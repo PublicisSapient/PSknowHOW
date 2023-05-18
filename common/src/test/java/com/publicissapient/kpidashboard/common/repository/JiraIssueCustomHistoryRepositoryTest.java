@@ -22,13 +22,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.joda.time.DateTime;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +38,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 
 public class JiraIssueCustomHistoryRepositoryTest {
@@ -59,7 +61,7 @@ public class JiraIssueCustomHistoryRepositoryTest {
 		// Helper mock data
 
 		/// document -1 in feature_custom_history
-		ArrayList<JiraIssueSprint> storySprintDetails = new ArrayList<>();
+		ArrayList<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
 		String projectID = "TestProject1";
 		String storyID = "TestStory1";
 		String storyType = "Story";
@@ -67,25 +69,25 @@ public class JiraIssueCustomHistoryRepositoryTest {
 		String sprintId = "TestSprint1";
 		String status = "Active";
 		String fromStatus = "Open";
-		DateTime activityDate = DateTime.now();
-		JiraIssueSprint f1 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f1);
+		java.time.LocalDateTime activityDate = java.time.LocalDateTime.now();
+		JiraHistoryChangeLog f1 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f1);
 		sprintId = "TestSprint1";
 		status = "Active";
 		fromStatus = "In Progress";
 		activityDate = activityDate.plusDays(3);
-		JiraIssueSprint f2 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f2);
+		JiraHistoryChangeLog f2 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f2);
 		sprintId = "TestSprint1";
 		status = "Active";
 		fromStatus = "Closed";
 		activityDate = activityDate.plusDays(3);
-		JiraIssueSprint f3 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f3);
-		mockJiraJiraIssueCustomHistory1 = createFeatureHistory(projectID, storyID, storyType, storySprintDetails);
+		JiraHistoryChangeLog f3 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f3);
+		mockJiraJiraIssueCustomHistory1 = createFeatureHistory(projectID, storyID, storyType, statusUpdationLog);
 
 		/// document -2 in feature_custom_history
-		storySprintDetails = new ArrayList<>();
+		statusUpdationLog = new ArrayList<>();
 		projectID = "TestProject1";
 		storyID = "TestStory2";
 		storyType = "Story";
@@ -93,25 +95,25 @@ public class JiraIssueCustomHistoryRepositoryTest {
 		sprintId = "TestSprint1";
 		status = "Active";
 		fromStatus = "Open";
-		activityDate = DateTime.now();
-		f1 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f1);
+		activityDate = java.time.LocalDateTime.now();
+		f1 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f1);
 		sprintId = "TestSprint1";
 		status = "Active";
 		fromStatus = "In Progress";
 		activityDate = activityDate.plusDays(5);
-		f2 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f2);
+		f2 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f2);
 		sprintId = "TestSprint1";
 		status = "Active";
 		fromStatus = "Closed";
 		activityDate = activityDate.plusDays(7);
-		f3 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f3);
-		mockJiraJiraIssueCustomHistory2 = createFeatureHistory(projectID, storyID, storyType, storySprintDetails);
+		f3 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f3);
+		mockJiraJiraIssueCustomHistory2 = createFeatureHistory(projectID, storyID, storyType, statusUpdationLog);
 
 		/// document -3 in feature_custom_history
-		storySprintDetails = new ArrayList<>();
+		statusUpdationLog = new ArrayList<>();
 		projectID = "TestProject2";
 		storyID = "TestStory3";
 		storyType = "Story";
@@ -119,25 +121,25 @@ public class JiraIssueCustomHistoryRepositoryTest {
 		sprintId = "TestSprint1";
 		status = "Active";
 		fromStatus = "Open";
-		activityDate = DateTime.now();
-		f1 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f1);
+		activityDate = java.time.LocalDateTime.now();
+		f1 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f1);
 		sprintId = "TestSprint2";
 		status = "Active";
 		fromStatus = "In Progress";
 		activityDate = activityDate.plusDays(3);
-		f2 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f2);
+		f2 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f2);
 		sprintId = "TestSprint3";
 		status = "Active";
 		fromStatus = "Closed";
 		activityDate = activityDate.plusDays(3);
-		f3 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f3);
-		mockJiraJiraIssueCustomHistory3 = createFeatureHistory(projectID, storyID, storyType, storySprintDetails);
+		f3 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f3);
+		mockJiraJiraIssueCustomHistory3 = createFeatureHistory(projectID, storyID, storyType, statusUpdationLog);
 
 		/// document -4 in feature_custom_history
-		storySprintDetails = new ArrayList<>();
+		statusUpdationLog = new ArrayList<>();
 		projectID = "TestProject2";
 		storyID = "TestStory4";
 		storyType = "Story";
@@ -145,31 +147,31 @@ public class JiraIssueCustomHistoryRepositoryTest {
 		sprintId = "TestSprint4";
 		status = "Active";
 		fromStatus = "Open";
-		activityDate = DateTime.now();
-		f1 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f1);
+		activityDate = java.time.LocalDateTime.now();
+		f1 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f1);
 		sprintId = "TestSprint4";
 		status = "Active";
 		fromStatus = "In Progress";
 		activityDate = activityDate.plusDays(5);
-		f2 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f2);
+		f2 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f2);
 		sprintId = "TestSprint4";
 		status = "Active";
 		fromStatus = "Open";
 		activityDate = activityDate.plusDays(7);
-		f3 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f3);
+		f3 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f3);
 		sprintId = "TestSprint4";
 		status = "Active";
 		fromStatus = "Closed";
 		activityDate = activityDate.plusWeeks(7);
-		f3 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f3);
-		mockJiraJiraIssueCustomHistory4 = createFeatureHistory(projectID, storyID, storyType, storySprintDetails);
+		f3 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f3);
+		mockJiraJiraIssueCustomHistory4 = createFeatureHistory(projectID, storyID, storyType, statusUpdationLog);
 
 		/// document -5 in feature_custom_history
-		storySprintDetails = new ArrayList<>();
+		statusUpdationLog = new ArrayList<>();
 		projectID = "TestProject2";
 		storyID = "TestDefect1";
 		storyType = "Defect";
@@ -179,28 +181,28 @@ public class JiraIssueCustomHistoryRepositoryTest {
 		sprintId = "TestSprint4";
 		status = "Active";
 		fromStatus = "Open";
-		activityDate = DateTime.now();
-		f1 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f1);
+		activityDate = java.time.LocalDateTime.now();
+		f1 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f1);
 		sprintId = "TestSprint4";
 		status = "Active";
 		fromStatus = "In Development";
 		activityDate = activityDate.plusDays(5);
-		f2 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f2);
+		f2 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f2);
 		sprintId = "TestSprint4";
 		status = "Active";
 		fromStatus = "In Testing";
 		activityDate = activityDate.plusDays(7);
-		f3 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f3);
+		f3 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f3);
 		sprintId = "TestSprint4";
 		status = "Active";
 		fromStatus = "Closed";
 		activityDate = activityDate.plusWeeks(7);
-		f3 = createFeatureSprintDetails(sprintId, status, fromStatus, activityDate);
-		storySprintDetails.add(f3);
-		mockJiraJiraIssueCustomHistory5 = createFeatureHistory(projectID, storyID, storyType, storySprintDetails);
+		f3 = createFeatureStatusDetails(sprintId, status, fromStatus, activityDate);
+		statusUpdationLog.add(f3);
+		mockJiraJiraIssueCustomHistory5 = createFeatureHistory(projectID, storyID, storyType, statusUpdationLog);
 		mockJiraJiraIssueCustomHistory5.setDefectStoryID(defectStoryID);
 
 	}
@@ -247,23 +249,22 @@ public class JiraIssueCustomHistoryRepositoryTest {
 	}
 
 	private JiraIssueCustomHistory createFeatureHistory(String projectID, String storyID, String storyType,
-			ArrayList<JiraIssueSprint> storySprintDetails) {
+			ArrayList<JiraHistoryChangeLog> statusChangeLog) {
 		JiraIssueCustomHistory rt = new JiraIssueCustomHistory();
 		rt.setProjectID(projectID);
 		rt.setStoryID(storyID);
 		rt.setStoryType(storyType);
-		rt.setStorySprintDetails(storySprintDetails);
+		rt.setStatusUpdationLog(statusChangeLog);
 		return rt;
 	}
 
-	private JiraIssueSprint createFeatureSprintDetails(String sprintId, String status, String fromStatus,
-			DateTime activityDate) {
-		JiraIssueSprint jiraIssueSprint = new JiraIssueSprint();
-		jiraIssueSprint.setActivityDate(activityDate);
-		jiraIssueSprint.setFromStatus(fromStatus);
-		jiraIssueSprint.setSprintId(sprintId);
-		jiraIssueSprint.setStatus(fromStatus);
-		return jiraIssueSprint;
+	private JiraHistoryChangeLog createFeatureStatusDetails(String sprintId, String status, String fromStatus,
+			java.time.LocalDateTime activityDate) {
+		JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
+		jiraHistoryChangeLog.setUpdatedOn(activityDate);
+		jiraHistoryChangeLog.setChangedTo(fromStatus);
+		jiraHistoryChangeLog.setChangedFrom(status);
+		return jiraHistoryChangeLog;
 
 	}
 

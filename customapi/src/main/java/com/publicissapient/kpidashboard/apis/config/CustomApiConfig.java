@@ -93,8 +93,6 @@ public class CustomApiConfig {// NOPMD
 	@Value("${filter.date.range.show:true}")
 	private boolean showDateRangeFilter;
 
-	private String rsaPrivateKey;
-
 	@Value("${testconnection.jiraApi}")
 	private String jiraTestConnection;
 
@@ -185,6 +183,13 @@ public class CustomApiConfig {// NOPMD
 
 	@Value(("${testExecution.kanban.numberOfFutureDays}"))
 	private int numberOfFutureDaysForKanbanTestExecution;
+
+	@Value("${kpi.comments.max.store.count}")
+	private int kpiCommentsMaxStoreCount;
+
+	@Value("${limit.comments.shown.on.kpi.dashboard.count}")
+	private int limitCommentsShownOnKpiDashboardCount;
+
 	private int jiraXaxisMonthCount;
 
 	private boolean ssoLogin;
@@ -198,6 +203,22 @@ public class CustomApiConfig {// NOPMD
 
 	private int exposeAPITokenExpiryDays; // expose api token expiry after days limit
 
+	public int getLimitCommentsShownOnKpiDashboardCount() {
+		return limitCommentsShownOnKpiDashboardCount;
+	}
+
+	public void setLimitCommentsShownOnKpiDashboardCount(int limitCommentsShownOnKpiDashboardCount) {
+		this.limitCommentsShownOnKpiDashboardCount = limitCommentsShownOnKpiDashboardCount;
+	}
+
+	public int getKpiCommentsMaxStoreCount() {
+		return kpiCommentsMaxStoreCount;
+	}
+
+	public void setKpiCommentsMaxStoreCount(int kpiCommentsMaxStoreCount) {
+		this.kpiCommentsMaxStoreCount = kpiCommentsMaxStoreCount;
+	}
+		
 	@Value("${backlogWeekCount}")
 	private int backlogWeekCount;
 
@@ -632,25 +653,6 @@ public class CustomApiConfig {// NOPMD
 	 */
 	public void setMaxPendingRequestsPerUsername(Integer maxPendingRequestsPerUsername) {
 		this.maxPendingRequestsPerUsername = maxPendingRequestsPerUsername;
-	}
-
-	/**
-	 * Gets rsa private key.
-	 *
-	 * @return the rsa private key
-	 */
-	public String getRsaPrivateKey() {
-		return rsaPrivateKey;
-	}
-
-	/**
-	 * Sets rsa private key.
-	 *
-	 * @param rsaPrivateKey
-	 *            the rsa private key
-	 */
-	public void setRsaPrivateKey(String rsaPrivateKey) {
-		this.rsaPrivateKey = rsaPrivateKey;
 	}
 
 	public String getZephyrTestConnection() {

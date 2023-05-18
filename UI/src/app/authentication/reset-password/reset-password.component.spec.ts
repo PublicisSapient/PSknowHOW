@@ -31,7 +31,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { HttpService } from '../../services/http.service';
 import { environment } from 'src/environments/environment';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
-
+import { SharedService } from 'src/app/services/shared.service';
 
 describe('ResetPasswordComponent', () => {
   let component: ResetPasswordComponent;
@@ -39,6 +39,7 @@ describe('ResetPasswordComponent', () => {
   const baseUrl = environment.baseUrl;
   let httpMock;
   let httpService;
+  let sharedService;
   const fakeError = { message: 'logError', success: false };
   const fakeSuccess = { message: 'success', success: true };
 
@@ -58,7 +59,7 @@ describe('ResetPasswordComponent', () => {
       ],
       declarations: [ResetPasswordComponent,
         RegisterComponent, DashboardComponent],
-      providers: [HttpService
+      providers: [HttpService, SharedService
         , { provide: APP_CONFIG, useValue: AppConfig }
 
       ],
@@ -71,6 +72,7 @@ describe('ResetPasswordComponent', () => {
     fixture = TestBed.createComponent(ResetPasswordComponent);
     component = fixture.componentInstance;
     httpService = TestBed.get(HttpService);
+    sharedService = TestBed.inject(SharedService);
     httpMock = TestBed.get(HttpTestingController);
     fixture.detectChanges();
   });

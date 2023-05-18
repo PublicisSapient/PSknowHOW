@@ -19,6 +19,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GetAuthorizationService } from '../services/get-authorization.service';
 import { Router, NavigationEnd } from '@angular/router';
+import { SharedService } from '../services/shared.service';
 
 declare let $: any;
 
@@ -32,11 +33,11 @@ export class ConfigComponent implements OnInit {
     hasAccess = <boolean>false;
     activeTab: any;
 
-    constructor(private getAuthorizationService: GetAuthorizationService, private router: Router) {
+    constructor(private getAuthorizationService: GetAuthorizationService, private router: Router,private sharedService: SharedService) {
     }
 
     ngOnInit() {
-        if (this.getAuthorizationService.checkIfSuperUser() || (localStorage.getItem('projectsAccess') && localStorage.getItem('projectsAccess') !== 'undefined' && JSON.parse(localStorage.getItem('projectsAccess')).length)) {
+        if (this.getAuthorizationService.checkIfSuperUser() || (this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess').length)) {
             if (!this.getAuthorizationService.checkIfSuperUser()) {
                 if (!this.getAuthorizationService.checkIfProjectAdmin()) {
                     this.hasAccess = false;

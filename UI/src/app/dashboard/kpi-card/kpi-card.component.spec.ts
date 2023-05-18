@@ -1,4 +1,8 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 
 import { KpiCardComponent } from './kpi-card.component';
 import { SharedService } from 'src/app/services/shared.service';
@@ -10,6 +14,7 @@ describe('KpiCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [ KpiCardComponent ],
       providers: [SharedService]
     })
@@ -136,4 +141,5 @@ describe('KpiCardComponent', () => {
     tick();
     expect(component.radioOption).toBe('default');
   }));
+
 });

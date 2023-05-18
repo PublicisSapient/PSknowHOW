@@ -33,7 +33,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';
 import { DatePipe } from '../../../../node_modules/@angular/common';
-import { TextEncryptionService } from '../../services/text.encryption.service';
 import { of } from 'rxjs';
 
 describe('NavComponent', () => {
@@ -43,7 +42,6 @@ describe('NavComponent', () => {
   let httpMock;
   let httpService;
   let service;
-  let aesEncryption;
   const baseUrl = environment.baseUrl;  // Servers Env
 
   const getversionData = { versionDetailsMap: { currentVersion: '2.8.0' } };
@@ -70,7 +68,7 @@ describe('NavComponent', () => {
         ])
 
       ],
-      providers: [HttpService, SharedService, MessageService, HelperService, DatePipe, TextEncryptionService,
+      providers: [HttpService, SharedService, MessageService, HelperService, DatePipe,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })
@@ -80,7 +78,6 @@ describe('NavComponent', () => {
       httpMock = TestBed.get(HttpTestingController);
       fixture = TestBed.createComponent(NavComponent);
       component = fixture.componentInstance;
-      aesEncryption = TestBed.inject(TextEncryptionService);
       httpService = TestBed.inject(HttpService);
       messageService = TestBed.inject(MessageService);
       shareService = TestBed.inject(SharedService);
@@ -91,7 +88,6 @@ describe('NavComponent', () => {
       // httpMock.expectOne(baseUrl + '/api/getversionmetadata').flush(getversionData);
       httpMock.expectOne(baseUrl + '/api/user-board-config').flush(getDashConfData);
       document.dispatchEvent(new MouseEvent('click'));
-      localStorage.setItem('authorities',aesEncryption.convertText('["ROLE_PROJECT_ADMIN","ROLE_PROJECT_VIEWER"]', 'encrypt'));
   }));
 
   it('select tab functionality ', () => {

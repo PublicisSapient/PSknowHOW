@@ -65,8 +65,8 @@ import { TabViewModule } from 'primeng/tabview';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TabMenuModule } from 'primeng/tabmenu';
-import { SkeletonModule } from 'primeng/skeleton'
-
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { SkeletonModule } from 'primeng/skeleton';
 
 /******************************************************/
 
@@ -81,8 +81,6 @@ import { APP_CONFIG, AppConfig } from './services/app.config';
 import { HelperService } from './services/helper.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { JsonExportImportService } from './services/json-export-import.service';
-import { RsaEncryptionService } from './services/rsa.encryption.service';
-import { TextEncryptionService } from './services/text.encryption.service';
 import { IterationComponent } from './dashboard/iteration/iteration.component';
 import { OverlappedProgressbarComponent } from './component/overlapped-progressbar/overlapped-progressbar.component';
 import { HorizontalStackProgressbarComponent } from './component/horizontal-stack-progressbar/horizontal-stack-progressbar.component';
@@ -108,7 +106,7 @@ import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-f
 import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
 
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
-
+import { CommentsComponent } from './component/comments/comments.component';
 import { MilestoneComponent } from './dashboard/milestone/milestone.component';
 import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
 
@@ -167,6 +165,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         BacklogComponent,
         TableComponent,
         ExportExcelComponent,
+        CommentsComponent,
         SsoAuthFailureComponent,
         UnauthorisedAccessComponent,
         GroupBarChartComponent,
@@ -200,6 +199,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         DialogModule,
         FontAwesomeModule,
         DragDropModule,
+        OverlayPanelModule,
         MenuModule,
         SkeletonModule
     ],
@@ -211,9 +211,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         HelperService,
         GetAuthorizationService,
         JsonExportImportService,
-        RsaEncryptionService,
         MessageService,
-        TextEncryptionService,
         DatePipe,
         { provide: APP_CONFIG, useValue: AppConfig },
         { provide: APP_CONFIG, useValue: AppConfig },
@@ -227,7 +225,3 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
     bootstrap: [AppComponent]
 })
 export class AppModule { }
-
-
-
-

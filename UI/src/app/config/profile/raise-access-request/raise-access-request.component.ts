@@ -21,6 +21,7 @@ import { UntypedFormGroup } from '@angular/forms';
 import { HttpService } from '../../../services/http.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { SharedService } from 'src/app/services/shared.service';
 
 declare let $: any;
 
@@ -41,11 +42,15 @@ export class RaiseAccessRequestComponent implements OnInit {
   requestData = {};
   raiseRequestResponse = {};
   roleSelected = false;
-  constructor(private httpService: HttpService, private messageService: MessageService, private router: Router) { }
+  constructor(private httpService: HttpService, private messageService: MessageService, private router: Router,private sharedService : SharedService) { }
 
   ngOnInit() {
     this.getRolesList();
-    this.requestData['username'] = localStorage.getItem('user_name');
+    this.sharedService.currentUserDetailsObs.subscribe(details => {
+      if (details) {
+        this.requestData['username'] = details['user_name'];
+      }
+    });
     this.requestData['status'] = 'Pending';
     this.requestData['reviewComments'] = '';
     this.requestData['role'] = '';
@@ -136,12 +141,7 @@ export class RaiseAccessRequestComponent implements OnInit {
       .subscribe(getData => {
         if (!(getData !== null && getData[0] === 'error')) {
           localStorage.removeItem('auth_token');
-          localStorage.removeItem('user_name');
-          localStorage.removeItem('authorities');
-          localStorage.removeItem('projectsAccess');
-          if (localStorage.getItem('loginType') === 'AD') {
-            localStorage.removeItem('SpeedyPassword');
-          }
+          this.sharedService.setCurrentUserDetails({});
 
           this.router.navigate(['./authentication/login']);
         }

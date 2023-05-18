@@ -62,7 +62,7 @@ export class HelperService {
     // this is used for making request object for kpi .Here first parameter is kpi source i.e
     // sonar , jira etc and second parameter is Kanban is true or false
     // type is quality or productivity
-    groupKpiFromMaster(kpiSource, isKanban, masterData, filterApplyData, filterData, kpiIdsForCurrentBoard, type) {
+    groupKpiFromMaster(kpiSource, isKanban, masterData, filterApplyData, filterData, kpiIdsForCurrentBoard, type,selectedTab) {
         const kpiRequestObject = <any>{};
 
         kpiRequestObject.kpiList = <any>[];
@@ -73,6 +73,9 @@ export class HelperService {
 
             if (type && type !== '' && !isNaN(type)) {
                 condition = (obj.groupId && obj.groupId === type) && condition;
+            }
+            if(obj?.kpiCategory){
+              condition =   obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
             }
 
             if (condition) {

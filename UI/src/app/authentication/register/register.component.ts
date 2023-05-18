@@ -20,7 +20,6 @@ import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { Router } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { TextEncryptionService } from '../../services/text.encryption.service';
 @Component({
     selector: 'app-register',
     templateUrl: './register.component.html',
@@ -36,7 +35,7 @@ export class RegisterComponent implements OnInit {
     constructor(
         private formBuilder: UntypedFormBuilder,
         private router: Router,
-        private httpService: HttpService, private aesEncryption: TextEncryptionService) { }
+        private httpService: HttpService) { }
     ngOnInit() {
         // Set validation for registration-form elements
         this.registorForm = this.formBuilder.group({
@@ -84,7 +83,6 @@ export class RegisterComponent implements OnInit {
                         // After successfully registration redirect form to dashboard router(Executive page)
 
                         this.success = data.message;
-                        localStorage.setItem('SpeedyPassword', this.aesEncryption.convertText(this.f.password.value, 'encrypt'));
                         this.router.navigate(['./dashboard/']);
                     } else {
                         this.error = data.message;

@@ -54,7 +54,11 @@ public final class AzureConstants {
 
    	public static final String ORDERBY="order by";
    	public static final String CHANGEDDATE="[system.changeddate]";
+    public static final String PRIORITY = "Microsoft.VSTS.Common.Priority";
+    public static final String ASSIGNEE = "System.AssignedTo";
+    public static final String LABEL = "System.Tags";
    	public static final String WHERE="where";
+   public static final String DUE_DATE = "Microsoft.VSTS.Scheduling.DueDate";
     private AzureConstants()
     {
 
