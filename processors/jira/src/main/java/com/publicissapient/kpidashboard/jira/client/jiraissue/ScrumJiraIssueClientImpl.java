@@ -760,7 +760,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		issueBacklogCustomHistory.setBuildNumber(jiraIssueHistory.getBuildNumber());
 		issueBacklogCustomHistory.setProjectName(jiraIssueHistory.getProjectName());
 		issueBacklogCustomHistory.setBasicProjectConfigId(jiraIssueHistory.getBasicProjectConfigId());
-		issueBacklogCustomHistory.setStorySprintDetails(jiraIssueHistory.getStorySprintDetails());
 		issueBacklogCustomHistory.setStatusUpdationLog(jiraIssueHistory.getStatusUpdationLog());
 		issueBacklogCustomHistory.setAssigneeUpdationLog(jiraIssueHistory.getAssigneeUpdationLog());
 		issueBacklogCustomHistory.setPriorityUpdationLog(jiraIssueHistory.getPriorityUpdationLog());
