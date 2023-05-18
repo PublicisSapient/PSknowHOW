@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -55,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
@@ -64,13 +67,16 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.Project
 import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
+import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
+import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
+import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
-
 
 /**
  * Implementation of {@link UserInfoService}.
@@ -108,6 +114,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Autowired
     private CacheService cacheService;
+
+    @Autowired
+    private CookieUtil cookieUtil;
+    @Autowired
+    private UserTokenReopository userTokenReopository;
 
     @Override
     public Collection<GrantedAuthority> getAuthorities(String username) {
@@ -455,6 +466,31 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
+	public UserDetailsResponseDTO getUserInfoByToken(HttpServletRequest request) {
+		Cookie authCookie = cookieUtil.getAuthCookie(request);
+		if (StringUtils.isBlank(authCookie.getValue())) {
+			return null;
+		}
+		String token = authCookie.getValue();
+		UserTokenData userTokenData = userTokenReopository.findByUserToken(token);
+		UserDetailsResponseDTO userDetailsResponseDTO = new UserDetailsResponseDTO();
+		if (Objects.nonNull(userTokenData)) {
+			String username = userTokenData.getUserName();
+			UserInfo userinfo = userInfoRepository.findByUsername(username);
+			Authentication authentication = authenticationRepository.findByUsername(username);
+			String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
+
+			userDetailsResponseDTO.setUserName(username);
+			userDetailsResponseDTO.setUserEmail(email);
+			userDetailsResponseDTO.setAuthorities(userinfo.getAuthorities());
+
+			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
+
+			userDetailsResponseDTO.setProjectsAccess(projectAccessesWithRole);
+		}
+		return userDetailsResponseDTO;
+
+	}
     public UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities){
         UserInfo userInfo = userInfoRepository.findByUsername(userName);
         if(userInfo == null) {

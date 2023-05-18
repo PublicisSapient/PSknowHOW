@@ -210,6 +210,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
                 this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,this.selectedTab);
                 if (this.kpiJira?.kpiList?.length > 0) {
                     this.postJiraKpi(this.kpiJira, 'jira');
+                } else {
+                    this.noOfJiraGroups--;
                 }
             }
         });
@@ -241,6 +243,8 @@ export class MaturityComponent implements OnInit, OnDestroy {
                 this.kpiJira = this.helperService.groupKpiFromMaster('Jira', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,this.selectedTab);
                 if (this.kpiJira?.kpiList?.length > 0) {
                     this.postJiraKpi(this.kpiJira, 'jira');
+                } else {
+                    this.noOfJiraGroups--;
                 }
             }
         });

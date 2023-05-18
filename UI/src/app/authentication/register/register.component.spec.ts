@@ -32,6 +32,7 @@ import { HttpService } from '../../services/http.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { environment } from 'src/environments/environment';
 import { throwError, of } from 'rxjs';
+import { SharedService } from 'src/app/services/shared.service';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -40,6 +41,7 @@ describe('RegisterComponent', () => {
   let httpMock;
   let httpreq;
   let httpService;
+  let sharedService;
   // const errorMsz = 'Cannot complete the registration process, Try with different email';
   const errorMsz = {
     message:'Cannot complete the registration process, Try with different email',
@@ -68,7 +70,7 @@ describe('RegisterComponent', () => {
       declarations: [
         LoginComponent,
         RegisterComponent, DashboardComponent],
-      providers: [{ provide: APP_CONFIG, useValue: AppConfig }, HttpService],
+      providers: [{ provide: APP_CONFIG, useValue: AppConfig }, HttpService, SharedService],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
       .compileComponents();
@@ -79,7 +81,7 @@ describe('RegisterComponent', () => {
     component = fixture.componentInstance;
     httpService = TestBed.get(HttpService);
     httpMock = TestBed.get(HttpTestingController);
-
+    sharedService = TestBed.inject(SharedService);
     fixture.detectChanges();
   });
 

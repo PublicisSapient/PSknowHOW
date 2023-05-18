@@ -31,19 +31,20 @@ import { TableModule } from 'primeng/table';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpService } from 'src/app/services/http.service';
-import { RsaEncryptionService } from 'src/app/services/rsa.encryption.service';
 import { ConnectionListComponent } from './connection-list.component';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { ConfirmationService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
 import { of } from 'rxjs';
 import { TestConnectionService } from 'src/app/services/test-connection.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 describe('ConnectionListComponent', () => {
   let component: ConnectionListComponent;
   let fixture: ComponentFixture<ConnectionListComponent>;
   let httpMock;
   let httpService;
+  let sharedService;
   const baseUrl = environment.baseUrl;
   let testConnectionService;
   const connectionTableData = [
@@ -1016,7 +1017,7 @@ describe('ConnectionListComponent', () => {
       providers: [
         HttpService,
         ConfirmationService,
-        RsaEncryptionService,
+        SharedService,
         { provide: APP_CONFIG, useValue: AppConfig },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -1027,6 +1028,7 @@ describe('ConnectionListComponent', () => {
     fixture = TestBed.createComponent(ConnectionListComponent);
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
+    sharedService = TestBed.inject(SharedService);
     httpMock = TestBed.inject(HttpTestingController);
     testConnectionService = TestBed.inject(TestConnectionService);
     fixture.detectChanges();

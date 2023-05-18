@@ -81,8 +81,6 @@ import { APP_CONFIG, AppConfig } from './services/app.config';
 import { HelperService } from './services/helper.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { JsonExportImportService } from './services/json-export-import.service';
-import { RsaEncryptionService } from './services/rsa.encryption.service';
-import { TextEncryptionService } from './services/text.encryption.service';
 import { IterationComponent } from './dashboard/iteration/iteration.component';
 import { OverlappedProgressbarComponent } from './component/overlapped-progressbar/overlapped-progressbar.component';
 import { HorizontalStackProgressbarComponent } from './component/horizontal-stack-progressbar/horizontal-stack-progressbar.component';
@@ -211,9 +209,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         HelperService,
         GetAuthorizationService,
         JsonExportImportService,
-        RsaEncryptionService,
         MessageService,
-        TextEncryptionService,
         DatePipe,
         { provide: APP_CONFIG, useValue: AppConfig },
         { provide: APP_CONFIG, useValue: AppConfig },

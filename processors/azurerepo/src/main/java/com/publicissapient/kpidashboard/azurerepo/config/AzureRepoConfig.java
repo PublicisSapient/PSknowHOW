@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.azurerepo.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +44,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AzureRepoConfig {
 	private String cron;
+	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
 	private int initialRunOccurrenceInDays;
 	private String api;

@@ -80,7 +80,6 @@
           </ng-template>
           <ng-template pTemplate="body" let-processor let-expanded="expanded">
             <tr>
-              <!--//TODO: Hot Fix For DTS-8727, in future we may need to change in processor api-->
               <td class='custom-table-cell'>
                 {{ processor.processorName === 'Azure' ? 'Azure Board' : processor.processorName }}
               </td>

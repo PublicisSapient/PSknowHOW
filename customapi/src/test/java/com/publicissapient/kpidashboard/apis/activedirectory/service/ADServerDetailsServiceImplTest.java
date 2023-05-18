@@ -17,14 +17,13 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.activedirectory.service;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
+import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
+import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,14 +32,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
-import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
-import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 /**
  * @author sansharm13
@@ -54,8 +52,6 @@ public class ADServerDetailsServiceImplTest {
 	private GlobalConfigRepository globalConfigRepository;
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-	@Mock
-	private RsaEncryptionService rsaEncryptionService;
 	@Mock
 	private AesEncryptionService aesEncryptionService;
 	@Mock
@@ -93,7 +89,6 @@ public class ADServerDetailsServiceImplTest {
 		String encryptedString = "ahjh=kj=hgmn";
 		when(globalConfigRepository.findAll()).thenReturn(globalConfigs);
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		when(rsaEncryptionService.decrypt(Mockito.any(), Mockito.any())).thenReturn(plainText);
 		when(aesEncryptionService.encrypt(Mockito.any(), Mockito.any())).thenReturn(encryptedString);
 		ServiceResponse response = adUserDetailsServiceImpl.addUpdateADServerDetails(adUserDetail);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
