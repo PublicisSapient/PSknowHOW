@@ -43,8 +43,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.atlassian.jira.rest.client.api.domain.Status;
-import com.publicissapient.kpidashboard.common.model.jira.ProjectStatusCategory;
-import com.publicissapient.kpidashboard.common.repository.jira.ProjectStatusCategoryRepository;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -155,7 +155,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	@Autowired
-	private ProjectStatusCategoryRepository projectStatusCategoryRepository;
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 
 	@Autowired
 	private HandleJiraHistory handleJiraHistory;
@@ -1603,24 +1603,24 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 	private void processAndSaveProjectStatusCategory(List<Status> listOfProjectStatus, String basicProjectConfigId) {
 		if (CollectionUtils.isNotEmpty(listOfProjectStatus)) {
-			ProjectStatusCategory projectStatusCategory = new ProjectStatusCategory();
+			JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
 			Map<Long, String> listOfTodos = new HashMap<>();
 			Map<Long, String> listOfInProgress = new HashMap<>();
 			Map<Long, String> listOfClosed = new HashMap<>();
-			projectStatusCategory.setBasicProjectConfigId(basicProjectConfigId);
+			jiraIssueReleaseStatus.setBasicProjectConfigId(basicProjectConfigId);
 			listOfProjectStatus.stream().forEach(status -> {
-				if ("To Do".equals(status.getStatusCategory().getName())) {
+				if (JiraConstants.TO_DO.equals(status.getStatusCategory().getName())) {
 					listOfTodos.put(status.getId(), status.getName());
-				} else if ("Done".equals(status.getStatusCategory().getName())) {
+				} else if (JiraConstants.DONE.equals(status.getStatusCategory().getName())) {
 					listOfClosed.put(status.getId(), status.getName());
 				} else {
 					listOfInProgress.put(status.getId(), status.getName());
 				}
 			});
-			projectStatusCategory.setListOfTodos(listOfTodos);
-			projectStatusCategory.setListOfInProgress(listOfInProgress);
-			projectStatusCategory.setListOfClosed(listOfClosed);
-			projectStatusCategoryRepository.save(projectStatusCategory);
+			jiraIssueReleaseStatus.setListOfTodos(listOfTodos);
+			jiraIssueReleaseStatus.setListOfInProgress(listOfInProgress);
+			jiraIssueReleaseStatus.setListOfClosed(listOfClosed);
+			jiraIssueReleaseStatusRepository.save(jiraIssueReleaseStatus);
 			log.debug("saved project status category");
 		}
 	}

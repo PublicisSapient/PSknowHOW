@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.ProjectStatusCategory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -296,8 +296,12 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return filteredJiraIssue;
 	}
 
-	public ProjectStatusCategory getProjectStatusCategory(String basicProjectConfigId) {
-		return jiraService.getProjectStatusCategoryForProject(basicProjectConfigId);
+	public JiraIssueReleaseStatus getProjectStatusCategory(String basicProjectConfigId) {
+		return jiraService.getJiraIssueReleaseForProject(basicProjectConfigId);
+	}
+
+	public List<JiraIssue> getReleaseJiraIssuesFromBaseClass() {
+		return jiraService.getJiraIssuesForCurrentSprint();
 	}
 
 }

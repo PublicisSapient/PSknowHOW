@@ -18,8 +18,8 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Document(collection = "project_status_categories")
-public class ProjectStatusCategory {
+@Document(collection = "jira_issue_release_status")
+public class JiraIssueReleaseStatus {
 
     private String basicProjectConfigId;
     private Map<Long, String> listOfTodos;
