@@ -10,6 +10,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
 import { environment } from 'src/environments/environment';
 import { of,throwError } from 'rxjs';
+import { SharedService } from 'src/app/services/shared.service';
 
 describe('AdSettingsComponent', () => {
   let component: AdSettingsComponent;
@@ -18,6 +19,7 @@ describe('AdSettingsComponent', () => {
   const baseUrl = environment.baseUrl;
   let httpMock;
   let msgService;
+  let shared ;
 
   const fakeLoginSettings = {
     message: 'types of authentication config',
@@ -29,7 +31,7 @@ describe('AdSettingsComponent', () => {
       },
       adServerDetail: {
         username: 'testUser',
-        password: '',
+        password: '****',
         host: 'testhost.net',
         port: 639,
         rootDn: 'DC=global,DC=testhost,DC=net',
@@ -50,6 +52,7 @@ describe('AdSettingsComponent', () => {
       providers: [
         HttpService,
         MessageService,
+        SharedService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })
@@ -62,6 +65,7 @@ describe('AdSettingsComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     httpService = TestBed.inject(HttpService);
     msgService = TestBed.inject(MessageService);
+    shared = TestBed.inject(SharedService);
     fixture.detectChanges();
   });
 
@@ -93,7 +97,7 @@ describe('AdSettingsComponent', () => {
       success: true,
       data: {
         username: 'test-username',
-        password: 'dummypassword',
+        password: '***',
         host: 'test-host-name',
         port: 639,
         rootDn: 'test-root',
@@ -108,7 +112,7 @@ describe('AdSettingsComponent', () => {
   it("should adsetting form valid",()=>{
     component.initializeFields();
     component.adSettingsForm.controls['username'].setValue("abc@gmail.com")
-    component.adSettingsForm.controls['password'].setValue("abc@gmail.com")
+    component.adSettingsForm.controls['password'].setValue("***")
     component.adSettingsForm.controls['host'].setValue("abc@gmail.com")
     component.adSettingsForm.controls['port'].setValue("abc@gmail.com")
     component.adSettingsForm.controls['rootDn'].setValue("abc@gmail.com")

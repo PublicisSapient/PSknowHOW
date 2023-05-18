@@ -70,6 +70,9 @@ public class ScrumJiraIssueClientImplTest {
     private ScrumJiraIssueClientImpl scrumJiraIssueClient;
 
     @Mock
+    private HandleJiraHistory handleJiraHistory;
+
+    @Mock
     private JiraIssueRepository jiraIssueRepository;
 
     @Mock

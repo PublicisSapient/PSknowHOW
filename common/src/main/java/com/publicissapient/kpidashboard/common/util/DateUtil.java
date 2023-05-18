@@ -36,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.publicissapient.kpidashboard.common.model.application.Week;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * @author narsingh9
@@ -63,7 +64,7 @@ public class DateUtil {
 	public static final String BASIC_DATE_FORMAT = "dd-MM-yyyy";
 
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
-	
+
 	private DateUtil() {
 		// to prevent creation on object
 	}
@@ -188,6 +189,26 @@ public class DateUtil {
 
 	public static long convertStringToLong(String date) {
 		return ZonedDateTime.of(stringToLocalDateTime(date, TIME_FORMAT), ZoneId.systemDefault()).toInstant().toEpochMilli();
+	}
+
+	public static LocalDateTime convertingStringToLocalDateTime(String time, String format){
+		Instant timestamp = Instant.parse(time);
+		return  timestamp.atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
+
+	public static String getFormattedDate(DateTime dateTime1) {
+		String date = "";
+		if(dateTime1!=null) date = dateTime1.toString();
+		if (date != null && !date.isEmpty()) {
+			try {
+				DateTime dateTime = ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(date);
+				return ISODateTimeFormat.dateHourMinuteSecondMillis().print(dateTime) + "0000";
+			} catch (IllegalArgumentException e) {
+				log.error("error while parsing date: {} {}", date, e);
+			}
+		}
+
+		return "";
 	}
 
 	public static String dateTimeConverter(DateTime dateTime, final String fromFormat) {

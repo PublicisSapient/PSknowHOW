@@ -32,7 +32,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Router, Routes } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { MessageService } from 'primeng/api';
-import { TextEncryptionService } from '../../services/text.encryption.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { of, throwError } from 'rxjs';
@@ -43,7 +42,6 @@ describe('FilterComponent', () => {
   let fixture: ComponentFixture<FilterComponent>;
   let httpService: HttpService;
   let messageService: MessageService;
-  let aesEncryption;
   let httpMock;
   let sharedService: SharedService;
   let getAuthorizationService: GetAuthorizationService;
@@ -206,7 +204,7 @@ describe('FilterComponent', () => {
       imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule,
         RouterTestingModule.withRoutes(routes),
       ],
-      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, TextEncryptionService, MessageService, HelperService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService, { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
   });
@@ -216,14 +214,11 @@ describe('FilterComponent', () => {
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService);
     httpService = TestBed.inject(HttpService);
-    aesEncryption = TestBed.inject(TextEncryptionService);
     getAuthorizationService = TestBed.inject(GetAuthorizationService);
     helperService = TestBed.inject(HelperService);
     messageService = TestBed.inject(MessageService);
     excelService = TestBed.inject(ExcelService);
     httpMock = TestBed.inject(HttpTestingController);
-    localStorage.setItem('user_name', 'Fake user name');
-    localStorage.setItem('authorities', aesEncryption.convertText('["ROLE_PROJECT_ADMIN"]', 'encrypt'));
     spyOn(sharedService.passDataToDashboard, 'emit');
   });
 
@@ -558,13 +553,13 @@ describe('FilterComponent', () => {
   });
 
   it('should  assign UserName For KpiData', () => {
+    spyOn(sharedService,'getCurrentUserDetails').and.returnValue('dummy user')
     component.kpiListData = {
       username: undefined,
       id: 1
     };
-    spyOn(localStorage, 'getItem').and.returnValue('project_admin');
     component.assignUserNameForKpiData();
-    expect(component.kpiListData.username).toBe('project_admin');
+    expect(component.kpiListData.username).toBe('dummy user');
   });
 
   it('should navigate To Selected Tab', inject([Router], (router: Router) => {
@@ -696,7 +691,7 @@ describe('FilterComponent', () => {
         nodeName: 'BITBUCKET_DEMO',
         path: 't3_subaccount###t2_account###t1_business###bittest_corporate',
         labelName: 'project1',
-        parentId: 't3_subaccount',
+        parentId: 't3',
         level: 5,
         basicProjectConfigId: '632c46c6728e93266f5d5631'
       }];
@@ -715,7 +710,7 @@ describe('FilterComponent', () => {
         nodeName: 'BITBUCKET_DEMO',
         path: 't3_subaccount###t2_account###t1_business###bittest_corporate',
         labelName: 'project',
-        parentId: 't3_subaccount',
+        parentId: 't3',
         level: 5,
         basicProjectConfigId: '632c46c6728e93266f5d5631'
       }];
@@ -736,19 +731,19 @@ describe('FilterComponent', () => {
       {
         id: '63244d35d1d9f4caf85056f9',
         level: 3,
-        hierarchyLevelId: 'account',
-        hierarchyLevelName: 'Account Name'
+        hierarchyLevelId: 'dummyaccount',
+        hierarchyLevelName: 'dummyAccount Name'
       },
       {
         id: '63244d35d1d9f4caf85056fa',
         level: 4,
-        hierarchyLevelId: 'subaccount',
-        hierarchyLevelName: 'Subaccount'
+        hierarchyLevelId: 'dummysubaccount',
+        hierarchyLevelName: 'dummySubaccount'
       },
       {
         level: 5,
-        hierarchyLevelId: 'project',
-        hierarchyLevelName: 'Project'
+        hierarchyLevelId: 'dummyproject',
+        hierarchyLevelName: 'dummyProject'
       }
     ];
     component.selectedTab = '';
