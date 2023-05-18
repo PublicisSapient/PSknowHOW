@@ -855,10 +855,10 @@ describe('FilterComponent', () => {
     });
 
     let result = component.getDate('start');
-    expect(result).toBe('07/09/2022');
+    expect(result).toBe('07/Sept/2022');
 
     let result2 = component.getDate('end');
-    expect(result2).toBe('27/09/2022');
+    expect(result2).toBe('27/Sept/2022');
   });
 
   it("should call formatted date for iteration",()=>{
