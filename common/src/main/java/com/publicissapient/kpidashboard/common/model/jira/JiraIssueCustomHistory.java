@@ -83,7 +83,8 @@ public class JiraIssueCustomHistory extends BasicModel {
 	private List<JiraHistoryChangeLog> labelUpdationLog = new ArrayList<>();
 	private List<JiraHistoryChangeLog> dueDateUpdationLog = new ArrayList<>();
 	private List<JiraHistoryChangeLog> sprintUpdationLog = new ArrayList<>();
-
+	private List<JiraHistoryChangeLog> flagStatusChangeLog = new ArrayList<>();
+	
 	private List<AdditionalFilter> additionalFilters;
 
 	private String url;
