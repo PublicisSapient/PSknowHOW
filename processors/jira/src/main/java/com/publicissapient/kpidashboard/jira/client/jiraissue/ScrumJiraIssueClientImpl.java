@@ -41,6 +41,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.atlassian.jira.rest.client.api.domain.Status;
+import com.publicissapient.kpidashboard.common.model.jira.ProjectStatusCategory;
+import com.publicissapient.kpidashboard.common.repository.jira.ProjectStatusCategoryRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -150,6 +153,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
+	@Autowired
+	private ProjectStatusCategoryRepository projectStatusCategoryRepository;
+
 	/**
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
@@ -205,6 +211,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			Set<SprintDetails> setForCacheClean = new HashSet<>();
 			String userTimeZone = jiraAdapter.getUserTimeZone(projectConfig);
 			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
+
+			List<Status> projectStatuses = jiraAdapter.getStatus();
+			processAndSaveProjectStatusCategory(projectStatuses, projectConfig.getBasicProjectConfigId().toString());
 
 			for (int i = 0; hasMore; i += pageSize) {
 				Instant startProcessingJiraIssues = Instant.now();
@@ -293,6 +302,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			String userTimeZone = jiraAdapter.getUserTimeZone(projectConfig);
 			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
 			List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
+			List<Status> projectStatuses = jiraAdapter.getStatus();
+			processAndSaveProjectStatusCategory(projectStatuses, projectConfig.getBasicProjectConfigId().toString());
 			for(BoardDetails board : boardDetailsList) {
 				psLogData.setBoardId(board.getBoardId());
 				int boardTotal = 0;
@@ -1787,6 +1798,30 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	private static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig, Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog, LocalDateTime configuredStartDate, String issueType) {
 		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
 			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
+		}
+	}
+
+	private void processAndSaveProjectStatusCategory(List<Status> listOfProjectStatus, String basicProjectConfigId) {
+		if (CollectionUtils.isNotEmpty(listOfProjectStatus)) {
+			ProjectStatusCategory projectStatusCategory = new ProjectStatusCategory();
+			Map<Long, String> listOfTodos = new HashMap<>();
+			Map<Long, String> listOfInProgress = new HashMap<>();
+			Map<Long, String> listOfClosed = new HashMap<>();
+			projectStatusCategory.setBasicProjectConfigId(basicProjectConfigId);
+			listOfProjectStatus.stream().forEach(status -> {
+				if ("To Do".equals(status.getStatusCategory().getName())) {
+					listOfTodos.put(status.getId(), status.getName());
+				} else if ("Done".equals(status.getStatusCategory().getName())) {
+					listOfClosed.put(status.getId(), status.getName());
+				} else {
+					listOfInProgress.put(status.getId(), status.getName());
+				}
+			});
+			projectStatusCategory.setListOfTodos(listOfTodos);
+			projectStatusCategory.setListOfInProgress(listOfInProgress);
+			projectStatusCategory.setListOfClosed(listOfClosed);
+			projectStatusCategoryRepository.save(projectStatusCategory);
+			log.debug("saved project status category");
 		}
 	}
 }

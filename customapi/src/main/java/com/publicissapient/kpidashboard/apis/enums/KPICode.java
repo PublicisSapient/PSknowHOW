@@ -302,6 +302,7 @@ public enum KPICode {
 	DEFECT_COUNT_BY_RCA_RELEASE("kpi142", KPISource.JIRA.name()),
 	DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143", KPISource.JIRA.name()),
 	DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144", KPISource.JIRA.name()),
+	RELEASE_PROGRESS("kpi145", KPISource.JIRA.name()),
 	/**
 	 * Scope Change
 	 */

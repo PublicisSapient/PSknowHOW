@@ -29,6 +29,8 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.ProjectStatusCategory;
+import com.publicissapient.kpidashboard.common.repository.jira.ProjectStatusCategoryRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.SerializationUtils;
@@ -94,6 +96,8 @@ public class JiraServiceR {
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Autowired
+	private ProjectStatusCategoryRepository projectStatusCategoryRepository;
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 
@@ -415,6 +419,10 @@ public class JiraServiceR {
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
 		return jiraIssueCustomHistoryList;
+	}
+
+	public ProjectStatusCategory getProjectStatusCategoryForProject(String basicProjectConfigId) {
+		return projectStatusCategoryRepository.findByBasicProjectConfigId(basicProjectConfigId);
 	}
 
 }
