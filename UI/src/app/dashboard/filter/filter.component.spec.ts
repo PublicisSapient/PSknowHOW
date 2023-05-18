@@ -830,7 +830,7 @@ describe('FilterComponent', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  fit('should get format date based on iteration/milestone', () => {
+  it('should get format date based on iteration/milestone', () => {
     component.selectedTab = 'iteration';
     component.filteredAddFilters = {
       sprint: [
