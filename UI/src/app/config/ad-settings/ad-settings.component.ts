@@ -171,11 +171,7 @@ export class AdSettingsComponent implements OnInit {
       } else {
         submitData['adServerDetail'] = {};
         for (const obj in this.adForm) {
-          if (obj === 'password') {
-            submitData['adServerDetail'][obj] = this.adForm[obj].value;
-          } else {
-            submitData['adServerDetail'][obj] = this.adForm[obj].value;
-          }
+          submitData['adServerDetail'][obj] = this.adForm[obj].value;
         }
       }
     }
