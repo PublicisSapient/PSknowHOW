@@ -113,10 +113,10 @@
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body"  let-item let-columns="columns">
-                    <tr class="sprint" [ngClass]="{'tr-active': ((currentDate  | date: 'dd/MM/yyyy') === (item?.executionDate | date: 'dd/MM/yyyy'))}">
+                    <tr class="sprint" [ngClass]="{'tr-active': ((currentDate  | date: 'dd/MMM/yyyy') === (item?.executionDate | date: 'dd/MMM/yyyy'))}">
                       <td *ngFor="let col of columns" [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number'}" class="upload_tep_width_kanban">
                         <span *ngIf="col.field === 'executionDate' else otherFieldsTemp">
-                          {{item[col.field]}}
+                          {{item[col.field] | date: 'dd/MMM/yyyy'}}
                         </span>
                         <ng-template #otherFieldsTemp>
                           {{item[col.field] ? item[col.field] : '- -'}}
@@ -194,7 +194,7 @@
                         class="upload_sprint_capacity sprint p-pl-3">
                         <button *ngIf="i === 0 && isToggleEnableForSelectedProject" type="button" pButton pRipple  class="p-button-text  p-button-plain expand-btn" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
                         <span *ngIf="col.field === 'startDate' || col.field === 'endDate' else otherFieldsTemp">
-                          {{item[col.field]}}
+                           {{item[col.field] | date: 'dd/MMM/yyyy'}}
                         </span>
                         <ng-template #otherFieldsTemp>
                           {{item[col.field] ? item[col.field] : '- -'}}
@@ -222,8 +222,8 @@
                                   <span class="p-pl-2">Edit</span>
                                 </p-button>
                               </div>
-                      
-                      
+
+
                               <p-table [value]="item?.assigneeCapacity" dataKey="userId" [paginator]="true" [rows]="20"
                                 [rowsPerPageOptions]="[20,25,30]" [showCurrentPageReport]="true">
                                 <ng-template pTemplate="header">
@@ -249,13 +249,13 @@
                         <tr class="expanded-table-body-row">
                           <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '- -'}}</td>
                           <td class="expanded-table-body-cell">
-                            <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'200px'}" 
+                            <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'200px'}"
                             [formControl]="selectedSprintAssigneFormArray[rowIndex]?.role" (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'role')"></p-dropdown>
                             <ng-template #showRole>{{assignee?.role ? projectAssigneeRolesObj[assignee?.role] : '- -'}}</ng-template>
                           </td>
                           <td class="expanded-table-body-cell">
-                            <input type="number" min="0" pInputText *ngIf="projectCapacityEditMode;else showPlannedCapacity" 
-                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'plannedCapacity')" [style]="{'width':'150px'}" 
+                            <input type="number" min="0" pInputText *ngIf="projectCapacityEditMode;else showPlannedCapacity"
+                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'plannedCapacity')" [style]="{'width':'150px'}"
                             [formControl]="selectedSprintAssigneFormArray[rowIndex]?.plannedCapacity" (keypress)="validateInput($event)">
                             <ng-template #showPlannedCapacity>{{assignee?.plannedCapacity ? assignee?.plannedCapacity : '- -'}}</ng-template></td>
                           <td class="expanded-table-body-cell" [style]="{'position':'relative'}">
@@ -273,12 +273,12 @@
                         </tr>
                       </ng-template>
                       </p-table>
-                      
+
                       <div class="p-d-flex p-justify-end p-mt-3 p-mb-3" *ngIf="projectCapacityEditMode">
                         <button pButton pRipple label="Cancel" icon="pi pi-times"
                           class="p-button-cancel p-button-outlined p-button-secondary p-button-text p-mr-2 p-button-sm"
                           (click)="onSprintCapacityCancel(item)"></button>
-                      
+
                         <button pButton pRipple label="Save" icon="pi pi-save" class="p-button-secondary p-button-sm"
                           (click)="onSprintCapacitySave(item)"  [disabled]="selectedSprintAssigneValidator?.length > 0"></button>
                       </div>
@@ -339,9 +339,9 @@
                               <span class="p-pl-2">Edit</span>
                           </p-button>
                           </div>
-                          
 
-                          <p-table [value]="item.assigneeCapacity" dataKey="userId" [paginator]="true" [rows]="20"  
+
+                          <p-table [value]="item.assigneeCapacity" dataKey="userId" [paginator]="true" [rows]="20"
                           [rowsPerPageOptions]="[20,25,30]" [showCurrentPageReport]="true">
                             <ng-template pTemplate="header">
                                 <tr class="expanded-table-header-row">
@@ -356,13 +356,13 @@
                                 <tr class="expanded-table-body-row">
                                   <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '- -'}}</td>
                                   <td class="expanded-table-body-cell">
-                                    <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'200px'}" 
+                                    <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'200px'}"
                                     [formControl]="selectedSprintAssigneFormArray[rowIndex]?.role" (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'role')"></p-dropdown>
                                     <ng-template #showRole>{{assignee?.role ? projectAssigneeRolesObj[assignee?.role] : '- -'}}</ng-template>
                                   </td>
                                   <td class="expanded-table-body-cell">
-                                    <input type="number" min="0" pInputText *ngIf="projectCapacityEditMode;else showPlannedCapacity" 
-                                    (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'plannedCapacity')" [style]="{'width':'150px'}" 
+                                    <input type="number" min="0" pInputText *ngIf="projectCapacityEditMode;else showPlannedCapacity"
+                                    (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'plannedCapacity')" [style]="{'width':'150px'}"
                                     [formControl]="selectedSprintAssigneFormArray[rowIndex]?.plannedCapacity" (keypress)="validateInput($event)">
                                     <ng-template #showPlannedCapacity>{{assignee?.plannedCapacity ? assignee?.plannedCapacity : '- -'}}</ng-template></td>
                                   <td class="expanded-table-body-cell" [style]="{'position':'relative'}">
@@ -382,9 +382,9 @@
                         </p-table>
 
                         <div class="p-d-flex p-justify-end p-mt-3 p-mb-3" *ngIf="projectCapacityEditMode">
-                          <button pButton pRipple label="Cancel" icon="pi pi-times" 
+                          <button pButton pRipple label="Cancel" icon="pi pi-times"
                           class="p-button-cancel p-button-outlined p-button-secondary p-button-text p-mr-2 p-button-sm" (click)="onSprintCapacityCancel(item)"></button>
-                      
+
                           <button pButton pRipple label="Save" icon="pi pi-save"
                           class="p-button-secondary p-button-sm" (click)="onSprintCapacitySave(item)" [disabled]="selectedSprintAssigneValidator?.length > 0"></button>
                         </div>
@@ -433,7 +433,7 @@
     <form [formGroup]="popupForm" class="p-fluid p-xl-12 p-p-0" *ngIf="selectedView === 'upload_tep' else sprintCapacityPopupFormTemp">
       <div class=" form-group p-xl-12 pad-l-0">
         <label class="mr-sm-2" *ngIf="kanban else scrumTemp">
-          <span>For Execution Date {{executionDate}}</span>
+          <span>For Execution Date {{executionDate | date: 'dd/MMM/yyyy'}}</span>
         </label>
         <ng-template #scrumTemp>
           <label class="mr-sm-2">
@@ -471,7 +471,8 @@
       <form [formGroup]="popupForm" class="p-xl-12 p-p-0" *ngIf="selectedView === 'upload_Sprint_Capacity'">
         <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
           <label for="capacity" class="mr-sm-2 float-left">
-            <span *ngIf="kanban">Enter 'Team capacity' for the days between {{this.startDate}} to {{this.endDate}}</span>
+            <span *ngIf="kanban">Enter 'Team capacity' for the days between {{this.startDate | date: 'dd/MMM/yyyy'}}
+              to {{this.endDate | date: 'dd/MMM/yyyy'}} </span>
             <span *ngIf="!kanban">Enter "Team capacity for {{selectedSprintName}}"</span>
           </label>
           <input type="number" pInputText class="form-control w-100 p-p-2 mb-2 mr-sm-2" (input)="numericInputUpDown($event)"
