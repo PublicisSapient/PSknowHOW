@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.publicissapient.kpidashboard.azure.adapter.AzureAdapter;
+import com.publicissapient.kpidashboard.azure.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.azure.model.AzureServer;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -63,6 +64,8 @@ public class SprintClientImplTest {
 	
 	private Set<SprintDetails> sprintDetailsSet = new HashSet<>();
 
+	private List<JiraIssue> jiraIssueList = new ArrayList<>();
+
 	@BeforeEach
 	public void setUp() throws Exception {
 		sprintDetails1 = new SprintDetails();
@@ -86,6 +89,9 @@ public class SprintClientImplTest {
 		sprintDetailsSet.add(sprintDetails1);
 		sprintDetailsSet.add(sprintDetails2);
 		sprintDetailsSet.add(sprintDetails3);
+
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		jiraIssueList = jiraIssueDataFactory.getJiraIssues();
 	}
 
 	@Test
@@ -133,10 +139,11 @@ public class SprintClientImplTest {
 		issueItemList.add("2");
 		issueItemList.add("3");
 		when(azureAdapter.getIssuesBySprint(prepareAzureServer(), "sprint1")).thenReturn(issueItemList);
-		List<JiraIssue> jiraIssueList = new ArrayList<>();
+
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList() , anyString())).thenReturn(jiraIssueList);
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
+
 		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet , azureAdapter , prepareAzureServer());
 	}
 	
