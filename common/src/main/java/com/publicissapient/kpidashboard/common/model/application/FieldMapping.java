@@ -187,9 +187,6 @@ public class FieldMapping extends BasicModel {
 
 	//field for FTPR
 	private List<String> jiraFTPRStoryIdentification;
-	
-	//field for identifying ready for development status
-	private String readyForDevelopmentStatus;
 
 	//field for Wasting - wait status
 	private List<String> jiraWaitStatus;

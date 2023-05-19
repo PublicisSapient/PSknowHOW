@@ -127,6 +127,9 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
 
+	@Autowired
+	private ScrumHandleAzureIssueHistory scrumHandleAzureIssueHistory;
+
 	private final Map<String, com.publicissapient.kpidashboard.common.model.azureboards.iterations.Value> sprintPathsMap = new HashMap<>();
 
 	@Override
@@ -397,7 +400,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
-				setAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig);
+				setAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig, fieldsMap);
 
 				// Placeholder for Test Automated field mapping.
 
@@ -677,7 +680,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	}
 
 	private void setAzureIssueHistory(JiraIssueCustomHistory azureIssueHistory, JiraIssue azureIssue, Value issue,
-									  FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig) {
+									  FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig, Map<String, Object> fieldsMap) {
 
 		azureIssueHistory.setProjectID(azureIssue.getProjectName());
 		azureIssueHistory.setProjectComponentId(azureIssue.getProjectID());
@@ -689,7 +692,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 		// This method is not setup method. write it to keep
 		// custom history
-		processAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig);
+		processAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig, fieldsMap);
 		
 		azureIssueHistory.setBasicProjectConfigId(azureIssue.getBasicProjectConfigId());
 	}
@@ -709,7 +712,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 *            Project Config
 	 */
 	private void processAzureIssueHistory(JiraIssueCustomHistory azureIssueCustomHistory, JiraIssue azureIssue,
-										  Value issue, FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig) {
+			Value issue, FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig,
+			Map<String, Object> fieldsMap) {
 
 		String issueId = AzureProcessorUtil.deodeUTF8String(issue.getId());
 		AzureServer server = prepareAzureServer(projectConfig);
@@ -723,16 +727,14 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		}
 
 		if (null == azureIssueCustomHistory.getStoryID()) {
-			addStoryHistory(azureIssueCustomHistory, azureIssue, issue, valueList, fieldMapping);
+			addStoryHistory(azureIssueCustomHistory, azureIssue, issue, valueList, fieldMapping, fieldsMap);
 		} else {
 			if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(azureIssue.getTypeName())) {
 				azureIssueCustomHistory.setDefectStoryID(azureIssue.getDefectStoryID());
 			}
-			DateTime dateTime = new DateTime(
-					AzureProcessorUtil.getFormattedDateTime(issue.getFields().getSystemCreatedDate()));
 
-			List<JiraIssueSprint> listIssueSprint = getChangeLog(azureIssue, valueList, dateTime, fieldMapping);
-			azureIssueCustomHistory.setStorySprintDetails(listIssueSprint);
+			scrumHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory,valueList, fieldMapping, fieldsMap, azureIssue);
+
 		}
 
 	}
@@ -753,16 +755,14 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 */
 	private void addStoryHistory(JiraIssueCustomHistory azureIssueCustomHistory, JiraIssue azureIssue, Value issue,
 								 List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> valueList,
-								 FieldMapping fieldMapping) {
+								 FieldMapping fieldMapping, Map<String, Object> fieldsMap) {
 
 		DateTime dateTime = new DateTime(
 				AzureProcessorUtil.getFormattedDateTime(issue.getFields().getSystemCreatedDate()));
 		azureIssueCustomHistory.setCreatedDate(dateTime);
 
-		List<JiraIssueSprint> listIssueSprint = getChangeLog(azureIssue, valueList, dateTime, fieldMapping);
-
 		azureIssueCustomHistory.setStoryID(azureIssue.getNumber());
-		azureIssueCustomHistory.setStorySprintDetails(listIssueSprint);
+		scrumHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory,valueList, fieldMapping, fieldsMap, azureIssue);
 		// estimate
 		azureIssueCustomHistory.setEstimate(azureIssue.getEstimate());
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(azureIssue.getTypeName())) {
@@ -833,188 +833,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		azureServer.setApiVersion(projectConfig.getAzure().getApiVersion());
 		azureServer.setUsername(projectConfig.getAzure().getConnection().getUsername());
 		return azureServer;
-	}
-
-	/**
-	 * process Azure issue history
-	 *
-	 * @param azureIssue
-	 *            azureIssue
-	 * @param updateValueList
-	 *            updateValueList
-	 * @param systemCreatedDate
-	 *            systemCreatedDate
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @return List of JiraIssuesSprints
-	 */
-	private List<JiraIssueSprint> getChangeLog(JiraIssue azureIssue, // NOSONAR
-											   // //NOPMD
-											   List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList,
-											   DateTime systemCreatedDate, FieldMapping fieldMapping) {
-		String fromSprint = "";
-		String fromSprintId = "";
-		String toSprint = "";
-		String toSprintId = "";
-		String sprintStatus = "";
-		boolean sprintUpdated = true;
-		boolean sprintChanged = false;
-		List<JiraIssueSprint> issueHistory = new ArrayList<>();
-		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
-		List<String> jiraStatusForQa = fieldMapping.getJiraStatusForQa();
-		// creating first entry of issue
-		if (null != systemCreatedDate) {
-			JiraIssueSprint jiraIssueSprint = new JiraIssueSprint();
-			jiraIssueSprint.setActivityDate(systemCreatedDate);
-			jiraIssueSprint.setFromStatus(fieldMapping.getStoryFirstStatus());
-			jiraIssueSprint.setSprintId("");
-			jiraIssueSprint.setSprintComponentId("");
-			jiraIssueSprint.setStatus("");
-			issueHistory.add(jiraIssueSprint);
-			setIndividualDetails(azureIssue, jiraStatusForDevelopment, jiraStatusForQa, jiraIssueSprint);
-
-		}
-		if (CollectionUtils.isNotEmpty(updateValueList)) {
-
-			for (com.publicissapient.kpidashboard.common.model.azureboards.updates.Value history : updateValueList) {
-				com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history
-						.getFields();
-				// Check for Ietrationlevel2
-				if (null != changelogItem) {
-					if (null != changelogItem.getSystemIterationPath()) {
-
-						fromSprint = getModifiedSprintsPath(changelogItem.getSystemIterationPath().getOldValue());
-
-						fromSprintId = sprintPathsMap.get(fromSprint) == null ? ""
-								: sprintPathsMap.get(fromSprint).getId();
-						toSprint = getModifiedSprintsPath(changelogItem.getSystemIterationPath().getNewValue());
-						toSprintId = sprintPathsMap.get(toSprint) == null ? "" : sprintPathsMap.get(toSprint).getId();
-						sprintChanged = true;
-
-					} else if (null != changelogItem.getSystemState()) {
-						JiraIssueSprint jiraIssueSprint = new JiraIssueSprint();
-						jiraIssueSprint.setStatus(sprintStatus);
-
-						jiraIssueSprint.setSprintId(toSprint);
-						if (StringUtils.isNotBlank(toSprintId)) {
-							jiraIssueSprint.setSprintComponentId(toSprintId + "_" + azureIssue.getProjectName());
-						} else {
-							jiraIssueSprint.setSprintComponentId(toSprintId);
-						}
-
-						jiraIssueSprint.setStatus(sprintStatus);
-						jiraIssueSprint.setFromStatus(changelogItem.getSystemState().getNewValue());
-						DateTime changedDate = new DateTime(AzureProcessorUtil
-								.getFormattedDateTime(changelogItem.getSystemChangedDate().getNewValue()));
-						jiraIssueSprint.setActivityDate(changedDate);
-
-						issueHistory.add(jiraIssueSprint);
-						setIndividualDetails(azureIssue, jiraStatusForDevelopment, jiraStatusForQa, jiraIssueSprint);
-					}
-					if (sprintUpdated && sprintChanged) {
-						for (int i = 0; i < issueHistory.size() - 1; i++) {
-							JiraIssueSprint fsprint = issueHistory.get(i);
-							String[] toSprintIdArrFrom = {};
-
-							if (fromSprintId != null && fromSprintId.contains(",")) {
-								toSprintIdArrFrom = fromSprintId.split(",");
-							}
-							if (toSprintIdArrFrom.length > 0) {
-								fsprint.setSprintId(fromSprintId);
-								if (StringUtils.isNotBlank(fromSprintId)) {
-									fsprint.setSprintComponentId(fromSprintId + "_" + azureIssue.getProjectName());
-								} else {
-									fsprint.setSprintComponentId(fromSprintId);
-								}
-							}
-							issueHistory.set(i, fsprint);
-						}
-						sprintUpdated = false;
-					}
-
-					/*
-					 * check if only sprint changed. In this case only sprint
-					 * name need to be updated with last status
-					 */
-					sprintChanged = updateIfSprintChanged(azureIssue, toSprint, toSprintId, sprintChanged,
-							issueHistory);
-
-				}
-			}
-		}
-		/**
-		 * check if no sprint found in changelog but sprint present in issue
-		 * update sprint in all changelog
-		 */
-		if (StringUtils.isEmpty(fromSprint) && StringUtils.isEmpty(toSprint)
-				&& !StringUtils.isEmpty(azureIssue.getSprintName())) {
-			updateChangeLogWithSprint(issueHistory, azureIssue);
-		}
-		return issueHistory;
-
-	}
-
-	private void setIndividualDetails(JiraIssue azureIssue, List<String> jiraStatusForDevelopment,
-									  List<String> jiraStatusForQa, JiraIssueSprint jiraIssueSprint) {
-		if (CollectionUtils.isNotEmpty(jiraStatusForDevelopment)
-				&& jiraStatusForDevelopment.stream().anyMatch(jiraIssueSprint.getFromStatus()::equalsIgnoreCase)
-				&& StringUtils.isNotBlank(azureIssue.getAssigneeId())
-				&& StringUtils.isNotBlank(azureIssue.getAssigneeName())) {
-
-			azureIssue.setDeveloperId(azureIssue.getAssigneeId());
-			azureIssue.setDeveloperName(azureIssue.getAssigneeName() + AzureConstants.OPEN_BRACKET
-					+ azureIssue.getAssigneeId() + AzureConstants.CLOSED_BRACKET);
-
-		}
-		if (CollectionUtils.isNotEmpty(jiraStatusForQa)
-				&& jiraStatusForQa.stream().anyMatch(jiraIssueSprint.getFromStatus()::equalsIgnoreCase)
-				&& StringUtils.isNotBlank(azureIssue.getAssigneeId())
-				&& StringUtils.isNotBlank(azureIssue.getAssigneeName())) {
-
-			azureIssue.setQaId(azureIssue.getAssigneeId());
-			azureIssue.setQaName(azureIssue.getAssigneeName() + AzureConstants.OPEN_BRACKET + azureIssue.getAssigneeId()
-					+ AzureConstants.CLOSED_BRACKET);
-
-		}
-
-	}
-
-	private boolean updateIfSprintChanged(JiraIssue azureIssue, String toSprint, String toSprintId,
-										  boolean sprintChanged, List<JiraIssueSprint> issueHistory) {
-		boolean changed = sprintChanged;
-		if (sprintChanged && toSprint != null
-				&& !(toSprint.equals(issueHistory.get(issueHistory.size() - 1).getSprintId()))) {
-			JiraIssueSprint fsprint = issueHistory.get(issueHistory.size() - 1);
-
-			fsprint.setSprintId(toSprint);
-			if (StringUtils.isNotBlank(toSprintId)) {
-				fsprint.setSprintComponentId(toSprintId + "_" + azureIssue.getProjectName());
-			} else {
-				fsprint.setSprintComponentId(toSprintId);
-			}
-
-			issueHistory.set(issueHistory.size() - 1, fsprint);
-			changed = false;
-		}
-		return changed;
-	}
-
-	/**
-	 * Updates Change log with Sprint
-	 *
-	 * @param issueHistory
-	 *            List of JiraIssueSprint containing History data
-	 * @param jiraIssue
-	 *            JiraIssue
-	 */
-	private void updateChangeLogWithSprint(List<JiraIssueSprint> issueHistory, JiraIssue jiraIssue) {
-		for (int i = 0; i < issueHistory.size(); i++) {
-			JiraIssueSprint fsprint = issueHistory.get(i);
-			fsprint.setSprintId(jiraIssue.getSprintName());
-			fsprint.setSprintComponentId(jiraIssue.getSprintID());
-			fsprint.setStatus(jiraIssue.getSprintAssetState());
-			issueHistory.set(i, fsprint);
-		}
 	}
 
 	/**

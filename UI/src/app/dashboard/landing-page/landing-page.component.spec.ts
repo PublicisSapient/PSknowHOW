@@ -7,6 +7,7 @@ import { HttpService } from '../../services/http.service';
 import { LandingPageComponent } from './landing-page.component';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { of } from 'rxjs';
+import { SharedService } from 'src/app/services/shared.service';
 
 describe('LandingPageComponent', () => {
   let component: LandingPageComponent;
@@ -21,7 +22,7 @@ describe('LandingPageComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [LandingPageComponent],
       imports: [RouterTestingModule, HttpClientModule, HttpClientTestingModule],
-      providers: [HttpService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService,SharedService, { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
   });
@@ -99,6 +100,7 @@ describe('LandingPageComponent', () => {
   }));
 
   it('should save feedback successfully', fakeAsync(() => {
+      component.userName = "dummy name";
     const obj = {
       "feedbackType": "feedback",
       "category": "UI",

@@ -29,21 +29,16 @@
                             </h3>
                             <p *ngIf="x?.labelInfo" class="p-m-0">{{x?.labelInfo}}</p>
                             <p class="text-data">
-                              <span *ngIf="x?.label?.toLowerCase() === 'backlog strength'; else otherFields">
-                                {{checkSprint(x?.value, x?.unit, kpi?.kpiId)}}
+                              <span
+                                [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
+                                != -99 ?
+                                convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
+                              <span *ngIf="x?.value1 && x?.value1 != -99 && x?.value1 != undefined"
+                                [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
+                                x?.value1}}</span>
+                              <span *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
+                                {{ x?.value != -99 ? x?.unit : ''}}
                               </span>
-                              <ng-template #otherFields>
-                                <span
-                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
-                                  != -99 ?
-                                  convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
-                                <span *ngIf="x?.value1 && x?.value1 != -99 && x?.value1 != undefined"
-                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
-                                  x?.value1}}</span>
-                                <span *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
-                                  {{ x?.value != -99 ? x?.unit : ''}}
-                                </span>
-                              </ng-template>
                             </p>
                           </div>
                         </ng-container>
@@ -144,11 +139,12 @@
   </div>
 </ng-template>
 
-<p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true" [resizable]="true">
+<p-dialog [(visible)]="displayModal" [modal]="true" [draggable]="true"
+  [resizable]="true">
   <p-header>
     {{modalDetails['header']}}
     <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
-      class="p-button-secondary p-p-2 export-button" (click)="generateExcel()"></button>
+            class="p-button-secondary p-p-2 export-button" (click)="generateExcel()"></button>
   </p-header>
   <div class="dialog-body p-mb-4">
     <p-table [value]="modalDetails['tableValues']" styleClass="p-datatable-gridlines" loadingIcon="loading-img">

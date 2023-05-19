@@ -121,6 +121,8 @@ public class ScrumAzureIssueClientImplTest {
 
 	@Mock
 	private HierarchyLevelService hierarchyLevelService;
+	@Mock
+	private ScrumHandleAzureIssueHistory scrumHandleAzureIssueHistory;
 
 	Fields field;
 	com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields fields;

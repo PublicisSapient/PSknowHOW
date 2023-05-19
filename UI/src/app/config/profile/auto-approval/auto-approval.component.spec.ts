@@ -6,6 +6,7 @@ import { MessageService } from 'primeng/api';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { environment } from 'src/environments/environment';
+import { SharedService } from 'src/app/services/shared.service';
 
 describe('AutoApprovalComponent', () => {
   let component: AutoApprovalComponent;
@@ -112,6 +113,7 @@ describe('AutoApprovalComponent', () => {
       providers: [
         HttpService,
         MessageService,
+        SharedService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })

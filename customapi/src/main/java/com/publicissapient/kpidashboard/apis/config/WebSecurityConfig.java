@@ -18,11 +18,20 @@
 
 package com.publicissapient.kpidashboard.apis.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
-
+import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
+import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
+import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenAuthenticationProvider;
+import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenRequestFilter;
+import com.publicissapient.kpidashboard.apis.auth.ldap.CustomUserDetailsContextMapper;
+import com.publicissapient.kpidashboard.apis.auth.ldap.LdapLoginRequestFilter;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
+import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
+import com.publicissapient.kpidashboard.apis.errors.CustomAuthenticationEntryPoint;
+import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -42,21 +51,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
-import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenAuthenticationProvider;
-import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenRequestFilter;
-import com.publicissapient.kpidashboard.apis.auth.ldap.CustomUserDetailsContextMapper;
-import com.publicissapient.kpidashboard.apis.auth.ldap.LdapLoginRequestFilter;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
-import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
-import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
-import com.publicissapient.kpidashboard.apis.errors.CustomAuthenticationEntryPoint;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Extension of {@link WebSecurityConfigurerAdapter} to provide configuration
@@ -88,8 +86,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	@Autowired
 	private AuthProperties authProperties;
 
-	private RsaEncryptionService rsaEncryptionService;
-
 	private CustomApiConfig customApiConfig;
 
 	@Autowired
@@ -100,11 +96,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
 	@Autowired
 	private AuthTypesConfigService authTypesConfigService;
-
-	@Autowired
-	public void setRsaEncryptionService(RsaEncryptionService rsaEncryptionService) {
-		this.rsaEncryptionService = rsaEncryptionService;
-	}
 
 	@Autowired
 	public void setCustomApiConfig(CustomApiConfig customApiConfig) {
@@ -172,14 +163,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	@Bean
 	protected StandardLoginRequestFilter standardLoginRequestFilter() throws Exception {
 		return new StandardLoginRequestFilter("/login", authenticationManager(), authenticationResultHandler,
-				customAuthenticationFailureHandler, rsaEncryptionService, customApiConfig, authTypesConfigService);
+				customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
 	}
 
 	// update authenticatoin result handler
 	@Bean
 	protected LdapLoginRequestFilter ldapLoginRequestFilter() throws Exception {
 		return new LdapLoginRequestFilter("/ldap", authenticationManager(), authenticationResultHandler,
-				customAuthenticationFailureHandler, rsaEncryptionService, customApiConfig, adServerDetailsService,
+				customAuthenticationFailureHandler, customApiConfig, adServerDetailsService,
 				authTypesConfigService);
 	}
 

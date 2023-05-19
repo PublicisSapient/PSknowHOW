@@ -18,10 +18,13 @@
 
 package com.publicissapient.kpidashboard.apis.auth.ldap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
+import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,13 +34,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
-import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * The type Ldap login request filter. Fills need for ldap based configurations.
@@ -47,7 +45,6 @@ public class LdapLoginRequestFilter extends UsernamePasswordAuthenticationFilter
 	private static final String LDAP_NOT_CONFIGURED = "Please contact your Superadmin or "
 			+ "dojosupport@publicissapient.com to get AD login configured";
 
-	private RsaEncryptionService rsaEncryptionService;
 	private CustomApiConfig customApiConfig;
 	private ADServerDetailsService adServerDetailsService;
 
@@ -60,14 +57,13 @@ public class LdapLoginRequestFilter extends UsernamePasswordAuthenticationFilter
 	 * @param authenticationManager        the authentication manager
 	 * @param authenticationResultHandler  the authentication result handler
 	 * @param authenticationFailureHandler authenticationFailureHandler
-	 * @param rsaEncryptionService         rsaEncryptionService
 	 * @param customApiConfig              customApiConfig
 	 * @param adServerDetailsService       adServerDetailsService
 	 * 
 	 */
 	public LdapLoginRequestFilter(String path, AuthenticationManager authenticationManager,
 								  AuthenticationResultHandler authenticationResultHandler,
-								  CustomAuthenticationFailureHandler authenticationFailureHandler, RsaEncryptionService rsaEncryptionService,
+								  CustomAuthenticationFailureHandler authenticationFailureHandler,
 								  CustomApiConfig customApiConfig, ADServerDetailsService adServerDetailsService,
 								  AuthTypesConfigService authTypesConfigService) {
 		super();
@@ -76,7 +72,6 @@ public class LdapLoginRequestFilter extends UsernamePasswordAuthenticationFilter
 		setAuthenticationManager(authenticationManager);
 		setFilterProcessesUrl(path);
 		setAuthenticationDetailsSource(new LdapAuthenticationDetailsSource());
-		this.rsaEncryptionService = rsaEncryptionService;
 		this.customApiConfig = customApiConfig;
 		this.adServerDetailsService = adServerDetailsService;
 		this.authTypesConfigService = authTypesConfigService;
@@ -102,7 +97,7 @@ public class LdapLoginRequestFilter extends UsernamePasswordAuthenticationFilter
 		}
 
 		String username = obtainUsername(request);
-		String password = rsaEncryptionService.decrypt(obtainPassword(request), customApiConfig.getRsaPrivateKey());
+		String password = obtainPassword(request);
 
 		if (username == null) {
 			username = "";
