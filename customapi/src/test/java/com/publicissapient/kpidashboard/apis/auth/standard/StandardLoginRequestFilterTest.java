@@ -18,18 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.auth.standard;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
 import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,10 +34,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StandardLoginRequestFilterTest {
@@ -71,16 +67,13 @@ public class StandardLoginRequestFilterTest {
 	private CustomApiConfig customApiConfig;
 
 	@Mock
-	private RsaEncryptionService rsaEncryptionService;
-
-	@Mock
 	private AuthTypesConfigService authTypesConfigService;
 
 	@Before
 	public void setup() {
 		path = "/login";
 		filter = new StandardLoginRequestFilter(path, manager, resultHandler, authenticationFailureHandler,
-				rsaEncryptionService, customApiConfig, authTypesConfigService);
+				customApiConfig, authTypesConfigService);
 	}
 
 	@Test
@@ -105,11 +98,9 @@ public class StandardLoginRequestFilterTest {
 		String credentials = "password1";
 		when(request.getParameter("username")).thenReturn(principal + " ");
 		when(request.getParameter("password")).thenReturn(credentials);
-		when(customApiConfig.getRsaPrivateKey()).thenReturn("abc");
 		Authentication auth = new StandardAuthenticationToken(principal, credentials);
 		ArgumentCaptor<Authentication> argumentCaptor = ArgumentCaptor.forClass(Authentication.class);
 		when(manager.authenticate(argumentCaptor.capture())).thenReturn(auth);
-		when(rsaEncryptionService.decrypt(anyString(), anyString())).thenReturn("password1");
 		Authentication result = filter.attemptAuthentication(request, response);
 
 		assertNotNull(result);

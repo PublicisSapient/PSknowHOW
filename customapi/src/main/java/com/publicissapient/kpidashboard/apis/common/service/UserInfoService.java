@@ -20,10 +20,12 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import org.springframework.security.core.GrantedAuthority;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.List;
 
@@ -132,7 +134,28 @@ public interface UserInfoService {
 
 	List<UserInfo> getUserInfoByAuthType(String userType);
 
-	public UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email);
+	/**
+	 * get user details for profile screen and response will be same as login api
+	 * @param request
+	 * @return
+	 */
+	UserDetailsResponseDTO getUserInfoByToken(HttpServletRequest request);
 
+	/**
+	 * This method return user info dto object comparing username,authtype and email
+	 * @param username
+	 * @param authType
+	 * @param email
+	 * @return user info dto object
+	 */
+	UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email);
+
+	/**
+	 * This method return user info object by comparing username, auth type and authorities
+	 * @param userName
+	 * @param authType
+	 * @param authorities
+	 * @return user info object
+	 */
 	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
 }

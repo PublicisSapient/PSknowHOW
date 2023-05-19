@@ -43,9 +43,9 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -503,12 +503,12 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			JiraIssueCustomHistory jiraIssueCustomHistory = subTaskHistory.stream().filter(
 					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
 					.findFirst().orElse(new JiraIssueCustomHistory());
-			Optional<JiraIssueSprint> issueSprint = jiraIssueCustomHistory.getStorySprintDetails().stream()
+			Optional<JiraHistoryChangeLog> issueSprint = jiraIssueCustomHistory.getStatusUpdationLog().stream()
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
-							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER),
+							.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00.00.00"), DATE_TIME_FORMATTER),
 							sprintStartDate, sprintEndDate))
 					.reduce((a, b) -> b);
-			if (issueSprint.isPresent() && fieldMapping.getJiraIssueDeliverdStatus().contains(issueSprint.get().getFromStatus()))
+			if (issueSprint.isPresent() && fieldMapping.getJiraIssueDeliverdStatus().contains(issueSprint.get().getChangedTo()))
 				resolvedSubtaskForSprint.add(jiraIssue);
 		});
 		return resolvedSubtaskForSprint;

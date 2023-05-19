@@ -496,12 +496,5 @@ db.getCollection('kpi_fieldmapping').insert(
             'jiraRejectedInRefinement'
           ]
         }
-      },
-	  {
-        kpiId: 'kpi138',
-        kpiName: 'Backlog Readiness Efficiency',
-		kpiSource: 'Jira',
-        type: ['Other'],
-        fieldNames : {'Workflow Status Mapping' : ['readyForDevelopmentStatus'] }
       }
 	  ]);
