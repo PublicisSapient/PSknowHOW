@@ -264,7 +264,7 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 				buildFailurePercentage = Double
 						.parseDouble(decimalFormat.format(failureBuildCount / totalBuildCount * 100));
 			}
-			String date = monday + " to " + sunday;
+			String date = DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday);
 			DataCount dataCount = createDataCount(trendLineName, buildFailurePercentage, date,
 					totalBuildCount.intValue(), failureBuildCount.intValue(), jobName);
 			setChangeFailureRateInfoForExcel(changeFailureRateInfo, jobName, totalBuildCount, failureBuildCount,
