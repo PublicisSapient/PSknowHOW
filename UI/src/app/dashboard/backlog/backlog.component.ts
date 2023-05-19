@@ -226,20 +226,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
       });
   }
 
-  generateKpiProgressBarData(kpiData){
-    if (kpiData?.value && kpiData.value.length > 0 ) {
-          if (kpiData.value[0]?.hoverValue) {
-            const total=0;
-            Object.keys(kpiData.value[0].hoverValue)?.forEach((key) => {
-              if(key?.toLowerCase()?.includes('total')){
-                kpiData.value[0].maxValue= kpiData?.value[0]?.hoverValue[key];
-              }else{
-                kpiData.value[0].value=kpiData?.value[0]?.hoverValue[key];
-              }
-            });
-          }
-        }
-  }
   // Used for grouping all Sonar kpi from master data and calling Sonar kpi.
   groupZypherKpi(kpiIdsForCurrentBoard) {
     // creating a set of unique group Ids
@@ -331,16 +317,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }else{
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
       }
-        if (this.getChartType(kpiId) === 'progress-bar') {
-          this.generateKpiProgressBarData(this.kpiChartData[kpiId][0]);
-        }
       }
     } else {
       if (trendValueList?.length > 0) {
         this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
-        if (this.getChartType(kpiId) === 'progress-bar') {
-          this.generateKpiProgressBarData(this.kpiChartData[kpiId][0]);
-        }
       } else {
         this.kpiChartData[kpiId] = [];
       }
@@ -416,10 +396,18 @@ export class BacklogComponent implements OnInit, OnDestroy{
       if (idx !== -1) {
         this.allKpiArray.splice(idx, 1);
       }
-      this.allKpiArray.push(data[key]);
-      const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
+      let trendValueList;
+      /**Todo: if else condition to be removed after api integration */
+      if(key == 'kpi146'){
+        const fakeJson = require('../../../test/resource/fakeFlowDistributionKpi.json');
+        this.allKpiArray.push(fakeJson);
+        trendValueList = fakeJson.trendValueList;
+      }else{
+        this.allKpiArray.push(data[key]);
+        trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
+      }
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
-
+      /** if: for graphs, else: for other than graphs */
       if (this.getChartType(key)) {
         if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
           this.kpiSelectedFilterObj[data[key]?.kpiId] = [];

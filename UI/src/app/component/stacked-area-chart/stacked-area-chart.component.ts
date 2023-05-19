@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
@@ -7,35 +7,50 @@ import * as d3 from 'd3';
   styleUrls: ['./stacked-area-chart.component.css']
 })
 export class StackedAreaChartComponent implements OnInit {
-
-  constructor() { }
+  @Input() data: any; // json data
+  elem;
+  constructor(private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
     this.draw();
+    
   }
 
-
-
-  draw() {
-    // set the dimensions and margins of the graph
-    const formatDate = (dateInput) => {
-      const today = new Date(dateInput);
-      const yyyy = today.getFullYear();
-      let mm: any = today.getMonth() + 1; // Months start at 0!
-      let dd: any = today.getDate();
-      if (dd < 10) dd = '0' + dd;
-      if (mm < 10) mm = '0' + mm;
-
-      const formattedDate = dd + '-' + mm + '-' + yyyy;
-      return formattedDate;
+  ngOnChanges(changes: SimpleChanges) {
+    // only run when property "data" changed
+    if (Object.keys(changes)?.length > 0) {
+      if (changes['data']) {
+        this.elem = this.viewContainerRef.element.nativeElement;
+        this.draw();
+      }
     }
 
-    const margin = { top: 60, right: 230, bottom: 50, left: 50 },
-      width = 660 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+  }
+
+  draw() {
+    d3.select(this.elem).select('#stacked-area').select('svg').remove();
+    
+    let keys = Object.keys(this.data[0]?.value);
+    let yMax = 0;
+    const data = this.data.map((x) => {
+      let obj = {
+        'date': x.date,
+        ...x.value
+      }
+      for(let item in x.value){
+        if(keys.indexOf(item) == -1) keys.push(item);
+        if(x.value[item] > yMax) yMax = x.value[item];
+      }
+      return obj;
+    });
+    
+    // set the dimensions and margins of the graph
+    const margin = { top: 20, right: 20, bottom: 90, left: 50 },
+      width = 400,
+      height = 228;
 
     // append the svg object to the body of the page
-    const svg = d3.select("#my_dataviz")
+    const svg = d3.select(this.elem).select('#stacked-area')
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -43,35 +58,46 @@ export class StackedAreaChartComponent implements OnInit {
       .attr("transform",
         `translate(${margin.left}, ${margin.top})`);
 
-    // Parse the Data
-    d3.csv("./assets/date-wise-issue-type.csv").then(function (data) {
-
-      // console.log(data);
 
       //////////
       // GENERAL //
       //////////
 
-      // List of groups = header of the csv files
-      const keys = data.columns.slice(3)
-
       // color palette
       const color = d3.scaleOrdinal()
         .domain(keys)
-        .range(d3.schemeSet2);
+        .range(['#FFA193',
+        '#00B1B0',
+        '#FEC84D',
+        '#E42256',
+        '#7FBD7F',
+        '#B79CED',
+        '#5CA7CF',
+        '#994636',
+        '#E3D985',
+        '#0072bb',
+        '#DC0073',
+        '#944075',
+        '#80A9A2',
+        '#E07373',
+        '#6C4F84',
+        '#BC2C1A',
+        '#50723C',
+        '#F17552',
+        '#445E93',
+        '#885053']);
 
       //stack the data?
       const stackedData = d3.stack()
         .keys(keys)
         (data)
 
-
       //////////
       // AXIS //
       //////////
       // Add X axis
       const x = d3.scaleTime()
-        .domain(d3.extent(data, function (d) { const xInput = formatDate(d.date); return new Date(xInput); }))
+        .domain(d3.extent(data, function (d) {return new Date(d.date);}))
         .range([0, width]);
       const xAxis = svg.append("g")
         .attr("transform", `translate(0, ${height})`)
@@ -82,7 +108,7 @@ export class StackedAreaChartComponent implements OnInit {
         .attr("text-anchor", "end")
         .attr("x", width)
         .attr("y", height + 40)
-        .text("Time (months)");
+        .text("Time");
 
       // Add Y axis label:
       svg.append("text")
@@ -94,7 +120,7 @@ export class StackedAreaChartComponent implements OnInit {
 
       // Add Y axis
       const y = d3.scaleLinear()
-        .domain([0, 7000])
+        .domain([0, yMax + 150])
         .range([height, 0]);
       svg.append("g")
         .call(d3.axisLeft(y).ticks(5))
@@ -192,33 +218,54 @@ export class StackedAreaChartComponent implements OnInit {
       //////////
 
       // Add one dot in the legend for each name.
-      const size = 20
-      svg.selectAll("myrect")
-        .data(keys)
-        .join("rect")
-        .attr("x", 400)
-        .attr("y", function (d, i) { return 10 + i * (size + 5) }) // 100 is where the first dot appears. 25 is the distance between dots
-        .attr("width", size)
-        .attr("height", size)
-        .style("fill", function (d) { return color(d) })
-        .on("mouseover", highlight)
-        .on("mouseleave", noHighlight)
+      const foreignObject = svg.append("foreignObject")
+      .attr("width", 400)
+      .attr("height", 50)
+      .style('overflow-y', 'auto')
+      .attr("transform", `translate(0,${(height+60)})`)
+      .append("xhtml:div")
+      .attr("id", "legend-container")
+      .attr("class", "p-d-flex p-flex-wrap");
 
-      // Add one dot in the legend for each name.
-      svg.selectAll("mylabels")
-        .data(keys)
-        .join("text")
-        .attr("x", 400 + size * 1.2)
-        .attr("y", function (d, i) { return 10 + i * (size + 5) + (size / 2) }) // 100 is where the first dot appears. 25 is the distance between dots
-        .style("fill", function (d) { return color(d) })
-        .text(function (d) { return d })
-        .attr("text-anchor", "left")
-        .style("alignment-baseline", "middle")
-        .on("mouseover", highlight)
-        .on("mouseleave", noHighlight)
+      keys.forEach((x) => {
+        foreignObject.append('div')
+          .attr('class', 'p-d-flex p-align-center p-mr-3')
+          .html(`<span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${color(x)}'></span>
+          <span style="text-transform: capitalize;">${x}</span>`)
+          .on("mouseover", (event) => {highlight(event, x)})
+          .on("mouseleave", (event) => {noHighlight(event, x)})
+        })
 
-    })
+      // const size = 20
+      // svg.selectAll("myrect")
+      //   .data(keys)
+      //   .join("rect")
+      //   .attr("x", function (d, i) { return 10 + i * (size + 5) })
+      //   .attr("y", 300) // 100 is where the first dot appears. 25 is the distance between dots
+      //   .attr("width", size)
+      //   .attr("height", size)
+      //   .style("fill", function (d) { return color(d) })
+      //   .on("mouseover", highlight)
+      //   .on("mouseleave", noHighlight)
+
+      // // Add one dot in the legend for each name.
+      // svg.selectAll("mylabels")
+      //   .data(keys)
+      //   .join("text")
+      //   .attr("x", size * 1.2)
+      //   .attr("y", function (d, i) { return 10 + i * (size + 5) + (size / 2) }) // 100 is where the first dot appears. 25 is the distance between dots
+      //   .style("fill", function (d) { return color(d) })
+      //   .text(function (d) { return d })
+      //   .attr("text-anchor", "left")
+      //   .style("alignment-baseline", "middle")
+      //   .on("mouseover", highlight)
+      //   .on("mouseleave", noHighlight)
+
+    
   }
 
-
+  ngOnDestroy(){
+    d3.select(this.elem).select('#stacked-area').select('svg').remove();
+    this.data = [];
+  }
 }
