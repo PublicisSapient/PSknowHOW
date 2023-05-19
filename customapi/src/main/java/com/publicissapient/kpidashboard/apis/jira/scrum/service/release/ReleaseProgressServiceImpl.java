@@ -10,6 +10,7 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -17,6 +18,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -147,30 +149,28 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	public void createDataCountGroupMap(List<JiraIssue> jiraIssueList, JiraIssueReleaseStatus jiraIssueReleaseStatus,
 			Set<String> assigneeNames, Set<String> priorities, FieldMapping fieldMapping,
 			List<IterationKpiValue> iterationKpiValues) {
-		Map<String, List<JiraIssue>> typeAndStatusWiseIssues = jiraIssueList.stream()
-				.collect(Collectors.groupingBy(issue -> issue.getAssigneeName() + ":" + issue.getPriority()));
-		typeAndStatusWiseIssues.forEach((typeAndStatus, issues) -> {
-			List<DataCount> dataCountList = new ArrayList<>();
-			String[] parts = typeAndStatus.split(":");
-			String assigneeName = parts[0];
-			String priority = parts[1];
-			assigneeNames.add(assigneeName);
-			priorities.add(priority);
-			dataCountList.add(getStatusWiseCountList(issues, jiraIssueReleaseStatus));
-			dataCountList.add(getStatusWiseStoryPointList(issues, fieldMapping, jiraIssueReleaseStatus));
-			IterationKpiValue matchingObject = iterationKpiValues.stream()
-					.filter(p -> p.getFilter1().equals(assigneeName) && p.getFilter2().equals(priority)).findAny()
-					.orElse(null);
-			if (matchingObject == null) {
-				IterationKpiValue iterationKpiValue = new IterationKpiValue();
-				iterationKpiValue.setFilter1(assigneeName);
-				iterationKpiValue.setFilter2(priority);
-				iterationKpiValue.setValue(dataCountList);
-				iterationKpiValues.add(iterationKpiValue);
-			} else {
-				matchingObject.getValue().addAll(dataCountList);
-			}
-		});
+		Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = jiraIssueList.stream().collect(
+				Collectors.groupingBy(JiraIssue::getAssigneeName, Collectors.groupingBy(JiraIssue::getPriority)));
+		typeAndStatusWiseIssues
+				.forEach((assigneeName, priorityWiseIssue) -> priorityWiseIssue.forEach((priority, issues) -> {
+					List<DataCount> dataCountList = new ArrayList<>();
+					assigneeNames.add(assigneeName);
+					priorities.add(priority);
+					dataCountList.add(getStatusWiseCountList(issues, jiraIssueReleaseStatus));
+					dataCountList.add(getStatusWiseStoryPointList(issues, fieldMapping, jiraIssueReleaseStatus));
+					IterationKpiValue matchingObject = iterationKpiValues.stream()
+							.filter(p -> p.getFilter1().equals(assigneeName) && p.getFilter2().equals(priority))
+							.findAny().orElse(null);
+					if (matchingObject == null) {
+						IterationKpiValue iterationKpiValue = new IterationKpiValue();
+						iterationKpiValue.setFilter1(assigneeName);
+						iterationKpiValue.setFilter2(priority);
+						iterationKpiValue.setValue(dataCountList);
+						iterationKpiValues.add(iterationKpiValue);
+					} else {
+						matchingObject.getValue().addAll(dataCountList);
+					}
+				}));
 
 	}
 
