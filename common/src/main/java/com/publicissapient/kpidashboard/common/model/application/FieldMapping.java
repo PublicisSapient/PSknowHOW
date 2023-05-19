@@ -194,6 +194,9 @@ public class FieldMapping extends BasicModel {
 	//field for Wasting - block status
 	private List<String> jiraBlockedStatus;
 
+	//field for Wasting - Include Blocked Status
+	private String jiraIncludeBlockedStatus;
+
 	//for for JiraDueDate
 	@Builder.Default
 	private String jiraDueDateField= CommonConstant.DUE_DATE;

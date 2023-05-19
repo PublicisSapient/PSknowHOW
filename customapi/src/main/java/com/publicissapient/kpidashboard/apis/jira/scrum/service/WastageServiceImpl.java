@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,6 +180,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 
 			List<List<String>> fetchBlockAndWaitStatus = filedMappingExist(fieldMapping);
+			boolean flagIncluded = checkFlagIncludedStatus(fieldMapping);
+			LOGGER.info("Is flag included for wastage kpi calculation  {}", flagIncluded);
 
 			List<String> blockedStatusList = fetchBlockAndWaitStatus.get(0);
 			List<String> waitStatusList = fetchBlockAndWaitStatus.get(1);
@@ -198,7 +201,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 									.findFirst().orElse(new JiraIssueCustomHistory());
 
 							List<Integer> waitedTimeAndBlockedTime = calculateWaitAndBlockTime(issueCustomHistory,
-									sprintDetail, blockedStatusList, waitStatusList);
+									sprintDetail, blockedStatusList, waitStatusList, flagIncluded);
 							jiraIssueWaitedTime = waitedTimeAndBlockedTime.get(0);
 							jiraIssueBlockedTime = waitedTimeAndBlockedTime.get(1);
 							if (jiraIssueWaitedTime != 0) {
@@ -257,6 +260,22 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	}
 
 	/**
+	 * Check for the flag status
+	 *
+	 * @param fieldMapping
+	 * @return boolean flagStatus
+	 */
+	private static boolean checkFlagIncludedStatus(FieldMapping fieldMapping) {
+		boolean isFlagIncluded = false;
+		if (null != fieldMapping && StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatus())
+				&& fieldMapping.getJiraIncludeBlockedStatus().contains(CommonConstant.IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE)) {
+			isFlagIncluded = true;
+		}
+		return isFlagIncluded;
+	}
+
+
+	/**
 	 * Check for the fieldMapping and return blockStatus and waitStatus as list
 	 * 
 	 * @param fieldMapping
@@ -266,7 +285,9 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		List<String> blockedStatus = new ArrayList<>();
 		List<String> waitStatus = new ArrayList<>();
 		if (null != fieldMapping) {
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraBlockedStatus()))
+			if ( StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatus()) &&
+					fieldMapping.getJiraIncludeBlockedStatus().contains(CommonConstant.BLOCKED_STATUS_WASTAGE)
+					&& CollectionUtils.isNotEmpty(fieldMapping.getJiraBlockedStatus()))
 				blockedStatus = fieldMapping.getJiraBlockedStatus();
 
 			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraWaitStatus()))
@@ -283,8 +304,9 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 * @return List<Integer>
 	 */
 	List<Integer> calculateWaitAndBlockTime(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
-			List<String> blockedStatusList, List<String> waitStatusList) {
+			List<String> blockedStatusList, List<String> waitStatusList, boolean flagIncluded) {
 		List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
+		List<JiraHistoryChangeLog> flagStatusUpdationLog = new ArrayList<>();
 		List<Integer> resultList = new ArrayList<>();
 
 		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
@@ -294,15 +316,66 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		int waitedTime = 0;
 		for (int i = 0; i < statusUpdationLog.size(); i++) {
 			JiraHistoryChangeLog entry = statusUpdationLog.get(i);
-
-			blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList, statusUpdationLog, i,
-					sprintDetail, blockedTime);
+			if (!flagIncluded) {
+				blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList, statusUpdationLog, i,
+						sprintDetail, blockedTime);
+			}
 			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, statusUpdationLog, i,
 					sprintDetail, waitedTime);
+		}
+
+		if (flagIncluded && CollectionUtils.isNotEmpty(issueCustomHistory.getFlagStatusChangeLog())) {
+			flagStatusUpdationLog = issueCustomHistory.getFlagStatusChangeLog();
+			for (int i = 0; i < flagStatusUpdationLog.size(); i++) {
+				JiraHistoryChangeLog entry = flagStatusUpdationLog.get(i);
+				blockedTime = calculateBlockTimeBasedOnFlagStatus(entry, flagStatusUpdationLog, i, sprintDetail,
+						blockedTime);
+			}
 		}
 		resultList.add(calculateBlockandwaitTimeinDays(waitedTime));
 		resultList.add(calculateBlockandwaitTimeinDays(blockedTime));
 		return resultList;
+	}
+
+	/**
+	 * Calculate the block time w.r.t flag status
+	 *
+	 * @param entry
+	 * @param flagStatusUpdationLog
+	 * @param index
+	 * @param sprintDetails
+	 * @param time
+	 * @return int
+	 */
+	private int calculateBlockTimeBasedOnFlagStatus(JiraHistoryChangeLog entry,List<JiraHistoryChangeLog> flagStatusUpdationLog, int index,
+													SprintDetails sprintDetails, int time){
+		LocalDateTime sprintStartDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),DateUtil.TIME_FORMAT);
+		LocalDateTime sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getEndDate(),DateUtil.TIME_FORMAT);
+		LocalDateTime entryActivityDate = entry.getUpdatedOn();
+		if (entry.getChangedTo().equalsIgnoreCase(CommonConstant.REQUIRED_ATTENTION_FLAG)) {
+			long hours = 0;
+			// Checking for indexOutOfBound in flagStatusUpdationLog list
+			if (flagStatusUpdationLog.size() == index + 1) {
+				hours = hoursForLastEntryOfStatusUpdationLog(sprintDetails, sprintStartDate, sprintEndDate,
+						entryActivityDate);
+			} else {
+				// Find fetch the next element of flagStatusUpdationLog
+				JiraHistoryChangeLog nextEntry = flagStatusUpdationLog.get(index + 1);
+				if(!nextEntry.getChangedTo().equalsIgnoreCase(CommonConstant.REQUIRED_ATTENTION_FLAG)) {
+				LocalDateTime nextEntryActivityDate = nextEntry.getUpdatedOn();
+				// Checking if both alternate element are inside the sprint start and end date
+				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
+						&& !(entryActivityDate.isAfter(sprintEndDate)
+						&& nextEntryActivityDate.isAfter(sprintEndDate))) {
+					hours = hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
+							nextEntryActivityDate);
+				}
+			}
+		}
+			if (hours != 0)
+				time += hours;
+		}
+		return time;
 	}
 
 	private int calculateBlockandwaitTimeinDays(int timeInHours) {

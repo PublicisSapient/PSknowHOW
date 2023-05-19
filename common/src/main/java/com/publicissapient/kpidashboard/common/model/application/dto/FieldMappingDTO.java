@@ -196,6 +196,9 @@ public class FieldMappingDTO extends BasicModel {
 	//field for Wasting - block status
 	private List<String> jiraBlockedStatus;
 
+	//field for Wasting - Include Blocked Status
+	private String jiraIncludeBlockedStatus;
+
 	//field for In Progress status
 	private List<String> jiraStatusForInProgress;
 

@@ -183,6 +183,7 @@
       "In Investigation",
       "Open"
     ],
+    "jiraIncludeBlockedStatus": "Include Flagged Issue",
     "jiraDefectClosedStatus": [
       "Closed"
     ],
