@@ -20,7 +20,6 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
-import { RsaEncryptionService } from '../../services/rsa.encryption.service';
 
 
 @Component({
@@ -51,7 +50,7 @@ export class AdSettingsComponent implements OnInit {
   }];
   disableSave = false;
 
-  constructor(private formBuilder: UntypedFormBuilder, private http: HttpService, private messenger: MessageService, private rsa: RsaEncryptionService) { }
+  constructor(private formBuilder: UntypedFormBuilder, private http: HttpService, private messenger: MessageService) { }
 
   ngOnInit(): void {
     this.getAuthSettings();
@@ -172,11 +171,7 @@ export class AdSettingsComponent implements OnInit {
       } else {
         submitData['adServerDetail'] = {};
         for (const obj in this.adForm) {
-          if (obj === 'password') {
-            submitData['adServerDetail'][obj] = this.rsa.encrypt(this.adForm[obj].value);
-          } else {
-            submitData['adServerDetail'][obj] = this.adForm[obj].value;
-          }
+          submitData['adServerDetail'][obj] = this.adForm[obj].value;
         }
       }
     }

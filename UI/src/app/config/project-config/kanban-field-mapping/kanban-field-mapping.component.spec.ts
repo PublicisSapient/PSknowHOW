@@ -59,14 +59,14 @@ const completeHierarchyData = {
     {
       id: '63244d35d1d9f4caf85056f9',
       level: 3,
-      hierarchyLevelId: 'account',
-      hierarchyLevelName: 'Account Name'
+      hierarchyLevelId: 'dummy',
+      hierarchyLevelName: 'dummy Name'
     },
     {
       id: '63244d35d1d9f4caf85056fa',
       level: 4,
-      hierarchyLevelId: 'subaccount',
-      hierarchyLevelName: 'Subaccount'
+      hierarchyLevelId: 'subdummy',
+      hierarchyLevelName: 'Subdummy'
     },
     {
       level: 5,
@@ -95,14 +95,14 @@ const completeHierarchyData = {
     {
       id: '63244d35d1d9f4caf85056f9',
       level: 3,
-      hierarchyLevelId: 'account',
-      hierarchyLevelName: 'Account Name'
+      hierarchyLevelId: 'dummy',
+      hierarchyLevelName: 'dummy Name'
     },
     {
       id: '63244d35d1d9f4caf85056fa',
       level: 4,
-      hierarchyLevelId: 'subaccount',
-      hierarchyLevelName: 'Subaccount'
+      hierarchyLevelId: 'subdummy',
+      hierarchyLevelName: 'Subdummy'
     },
     {
       level: 5,
@@ -469,7 +469,6 @@ describe('KanbanFieldMappingComponent', () => {
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
 
     localStorage.setItem('completeHierarchyData', JSON.stringify(completeHierarchyData));
-    localStorage.setItem('projectsAccess', JSON.stringify([]));
   });
 
   it('should create', () => {

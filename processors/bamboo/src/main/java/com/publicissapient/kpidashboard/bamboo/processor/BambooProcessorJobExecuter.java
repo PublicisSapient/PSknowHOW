@@ -474,7 +474,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 
 	private String decryptPassword(String encryptedPassword) {
-		return aesEncryptionService.decrypt(encryptedPassword, "708C150A5363290AAE3F579BF3746AD5");
+		return aesEncryptionService.decrypt(encryptedPassword, bambooConfig.getAesEncryptionKey());
 	}
 
 	private void deleteJobs(int newBuildCount, List<Deployment> activeDeployJobs, Set<ObjectId> nonExistentToolConfig) {

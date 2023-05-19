@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.gitlab.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +45,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GitLabConfig {
     private String cron;
+    @Value("${aesEncryptionKey}")
     private String aesEncryptionKey;
     private int initialRunOccurrenceInDays;
     private String api;

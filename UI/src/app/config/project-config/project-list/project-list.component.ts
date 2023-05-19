@@ -22,7 +22,6 @@ import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { Router } from '@angular/router';
-import { TextEncryptionService } from '../../../services/text.encryption.service';
 import { Table } from 'primeng/table';
 
 declare const require: any;
@@ -59,7 +58,7 @@ export class ProjectListComponent implements OnInit {
   @ViewChild(Table) table: Table;
 
   constructor(private http: HttpService, private sharedService: SharedService, private messenger: MessageService, private router: Router, private confirmationService: ConfirmationService,
-    private authorization: GetAuthorizationService, private aesEncryption: TextEncryptionService) { }
+    private authorization: GetAuthorizationService) { }
 
   ngOnInit(): void {
     this.getData();
@@ -69,9 +68,8 @@ export class ProjectListComponent implements OnInit {
 
   /* Assign role along with project Id */
   roleAccessAssign() {
-    const projectsAccess = !!localStorage.getItem('projectsAccess') && localStorage.getItem('projectsAccess') !== 'undefined' && localStorage.getItem('projectsAccess') !== 'null' ? JSON.parse(localStorage.getItem('projectsAccess')) : [];
-    const decryptedText = this.aesEncryption.convertText(localStorage.getItem('authorities'), 'decrypt');
-    this.authorities = !!decryptedText && decryptedText !== 'undefined' && decryptedText !== 'null' ? JSON.parse(decryptedText) : [];
+    const projectsAccess = !!this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'null' ? this.sharedService.getCurrentUserDetails('projectsAccess') : [];
+    this.authorities = this.sharedService.getCurrentUserDetails('authorities') ? this.sharedService.getCurrentUserDetails('authorities') : [];
     if (projectsAccess.length) {
       projectsAccess.forEach(projectAccess => {
         this.roleAccess[projectAccess.role] = [];
@@ -177,12 +175,14 @@ export class ProjectListComponent implements OnInit {
       accept: () => {
         this.http.deleteProject(project).subscribe(response => {
           this.projectDeletionStatus(response);
-          let arr = JSON.parse(localStorage.getItem('projectsAccess'));
-          arr.map((item) => {
-            item.projects = item.projects.filter(x => x.projectId != project.id);
-          });
-          arr = arr.filter(item => item.projects?.length > 0);
-          localStorage.setItem('projectsAccess', JSON.stringify(arr));
+          let arr = this.sharedService.getCurrentUserDetails('projectsAccess');
+          if(arr?.length){
+            arr?.map((item) => {
+              item.projects = item.projects.filter(x => x.projectId != project.id);
+            });
+            arr = arr?.filter(item => item.projects?.length > 0);
+            this.sharedService.setCurrentUserDetails({projectsAccess: arr});
+          }
         }, error => {
           this.projectDeletionStatus(error);
         });
