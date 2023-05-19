@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -199,7 +200,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 					 */
 
 					if (CollectionUtils.isNotEmpty(issues)) {
-						saveAzureIssueDetails(issues, projectConfig);
+						saveAzureIssueDetails(issues, projectConfig , new HashSet<>());
 						count += issues.size();
 					}
 					MDC.put("IssueCount", String.valueOf(issues.size()));
@@ -259,7 +260,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 *             error while parsing JSON response
 	 */
 	@Override
-	public void saveAzureIssueDetails(List<Value> currentPagedAzureRs, ProjectConfFieldMapping projectConfig) // NOSONAR
+	public void saveAzureIssueDetails(List<Value> currentPagedAzureRs, ProjectConfFieldMapping projectConfig , Set<SprintDetails> sprintDetailsSet) // NOSONAR
 	// //NOPMD
 			throws JSONException {
 		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService

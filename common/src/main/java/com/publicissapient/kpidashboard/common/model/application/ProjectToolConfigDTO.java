@@ -97,4 +97,7 @@ public class ProjectToolConfigDTO {
 
 	//template ID
 	private String metadataTemplateCode;
+
+	// jiraIterationCompletionStatusCustomField field mapping update identifier
+	private boolean azureIterationStatusFieldUpdate;
 }

@@ -1284,7 +1284,7 @@ public class KPIExcelUtility {
 		jiraIssueModalObject.setOwnersFullName(jiraIssue.getOwnersFullName());
 		jiraIssueModalObject.setSprintName(jiraIssue.getSprintName());
 		jiraIssueModalObject.setResolution(jiraIssue.getResolution());
-		if (!jiraIssue.getReleaseVersions().isEmpty()) {
+		if (CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())) {
 			List<ReleaseVersion> releaseVersions = jiraIssue.getReleaseVersions();
 			jiraIssueModalObject.setReleaseName(releaseVersions.get(releaseVersions.size() -1).getReleaseName());
 		}

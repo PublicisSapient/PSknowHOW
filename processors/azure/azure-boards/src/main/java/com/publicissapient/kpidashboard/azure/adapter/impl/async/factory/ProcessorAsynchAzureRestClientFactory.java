@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -473,5 +475,44 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 		StringBuilder sb = new StringBuilder();
 		sb.append(preQuery.replace(AzureConstants.CHANGEDDATE, " (" + postQuery + ") "));
 		return sb;
+	}
+
+	/**
+	 * fetched all issues tag to sprint
+	 * @param azureServer
+	 * @param sprintId
+	 * @return
+	 */
+	@Override
+	public List<String>  getIssuesBySprintResponse(AzureServer azureServer, String sprintId) {
+		List<String> sprintWiseItemIdList = new ArrayList<>();
+		StringBuilder url = new StringBuilder(AzureProcessorUtil.joinURL(azureServer.getUrl(),
+				azureProcessorConfig.getApiEndpointIterations(), "/" + sprintId + "/workitems"));
+		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
+
+		ResponseEntity<String> responseEntity = doRestCall(url.toString(), azureServer);
+		String response = responseEntity.getBody();
+		try {
+			JSONObject jsonObject = (JSONObject) new JSONParser().parse(response);
+			JSONArray jsonArray = (JSONArray) jsonObject.get("workItemRelations");
+			for(Object workItemObj : jsonArray){
+				JSONObject workItemJson = (JSONObject)workItemObj;
+				JSONObject targetJsonValue = (JSONObject) workItemJson.get("target");
+				if(targetJsonValue != null) {
+					String itemId = convertToString(targetJsonValue , "id");
+					sprintWiseItemIdList.add(itemId);
+				}
+			}
+		//} catch (IOException e) {
+			//log.error("Error while parsing getUpdate API", e.getMessage());
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+		return sprintWiseItemIdList;
+	}
+
+	public String convertToString(JSONObject jsonData, String key) {
+		Object jsonObj = jsonData.get(key);
+		return jsonObj == null ? null : jsonObj.toString();
 	}
 }

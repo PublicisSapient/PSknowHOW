@@ -44,6 +44,7 @@ import com.publicissapient.kpidashboard.common.model.azureboards.SystemAssignedT
 import com.publicissapient.kpidashboard.common.model.azureboards.SystemCreatedBy;
 import com.publicissapient.kpidashboard.common.model.azureboards.Value;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,10 +76,11 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	 *
 	 * @param currentPagedJiraRs List of Azure issue in current page call
 	 * @param projectConfig      Project Configuration Mapping
+	 * @param sprintDetailsSet  sprint details set
 	 * @throws JSONException Error while JSON parsing
 	 */
-	public abstract void saveAzureIssueDetails(List<Value> currentPagedJiraRs, ProjectConfFieldMapping projectConfig)
-			throws JSONException;
+	public abstract void saveAzureIssueDetails(List<Value> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
+			Set<SprintDetails> sprintDetailsSet) throws JSONException;
 
 	/**
 	 * Sets RCA.

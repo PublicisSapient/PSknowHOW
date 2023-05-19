@@ -10,9 +10,12 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
@@ -166,6 +169,7 @@ public class ScrumAzureIssueClientImplTest {
 		Value value = new Value();
 		value.setId(3);
 		value.setFields(field);
+		Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 		when(azureWiqlModel.getWorkItems()).thenReturn(workItems);
 		when(processorAzureRestClient.getUpdatesResponse(any(),any())).thenReturn(azureUpdatesModel);
 		when(accountHierarchyRepo.findByLabelNameAndBasicProjectConfigId("Project", scrumProjectList.get(0).getId()))
@@ -177,7 +181,7 @@ public class ScrumAzureIssueClientImplTest {
 
 		scrumIssueClientImpl.processesAzureIssues(projectConfFieldMapping, "TestKey", azureAdapter);
 		scrumIssueClientImpl.purgeAzureIssues(issues, projectConfFieldMapping);
-		scrumIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping);
+		scrumIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping , sprintDetailsSet);
 
 	}
 

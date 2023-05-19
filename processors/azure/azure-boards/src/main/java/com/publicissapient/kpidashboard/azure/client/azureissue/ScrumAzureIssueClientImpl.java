@@ -186,6 +186,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 						sprintPathsMap.put(finalSprintPath, value);
 					}
 				}
+				Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 
 				// Loop for fetching paged Work items
 				for (int i = 0; i < workItemIds.size(); i += pageSize) {
@@ -204,7 +205,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 					 */
 
 					if (CollectionUtils.isNotEmpty(issues)) {
-						saveAzureIssueDetails(issues, projectConfig);
+						saveAzureIssueDetails(issues, projectConfig , sprintDetailsSet);
 						count += issues.size();
 					}
 
@@ -214,6 +215,9 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 						break;
 					}
 				}
+
+				// sprint report prepare and save sprint details
+				sprintClient.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, azureServer);
 			}
 
 		} catch (JSONException | NullPointerException e) {
@@ -274,7 +278,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 *             Error If JSON is invalid
 	 */
 	@Override
-	public void saveAzureIssueDetails(List<Value> currentPagedAzureRs, ProjectConfFieldMapping projectConfig) // NOSONAR
+	public void saveAzureIssueDetails(List<Value> currentPagedAzureRs, ProjectConfFieldMapping projectConfig , Set<SprintDetails> sprintDetailsSet) // NOSONAR
 	// //NOPMD
 			throws JSONException {
 
@@ -286,7 +290,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				.getFullHierarchyLevels(projectConfig.isKanban());
 		List<JiraIssue> azureIssuesToSave = new ArrayList<>();
 		List<JiraIssueCustomHistory> azureIssueHistoryToSave = new ArrayList<>();
-		Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 
 		ObjectId azureProcessorId = azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE).getId();
 		for (Value issue : currentPagedAzureRs) {
@@ -411,7 +414,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		jiraIssueCustomHistoryRepository.saveAll(azureIssueHistoryToSave);
 
 		saveAccountHierarchy(azureIssuesToSave, projectConfig, hierarchyLevelList);
-		sprintClient.processSprints(projectConfig, sprintDetailsSet);
 
 	}
 

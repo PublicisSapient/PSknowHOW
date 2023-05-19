@@ -122,4 +122,12 @@ public interface AzureAdapter {
 	 */
 	List<IssuelinksType> getIssueLinkTypes();
 
+	/**
+	 * get all issues based on sprintId
+	 * @param azureServer
+	 * @param sprintId
+	 * @return
+	 */
+	List<String> getIssuesBySprint(AzureServer azureServer, String sprintId);
+
 }

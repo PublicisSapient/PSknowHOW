@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.azure.adapter.impl;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -323,6 +324,22 @@ public class OnlineAdapter implements AzureAdapter {
 			}
 		}
 		return issueLinksType;
+	}
+
+	@Override
+	public List<String> getIssuesBySprint(AzureServer azureServer, String sprintId) {
+		List<String> sprintWiseItemIdList = new ArrayList<>();
+		if (client == null) {
+			log.warn(MSG_AZURE_CLIENT_SETUP_FAILED);
+		} else {
+			try {
+				sprintWiseItemIdList = client.getIssuesBySprintResponse(azureServer, sprintId);
+			} catch (RestClientException rce) {
+				log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, rce.getMessage());
+
+			}
+		}
+		return sprintWiseItemIdList;
 	}
 
 	/**

@@ -1,15 +1,21 @@
 package com.publicissapient.kpidashboard.azure.client.sprint;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.azure.adapter.AzureAdapter;
+import com.publicissapient.kpidashboard.azure.model.AzureServer;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,12 +43,49 @@ public class SprintClientImplTest {
 
 	@InjectMocks
 	private SprintClientImpl sprintClientImpl;
+
+	@Mock
+	private AzureAdapter azureAdapter;
 	
 	@Mock
 	private AzureProcessorRepository azureProcessorRepository;
 
+	@Mock
+	private ProjectToolConfigRepository projectToolConfigRepository;
+
+	@Mock
+	private JiraIssueRepository jiraIssueRepository;
+
+	private SprintDetails sprintDetails1;
+	private SprintDetails sprintDetails2;
+
+	private SprintDetails sprintDetails3;
+	
+	private Set<SprintDetails> sprintDetailsSet = new HashSet<>();
+
 	@BeforeEach
 	public void setUp() throws Exception {
+		sprintDetails1 = new SprintDetails();
+
+		sprintDetails1.setSprintID("abc-testProject");
+		sprintDetails1.setSprintName("testSprint1");
+		sprintDetails1.setOriginalSprintId("abc");
+		sprintDetails1.setState("Closed");
+
+		sprintDetails2 = new SprintDetails();
+		sprintDetails2.setSprintID("xyz-testProject");
+		sprintDetails2.setSprintName("testSprint2");
+		sprintDetails2.setOriginalSprintId("xyz");
+		sprintDetails2.setState("Active");
+
+		sprintDetails3 = new SprintDetails();
+		sprintDetails3.setSprintID("pqr-testProject");
+		sprintDetails3.setSprintName("testSprint3");
+		sprintDetails3.setOriginalSprintId("pqr");
+		sprintDetails3.setState("Future");
+		sprintDetailsSet.add(sprintDetails1);
+		sprintDetailsSet.add(sprintDetails2);
+		sprintDetailsSet.add(sprintDetails3);
 	}
 
 	@Test
@@ -70,19 +113,44 @@ public class SprintClientImplTest {
 		ProjectConfFieldMapping projectConfig = ProjectConfFieldMapping.builder().build();
 		projectConfig.setBasicProjectConfigId(new ObjectId("621dc33afa2fae5a9cf47219"));
 		projectConfig.setAzure(azureToolConfig);
+		projectConfig.setAzureBoardToolConfigId(new ObjectId("61e4f7852747353d4405c762"));
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setApiVersion("5.1");
+		projectToolConfig.setAzureIterationStatusFieldUpdate(true);
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMapping.setBasicProjectConfigId(new ObjectId("621dc33afa2fae5a9cf47219"));
+		List<String> jiraIterationCompletionStatusCustomField = new ArrayList<>();
+		jiraIterationCompletionStatusCustomField.add("Done");
+		fieldMapping.setJiraIterationCompletionStatusCustomField(jiraIterationCompletionStatusCustomField);
+		projectConfig.setFieldMapping(fieldMapping);
 		projectConfig.setProjectToolConfig(projectToolConfig);
-		when(sprintRepository.findTopByBasicProjectConfigIdAndState(any(), anyString())).thenReturn(null);
+		when(sprintRepository.findBySprintID(sprintDetails1.getSprintID())).thenReturn(sprintDetails1);
+		when(sprintRepository.findBySprintID(sprintDetails2.getSprintID())).thenReturn(sprintDetails2);
+		when(sprintRepository.findBySprintID(sprintDetails3.getSprintID())).thenReturn(sprintDetails3);
 		when(azureProcessorRepository.findByProcessorName(anyString())).thenReturn(processor);
-		sprintClientImpl.processSprints(projectConfig, getSprintDetails());
+		List<String> issueItemList = new ArrayList<>();
+		issueItemList.add("1");
+		issueItemList.add("2");
+		issueItemList.add("3");
+		when(azureAdapter.getIssuesBySprint(prepareAzureServer(), "sprint1")).thenReturn(issueItemList);
+		List<JiraIssue> jiraIssueList = new ArrayList<>();
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList() , anyString())).thenReturn(jiraIssueList);
+		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
+		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
+		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet , azureAdapter , prepareAzureServer());
 	}
 	
-	private Set<SprintDetails> getSprintDetails(){
-		Set<SprintDetails> set = new HashSet<>();
-		SprintDetails sprintDetails = new SprintDetails();
-		sprintDetails.setSprintID("asprintid");
-		set.add(sprintDetails);
-		return set;
+
+
+	private AzureServer prepareAzureServer() {
+		AzureServer azureServer = new AzureServer();
+		azureServer.setPat("TestUser@123");
+		azureServer.setUrl("https://test.com/testUser/testProject");
+		azureServer.setApiVersion("5.1");
+		azureServer.setUsername("");
+		return azureServer;
+
 	}
+
+
 }

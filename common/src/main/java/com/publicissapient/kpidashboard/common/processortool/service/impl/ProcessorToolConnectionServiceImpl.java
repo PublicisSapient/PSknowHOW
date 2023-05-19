@@ -175,6 +175,7 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 		processorToolConnection.setJiraCanBeAutomatedTestValue(toolConfig.getJiraCanBeAutomatedTestValue());
 		processorToolConnection.setTestCaseStatus(toolConfig.getTestCaseStatus());
 		processorToolConnection.setPatOAuthToken(connection.getPatOAuthToken());
+		processorToolConnection.setAzureIterationStatusFieldUpdate(toolConfig.isAzureIterationStatusFieldUpdate());
 		return processorToolConnection;
 	}
 

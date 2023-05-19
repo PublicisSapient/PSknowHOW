@@ -85,4 +85,12 @@ public interface ProcessorAzureRestClient {
 	 * @return jsonObject response
 	 */
 	JSONObject getMetadataJson(AzureServer azureServer, String metadataUrlPath, boolean orgLevelApi);
+
+	/**
+	 *
+	 * @param azureServer
+	 * @param sprintId
+	 * @return
+	 */
+	List<String> getIssuesBySprintResponse(AzureServer azureServer, String sprintId);
 }
