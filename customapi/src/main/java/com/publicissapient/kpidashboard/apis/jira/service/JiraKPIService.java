@@ -52,7 +52,7 @@ import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -215,14 +215,14 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, FieldMapping fieldMapping) {
 		String devCompleteDate = Constant.DASH;
-		List<JiraIssueSprint> filterStorySprintDetails = issueCustomHistory.getStorySprintDetails();
+		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
 		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDevDoneStatus())) {
-			devCompleteDate = filterStorySprintDetails.stream()
-					.filter(jiraIssueSprint -> fieldMapping.getJiraDevDoneStatus()
-							.contains(jiraIssueSprint.getFromStatus()) && jiraIssueSprint.getActivityDate() != null)
+			devCompleteDate = filterStatusUpdationLog.stream()
+					.filter(jiraHistoryChangeLog -> fieldMapping.getJiraDevDoneStatus()
+							.contains(jiraHistoryChangeLog.getChangedTo()) && jiraHistoryChangeLog.getUpdatedOn() != null)
 					.findFirst()
-					.map(jiraIssueSprint -> LocalDate
-							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0],
+					.map(jiraHistoryChangeLog -> LocalDate
+							.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("\\.")[0],
 									DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
 							.toString())
 					.orElse(devCompleteDate);

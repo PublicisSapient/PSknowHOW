@@ -38,6 +38,7 @@ describe('RequestStatusComponent', () => {
   let httpService: HttpService;
   let httpMock;
   let messageService;
+  let sharedService;
   const baseUrl = environment.baseUrl;
 
   const fakeRequestsData = {
@@ -109,6 +110,7 @@ describe('RequestStatusComponent', () => {
     httpService = TestBed.get(HttpService);
     httpMock = TestBed.get(HttpTestingController);
     messageService = TestBed.get(MessageService);
+    sharedService= TestBed.inject(SharedService);
     fixture.detectChanges();
   });
 
@@ -121,17 +123,17 @@ describe('RequestStatusComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load pending requests on load', (done) => {
+  it('should load pending requests on load', () => {
     component.userName = 'testUser';
-    component.ngOnInit();
+    sharedService.currentUserDetailsSubject.next({user_name: 'testUser'});
     fixture.detectChanges();
+    component.ngOnInit();
     httpMock.match(baseUrl + '/api/accessrequests/user/' + component.userName)[0].flush(fakeRequestsData);
     if (component.requestStatusData['success']) {
       expect(Object.keys(component.requestStatusList).length).toEqual(Object.keys(fakeRequestsData.data).length);
     } else {
       // component.messageService.add({ severity: 'error', summary: 'Error in fetching roles. Please try after some time.' });
     }
-    done();
   });
 
   it('should delete request', () => {

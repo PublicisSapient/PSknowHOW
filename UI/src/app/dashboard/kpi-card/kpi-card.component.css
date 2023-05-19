@@ -34,7 +34,7 @@
 }
 
 .kpi-card-name-placeholder h3 {
-    font-size: 1.10rem;
+    font-size: 1rem;
     font-weight: 500;
 }
 
@@ -71,6 +71,7 @@
     color: #707070;
     vertical-align: middle;
     margin-top: -2px;
+    margin-right: 5px;
 }
 
 .kpi-download-icon{
@@ -142,9 +143,9 @@
 }
 
 .sprint-hover-icon {
-    height: 15px;
+    height: 13px;
     position: absolute;
-    top: 15px;
+    top: 16px;
 }
 
 

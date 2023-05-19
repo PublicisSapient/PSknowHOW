@@ -28,6 +28,8 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   @Input() showChartView = true;
   @Input() cols: Array<object> = [];
   @Input() iSAdditionalFilterSelected =false;
+  @Input() showCommentIcon: boolean;
+  selectedTab: string;
   @Input() trendValueList : any
   @Input() colors : Array<any>;
   selectedTabIndex : number = 0;
@@ -41,6 +43,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
  ];
  sprintDetailsList : Array<any>;
  colorCssClassArray = ['sprint-hover-project1','sprint-hover-project2','sprint-hover-project3','sprint-hover-project4','sprint-hover-project5','sprint-hover-project6'];
+
 
   constructor(private service: SharedService) {
   }
@@ -66,6 +69,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
           }
         }
       }
+      this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
     }));
     /** assign 1st value to radio button by default */
     if(this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length > 0){

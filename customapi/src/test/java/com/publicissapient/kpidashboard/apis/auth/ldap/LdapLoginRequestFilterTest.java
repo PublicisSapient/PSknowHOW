@@ -18,14 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.auth.ldap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
+import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.auth.standard.StandardAuthenticationToken;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,15 +38,12 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
 
-import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
-import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.standard.StandardAuthenticationToken;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LdapLoginRequestFilterTest {
@@ -75,9 +72,6 @@ public class LdapLoginRequestFilterTest {
 
 	@Mock
 	private CustomApiConfig customApiConfig;
-
-	@Mock
-	private RsaEncryptionService rsaEncryptionService;
 	
 	@Mock
 	private ADServerDetailsService adServerDetailsService;
@@ -91,7 +85,7 @@ public class LdapLoginRequestFilterTest {
 	public void setup() {
 		path = "/ldap";
 		filter = new LdapLoginRequestFilter(path, manager, resultHandler, customAuthenticationFailureHandler,
-				rsaEncryptionService, customApiConfig, adServerDetailsService, authTypesConfigService);
+				customApiConfig, adServerDetailsService, authTypesConfigService);
 		adUserDetail = new ADServerDetail();
 		adUserDetail.setDomain("domain");
 		adUserDetail.setHost("host");

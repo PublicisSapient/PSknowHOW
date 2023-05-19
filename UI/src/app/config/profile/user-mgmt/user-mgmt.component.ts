@@ -21,7 +21,6 @@ import { HttpService } from '../../../services/http.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { TextEncryptionService } from '../../../services/text.encryption.service';
 
 @Component({
   selector: 'app-user-mgmt',
@@ -38,7 +37,7 @@ export class UserMgmtComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private httpService: HttpService,
-    private messageService: MessageService, private aesEncryption: TextEncryptionService) { }
+    private messageService: MessageService) { }
 
   ngOnInit() {
     // Set validation for registration-form elements
@@ -81,9 +80,6 @@ export class UserMgmtComponent implements OnInit {
         response => {
           if (response.success) {
             this.success = 'Password changed successfully';
-            if (localStorage.getItem('loginType') === 'standard') {
-              localStorage.setItem('SpeedyPassword', this.aesEncryption.convertText(this.f.password.value, 'encrypt'));
-            }
             this.messageService.add({ severity: 'success', summary: `Password changed successfully` });
           } else {
             this.error = 'Change password request failed!';
