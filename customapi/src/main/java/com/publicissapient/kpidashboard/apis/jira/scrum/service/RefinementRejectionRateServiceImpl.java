@@ -321,7 +321,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 			LocalDate monday = currentDate.with(DayOfWeek.MONDAY);
 			LocalDate sunday = currentDate.with(DayOfWeek.SUNDAY);
 			String weekName = "Week" + (i);
-			String dateRange = monday + " to " + sunday;
+			String dateRange = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT);
 			currentDate = sunday.plusDays(1);
 			weekMap.put(weekName, dateRange);
 		}
@@ -396,7 +396,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 		if (null != jiraDate) {
 			LocalDate monday = jiraDate.with(DayOfWeek.MONDAY);
 			LocalDate sunday = jiraDate.with(DayOfWeek.SUNDAY);
-			String value = monday + " to " + sunday;
+			String value = DateUtil.dateTimeConverter(monday.toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(sunday.toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT);
 			String weekVal = "";
 			for (String week : weekMap.keySet()) {
 				if (weekMap.get(week).equalsIgnoreCase(value)) {

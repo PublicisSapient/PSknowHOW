@@ -89,7 +89,7 @@ describe('FilterComponent', () => {
     }],
   }
 
-  const releaseList = [{ 
+  const releaseList = [{
     labelName: "release",
     level: 5,
     nodeId: "844_DOTC_63b51633f33fd2360e9e72bd",
@@ -423,7 +423,7 @@ describe('FilterComponent', () => {
     component.selectedTab = 'Iteration';
     component.processMasterData(fakeMasterData);
     expect(spyhandleIteration).toHaveBeenCalled();
-    
+
   });
 
   it('should set filters empty when selected tab is iteraiton', () => {
@@ -482,7 +482,7 @@ describe('FilterComponent', () => {
     expect(component.selectedFilterArray[0].grossMaturity).toEqual(result);
   });
 
-  
+
 
   it('should get filter data on load', () => {
     spyOn(sharedService, 'getFilterData').and.returnValue(fakeFilterData);
@@ -606,7 +606,7 @@ describe('FilterComponent', () => {
     component.processKpiList();
     expect(component.kpiList).not.toBeNull();
   });
-  
+
   it('should kpiList not blank for backlog', () => {
     component.selectedTab = 'Backlog';
     component.kanban = false;
@@ -756,7 +756,7 @@ describe('FilterComponent', () => {
   });
 
   it('should check if Add Filter Disabled', () => {
-  
+
     component.filterForm = new UntypedFormGroup({
       selectedLevel: new UntypedFormControl('project')
     });
@@ -826,6 +826,7 @@ describe('FilterComponent', () => {
   });
 
   it('should get format date based on iteration/milestone', () => {
+    component.selectedTab = 'iteration';
     component.filteredAddFilters = {
       sprint: [
         {
@@ -848,11 +849,11 @@ describe('FilterComponent', () => {
       selectedSprintValue: new UntypedFormControl('38998_DEMO_SONAR_63284960fdd20276d60e4df5')
     });
 
-    let result = component.getFormatDateBasedOnIterationAndMilestone('start','sprint', "selectedSprintValue", "sprintStartDate", "sprintEndDate");
-    expect(result).toBe('07/09/2022');
+    let result = component.getDate('start');
+    expect(result).toBe('07/Sep/2022');
 
-    let result2 = component.getFormatDateBasedOnIterationAndMilestone('end','sprint', "selectedSprintValue", "sprintStartDate", "sprintEndDate");
-    expect(result2).toBe('27/09/2022');
+    let result2 = component.getDate('end');
+    expect(result2).toBe('27/Sep/2022');
   });
 
   it("should call formatted date for iteration",()=>{
@@ -986,7 +987,7 @@ describe('FilterComponent', () => {
   })
 
   it("should apply filters based on node selection",()=>{
-   
+
     component.hierarchyLevels = hierarchyLevels;
     component.trendLineValueList = trendLineValueList;
     component.additionalFiltersDdn =  additionalFiltersDdn;
@@ -1056,7 +1057,7 @@ describe('FilterComponent', () => {
   it("should labels come when addtional filter are applied for sprint",()=>{
 
     component.selectedFilterArray = selectedFilterArrayNestedArray;
-  
+
     component.filterApplyData = {
       ids: [
         'bittest_corporate'
