@@ -138,3 +138,7 @@
     top: 30px;
     margin: auto;
   }
+
+  .chart-container-height{
+    height: 300px;
+  }
