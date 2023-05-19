@@ -76,9 +76,9 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 			LOGGER.info("Release Progress -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 
-			List<JiraIssue> releaseIssues = getReleaseJiraIssuesFromBaseClass();
+			List<JiraIssue> releaseIssues = getFilteredReleaseJiraIssuesFromBaseClass(null);
 			resultListMap.put(TOTAL_ISSUES, releaseIssues);
-			JiraIssueReleaseStatus jiraIssueReleaseStatus = getProjectStatusCategory(basicProjectConfigId);
+			JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus(basicProjectConfigId);
 			resultListMap.put(RELEASE_JIRA_ISSUE_STATUS, jiraIssueReleaseStatus);
 		}
 		return resultListMap;
@@ -180,14 +180,14 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 		Map<String, Double> releaseProgressCount = new HashMap<>();
 		releaseProgressCount.put(TO_DO,
 				(double) jiraIssueList.stream().filter(
-						jiraIssue -> jiraIssueReleaseStatus.getListOfTodos().values().contains(jiraIssue.getStatus()))
+						jiraIssue -> jiraIssueReleaseStatus.getToDoList().values().contains(jiraIssue.getStatus()))
 						.count());
 		releaseProgressCount.put(IN_PROGRESS, (double) jiraIssueList.stream().filter(
-				jiraIssue -> jiraIssueReleaseStatus.getListOfInProgress().values().contains(jiraIssue.getStatus()))
+				jiraIssue -> jiraIssueReleaseStatus.getInProgressList().values().contains(jiraIssue.getStatus()))
 				.count());
 		releaseProgressCount.put(DONE,
 				(double) jiraIssueList.stream().filter(
-						jiraIssue -> jiraIssueReleaseStatus.getListOfClosed().values().contains(jiraIssue.getStatus()))
+						jiraIssue -> jiraIssueReleaseStatus.getClosedList().values().contains(jiraIssue.getStatus()))
 						.count());
 		dataCount
 				.setData(String.valueOf(releaseProgressCount.values().stream().mapToDouble(Double::doubleValue).sum()));
@@ -201,7 +201,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 		DataCount dataCount = new DataCount();
 		Map<String, Double> releaseProgressStoryPoint = new HashMap<>();
 		releaseProgressStoryPoint.put(TO_DO, jiraIssueList.stream()
-				.filter(jiraIssue -> jiraIssueReleaseStatus.getListOfTodos().values().contains(jiraIssue.getStatus()))
+				.filter(jiraIssue -> jiraIssueReleaseStatus.getToDoList().values().contains(jiraIssue.getStatus()))
 				.mapToDouble(jiraIssue -> {
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
@@ -211,7 +211,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 					}
 				}).sum());
 		releaseProgressStoryPoint.put(IN_PROGRESS, jiraIssueList.stream().filter(
-				jiraIssue -> jiraIssueReleaseStatus.getListOfInProgress().values().contains(jiraIssue.getStatus()))
+				jiraIssue -> jiraIssueReleaseStatus.getInProgressList().values().contains(jiraIssue.getStatus()))
 				.mapToDouble(jiraIssue -> {
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
@@ -221,7 +221,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 					}
 				}).sum());
 		releaseProgressStoryPoint.put(DONE, jiraIssueList.stream()
-				.filter(jiraIssue -> jiraIssueReleaseStatus.getListOfClosed().values().contains(jiraIssue.getStatus()))
+				.filter(jiraIssue -> jiraIssueReleaseStatus.getClosedList().values().contains(jiraIssue.getStatus()))
 				.mapToDouble(jiraIssue -> {
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {

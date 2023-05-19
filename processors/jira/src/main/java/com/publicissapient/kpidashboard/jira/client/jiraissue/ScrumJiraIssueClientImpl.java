@@ -1604,22 +1604,22 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	private void processAndSaveProjectStatusCategory(List<Status> listOfProjectStatus, String basicProjectConfigId) {
 		if (CollectionUtils.isNotEmpty(listOfProjectStatus)) {
 			JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
-			Map<Long, String> listOfTodos = new HashMap<>();
-			Map<Long, String> listOfInProgress = new HashMap<>();
-			Map<Long, String> listOfClosed = new HashMap<>();
+			Map<Long, String> toDosList = new HashMap<>();
+			Map<Long, String> inProgressList = new HashMap<>();
+			Map<Long, String> closedList = new HashMap<>();
 			jiraIssueReleaseStatus.setBasicProjectConfigId(basicProjectConfigId);
 			listOfProjectStatus.stream().forEach(status -> {
 				if (JiraConstants.TO_DO.equals(status.getStatusCategory().getName())) {
-					listOfTodos.put(status.getId(), status.getName());
+					toDosList.put(status.getId(), status.getName());
 				} else if (JiraConstants.DONE.equals(status.getStatusCategory().getName())) {
-					listOfClosed.put(status.getId(), status.getName());
+					closedList.put(status.getId(), status.getName());
 				} else {
-					listOfInProgress.put(status.getId(), status.getName());
+					inProgressList.put(status.getId(), status.getName());
 				}
 			});
-			jiraIssueReleaseStatus.setListOfTodos(listOfTodos);
-			jiraIssueReleaseStatus.setListOfInProgress(listOfInProgress);
-			jiraIssueReleaseStatus.setListOfClosed(listOfClosed);
+			jiraIssueReleaseStatus.setToDoList(toDosList);
+			jiraIssueReleaseStatus.setInProgressList(inProgressList);
+			jiraIssueReleaseStatus.setClosedList(closedList);
 			jiraIssueReleaseStatusRepository.save(jiraIssueReleaseStatus);
 			log.debug("saved project status category");
 		}

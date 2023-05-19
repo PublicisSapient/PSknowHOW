@@ -285,23 +285,20 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		List<JiraIssue> jiraIssuesForCurrentSprint = jiraService.getJiraIssuesForCurrentSprint();
 		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(jiraIssuesForCurrentSprint)) {
-			projectWiseDefectTypes.forEach((project, values) ->
-				filteredJiraIssue
-						.addAll(jiraIssuesForCurrentSprint.stream()
-								.filter(jiraIssue -> values.contains(jiraIssue.getTypeName())
-										&& project.equalsIgnoreCase(jiraIssue.getBasicProjectConfigId()))
-								.collect(Collectors.toList()))
-			);
-		}
+			List<JiraIssue> finalFilteredJiraIssue = filteredJiraIssue;
+			projectWiseDefectTypes.forEach((project,
+					values) -> finalFilteredJiraIssue.addAll(jiraIssuesForCurrentSprint.stream()
+							.filter(jiraIssue -> values.contains(jiraIssue.getTypeName())
+									&& project.equalsIgnoreCase(jiraIssue.getBasicProjectConfigId()))
+							.collect(Collectors.toList())));
+
+		} else
+			filteredJiraIssue = jiraIssuesForCurrentSprint;
 		return filteredJiraIssue;
 	}
 
-	public JiraIssueReleaseStatus getProjectStatusCategory(String basicProjectConfigId) {
+	public JiraIssueReleaseStatus getJiraIssueReleaseStatus(String basicProjectConfigId) {
 		return jiraService.getJiraIssueReleaseForProject(basicProjectConfigId);
-	}
-
-	public List<JiraIssue> getReleaseJiraIssuesFromBaseClass() {
-		return jiraService.getJiraIssuesForCurrentSprint();
 	}
 
 }

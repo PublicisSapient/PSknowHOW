@@ -22,8 +22,8 @@ import java.util.Map;
 public class JiraIssueReleaseStatus {
 
     private String basicProjectConfigId;
-    private Map<Long, String> listOfTodos;
-    private Map<Long, String> listOfInProgress;
-    private Map<Long, String> listOfClosed;
+    private Map<Long, String> toDoList;
+    private Map<Long, String> inProgressList;
+    private Map<Long, String> closedList;
 
 }
