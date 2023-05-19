@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -68,6 +67,7 @@ import com.publicissapient.kpidashboard.common.model.application.KPIFieldMapping
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -1384,38 +1384,41 @@ public class KpiHelperService { // NOPMD
 	public void removeStoriesWithReturnTransaction(List<JiraIssue> firstTimePassStories,
 														  List<JiraIssueCustomHistory> storiesHistory) {
 
-		firstTimePassStories.removeIf(issue -> hasReturnTransaction(issue, storiesHistory));
+		firstTimePassStories.removeIf(issue -> hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory));
 
 	}
 
-	private boolean hasReturnTransaction(JiraIssue issue, List<JiraIssueCustomHistory> storiesHistory) {
+	private boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue, List<JiraIssueCustomHistory> storiesHistory) {
 		JiraIssueCustomHistory jiraIssueCustomHistory = storiesHistory.stream()
 				.filter(issueHistory -> issueHistory.getStoryID().equals(issue.getNumber())).findFirst().orElse(null);
 		if (jiraIssueCustomHistory == null) {
 			return false;
 		} else {
-
 			List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistory.getStatusUpdationLog();
-			Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
-
-			JiraHistoryChangeLog latestClosedStatusDetail = statusUpdationLog.stream()
-					.filter(statusHistory -> statusHistory.getChangedTo().equals(issue.getJiraStatus())).findFirst()
-					.orElse(null);
-
-			if (latestClosedStatusDetail != null) {
-				Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
-				FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
-				List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
-						.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
-				DateTime latestClosedStatusTime = DateTime.parse(latestClosedStatusDetail.getUpdatedOn().toString());
-				return statusUpdationLog.stream()
-						.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString())
-								.isAfter(latestClosedStatusTime))
-						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getChangedTo()));
+			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
+			FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraFtprRejectStatus())) {
+				return CollectionUtils.isNotEmpty(statusUpdationLog.stream().filter(
+						statusHistory -> fieldMapping.getJiraFtprRejectStatus().contains(statusHistory.getChangedTo()))
+						.collect(Collectors.toList()));
+			} else {
+				Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
+				JiraHistoryChangeLog latestClosedStatusDetail = statusUpdationLog.stream()
+						.filter(statusHistory -> statusHistory.getChangedTo().equals(issue.getJiraStatus())).findFirst()
+						.orElse(null);
+				if (latestClosedStatusDetail != null) {
+					List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
+							.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
+					DateTime latestClosedStatusTime = DateTime
+							.parse(latestClosedStatusDetail.getUpdatedOn().toString());
+					return statusUpdationLog.stream()
+							.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString())
+									.isAfter(latestClosedStatusTime))
+							.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getChangedTo()));
+				}
 			}
 			return false;
 		}
-
 	}
 
 

@@ -214,6 +214,7 @@ public class FieldMappingDTO extends BasicModel {
 
 	// For DTS_21154 - field for Stakeholder refinement status
 	private List<String> jiraReadyForRefinement;
+	private List<String> jiraFtprRejectStatus;
 
 	/**
 	 * Get jira issue type names string [ ].
