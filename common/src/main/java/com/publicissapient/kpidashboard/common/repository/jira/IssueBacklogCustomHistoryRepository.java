@@ -19,5 +19,5 @@ public interface IssueBacklogCustomHistoryRepository extends CrudRepository<Issu
 	List<IssueBacklogCustomHistory> findByStoryIDInAndBasicProjectConfigIdIn(List<String> storyID,
 																		  List<String> basicProjectConfigId);
 
-
+	List<IssueBacklogCustomHistory> findByStoryIDIn(List<String> storyList);
 }

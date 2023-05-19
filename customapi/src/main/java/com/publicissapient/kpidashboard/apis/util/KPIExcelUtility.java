@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1319,7 +1320,7 @@ public class KPIExcelUtility {
 	 * @param jiraDateMap
 	 */
 	public static void populateRefinementRejectionExcelData(List<KPIExcelData> excelDataList,
-															List<JiraIssue> issuesExcel, Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, Map<String, LocalDateTime> jiraDateMap) {
+															List<IssueBacklog> issuesExcel, Map<String, Map<String, List<IssueBacklog>>> weekAndTypeMap, Map<String, LocalDateTime> jiraDateMap) {
 
 		if (CollectionUtils.isNotEmpty(issuesExcel)) {
 			issuesExcel.forEach(e -> {
@@ -1349,11 +1350,11 @@ public class KPIExcelUtility {
 	 * @param weekAndTypeMap
 	 * @param e
 	 */
-	private static HashMap<String,String> getStatusNameAndWeekName(Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e) {
+	private static HashMap<String,String> getStatusNameAndWeekName(Map<String, Map<String, List<IssueBacklog>>> weekAndTypeMap, IssueBacklog e) {
 		HashMap<String,String> data = new HashMap<>();
 		for (String week : weekAndTypeMap.keySet()) {
 			for (String type : weekAndTypeMap.get(week).keySet()) {
-				for (JiraIssue issue : weekAndTypeMap.get(week).get(type)) {
+				for (IssueBacklog issue : weekAndTypeMap.get(week).get(type)) {
 					if (issue.getNumber().equalsIgnoreCase(e.getNumber())) {
 						data.put(STATUS,type);
 						data.put(WEEK,week);

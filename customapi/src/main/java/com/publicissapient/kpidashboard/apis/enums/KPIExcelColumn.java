@@ -184,6 +184,8 @@ public enum KPIExcelColumn {
             Arrays.asList("Issue Id", "Issue Type", "Issue Description","Size(story point/hours)","Issue Status", "Due Date","Remaining Estimate","Assignee")),
 
     INVALID("INVALID_KPI", Arrays.asList("Invalid")),
+    BACKLOG_READINESS_EFFICIENCY("kpi138",
+            Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)")),
 
 	FIRST_TIME_PASS_RATE_ITERATION("kpi135",
 			Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority")),

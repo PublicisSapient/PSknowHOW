@@ -1451,4 +1451,14 @@ public class KpiHelperService { // NOPMD
 		);
 		return jiraIssueCustomHistoryList;
 	}
+
+	public List<IssueBacklogCustomHistory> convertJiraHistoryToBacklogHistory(
+			List<JiraIssueCustomHistory> jiraIssueCustomHistories) {
+		List<IssueBacklogCustomHistory> issueBacklogCustomHistoryList = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		jiraIssueCustomHistories.forEach(jiraIssueCustomHistory->
+				issueBacklogCustomHistoryList.add(mapper.map(jiraIssueCustomHistory, IssueBacklogCustomHistory.class))
+		);
+		return issueBacklogCustomHistoryList;
+	}
 }
