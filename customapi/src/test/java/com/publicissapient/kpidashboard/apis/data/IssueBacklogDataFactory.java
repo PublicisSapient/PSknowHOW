@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -68,6 +69,9 @@ public class IssueBacklogDataFactory {
 
     public List<IssueBacklog> getIssueBacklogs() {
         return issueBacklogs;
+    }
+    public List<IssueBacklog> findIssueByNumberList(List<String> ids) {
+        return issueBacklogs.stream().filter(jiraIssue -> ids.contains(jiraIssue.getNumber())).collect(Collectors.toList());
     }
 
 }
