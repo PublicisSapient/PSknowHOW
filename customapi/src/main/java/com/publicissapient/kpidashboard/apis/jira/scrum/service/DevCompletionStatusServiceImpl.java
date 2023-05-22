@@ -170,7 +170,7 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 
 			Map<JiraIssue, String> completedIssueMap = createComplteIssuesWithCompletionDate(allIssueHistories,
 					allIssuesWithDevDueDate, fieldMapping);
-			Map<JiraIssue, String> completedIssues = completedIssueMap.entrySet().stream()
+			Map<JiraIssue, String> devCompletdIssues = completedIssueMap.entrySet().stream()
 					.filter(entry -> !entry.getValue().equalsIgnoreCase(Constant.DASH))
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
@@ -233,6 +233,20 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 									KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue,
 											fieldMapping, modalObjectMap);
 									setKpiSpecificData(modalObjectMap, jiraIssue, jiraIssueData, actualCompletionData);
+
+									// Calculating actual work status for only completed issues
+									if (devCompletdIssues.containsKey(jiraIssue)) {
+										issueCountActual = issueCountActual + 1;
+										overAllIssueCountActual.set(0, overAllIssueCountActual.get(0) + 1);
+
+										storyPointActual = KpiDataHelper.getStoryPoint(overAllStoryPointsActual,
+												storyPointActual, jiraIssue);
+										originalEstimateActual = KpiDataHelper.getOriginalEstimate(
+												overAllOriginalEstimateActual, originalEstimateActual, jiraIssue);
+
+										delay = getDelay(fieldMapping, modalObjectMap, overallDelay, overAllmodalValues,
+												modalValues, delay, jiraIssue, jiraIssueData, actualCompletionData);
+									}
 								}
 							} else {
 								// Checking if devdueDate is <= sprint End Date for closed sprint
@@ -255,29 +269,20 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 									KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue,
 											fieldMapping, modalObjectMap);
 									setKpiSpecificData(modalObjectMap, jiraIssue, jiraIssueData, actualCompletionData);
-								}
-							}
-							// Calculating actual work status for only completed issues
-							if (completedIssues.containsKey(jiraIssue)) {
-								issueCountActual = issueCountActual + 1;
-								overAllIssueCountActual.set(0, overAllIssueCountActual.get(0) + 1);
 
-								storyPointActual = KpiDataHelper.getStoryPoint(overAllStoryPointsActual,
-										storyPointActual, jiraIssue);
-								originalEstimateActual = KpiDataHelper.getOriginalEstimate(
-										overAllOriginalEstimateActual, originalEstimateActual, jiraIssue);
+									// Calculating actual work status for only completed issues
+									if (devCompletdIssues.containsKey(jiraIssue)) {
+										issueCountActual = issueCountActual + 1;
+										overAllIssueCountActual.set(0, overAllIssueCountActual.get(0) + 1);
 
-								if (DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
-										.isAfter(LocalDate.now().minusDays(1))) {
-									if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
-										int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
-										delay += KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
-										overallDelay.set(0,
-												overallDelay.get(0) + KpiDataHelper.getDelayInMinutes(jiraIssueDelay));
+										storyPointActual = KpiDataHelper.getStoryPoint(overAllStoryPointsActual,
+												storyPointActual, jiraIssue);
+										originalEstimateActual = KpiDataHelper.getOriginalEstimate(
+												overAllOriginalEstimateActual, originalEstimateActual, jiraIssue);
+
+										delay = getDelay(fieldMapping, modalObjectMap, overallDelay, overAllmodalValues,
+												modalValues, delay, jiraIssue, jiraIssueData, actualCompletionData);
 									}
-									KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue,
-											fieldMapping, modalObjectMap);
-									setKpiSpecificData(modalObjectMap, jiraIssue, jiraIssueData, actualCompletionData);
 								}
 							}
 						}
@@ -326,6 +331,24 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 			kpiElement.setExcelColumnInfo(KPIExcelColumn.DEV_COMPLETION_STATUS.getKpiExcelColumnInfo());
 			kpiElement.setTrendValueList(trendValue);
 		}
+	}
+@SuppressWarnings("java:S107")
+	private int getDelay(FieldMapping fieldMapping, Map<String, IterationKpiModalValue> modalObjectMap,
+			List<Integer> overallDelay, List<IterationKpiModalValue> overAllmodalValues,
+			List<IterationKpiModalValue> modalValues, int delay, JiraIssue jiraIssue, Map<String, Object> jiraIssueData,
+			Map<String, Object> actualCompletionData) {
+		if (DateUtil.stringToLocalDate(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
+				.isAfter(LocalDate.now().minusDays(1))) {
+			if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
+				int jiraIssueDelay = (int) jiraIssueData.get(ISSUE_DELAY);
+				delay += KpiDataHelper.getDelayInMinutes(jiraIssueDelay);
+				overallDelay.set(0, overallDelay.get(0) + KpiDataHelper.getDelayInMinutes(jiraIssueDelay));
+			}
+			KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue, fieldMapping,
+					modalObjectMap);
+			setKpiSpecificData(modalObjectMap, jiraIssue, jiraIssueData, actualCompletionData);
+		}
+		return delay;
 	}
 
 	private Map<JiraIssue, String> createComplteIssuesWithCompletionDate(List<JiraIssueCustomHistory> allIssueHistories,

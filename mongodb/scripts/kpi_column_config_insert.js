@@ -612,6 +612,11 @@ db.kpi_column_configs.insertMany([{
                                  			order: 7,
                                  			isShown: true,
                                  			isDefault: false
+                                 		}, {
+                                 		    columnName: 'Created during Iteration',
+                                 		    order: 8,
+                                 		    isShown: true,
+                                 		    isDefault: false
                                  		}]
                                  	},
 
@@ -658,7 +663,12 @@ db.kpi_column_configs.insertMany([{
                                  			order: 7,
                                  			isShown: true,
                                  			isDefault: false
-                                 		}]
+                                 		}, {
+                                            columnName: 'Created during Iteration',
+                                            order: 8,
+                                            isShown: true,
+                                            isDefault: false
+                                        }]
                                  	},
 
                                  	{
@@ -2548,4 +2558,5 @@ db.kpi_column_configs.insertMany([{
                                             isDefault: false
                                         }]
                                     }
+
                                  ]);
