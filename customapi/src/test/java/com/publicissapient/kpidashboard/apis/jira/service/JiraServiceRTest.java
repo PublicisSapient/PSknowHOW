@@ -72,7 +72,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
  *
  */
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class JiraServiceRTest {
 
 	@Mock

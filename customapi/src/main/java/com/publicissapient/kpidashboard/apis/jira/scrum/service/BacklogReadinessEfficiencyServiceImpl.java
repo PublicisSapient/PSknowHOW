@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -14,12 +15,17 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
@@ -36,7 +42,6 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.BacklogService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
@@ -98,7 +103,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
     private static final String OVERALL = "Overall";
 
     @Autowired
-    private BacklogService backlogService;
+    private IssueBacklogRepository issueBacklogRepository;
 
     @Autowired
     private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
@@ -114,6 +119,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
     @Autowired
     private CustomApiConfig customApiConfig;
+
 
     /**
      * Methods get the data for the KPI
@@ -154,8 +160,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
                                                   KpiRequest kpiRequest) {
         Map<String, Object> resultListMap = new HashMap<>();
 
-        List<IssueBacklog> issues = backlogService
-                .getBackLogStory(leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
+        List<IssueBacklog> issues = getBackLogStory(leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
         resultListMap.put(ISSUES, issues);
 
         List<String> issueNumbers = issues.stream().map(IssueBacklog::getNumber).collect(Collectors.toList());
@@ -437,6 +442,31 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
             // have to
             // prepare data from jira issue.
         }
+    }
+
+    public List<IssueBacklog> getBackLogStory(ObjectId basicProjectId) {
+        Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+        Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+        Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+
+        List<String> basicProjectConfigIds = new ArrayList<>();
+        basicProjectConfigIds.add(basicProjectId.toString());
+
+        FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectId);
+
+        List<String> statusList = new ArrayList<>();
+        if (Optional.ofNullable(fieldMapping.getReadyForDevelopmentStatus()).isPresent()) {
+            statusList.add(fieldMapping.getReadyForDevelopmentStatus());
+        }
+        mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
+                CommonUtils.convertToPatternList(statusList));
+        mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+                basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+
+        mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(), Lists.newArrayList("", null));
+
+        uniqueProjectMap.put(basicProjectId.toString(), mapOfProjectFilters);
+        return issueBacklogRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
     }
 
 

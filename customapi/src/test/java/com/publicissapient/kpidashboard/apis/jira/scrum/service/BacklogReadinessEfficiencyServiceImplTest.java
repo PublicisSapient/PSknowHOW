@@ -17,6 +17,7 @@ import com.publicissapient.kpidashboard.apis.data.IssueBacklogDataFactory;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,6 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.BacklogService;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -59,8 +59,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class BacklogReadinessEfficiencyServiceImplTest {
 
-    @Mock
-    private BacklogService backlogService;
 
     @Mock
     private JiraIssueCustomHistoryRepository jiraHistoryRepo;
@@ -84,6 +82,9 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 
     @InjectMocks
     BacklogReadinessEfficiencyServiceImpl backlogReadinessEfficiencyServiceImpl;
+
+    @Mock
+    private IssueBacklogRepository issueBacklogRepository;
 
     private KpiRequest kpiRequest;
     private List<IssueBacklog> storyList = new ArrayList<>();
@@ -142,7 +143,9 @@ public class BacklogReadinessEfficiencyServiceImplTest {
         when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any())).thenReturn(sprintVelocityStoryMap);
 
         when(issueBacklogCustomHistoryRepository.findByStoryIDIn(any())).thenReturn(jiraIssueCustomHistories);
-        when(backlogService.getBackLogStory(any())).thenReturn(storyList);
+        when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+        when(issueBacklogRepository.findIssuesBySprintAndType(any(), any())).thenReturn(storyList);
+        when(backlogReadinessEfficiencyServiceImpl.getBackLogStory(new ObjectId("6335363749794a18e8a4479b"))).thenReturn(storyList);
 
         String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
@@ -166,6 +169,13 @@ public class BacklogReadinessEfficiencyServiceImplTest {
     @Test
     public void testGetQualifierType() {
         Assert.assertEquals(backlogReadinessEfficiencyServiceImpl.getQualifierType(), "BACKLOG_READINESS_EFFICIENCY");
+    }
+    @Test
+    public void testGetBackLogStory() {
+        when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+        when(issueBacklogRepository.findIssuesBySprintAndType(any(), any())).thenReturn(storyList);
+        List<IssueBacklog> backLogStory = backlogReadinessEfficiencyServiceImpl.getBackLogStory(new ObjectId("6335363749794a18e8a4479b"));
+        Assert.assertEquals(backLogStory.size(), storyList.size());
     }
 
 }

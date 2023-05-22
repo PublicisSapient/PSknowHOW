@@ -3644,7 +3644,7 @@ db.getCollection('kpi_master').insert(
 		  "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
 		},
 		"xAxisLabel": "Weeks",
-		"yAxisLabel": "Count",
+		"yAxisLabel": "Percentage",
 		"isPositiveTrend": false,
 		"kpiFilter": "",
 		"showTrend": false,
