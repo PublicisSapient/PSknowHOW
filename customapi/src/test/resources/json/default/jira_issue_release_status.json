@@ -1,7 +1,7 @@
 [
   {
     "basicProjectConfigId" : "645e6bc42c0ccc68494f6885",
-    "listOfTodos" : {
+    "toDoList" : {
       "1" : "Open",
       "10023" : "Requested",
       "10745" : "READY FOR WORK",
@@ -11,7 +11,7 @@
       "24845" : "Funnel",
       "33945" : "Planning"
     },
-    "listOfInProgress" : {
+    "inProgressList" : {
       "3" : "In Progress",
       "10001" : "In Analysis",
       "10003" : "In Development",
@@ -47,7 +47,7 @@
       "24849" : "Need Info",
       "27770" : "Releasing"
     },
-    "listOfClosed" : {
+    "closedList" : {
       "6" : "Closed",
       "10000" : "Dropped",
       "30947" : "Live"
