@@ -3,6 +3,8 @@
     height: 290px;
     width: auto;
     margin-top: 1rem;
+    display: flex;
+    justify-content: center;
 }
 
 :host ::ng-deep.tooltip{
