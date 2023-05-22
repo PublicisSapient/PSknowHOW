@@ -58,10 +58,7 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -208,8 +205,8 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 			Map<String, Map<String, List<IssueBacklog>>> weekAndTypeMap = populateWeekAndTypeMap(weekMap);
 			List<DataCount> dataList = new ArrayList<>();
 			List<IssueBacklog> issuesExcel = new ArrayList<>();
-			if (null != projectWiseMap.get(node.getId()) && rejectedInRefinementIssueBacklogs.size()>0
-			&& readyForRefinementIssueBacklogs.size()>0 && acceptedInRefinementIssueBacklogs.size()>0) {
+			if (null != projectWiseMap.get(node.getId()) && !rejectedInRefinementIssueBacklogs.isEmpty()
+			&& !readyForRefinementIssueBacklogs.isEmpty() && !acceptedInRefinementIssueBacklogs.isEmpty()) {
 				getWeekWiseRecord(projectWiseMap.get(node.getId()), weekAndTypeMap, weekMap, jiraDateMap);
 				for (Map.Entry<String, Map<String, List<IssueBacklog>>> entry : weekAndTypeMap.entrySet()) {
 					String week = entry.getKey();
