@@ -28,9 +28,8 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   draw(){
     const chart = d3.select('#chart');
     chart.select('svg').remove();
-
     const margin = {top: 10, right: 22, bottom: 20, left: 100};
-    const width = chart.node().getBoundingClientRect().width - margin.left - margin.right;
+    const width = 485 - margin.left - margin.right;
     const height = 180 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
