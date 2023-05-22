@@ -14,7 +14,6 @@ import com.publicissapient.kpidashboard.common.model.application.ValidationMessa
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -40,8 +39,6 @@ public class AuthTypesConfigServiceImplTest {
     @Mock
     private GlobalConfigRepository globalConfigRepository;
 
-    @Mock
-    private RsaEncryptionService rsaEncryptionService;
 
     @Mock
     private AesEncryptionService aesEncryptionService;

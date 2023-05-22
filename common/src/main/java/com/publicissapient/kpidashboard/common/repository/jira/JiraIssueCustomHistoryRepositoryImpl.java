@@ -55,12 +55,13 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	private MongoOperations operations;
 
 	private static final String STORY_SPRINT_DETAILS = "storySprintDetails";
-	private static final String ACTIVITY_DATE = "storySprintDetails.activityDate";
+	private static final String STATUS_CHANGE_LOG = "statusUpdationLog";
+	private static final String UPDATED_ON = "statusUpdationLog.updatedOn";
 	private static final String STORY_ID = "storyID";
 	private static final String STORY_TYPE = "storyType";
 	private static final String TICKET_CREATED_DATE_FIELD = "createdDate";
 	private static final String PROJECT_COMP_ID = "projectComponentId";
-	private static final String STATUS = "storySprintDetails.fromStatus";
+	private static final String STATUS = "statusUpdationLog.changedTo";
 	private static final String START_TIME = "T00:00:00.000Z";
 	private static final String END_TIME = "T23:59:59.000Z";
 	private static final String BASIC_PROJ_CONF_ID = "basicProjectConfigId";
@@ -108,14 +109,14 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 				criteriaAggregatedAtProjectLevel);
 
 		list.add(Aggregation.match(criteriaAggregatedForFirstMatchStage));
-		list.add(Aggregation.unwind(STORY_SPRINT_DETAILS));
+		list.add(Aggregation.unwind(STATUS_CHANGE_LOG));
 
 		// project level status filter
 		List<Criteria> storyStatuscriteriaList = new ArrayList<>();
 		uniqueProjectMap.forEach((project, filterMap) -> {
 			Criteria projectCriteria = new Criteria();
 			projectCriteria.and(BASIC_PROJ_CONF_ID).is(project);
-			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get("storySprintDetails.story.fromStatus"));
+			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get("statusUpdationLog.story.changedTo"));
 			storyStatuscriteriaList.add(projectCriteria);
 		});
 
@@ -123,10 +124,9 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 				.orOperator(storyStatuscriteriaList.toArray(new Criteria[0]));
 		list.add(Aggregation.match(criteriaAggregatedAtProjectLevelForStatus));
 
-		list.add(Aggregation.sort(Sort.Direction.DESC, ACTIVITY_DATE));
-		list.add(Aggregation.group(STORY_ID, BASIC_PROJ_CONF_ID).push(STORY_SPRINT_DETAILS)
-				.as(STORY_SPRINT_DETAILS));
-		list.add(Aggregation.project(STORY_SPRINT_DETAILS));
+		list.add(Aggregation.sort(Sort.Direction.DESC, UPDATED_ON));
+		list.add(Aggregation.group(STORY_ID, BASIC_PROJ_CONF_ID).push(STATUS_CHANGE_LOG).as(STATUS_CHANGE_LOG));
+		list.add(Aggregation.project(STATUS_CHANGE_LOG));
 		TypedAggregation<JiraIssueCustomHistory> agg = Aggregation.newAggregation(JiraIssueCustomHistory.class, list);
 
 		List<IssueHistoryMappedData> data = operations
@@ -138,7 +138,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			JiraIssueCustomHistory history = new JiraIssueCustomHistory();
 			history.setStoryID(result.getId().getStoryID());
 			history.setBasicProjectConfigId(result.getId().getBasicProjectConfigId());
-			history.setStorySprintDetails(result.getStorySprintDetails());
+			history.setStatusUpdationLog(result.getStatusUpdationLog());
 			resultList.add(history);
 		});
 		return resultList;
@@ -189,7 +189,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<JiraIssueCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
-																																		 Map<String, Map<String, Object>> uniqueProjectMap) {
+			Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
 		// map of common filters Project and Sprint
 		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
@@ -201,7 +201,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		List<Criteria> projectCriteriaList = new ArrayList<>();
 		uniqueProjectMap.forEach((project, filterMap) -> {
 			Criteria projectCriteria = new Criteria();
-			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get("storySprintDetails.story.fromStatus"));
+			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get("statusUpdationLog.story.changedTo"));
 			projectCriteriaList.add(projectCriteria);
 		});
 

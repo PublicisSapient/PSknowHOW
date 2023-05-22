@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -68,7 +70,7 @@ import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
@@ -314,36 +316,34 @@ public class KpiHelperServiceTest {
 
 	@Test
 	public void testProcessStoryData() {
-		List<JiraIssueSprint> storySprintDetails = new ArrayList<>();
-		JiraIssueSprint jiraIssueSprint1 = new JiraIssueSprint();
-		jiraIssueSprint1.setSprintId("sprintId");
-		jiraIssueSprint1.setStatus("success");
-		jiraIssueSprint1.setFromStatus("fromStatus");
-		jiraIssueSprint1.setActivityDate(new DateTime(System.currentTimeMillis()));
-		JiraIssueSprint jiraIssueSprint2 = new JiraIssueSprint();
-		jiraIssueSprint2.setSprintId("sprintId");
-		jiraIssueSprint2.setStatus("success");
-		jiraIssueSprint2.setFromStatus("fromStatus");
-		jiraIssueSprint2.setActivityDate(new DateTime(System.currentTimeMillis()));
-		storySprintDetails.add(jiraIssueSprint1);
-		storySprintDetails.add(jiraIssueSprint2);
+		List<JiraHistoryChangeLog> statusChangeLogs = new ArrayList<>();
+		JiraHistoryChangeLog jiraHistoryChangeLog1 = new JiraHistoryChangeLog();
+		jiraHistoryChangeLog1.setChangedFrom("success");
+		jiraHistoryChangeLog1.setChangedTo("fromStatus");
+		jiraHistoryChangeLog1.setUpdatedOn(LocalDateTime.now());
+		JiraHistoryChangeLog jiraHistoryChangeLog2 = new JiraHistoryChangeLog();
+		jiraHistoryChangeLog2.setChangedFrom("success");
+		jiraHistoryChangeLog2.setChangedTo("fromStatus");
+		jiraHistoryChangeLog2.setUpdatedOn(LocalDateTime.now());
+		statusChangeLogs.add(jiraHistoryChangeLog1);
+		statusChangeLogs.add(jiraHistoryChangeLog2);
 		JiraIssueCustomHistory jiraIssueCustomHistory = new JiraIssueCustomHistory();
-		jiraIssueCustomHistory.setStorySprintDetails(storySprintDetails);
+		jiraIssueCustomHistory.setStatusUpdationLog(statusChangeLogs);
 		double result = kpiHelperService.processStoryData(jiraIssueCustomHistory, "fromStatus", "fromStatus");
 		assertEquals(0.0, result, 0);
 	}
 
 	@Test
 	public void testProcessStoryDataElseCondition() {
-		List<JiraIssueSprint> storySprintDetails = new ArrayList<>();
-		JiraIssueSprint jiraIssueSprint1 = new JiraIssueSprint();
-		jiraIssueSprint1.setSprintId("sprintId");
-		jiraIssueSprint1.setStatus("success");
-		jiraIssueSprint1.setFromStatus("fromStatus");
-		jiraIssueSprint1.setActivityDate(new DateTime(System.currentTimeMillis()));
-		storySprintDetails.add(jiraIssueSprint1);
+		List<JiraHistoryChangeLog> statusChangeLogs = new ArrayList<>();
+		JiraHistoryChangeLog jiraHistoryChangeLog1 = new JiraHistoryChangeLog();
+		jiraHistoryChangeLog1.setChangedFrom("success");
+		jiraHistoryChangeLog1.setChangedTo("fromStatus");
+		jiraHistoryChangeLog1.setUpdatedOn(LocalDateTime.now());
+		statusChangeLogs.add(jiraHistoryChangeLog1);
 		JiraIssueCustomHistory jiraIssueCustomHistory = new JiraIssueCustomHistory();
-		jiraIssueCustomHistory.setStorySprintDetails(storySprintDetails);
+		jiraIssueCustomHistory.setStatusUpdationLog(statusChangeLogs);
+		jiraIssueCustomHistory.setCreatedDate(DateTime.now());
 		double result = kpiHelperService.processStoryData(jiraIssueCustomHistory, "fromStatus", "fromStatus");
 		assertEquals(0.0, result, 0);
 	}

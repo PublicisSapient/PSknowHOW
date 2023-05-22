@@ -21,24 +21,27 @@ import { ProfileComponent } from './profile.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 describe('ProfileModule', () => {
   let fixture: ComponentFixture<ProfileComponent>;
   let profileModule: ProfileModule;
   let component : ProfileComponent ;
-  let authService : GetAuthorizationService
+  let authService: GetAuthorizationService;
+  let sharedService: SharedService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations : [ProfileComponent],
       imports : [RouterTestingModule],
-      providers : [GetAuthorizationService]
+      providers : [GetAuthorizationService,SharedService]
 
     }).compileComponents();
     profileModule = new ProfileModule();
     fixture = TestBed.createComponent(ProfileComponent);
     component = fixture.componentInstance;
     authService = TestBed.inject(GetAuthorizationService);
+    sharedService =TestBed.inject(SharedService);
   });
 
   it('should create an instance', () => {
@@ -59,6 +62,7 @@ describe('ProfileModule', () => {
 
   it("should AD login enable and change password disable",()=>{
    localStorage.setItem('loginType',"AD");
+   sharedService.currentUserDetailsSubject.next({});
     component.ngOnInit();
     expect(component.changePswdDisabled).toBeTruthy();
     expect(component.adLogin).toBeTruthy();

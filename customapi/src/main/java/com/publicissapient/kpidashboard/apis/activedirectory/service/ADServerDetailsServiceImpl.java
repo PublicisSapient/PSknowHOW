@@ -30,7 +30,6 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,9 +43,6 @@ public class ADServerDetailsServiceImpl implements ADServerDetailsService {
 	
 	@Autowired
 	private GlobalConfigRepository globalConfigRepository;
-	
-	@Autowired
-	private RsaEncryptionService rsaEncryptionService;
 
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
@@ -100,12 +96,9 @@ public class ADServerDetailsServiceImpl implements ADServerDetailsService {
 
 	/**
 	 * Returns AES ecnrypted key to store in DB
-	 * @param rasEncryptedStringFromClient
 	 * @return
 	 */
-	private String encryptStringForDb(String rasEncryptedStringFromClient) {
-		String plainText = rsaEncryptionService.decrypt(rasEncryptedStringFromClient,
-				customApiConfig.getRsaPrivateKey());
+	private String encryptStringForDb(String plainText) {
 		String encryptedString = aesEncryptionService.encrypt(plainText, customApiConfig.getAesEncryptionKey());
 		return encryptedString == null ? "" : encryptedString;
 	}

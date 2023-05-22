@@ -36,7 +36,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -207,24 +207,24 @@ public class KpiHelperService { // NOPMD
 	 * @return difference of two date as days
 	 */
 	public double processStoryData(JiraIssueCustomHistory jiraIssueCustomHistory, String status1, String status2) {
-		int storyDataSize = jiraIssueCustomHistory.getStorySprintDetails().size();
+		int storyDataSize = jiraIssueCustomHistory.getStatusUpdationLog().size();
 		double daysDifference = -99d;
 		if (storyDataSize >= 2 && null != status1 && null != status2) {
-			if (status2.equalsIgnoreCase(jiraIssueCustomHistory.getStorySprintDetails().get(0).getFromStatus())
+			if (status2.equalsIgnoreCase(jiraIssueCustomHistory.getStatusUpdationLog().get(0).getChangedTo())
 					&& status1.equalsIgnoreCase(
-							jiraIssueCustomHistory.getStorySprintDetails().get(storyDataSize - 1).getFromStatus())) {
+							jiraIssueCustomHistory.getStatusUpdationLog().get(storyDataSize - 1).getChangedTo())) {
 				DateTime closeDate = new DateTime(
-						jiraIssueCustomHistory.getStorySprintDetails().get(0).getActivityDate(), DateTimeZone.UTC);
+						jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn().toString(), DateTimeZone.UTC);
 				DateTime startDate = new DateTime(
-						jiraIssueCustomHistory.getStorySprintDetails().get(storyDataSize - 1).getActivityDate(),
+						jiraIssueCustomHistory.getStatusUpdationLog().get(storyDataSize - 1).getUpdatedOn().toString(),
 						DateTimeZone.UTC);
 				Duration duration = new Duration(startDate, closeDate);
 				daysDifference = duration.getStandardDays();
 			}
 		} else {
 			DateTime firstDate = new DateTime(jiraIssueCustomHistory.getCreatedDate(), DateTimeZone.UTC);
-			DateTime secondDate = new DateTime(jiraIssueCustomHistory.getStorySprintDetails().get(0).getActivityDate(),
-					DateTimeZone.UTC);
+			DateTime secondDate = new DateTime(
+					jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn().toString(), DateTimeZone.UTC);
 			Duration duration = new Duration(firstDate, secondDate);
 			daysDifference = duration.getStandardDays();
 		}
@@ -268,9 +268,9 @@ public class KpiHelperService { // NOPMD
 					leaf.getProjectFilter().getBasicProjectConfigId());
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueType()));
-			mapOfProjectFiltersFH.put("storySprintDetails.story.fromStatus",
+			mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDod()));
-			mapOfProjectFiltersFH.put("storySprintDetails.defect.fromStatus",
+			mapOfProjectFiltersFH.put("statusUpdationLog.defect.changedTo",
 					fieldMapping.getJiraDefectCreatedStatus());
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
@@ -358,7 +358,7 @@ public class KpiHelperService { // NOPMD
 
 			List<String> dodList = fieldMapping.getJiraDod();
 			if (CollectionUtils.isNotEmpty(dodList)) {
-				mapOfProjectFiltersFH.put("storySprintDetails.story.fromStatus",
+				mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
 						CommonUtils.convertToPatternList(dodList));
 			}
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
@@ -891,14 +891,14 @@ public class KpiHelperService { // NOPMD
 	 *
 	 * @param historyStatus
 	 * @param jiraClosedStatusList
-	 * @param activityDate
+	 * @param updatedOn
 	 * @param startDate
 	 * @param nonClosedStatusList
 	 * @return
 	 */
 	public boolean checkConditionForClosedStatusTickets(String historyStatus, List<String> jiraClosedStatusList,
-			String activityDate, String startDate, List<String> nonClosedStatusList) {
-		LocalDateTime activityLocalDate = LocalDateTime.parse(activityDate.split("\\.")[0], DATE_TIME_FORMATTER);
+			String updatedOn, String startDate, List<String> nonClosedStatusList) {
+		LocalDateTime activityLocalDate = LocalDateTime.parse(updatedOn.split("\\.")[0], DATE_TIME_FORMATTER);
 		LocalDateTime startLocalDate = LocalDateTime.parse(LocalDate.parse(startDate).atTime(23, 59, 59).toString());
 		return jiraClosedStatusList.contains(historyStatus) && activityLocalDate.isBefore(startLocalDate)
 				&& CollectionUtils.isEmpty(nonClosedStatusList);
@@ -1434,11 +1434,11 @@ public class KpiHelperService { // NOPMD
 			return false;
 		} else {
 
-			List<JiraIssueSprint> storySprintDetails = jiraIssueCustomHistory.getStorySprintDetails();
-			Collections.sort(storySprintDetails, Comparator.comparing(JiraIssueSprint::getActivityDate));
+			List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistory.getStatusUpdationLog();
+			Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 
-			JiraIssueSprint latestClosedStatusDetail = storySprintDetails.stream()
-					.filter(statusHistory -> statusHistory.getFromStatus().equals(issue.getJiraStatus())).findFirst()
+			JiraHistoryChangeLog latestClosedStatusDetail = statusUpdationLog.stream()
+					.filter(statusHistory -> statusHistory.getChangedTo().equals(issue.getJiraStatus())).findFirst()
 					.orElse(null);
 
 			if (latestClosedStatusDetail != null) {
@@ -1446,10 +1446,11 @@ public class KpiHelperService { // NOPMD
 				FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
 				List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
 						.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
-				DateTime latestClosedStatusTime = latestClosedStatusDetail.getActivityDate();
-				return storySprintDetails.stream()
-						.filter(statusHistory -> statusHistory.getActivityDate().isAfter(latestClosedStatusTime))
-						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getFromStatus()));
+				DateTime latestClosedStatusTime = DateTime.parse(latestClosedStatusDetail.getUpdatedOn().toString());
+				return statusUpdationLog.stream()
+						.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString())
+								.isAfter(latestClosedStatusTime))
+						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getChangedTo()));
 			}
 			return false;
 		}

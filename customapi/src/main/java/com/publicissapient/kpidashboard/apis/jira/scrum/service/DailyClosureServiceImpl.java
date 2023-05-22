@@ -41,7 +41,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -181,16 +181,16 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 				.collect(Collectors.toSet());
 		completedJiraIssuesHistory.stream().forEach(jiraIssueCustomHistory -> {
 			Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
-			List<JiraIssueSprint> storySprintDetail = jiraIssueCustomHistory.getStorySprintDetails();
-			for (JiraIssueSprint jiraIssueSprint : storySprintDetail) {
-				if (closedStatus.contains(jiraIssueSprint.getFromStatus())) {
+			List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistory.getStatusUpdationLog();
+			for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdationLog) {
+				if (closedStatus.contains(jiraHistoryChangeLog.getChangedTo())) {
 					LocalDate activityDate = LocalDate
-							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0], DATE_TIME_FORMATTER);
+							.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("\\.")[0], DATE_TIME_FORMATTER);
 					if (DateUtil.isWithinDateRange(activityDate, sprintStartDate, sprintEndDate)) {
-						if (closedStatusDateMap.containsKey(jiraIssueSprint.getFromStatus())) {
+						if (closedStatusDateMap.containsKey(jiraHistoryChangeLog.getChangedTo())) {
 							closedStatusDateMap.clear();
 						}
-						closedStatusDateMap.put(jiraIssueSprint.getFromStatus(), activityDate);
+						closedStatusDateMap.put(jiraHistoryChangeLog.getChangedTo(), activityDate);
 					}
 				}
 			}
@@ -416,7 +416,7 @@ public class DailyClosureServiceImpl extends JiraKPIService<Map<String, Long>, L
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
-		dataCount.setDate(date);
+		dataCount.setDate(DateUtil.dateTimeConverter(date, DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 		dataCount.setSubFilter(label);
 		dataCount.setKpiGroup(status);
 		dataCount.setGroupBy(DATE);

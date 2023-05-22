@@ -8,6 +8,7 @@
                         <app-tooltip *ngIf="isTooltip" [data]="kpiData?.kpiDetail?.kpiInfo"
                             (mouseleave)="showTooltip(false)" [showChartView]="showChartView"></app-tooltip>
                     </span>
+                    <app-comments *ngIf="showCommentIcon" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName" [selectedTab]="selectedTab"></app-comments>
                 </h3>
             </div>
         </div>
@@ -57,10 +58,10 @@
                 <ng-container *ngSwitchCase="'radiobutton'">
                     <ng-container *ngIf="dropdownArr?.length>0">
                         <span *ngFor="let option of dropdownArr[0]?.options; let i = index" class="filter-radioButton">
-                            <p-radioButton [inputId]="option" name="option" [value]="option" [(ngModel)]="radioOption"
+                            <p-radioButton [inputId]="option + '-' + kpiData?.kpiId" [name]="kpiData?.kpiId" [value]="option" [(ngModel)]="radioOption"
                                 (onClick)="handleChange('radio', option)">
                             </p-radioButton>
-                            <label [for]="option">{{ option }}</label>
+                            <label [for]="option + '-' + kpiData?.kpiId">{{ option }}</label>
                         </span>
                     </ng-container>
                 </ng-container>

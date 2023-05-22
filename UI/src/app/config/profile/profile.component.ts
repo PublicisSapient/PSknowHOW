@@ -19,6 +19,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { Router } from '@angular/router';
+import { SharedService } from 'src/app/services/shared.service';
 import { environment } from 'src/environments/environment';
 
 declare let $: any;
@@ -34,8 +35,8 @@ export class ProfileComponent implements OnInit {
     changePswdDisabled = false;
     adLogin = false;
     ssoLogin = environment.SSO_LOGIN;
-    constructor(private getAuthorizationService: GetAuthorizationService, public router: Router) {
-    }
+    constructor(private getAuthorizationService: GetAuthorizationService, public router: Router, private sharedService : SharedService) {}
+
     ngOnInit() {
         if (this.getAuthorizationService.checkIfSuperUser()) {
             // logged in as SuperAdmin
@@ -45,10 +46,11 @@ export class ProfileComponent implements OnInit {
         if(this.getAuthorizationService.checkIfProjectAdmin()) {
             this.isProjectAdmin = true;
         }
-
-        if (!localStorage.getItem('user_email')) {
-            this.changePswdDisabled = true;
-        }
+        this.sharedService.currentUserDetailsObs.subscribe(details=>{
+            if (details && !details['user_email']) {
+                    this.changePswdDisabled = true;
+                }
+          })
 
         this.adLogin = localStorage.loginType === 'AD';
     }
