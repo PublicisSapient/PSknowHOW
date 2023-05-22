@@ -1605,12 +1605,14 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (CollectionUtils.isNotEmpty(listOfProjectStatus)) {
 			JiraIssueReleaseStatus jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository
 					.findByBasicProjectConfigId(basicProjectConfigId);
-			jiraIssueReleaseStatus = (jiraIssueReleaseStatus == null) ? new JiraIssueReleaseStatus()
-					: jiraIssueReleaseStatus;
+			if (jiraIssueReleaseStatus == null) {
+				jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
+				jiraIssueReleaseStatus.setBasicProjectConfigId(basicProjectConfigId);
+			}
 			Map<Long, String> toDosList = new HashMap<>();
 			Map<Long, String> inProgressList = new HashMap<>();
 			Map<Long, String> closedList = new HashMap<>();
-			jiraIssueReleaseStatus.setBasicProjectConfigId(basicProjectConfigId);
+
 			listOfProjectStatus.stream().forEach(status -> {
 				if (JiraConstants.TO_DO.equals(status.getStatusCategory().getName())) {
 					toDosList.put(status.getId(), status.getName());
