@@ -354,6 +354,11 @@ public enum KPICode {
 	PLANNED_WORK_STATUS("kpi128", KPISource.JIRA.name()),
 
 	/**
+	 * Dev Completed Status KPI Code
+	 */
+	DEV_COMPLETED_STATUS("kpi145", KPISource.JIRA.name()),
+
+	/**
 	 * Quality Status
 	 */
 	QUALITY_STATUS("kpi133", KPISource.JIRA.name()),
