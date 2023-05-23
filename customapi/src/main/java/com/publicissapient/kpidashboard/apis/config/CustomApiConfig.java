@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties
 public class CustomApiConfig {// NOPMD
 	// Do not remove NOPMD comment. This is required to ignore TooManyFields.
+	private int flowKpiMonthCount;
 
 	// AES key used to encrypt
 	private String aesEncryptionKey;
@@ -987,5 +988,13 @@ public class CustomApiConfig {// NOPMD
 
 	public String getSamlUrlEndString() {
 		return samlUrlEndString;
+	}
+
+	public int getFlowKpiMonthCount() {
+		return flowKpiMonthCount;
+	}
+
+	public void setFlowKpiMonthCount(int flowKpiMonthCount) {
+		this.flowKpiMonthCount = flowKpiMonthCount;
 	}
 }

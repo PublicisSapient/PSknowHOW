@@ -3832,5 +3832,28 @@ db.getCollection('kpi_master').insert(
     "kpiFilter": "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
-  }
+  },{
+    "kpiId": "kpi148",
+    "kpiName": "Flow Load",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 2,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "stacked-area",
+    "kpiInfo": {
+    "definition": "Flow Load"
+    },
+    "xAxisLabel": "Time",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": false,
+    "kpiFilter": "",
+    "showTrend": false,
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+    }
 ]);

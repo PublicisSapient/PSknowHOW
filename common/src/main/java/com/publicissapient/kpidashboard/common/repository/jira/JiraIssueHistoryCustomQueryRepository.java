@@ -66,4 +66,5 @@ public interface JiraIssueHistoryCustomQueryRepository {
 	List<JiraIssueCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap);
 
+    Map<String, Map<String, Integer>> getStoryStatusCountByDateRange(List<String> projectList, String startDate, String endDate);
 }
