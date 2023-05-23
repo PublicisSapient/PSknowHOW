@@ -229,14 +229,8 @@
 			<artifactId>spring-metrics</artifactId>
 			<version>0.5.1.RELEASE</version>
 		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-joda</artifactId>
-			<version>2.13.4</version>
-			<scope>test</scope>
-		</dependency>
 
-    </dependencies>
+	</dependencies>
 
 	<build>
 		<finalName>${final.name}</finalName>

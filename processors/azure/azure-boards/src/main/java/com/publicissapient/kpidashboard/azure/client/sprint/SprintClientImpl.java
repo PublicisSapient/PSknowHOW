@@ -49,7 +49,11 @@ public class SprintClientImpl implements SprintClient {
 	private ProjectToolConfigRepository projectToolConfigRepository;
 
 	/**
-	 * 
+	 * all sprint issues saved based on status configure field mapping field status
+	 * closed sprint issues will be not changes after saved sprint details once
+	 * active sprint issues bucket changes based on comparison of dbSprintDetails vs fetched issues
+	 * future sprint issues only changes while
+	 *
 	 * @param projectConfig
 	 * @param sprintDetailsSet
 	 * @param azureAdapter
@@ -57,8 +61,7 @@ public class SprintClientImpl implements SprintClient {
 	 */
 	@Override
 	public void prepareSprintReport(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			AzureAdapter azureAdapter, AzureServer azureServer) {
-
+			AzureAdapter azureAdapter, AzureServer azureServer) throws Exception {
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
 		List<String> completedIssuesStatus = fieldMapping.getJiraIterationCompletionStatusCustomField();
 		ObjectId azureProcessorId = azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE).getId();
@@ -68,26 +71,28 @@ public class SprintClientImpl implements SprintClient {
 			if (Objects.isNull(dbSprintDetails)) {
 				// first time run and fetch sprint wise issues and
 				// initialize issues into completed , notCompleted , total issues bucket
-				log.info("fetched sprint Name -> {} sprint state -> {} ", fetchedSprintDetails.getSprintName(),
+				log.info("fetched sprint Name -> {} , sprint state -> {} ", fetchedSprintDetails.getSprintName(),
 						fetchedSprintDetails.getState());
 				List<SprintIssue> fetchedSprintWiseIssues = fetchAndPrepareSprintIssue(azureAdapter, azureServer,
 						projectConfig, fetchedSprintDetails);
-				Set<SprintIssue> completedIssues = new HashSet<>();
-				Set<SprintIssue> notCompletedIssues = new HashSet<>();
-				Set<SprintIssue> totalIssues = new HashSet<>();
+				Set<SprintIssue> toBeSavedCompletedIssues = new HashSet<>();
+				Set<SprintIssue> toBeSavedNotCompletedIssues = new HashSet<>();
+				Set<SprintIssue> toBeSavedTotalIssues = new HashSet<>();
 				prepareCompletedAndNotCompletedSprintIssue(completedIssuesStatus, fetchedSprintWiseIssues,
-						completedIssues, notCompletedIssues, totalIssues);
-				fetchedSprintDetails.setCompletedIssues(completedIssues);
-				fetchedSprintDetails.setNotCompletedIssues(notCompletedIssues);
-				fetchedSprintDetails.setTotalIssues(totalIssues);
+						toBeSavedCompletedIssues, toBeSavedNotCompletedIssues, toBeSavedTotalIssues);
+				fetchedSprintDetails.setCompletedIssues(toBeSavedCompletedIssues);
+				fetchedSprintDetails.setNotCompletedIssues(toBeSavedNotCompletedIssues);
+				fetchedSprintDetails.setTotalIssues(toBeSavedTotalIssues);
 				fetchedSprintDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 				fetchedSprintDetails.setProcessorId(azureProcessorId);
 				toBeSavedSprintDetails.add(fetchedSprintDetails);
+				log.debug("Closed sprint Id -> {} , toBeSavedCompletedIssues -> {} , toBeSavedNotCompletedIssues -> {}",
+						fetchedSprintDetails.getSprintID(), getIssuesIdList(toBeSavedCompletedIssues),
+						getIssuesIdList(toBeSavedNotCompletedIssues));
 
 			} else {
-				// active sprint
-				if ((fetchedSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
-						|| fetchedSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED))
+				// fetched and db sprint is active then issues bucket compare as per
+				if (fetchedSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 						&& dbSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)) {
 					List<SprintIssue> fetchedSprintWiseIssues = fetchAndPrepareSprintIssue(azureAdapter, azureServer,
 							projectConfig, fetchedSprintDetails);
@@ -102,13 +107,48 @@ public class SprintClientImpl implements SprintClient {
 							toBeSavedCompletedIssues, toBeSavedNotCompletedIssues, toBeSavedTotalIssues);
 
 					prepareAddedSprintIssues(dbSprintDetails, fetchedSprintWiseIssues, toBeSavedAddedIssues);
-					prepareRemoveSprintIssues(dbSprintDetails, fetchedSprintWiseIssues, toBeSavedPuntedIssues);
+					preparePuntedSprintIssues(dbSprintDetails, fetchedSprintWiseIssues, toBeSavedPuntedIssues);
 
 					fetchedSprintDetails.setCompletedIssues(toBeSavedCompletedIssues);
 					fetchedSprintDetails.setNotCompletedIssues(toBeSavedNotCompletedIssues);
 					fetchedSprintDetails.setTotalIssues(toBeSavedTotalIssues);
 					fetchedSprintDetails.setAddedIssues(toBeSavedAddedIssues);
 					fetchedSprintDetails.setPuntedIssues(toBeSavedPuntedIssues);
+
+					fetchedSprintDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
+					fetchedSprintDetails.setProcessorId(azureProcessorId);
+					fetchedSprintDetails.setId(dbSprintDetails.getId());
+					toBeSavedSprintDetails.add(fetchedSprintDetails);
+					log.debug("Active sprint Id -> {} , toBeSavedCompletedIssues -> {} , toBeSavedNotCompletedIssues -> {}",
+							fetchedSprintDetails.getSprintID(), getIssuesIdList(toBeSavedCompletedIssues),
+							getIssuesIdList(toBeSavedNotCompletedIssues));
+				}
+
+				if (fetchedSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED)
+						&& dbSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)) {
+					// fetched sprint closed and after that all not completed issues tag to next sprint/backlog so that
+					// snapshot of based on last active state and fetched completed issues from fetched sprint
+					List<SprintIssue> fetchedSprintWiseIssues = fetchAndPrepareSprintIssue(azureAdapter, azureServer,
+							projectConfig, fetchedSprintDetails);
+
+					Set<SprintIssue> toBeSavedCompletedIssues = new HashSet<>();
+					Set<SprintIssue> toBeSavedNotCompletedIssues = new HashSet<>();
+					Set<SprintIssue> toBeSavedTotalIssues = new HashSet<>();
+
+					prepareCompletedAndNotCompletedSprintIssue(completedIssuesStatus, fetchedSprintWiseIssues,
+							toBeSavedCompletedIssues, toBeSavedNotCompletedIssues, toBeSavedTotalIssues);
+
+					toBeSavedCompletedIssues.addAll(dbSprintDetails.getCompletedIssues());
+					toBeSavedTotalIssues.addAll(toBeSavedCompletedIssues);
+
+					Set<SprintIssue> dbNotCompletedIssues = dbSprintDetails.getNotCompletedIssues();
+					dbNotCompletedIssues.removeAll(toBeSavedCompletedIssues);
+
+					fetchedSprintDetails.setCompletedIssues(toBeSavedCompletedIssues);
+					fetchedSprintDetails.setNotCompletedIssues(dbNotCompletedIssues);
+					fetchedSprintDetails.setTotalIssues(dbSprintDetails.getTotalIssues());
+					fetchedSprintDetails.setAddedIssues(dbSprintDetails.getAddedIssues());
+					fetchedSprintDetails.setPuntedIssues(dbSprintDetails.getPuntedIssues());
 
 					fetchedSprintDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 					fetchedSprintDetails.setProcessorId(azureProcessorId);
@@ -140,12 +180,16 @@ public class SprintClientImpl implements SprintClient {
 				}
 			}
 		});
-		sprintRepository.saveAll(toBeSavedSprintDetails);
+
+		if(CollectionUtils.isNotEmpty(toBeSavedSprintDetails)) {
+			sprintRepository.saveAll(toBeSavedSprintDetails);
+		}
 
 		basedOnIterationStatusUpdateSprintReportIssuesShuffle(projectConfig);
 	}
 
 	/**
+	 * based on field mapping completed issues status divided into completed and not completed issues bucket
 	 *
 	 * @param completedIssuesStatus
 	 * @param fetchedSprintWiseIssues
@@ -169,13 +213,14 @@ public class SprintClientImpl implements SprintClient {
 	}
 
 	/**
+	 * if any fetched issues not found in db total issues then count into removed issues for active sprint
 	 *
 	 * @param dbSprintDetails
 	 * @param fetchedSprintWiseIssues
 	 * @param toBeSavedPuntedIssues
 	 */
 
-	private void prepareRemoveSprintIssues(SprintDetails dbSprintDetails, List<SprintIssue> fetchedSprintWiseIssues,
+	private void preparePuntedSprintIssues(SprintDetails dbSprintDetails, List<SprintIssue> fetchedSprintWiseIssues,
 			Set<SprintIssue> toBeSavedPuntedIssues) {
 		if (CollectionUtils.isNotEmpty(dbSprintDetails.getTotalIssues())) {
 			List<String> fetchedTotalIssues = fetchedSprintWiseIssues.stream().filter(Objects::nonNull)
@@ -184,13 +229,17 @@ public class SprintClientImpl implements SprintClient {
 			List<SprintIssue> removedIssues = dbSprintDetails.getTotalIssues().stream().filter(Objects::nonNull)
 					.filter(sprintIssue -> !fetchedTotalIssues.contains(sprintIssue.getNumber())).distinct()
 					.collect(Collectors.toList());
-			toBeSavedPuntedIssues.addAll(dbSprintDetails.getPuntedIssues());
+			if(CollectionUtils.isNotEmpty(dbSprintDetails.getPuntedIssues())) {
+				toBeSavedPuntedIssues.addAll(dbSprintDetails.getPuntedIssues());
+			}
 			toBeSavedPuntedIssues.addAll(removedIssues);
+			log.debug("Active Sprint Name -> {} , fetched total issues -> {} , removed issues -> {} ",
+					dbSprintDetails.getSprintName(), fetchedTotalIssues, removedIssues);
 		}
 	}
 
 	/**
-	 *
+	 * if db total issues and fetched total issues diff is added issue for active sprint
 	 * @param dbSprintDetails
 	 * @param fetchedSprintWiseIssues
 	 * @param toBeSavedAddedIssues
@@ -203,13 +252,32 @@ public class SprintClientImpl implements SprintClient {
 			Set<String> addedIssues = fetchedSprintWiseIssues.stream().filter(Objects::nonNull)
 					.filter(sprintIssue -> !dbTotalIssues.contains(sprintIssue.getNumber())).map(SprintIssue::getNumber)
 					.collect(Collectors.toSet());
-			toBeSavedAddedIssues.addAll(dbSprintDetails.getAddedIssues());
+			if(CollectionUtils.isNotEmpty(dbSprintDetails.getAddedIssues())) {
+				toBeSavedAddedIssues.addAll(dbSprintDetails.getAddedIssues());
+			}
 			toBeSavedAddedIssues.addAll(addedIssues);
+
+			// if any issues punted in sprint and with in sprint added same issues added in sprint then it will be not count
+			// in punted and added list
+			if (CollectionUtils.isNotEmpty(dbSprintDetails.getPuntedIssues())
+					&& CollectionUtils.isNotEmpty(addedIssues)) {
+				Set<SprintIssue> dbPuntedIssues = dbSprintDetails.getPuntedIssues();
+				Set<SprintIssue> puntedAndAddedWithInSprint = dbSprintDetails.getPuntedIssues().stream()
+						.filter(Objects::nonNull).filter(sprintIssue -> addedIssues.contains(sprintIssue.getNumber()))
+						.collect(Collectors.toSet());
+				List<String> puntedNotAddedIssues = getIssuesIdList(puntedAndAddedWithInSprint);
+				dbPuntedIssues.removeAll(puntedAndAddedWithInSprint);
+				dbSprintDetails.setPuntedIssues(dbPuntedIssues);
+				toBeSavedAddedIssues.removeAll(puntedNotAddedIssues);
+			}
+
+			log.debug("Active Sprint Name -> {} , db total issues -> {} , added issues -> {} ",
+					dbSprintDetails.getSprintName(), dbTotalIssues, addedIssues);
 		}
 	}
 
 	/**
-	 *
+	 * if field mapping is changes then existing sprint report issues will be changes as per status
 	 * @param projectConfig
 	 */
 	private void basedOnIterationStatusUpdateSprintReportIssuesShuffle(ProjectConfFieldMapping projectConfig) {
@@ -239,11 +307,12 @@ public class SprintClientImpl implements SprintClient {
 			sprintRepository.saveAll(dbSprintDetailsList);
 			projectToolConfig.setAzureIterationStatusFieldUpdate(false);
 			projectToolConfigRepository.save(projectToolConfig);
+			log.debug("sprint issues shuffle based on field mapping status changes ");
 		}
 	}
 
 	/**
-	 *
+	 * fetched items sprint wise and convert into sprint issue
 	 * @param azureAdapter
 	 * @param azureServer
 	 * @param projectConfig
@@ -262,14 +331,14 @@ public class SprintClientImpl implements SprintClient {
 		if (CollectionUtils.isNotEmpty(jiraIssueList)) {
 			jiraIssueList.stream().forEach(jiraIssue -> sprintIssueList.add(setSprintIssueDetails(jiraIssue)));
 		}
-		log.info("fetched sprint name -> {} Issues -> {} ", fetchedSprintDetails.getSprintName(), sprintWiseItemIdList);
+		log.info("fetched sprint Id -> {} , Issues -> {} ", fetchedSprintDetails.getSprintID(), sprintWiseItemIdList);
 		return sprintIssueList;
 	}
 
 	/**
-	 * 
+	 * azure item details fetched from jira issues and convert into sprint issue
 	 * @param azureIssue
-	 * @return
+	 * @return SprintIssue
 	 */
 	private SprintIssue setSprintIssueDetails(JiraIssue azureIssue) {
 		SprintIssue sprintIssue = new SprintIssue();
@@ -288,5 +357,10 @@ public class SprintClientImpl implements SprintClient {
 		StringBuilder projectKeyIssueId = new StringBuilder(projectConfig.getProjectKey());
 		projectKeyIssueId.append("-").append(issueId);
 		return projectKeyIssueId.toString();
+	}
+	
+	private List<String> getIssuesIdList(Set<SprintIssue> sprintIssueSet){
+		return  sprintIssueSet.stream().filter(Objects::nonNull)
+				.map(SprintIssue::getNumber).collect(Collectors.toList());
 	}
 }

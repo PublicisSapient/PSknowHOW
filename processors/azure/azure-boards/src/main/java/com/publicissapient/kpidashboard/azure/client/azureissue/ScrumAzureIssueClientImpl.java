@@ -225,6 +225,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 		} catch (JSONException | NullPointerException e) {
 			log.error("Error while updating Story information in scrum client", e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 
 		return count;
