@@ -3832,5 +3832,30 @@ db.getCollection('kpi_master').insert(
     "kpiFilter": "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
+  },
+  {
+      "kpiId": "kpi147",
+      "kpiName": "Release Progress",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 1,
+      "kpiCategory": "Release",
+      "kpiSource": "Jira",
+      "groupId": 9,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "horizontalPercentBarChart",
+      "kpiInfo": {
+          "definition": "Release progress KPI explains the count of issues in To, In Progress, Done. It also gives the breakup (To, In Progress, Done) based on size (story points)"
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiSelectDropDown",
+      "boxType": "chart",
+      "calculateMaturity": false
   }
 ]);
