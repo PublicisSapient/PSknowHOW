@@ -297,7 +297,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
-    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release'){
+    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'mydashboard'){
       this.allowMultipleSelection = false;
     }else{
       this.allowMultipleSelection = true;
@@ -1074,7 +1074,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (selectedField) {
         const obj = this.filteredAddFilters[filteredAddFiltersKey]?.filter((x) => x['nodeId'] == selectedField)[0];
         
-        if((obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
+        if(obj && (obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
           return dateString;
         }
 

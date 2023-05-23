@@ -3839,5 +3839,30 @@
   "aggregationCriteria": "sum",
   "isAdditionalFilterSupport": true,
   "calculateMaturity": false
+},
+{
+  "kpiId": "kpi145",
+  "kpiName": "Release Progress",
+  "maxValue": "",
+  "kpiUnit": "Count",
+  "isDeleted": "False",
+  "defaultOrder": 1,
+  "kpiCategory": "Release",
+  "kpiSource": "Jira",
+  "groupId": 9,
+  "thresholdValue": "",
+  "kanban": false,
+  "chartType": "horizontalPercentBarChart",
+  "kpiInfo": {
+    "definition": "Release progress KPI explains the count of issues in To, In Progress, Done. It also gives the breakup (To, In Progress, Done) based on size (story points)"
+  },
+  "xAxisLabel": "",
+  "yAxisLabel": "",
+  "isPositiveTrend": true,
+  "showTrend": false,
+  "isAdditionalFilterSupport": false,
+  "kpiFilter": "dropdown",
+  "boxType": "chart",
+  "calculateMaturity": false
 }
 ]
