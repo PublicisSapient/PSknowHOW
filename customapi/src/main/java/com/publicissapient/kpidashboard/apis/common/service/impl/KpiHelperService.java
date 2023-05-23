@@ -1403,18 +1403,20 @@ public class KpiHelperService { // NOPMD
 						.collect(Collectors.toList()));
 			} else {
 				Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
-				JiraHistoryChangeLog latestClosedStatusDetail = statusUpdationLog.stream()
-						.filter(statusHistory -> statusHistory.getChangedTo().equals(issue.getJiraStatus())).findFirst()
+				List<String> jiraStatusForQa = (List<String>) CollectionUtils
+						.emptyIfNull(fieldMapping.getJiraStatusForQa());
+				JiraHistoryChangeLog latestQAField = statusUpdationLog.stream()
+						.filter(statusHistory -> jiraStatusForQa.contains(issue.getJiraStatus())).findFirst()
 						.orElse(null);
-				if (latestClosedStatusDetail != null) {
-					List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
-							.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
-					DateTime latestClosedStatusTime = DateTime
-							.parse(latestClosedStatusDetail.getUpdatedOn().toString());
+				if (latestQAField != null) {
+					List<String> jiraStatusForDevelopemnt = (List<String>) CollectionUtils
+							.emptyIfNull(fieldMapping.getJiraStatusForDevelopment());
+					DateTime latestQAFieldActivityDate = DateTime
+							.parse(latestQAField.getUpdatedOn().toString());
 					return statusUpdationLog.stream()
 							.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString())
-									.isAfter(latestClosedStatusTime))
-							.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getChangedTo()));
+									.isAfter(latestQAFieldActivityDate))
+							.anyMatch(statusHistory -> jiraStatusForDevelopemnt.contains(statusHistory.getChangedTo()));
 				}
 			}
 			return false;
