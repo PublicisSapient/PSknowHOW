@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import org.apache.commons.collections.CollectionUtils;
@@ -455,6 +456,14 @@ public class KPIExcelUtility {
 		if (object instanceof IssueDetails) {
 			IssueDetails issueDetails = (IssueDetails) object;
 			url = StringUtils.isEmpty(issueDetails.getUrl()) ? Constant.EMPTY_STRING : issueDetails.getUrl();
+		}
+		if(object instanceof IssueBacklog){
+			IssueBacklog issueBacklog = (IssueBacklog) object;
+			url = StringUtils.isEmpty(issueBacklog.getUrl()) ? Constant.EMPTY_STRING : issueBacklog.getUrl();
+		}
+		if(object instanceof IssueBacklogCustomHistory){
+			IssueBacklogCustomHistory issueBacklogCustomHistory = (IssueBacklogCustomHistory) object;
+			url = StringUtils.isEmpty(issueBacklogCustomHistory.getUrl()) ? Constant.EMPTY_STRING : issueBacklogCustomHistory.getUrl();
 		}
 
 		return url;
