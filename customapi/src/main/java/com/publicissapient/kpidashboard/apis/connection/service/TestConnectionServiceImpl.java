@@ -44,7 +44,6 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,9 +53,6 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
-
-	@Autowired
-	private RsaEncryptionService rsaEncryptionService;
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -129,8 +125,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		case Constant.TOOL_GITLAB:
 			apiUrl = createApiUrl(connection.getBaseUrl(), toolName);
 			if (checkDetailsForTool(apiUrl, password)) {
-				String decryptedPswd = rsaEncryptionService.decrypt(password, customApiConfig.getRsaPrivateKey());
-				statusCode = validateTestConn(connection, apiUrl, decryptedPswd, toolName);
+				statusCode = validateTestConn(connection, apiUrl, password, toolName);
 			}
 			break;
 		default:
@@ -212,8 +207,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else if (toolName.equals(Constant.TOOL_SONAR)) {
 			if(connection.isCloudEnv()) {
-				String accessToken = rsaEncryptionService.decrypt(password, customApiConfig.getRsaPrivateKey());
-				isValid = testConnectionForTools(apiUrl, accessToken);
+				isValid = testConnectionForTools(apiUrl, password);
 			} else if (!connection.isCloudEnv() && connection.isAccessTokenEnabled()) {
 				isValid = testConnection(connection, toolName, apiUrl, password, true);
 			}else{
@@ -333,13 +327,12 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 * @return
 	 */
 	private HttpHeaders createHeadersWithAuthentication(String username, String password, boolean isSonarWithAccessToken) {
-		String decryptedPswd = rsaEncryptionService.decrypt(password, customApiConfig.getRsaPrivateKey());
 		String plainCreds = null;
 
 		if(isSonarWithAccessToken){
-			plainCreds = decryptedPswd + ":";
+			plainCreds = password + ":";
 		}else{
-			plainCreds = username + ":" + decryptedPswd;
+			plainCreds = username + ":" + password;
 		}
 		byte[] base64CredsBytes = Base64.getEncoder().encode(plainCreds.getBytes());
 		String base64Creds = new String(base64CredsBytes);
@@ -350,8 +343,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	private HttpHeaders createHeadersWithBearer(String pat) {
 		HttpHeaders headers = new HttpHeaders();
-		String decryptedPswd = rsaEncryptionService.decrypt(pat, customApiConfig.getRsaPrivateKey());
-		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + decryptedPswd);
+		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + pat);
 		headers.add(HttpHeaders.ACCEPT,"*/*");
 		headers.add(HttpHeaders.CONTENT_TYPE,"application/json");
 		headers.set("Cookie", "");

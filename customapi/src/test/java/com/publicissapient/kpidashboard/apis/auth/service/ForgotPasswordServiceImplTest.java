@@ -151,7 +151,7 @@ public class ForgotPasswordServiceImplTest {
 	@Test
 	public void updatePasswordOK() throws Exception {
 		ResetPasswordRequest updatedPasswordRequest = new ResetPasswordRequest();
-		updatedPasswordRequest.setPassword("Welcome@1");
+		updatedPasswordRequest.setPassword("dummyPwd@1");
 		updatedPasswordRequest.setResetToken("abc-xyz");
 		ForgotPasswordToken forgotPasswordToken = new ForgotPasswordToken();
 		forgotPasswordToken.setExpiryDate(30);
@@ -231,14 +231,14 @@ public class ForgotPasswordServiceImplTest {
 	@Test
 	public void updatePasswordSameAsOld(){
 		ResetPasswordRequest updatedPasswordRequest = new ResetPasswordRequest();
-		updatedPasswordRequest.setPassword("Web@1234");
+		updatedPasswordRequest.setPassword("dummyPwd@1");
 		updatedPasswordRequest.setResetToken("abc-xyz");
 		ForgotPasswordToken forgotPasswordToken = new ForgotPasswordToken();
 		forgotPasswordToken.setExpiryDate(30);
 		forgotPasswordToken.setUsername("abc");
 		String email = "abc@xyz.com";
 		List<Authentication> authenticateList = new ArrayList<>();
-		Authentication authentication = new Authentication("abc", "Web@1234", email);
+		Authentication authentication = new Authentication("abc", "dummyPwd@1", email);
 		authenticateList.add(authentication);
 		Mockito.when(forgotPasswordTokenRepository.findByToken(Mockito.any())).thenReturn(forgotPasswordToken);
 		Mockito.when(authenticationRepository.findByUsername("abc")).thenReturn(authentication);
@@ -257,7 +257,7 @@ public class ForgotPasswordServiceImplTest {
 		forgotPasswordToken.setUsername("abc");
 		String email = "abc@xyz.com";
 		List<Authentication> authenticateList = new ArrayList<>();
-		Authentication authentication = new Authentication("abc", "Web@1234", email);
+		Authentication authentication = new Authentication("abc", "dummyPwd@1", email);
 		authenticateList.add(authentication);
 		Mockito.when(forgotPasswordTokenRepository.findByToken(Mockito.any())).thenReturn(forgotPasswordToken);
 		Mockito.when(authenticationRepository.findByUsername("abc")).thenReturn(authentication);

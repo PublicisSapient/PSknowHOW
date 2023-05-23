@@ -32,7 +32,6 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { Confirmation, ConfirmationService, MessageService } from 'primeng/api';
 
 import { environment } from 'src/environments/environment';
-import { TextEncryptionService } from '../../../services/text.encryption.service';
 import { of } from 'rxjs';
 
 describe('ProjectListComponent', () => {
@@ -197,7 +196,6 @@ describe('ProjectListComponent', () => {
         MessageService,
         ConfirmationService,
         GetAuthorizationService,
-        TextEncryptionService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })
@@ -222,7 +220,6 @@ describe('ProjectListComponent', () => {
     );
     spyOn(window.localStorage, 'clear').and.callFake(() => (localStore = {}));
 
-    localStorage.setItem('projectsAccess', JSON.stringify(projectsAccess));
   });
 
   it('should create', () => {

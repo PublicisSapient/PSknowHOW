@@ -277,8 +277,8 @@ public class HandleJiraHistory {
 		String[] lastChangedToList = lastChangedTo.split(",");
 		String[] currentFixVersionList = currentFixVersion.split(",");
 		Set<String> set = new HashSet<>();
-		for(String fixVersion:lastChangedToList) set.add(fixVersion);
-		for(String fixVersion:currentFixVersionList) set.add(fixVersion);
+		set.addAll(Arrays.asList(lastChangedToList));
+		set.addAll(Arrays.asList(currentFixVersionList));
 		return StringUtils.join(set,",");
 	}
 

@@ -94,7 +94,7 @@ public class KanbanIssueCustomHistory extends BasicModel {
 		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID +", url=" + url + ",storyType=" + storyType
 				+ ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime="
 				+ bufferedEstimateTime + ", devicePlatform=" + devicePlatform + ", projectKey=" + projectKey
-				+ ", projectComponentId=" + projectComponentId + ", storySprintDetails=" + historyDetails + "]";
+				+ ", projectComponentId=" + projectComponentId + "]";
 	}
 
 	@Override
