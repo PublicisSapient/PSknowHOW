@@ -177,7 +177,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 											.skip(customApiConfig.getSprintCountForFilters()).limit(sprintVelocityLimit)
 											.collect(Collectors.toList()))));
 			resultListMap = kpiHelperService
-					.fetchSprintVelocityDataFromDb(projectWisePreviousSprintDetails, kpiRequest, projectWiseSprintsForFilter);
+					.fetchSprintVelocityDataFromDb(projectWisePreviousSprintDetails, kpiRequest, projectWiseSprintsForFilter,totalSprintDetails);
 		}
 
 		return resultListMap;
@@ -283,9 +283,10 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			if (!avgVelocityCount.containsKey(projId)) {
 				avgVelocityCount.put(projId, 0);
 			}
+
 			double averageVelocity = getAverageVelocity(sprintVelocity, avgVelocityCount.get(projId), projId);
 			if (averageVelocity > 0) {
-				dataCount.setValue(averageVelocity);
+				dataCount.setValue(dataCount.getLineValue());
 				Map<String, Object> hoverValue = new HashMap<>();
 				hoverValue.put(AVERAGE_VELOCITY, String.valueOf(averageVelocity));
 				hoverValue.put(VELOCITY, dataCount.getLineValue());
@@ -339,23 +340,23 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	 */
 	private double getAverageVelocity(Map<Pair<String, String>, Double> sprintVelocityMap, int sprintCount,
 			String basicProjId) {
-		AtomicDouble sumVelocity = new AtomicDouble();
+		AtomicDouble sumVelocity =new AtomicDouble();
 		AtomicInteger count = new AtomicInteger();
 		AtomicInteger validCount = new AtomicInteger();
 		sprintVelocityMap.entrySet().forEach(velocityMap -> {
 			if (velocityMap.getKey().getKey().equals(basicProjId)) {
 				count.set(count.get() + 1);
-				if (count.get() > sprintCount) {
+				if (count.get() > sprintCount || sprintVelocityMap.size()<=customApiConfig.getSprintCount()) {
 					validCount.set(validCount.get() + 1);
 					sumVelocity.set(sumVelocity.get() + velocityMap.getValue());
 				}
 			}
 		});
 		log.debug("The average velocity of sprint {} is {}", sprintCount, sumVelocity.get());
-		if (validCount.get() == 5) {
-			return sumVelocity.get() / 5;
+		if (validCount.get() == customApiConfig.getSprintCount()) {
+			return sumVelocity.get() / customApiConfig.getSprintCount();
 		}
-		return sumVelocity.get();
+		return sumVelocity.get()/validCount.get();
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,

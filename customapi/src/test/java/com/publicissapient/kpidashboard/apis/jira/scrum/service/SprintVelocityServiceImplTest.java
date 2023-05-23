@@ -189,7 +189,7 @@ public class SprintVelocityServiceImplTest {
 		resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetailsList);
 		resultListMap.put(PREVIOUS_SPRINT_VELOCITY,previousTotalIssueList);
 		resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, new ArrayList<>());
-		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any())).thenReturn(resultListMap);
+		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any(),any())).thenReturn(resultListMap);
 		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(any(),any())).thenReturn(sprintDetailsList);
 		Map<String, Object> velocityListMap = sprintVelocityServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
@@ -218,7 +218,7 @@ public class SprintVelocityServiceImplTest {
 		map.put(Pair.of("6335363749794a18e8a4479b","abc"),abc);
 
 		resultListMap.put(TOTAL_ISSUE_WITH_STORYPOINTS,map);
-		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any())).thenReturn(resultListMap);
+		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any(),any())).thenReturn(resultListMap);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
@@ -252,7 +252,7 @@ public class SprintVelocityServiceImplTest {
 		resultListMap.put(SPRINT_WISE_SPRINTDETAILS, new ArrayList<>());
 		resultListMap.put(PREVIOUS_SPRINT_VELOCITY,previousTotalIssueList);
 		resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, new ArrayList<>());
-		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any())).thenReturn(resultListMap);
+		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any(), any())).thenReturn(resultListMap);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))

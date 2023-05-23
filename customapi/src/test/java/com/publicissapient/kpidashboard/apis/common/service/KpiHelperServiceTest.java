@@ -243,8 +243,8 @@ public class KpiHelperServiceTest {
 				node -> node.getProjectFilter().getBasicProjectConfigId(),
 				Collectors.collectingAndThen(Collectors.toList(),
 						s -> s.stream().map(node -> node.getSprintFilter().getId()).collect(Collectors.toList()))));
-		Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(previousProjectWiseSprintsForFilter, kpiRequest, projectWiseSprintsForFilter);
-		assertEquals(2, resultMap.size());
+		Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(previousProjectWiseSprintsForFilter, kpiRequest, projectWiseSprintsForFilter,sprintDetailsList);
+		assertEquals(4, resultMap.size());
 	}
 
 	@Test
