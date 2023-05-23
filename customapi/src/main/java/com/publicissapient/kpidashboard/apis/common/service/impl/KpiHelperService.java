@@ -440,27 +440,27 @@ public class KpiHelperService { // NOPMD
 		List<String> sprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
 
-		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		/*Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();*/
 		Map<String, List<String>> closedStatusMap = new HashMap<>();
 		Map<String, List<String>> typeNameMap = new HashMap<>();
 
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+			/*Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();*/
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+			/*mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueType()));
 
 			mapOfProjectFilters.put(JiraFeature.STATUS.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatus()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatus()));*/
 			closedStatusMap.put(basicProjectConfigId.toString(), fieldMapping.getJiraIssueDeliverdStatus());
 			typeNameMap.put(basicProjectConfigId.toString(), fieldMapping.getJiraSprintVelocityIssueType());
 
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+	/*		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);*/
 
 		});
 
@@ -496,14 +496,14 @@ public class KpiHelperService { // NOPMD
 					new HashMap<>());
 			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
-		} else {
+		} /*else {
 			// start: for azure board sprint details collections put is empty due to we did
 			// not have required data of issues.
 			List<JiraIssue> sprintVelocityList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 					uniqueProjectMap);
 			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, null);
-		}
+		}*/
 		// end: for azure board sprint details collections put is empty due to we did
 		// not have required data of issues.
 

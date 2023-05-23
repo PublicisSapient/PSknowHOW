@@ -255,7 +255,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			resultListMap.put(SUB_TASK_BUGS_HISTORY, subTaskBugsCustomHistory);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
 
-		} else {
+		} /*else {
 			// start : for azure board sprint details collections put is empty due to we did
 			// not have required data of issues.
 			resultListMap.put(CREATED_VS_RESOLVED_KEY,
@@ -265,7 +265,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			resultListMap.put(SPRINT_WISE_SUB_TASK_BUGS, new ArrayList<>());
 			// end : for azure board sprint details collections put is empty due to we did
 			// not have required data of issues.
-		}
+		}*/
 		resultListMap.put(PROJECT_WISE_CLOSED_STORY_STATUS, projectWiseClosedStatusMap);
 		setDbQueryLogger((List<JiraIssue>) resultListMap.get(CREATED_VS_RESOLVED_KEY));
 		return resultListMap;

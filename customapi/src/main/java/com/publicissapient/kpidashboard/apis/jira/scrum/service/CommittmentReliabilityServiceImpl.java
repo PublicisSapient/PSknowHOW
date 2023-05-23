@@ -172,7 +172,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 					sprintWiseClosedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 							new ArrayList<>(completedIssues));
 				});
-			} else {
+			} /*else {
 				// for azure board sprint details collections empty so that we have to prepare
 				// data from jira issue.
 				Map<String, List<String>> projectWiseClosedStatusMap = (Map<String, List<String>>) resultMap
@@ -193,7 +193,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 						sprintWiseClosedIssues.put(Pair.of(basicProjectConfigId, sprintId), completedIssues);
 					});
 				});
-			}
+			}*/
 		}
 
 		List<KPIExcelData> excelData = new ArrayList<>();
@@ -248,11 +248,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		List<String> sprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		Map<String, Pair<String, String>> sprintWithDateMap = new HashMap<>();
-		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		/*Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();*/
 		Map<String, List<String>> projectWiseClosedStatusMap = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+			/*Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();*/
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
@@ -261,15 +261,15 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 					Pair.of(leaf.getSprintFilter().getStartDate(), leaf.getSprintFilter().getEndDate()));
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+			/*mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueType()));
 
 			if (Optional.ofNullable(fieldMapping.getJiraIssueDeliverdStatus()).isPresent()) {
 				projectWiseClosedStatusMap.put(basicProjectConfigId.toString(),
 						fieldMapping.getJiraIssueDeliverdStatus().stream().distinct().collect(Collectors.toList()));
-			}
+			}*/
 
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			/*uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);*/
 
 		});
 
@@ -294,14 +294,14 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE,
 					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, new HashMap<>()));
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
-		} else {
+		} /*else {
 			// start: for azure board sprint details collections put is empty due to we did
 			// not have required data of issues.
 			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE,
 					jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap));
 			resultListMap.put(SPRINT_DETAILS, null);
 		}
-		resultListMap.put(PROJECT_WISE_CLOSED_STORY_STATUS, projectWiseClosedStatusMap);
+		resultListMap.put(PROJECT_WISE_CLOSED_STORY_STATUS, projectWiseClosedStatusMap);*/
 		// end: for azure board sprint details collections put is empty due to we did
 		// not have required data of issues.
 		return resultListMap;

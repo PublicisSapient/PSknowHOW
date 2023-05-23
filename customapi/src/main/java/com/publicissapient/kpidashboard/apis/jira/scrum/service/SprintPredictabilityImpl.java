@@ -207,14 +207,14 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			List<JiraIssue> sprintWiseJiraList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 					new HashMap<>());
 			resultListMap.put(SPRINT_WISE_PREDICTABILITY, sprintWiseJiraList);
-		} else {
+		}/* else {
 			// start: for azure board sprint details collections put is empty due to we did
 			// not have required data of issues.
 			List<JiraIssue> sprintWiseJiraList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 					uniqueProjectMap);
 			resultListMap.put(SPRINT_WISE_PREDICTABILITY, sprintWiseJiraList);
 			resultListMap.put(SPRINT_WISE_SPRINT_DETAILS, new ArrayList<>());
-		}
+		}*/
 		// end: for azure board sprint details collections put is empty due to we did
 		// not have required data of issues.
 
@@ -303,7 +303,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 						sd.getSprintID());
 				currentSprintLeafPredictabilityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
 			});
-		} else {
+		} /*else {
 			// start : for azure board sprint details collections empty so that we have to
 			// prepare data from jira issue
 			Map<String, List<JiraIssue>> projectWiseJiraIssues = sprintWiseJiraStoryList.stream()
@@ -340,7 +340,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				currentSprintLeafPredictabilityMap.put(currentNodeIdentifier.getKey(), filterIssueDetailsSet);
 				sprintWisePredictabilityList.add(sprintWiseStory);
 			}
-		}
+		}*/
 
 		Map<Pair<String, String>, Double> predictability = prepareSprintPredictMap(sprintWisePredictabilityList);
 		List<KPIExcelData> excelData = new ArrayList<>();

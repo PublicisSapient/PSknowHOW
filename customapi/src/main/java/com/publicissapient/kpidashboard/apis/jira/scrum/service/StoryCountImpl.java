@@ -183,13 +183,13 @@ public class StoryCountImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			resultListMap.put(STORY_LIST,
 					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, uniqueProjectMap));
 			resultListMap.put(SPRINTSDETAILS, sprintDetails);
-		} else {
+		} /*else {
 			// start : for azure board sprint details collections put is empty due to we did
 			// not have required data of issues.
 			resultListMap.put(STORY_LIST,
 					jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap));
 			resultListMap.put(SPRINTSDETAILS, null);
-		}
+		}*/
 		// end : for azure board sprint details collections put is empty due to we did
 		// not have required data of issues.
 		return resultListMap;
@@ -251,7 +251,7 @@ public class StoryCountImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					sprintWiseIssueNumbers.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 							totalIssues);
 				});
-			} else {
+			} /*else {
 				// start : for azure board sprint details collections empty so that we have to
 				// prepare data from jira issue.
 				Map<String, List<JiraIssue>> projectWiseJiraIssues = allJiraIssue.stream()
@@ -266,7 +266,7 @@ public class StoryCountImpl extends JiraKPIService<Double, List<Object>, Map<Str
 						sprintWiseIssueNumbers.put(Pair.of(basicProjectConfigId, sprintId), totalIssues);
 					});
 				});
-			}
+			}*/
 			// end : for azure board sprint details collections empty so that we have to
 			// prepare data from jira issue.
 		}
