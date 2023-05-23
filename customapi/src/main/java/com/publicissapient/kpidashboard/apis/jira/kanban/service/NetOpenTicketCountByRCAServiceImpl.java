@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -295,7 +296,7 @@ public class NetOpenTicketCountByRCAServiceImpl
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
-			range = dateRange.getStartDate().toString() + " to " + dateRange.getEndDate().toString();
+			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
 		} else {
