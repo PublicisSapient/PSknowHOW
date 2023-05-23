@@ -149,8 +149,8 @@ public class BambooProcessorJobExecuterTests {
 		BAMBOOSAMPLESERVER.setConnectionId(new ObjectId("5fa69f5d220038d6a365fec6"));
 		BAMBOOSAMPLESERVER.setConnectionName("Bamboo connection");
 		BAMBOOSAMPLESERVER.setUrl(HTTP_URL);
-		BAMBOOSAMPLESERVER.setUsername("does");
-		BAMBOOSAMPLESERVER.setPassword("matter");
+		BAMBOOSAMPLESERVER.setUsername("dummyUsername");
+		BAMBOOSAMPLESERVER.setPassword("dummyPassword");
 		BAMBOOSAMPLESERVER.setJobType("build");
 
 		BAMBOOSAMPLESERVER1.setId(new ObjectId("6296661b307f0239477f1e9e"));

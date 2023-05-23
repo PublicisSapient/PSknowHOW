@@ -6,15 +6,16 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Defect Injection Rate',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames :  {'Workflow Status Mapping' : ['jiraDod', 'jiraDefectCreatedStatus', 'jiraDefectDroppedStatus','resolutionTypeForRejection','jiraDefectRejectionStatus'], 'Issue Types Mapping' : ['jiraDefectInjectionIssueType'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR']}
+        fieldNames :  {'Workflow Status Mapping' : ['jiraDod', 'jiraDefectCreatedStatus', 'jiraDefectDroppedStatus','resolutionTypeForRejection','jiraDefectRejectionStatus'], 'Issue Types Mapping' : ['jiraDefectInjectionIssueType'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] }
       },
       {
         kpiId: 'kpi82',
         kpiName: 'First Time Pass Rate',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus','jiraDefectRejectionStatus'], 'Issue Types Mapping' : ['jiraFTPRStoryIdentification'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR']}
-      },
+        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus','jiraDefectRejectionStatus'], 'Issue Types Mapping' : ['jiraFTPRStoryIdentification'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] }
+        },
+
       {
         kpiId: 'kpi111',
         kpiName: 'Defect Density',
@@ -132,7 +133,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Sprint Velocity',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType'] , 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
+        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
       },
       {
         kpiId: 'kpi46',
@@ -502,12 +503,5 @@ db.getCollection('kpi_fieldmapping').insert(
             'jiraRejectedInRefinement'
           ]
         }
-      },
-	  {
-        kpiId: 'kpi138',
-        kpiName: 'Backlog Readiness',
-		kpiSource: 'Jira',
-        type: ['Other'],
-        fieldNames : {'Workflow Status Mapping' : ['readyForDevelopmentStatus'] }
       }
-  ]);
+	  ]);

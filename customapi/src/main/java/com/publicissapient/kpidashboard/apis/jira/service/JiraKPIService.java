@@ -27,9 +27,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +53,7 @@ import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -186,8 +186,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalVal.setPriority(iterationStatus.getPriority());
 		iterationKpiModalVal.setDescription(iterationStatus.getIssueDescription());
 		iterationKpiModalVal.setIssueStatus(iterationStatus.getIssueStatus());
-		iterationKpiModalVal.setDueDate(
-				DateUtil.stringToLocalDate(iterationStatus.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC).toString());
+		iterationKpiModalVal.setDueDate(DateUtil.dateTimeConverter(iterationStatus.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT));
 		if (iterationStatus.getRemainingEstimateMinutes() != null)
 			iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes());
 		else
@@ -216,14 +215,14 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, FieldMapping fieldMapping) {
 		String devCompleteDate = Constant.DASH;
-		List<JiraIssueSprint> filterStorySprintDetails = issueCustomHistory.getStorySprintDetails();
+		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
 		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDevDoneStatus())) {
-			devCompleteDate = filterStorySprintDetails.stream()
-					.filter(jiraIssueSprint -> fieldMapping.getJiraDevDoneStatus()
-							.contains(jiraIssueSprint.getFromStatus()) && jiraIssueSprint.getActivityDate() != null)
+			devCompleteDate = filterStatusUpdationLog.stream()
+					.filter(jiraHistoryChangeLog -> fieldMapping.getJiraDevDoneStatus()
+							.contains(jiraHistoryChangeLog.getChangedTo()) && jiraHistoryChangeLog.getUpdatedOn() != null)
 					.findFirst()
-					.map(jiraIssueSprint -> LocalDate
-							.parse(jiraIssueSprint.getActivityDate().toString().split("\\.")[0],
+					.map(jiraHistoryChangeLog -> LocalDate
+							.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("\\.")[0],
 									DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT))
 							.toString())
 					.orElse(devCompleteDate);
@@ -285,35 +284,20 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		List<JiraIssue> jiraIssuesForCurrentSprint = jiraService.getJiraIssuesForCurrentSprint();
 		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(jiraIssuesForCurrentSprint)) {
-			projectWiseDefectTypes.forEach((project, values) ->
-				filteredJiraIssue
-						.addAll(jiraIssuesForCurrentSprint.stream()
-								.filter(jiraIssue -> values.contains(jiraIssue.getTypeName())
-										&& project.equalsIgnoreCase(jiraIssue.getBasicProjectConfigId()))
-								.collect(Collectors.toList()))
-			);
-		}
+			List<JiraIssue> finalFilteredJiraIssue = filteredJiraIssue;
+			projectWiseDefectTypes.forEach((project,
+					values) -> finalFilteredJiraIssue.addAll(jiraIssuesForCurrentSprint.stream()
+							.filter(jiraIssue -> values.contains(jiraIssue.getTypeName())
+									&& project.equalsIgnoreCase(jiraIssue.getBasicProjectConfigId()))
+							.collect(Collectors.toList())));
+
+		} else
+			filteredJiraIssue = jiraIssuesForCurrentSprint;
 		return filteredJiraIssue;
 	}
 
-
-	/**
-	 * Popup date for the backlog issues
-	 *
-	 * @param overAllmodalValues
-	 * @param modalValues
-	 * @param jiraIssue
-	 */
-	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
-			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
-		overAllmodalValues.add(iterationKpiModalValue);
-		modalValues.add(iterationKpiModalValue);
+	public JiraIssueReleaseStatus getJiraIssueReleaseStatus(String basicProjectConfigId) {
+		return jiraService.getJiraIssueReleaseForProject(basicProjectConfigId);
 	}
+
 }

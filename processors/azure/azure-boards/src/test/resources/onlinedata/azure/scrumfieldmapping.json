@@ -20,10 +20,14 @@
 		"Parent"
 	],
 	"rootCause": "Custom.RootCause",
-	"jiraStatusForDevelopment": [],
+	"jiraStatusForDevelopment": [
+		"In Progress"
+	],
 	"jiraAtmProjectId": "",
 	"jiraAtmProjectKey": "",
-	"jiraStatusForQa": [],
+	"jiraStatusForQa": [
+		"In Testing"
+	],
 	"testAutomated": "Execution Type",
 	"testAutomationStatusLabel": "Execution Type",
 	"testRegressionLabel": "Sanity/ regression",

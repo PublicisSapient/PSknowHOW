@@ -3043,7 +3043,7 @@ db.getCollection('kpi_master').insert(
         },
         {
            "type": "paragraph",
-           "value": "Issues finishing post issue due date are marked in RED"
+           "value": "Issues finishing post iteration are marked in RED"
         },
         {
           "type": "paragraph",
@@ -3136,7 +3136,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 14,
+    "defaultOrder": 22,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3174,7 +3174,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 6,
+    "defaultOrder": 7,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3188,12 +3188,12 @@ db.getCollection('kpi_master').insert(
           "value": "Issues likely to spill gives intelligence to the team about number of issues that could potentially not get completed. This prediction is based on the the Predicted Completion date i.e if Predicted completion completion date > Sprint end date for an issue, it is considered to be potential spill."
         },
         {
-           "type": "link",
-           "kpiLinkDetail": {
-                 "text":"Predicted completion date logic is detailed at",
-                 "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
-             }
-         }
+          "type": "link",
+          "kpiLinkDetail": {
+                "text":"Predicted completion date logic is detailed at",
+                "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
+            }
+        }
       ]
     },
     "xAxisLabel": "",
@@ -3211,7 +3211,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Story Point",
     "isDeleted": "False",
-    "defaultOrder": 5,
+    "defaultOrder": 6,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3219,18 +3219,18 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": null,
     "kpiInfo": {
-    "details": [
-      {
-        "type": "paragraph",
-        "value": "Closures possible today gives intelligence to users about how many issues can be completed on a particular day of an iteration. An issue is included as a possible closure based on the calculation of Predicted completion date."
-      },
-      {
-        "type": "link",
-        "kpiLinkDetail": {
-              "text":"Predicted completion date logic is detailed at",
-              "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
-          }
-      }
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Closures possible today gives intelligence to users about how many issues can be completed on a particular day of an iteration. An issue is included as a possible closure based on the calculation of Predicted completion date."
+        },
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+                "text":"Predicted completion date logic is detailed at",
+                "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
+            }
+        }
       ]
     },
     "xAxisLabel": "",
@@ -3286,7 +3286,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 12,
+    "defaultOrder": 21,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3319,127 +3319,127 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi132",
-    "kpiName": "Defect Count by RCA",
+         "kpiId": "kpi132",
+         "kpiName": "Defect Count by RCA",
+         "maxValue": "",
+         "kpiUnit": "Count",
+         "isDeleted": "False",
+         "defaultOrder": 14,
+         "kpiCategory": "Iteration",
+         "kpiSource": "Jira",
+         "groupId": 8,
+         "thresholdValue": "",
+         "kanban": false,
+         "chartType": "pieChart",
+         "kpiInfo": {
+           "details": [
+             {
+               "type": "paragraph",
+               "value": "Defect Count by RCA KPI gives a graphical representation of no. of issues by Root Cause RCA."
+             },
+             {
+               "type": "paragraph",
+               "value": "This KPI is very useful for retrospective meetings and it clearly illustrates how the iteration was when looked in combination to other iteration board KPIs"
+             },
+             {
+               "type": "paragraph",
+               "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+             }
+           ]
+         },
+         "xAxisLabel": "",
+         "yAxisLabel": "",
+         "isPositiveTrend": true,
+         "showTrend": false,
+         "isAdditionalFilterSupport": false,
+         "kpiFilter": "radioButton",
+         "boxType": "chart",
+         "calculateMaturity": false
+       },
+  {
+    "kpiId": "kpi133",
+    "kpiName": "Quality Status",
     "maxValue": "",
-    "kpiUnit": "Count",
+    "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 7,
+    "defaultOrder": 12,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
-    "kanban": false,
-    "chartType": "pieChart",
-    "kpiInfo": {
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "Defect Count by RCA KPI gives a graphical representation of no. of issues by Root Cause RCA."
-        },
-        {
-          "type": "paragraph",
-          "value": "This KPI is very useful for retrospective meetings and it clearly illustrates how the iteration was when looked in combination to other iteration board KPIs"
-        },
-        {
-          "type": "paragraph",
-          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
-        }
-      ]
-    },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
-    "isPositiveTrend": true,
-    "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "radioButton",
-    "boxType": "chart",
-    "calculateMaturity": false
-  },
-  {
-      "kpiId": "kpi133",
-      "kpiName": "Quality Status",
-      "maxValue": "",
-      "kpiUnit": "",
-      "isDeleted": "False",
-      "defaultOrder": 9,
-      "kpiCategory": "Iteration",
-      "kpiSource": "Jira",
-      "groupId": 8,
-      "thresholdValue": "",
-      "isAdditionalFilterSupport": false,
-      "calculateMaturity": false,
-      "kanban": false,
-      "chartType": null,
-      "kpiInfo": {
-      "definition": "Quality status as a KPI showcases the basic defect related metric that helps distinguish between story related defects, defects arising out of regression and their correlation to the complexity of work taken in the iteration",
-         "details": [
-                   {
-                     "type": "paragraph",
-                     "value": "The KPI shows:"
-                   },
-                   {
-                     "type": "paragraph",
-                     "value": "1. Linked defects to story"
-                   },
-                   {
-                     "type": "paragraph",
-                     "value": "2. Defect Injection Rate"
-                   },
-                   {
-                     "type": "paragraph",
-                     "value": "3. Defect Density"
-                   },
-                   {
-                     "type": "paragraph",
-                     "value": "4. Unlinked defects"
-                   },
-                   {
-                     "type": "paragraph",
-                     "value": "*Any defect created during the iteration duration but is not added to the iteration is not considered"
-                   }
-                   ]
-              },
-       "xAxisLabel": "",
-       "yAxisLabel": "",
-       "isPositiveTrend": true,
-       "kpiFilter": "",
-       "showTrend": false,
-       "boxType": "3_column"
-    },
-    {
-      "kpiId": "kpi134",
-      "kpiName": "Unplanned Work Status",
-      "maxValue": "",
-      "kpiUnit": "Count",
-      "isDeleted": "False",
-      "defaultOrder": 5,
-      "kpiCategory": "Iteration",
-      "kpiSource": "Jira",
-      "groupId": 8,
-      "thresholdValue": "",
-      "kanban": false,
-      "chartType": null,
-      "kpiInfo": {
-        "details": [
-          {
-              "type": "paragraph",
-              "value": "Unplanned Work status keep track of the issues which doesn't have due date."
-          },
-          {
-            "type": "paragraph",
-            "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
-          }
-        ]
-      },
-      "xAxisLabel": "",
-      "yAxisLabel": "",
-      "isPositiveTrend": true,
-      "showTrend": false,
-      "isSquadSupport": false,
-      "kpiFilter": "multiSelectDropDown",
-      "boxType": "2_column",
-      "calculateMaturity": false
+    "calculateMaturity": false,
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+    "definition": "Quality status as a KPI showcases the basic defect related metric that helps distinguish between story related defects, defects arising out of regression and their correlation to the complexity of work taken in the iteration",
+       "details": [
+                 {
+                   "type": "paragraph",
+                   "value": "The KPI shows:"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "1. Linked defects to story"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "2. Defect Injection Rate"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "3. Defect Density"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "4. Unlinked defects"
+                 },
+                 {
+                   "type": "paragraph",
+                   "value": "*Any defect created during the iteration duration but is not added to the iteration is not considered"
+                 }
+                 ]
+            },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "kpiFilter": "",
+     "showTrend": false,
+     "boxType": "3_column"
+   },
+   {
+     "kpiId": "kpi134",
+     "kpiName": "Unplanned Work Status",
+     "maxValue": "",
+     "kpiUnit": "Count",
+     "isDeleted": "False",
+     "defaultOrder": 5,
+     "kpiCategory": "Iteration",
+     "kpiSource": "Jira",
+     "groupId": 8,
+     "thresholdValue": "",
+     "kanban": false,
+     "chartType": null,
+     "kpiInfo": {
+       "details": [
+         {
+             "type": "paragraph",
+             "value": "Unplanned Work status keep track of the issues which doesn't have due date."
+         },
+         {
+           "type": "paragraph",
+           "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+         }
+       ]
+     },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "showTrend": false,
+     "isSquadSupport": false,
+     "kpiFilter": "multiSelectDropDown",
+     "boxType": "2_column",
+     "calculateMaturity": false
   },
   {
     "kpiId": "kpi125",
@@ -3447,7 +3447,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 13,
+    "defaultOrder": 8,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3481,7 +3481,7 @@ db.getCollection('kpi_master').insert(
      "maxValue": "",
      "kpiUnit": "Hours",
      "isDeleted": "False",
-     "defaultOrder": 11,
+     "defaultOrder": 9,
      "kpiCategory": "Iteration",
      "kpiSource": "Jira",
      "groupId": 8,
@@ -3527,7 +3527,7 @@ db.getCollection('kpi_master').insert(
        "maxValue": "",
        "kpiUnit": "Hours",
        "isDeleted": "False",
-       "defaultOrder": 10,
+       "defaultOrder": 11,
        "kpiCategory": "Iteration",
        "kpiSource": "Jira",
        "groupId": 8,
@@ -3629,29 +3629,53 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi136",
-    "kpiName": "Defect Count by Status",
-    "maxValue": "",
-    "kpiUnit": "Count",
-    "isDeleted": "False",
-    "defaultOrder": 8,
-    "kpiCategory": "Iteration",
-    "kpiSource": "Jira",
-    "groupId": 8,
-    "thresholdValue": "",
-    "kanban": false,"chartType": "pieChart",
-    "kpiInfo": {
-      "definition": "Defect count by status shows the breakup of all defects within an iteration by status. The pie chart representation gives the count of defects in each status"
-      },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
-    "isPositiveTrend": true,
-    "showTrend": false,
-    "isAdditionalFilterSupport": false,
-    "kpiFilter": "radioButton",
-    "boxType": "chart",
-    "calculateMaturity": false
+		"kpiId": "kpi139",
+		"kpiName": "Refinement Rejection Rate",
+		"kpiUnit": "%",
+		"isDeleted": "False",
+		"defaultOrder": 4,
+		"kpiCategory": "Backlog",
+		"kpiSource": "Jira",
+		"groupId": 2,
+		"thresholdValue": "",
+		"kanban": false,
+		"chartType": "line",
+		"kpiInfo": {
+		  "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
+		},
+		"xAxisLabel": "Weeks",
+		"yAxisLabel": "Count",
+		"isPositiveTrend": false,
+		"kpiFilter": "",
+		"showTrend": false,
+		"aggregationCriteria": "sum",
+		"isAdditionalFilterSupport": false,
+		"calculateMaturity": false
   },
+  {
+     "kpiId": "kpi136",
+     "kpiName": "Defect Count by Status",
+     "maxValue": "",
+     "kpiUnit": "Count",
+     "isDeleted": "False",
+     "defaultOrder": 13,
+     "kpiCategory": "Iteration",
+     "kpiSource": "Jira",
+     "groupId": 8,
+     "thresholdValue": "",
+     "kanban": false,"chartType": "pieChart",
+     "kpiInfo": {
+       "definition": "Defect count by status shows the breakup of all defects within an iteration by status. The pie chart representation gives the count of defects in each status"
+       },
+     "xAxisLabel": "",
+     "yAxisLabel": "",
+     "isPositiveTrend": true,
+     "showTrend": false,
+     "isAdditionalFilterSupport": false,
+     "kpiFilter": "radioButton",
+     "boxType": "chart",
+     "calculateMaturity": false
+   },
   {
     "kpiId":"kpi137",
     "kpiName":"Defect Reopen Rate",
@@ -3785,36 +3809,12 @@ db.getCollection('kpi_master').insert(
     "kanban": false
   },
   {
-    "kpiId": "kpi139",
-    "kpiName": "Refinement Rejection Rate",
-    "kpiUnit": "%",
-    "isDeleted": "False",
-    "defaultOrder": 4,
-    "kpiCategory": "Backlog",
-    "kpiSource": "Jira",
-    "groupId": 2,
-    "thresholdValue": "",
-    "kanban": false,
-    "chartType": "line",
-    "kpiInfo": {
-      "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
-    },
-    "xAxisLabel": "Weeks",
-    "yAxisLabel": "Count",
-    "isPositiveTrend": false,
-    "kpiFilter": "",
-    "showTrend": false,
-    "aggregationCriteria": "sum",
-    "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
-  },
-  {
     "kpiId": "kpi140",
     "kpiName": "Defect Count by Priority",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 7,
+    "defaultOrder": 15,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3834,111 +3834,102 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi138",
-    "kpiName": "Backlog Readiness",
-    "maxValue": "",
-    "kpiUnit": "Count",
-    "isDeleted": "False",
-    "defaultOrder": 5,
-    "kpiCategory": "Backlog",
-    "kpiSource": "Jira",
-    "groupId": 2,
-    "thresholdValue": "",
-    "kanban": false,
-    "chartType": null,
-    "kpiInfo": {
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "Backlog Readiness KPI compares the total size of ready Product Backlog items (PBI) against the average velocity of last five sprints to ascertain if enough backlog items are always available for the team to start development. It also calculates the average time taken for Backlog items to be ready for development."
-        },
-        {
-          "type": "paragraph",
-          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
-        }
-      ]
-    },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
-    "isPositiveTrend": true,
-    "showTrend": false,
-    "isAdditionalFilterSupport": false,
-    "kpiFilter": "multiSelectDropDown",
-    "boxType": "3_column",
-    "calculateMaturity": false
+      "kpiId": "kpi147",
+      "kpiName": "Release Progress",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 1,
+      "kpiCategory": "Release",
+      "kpiSource": "Jira",
+      "groupId": 9,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "horizontalPercentBarChart",
+      "kpiInfo": {
+          "definition": "Release progress KPI explains the count of issues in To, In Progress, Done. It also gives the breakup (To, In Progress, Done) based on size (story points)"
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiSelectDropDown",
+      "boxType": "chart",
+      "calculateMaturity": false
   },
   {
-        "kpiId": "kpi145",
-        "kpiName": "Dev Completion Status",
-        "maxValue": "",
-        "kpiUnit": "Count",
-        "isDeleted": "False",
-        "defaultOrder": 3,
-        "kpiCategory": "Iteration",
-        "kpiSource": "Jira",
-        "groupId": 8,
-        "thresholdValue": "",
-        "kanban": false,
-        "chartType": null,
-        "kpiInfo": {
-          "details": [
-            {
+          "kpiId": "kpi145",
+          "kpiName": "Dev Completion Status",
+          "maxValue": "",
+          "kpiUnit": "Count",
+          "isDeleted": "False",
+          "defaultOrder": 3,
+          "kpiCategory": "Iteration",
+          "kpiSource": "Jira",
+          "groupId": 8,
+          "thresholdValue": "",
+          "kanban": false,
+          "chartType": null,
+          "kpiInfo": {
+            "details": [
+              {
+                  "type": "paragraph",
+                  "value": "Dev Completed status explains the Dev Completed vs actual progress weighed in terms of issues and size of work."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "if dev due date is after the sprint end date then the issue is not considered in the kpi calculation."
+              },
+              {
                 "type": "paragraph",
-                "value": "Dev Completed status explains the Dev Completed vs actual progress weighed in terms of issues and size of work."
-            },
-            {
+                "value": "For the KPI to reflect meaningful info,"
+              },
+              {
                 "type": "paragraph",
-                "value": "if dev due date is after the sprint end date then the issue is not considered in the kpi calculation."
-            },
-            {
-              "type": "paragraph",
-              "value": "For the KPI to reflect meaningful info,"
-            },
-            {
-              "type": "paragraph",
-              "value": "Map all ‘In Progress status’ in mappings for your project."
-            },
-            {
+                "value": "Map all ‘In Progress status’ in mappings for your project."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "Ensure Original Estimate & Dev Due Date is added to all issues in a sprint."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "Assignees should be kept up to date in Jira."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "Completed work is based on the ‘Issues completed’ list in Sprint report in Jira."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "Dev Completed is based on 'Dev Due Date'."
+              },
+              {
                 "type": "paragraph",
-                "value": "Ensure Original Estimate & Dev Due Date is added to all issues in a sprint."
-            },
-            {
+                "value": "Issue count - Total no. of issues that are completed."
+              },
+              {
                 "type": "paragraph",
-                "value": "Assignees should be kept up to date in Jira."
-            },
-            {
+                "value": "Story Points - Sum of story points of all issues that are completed"
+              },
+              {
                 "type": "paragraph",
-                "value": "Completed work is based on the ‘Issues completed’ list in Sprint report in Jira."
-            },
-            {
+                "value": "In addition, the information on overlay lets the user know the delay for each issue that has been completed.The delay is calculated by comparing the time an issue took to get completed, from the time it was 'In Progress' with the 'Original Estimate' of issue."
+              },
+              {
                 "type": "paragraph",
-                "value": "Dev Completed is based on 'Dev Due Date'."
-            },
-            {
-              "type": "paragraph",
-              "value": "Issue count - Total no. of issues that are completed."
-            },
-            {
-              "type": "paragraph",
-              "value": "Story Points - Sum of story points of all issues that are completed"
-            },
-            {
-              "type": "paragraph",
-              "value": "In addition, the information on overlay lets the user know the delay for each issue that has been completed.The delay is calculated by comparing the time an issue took to get completed, from the time it was 'In Progress' with the 'Original Estimate' of issue."
-            },
-            {
-              "type": "paragraph",
-              "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
-            }
-          ]
-        },
-        "xAxisLabel": "",
-        "yAxisLabel": "",
-        "isPositiveTrend": true,
-        "showTrend": false,
-        "isSquadSupport": false,
-        "kpiFilter": "multiSelectDropDown",
-        "boxType": "3_column",
-        "calculateMaturity": false
-      }
+                "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+              }
+            ]
+          },
+          "xAxisLabel": "",
+          "yAxisLabel": "",
+          "isPositiveTrend": true,
+          "showTrend": false,
+          "isSquadSupport": false,
+          "kpiFilter": "multiSelectDropDown",
+          "boxType": "3_column",
+          "calculateMaturity": false
+        }
 ]);

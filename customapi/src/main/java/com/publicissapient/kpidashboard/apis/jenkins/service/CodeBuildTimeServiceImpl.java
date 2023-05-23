@@ -230,7 +230,7 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 			while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
 				sunday = sunday.plusDays(1);
 			}
-			String date = monday + " to " + sunday;
+			String date = DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday);
 			for (Build build : buildList) {
 				if (checkDateIsInWeeks(monday, sunday, build)) {
 					durationList.add(build.getDuration());
@@ -287,9 +287,9 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 				codeBuildTimeInfo.addBuidJob(build.getBuildJob());
 			}
 			codeBuildTimeInfo.addBuildUrl(build.getBuildUrl());
-			codeBuildTimeInfo.addBuildStartTime(new Date(build.getStartTime()).toString());
+			codeBuildTimeInfo.addBuildStartTime(DateUtil.dateConverter(new Date(build.getStartTime())));
 			codeBuildTimeInfo.addWeeks(date);
-			codeBuildTimeInfo.addBuildEndTime(new Date(build.getEndTime()).toString());
+			codeBuildTimeInfo.addBuildEndTime(DateUtil.dateConverter(new Date(build.getEndTime())));
 			codeBuildTimeInfo.addDuration(createDurationString(minutes, seconds));
 			codeBuildTimeInfo.addBuildStatus(build.getBuildStatus().toString());
 			codeBuildTimeInfo.addStartedBy(build.getStartedBy());

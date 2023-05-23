@@ -1069,7 +1069,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   cursor: pointer;
   color: rgb(85,26,139);
   font-size: 12px;
-  font-family: 'FuturaNext_Medium';
+  font-family: inherit;
 }
 
 .username-btn-wraper{

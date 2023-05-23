@@ -83,7 +83,8 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             .pipe(
                 tap(event => {
                     if (event instanceof HttpResponse){
-                        if(!event?.url?.includes('api/authdetails') && event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true' && localStorage.getItem('authorities')){
+                        if(!event?.url?.includes('api/authdetails') && 
+                        ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
                             this.httpService.getAuthDetails();
                         }
                     }
@@ -92,8 +93,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                 if (err instanceof HttpErrorResponse) {
                     if (err.status === 401) {
                         if (requestArea === 'internal') {
-                            localStorage.removeItem('user_name');
-                            localStorage.removeItem('authorities');
+                            this.service.setCurrentUserDetails({});
                             if(!environment.SSO_LOGIN){
                                 this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                             }
