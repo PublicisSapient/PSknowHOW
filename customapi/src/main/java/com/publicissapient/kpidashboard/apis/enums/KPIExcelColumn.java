@@ -168,6 +168,14 @@ public enum KPIExcelColumn {
 			new KPIExcelColumnInfo("Predicted Completion Date", ""),
 			new KPIExcelColumnInfo("Potential Delay(in days)", ""), new KPIExcelColumnInfo("Assignee", ""))),
 
+    DEV_COMPLETION_STATUS("kpi145", Arrays.asList(new KPIExcelColumnInfo("Issue Id", ""),
+            new KPIExcelColumnInfo("Issue Description", ""), new KPIExcelColumnInfo("Issue Status", ""),
+            new KPIExcelColumnInfo("Issue Type", ""), new KPIExcelColumnInfo("Size(story point/hours)", ""),
+            new KPIExcelColumnInfo("Remaining Estimate", ""),new KPIExcelColumnInfo("Dev Due Date", ""),
+            new KPIExcelColumnInfo("Dev Completion Date", ""), new KPIExcelColumnInfo("Delay(in days)",
+                    "Delay is calculated based on difference between time taken to complete Development of an issue that depends on the Dev Due date and Dev completion date (In Days)"),
+            new KPIExcelColumnInfo("Assignee", ""))),
+
     WORK_REMAINING("kpi119",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Size(story point/hours)", "Original Estimate","Remaining Estimate", "Dev Due Date", "Dev Completion Date", "Due Date","Predicted Completion Date","Potential Delay(in days)","Assignee")),
 
@@ -203,7 +211,9 @@ public enum KPIExcelColumn {
 
     DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
 
-    DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee"));
+    DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
+
+    RELEASE_PROGRESS("kpi147",Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority","Assignee", "Issue Status"));
 
     // @formatter:on
 

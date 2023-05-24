@@ -29,6 +29,8 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.SerializationUtils;
@@ -94,6 +96,8 @@ public class JiraServiceR {
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Autowired
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 
@@ -415,6 +419,10 @@ public class JiraServiceR {
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
 		return jiraIssueCustomHistoryList;
+	}
+
+	public JiraIssueReleaseStatus getJiraIssueReleaseForProject(String basicProjectConfigId) {
+		return jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId);
 	}
 
 }

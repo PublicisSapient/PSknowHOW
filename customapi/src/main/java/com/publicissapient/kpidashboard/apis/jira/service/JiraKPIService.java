@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections.CollectionUtils;
@@ -244,7 +245,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 	/**
 	 * For Assigning IterationKPiData
-	 *
+	 * 
 	 * @param label
 	 * @param fieldMapping
 	 * @param issueCount
@@ -286,16 +287,22 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		List<JiraIssue> jiraIssuesForCurrentSprint = jiraService.getJiraIssuesForCurrentSprint();
 		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(jiraIssuesForCurrentSprint)) {
-			projectWiseDefectTypes.forEach((project, values) ->
-				filteredJiraIssue
-						.addAll(jiraIssuesForCurrentSprint.stream()
-								.filter(jiraIssue -> values.contains(jiraIssue.getTypeName())
-										&& project.equalsIgnoreCase(jiraIssue.getBasicProjectConfigId()))
-								.collect(Collectors.toList()))
-			);
-		}
+			List<JiraIssue> finalFilteredJiraIssue = filteredJiraIssue;
+			projectWiseDefectTypes.forEach((project,
+					values) -> finalFilteredJiraIssue.addAll(jiraIssuesForCurrentSprint.stream()
+							.filter(jiraIssue -> values.contains(jiraIssue.getTypeName())
+									&& project.equalsIgnoreCase(jiraIssue.getBasicProjectConfigId()))
+							.collect(Collectors.toList())));
+
+		} else
+			filteredJiraIssue = jiraIssuesForCurrentSprint;
 		return filteredJiraIssue;
 	}
+
+	public JiraIssueReleaseStatus getJiraIssueReleaseStatus(String basicProjectConfigId) {
+		return jiraService.getJiraIssueReleaseForProject(basicProjectConfigId);
+	}
+
 	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
 									List<IterationKpiModalValue> modalValues, IssueBacklog issueBacklog) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();

@@ -70,7 +70,7 @@
         </div>
         <div class="p-text-center">
             <div class="indicator-heading">Maturity</div>
-            <p class="average-data-primary">{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' ? dataTrend?.maturityValue+'%' : ''}} {{dataTrend?.maturityValue && dataTrend?.maturity !== '--' ? '('+dataTrend?.maturity+')'  : dataTrend?.maturity}}</p>
+            <p class="average-data-primary">{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' ? dataTrend?.maturityValue : ''}}{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' && dataTrend?.kpiUnit == '%' ? '%' : ''}} {{dataTrend?.maturityValue && dataTrend?.maturity !== '--' ? '('+dataTrend?.maturity+')'  : dataTrend?.maturity}}</p>
         </div>
     </div>
 

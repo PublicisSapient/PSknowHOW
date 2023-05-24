@@ -42,6 +42,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.atlassian.jira.rest.client.api.domain.Status;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
@@ -156,6 +159,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	@Autowired
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+
+	@Autowired
 	private HandleJiraHistory handleJiraHistory;
 
 	@Autowired
@@ -219,6 +225,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			Set<SprintDetails> setForCacheClean = new HashSet<>();
 			String userTimeZone = jiraAdapter.getUserTimeZone(projectConfig);
 			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
+
+			List<Status> projectStatuses = jiraAdapter.getStatus();
+			processAndSaveProjectStatusCategory(projectStatuses, projectConfig.getBasicProjectConfigId().toString());
 
 			for (int i = 0; hasMore; i += pageSize) {
 				Instant startProcessingJiraIssues = Instant.now();
@@ -308,6 +317,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			String userTimeZone = jiraAdapter.getUserTimeZone(projectConfig);
 			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
 			List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
+			List<Status> projectStatuses = jiraAdapter.getStatus();
+			processAndSaveProjectStatusCategory(projectStatuses, projectConfig.getBasicProjectConfigId().toString());
 			for(BoardDetails board : boardDetailsList) {
 				psLogData.setBoardId(board.getBoardId());
 				int boardTotal = 0;
@@ -1362,7 +1373,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		} else {
 			Object sValue = sprintField.getValue();
 			try {
-				
 				List<SprintDetails> sprints = JiraProcessorUtil.processSprintDetail(sValue);
 				// Now sort so we can use the most recent one
 				// yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
@@ -1815,5 +1825,34 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 		return  new IssueBacklogCustomHistory();
 
+	}
+
+	private void processAndSaveProjectStatusCategory(List<Status> listOfProjectStatus, String basicProjectConfigId) {
+		if (CollectionUtils.isNotEmpty(listOfProjectStatus)) {
+			JiraIssueReleaseStatus jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository
+					.findByBasicProjectConfigId(basicProjectConfigId);
+			if (jiraIssueReleaseStatus == null) {
+				jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
+				jiraIssueReleaseStatus.setBasicProjectConfigId(basicProjectConfigId);
+			}
+			Map<Long, String> toDosList = new HashMap<>();
+			Map<Long, String> inProgressList = new HashMap<>();
+			Map<Long, String> closedList = new HashMap<>();
+
+			listOfProjectStatus.stream().forEach(status -> {
+				if (JiraConstants.TO_DO.equals(status.getStatusCategory().getName())) {
+					toDosList.put(status.getId(), status.getName());
+				} else if (JiraConstants.DONE.equals(status.getStatusCategory().getName())) {
+					closedList.put(status.getId(), status.getName());
+				} else {
+					inProgressList.put(status.getId(), status.getName());
+				}
+			});
+			jiraIssueReleaseStatus.setToDoList(toDosList);
+			jiraIssueReleaseStatus.setInProgressList(inProgressList);
+			jiraIssueReleaseStatus.setClosedList(closedList);
+			jiraIssueReleaseStatusRepository.save(jiraIssueReleaseStatus);
+			log.debug("saved project status category");
+		}
 	}
 }
