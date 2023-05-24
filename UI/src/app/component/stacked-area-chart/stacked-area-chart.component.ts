@@ -32,6 +32,7 @@ export class StackedAreaChartComponent implements OnInit {
     
     let keys = Object.keys(this.data[0]?.value);
     let yMax = 0;
+    /** calculating yMax and extracting keys */
     const data = this.data.map((x) => {
       for(let item in x.value){
         if(keys.indexOf(item) == -1){
@@ -46,6 +47,7 @@ export class StackedAreaChartComponent implements OnInit {
       return obj;
     });
     
+    /**adding missing issues with value of 0 */
     this.data.map((item) => {
       let dataItems = Object.keys(item?.value);//['story', 'issues', 'change requests']
 
@@ -62,7 +64,7 @@ export class StackedAreaChartComponent implements OnInit {
     
     
     // set the dimensions and margins of the graph
-    const margin = { top: 20, right: 20, bottom: 90, left: 50 },
+    const margin = { top: 20, right: 20, bottom: 150, left: 50 },
       width = 400,
       height = 228;
 
@@ -237,16 +239,16 @@ export class StackedAreaChartComponent implements OnInit {
       // Add one dot in the legend for each name.
       const foreignObject = svg.append("foreignObject")
       .attr("width", 400)
-      .attr("height", 50)
-      .style('overflow-y', 'auto')
+      .attr("height", 60)
+      .style('overflow-y', 'scroll')
       .attr("transform", `translate(0,${(height+60)})`)
       .append("xhtml:div")
       .attr("id", "legend-container")
-      .attr("class", "p-d-flex p-flex-wrap");
+      .attr("class", "p-d-flex p-flex-wrap h-100");
 
       keys.forEach((x) => {
         foreignObject.append('div')
-          .attr('class', 'p-d-flex p-align-center p-mr-3')
+          .attr('class', 'p-d-flex p-align-center p-mr-3 font-small')
           .html(`<span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${color(x)}'></span>
           <span style="text-transform: capitalize;">${x}</span>`)
           .on("mouseover", (event) => {highlight(event, x)})
