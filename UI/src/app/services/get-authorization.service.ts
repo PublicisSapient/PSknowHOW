@@ -36,8 +36,9 @@ export class GetAuthorizationService {
 
   checkIfProjectAdmin() {
     let isProjectAdmin = false;
+    const projectsAccess = !!this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'null' ? this.sharedService.getCurrentUserDetails('projectsAccess') : [];
     if (this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess') !== null) {
-      this.sharedService.getCurrentUserDetails('projectsAccess').forEach(accessElem => {
+      projectsAccess?.forEach(accessElem => {
         if (accessElem.role === 'ROLE_PROJECT_ADMIN') {
           isProjectAdmin = true;
         }

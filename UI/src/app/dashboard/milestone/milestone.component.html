@@ -68,7 +68,7 @@
                         [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)">
                         <ng-container *ngIf="!noTabAccess else noDataAccess">
                           <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
-                            <div class="p-pl-3 p-pr-3 w-100 position-relative" [ngSwitch]="kpi?.kpiDetail?.chartType"
+                            <div class="p-pl-3 p-pr-3 w-100 position-relative chart-container-height" [ngSwitch]="kpi?.kpiDetail?.chartType"
                               *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                               <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                 <app-groupstackchart *ngSwitchCase="'stackedColumn'"
@@ -87,6 +87,9 @@
 
                                 <app-piechart *ngSwitchCase="'pieChart'"
                                   [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
+                                <app-horizontal-percent-bar-chart *ngSwitchCase="'horizontalPercentBarChart'"
+                                [data]="kpiChartData[kpi?.kpiId]">
+                                </app-horizontal-percent-bar-chart>
                                 <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                                   [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                   [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"

@@ -180,7 +180,7 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraIssueDeliverdStatus') || fieldstoShow.length === 0">
-                        <label class="field-title">Issue Delivered Status - Velocity <span class="fa fa-info-circle"
+                        <label class="field-title">Issue Delivered Status <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
                                                 Definition:
                                                 Status from workflow on which issue is delivered. <br>
@@ -469,6 +469,31 @@
                               (click)="showDialogToAddValue(false, 'jiraRejectedInRefinement', 'workflow')"></button>
                     </div>
                   </div>
+                  <div class="p-mb-3 p-d-flex p-align-center"
+                       *ngIf="fieldstoShow?.includes('jiraIterationCompletionStatusCustomField') || fieldstoShow.length === 0">
+                    <label class="field-title">Iteration Dashboard & SPEED KPIs Completion Status <span class="fa fa-info-circle"
+                                                                            aria-hidden="true" pTooltip='<span>
+                                                                                Iteration Dashboard
+                                                                                SPEED KPIs - Sprint Velocity, Commitment Reliability, Story Count, Sprint Predictability
+                                              </span>' tooltipPosition="top" tooltipEvent="hover"
+                                                                            tooltipStyleClass="tooltiptext"
+                                                                            [escape]="false"></span></label>
+                    <div class="p-inputgroup">
+                      <p-chips [style]="{'max-width':'initial','width':'60vw'}"
+                               inputId="jiraIterationCompletionStatusCustomField" formControlName="jiraIterationCompletionStatusCustomField"
+                               placeholder="Enter Custom Completion Status" addOnBlur="true"
+                               pTooltip='<span>
+                                                    Definition:
+                                                    Status that Defines Jira Issue is Rejected In Refinement. <br>
+                                                    Example: Rejected in Refinement
+                                              </span>'
+                               tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                               [escape]="false">
+                      </p-chips>
+                      <button type="button" pButton pRipple icon="pi pi-search"
+                              (click)="showDialogToAddValue(false, 'jiraIterationCompletionStatusCustomField', 'workflow')"></button>
+                    </div>
+                  </div>
                 </div>
             </p-accordionTab>
             <p-accordionTab header="Issue Types Mapping"
@@ -755,6 +780,23 @@
                             </p-chips>
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(false, 'jiraIssueEpicType', 'Issue_Type')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraIterationCompletionTypeCustomField') || fieldstoShow.length === 0">
+                        <label class="field-title">Iteration Board Issue types <span class="fa fa-info-circle" aria-hidden="true"
+                                pTooltip='<span>
+                                    Iteration Dashboard
+                                    SPEED KPIs - Sprint Velocity, Commitment Reliability, Story Count, Sprint Predictability
+                              </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw'}" inputId="jiraIterationCompletionTypeCustomField"
+                                formControlName="jiraIterationCompletionTypeCustomField" placeholder="Enter Custom Completion Types"
+                                addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'jiraIterationCompletionTypeCustomField', 'Issue_Type')"></button>
                         </div>
                     </div>
                 </div>

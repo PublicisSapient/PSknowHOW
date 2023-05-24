@@ -302,6 +302,7 @@ public enum KPICode {
 	DEFECT_COUNT_BY_RCA_RELEASE("kpi142", KPISource.JIRA.name()),
 	DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143", KPISource.JIRA.name()),
 	DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144", KPISource.JIRA.name()),
+	RELEASE_PROGRESS("kpi147", KPISource.JIRA.name()),
 	/**
 	 * Scope Change
 	 */
@@ -351,6 +352,11 @@ public enum KPICode {
 	 * Planned Work Status
 	 */
 	PLANNED_WORK_STATUS("kpi128", KPISource.JIRA.name()),
+
+	/**
+	 * Dev Completed Status KPI Code
+	 */
+	DEV_COMPLETED_STATUS("kpi145", KPISource.JIRA.name()),
 
 	/**
 	 * Quality Status

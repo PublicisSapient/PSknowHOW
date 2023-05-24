@@ -536,7 +536,6 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 				.collect(Collectors.toList());
 	}
 
-
 	/**
 	 *
 	 * @param createdIssues

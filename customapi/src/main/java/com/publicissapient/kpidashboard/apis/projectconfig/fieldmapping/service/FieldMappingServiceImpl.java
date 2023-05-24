@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -45,8 +47,6 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author anisingh4
@@ -367,7 +367,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	private boolean compareJiraData(ObjectId basicProjectConfigId, FieldMapping fieldMapping,
-								FieldMapping existingFieldMapping) {
+			FieldMapping existingFieldMapping) {
 		boolean isUpdated = false;
 		Optional<ProjectBasicConfig> projectBasicConfigOpt = projectBasicConfigRepository
 				.findById(basicProjectConfigId);
@@ -375,30 +375,33 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
 
 			List<String> fieldNameList = Arrays.asList("jiradefecttype", "sprintName", JIRA_STORY_POINTS_CUSTOM_FIELD,
-					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "jiraDefectCreatedStatus", EPIC_COST_OF_DELAY,
-					EPIC_RISK_REDUCTION, "issueStatusExcluMissingWork", "jiraIssueDeliverdStatus", "jiraDod",
-					"jiraDefectRemovalStatus", "jiraDefectDroppedStatus", "jiraStatusForDevelopment", "jiraStatusForQa",
-					"jiraOnHoldStatus", "jiraBlockedStatus", "jiraWaitStatus", "jiraStatusForInProgress",
-					"jiraDevDoneStatus", "jiraDefectSeepageIssueType", "jiraQADefectDensityIssueType",
-					"jiraDefectCountlIssueType", "jiraSprintVelocityIssueType", "jiraDefectRemovalIssueType",
-					"jiraDefectRejectionlIssueType", "jiraDefectInjectionIssueType", "jiraTestAutomationIssueType",
-					"jiraIntakeToDorIssueType", "jiraStoryIdentification", "jiraFTPRStoryIdentification",
-					"jiraSprintCapacityIssueType", "jiraIssueEpicType", "defectPriority", "excludeRCAFromFTPR",
-					"workingHoursDayCPT", "jiraDevDueDateCustomField", EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, "jiraDor",
-					"resolutionTypeForRejection", "jiraDefectRejectionStatus", EPIC_TIME_CRITICALITY, "jiraLiveStatus",
-					EPIC_JOB_SIZE, "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField",
-					"jiraDefectClosedStatus","jiraRejectedInRefinement","jiraAcceptedInRefinement","jiraReadyForRefinement");
+					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "jiraDefectCreatedStatus",
+					EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION, "issueStatusExcluMissingWork", "jiraIssueDeliverdStatus",
+					"jiraDod", "jiraDefectRemovalStatus", "jiraDefectDroppedStatus", "jiraStatusForDevelopment",
+					"jiraStatusForQa", "jiraOnHoldStatus", "jiraBlockedStatus", "jiraWaitStatus",
+					"jiraStatusForInProgress", "jiraDevDoneStatus", "jiraDefectSeepageIssueType",
+					"jiraQADefectDensityIssueType", "jiraDefectCountlIssueType", "jiraSprintVelocityIssueType",
+					"jiraDefectRemovalIssueType", "jiraDefectRejectionlIssueType", "jiraDefectInjectionIssueType",
+					"jiraTestAutomationIssueType", "jiraIntakeToDorIssueType", "jiraStoryIdentification",
+					"jiraFTPRStoryIdentification", "jiraSprintCapacityIssueType", "jiraIssueEpicType", "defectPriority",
+					"excludeRCAFromFTPR", "workingHoursDayCPT", "jiraDevDueDateCustomField", EPIC_USER_BUSINESS_VALUE,
+					EPIC_WSJF, "jiraDor", "resolutionTypeForRejection", "jiraDefectRejectionStatus",
+					EPIC_TIME_CRITICALITY, "jiraLiveStatus", EPIC_JOB_SIZE, "additionalFilterConfig",
+					"jiraDueDateField", "jiraDueDateCustomField", "jiraDefectClosedStatus", "jiraRejectedInRefinement",
+					"jiraAcceptedInRefinement", "jiraReadyForRefinement", "jiraIterationCompletionStatusCustomField",
+					"jiraIterationCompletionTypeCustomField");
 
-			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES,
-					STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus", "jiraTicketRejectedStatus",
-					"jiraTicketClosedStatus", "jiraLiveStatus", "ticketCountIssueType", "kanbanRCACountIssueType",
-					"jiraTicketVelocityIssueType", "kanbanCycleTimeIssueType", "storyPointToHourMapping", EPIC_COST_OF_DELAY,
-					EPIC_RISK_REDUCTION, "jiraIssueEpicType", EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_JOB_SIZE,
-					EPIC_TIME_CRITICALITY);
+			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE,
+					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus",
+					"jiraTicketRejectedStatus", "jiraTicketClosedStatus", "jiraLiveStatus", "ticketCountIssueType",
+					"kanbanRCACountIssueType", "jiraTicketVelocityIssueType", "kanbanCycleTimeIssueType",
+					"storyPointToHourMapping", EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION, "jiraIssueEpicType",
+					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_JOB_SIZE, EPIC_TIME_CRITICALITY);
 
-			if ((!projectBasicConfig.getIsKanban() && isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
+			if ((!projectBasicConfig.getIsKanban()
+					&& isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
 					|| (projectBasicConfig.getIsKanban()
-					&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping, fieldNameListKanban))) {
+							&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping, fieldNameListKanban))) {
 
 				isUpdated = true;
 			}
