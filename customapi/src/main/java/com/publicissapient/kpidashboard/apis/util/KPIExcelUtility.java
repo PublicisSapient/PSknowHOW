@@ -771,7 +771,7 @@ public class KPIExcelUtility {
 				Optional<JiraIssue> completedJiraIssue = completedIssue.stream()
 						.filter(jiraIssue -> jiraIssue.getNumber().equals(e.getNumber())).findFirst();
 
-				if (completedJiraIssue.isPresent()) {
+				if (completedJiraIssue.isPresent() && Objects.nonNull(completedJiraIssue.get().getUpdateDate())) {
 					excelData.setActualCompletionDate(DateUtil.dateTimeConverter(completedJiraIssue.get().getUpdateDate(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 				} else {
 					excelData.setActualCompletionDate("-");
