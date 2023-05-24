@@ -381,20 +381,37 @@
                             <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
                                     This field should consider all status that are considered Closed in Jira for e.g. Closed, Done etc <br>
                                                    </span>' tooltipPosition="top" tooltipEvent="hover"
-                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
-                        <div class="p-inputgroup">
-                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
-                                   inputId="jiraDefectClosedStatus" formControlName="jiraDefectClosedStatus"
-                                   placeholder="Enter Status to identify 'Closed' status" addOnBlur="true">
-                            </p-chips>
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                  (click)="showDialogToAddValue(false, 'jiraDefectClosedStatus', 'workflow')"></button>
-                        </div>
-                    </div>
-                  <div class="p-mb-3 p-d-flex p-align-center"
-                       *ngIf="fieldstoShow?.includes('jiraReadyForRefinement') || fieldstoShow.length === 0">
-                    <label class="field-title">Ready For Refinement <span class="fa fa-info-circle"
-                                                                          aria-hidden="true" pTooltip='<span>
+                    tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+            <div class="p-inputgroup">
+              <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                       inputId="jiraDefectClosedStatus" formControlName="jiraDefectClosedStatus"
+                       placeholder="Enter Status to identify 'Closed' status" addOnBlur="true">
+              </p-chips>
+              <button type="button" pButton pRipple icon="pi pi-search"
+                      (click)="showDialogToAddValue(false, 'jiraDefectClosedStatus', 'workflow')"></button>
+            </div>
+          </div>
+          <div class="p-mb-3 p-d-flex p-align-center"
+               *ngIf="fieldstoShow?.includes('readyForDevelopmentStatus') || fieldstoShow.length === 0">
+            <label class="field-title">Status to identify issues Ready for Development <span class="fa fa-info-circle"
+                                                                                             aria-hidden="true"
+                                                                                             pTooltip='<span>
+                                Definition:
+                                Status to identify Ready for development from the backlog.
+                              </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                                                                             [escape]="false"></span></label>
+            <div class="p-inputgroup">
+              <input type="text" pInputText id="readyForDevelopmentStatus" formControlName="readyForDevelopmentStatus"
+                     placeholder="Enter backlog ready for development status"
+                     [style]="{'max-width':'initial','width':'60vw'}">
+              <button type="button" pButton pRipple icon="pi pi-search"
+                      (click)="showDialogToAddValue(true, 'readyForDevelopmentStatus', 'workflow')"></button>
+            </div>
+          </div>
+          <div class="p-mb-3 p-d-flex p-align-center"
+               *ngIf="fieldstoShow?.includes('jiraReadyForRefinement') || fieldstoShow.length === 0">
+            <label class="field-title">Ready For Refinement <span class="fa fa-info-circle"
+                                                                  aria-hidden="true" pTooltip='<span>
                                                     Definition:
                                                     Status that Defines Jira Issue is Ready for Refinement<br>
                                                     Example: Ready For Refinement
@@ -1188,16 +1205,16 @@
                             Definition
                             Working hours in a day.
                           </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-                                                                    [escape]="false"></span></label><br/>
-            <p-inputNumber id="workingHoursDayCPT" formControlName="workingHoursDayCPT"
-                           placeholder="Enter working hours in a day"
-                           [style]="{'max-width':'initial','width':'calc(60vw + 42px)'}"
-                           (input)="validateRegexp($event, '^[0-9]*$')"></p-inputNumber>
-          </div>
-          <div class="p-mb-3 p-d-flex p-align-center"
-               *ngIf="fieldstoShow?.includes('epicCostOfDelay') || fieldstoShow.length === 0">
-            <label class="field-title">Epic Cost of Delay <span class="fa fa-info-circle" aria-hidden="true"
-                                                                pTooltip='<span>
+                                [escape]="false"></span></label><br />
+                        <p-inputNumber id="workingHoursDayCPT" formControlName="workingHoursDayCPT"
+                            placeholder="Enter working hours in a day"
+                            [style]="{'max-width':'initial','width':'calc(60vw + 42px)'}"
+                            (input)="validateRegexp($event, '^[0-9]*$')"></p-inputNumber>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('epicCostOfDelay') || fieldstoShow.length === 0">
+                        <label class="field-title">Epic Cost of Delay <span class="fa fa-info-circle" aria-hidden="true"
+                                pTooltip='<span>
                                 Definition:
                                 JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
                                 Provide value of Cost Of delay field for Epics that need to show on Trend line. <br>
@@ -1206,19 +1223,19 @@
                                 KPI Impacted:
                                 Cost of delay
                               </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-                                                                [escape]="false"></span></label>
-            <div class="p-inputgroup">
-              <input type="text" pInputText id="epicCostOfDelay" formControlName="epicCostOfDelay"
-                     placeholder="Enter Cost of Delay Field"
-                     [style]="{'max-width':'initial','width':'60vw'}">
-              <button type="button" pButton pRipple icon="pi pi-search"
-                      (click)="showDialogToAddValue(true, 'epicCostOfDelay', 'fields')"></button>
-            </div>
-          </div>
-          <div class="p-mb-3 p-d-flex p-align-center"
-               *ngIf="fieldstoShow?.includes('epicRiskReduction') || fieldstoShow.length === 0">
-            <label class="field-title">Epic Risk Reduction <span class="fa fa-info-circle"
-                                                                 aria-hidden="true" pTooltip='<span>
+                                [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <input type="text" pInputText id="epicCostOfDelay" formControlName="epicCostOfDelay"
+                                placeholder="Enter Cost of Delay Field"
+                                [style]="{'max-width':'initial','width':'60vw'}">
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(true, 'epicCostOfDelay', 'fields')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('epicRiskReduction') || fieldstoShow.length === 0">
+                        <label class="field-title">Epic Risk Reduction <span class="fa fa-info-circle"
+                                aria-hidden="true" pTooltip='<span>
                                 Definition:
                                 JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
                                 Provide value of Risk reduction/ Enablement value for Epic that is required to calculated Cost of delay <br>
@@ -1227,19 +1244,19 @@
                                 KPI Impacted:
                                 Cost of delay KPI
                 </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-                                                                 [escape]="false"></span></label>
-            <div class="p-inputgroup">
-              <input type="text" pInputText id="epicRiskReduction" formControlName="epicRiskReduction"
-                     placeholder="Enter Epic Risk Reduction Field"
-                     [style]="{'max-width':'initial','width':'60vw'}">
-              <button type="button" pButton pRipple icon="pi pi-search"
-                      (click)="showDialogToAddValue(true, 'epicRiskReduction', 'fields')"></button>
-            </div>
-          </div>
-          <div class="p-mb-3 p-d-flex p-align-center"
-               *ngIf="fieldstoShow?.includes('epicUserBusinessValue') || fieldstoShow.length === 0">
-            <label class="field-title">Epic Business Value <span class="fa fa-info-circle"
-                                                                 aria-hidden="true" pTooltip='<span>
+                                [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <input type="text" pInputText id="epicRiskReduction" formControlName="epicRiskReduction"
+                                placeholder="Enter Epic Risk Reduction Field"
+                                [style]="{'max-width':'initial','width':'60vw'}">
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(true, 'epicRiskReduction', 'fields')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('epicUserBusinessValue') || fieldstoShow.length === 0">
+                        <label class="field-title">Epic Business Value <span class="fa fa-info-circle"
+                                aria-hidden="true" pTooltip='<span>
                                 Definition:
                                 JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
                                 Provide value of User-Business Value for Epic that is required to calculated Cost of delay. <br>
@@ -1248,19 +1265,19 @@
                                 KPI Impacted:
                                 Cost of delay
                 </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-                                                                 [escape]="false"></span></label>
-            <div class="p-inputgroup">
-              <input type="text" pInputText id="epicUserBusinessValue"
-                     formControlName="epicUserBusinessValue" placeholder="Enter Epic Business Value field"
-                     [style]="{'max-width':'initial','width':'60vw'}">
-              <button type="button" pButton pRipple icon="pi pi-search"
-                      (click)="showDialogToAddValue(true, 'epicUserBusinessValue', 'fields')"></button>
-            </div>
-          </div>
-          <div class="p-mb-3 p-d-flex p-align-center"
-               *ngIf="fieldstoShow?.includes('epicWsjf') || fieldstoShow.length === 0">
-            <label class="field-title">Epic WSJF <span class="fa fa-info-circle" aria-hidden="true"
-                                                       pTooltip='<span>
+                                [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <input type="text" pInputText id="epicUserBusinessValue"
+                                formControlName="epicUserBusinessValue" placeholder="Enter Epic Business Value field"
+                                [style]="{'max-width':'initial','width':'60vw'}">
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(true, 'epicUserBusinessValue', 'fields')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('epicWsjf') || fieldstoShow.length === 0">
+                        <label class="field-title">Epic WSJF <span class="fa fa-info-circle" aria-hidden="true"
+                                pTooltip='<span>
                                 Definition:
                                 JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
                                 Provide value of WSJF value that is required to calculated Cost of delay <br />
@@ -1269,18 +1286,18 @@
                                 KPI Impacted:
                                 Cost of delay
                              </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-                                                       [escape]="false"></span></label>
-            <div class="p-inputgroup">
-              <input type="text" pInputText id="epicWsjf" formControlName="epicWsjf"
-                     placeholder="Enter EPIC WSJF Field" [style]="{'max-width':'initial','width':'60vw'}">
-              <button type="button" pButton pRipple icon="pi pi-search"
-                      (click)="showDialogToAddValue(true, 'epicWsjf', 'fields')"></button>
-            </div>
-          </div>
-          <div class="p-mb-3 p-d-flex p-align-center"
-               *ngIf="fieldstoShow?.includes('epicTimeCriticality') || fieldstoShow.length === 0">
-            <label class="field-title">Epic Time Criticality <span class="fa fa-info-circle"
-                                                                   aria-hidden="true" pTooltip='<span>
+                                [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <input type="text" pInputText id="epicWsjf" formControlName="epicWsjf"
+                                placeholder="Enter EPIC WSJF Field" [style]="{'max-width':'initial','width':'60vw'}">
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(true, 'epicWsjf', 'fields')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('epicTimeCriticality') || fieldstoShow.length === 0">
+                        <label class="field-title">Epic Time Criticality <span class="fa fa-info-circle"
+                                aria-hidden="true" pTooltip='<span>
                                 Definition:
                                 JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
                                 Provide value of Time Criticality value on Epic that is required to calculated Cost of delay .<br />
@@ -1289,235 +1306,231 @@
                               KPI Impacted:
                               Cost of delay
                 </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-                                                                   [escape]="false"></span></label>
-            <div class="p-inputgroup">
-              <input type="text" pInputText id="epicTimeCriticality" formControlName="epicTimeCriticality"
-                     placeholder="Enter Epic Time Criticality Field"
-                     [style]="{'max-width':'initial','width':'60vw'}">
-              <button type="button" pButton pRipple icon="pi pi-search"
-                      (click)="showDialogToAddValue(true, 'epicTimeCriticality', 'fields')"></button>
-            </div>
-          </div>
-          <div class="p-mb-3 p-d-flex p-align-center"
-               *ngIf="fieldstoShow?.includes('epicJobSize') || fieldstoShow.length === 0">
-            <label class="field-title">Epic Job Size <span class="fa fa-info-circle" aria-hidden="true"
-                                                           pTooltip='<span>
+                                [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <input type="text" pInputText id="epicTimeCriticality" formControlName="epicTimeCriticality"
+                                placeholder="Enter Epic Time Criticality Field"
+                                [style]="{'max-width':'initial','width':'60vw'}">
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(true, 'epicTimeCriticality', 'fields')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('epicJobSize') || fieldstoShow.length === 0">
+                        <label class="field-title">Epic Job Size <span class="fa fa-info-circle" aria-hidden="true"
+                                pTooltip='<span>
                                 Definition:
                                 JIRA/AZURE applications let you add custom fields in addition to the built-in fields.
                                 Provide value of Job size on EPIC that is required to calculated WSJF. <br>
                                 Example:customfield_11111
-                            </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-                                                           [escape]="false"></span></label>
-            <div class="p-inputgroup">
-              <input type="text" pInputText id="epicJobSize" formControlName="epicJobSize"
-                     placeholder="Enter Epic Job Size field" [style]="{'max-width':'initial','width':'60vw'}">
-              <button type="button" pButton pRipple icon="pi pi-search"
-                      (click)="showDialogToAddValue(true, 'epicJobSize', 'fields')"></button>
-            </div>
-          </div>
+                            </span>' tooltipPosition="top" tooltipEvent ="hover" tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                          <div class="p-inputgroup">
+                              <input type="text" pInputText id="epicJobSize" formControlName="epicJobSize"
+                                  placeholder="Enter Epic Job Size field" [style]="{'max-width':'initial','width':'60vw'}">
+                              <button type="button" pButton pRipple icon="pi pi-search"
+                                  (click)="showDialogToAddValue(true, 'epicJobSize', 'fields')"></button>
+                          </div>
+                      </div>
 
-          <div class="p-mb-3 p-d-flex p-align-center"
-               *ngIf="fieldstoShow?.includes('jiraDueDateField') || fieldstoShow.length === 0">
-            <label class="field-title">Due Date <span class="fa fa-info-circle"
-                                                      aria-hidden="true" pTooltip='<span>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraDueDateField') || fieldstoShow.length === 0">
+                        <label class="field-title">Due Date <span class="fa fa-info-circle"
+                                aria-hidden="true" pTooltip='<span>
                                 Definition:
                                 This field is to track due date of issues tagged in the iteration
                                </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-                                                      [escape]="false" tooltipPosition="top"></span></label>
-            <div class="fields-container p-p-2">
-              <div class="p-d-flex p-justify-between">
-                <div class="p-inputgroup">
-                  <ng-container *ngFor="let dueDateType of dueDateTypes">
-                    <p-radioButton placeholder="Select" formControlName="jiraDueDateField"
-                                   value="{{dueDateType.value}}" label="{{dueDateType.value}}"
-                                   class="p-m-2">
-                    </p-radioButton>
-                  </ng-container>
-                </div>
-              </div>
+                                [escape]="false" tooltipPosition="top"></span></label>
+                        <div class="fields-container p-p-2">
+                            <div class="p-d-flex p-justify-between">
+                                <div class="p-inputgroup">
+                                    <ng-container *ngFor="let dueDateType of dueDateTypes">
+                                        <p-radioButton placeholder="Select" formControlName="jiraDueDateField"
+                                            value="{{dueDateType.value}}" label="{{dueDateType.value}}"
+                                            class="p-m-2">
+                                        </p-radioButton>
+                                    </ng-container>
+                                </div>
+                             </div>
 
-              <div class="p-m-2"
-                   *ngIf="fieldMapping['jiraDueDateField'] && fieldMapping['jiraDueDateField'].value === 'Custom Field' && (fieldstoShow?.includes('jiraDueDateCustomField') || fieldstoShow.length === 0)">
-                <label class="field-title">Due Date Custom Field <span
-                  class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                            <div class="p-m-2"
+                                *ngIf="fieldMapping['jiraDueDateField'] && fieldMapping['jiraDueDateField'].value === 'Custom Field' && (fieldstoShow?.includes('jiraDueDateCustomField') || fieldstoShow.length === 0)">
+                                <label class="field-title">Due Date Custom Field <span
+                                        class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
                                         Definition:
                                         This field is to track due date of issues tagged in the iteration
                                   </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-                  [escape]="false"></span></label>
-                <div class="p-inputgroup p-mt-2">
-                  <input type="text" pInputText id="jiraDueDateCustomField" formControlName="jiraDueDateCustomField"
-                         placeholder="Enter due date custom field" [style]="{'max-width':'initial','width':'60vw'}">
-                  <button type="button" pButton pRipple icon="pi pi-search"
-                          (click)="showDialogToAddValue(true, 'jiraDueDateCustomField', 'fields')"></button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="p-mb-3 p-d-flex p-align-center"
-               *ngIf="fieldstoShow?.includes('jiraDevDueDateCustomField') || fieldstoShow.length === 0">
-            <label class="field-title">Dev Due Date <span class="fa fa-info-circle" aria-hidden="true"
-                                                          pTooltip='<span>
+                                        [escape]="false"></span></label>
+                                <div class="p-inputgroup p-mt-2">
+                                    <input type="text" pInputText id="jiraDueDateCustomField" formControlName="jiraDueDateCustomField"
+                                        placeholder="Enter due date custom field" [style]="{'max-width':'initial','width':'60vw'}">
+                                    <button type="button" pButton pRipple icon="pi pi-search"
+                                        (click)="showDialogToAddValue(true, 'jiraDueDateCustomField', 'fields')"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                    *ngIf="fieldstoShow?.includes('jiraDevDueDateCustomField') || fieldstoShow.length === 0">
+                    <label class="field-title">Dev Due Date <span class="fa fa-info-circle" aria-hidden="true"
+                            pTooltip='<span>
                             Definition:
                             This field is to track dev due date of issues tagged in the iteration
-                        </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-                                                          [escape]="false"></span></label>
-            <div class="p-inputgroup">
-              <input type="text" pInputText id="jiraDevDueDateCustomField" formControlName="jiraDevDueDateCustomField"
-                     placeholder="Enter Dev Due Date" [style]="{'max-width':'initial','width':'60vw'}">
-              <button type="button" pButton pRipple icon="pi pi-search"
-                      (click)="showDialogToAddValue(true, 'jiraDevDueDateCustomField', 'fields')"></button>
-            </div>
-          </div>
-        </div>
-      </p-accordionTab>
+                        </span>' tooltipPosition="top" tooltipEvent ="hover" tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                      <div class="p-inputgroup">
+                          <input type="text" pInputText id="jiraDevDueDateCustomField" formControlName="jiraDevDueDateCustomField"
+                              placeholder="Enter Dev Due Date" [style]="{'max-width':'initial','width':'60vw'}">
+                          <button type="button" pButton pRipple icon="pi pi-search"
+                              (click)="showDialogToAddValue(true, 'jiraDevDueDateCustomField', 'fields')"></button>
+                      </div>
+                  </div>
+                  </div>
+              </p-accordionTab>
 
-      <p-accordionTab header="Additional Filters Mapping"
-                      [disabled]="!(groupsToShow.groupNames.includes('Additional Filters Mapping') || groupsToShow.showAllgroups)">
-        <ng-template pTemplate="header">
-          <p-badge
-            *ngIf="groupsToShow.groupNames.includes('Additional Filters Mapping') && groupsToShow.groupNames.length !== 0"
-            [value]="groupsToShow.groupFields['Additional Filters Mapping']" styleClass="p-ml-2"
-            severity="info"></p-badge>
-        </ng-template>
-        <div class="p-mb-3 p-d-flex p-align-center"
-             *ngIf="fieldstoShow?.includes('additionalFilterIdentifier') || fieldstoShow.length === 0">
-          <label class="field-title">Additional Filter Identifier <span class="fa fa-info-circle"
-                                                                        aria-hidden="true" pTooltip='<span>
+            <p-accordionTab header="Additional Filters Mapping"
+                [disabled]="!(groupsToShow.groupNames.includes('Additional Filters Mapping') || groupsToShow.showAllgroups)">
+                <ng-template pTemplate="header">
+                    <p-badge
+                        *ngIf="groupsToShow.groupNames.includes('Additional Filters Mapping') && groupsToShow.groupNames.length !== 0"
+                        [value]="groupsToShow.groupFields['Additional Filters Mapping']" styleClass="p-ml-2"
+                        severity="info"></p-badge>
+                </ng-template>
+                <div class="p-mb-3 p-d-flex p-align-center"
+                    *ngIf="fieldstoShow?.includes('additionalFilterIdentifier') || fieldstoShow.length === 0">
+                    <label class="field-title">Additional Filter Identifier <span class="fa fa-info-circle"
+                            aria-hidden="true" pTooltip='<span>
                                 Definition:
                                 This field is used to identify Additional Filters. <br>
                                 Example: SQUAD
                                 KPI Impacted : Filters
                               </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
-                                                                        [escape]="false"
-                                                                        tooltipPosition="top"></span></label>
-          <div [style]="{'width':'calc(60vw + 42px)'}">
-            <div class="p-d-flex p-align-center p-w-100">
-              <div class="p-w-100">
-                <p-dropdown id="additionalFilterIdentifier" [options]="additionalFilterOptions"
-                            placeholder="Select" [(ngModel)]="additionalFilterIdentifier"
-                            [ngModelOptions]="{standalone: true}"
-                            [style]="{'width':'100%', 'max-width': '100%','border-bottom-right-radius':'0px','border-top-right-radius':'0px'}"
-                            optionLabel="name" (onChange)="disableAdditionalFilterAdd=false">
-                </p-dropdown>
-              </div>
-              <div>
-                <p-button pRipple label="Add" class="p-button-raised configure-btn p-mt-1"
-                          [style]="{'padding':'15px','border-top-left-radius': '0px','border-bottom-left-radius': '0px'}"
-                          (click)="addAdditionalFilterMappings()" [disabled]="disableAdditionalFilterAdd"></p-button>
-              </div>
-            </div>
+                            [escape]="false" tooltipPosition="top"></span></label>
+                    <div [style]="{'width':'calc(60vw + 42px)'}">
+                        <div class="p-d-flex p-align-center p-w-100">
+                            <div class="p-w-100">
+                                <p-dropdown id="additionalFilterIdentifier" [options]="additionalFilterOptions"
+                                    placeholder="Select" [(ngModel)]="additionalFilterIdentifier"
+                                    [ngModelOptions]="{standalone: true}"
+                                    [style]="{'width':'100%', 'max-width': '100%','border-bottom-right-radius':'0px','border-top-right-radius':'0px'}"
+                                    optionLabel="name" (onChange)="disableAdditionalFilterAdd=false">
+                                </p-dropdown>
+                            </div>
+                            <div>
+                                <p-button pRipple label="Add" class="p-button-raised configure-btn p-mt-1"
+                                    [style]="{'padding':'15px','border-top-left-radius': '0px','border-bottom-left-radius': '0px'}"
+                                    (click)="addAdditionalFilterMappings()" [disabled]="disableAdditionalFilterAdd"></p-button>
+                            </div>
+                        </div>
 
-            <div class="p-p-2 p-mt-2 position-relative additional-fields-container"
-                 *ngFor="let filter of additionalFiltersArray">
-              <div class="">
-                <!--Additional Filter Identifier dropdown with three values ["Component", "CustomField", "Labels"]-->
-                <div class="p-m-2">
-                  <div class="p-d-flex">
-                    <label class="field-title">{{ filter.name }} Identifier </label>
-                    <div class="">
-                      <button pButton pRipple type="button" icon="pi pi-times"
-                              class="p-button p-button-secondary p-button-close"
-                              (click)="removeAdditionFilterMapping(filter)"></button>
+                        <div class="p-p-2 p-mt-2 position-relative additional-fields-container"
+                            *ngFor="let filter of additionalFiltersArray">
+                            <div class="">
+                                <!--Additional Filter Identifier dropdown with three values ["Component", "CustomField", "Labels"]-->
+                                <div class="p-m-2">
+                                    <div class="p-d-flex">
+                                        <label class="field-title">{{ filter.name }} Identifier </label>
+                                        <div class="">
+                                            <button pButton pRipple type="button" icon="pi pi-times"
+                                                class="p-button p-button-secondary p-button-close"
+                                                (click)="removeAdditionFilterMapping(filter)"></button>
+                                        </div>
+                                    </div>
+                                    <div class="p-d-flex p-justify-between">
+                                        <div class="p-inputgroup">
+                                            <ng-container
+                                                *ngFor="let additionalFilter of additionalFilterIdentificationOptions">
+                                                <p-radioButton placeholder="Select"
+                                                    formControlName="{{ filter.code + 'Identifier'}}"
+                                                    value="{{additionalFilter.value}}"
+                                                    label="{{additionalFilter.value}}" class="p-m-2"
+                                                    (onClick)="changeControl($event,filter)">
+                                                </p-radioButton>
+                                            </ng-container>
+                                        </div>
+                                        <button pButton pRipple type="button" label="Reset" class="p-button-raised"
+                                            (click)="resetRadioButton(filter.code + 'Identifier')"></button>
+                                    </div>
+                                </div>
+                                <!-- Single value text input for Custom Field-->
+                                <!-- -->
+                                <div class="p-m-2"
+                                    *ngIf="fieldMapping[ filter.code + 'Identifier'].value === 'CustomField'">
+                                    <label class="field-title">{{fieldMapping[filter.code +
+                                        'Identifier'].value}}</label>
+                                    <div class="p-inputgroup p-mt-2">
+                                        <input type="text" pInputText id="{{filter.code + 'IdentSingleValue'}}"
+                                            formControlName="{{filter.code + 'IdentSingleValue'}}"
+                                            placeholder="Enter {{fieldMapping[filter.code + 'Identifier'].value}}"
+                                            [style]="{'width':'100%','max-width':'100%'}">
+                                        <button
+                                            [hidden]="fieldMapping[filter.code + 'Identifier'].value !== 'CustomField'"
+                                            type="button" pButton pRipple icon="pi pi-search"
+                                            (click)="showDialogToAddValue(true, filter.code + 'IdentSingleValue' , 'fields')">
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- Multivalue field for Component and Labels-->
+                                <!--  -->
+                                <div class="p-m-2"
+                                    *ngIf="fieldMapping[ filter.code + 'Identifier'].value === 'Labels' || fieldMapping[filter.code + 'Identifier'].value === 'Component'">
+                                    <label class="field-title">{{fieldMapping[filter.code +
+                                        'Identifier'].value}}</label>
+                                    <div class="p-mt-2">
+                                        <p-chips [style]="{'width':'100%','max-width':'100%','display':'block'}"
+                                            inputId="{{ filter.code + 'IdentMultiValue' }}"
+                                            formControlName="{{ filter.code + 'IdentMultiValue' }}"
+                                            placeholder="Enter {{fieldMapping[filter.code + 'Identifier'].value}}"
+                                            addOnBlur="true" pTooltip='' tooltipPosition="top" tooltipEvent="hover"
+                                            tooltipStyleClass="tooltiptext" [escape]="false">
+                                        </p-chips>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                  <div class="p-d-flex p-justify-between">
-                    <div class="p-inputgroup">
-                      <ng-container
-                        *ngFor="let additionalFilter of additionalFilterIdentificationOptions">
-                        <p-radioButton placeholder="Select"
-                                       formControlName="{{ filter.code + 'Identifier'}}"
-                                       value="{{additionalFilter.value}}"
-                                       label="{{additionalFilter.value}}" class="p-m-2"
-                                       (onClick)="changeControl($event,filter)">
-                        </p-radioButton>
-                      </ng-container>
-                    </div>
-                    <button pButton pRipple type="button" label="Reset" class="p-button-raised"
-                            (click)="resetRadioButton(filter.code + 'Identifier')"></button>
-                  </div>
                 </div>
-                <!-- Single value text input for Custom Field-->
-                <!-- -->
-                <div class="p-m-2"
-                     *ngIf="fieldMapping[ filter.code + 'Identifier'].value === 'CustomField'">
-                  <label class="field-title">{{fieldMapping[filter.code +
-                    'Identifier'].value}}</label>
-                  <div class="p-inputgroup p-mt-2">
-                    <input type="text" pInputText id="{{filter.code + 'IdentSingleValue'}}"
-                           formControlName="{{filter.code + 'IdentSingleValue'}}"
-                           placeholder="Enter {{fieldMapping[filter.code + 'Identifier'].value}}"
-                           [style]="{'width':'100%','max-width':'100%'}">
-                    <button
-                      [hidden]="fieldMapping[filter.code + 'Identifier'].value !== 'CustomField'"
-                      type="button" pButton pRipple icon="pi pi-search"
-                      (click)="showDialogToAddValue(true, filter.code + 'IdentSingleValue' , 'fields')">
-                    </button>
-                  </div>
-                </div>
-                <!-- Multivalue field for Component and Labels-->
-                <!--  -->
-                <div class="p-m-2"
-                     *ngIf="fieldMapping[ filter.code + 'Identifier'].value === 'Labels' || fieldMapping[filter.code + 'Identifier'].value === 'Component'">
-                  <label class="field-title">{{fieldMapping[filter.code +
-                    'Identifier'].value}}</label>
-                  <div class="p-mt-2">
-                    <p-chips [style]="{'width':'100%','max-width':'100%','display':'block'}"
-                             inputId="{{ filter.code + 'IdentMultiValue' }}"
-                             formControlName="{{ filter.code + 'IdentMultiValue' }}"
-                             placeholder="Enter {{fieldMapping[filter.code + 'Identifier'].value}}"
-                             addOnBlur="true" pTooltip='' tooltipPosition="top" tooltipEvent="hover"
-                             tooltipStyleClass="tooltiptext" [escape]="false">
-                    </p-chips>
-                  </div>
-                </div>
+            </p-accordionTab>
 
-              </div>
-            </div>
-          </div>
-        </div>
-      </p-accordionTab>
-
-    </p-accordion>
-  </form>
-  <div class="save-container p-mt-5">
-    <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3"
+        </p-accordion>
+    </form>
+    <div class="save-container p-mt-5">
+        <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3"
             icon="pi pi-save" iconPos="left" label="Save" (click)="save()"
             [disabled]="disableSave || fieldMappingForm.invalid"></button>
-    <button pButton pRipple type="button" class="p-button-lg p-button-primary p-mr-3" icon="pi pi-download"
+        <button pButton pRipple type="button" class="p-button-lg p-button-primary p-mr-3" icon="pi pi-download"
             iconPos="left" label="Export" (click)="export()" [disabled]="fieldMappingForm.invalid"></button>
-  </div>
+    </div>
 </div>
 <p-dialog header="Add Value(s)" [(visible)]="displayDialog" showEffect="fade" [modal]="true" [style]="{width: '500px'}"
-          (onShow)="recordScrollPosition()" (onHide)="scrollToPosition()">
-  <div class="dialog-panel" style="width: 450px; min-height: 450px; overflow: hidden;">
-    <div *ngIf="singleSelectionDropdown">
-      <p-dropdown *ngIf="populateDropdowns" inputId="singleSelectionDropdown" autoWidth="false"
-                  [style]="{'width':'100%', 'max-width': '100%'}" [options]="fieldMappingMultiSelectValues"
-                  placeholder="Select Value" [(ngModel)]="selectedValue" optionLabel="key" optionValue="data"
-                  filter="true" showClear="true">
-      </p-dropdown>
+    (onShow)="recordScrollPosition()" (onHide)="scrollToPosition()">
+    <div class="dialog-panel" style="width: 450px; min-height: 450px; overflow: hidden;">
+        <div *ngIf="singleSelectionDropdown">
+            <p-dropdown *ngIf="populateDropdowns" inputId="singleSelectionDropdown" autoWidth="false"
+                [style]="{'width':'100%', 'max-width': '100%'}" [options]="fieldMappingMultiSelectValues"
+                placeholder="Select Value" [(ngModel)]="selectedValue" optionLabel="key" optionValue="data"
+                filter="true" showClear="true">
+            </p-dropdown>
+        </div>
+        <div *ngIf="!singleSelectionDropdown" class="multiselect-container p-field p-col-12">
+            <p-multiSelect *ngIf="populateDropdowns" inputId="multiSelectionDropdown"
+                [style]="{'width':'436px', 'max-width': '100%'}" [options]="fieldMappingMultiSelectValues"
+                defaultLabel="Select Values" [(ngModel)]="selectedMultiValue" optionLabel="key" display="chip">
+            </p-multiSelect>
+        </div>
     </div>
-    <div *ngIf="!singleSelectionDropdown" class="multiselect-container p-field p-col-12">
-      <p-multiSelect *ngIf="populateDropdowns" inputId="multiSelectionDropdown"
-                     [style]="{'width':'436px', 'max-width': '100%'}" [options]="fieldMappingMultiSelectValues"
-                     defaultLabel="Select Values" [(ngModel)]="selectedMultiValue" optionLabel="key" display="chip">
-      </p-multiSelect>
-    </div>
-  </div>
-  <p-footer>
-    <div class="ui-dialog-buttonpane ui-helper-clearfix">
-      <button type="button" pButton pRipple icon="pi pi-times" (click)="cancelDialog()" label="Cancel"
-              class="p-button p-button-danger p-button-raised"></button>
-      <button type="button" pButton pRipple icon="fa fa-check" (click)="saveDialog()" label="Add"
-              class="p-button p-button-success p-button-raised"></button>
-    </div>
-  </p-footer>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="button" pButton pRipple icon="pi pi-times" (click)="cancelDialog()" label="Cancel"
+                class="p-button p-button-danger p-button-raised"></button>
+            <button type="button" pButton pRipple icon="fa fa-check" (click)="saveDialog()" label="Add"
+                class="p-button p-button-success p-button-raised"></button>
+        </div>
+    </p-footer>
 </p-dialog>
 
 <p-confirmDialog #templateInfoDialog key="templateInfoDialog" [style]="{width: '50vw'}">
-  <p-footer>
-    <button type="button" (click)="templateInfoDialog.reject()" pButton label="Cancel"
-            class="enable-dialog-btn"></button>
-    <button type="button" (click)="templateInfoDialog.accept()" pButton label="Proceed"></button>
-  </p-footer>
+    <p-footer>
+        <button type="button" (click)="templateInfoDialog.reject()" pButton label="Cancel" class="enable-dialog-btn"></button>
+        <button type="button" (click)="templateInfoDialog.accept()" pButton label="Proceed"></button>
+    </p-footer>
 </p-confirmDialog>
