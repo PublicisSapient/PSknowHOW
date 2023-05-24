@@ -185,7 +185,7 @@ public class SprintClientImpl implements SprintClient {
 			sprintRepository.saveAll(toBeSavedSprintDetails);
 		}
 
-		basedOnIterationStatusUpdateSprintReportIssuesShuffle(projectConfig);
+		basedOnIterationStatusUpdateSprintReportIssuesShuffle(projectConfig , completedIssuesStatus);
 	}
 
 	/**
@@ -202,7 +202,7 @@ public class SprintClientImpl implements SprintClient {
 			Set<SprintIssue> toBeSavedNotCompletedIssues, Set<SprintIssue> toBeSavedTotalIssues) {
 
 		fetchedSprintWiseIssues.forEach(sprintIssue -> {
-			if (completedIssuesStatus.contains(sprintIssue.getStatus())) {
+			if (CollectionUtils.isNotEmpty(completedIssuesStatus) && completedIssuesStatus.contains(sprintIssue.getStatus())) {
 				toBeSavedCompletedIssues.add(sprintIssue);
 				toBeSavedTotalIssues.add(sprintIssue);
 			} else {
@@ -279,13 +279,13 @@ public class SprintClientImpl implements SprintClient {
 	/**
 	 * if field mapping is changes then existing sprint report issues will be changes as per status
 	 * @param projectConfig
+	 * @param completedIssuesStatus
 	 */
-	private void basedOnIterationStatusUpdateSprintReportIssuesShuffle(ProjectConfFieldMapping projectConfig) {
-		FieldMapping fieldMapping = projectConfig.getFieldMapping();
+	private void basedOnIterationStatusUpdateSprintReportIssuesShuffle(ProjectConfFieldMapping projectConfig , List<String> completedIssuesStatus) {
 		ProjectToolConfig projectToolConfig = projectToolConfigRepository
 				.findById(projectConfig.getAzureBoardToolConfigId().toString());
 		if (projectToolConfig.isAzureIterationStatusFieldUpdate()
-				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusCustomField())) {
+				&& CollectionUtils.isNotEmpty(completedIssuesStatus)) {
 			List<SprintDetails> dbSprintDetailsList = sprintRepository
 					.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 			dbSprintDetailsList.stream().forEach(sprintDetails -> {
@@ -293,8 +293,7 @@ public class SprintClientImpl implements SprintClient {
 					Set<SprintIssue> toBeSavedCompletedIssues = new HashSet<>();
 					Set<SprintIssue> toBeSavedNotCompletedIssues = new HashSet<>();
 					sprintDetails.getTotalIssues().stream().forEach(sprintIssue -> {
-						if (fieldMapping.getJiraIterationCompletionStatusCustomField()
-								.contains(sprintIssue.getStatus())) {
+						if (completedIssuesStatus.contains(sprintIssue.getStatus())) {
 							toBeSavedCompletedIssues.add(sprintIssue);
 						} else {
 							toBeSavedNotCompletedIssues.add(sprintIssue);
