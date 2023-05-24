@@ -33,16 +33,33 @@ export class StackedAreaChartComponent implements OnInit {
     let keys = Object.keys(this.data[0]?.value);
     let yMax = 0;
     const data = this.data.map((x) => {
+      for(let item in x.value){
+        if(keys.indexOf(item) == -1){
+          keys.push(item);
+        }
+        if(x.value[item] > yMax) yMax = x.value[item];
+      }
       let obj = {
         'date': x.date,
         ...x.value
       }
-      for(let item in x.value){
-        if(keys.indexOf(item) == -1) keys.push(item);
-        if(x.value[item] > yMax) yMax = x.value[item];
-      }
       return obj;
     });
+    
+    this.data.map((item) => {
+      let dataItems = Object.keys(item?.value);//['story', 'issues', 'change requests']
+
+      let missingItems: any = [];
+      if(keys?.length > dataItems?.length){
+        missingItems = keys.filter((x) => !dataItems.includes(x))
+      }
+      let obj = {...item};
+      missingItems.forEach((k) => {
+        obj.value[k] = 0
+      });
+      return obj;
+    });
+    
     
     // set the dimensions and margins of the graph
     const margin = { top: 20, right: 20, bottom: 90, left: 50 },
