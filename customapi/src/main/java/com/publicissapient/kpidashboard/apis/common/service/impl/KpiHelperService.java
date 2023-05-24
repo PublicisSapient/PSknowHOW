@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -146,6 +147,9 @@ public class KpiHelperService { // NOPMD
 
 	@Autowired
 	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
+
+	@Autowired
+	JiraServiceR jiraKPIService;
 
 	/**
 	 * Prepares Kpi Elemnts on the basis of kpi master data.
@@ -464,6 +468,7 @@ public class KpiHelperService { // NOPMD
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
+		jiraKPIService.processSprintBasedOnFieldMapping(sprintDetails,configHelperService);
 
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
