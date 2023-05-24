@@ -20,7 +20,7 @@
                         (<b class="pi pi-minus font-bold"></b>
                         <span class="kpi-trend">{{'VE' | uppercase}}</span>)
                     </span>
-                    <span *ngIf="dataTrend?.trend != '+ve' && dataTrend?.trend != '-ve'">
+                    <span class="other-trend" *ngIf="dataTrend?.trend != '+ve' && dataTrend?.trend != '-ve'">
                         ({{dataTrend?.trend}})
                     </span>
                     <!-- <span *ngIf="kpiData?.kpiDetail?.kpiUnit !== 'Number'"
@@ -33,7 +33,7 @@
         
         <div class="p-text-center">
             <div class="indicator-heading">Maturity</div>
-            <p class="average-data-primary">{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' ? dataTrend?.maturityValue : ''}}{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' && dataTrend?.kpiUnit ? ' '+dataTrend?.kpiUnit : ''}} {{dataTrend?.maturityValue && dataTrend?.maturity !== '--' ? '('+dataTrend?.maturity+')'  : dataTrend?.maturity}}</p>
+            <p class="average-data-primary">{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' ? dataTrend?.maturityValue : ''}}{{dataTrend?.maturityValue && dataTrend?.maturity !== '--' && dataTrend?.maturity !== 'NA' && dataTrend?.kpiUnit ? ' '+dataTrend?.kpiUnit.charAt(0).toUpperCase() : ''}} {{dataTrend?.maturityValue && dataTrend?.maturity !== '--' ? '('+dataTrend?.maturity+')'  : dataTrend?.maturity}}</p>
         </div>
     </div>
 
