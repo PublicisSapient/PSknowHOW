@@ -212,23 +212,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 					});
 				}
 			});
-		} /*else {
-			if (CollectionUtils.isNotEmpty(allJiraIssue)) {
-				// start : for azure board sprint details collections empty so that we have to
-				// prepare data from jira issue
-				Map<String, List<JiraIssue>> projectWiseJiraIssues = allJiraIssue.stream()
-						.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
-				projectWiseJiraIssues.forEach((basicProjectConfigId, projectWiseIssuesList) -> {
-					Map<String, List<JiraIssue>> sprintWiseJiraIssues = projectWiseIssuesList.stream()
-							.filter(jiraIssue -> Objects.nonNull(jiraIssue.getSprintID()))
-							.collect(Collectors.groupingBy(JiraIssue::getSprintID));
-					sprintWiseJiraIssues.forEach((sprintId, sprintWiseIssuesList) -> sprintWiseIssues
-							.put(Pair.of(basicProjectConfigId, sprintId), sprintWiseIssuesList));
-				});
-			}
-			// end : for azure board sprint details collections empty so that we have to
-			// prepare data from jira issue.
-		}*/
+		}
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 		sprintLeafNodeList.forEach(node -> {

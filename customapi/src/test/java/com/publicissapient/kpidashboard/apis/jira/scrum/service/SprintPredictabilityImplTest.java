@@ -223,7 +223,7 @@ public class SprintPredictabilityImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
 		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,
-				SprintDetails.SPRINT_STATE_CLOSED)).thenReturn(null);
+				SprintDetails.SPRINT_STATE_CLOSED)).thenReturn(sprintDetailsList);
 
 		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
 				.thenReturn(sprintWiseStoryList);
