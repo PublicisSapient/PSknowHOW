@@ -575,6 +575,15 @@ export class BacklogComponent implements OnInit, OnDestroy{
     return val;
   }
 
+   checkSprint(value, unit, kpiId){
+      if((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0 && this.kpiSelectedFilterObj[kpiId]['filter1'][0]?.toLowerCase() !== 'overall')
+      || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0 && this.kpiSelectedFilterObj[kpiId]['filter2'][0]?.toLowerCase() !== 'overall')){
+        return '-'
+      } else{
+        return Math.floor(value) < value ? `>${Math.round(value)} ${unit}` : `=${value} ${unit}`;
+      }
+    }
+
   handleArrowClick(kpi, label, tableValues) {
     this.displayModal = true;
     const idx = this.ifKpiExist(kpi?.kpiId);
@@ -636,7 +645,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
       this.excelService.generateExcel(kpiData, this.modalDetails['header']);
     }
-
+   typeOf(value) {
+       return typeof value === 'object' && value !== null;
+   }
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
     this.sharedObject = null;

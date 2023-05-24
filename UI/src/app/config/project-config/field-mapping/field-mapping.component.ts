@@ -405,6 +405,7 @@ export class FieldMappingComponent implements OnInit {
   initializeFields() {
     this.fieldMappingFormObj = {
       // workflow status mapping
+      readyForDevelopmentStatus: [''],
       storyFirstStatus: [''],
       jiraDefectCreatedStatus: [''],
       jiraDefectDroppedStatus: [[]],
@@ -572,7 +573,7 @@ export class FieldMappingComponent implements OnInit {
           if (response['data']) {
             this.confirmationService.confirm({
               message: `Please note that change in mappings is a deviation from initially configured template.
-              If you continue with the change in mappings then these changes will be mapped to a 
+              If you continue with the change in mappings then these changes will be mapped to a
               Custom template in project configurations which cannot be changed again to a initially configured template.`,
               header: 'Template Change Info',
               key: 'templateInfoDialog',
@@ -590,12 +591,12 @@ export class FieldMappingComponent implements OnInit {
             summary: 'Some error occurred. Please try again later.'
           });
         }
-        
+
       });
     }else{
       this.saveFieldMapping(submitData);
     }
-  
+
   }
 
   onUpload(event) {
