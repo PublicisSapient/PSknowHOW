@@ -225,6 +225,8 @@ public class CustomApiConfig {// NOPMD
 	@Value("${backlogWeekCount}")
 	private int backlogWeekCount;
 
+	@Value("${flowKpiMonthCount}")
+	private int flowKpiMonthCount;
 	public int getPushDataLimit() {
 		return pushDataLimit;
 	}
@@ -240,7 +242,9 @@ public class CustomApiConfig {// NOPMD
 	public int getBacklogWeekCount() {
 		return this.backlogWeekCount;
 	}
-
+	public int getFlowKpiMonthCount() {
+		return flowKpiMonthCount;
+	}
 	public void setExposeAPITokenExpiryDays(int exposeAPITokenExpiryDays) {
 		this.exposeAPITokenExpiryDays = exposeAPITokenExpiryDays;
 	}
