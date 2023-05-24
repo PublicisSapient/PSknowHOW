@@ -1125,7 +1125,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ? 
                                     this.checkMaturity(this.kpiChartData[kpiId][i]) 
                                     : 'M'+this.kpiChartData[kpiId][i]?.maturity,
-                        "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue
+                        "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue,
+                        "kpiUnit" : enabledKpiObj?.kpiDetail?.kpiUnit
                     };
                     if(kpiId === 'kpi997'){
                         trendObj['value'] = 'NA';

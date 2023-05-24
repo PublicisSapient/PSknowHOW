@@ -281,7 +281,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 				} else {
 					deploymentFrequencyInfo.addJobNameList(deployment.getJobName());
 				}
-				deploymentFrequencyInfo.addDeploymentDateList(deployment.getStartTime());
+				deploymentFrequencyInfo.addDeploymentDateList(DateUtil.dateTimeConverter(deployment.getStartTime(), DateUtil.TIME_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 				LocalDateTime dateTime = LocalDateTime.parse(deployment.getStartTime(), formatter);
 				deploymentFrequencyInfo.addMonthList(dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT)));

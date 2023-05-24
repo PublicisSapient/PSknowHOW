@@ -108,6 +108,8 @@ import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/una
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
 import { CommentsComponent } from './component/comments/comments.component';
 import { MilestoneComponent } from './dashboard/milestone/milestone.component';
+import { HorizontalPercentBarChartComponent } from './component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
+
 
 /******************************************************/
 
@@ -168,7 +170,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         SsoAuthFailureComponent,
         UnauthorisedAccessComponent,
         GroupBarChartComponent,
-        MilestoneComponent
+        MilestoneComponent,
+        HorizontalPercentBarChartComponent
     ],
     imports: [
         DropdownModule,

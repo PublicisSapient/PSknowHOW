@@ -87,7 +87,7 @@
     margin-right: 10px;
   }
   
-  ::ng-deep .legend_color_indicator {
+  :host::ng-deep .legend_color_indicator {
     width: 18px;
     height: 18px;
     display: inline-block;
