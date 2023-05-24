@@ -3845,7 +3845,7 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": "stacked-area",
     "kpiInfo": {
-    "definition": "Flow Load"
+    "definition": " Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues"
     },
     "xAxisLabel": "Time",
     "yAxisLabel": "Count",

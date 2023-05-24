@@ -213,10 +213,6 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 
 	}
 
-	@Override
-	public Map<String, Map<String, Integer>> getStoryStatusCountByDateRange(List<String> projectList, String startDate, String endDate) {
-		return null;
-	}
 
 
 }

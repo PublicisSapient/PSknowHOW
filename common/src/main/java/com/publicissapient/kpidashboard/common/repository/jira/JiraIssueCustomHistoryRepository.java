@@ -67,4 +67,6 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 	List<JiraIssueCustomHistory> findByStoryIDInAndBasicProjectConfigIdIn(List<String> storyID,
 			List<String> basicProjectConfigId);
 
+
+	List<JiraIssueCustomHistory> findByBasicProjectConfigId(String basicProjectConfigId);
 }
