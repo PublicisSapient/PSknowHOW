@@ -4,7 +4,7 @@
             <div class="kpi-card-title-container">
                 <h3 *ngIf="kpiData">{{kpiData?.kpiName}}
                     <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
-                        (mouseover)="showTooltip(true)">
+                        (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)">
                         <app-tooltip *ngIf="isTooltip" [data]="kpiData?.kpiDetail?.kpiInfo"
                             (mouseleave)="showTooltip(false)" [showChartView]="showChartView"></app-tooltip>
                     </span>
@@ -114,7 +114,8 @@
 
             <ng-container *ngFor="let project of projectList;  let i = index;">
                 <p-tabPanel header="{{project}}" [headerStyleClass]="getColorCssClasses(selectedTabIndex)">
-                    <p-table *ngIf="(sprintDetailsList[selectedTabIndex] && sprintDetailsList[selectedTabIndex]['hoverList'].length >0 ) ; else showNoDataMessage" [columns]="columnList" [value]="sprintDetailsList[selectedTabIndex]['hoverList']" styleClass="p-datatable-gridlines kpi-table" [scrollable]="true" scrollHeight="290px">
+                    <p-table *ngIf="(sprintDetailsList[selectedTabIndex] && sprintDetailsList[selectedTabIndex]['hoverList'].length >0 ) ; else showNoDataMessage" [columns]="columnList" [value]="sprintDetailsList[selectedTabIndex]['hoverList']" 
+                        styleClass="p-datatable-gridlines kpi-table" [scrollable]="true" scrollHeight="200px">
                         <ng-template pTemplate="header" let-columns>
                             <tr>
                                 <ng-container *ngFor="let col of columns">

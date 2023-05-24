@@ -1037,7 +1037,8 @@ export class UploadComponent implements OnInit {
             if (assigneeFormControls.plannedCapacity.value > 0) {
                 assigneeFormControls.leaves.setValidators([Validators.max(assignee.plannedCapacity)]);
                 assigneeFormControls.leaves.enable();
-                assignee.availableCapacity = assignee.plannedCapacity - assignee.leaves;
+                let totalCapacity = assignee.plannedCapacity - assignee.leaves;
+                assignee.availableCapacity  = Math.round(totalCapacity * 100) / 100;
             } else {
                 assigneeFormControls.leaves.setValue(0);
                 assigneeFormControls.leaves.disable();
