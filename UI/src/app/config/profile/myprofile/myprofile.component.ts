@@ -77,8 +77,8 @@ export class MyprofileComponent implements OnInit {
       }
     })
 
-    if (!!localStorage.projectsAccess && JSON.parse(localStorage.projectsAccess).length) {
-      const accessList = JSON.parse(localStorage.projectsAccess);
+    if (!!this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess')?.length) {
+      const accessList = JSON.parse(JSON.stringify(this.sharedService.getCurrentUserDetails('projectsAccess')));
 
       this.groupProjects(accessList);
       this.getTableHeadings();

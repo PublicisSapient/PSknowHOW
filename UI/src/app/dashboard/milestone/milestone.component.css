@@ -137,3 +137,7 @@
     background-color: #dedede;
     margin: auto;
   }
+
+  .chart-container-height{
+    height: 300px;
+  }

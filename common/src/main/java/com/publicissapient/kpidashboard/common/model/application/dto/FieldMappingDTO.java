@@ -96,6 +96,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraDefectCountlIssueType;
 
 	private List<String> jiraIssueDeliverdStatus;
+	private String readyForDevelopmentStatus;
 
 	private String jiraDor;
 

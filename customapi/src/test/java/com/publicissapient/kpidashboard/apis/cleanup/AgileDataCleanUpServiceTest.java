@@ -27,6 +27,8 @@ import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.repository.application.*;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -48,15 +50,22 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author anisingh4
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class AgileDataCleanUpServiceTest {
 
 	@InjectMocks
 	private AgileDataCleanUpService agileDataCleanUpService;
+
+	@Mock
+	private IssueBacklogRepository issueBacklogRepository;
+
+	@Mock
+	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 
 	@Mock
 	private ProjectToolConfigRepository projectToolConfigRepository;

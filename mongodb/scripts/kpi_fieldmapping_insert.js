@@ -395,6 +395,13 @@ db.getCollection('kpi_fieldmapping').insert(
         fieldNames : {'Workflow Status Mapping' : ['jiraStatusForInProgress', 'jiraDevDoneStatus','jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField']}
       },
       {
+         kpiId: 'kpi145',
+         kpiName: 'Dev Completion Status',
+      	 kpiSource: 'Jira',
+         type: ['Other'],
+         fieldNames : {'Workflow Status Mapping' : ['jiraStatusForInProgress', 'jiraDevDoneStatus']}
+      },
+      {
         kpiId: 'kpi79',
         kpiName: 'Test Cases Without Story Link',
 		kpiSource: 'Zypher',
@@ -496,5 +503,12 @@ db.getCollection('kpi_fieldmapping').insert(
             'jiraRejectedInRefinement'
           ]
         }
-      }
+      },
+       {
+              kpiId: 'kpi138',
+              kpiName: 'Backlog Readiness Efficiency',
+      		kpiSource: 'Jira',
+              type: ['Other'],
+              fieldNames : {'Workflow Status Mapping' : ['readyForDevelopmentStatus'] }
+            }
 	  ]);
