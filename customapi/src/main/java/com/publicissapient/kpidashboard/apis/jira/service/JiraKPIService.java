@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -284,15 +285,20 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		List<JiraIssue> jiraIssuesForCurrentSprint = jiraService.getJiraIssuesForCurrentSprint();
 		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(jiraIssuesForCurrentSprint)) {
-			projectWiseDefectTypes.forEach((project, values) ->
-				filteredJiraIssue
-						.addAll(jiraIssuesForCurrentSprint.stream()
-								.filter(jiraIssue -> values.contains(jiraIssue.getTypeName())
-										&& project.equalsIgnoreCase(jiraIssue.getBasicProjectConfigId()))
-								.collect(Collectors.toList()))
-			);
-		}
+			List<JiraIssue> finalFilteredJiraIssue = filteredJiraIssue;
+			projectWiseDefectTypes.forEach((project,
+					values) -> finalFilteredJiraIssue.addAll(jiraIssuesForCurrentSprint.stream()
+							.filter(jiraIssue -> values.contains(jiraIssue.getTypeName())
+									&& project.equalsIgnoreCase(jiraIssue.getBasicProjectConfigId()))
+							.collect(Collectors.toList())));
+
+		} else
+			filteredJiraIssue = jiraIssuesForCurrentSprint;
 		return filteredJiraIssue;
+	}
+
+	public JiraIssueReleaseStatus getJiraIssueReleaseStatus(String basicProjectConfigId) {
+		return jiraService.getJiraIssueReleaseForProject(basicProjectConfigId);
 	}
 
 	public void getModifiedSprintDetailsFromBaseClass(List<SprintDetails> sprintDetails, ConfigHelperService configHelperService) {
