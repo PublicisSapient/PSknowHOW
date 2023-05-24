@@ -115,7 +115,7 @@
             <ng-container *ngFor="let project of projectList;  let i = index;">
                 <p-tabPanel header="{{project}}" [headerStyleClass]="getColorCssClasses(selectedTabIndex)">
                     <p-table *ngIf="(sprintDetailsList[selectedTabIndex] && sprintDetailsList[selectedTabIndex]['hoverList'].length >0 ) ; else showNoDataMessage" [columns]="columnList" [value]="sprintDetailsList[selectedTabIndex]['hoverList']" 
-                        styleClass="p-datatable-gridlines kpi-table" [scrollable]="true" scrollHeight="200px">
+                        styleClass="p-datatable-gridlines kpi-table" [scrollable]="true" scrollHeight="250px" [style]="{width: '450px'}">
                         <ng-template pTemplate="header" let-columns>
                             <tr>
                                 <ng-container *ngFor="let col of columns">

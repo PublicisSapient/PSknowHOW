@@ -180,15 +180,6 @@
 
 }
 
-@media only screen and (max-width: 1600px){
 
-    ::ng-deep .sprint-details-overlay{
-        width: auto !important;
-        max-width: 340px !important;
-        min-width: 300px;
-        z-index: 0 !important;
-    
-    }
-}
 
 
