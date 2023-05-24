@@ -2554,9 +2554,7 @@ db.kpi_column_configs.insertMany([{
                                                                               isShown: true,
                                                                               isDefault: false
                                                                           }]
-                                                                      }
-
-                                 	},
+                                                                      },
 
                                     									{
                                                                      		basicProjectConfigId: null,

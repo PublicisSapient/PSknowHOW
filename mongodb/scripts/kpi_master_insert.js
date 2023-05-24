@@ -3931,8 +3931,7 @@ db.getCollection('kpi_master').insert(
           "kpiFilter": "multiSelectDropDown",
           "boxType": "3_column",
           "calculateMaturity": false
-        }
-  },
+        },
      {
        "kpiId": "kpi138",
        "kpiName": "Backlog Readiness",

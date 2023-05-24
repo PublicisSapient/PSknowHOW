@@ -3934,8 +3934,7 @@
   "kpiFilter": "dropdown",
   "boxType": "chart",
   "calculateMaturity": false
-}
-},
+ },
   {
     "kpiId": "kpi138",
     "kpiName": "Backlog Readiness Efficiency",
