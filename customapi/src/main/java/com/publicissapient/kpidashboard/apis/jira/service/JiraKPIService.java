@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -300,4 +301,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return jiraService.getJiraIssueReleaseForProject(basicProjectConfigId);
 	}
 
+	public void getModifiedSprintDetailsFromBaseClass(List<SprintDetails> sprintDetails, ConfigHelperService configHelperService) {
+		jiraService.processSprintBasedOnFieldMapping(sprintDetails, configHelperService);
+	}
 }
