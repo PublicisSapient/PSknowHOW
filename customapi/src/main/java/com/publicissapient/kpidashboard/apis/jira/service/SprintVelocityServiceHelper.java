@@ -1,10 +1,6 @@
 package com.publicissapient.kpidashboard.apis.jira.service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -43,27 +39,31 @@ public class SprintVelocityServiceHelper {
 			Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues, List<SprintDetails> sprintDetails,
 			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap) {
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
-			sprintDetails.stream().filter(sd -> CollectionUtils.isNotEmpty(sd.getCompletedIssues())).forEach(
-					sd -> {
+			Map<String, JiraIssue> jiraIssueMap = new HashMap<>();
+			if (CollectionUtils.isNotEmpty(allJiraIssue))
+			allJiraIssue.forEach(jiraIssue -> jiraIssueMap.put(jiraIssue.getNumber(), jiraIssue));
+
+			sprintDetails.stream()
+					.filter(sd -> CollectionUtils.isNotEmpty(sd.getCompletedIssues()))
+					.forEach(sd -> {
 						Set<IssueDetails> filterIssueDetailsSet = new HashSet<>();
-						sd.getCompletedIssues().stream().forEach(sprintIssue -> {
-							allJiraIssue.stream().forEach(jiraIssue -> {
-								if (sprintIssue.getNumber().equals(jiraIssue.getNumber())) {
-									IssueDetails issueDetails = new IssueDetails();
-									issueDetails.setSprintIssue(sprintIssue);
-									issueDetails.setUrl(jiraIssue.getUrl());
-									issueDetails.setDesc(jiraIssue.getName());
-									filterIssueDetailsSet.add(issueDetails);
-								}
-							});
-							Pair<String, String> currentNodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(),
-									sd.getSprintID());
-							LOGGER.debug("Issue count for the sprint {} is {}", sd.getSprintID(),
-									filterIssueDetailsSet.size());
-							currentSprintLeafVelocityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
+						sd.getCompletedIssues().forEach(sprintIssue -> {
+							JiraIssue jiraIssue = jiraIssueMap.get(sprintIssue.getNumber());
+
+								IssueDetails issueDetails = new IssueDetails();
+								issueDetails.setSprintIssue(sprintIssue);
+							if (jiraIssue != null) {
+								issueDetails.setUrl(jiraIssue.getUrl());
+								issueDetails.setDesc(jiraIssue.getName());
+							}
+								filterIssueDetailsSet.add(issueDetails);
+
 						});
-					}
-			);
+
+						Pair<String, String> currentNodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID());
+						LOGGER.debug("Issue count for the sprint {} is {}", sd.getSprintID(), filterIssueDetailsSet.size());
+						currentSprintLeafVelocityMap.put(currentNodeIdentifier, new HashSet<>(filterIssueDetailsSet));
+					});
 		} else {
 			if (CollectionUtils.isNotEmpty(allJiraIssue)) {
 				// start : for azure board sprint details collections empty so

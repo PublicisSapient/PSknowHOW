@@ -38,6 +38,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.google.common.util.concurrent.AtomicDouble;
@@ -167,14 +168,13 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			basicProjectConfigObjectIds.add(leaf.getProjectFilter().getBasicProjectConfigId());
 		});
 		List<SprintDetails> totalSprintDetails = sprintRepository
-				.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,
-						SprintDetails.SPRINT_STATE_CLOSED);
+				.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,SprintDetails.SPRINT_STATE_CLOSED,PageRequest.of(0, customApiConfig.getSprintCountForFilters() + sprintVelocityLimit));
 		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
 			Map<ObjectId, List<String>> projectWisePreviousSprintDetails = totalSprintDetails.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId,
 							Collectors.collectingAndThen(Collectors.toList(),
 									s -> s.stream().map(sprint -> sprint.getSprintID())
-											.skip(customApiConfig.getSprintCountForFilters()).limit(sprintVelocityLimit)
+											.skip(customApiConfig.getSprintCountForFilters())
 											.collect(Collectors.toList()))));
 			resultListMap = kpiHelperService
 					.fetchSprintVelocityDataFromDb(projectWisePreviousSprintDetails, kpiRequest, projectWiseSprintsForFilter,totalSprintDetails);
@@ -224,7 +224,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 
 		Map<String, Object> sprintVelocityStoryMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
 
-		List<JiraIssue> allJiraIssue = (List<JiraIssue>) sprintVelocityStoryMap.get(SPRINTVELOCITYKEY);
+		List<JiraIssue> currentJiraIssue = (List<JiraIssue>) sprintVelocityStoryMap.get(SPRINTVELOCITYKEY);
 
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -232,7 +232,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) sprintVelocityStoryMap.get(SPRINT_WISE_SPRINTDETAILS);
 		Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
-		velocityHelper.getSprintIssuesForProject(allJiraIssue, sprintWiseIssues, sprintDetails,
+		velocityHelper.getSprintIssuesForProject(currentJiraIssue, sprintWiseIssues, sprintDetails,
 				currentSprintLeafVelocityMap);
 
 		Map<Pair<String, String>, Set<IssueDetails>> oldcurrentSprintLeafVelocityMap = new HashMap<>();
@@ -244,7 +244,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			Collections.sort(oldSprintDetails, Comparator.comparing(SprintDetails::getStartDate));
 			List<JiraIssue> oldAllJiraIssue = (List<JiraIssue>) sprintVelocityStoryMap.get(PREVIOUS_SPRINT_VELOCITY);
 			velocityHelper.getSprintIssuesForProject(oldAllJiraIssue, oldSprintWiseIssues, oldSprintDetails,
-					oldcurrentSprintLeafVelocityMap);	
+					oldcurrentSprintLeafVelocityMap);
 		}
 		Map<Pair<String, String>, Double> sprintVelocity = getSprintVelocityMap(oldSprintWiseIssues,
 				oldcurrentSprintLeafVelocityMap, oldSprintDetails);
