@@ -129,7 +129,7 @@
                         <ng-template pTemplate="body" let-rowData let-columns="columns">
                             <tr>
                                 <ng-container *ngFor="let col of columns">
-                                    <td *ngIf="hasData(col.field)" [innerHTML]="rowData[col.field]" class="p-overflowlabel" [ngClass]="{'p-text-center': col.field ==='value','col1':col.field ==='duration'}">
+                                    <td *ngIf="hasData(col.field)" [innerHTML]="rowData[col.field]" class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}">
                                     </td>
                                </ng-container>
                             </tr>
