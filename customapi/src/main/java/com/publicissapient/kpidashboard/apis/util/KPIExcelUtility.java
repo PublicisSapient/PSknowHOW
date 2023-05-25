@@ -1433,8 +1433,8 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateFlowDistribution(Map<String, Map<String, Integer>> dateTypeCountMap,
-			List<KPIExcelData> excelData) {
+	public static void populateFlowKPI(Map<String, Map<String, Integer>> dateTypeCountMap,
+									   List<KPIExcelData> excelData) {
 		for (Map.Entry<String, Map<String, Integer>> entry : dateTypeCountMap.entrySet()) {
 			String date = entry.getKey();
 			Map<String, Integer> typeCountMap = entry.getValue();

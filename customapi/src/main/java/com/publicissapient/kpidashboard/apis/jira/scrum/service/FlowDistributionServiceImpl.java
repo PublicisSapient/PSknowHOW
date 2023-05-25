@@ -204,7 +204,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 			Map<String, Map<String, Integer>> dateTypeCountMap) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& !Objects.isNull(dateTypeCountMap)) {
-			KPIExcelUtility.populateFlowDistribution(dateTypeCountMap, excelData);
+			KPIExcelUtility.populateFlowKPI(dateTypeCountMap, excelData);
 		}
 	}
 	private static String combineType(String storyType) {
