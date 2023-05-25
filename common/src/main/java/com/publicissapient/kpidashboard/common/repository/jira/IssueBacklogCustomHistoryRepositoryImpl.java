@@ -18,21 +18,16 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.mongodb.BasicDBObject;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -56,11 +51,6 @@ public class IssueBacklogCustomHistoryRepositoryImpl implements IssueBacklogCust
 	private MongoOperations operations;
 
 	private static final String STATUS = "statusUpdationLog.changedTo";
-	private static final String STORY_TYPE = "storyType";
-	private static final String BASIC_PROJ_CONF_ID = "basicProjectConfigId";
-	private static final String START_TIME = "T00:00:00.000Z";
-	private static final String END_TIME = "T23:59:59.000Z";
-	private static final String TICKET_CREATED_DATE_FIELD = "createdDate";
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -86,31 +76,6 @@ public class IssueBacklogCustomHistoryRepositoryImpl implements IssueBacklogCust
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
 		return operations.find(query, IssueBacklogCustomHistory.class);
-	}
-	@SuppressWarnings("rawtypes")
-	@Override
-	public List<Map> getStoryTypeCountByDateRange(String basicProjectConfigId, String startDate,
-												  String endDate) {
-
-		LocalDateTime startDateTime = LocalDateTime.parse(startDate + START_TIME, FORMATTER);
-		LocalDateTime endDateTime = LocalDateTime.parse(endDate + END_TIME, FORMATTER);
-
-		Criteria criteria = Criteria.where(BASIC_PROJ_CONF_ID).is(basicProjectConfigId)
-				.and(TICKET_CREATED_DATE_FIELD).gte(startDateTime).lte(endDateTime);
-
-		TypedAggregation<IssueBacklogCustomHistory> aggregation = Aggregation.newAggregation(IssueBacklogCustomHistory.class,
-				Aggregation.match(criteria),
-				Aggregation.project()
-						.andExpression("dateToString('%Y-%m-%d', " + TICKET_CREATED_DATE_FIELD + ")").as("date")
-						.and(STORY_TYPE).as("type"),
-				Aggregation.group("date", "type").count().as(COUNT),
-				Aggregation.group("date").push(new BasicDBObject("type", "$_id.type").append(COUNT, "$count"))
-						.as(TYPE_COUNT_MAP),
-				Aggregation.project().and("_id").as("date").and(TYPE_COUNT_MAP).as(TYPE_COUNT_MAP));
-
-		AggregationResults<Map> results = operations.aggregate(aggregation, Map.class);
-		return results.getMappedResults();
-
 	}
 
 }

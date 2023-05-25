@@ -215,7 +215,7 @@ public enum KPIExcelColumn {
 
     RELEASE_PROGRESS("kpi147",Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority","Assignee", "Issue Status")),
 
-    FLOW_DISTRIBUTION("Kpi146",Arrays.asList("Date","Type Count Map"));
+    FLOW_DISTRIBUTION("Kpi146",Arrays.asList("Date"));
 
     // @formatter:on
 

@@ -1441,7 +1441,7 @@ public class KPIExcelUtility {
 			KPIExcelData kpiExcelData = new KPIExcelData();
 			if (MapUtils.isNotEmpty(typeCountMap)) {
 				kpiExcelData.setDate(date);
-				kpiExcelData.setTypeCountMap(typeCountMap);
+				kpiExcelData.setCount(typeCountMap);
 				excelData.add(kpiExcelData);
 			}
 		}

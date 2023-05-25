@@ -31,16 +31,15 @@ export class ExportExcelComponent implements OnInit {
                     if (chartType == 'stacked-area') {
                         let kpiObj = JSON.parse(JSON.stringify(getData));
                         kpiObj['excelData'] = kpiObj['excelData'].map((item) => {
-                            for (let key in item['Type Count Map']) {
+                            for (let key in item['Count']) {
                                 if (!kpiObj['columns']?.includes(key)) {
                                     kpiObj['columns'] = [...kpiObj['columns'], key];
                                 }
                             }
-                            let obj = { ...item, ...item['Type Count Map'] };
-                            delete obj['Type Count Map'];
+                            let obj = { ...item, ...item['Count'] };
+                            delete obj['Count'];
                             return obj;
                         });
-                        kpiObj['columns'].splice(kpiObj['columns'].indexOf('Type Count Map'), 1); //remove 'Type Count Map from columns array
                         this.kpiExcelData = this.excelService.generateExcelModalData(kpiObj);
                     } else {
                         this.kpiExcelData = this.excelService.generateExcelModalData(getData);
