@@ -134,31 +134,36 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		}
 		long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 2;
 		Map<String, Map<String, Integer>> finalDateWithStatusCount = dateWithStatusCount;
-		statusesWithStartAndEndDate.forEach((status, listOfStartAndEndDate) -> {
-			Integer[] data = new Integer[(int)totalDays];
-			Arrays.fill(data, Integer.valueOf(0));
-			List<Integer> list = Arrays.asList(data);
-			List<Integer> statusCountPresentInEachDay = list;
-			listOfStartAndEndDate.forEach(intervalRange -> {
-				int startIndex = (int) ChronoUnit.DAYS.between(startDate, intervalRange.getKey());
-				int endIndex = (int) ChronoUnit.DAYS.between(startDate, intervalRange.getValue());
-				statusCountPresentInEachDay.set(startIndex, statusCountPresentInEachDay.get(startIndex) + 1);
-				statusCountPresentInEachDay.set(endIndex + 1, statusCountPresentInEachDay.get(endIndex + 1) - 1);
-			});
-			if(statusCountPresentInEachDay.get(0)!=0)
-			finalDateWithStatusCount.get(startDate.toString()).put(status, statusCountPresentInEachDay.get(0));
-			int prevValue = statusCountPresentInEachDay.get(0);
-			for (int i = 1; i < totalDays - 1; i++) {
-				statusCountPresentInEachDay.set(i, statusCountPresentInEachDay.get(i) + prevValue);
-				prevValue = statusCountPresentInEachDay.get(i);
-				if (statusCountPresentInEachDay.get(i) != 0) {
-					finalDateWithStatusCount.get(startDate.plusDays(i).toString()).put(status,
-							statusCountPresentInEachDay.get(i));
+		try {
+			statusesWithStartAndEndDate.forEach((status, listOfStartAndEndDate) -> {
+				Integer[] data = new Integer[(int) totalDays];
+				Arrays.fill(data, Integer.valueOf(0));
+				List<Integer> list = Arrays.asList(data);
+				List<Integer> statusCountPresentInEachDay = list;
+				listOfStartAndEndDate.forEach(intervalRange -> {
+					int startIndex = (int) ChronoUnit.DAYS.between(startDate, intervalRange.getKey());
+					int endIndex = (int) ChronoUnit.DAYS.between(startDate, intervalRange.getValue());
+					statusCountPresentInEachDay.set(startIndex, statusCountPresentInEachDay.get(startIndex) + 1);
+					statusCountPresentInEachDay.set(endIndex + 1, statusCountPresentInEachDay.get(endIndex + 1) - 1);
+				});
+				if (statusCountPresentInEachDay.get(0) != 0)
+					finalDateWithStatusCount.get(startDate.toString()).put(status, statusCountPresentInEachDay.get(0));
+				int prevValue = statusCountPresentInEachDay.get(0);
+				for (int i = 1; i < totalDays - 1; i++) {
+					statusCountPresentInEachDay.set(i, statusCountPresentInEachDay.get(i) + prevValue);
+					prevValue = statusCountPresentInEachDay.get(i);
+					if (statusCountPresentInEachDay.get(i) != 0) {
+						finalDateWithStatusCount.get(startDate.plusDays(i).toString()).put(status,
+								statusCountPresentInEachDay.get(i));
+					}
 				}
-			}
-		});
-		dateWithStatusCount = dateWithStatusCount.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-				 (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+			});
+			dateWithStatusCount = dateWithStatusCount.entrySet().stream().sorted(Map.Entry.comparingByKey())
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
+							LinkedHashMap::new));
+		} catch (Exception e) {
+			LOGGER.info("Flow Load exception " + String.valueOf(e));
+		}
 
 		if (!Objects.isNull(dateWithStatusCount)) {
 			populateTrendValueList(trendValueList, dateWithStatusCount);
@@ -175,10 +180,12 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 	private void savingDateRangeInMap(LocalDate endDate, LocalDate startDate,
 			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate, String status,
 			LocalDate intervalStartDate, LocalDate intervalEndDate) {
-		intervalStartDate = intervalStartDate.compareTo(startDate) < 0 ? startDate : intervalStartDate;
-		intervalEndDate = intervalEndDate.compareTo(endDate) > 0 ? endDate : intervalEndDate;
+		intervalStartDate = intervalStartDate.isBefore(startDate) ? startDate : intervalStartDate;
+		intervalEndDate = intervalEndDate.isAfter(endDate) ? endDate : intervalEndDate;
+		intervalStartDate = intervalStartDate.isAfter(endDate) ? endDate : intervalStartDate;
+		intervalEndDate = intervalEndDate.isBefore(startDate) ? startDate : intervalEndDate;
 		Pair<LocalDate, LocalDate> intervalRange = Pair.of(intervalStartDate, intervalEndDate);
-		status = status.replaceAll(" ","-");
+		status = status.replaceAll(" ", "-");
 		if (!statusesWithStartAndEndDate.containsKey(status))
 			statusesWithStartAndEndDate.put(status, new ArrayList<>());
 		statusesWithStartAndEndDate.get(status).add(intervalRange);
