@@ -33,32 +33,26 @@ export class StackedAreaChartComponent implements OnInit {
     let keys = Object.keys(this.data[0]?.value);
     let yMax = 0;
     /** calculating yMax and extracting keys */
-    const data = this.data.map((x) => {
+    this.data.forEach((x) => {
       for(let item in x.value){
         if(keys.indexOf(item) == -1){
           keys.push(item);
         }
         if(x.value[item] > yMax) yMax = x.value[item];
       }
-      let obj = {
-        'date': x.date,
-        ...x.value
-      }
-      return obj;
     });
     
     /**adding missing issues with value of 0 */
-    this.data.map((item) => {
-      let dataItems = Object.keys(item?.value);//['story', 'issues', 'change requests']
-
-      let missingItems: any = [];
+    const data = this.data.map((item) => {
+      let dataItems = item?.value ? Object.keys(item?.value) : [];//['story', 'issues', 'change requests']
+      let obj = {...item, ...item.value};
       if(keys?.length > dataItems?.length){
+        let missingItems: any = [];
         missingItems = keys.filter((x) => !dataItems.includes(x))
+        missingItems.forEach((k) => {
+          obj[k] = 0
+        });
       }
-      let obj = {...item};
-      missingItems.forEach((k) => {
-        obj.value[k] = 0
-      });
       return obj;
     });
     
