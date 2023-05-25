@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -285,7 +286,17 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 						storyPointsFromDefaultField);
 			}
 		}
+		if (Objects.nonNull(fields.getMicrosoftVSTSSchedulingOriginalEstimate())) {
+			Double originalEstimateInHours = fields.getMicrosoftVSTSSchedulingOriginalEstimate();
+			Double originalEstimateInMinutes = originalEstimateInHours * 60;
+			azureIssue.setRemainingEstimateMinutes(originalEstimateInMinutes.intValue());
+		}
 
+		if (Objects.nonNull(fields.getMicrosoftVSTSSchedulingRemainingWork())) {
+			Integer remainingWorkInHours = fields.getMicrosoftVSTSSchedulingRemainingWork();
+			Integer remainingWorkImMinutes = remainingWorkInHours * 60;
+			azureIssue.setRemainingEstimateMinutes(remainingWorkImMinutes);
+		}
 	}
 
 	private void setEstimateForDefaultFields(JiraIssue jiraIssue, Fields fields, Double estimationFromDefaultField,
