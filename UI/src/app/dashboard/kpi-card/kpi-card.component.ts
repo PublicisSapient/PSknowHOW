@@ -28,12 +28,12 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   @Input() showChartView = true;
   @Input() cols: Array<object> = [];
   @Input() iSAdditionalFilterSelected =false;
-  @Input() showCommentIcon: boolean = true;
+  @Input() showCommentIcon: boolean;
   selectedTab: string;
   @Input() trendValueList : any
   @Input() colors : Array<any>;
   selectedTabIndex : number = 0;
-  @Input() sprintsOverlayVisible : boolean = true;
+  @Input() sprintsOverlayVisible : boolean;
   projectList : Array<string>;
   displaySprintDetailsModal : boolean = false;
   columnList = [
