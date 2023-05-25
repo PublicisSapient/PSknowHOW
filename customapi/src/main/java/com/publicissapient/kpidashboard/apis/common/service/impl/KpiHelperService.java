@@ -1416,7 +1416,7 @@ public class KpiHelperService { // NOPMD
 				List<String> jiraStatusForQa = (List<String>) CollectionUtils
 						.emptyIfNull(fieldMapping.getJiraStatusForQa());
 				JiraHistoryChangeLog latestQAField = statusUpdationLog.stream()
-						.filter(statusHistory -> jiraStatusForQa.contains(issue.getJiraStatus())).findFirst()
+						.filter(statusHistory -> jiraStatusForQa.contains(statusHistory.getChangedTo())).findFirst()
 						.orElse(null);
 				if (latestQAField != null) {
 					List<String> jiraStatusForDevelopemnt = (List<String>) CollectionUtils
