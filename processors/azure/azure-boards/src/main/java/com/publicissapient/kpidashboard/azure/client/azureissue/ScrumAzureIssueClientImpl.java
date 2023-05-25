@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
@@ -77,7 +78,6 @@ import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlM
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.WorkItem;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -404,7 +404,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				// jira_issue_custom_history
 				setAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig, fieldsMap);
 
-				// Placeholder for Test Automated field mapping.
+				setDueDates(azureIssue , fields , fieldsMap , fieldMapping);
 
 				if (StringUtils.isNotBlank(azureIssue.getProjectID())) {
 					azureIssuesToSave.add(azureIssue);
@@ -1085,6 +1085,34 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		String baseUrl = projectConfig.getAzure().getConnection().getBaseUrl();
 		baseUrl= baseUrl + (baseUrl.endsWith("/") ? "" : "/");
 		jiraIssue.setUrl(baseUrl.equals("")?"": baseUrl+azureProcessorConfig.getAzureDirectTicketLinkKey() + ticketNumber);
+	}
+
+	private void setDueDates(JiraIssue jiraIssue, Fields fields, Map<String, Object> fieldsMap ,
+			FieldMapping fieldMapping) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
+			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
+					&& ObjectUtils.isNotEmpty(fields.getMicrosoftVSTSSchedulingDueDate())) {
+				jiraIssue.setDueDate(AzureProcessorUtil.deodeUTF8String(fields.getMicrosoftVSTSSchedulingDueDate()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
+					&& fieldsMap.containsKey(fieldMapping.getJiraDueDateCustomField()) 
+					&& ObjectUtils.isNotEmpty(fieldsMap.get(fieldMapping.getJiraDueDateCustomField()))) {
+				Object issueField = fieldsMap.get(fieldMapping.getJiraDueDateCustomField());
+				if (ObjectUtils.isNotEmpty(issueField)) {
+					jiraIssue.setDueDate(AzureProcessorUtil.deodeUTF8String(issueField.toString()).split("T")[0]
+							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+				}
+			}
+		}
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
+				&& fieldsMap.containsKey(fieldMapping.getJiraDevDueDateCustomField()) && 
+				ObjectUtils.isNotEmpty(fieldsMap.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+			Object issueField = fieldsMap.get(fieldMapping.getJiraDevDueDateCustomField());
+			if (ObjectUtils.isNotEmpty(issueField)) {
+				jiraIssue.setDevDueDate((AzureProcessorUtil.deodeUTF8String(issueField.toString()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
+			}
+		}
 	}
 
 }
