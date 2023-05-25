@@ -1406,11 +1406,13 @@ public class KpiHelperService { // NOPMD
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
 			FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
 			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraFtprRejectStatus())) {
+				//if rejected field is mentioned then we will not calculate return transactions
 				return CollectionUtils.isNotEmpty(statusUpdationLog.stream().filter(
 						statusHistory -> fieldMapping.getJiraFtprRejectStatus().contains(statusHistory.getChangedTo()))
 						.collect(Collectors.toList()));
 			} else {
 				Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
+				//if after qa field we get some status which signifies statusfor development then we will consider that as return transaction
 				List<String> jiraStatusForQa = (List<String>) CollectionUtils
 						.emptyIfNull(fieldMapping.getJiraStatusForQa());
 				JiraHistoryChangeLog latestQAField = statusUpdationLog.stream()
