@@ -33,5 +33,6 @@ public interface IssueBacklogCustomHistoryQueryRepository {
 
 	List<IssueBacklogCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
 																 Map<String, Map<String, Object>> uniqueProjectMap);
-	Map<String, Map<String, Integer>> getStoryTypeCountByDateRange(String basicProjectConfigId, String startDate, String endDate);
+	@SuppressWarnings("rawtypes")
+	List<Map> getStoryTypeCountByDateRange(String basicProjectConfigId, String startDate, String endDate);
 }

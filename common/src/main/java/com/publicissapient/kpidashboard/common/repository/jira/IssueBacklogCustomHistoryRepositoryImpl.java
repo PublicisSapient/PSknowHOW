@@ -18,19 +18,15 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.mongodb.BasicDBObject;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -51,7 +47,11 @@ public class IssueBacklogCustomHistoryRepositoryImpl implements IssueBacklogCust
 
 	public static final String COUNT = "count";
 	public static final String TYPE_COUNT_MAP = "typeCountMap";
-	/** The operations. */
+	public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+	/**
+	 * The operations.
+	 */
 	@Autowired
 	private MongoOperations operations;
 
@@ -89,65 +89,28 @@ public class IssueBacklogCustomHistoryRepositoryImpl implements IssueBacklogCust
 	}
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Map<String, Map<String, Integer>> getStoryTypeCountByDateRange(String basicProjectConfigId, String startDate,
-																		  String endDate) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	public List<Map> getStoryTypeCountByDateRange(String basicProjectConfigId, String startDate,
+												  String endDate) {
 
-		LocalDateTime startDateTime = LocalDateTime.parse(new StringBuilder(startDate).append(START_TIME).toString(),
-				formatter);
-		LocalDateTime endDateTime = LocalDateTime.parse(new StringBuilder(endDate).append(END_TIME).toString(),
-				formatter);
+		LocalDateTime startDateTime = LocalDateTime.parse(startDate + START_TIME, FORMATTER);
+		LocalDateTime endDateTime = LocalDateTime.parse(endDate + END_TIME, FORMATTER);
 
-		Map<String, Map<String, Integer>> storyTypeCountMap = new LinkedHashMap<>();
+		Criteria criteria = Criteria.where(BASIC_PROJ_CONF_ID).is(basicProjectConfigId)
+				.and(TICKET_CREATED_DATE_FIELD).gte(startDateTime).lte(endDateTime);
 
-		LocalDate currentDate = startDateTime.toLocalDate();
-		while (!currentDate.isAfter(endDateTime.toLocalDate())) {
-			String formattedDate = currentDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
-			storyTypeCountMap.put(formattedDate, new HashMap<>());
-
-			currentDate = currentDate.plusDays(1);
-		}
-
-		Criteria criteria = Criteria.where(BASIC_PROJ_CONF_ID).is(basicProjectConfigId).and(TICKET_CREATED_DATE_FIELD)
-				.gte(startDateTime).lte(endDateTime);
-
-
-		// create a new aggregation instance,then adds a $match stage to the aggregation pipeline, filtering the docs based on the provided criteria.
-		//then $project stage to the pipeline. It projects two fields: date,& , and type,$group stage to the pipeline.
-		//It groups the documents by date and type fields and calculates the count of each group using the $count operator.
-		//and finally $project stage to reshape the output. It renames the _id field to date and keeps the typeCountMap
-		TypedAggregation<JiraIssueCustomHistory> aggregation = Aggregation.newAggregation(JiraIssueCustomHistory.class,
+		TypedAggregation<IssueBacklogCustomHistory> aggregation = Aggregation.newAggregation(IssueBacklogCustomHistory.class,
 				Aggregation.match(criteria),
-				Aggregation.project().andExpression("dateToString('%Y-%m-%d', " + TICKET_CREATED_DATE_FIELD + ")")
-						.as("date").and(STORY_TYPE).as("type"),
+				Aggregation.project()
+						.andExpression("dateToString('%Y-%m-%d', " + TICKET_CREATED_DATE_FIELD + ")").as("date")
+						.and(STORY_TYPE).as("type"),
 				Aggregation.group("date", "type").count().as(COUNT),
-				Aggregation.group("_id.date").push(new BasicDBObject("type", "$_id.type").append(COUNT, "$count"))
+				Aggregation.group("date").push(new BasicDBObject("type", "$_id.type").append(COUNT, "$count"))
 						.as(TYPE_COUNT_MAP),
 				Aggregation.project().and("_id").as("date").and(TYPE_COUNT_MAP).as(TYPE_COUNT_MAP));
 
 		AggregationResults<Map> results = operations.aggregate(aggregation, Map.class);
-		List<Map> mappedResults = results.getMappedResults();
+		return results.getMappedResults();
 
-		for (Map map : mappedResults) {
-			String date = (String) map.get("date");
-			LocalDate createdDate = LocalDateTime
-					.parse(new StringBuilder(date).append(START_TIME).toString(), formatter).toLocalDate();
-			List<Map<String, Integer>> typeCountMap = (List<Map<String, Integer>>) map.get(TYPE_COUNT_MAP);
-
-			for (LocalDate createdDate1 = createdDate; !createdDate1
-					.isAfter(endDateTime.toLocalDate()); createdDate1 = createdDate1.plusDays(1)) {
-				String formattedDate = createdDate1.format(DateTimeFormatter.ISO_LOCAL_DATE);
-				Map<String, Integer> typeCounts = storyTypeCountMap.get(formattedDate);
-
-				for (Map<String, Integer> typeCount : typeCountMap) {
-					String type = String.valueOf(typeCount.get("type"));
-					int count = typeCount.get(COUNT);
-
-					typeCounts.merge(type, count, Integer::sum);
-				}
-			}
-		}
-		return storyTypeCountMap;
 	}
 
 }

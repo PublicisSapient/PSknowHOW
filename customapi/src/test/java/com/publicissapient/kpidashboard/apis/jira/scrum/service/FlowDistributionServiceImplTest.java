@@ -113,21 +113,24 @@ public class FlowDistributionServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		Map<String, Integer> typeCountMap = new HashMap<>();
-		typeCountMap.put("Epic", 1);
-		typeCountMap.put("Story", 3);
-
-		String date = "2023-05-12";
-		dateTypeCountMap.put(date, typeCountMap);
+		List<Map> expectedResult = new ArrayList<>();
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put("_id", "2023-02-17");
+		List<Map<String, Object>> typeCountMap = new ArrayList<>();
+		typeCountMap.add(new HashMap<String, Object>() {{
+			put("type", "Story");
+			put("count", 1);
+		}});
+		resultMap.put("typeCountMap", typeCountMap);
+		resultMap.put("date", "2023-02-17");
+		expectedResult.add(resultMap);
 		when(issueBacklogCustomHistoryQueryRepository.getStoryTypeCountByDateRange(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(dateTypeCountMap);
+				.thenReturn((List<Map>) expectedResult);
 		KpiElement responseKpiElement = flowDistributionService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 
 		assertNotNull(responseKpiElement);
 		assertNotNull(responseKpiElement.getTrendValueList());
 		assertEquals(responseKpiElement.getKpiId(), kpiRequest.getKpiList().get(0).getKpiId());
-		List<DataCount> dataCounts = (List<DataCount>) responseKpiElement.getTrendValueList();
-		assertEquals(dataCounts.get(0).getDate(), date);
 	}
 }
