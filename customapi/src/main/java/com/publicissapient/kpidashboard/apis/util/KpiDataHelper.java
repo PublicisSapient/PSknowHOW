@@ -506,7 +506,7 @@ public final class KpiDataHelper {
 
 	/**
 	 * create dueDateWise sorted Map only for the stories having dueDate
-	 * 
+	 *
 	 * @param arrangeJiraIssueList
 	 * @return
 	 */

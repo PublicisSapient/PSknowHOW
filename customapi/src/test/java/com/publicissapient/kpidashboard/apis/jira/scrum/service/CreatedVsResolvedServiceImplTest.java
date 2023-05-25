@@ -162,7 +162,7 @@ public class CreatedVsResolvedServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		when(configHelperService.getFieldMapping(projectConfig.getId())).thenReturn(fieldMapping);
 
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		//when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 		// setDataCountList();
 		kpiWiseAggregation.put("created_Vs_Resolved_Defects", "sum");
@@ -262,15 +262,16 @@ public class CreatedVsResolvedServiceImplTest {
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put(SUBGROUPCATEGORY, "Sprint");
 
-		resultListMap.put(SPRINT_WISE_SPRINTDETAILS, new ArrayList<>());
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn( new ArrayList<>());
+		Map<String, List<SprintDetails>> sprintWiseProjectData = sprintDetailsList.stream()
+				.collect(Collectors.groupingBy(SprintDetails::getSprintID));
+
+		resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintWiseProjectData);
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn( sprintDetailsList);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(createdVsResolvedServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
-				.thenReturn(totalIssueList);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 		resultListMap.put(CREATED_VS_RESOLVED_KEY, totalIssueList);
 

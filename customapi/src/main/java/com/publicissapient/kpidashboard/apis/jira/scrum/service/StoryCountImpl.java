@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -183,15 +182,7 @@ public class StoryCountImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			resultListMap.put(STORY_LIST,
 					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, uniqueProjectMap));
 			resultListMap.put(SPRINTSDETAILS, sprintDetails);
-		} else {
-			// start : for azure board sprint details collections put is empty due to we did
-			// not have required data of issues.
-			resultListMap.put(STORY_LIST,
-					jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap));
-			resultListMap.put(SPRINTSDETAILS, null);
-		}
-		// end : for azure board sprint details collections put is empty due to we did
-		// not have required data of issues.
+		} 
 		return resultListMap;
 
 	}
@@ -241,34 +232,16 @@ public class StoryCountImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINTSDETAILS);
 
 		Map<Pair<String, String>, List<String>> sprintWiseIssueNumbers = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(allJiraIssue)) {
-			if (CollectionUtils.isNotEmpty(sprintDetails)) {
-				sprintDetails.forEach(sd -> {
-					List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
-							CommonConstant.TOTAL_ISSUES);
-					totalIssues.retainAll(
-							allJiraIssue.stream().distinct().map(JiraIssue::getNumber).collect(Collectors.toList()));
-					sprintWiseIssueNumbers.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-							totalIssues);
-				});
-			} else {
-				// start : for azure board sprint details collections empty so that we have to
-				// prepare data from jira issue.
-				Map<String, List<JiraIssue>> projectWiseJiraIssues = allJiraIssue.stream()
-						.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
-				projectWiseJiraIssues.forEach((basicProjectConfigId, projectWiseIssuesList) -> {
-					Map<String, List<JiraIssue>> sprintWiseJiraIssues = projectWiseIssuesList.stream()
-							.filter(jiraIssue -> Objects.nonNull(jiraIssue.getSprintID()))
-							.collect(Collectors.groupingBy(JiraIssue::getSprintID));
-					sprintWiseJiraIssues.forEach((sprintId, sprintWiseJiraIssue) -> {
-						List<String> totalIssues = sprintWiseJiraIssue.stream().filter(Objects::nonNull)
-								.map(JiraIssue::getNumber).distinct().collect(Collectors.toList());
-						sprintWiseIssueNumbers.put(Pair.of(basicProjectConfigId, sprintId), totalIssues);
-					});
-				});
-			}
-			// end : for azure board sprint details collections empty so that we have to
-			// prepare data from jira issue.
+		if (CollectionUtils.isNotEmpty(allJiraIssue) && CollectionUtils.isNotEmpty(sprintDetails)) {
+			sprintDetails.forEach(sd -> {
+				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
+						CommonConstant.TOTAL_ISSUES);
+				totalIssues.retainAll(
+						allJiraIssue.stream().distinct().map(JiraIssue::getNumber).collect(Collectors.toList()));
+				sprintWiseIssueNumbers.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
+						totalIssues);
+			});
+
 		}
 
 

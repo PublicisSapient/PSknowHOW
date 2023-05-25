@@ -381,20 +381,37 @@
                             <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
                                     This field should consider all status that are considered Closed in Jira for e.g. Closed, Done etc <br>
                                                    </span>' tooltipPosition="top" tooltipEvent="hover"
-                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
-                        <div class="p-inputgroup">
-                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
-                                   inputId="jiraDefectClosedStatus" formControlName="jiraDefectClosedStatus"
-                                   placeholder="Enter Status to identify 'Closed' status" addOnBlur="true">
-                            </p-chips>
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                  (click)="showDialogToAddValue(false, 'jiraDefectClosedStatus', 'workflow')"></button>
-                        </div>
-                    </div>
-                  <div class="p-mb-3 p-d-flex p-align-center"
-                       *ngIf="fieldstoShow?.includes('jiraReadyForRefinement') || fieldstoShow.length === 0">
-                    <label class="field-title">Ready For Refinement <span class="fa fa-info-circle"
-                                                                          aria-hidden="true" pTooltip='<span>
+                    tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+            <div class="p-inputgroup">
+              <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                       inputId="jiraDefectClosedStatus" formControlName="jiraDefectClosedStatus"
+                       placeholder="Enter Status to identify 'Closed' status" addOnBlur="true">
+              </p-chips>
+              <button type="button" pButton pRipple icon="pi pi-search"
+                      (click)="showDialogToAddValue(false, 'jiraDefectClosedStatus', 'workflow')"></button>
+            </div>
+          </div>
+          <div class="p-mb-3 p-d-flex p-align-center"
+               *ngIf="fieldstoShow?.includes('readyForDevelopmentStatus') || fieldstoShow.length === 0">
+            <label class="field-title">Status to identify issues Ready for Development <span class="fa fa-info-circle"
+                                                                                             aria-hidden="true"
+                                                                                             pTooltip='<span>
+                                Definition:
+                                Status to identify Ready for development from the backlog.
+                              </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                                                                             [escape]="false"></span></label>
+            <div class="p-inputgroup">
+              <input type="text" pInputText id="readyForDevelopmentStatus" formControlName="readyForDevelopmentStatus"
+                     placeholder="Enter backlog ready for development status"
+                     [style]="{'max-width':'initial','width':'60vw'}">
+              <button type="button" pButton pRipple icon="pi pi-search"
+                      (click)="showDialogToAddValue(true, 'readyForDevelopmentStatus', 'workflow')"></button>
+            </div>
+          </div>
+          <div class="p-mb-3 p-d-flex p-align-center"
+               *ngIf="fieldstoShow?.includes('jiraReadyForRefinement') || fieldstoShow.length === 0">
+            <label class="field-title">Ready For Refinement <span class="fa fa-info-circle"
+                                                                  aria-hidden="true" pTooltip='<span>
                                                     Definition:
                                                     Status that Defines Jira Issue is Ready for Refinement<br>
                                                     Example: Ready For Refinement

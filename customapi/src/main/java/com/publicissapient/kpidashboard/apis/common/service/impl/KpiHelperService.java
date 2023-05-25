@@ -36,6 +36,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.apache.commons.collections.MapUtils;
@@ -45,6 +47,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -223,9 +226,9 @@ public class KpiHelperService { // NOPMD
 				daysDifference = duration.getStandardDays();
 			}
 		} else {
-			DateTime firstDate = new DateTime(jiraIssueCustomHistory.getCreatedDate(), DateTimeZone.UTC);
-			DateTime secondDate = new DateTime(
-					jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn().toString(), DateTimeZone.UTC);
+			DateTime firstDate = new DateTime(jiraIssueCustomHistory.getCreatedDate().toString(), DateTimeZone.UTC);
+			DateTime secondDate = new DateTime(jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn().toString(),
+					DateTimeZone.UTC);
 			Duration duration = new Duration(firstDate, secondDate);
 			daysDifference = duration.getStandardDays();
 		}
@@ -440,27 +443,18 @@ public class KpiHelperService { // NOPMD
 		List<String> sprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
 
-		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		Map<String, List<String>> closedStatusMap = new HashMap<>();
 		Map<String, List<String>> typeNameMap = new HashMap<>();
 
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueType()));
-
-			mapOfProjectFilters.put(JiraFeature.STATUS.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatus()));
 			closedStatusMap.put(basicProjectConfigId.toString(), fieldMapping.getJiraIssueDeliverdStatus());
 			typeNameMap.put(basicProjectConfigId.toString(), fieldMapping.getJiraSprintVelocityIssueType());
-
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 		});
 
@@ -496,16 +490,7 @@ public class KpiHelperService { // NOPMD
 					new HashMap<>());
 			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
-		} else {
-			// start: for azure board sprint details collections put is empty due to we did
-			// not have required data of issues.
-			List<JiraIssue> sprintVelocityList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
-					uniqueProjectMap);
-			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
-			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, null);
 		}
-		// end: for azure board sprint details collections put is empty due to we did
-		// not have required data of issues.
 
 		return resultListMap;
 	}
@@ -1424,4 +1409,43 @@ public class KpiHelperService { // NOPMD
 	}
 
 
+	public List<JiraIssue> convertBacklogToJiraIssue(List<IssueBacklog> issueBacklogList)
+	{
+		List<JiraIssue> jiraIssues = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		issueBacklogList.forEach(issueBacklog ->
+			jiraIssues.add(mapper.map(issueBacklog, JiraIssue.class))
+		);
+		return jiraIssues;
+	}
+
+	public List<IssueBacklog> convertJiraIssueToBacklog(List<JiraIssue> jiraIssueList)
+	{
+		List<IssueBacklog> issueBacklogs = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		jiraIssueList.forEach(jiraIssue ->
+			issueBacklogs.add(mapper.map(jiraIssue, IssueBacklog.class))
+		);
+		return issueBacklogs;
+	}
+	
+	public List<JiraIssueCustomHistory> convertBacklogHistoryToJiraHistory(
+			List<IssueBacklogCustomHistory> issueBacklogCustomHistories) {
+		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		issueBacklogCustomHistories.forEach(issueHistory->
+			jiraIssueCustomHistoryList.add(mapper.map(issueHistory, JiraIssueCustomHistory.class))
+		);
+		return jiraIssueCustomHistoryList;
+	}
+
+	public List<IssueBacklogCustomHistory> convertJiraHistoryToBacklogHistory(
+			List<JiraIssueCustomHistory> jiraIssueCustomHistories) {
+		List<IssueBacklogCustomHistory> issueBacklogCustomHistoryList = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		jiraIssueCustomHistories.forEach(jiraIssueCustomHistory->
+				issueBacklogCustomHistoryList.add(mapper.map(jiraIssueCustomHistory, IssueBacklogCustomHistory.class))
+		);
+		return issueBacklogCustomHistoryList;
+	}
 }
