@@ -517,4 +517,10 @@ db.getCollection('kpi_fieldmapping').insert(
              type: ['Other'],
              fieldNames : { }
             },
+      {
+        kpiId: 'Kpi146',
+        kpiName: 'Flow Distribution',
+        type: ['Other'],
+        fieldNames : { }
+      },
 	  ]);

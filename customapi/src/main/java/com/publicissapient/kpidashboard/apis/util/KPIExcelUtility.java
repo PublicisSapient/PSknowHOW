@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1434,15 +1433,15 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateFlowLoad(Map<String, Map<String, Integer>> dateStatusCountMap,
-												List<KPIExcelData> excelData) {
-		for (Map.Entry<String, Map<String, Integer>> entry : dateStatusCountMap.entrySet()) {
+	public static void populateFlowKPI(Map<String, Map<String, Integer>> dateTypeCountMap,
+									   List<KPIExcelData> excelData) {
+		for (Map.Entry<String, Map<String, Integer>> entry : dateTypeCountMap.entrySet()) {
 			String date = entry.getKey();
-			Map<String, Integer> statusCountMap = entry.getValue();
+			Map<String, Integer> typeCountMap = entry.getValue();
 			KPIExcelData kpiExcelData = new KPIExcelData();
-			if (MapUtils.isNotEmpty(statusCountMap)) {
+			if (MapUtils.isNotEmpty(typeCountMap)) {
 				kpiExcelData.setDate(date);
-				kpiExcelData.setStatusCountMap(statusCountMap);
+				kpiExcelData.setCount(typeCountMap);
 				excelData.add(kpiExcelData);
 			}
 		}

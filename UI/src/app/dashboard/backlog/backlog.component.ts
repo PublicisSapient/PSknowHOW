@@ -398,14 +398,8 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }
       let trendValueList;
       /**Todo: if else condition to be removed after api integration */
-      if(key == 'kpi146'){
-        const fakeJson = require('../../../test/resource/fakeFlowDistributionKpi.json');
-        this.allKpiArray.push(fakeJson);
-        trendValueList = fakeJson.trendValueList;
-      }else{
-        this.allKpiArray.push(data[key]);
-        trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
-      }
+      this.allKpiArray.push(data[key]);
+      trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
       /** if: for graphs, else: for other than graphs */
       if (this.getChartType(key)) {
@@ -554,8 +548,8 @@ export class BacklogComponent implements OnInit, OnDestroy{
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
-  downloadExcel(kpiId, kpiName, isKanban,additionalFilterSupport) {
-    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport,this.filterApplyData,this.filterData,false);
+  downloadExcel(kpiId, kpiName, isKanban,additionalFilterSupport, chartType?) {
+    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport,this.filterApplyData,this.filterData,false, chartType);
 }
 
   convertToHoursIfTime(val, unit) {
