@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -103,9 +105,10 @@ public class CommitmentReliabilityServiceImplTest {
 	FieldMappingRepository fieldMappingRepository;
 	@Mock
 	CustomApiConfig customApiConfig;
-
 	@Mock
 	private FilterHelperService filterHelperService;
+	@Mock
+	private JiraServiceR jiraService;
 
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
@@ -228,7 +231,6 @@ public class CommitmentReliabilityServiceImplTest {
 				.thenReturn(totalIssueList);
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-
 		Map<String, Object> predictList = commitmentReliabilityImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertThat("Sprint story size :", ((List<JiraIssue>) predictList.get(PROJECT_WISE_TOTAL_ISSUE)).size(),

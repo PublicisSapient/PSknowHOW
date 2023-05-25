@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryQueryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +50,15 @@ public class DefectReopenRateServiceImplTest {
 
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
+
+	@Mock
+	private IssueBacklogCustomHistoryQueryRepository issueBacklogCustomHistoryQueryRepository;
+
+	@Mock
+	private KpiHelperService kpiHelperService;
+
+	@Mock
+	private IssueBacklogRepository issueBacklogRepository;
 
 	@Mock
 	private ConfigHelperService configHelperService;

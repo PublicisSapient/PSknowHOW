@@ -76,6 +76,8 @@ public final class JiraConstants {
 	public static final String CAN_BE_AUTOMATED = "Manual";
     public static final String PARENT = "parent";
     public static final String KEY = "key";
+    public static final String TO_DO = "To Do";
+    public static final String DONE = "Done";
 
     static {
         ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");

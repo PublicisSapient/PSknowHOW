@@ -199,6 +199,9 @@ public class CustomApiConfig {// NOPMD
 	@Value("${flag.mailWithoutKafka}")
 	private boolean mailWithoutKafka;
 
+	@Value(("${backlog.sprint.count}"))
+	private int sprintCountForBackLogStrength;
+
 	private int pushDataLimit;//limit of data allowed to push through api
 
 	private int exposeAPITokenExpiryDays; // expose api token expiry after days limit
@@ -987,5 +990,8 @@ public class CustomApiConfig {// NOPMD
 
 	public String getSamlUrlEndString() {
 		return samlUrlEndString;
+	}
+	public int getSprintCountForBackLogStrength() {
+		return sprintCountForBackLogStrength;
 	}
 }

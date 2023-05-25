@@ -36,6 +36,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +47,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,7 +72,6 @@ import com.publicissapient.kpidashboard.common.model.application.KPIFieldMapping
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -144,6 +148,9 @@ public class KpiHelperService { // NOPMD
 	@Autowired
 	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
 
+	@Autowired
+	JiraServiceR jiraKPIService;
+
 	/**
 	 * Prepares Kpi Elemnts on the basis of kpi master data.
 	 *
@@ -219,9 +226,9 @@ public class KpiHelperService { // NOPMD
 				daysDifference = duration.getStandardDays();
 			}
 		} else {
-			DateTime firstDate = new DateTime(jiraIssueCustomHistory.getCreatedDate(), DateTimeZone.UTC);
-			DateTime secondDate = new DateTime(
-					jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn().toString(), DateTimeZone.UTC);
+			DateTime firstDate = new DateTime(jiraIssueCustomHistory.getCreatedDate().toString(), DateTimeZone.UTC);
+			DateTime secondDate = new DateTime(jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn().toString(),
+					DateTimeZone.UTC);
 			Duration duration = new Duration(firstDate, secondDate);
 			daysDifference = duration.getStandardDays();
 		}
@@ -461,6 +468,7 @@ public class KpiHelperService { // NOPMD
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
+		jiraKPIService.processSprintBasedOnFieldMapping(sprintDetails,configHelperService);
 
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
@@ -1424,4 +1432,43 @@ public class KpiHelperService { // NOPMD
 	}
 
 
+	public List<JiraIssue> convertBacklogToJiraIssue(List<IssueBacklog> issueBacklogList)
+	{
+		List<JiraIssue> jiraIssues = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		issueBacklogList.forEach(issueBacklog ->
+			jiraIssues.add(mapper.map(issueBacklog, JiraIssue.class))
+		);
+		return jiraIssues;
+	}
+
+	public List<IssueBacklog> convertJiraIssueToBacklog(List<JiraIssue> jiraIssueList)
+	{
+		List<IssueBacklog> issueBacklogs = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		jiraIssueList.forEach(jiraIssue ->
+			issueBacklogs.add(mapper.map(jiraIssue, IssueBacklog.class))
+		);
+		return issueBacklogs;
+	}
+
+	public List<JiraIssueCustomHistory> convertBacklogHistoryToJiraHistory(
+			List<IssueBacklogCustomHistory> issueBacklogCustomHistories) {
+		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		issueBacklogCustomHistories.forEach(issueHistory->
+			jiraIssueCustomHistoryList.add(mapper.map(issueHistory, JiraIssueCustomHistory.class))
+		);
+		return jiraIssueCustomHistoryList;
+	}
+
+	public List<IssueBacklogCustomHistory> convertJiraHistoryToBacklogHistory(
+			List<JiraIssueCustomHistory> jiraIssueCustomHistories) {
+		List<IssueBacklogCustomHistory> issueBacklogCustomHistoryList = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		jiraIssueCustomHistories.forEach(jiraIssueCustomHistory->
+				issueBacklogCustomHistoryList.add(mapper.map(jiraIssueCustomHistory, IssueBacklogCustomHistory.class))
+		);
+		return issueBacklogCustomHistoryList;
+	}
 }

@@ -22,23 +22,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -56,6 +61,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -94,6 +100,10 @@ public class JiraServiceR {
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Autowired
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+	@Autowired
+	private ConfigHelperService configHelperService;
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 
@@ -353,11 +363,15 @@ public class JiraServiceR {
 	}
 
 	public void fetchSprintDetails(String[] sprintId) {
-		sprintDetails = sprintRepository.findBySprintIDIn(Arrays.stream(sprintId).collect(Collectors.toList()));
+		sprintDetails=sprintRepository.findBySprintIDIn(Arrays.stream(sprintId).collect(Collectors.toList()));
+		processSprintBasedOnFieldMapping(sprintDetails,configHelperService);
 	}
 
 	public SprintDetails getCurrentSprintDetails() {
 		return sprintDetails.stream().findFirst().orElse(null);
+	}
+	public void setSprintDetails(List<SprintDetails> modifieldSprintDetails){
+		sprintDetails=modifieldSprintDetails;
 	}
 
 	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList, String board) {
@@ -415,6 +429,84 @@ public class JiraServiceR {
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
 		return jiraIssueCustomHistoryList;
+	}
+
+	public JiraIssueReleaseStatus getJiraIssueReleaseForProject(String basicProjectConfigId) {
+		return jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId);
+	}
+
+	public void processSprintBasedOnFieldMapping(List<SprintDetails> dbSprintDetails,
+			ConfigHelperService configHelperService) {
+		if (CollectionUtils.isNotEmpty(dbSprintDetails) && null != configHelperService) {
+			dbSprintDetails.forEach(dbSprintDetail -> {
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(dbSprintDetail.getBasicProjectConfigId());
+				if (null != fieldMapping && (CollectionUtils
+						.isNotEmpty(fieldMapping.getJiraIterationCompletionTypeCustomField())
+						|| CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusCustomField()))) {
+					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail, fieldMapping);
+					dbSprintDetail.setCompletedIssues(newCompletedSet);
+					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
+					Set<SprintIssue> totalIssue = new HashSet<>();
+					totalIssue.addAll(dbSprintDetail.getCompletedIssues());
+					totalIssue.addAll(dbSprintDetail.getNotCompletedIssues());
+					dbSprintDetail.setTotalIssues(totalIssue);
+				}
+			});
+		}
+	}
+
+	private Set<SprintIssue> getCombinationalCompletedSet(Set<SprintIssue> typeWiseIssues,
+			Set<SprintIssue> statusWiseIssues) {
+		Set<SprintIssue> newCompletedSet;
+		if (CollectionUtils.isNotEmpty(typeWiseIssues) && CollectionUtils.isNotEmpty(statusWiseIssues)) {
+			newCompletedSet = new HashSet<>(CollectionUtils.intersection(typeWiseIssues, statusWiseIssues));
+		} else if (CollectionUtils.isNotEmpty(typeWiseIssues)) {
+			newCompletedSet = typeWiseIssues;
+		} else {
+			newCompletedSet = statusWiseIssues;
+		}
+		return newCompletedSet;
+	}
+
+	private Set<SprintIssue> filteringByFieldMapping(SprintDetails dbSprintDetail, FieldMapping fieldMapping) {
+		Set<SprintIssue> typeWiseIssues = new HashSet<>();
+		Set<SprintIssue> statusWiseIssues = new HashSet<>();
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusCustomField())
+				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionTypeCustomField())) {
+			List<String> jiraIterationCompletionStatusCustomField = fieldMapping
+					.getJiraIterationCompletionStatusCustomField();
+			List<String> jiraIterationCompletionTypeCustomField = fieldMapping
+					.getJiraIterationCompletionTypeCustomField();
+			statusWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
+					.filter(issue -> jiraIterationCompletionStatusCustomField.contains(issue.getStatus()))
+					.collect(Collectors.toSet()));
+			statusWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
+					.filter(issue -> jiraIterationCompletionStatusCustomField.contains(issue.getStatus()))
+					.collect(Collectors.toSet()));
+			typeWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
+					.filter(issue -> jiraIterationCompletionTypeCustomField.contains(issue.getTypeName()))
+					.collect(Collectors.toSet()));
+			typeWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
+					.filter(issue -> jiraIterationCompletionTypeCustomField.contains(issue.getTypeName()))
+					.collect(Collectors.toSet()));
+		} else if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusCustomField())) {
+			List<String> jiraIterationCompletionStatusCustomField = fieldMapping
+					.getJiraIterationCompletionStatusCustomField();
+			statusWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
+					.filter(issue -> jiraIterationCompletionStatusCustomField.contains(issue.getStatus()))
+					.collect(Collectors.toSet()));
+			statusWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
+					.filter(issue -> jiraIterationCompletionStatusCustomField.contains(issue.getStatus()))
+					.collect(Collectors.toSet()));
+		} else if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionTypeCustomField())) {
+			List<String> jiraIterationCompletionTypeCustomField = fieldMapping
+					.getJiraIterationCompletionTypeCustomField();
+			typeWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
+					.filter(issue -> jiraIterationCompletionTypeCustomField.contains(issue.getTypeName()))
+					.collect(Collectors.toSet()));
+		}
+		return getCombinationalCompletedSet(typeWiseIssues, statusWiseIssues);
 	}
 
 }

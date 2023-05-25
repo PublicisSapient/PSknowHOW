@@ -707,7 +707,7 @@ import { SharedService } from './shared.service';
 
 
     getAuthDetails() {
-        const existingRoles = JSON.parse(localStorage?.getItem('projectsAccess')).map(projectRolesDetails => projectRolesDetails?.role);
+        const existingRoles = this.sharedService.getCurrentUserDetails('projectsAccess')?.map(projectRolesDetails => projectRolesDetails?.role);
         this.http.get<any>(this.authDetailsUrl).subscribe(response => {
 
             if (response && response?.success && response?.data) {
@@ -721,7 +721,7 @@ import { SharedService } from './shared.service';
                 });
                 this.sharedService.setCurrentUserDetails({username: authDetails['username']});
                 this.sharedService.setCurrentUserDetails({user_email:authDetails['emailAddress']});
-                this.sharedService.setCurrentUserDetails({projectsAccess : JSON.stringify(authDetails['projectsAccess'])});
+                this.sharedService.setCurrentUserDetails({projectsAccess : authDetails['projectsAccess']});
                 this.sharedService.setCurrentUserDetails({authorities :authDetails['authorities']});
                 if(!this.unauthorisedAccess && !roleAlreadyExist){
                     this.loadApp.next(true);
