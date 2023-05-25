@@ -65,7 +65,7 @@ export class StackedAreaChartComponent implements OnInit {
     
     // set the dimensions and margins of the graph
     const margin = { top: 20, right: 20, bottom: 150, left: 50 },
-      width = 400,
+      width = document.getElementById('stacked-area').offsetWidth - 70,
       height = 228;
 
     // append the svg object to the body of the page
@@ -238,7 +238,7 @@ export class StackedAreaChartComponent implements OnInit {
 
       // Add one dot in the legend for each name.
       const foreignObject = svg.append("foreignObject")
-      .attr("width", 400)
+      .attr("width", width)
       .attr("height", 60)
       .style('overflow-y', 'scroll')
       .attr("transform", `translate(0,${(height+60)})`)
