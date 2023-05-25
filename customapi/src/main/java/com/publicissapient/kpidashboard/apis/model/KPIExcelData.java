@@ -319,4 +319,7 @@ public class KPIExcelData {
     @JsonProperty("Created during Iteration")
     private String createdDuringIteration;
 
+    @JsonProperty("Status Count Map")
+    private Map<String, Integer> statusCountMap;
+
 }
