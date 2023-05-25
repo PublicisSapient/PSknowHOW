@@ -4,10 +4,13 @@
             <div class="kpi-card-title-container">
                 <h3 *ngIf="kpiData">{{kpiData?.kpiName}}
                     <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
-                        (mouseover)="showTooltip(true)">
+                        (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)">
                         <app-tooltip *ngIf="isTooltip" [data]="kpiData?.kpiDetail?.kpiInfo"
                             (mouseleave)="showTooltip(false)" [showChartView]="showChartView"></app-tooltip>
                     </span>
+                    <img src="../../../assets/img/database-svg.svg" *ngIf="sprintsOverlayVisible && trendValueList?.length > 0"  (click)="prepareData();op.toggle($event);" alt="Sprint Details" class="cursor-pointer p-ml-1 sprint-hover-icon"   pTooltip='<div class="inner-content">
+                        Please click on icon for all sprint details.
+                    </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper" />
                     <app-comments *ngIf="showCommentIcon" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName" [selectedTab]="selectedTab"></app-comments>
                 </h3>
             </div>
@@ -101,3 +104,46 @@
         </div>
     </div>
 </div>
+
+<p-overlayPanel #op [showCloseIcon]="true" styleClass="sprint-details-overlay">
+    <div class="p-mb-3 overlay-heading">
+            {{kpiData?.kpiName}}
+    </div>
+    <div class="dialog-body p-mb-4">
+        <p-tabView [(activeIndex)]="selectedTabIndex">
+
+            <ng-container *ngFor="let project of projectList;  let i = index;">
+                <p-tabPanel header="{{project}}" [headerStyleClass]="getColorCssClasses(selectedTabIndex)">
+                    <p-table *ngIf="(sprintDetailsList[selectedTabIndex] && sprintDetailsList[selectedTabIndex]['hoverList'].length >0 ) ; else showNoDataMessage" [columns]="columnList" [value]="sprintDetailsList[selectedTabIndex]['hoverList']" 
+                        styleClass="p-datatable-gridlines kpi-table" [scrollable]="true" scrollHeight="250px" [style]="{width: '450px'}">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <ng-container *ngFor="let col of columns">
+                                <th *ngIf="hasData(col.field)" [pSortableColumn]="col.field" [ngClass]="{'col1':col.field ==='duration'}">
+                                    {{ col.header }}
+                                    <p-sortIcon *ngIf="col.field === 'value'" [field]="col.field"></p-sortIcon>
+                                </th>
+                               </ng-container>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr>
+                                <ng-container *ngFor="let col of columns">
+                                    <td *ngIf="hasData(col.field)" [innerHTML]="rowData[col.field]" class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}">
+                                    </td>
+                               </ng-container>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+
+
+                </p-tabPanel>
+            </ng-container>
+            <ng-template #showNoDataMessage>
+                <h2 class="p-text-center">No Data Available</h2>
+              </ng-template>
+        </p-tabView>
+
+       
+    </div>
+ </p-overlayPanel>
