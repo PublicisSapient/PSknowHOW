@@ -33,6 +33,10 @@ import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
+import com.publicissapient.kpidashboard.apis.model.ReleaseFilter;
+import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +59,8 @@ import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHi
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class provides basic utility to create n-ary tree from list of filtered
@@ -352,6 +358,51 @@ public final class KPIHelperUtil {
 		Long p5Count = 0L;
 
 		for (JiraIssue issue : sprintWiseDefectDataList) {
+
+			if (StringUtils.isBlank(issue.getPriority())) {
+				p5Count++;
+				priorityCountMap.put(Constant.MISC, p5Count);
+			} else {
+				if (StringUtils.containsIgnoreCase(
+						customApiConfig.getpriorityP1().replaceAll(Constant.WHITESPACE, "").trim(),
+						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+					p1Count++;
+					priorityCountMap.put(Constant.P1, p1Count);
+				} else if (StringUtils.containsIgnoreCase(
+						customApiConfig.getpriorityP2().replaceAll(Constant.WHITESPACE, "").trim(),
+						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+					p2Count++;
+					priorityCountMap.put(Constant.P2, p2Count);
+				} else if (StringUtils.containsIgnoreCase(
+						customApiConfig.getpriorityP3().replaceAll(Constant.WHITESPACE, "").trim(),
+						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+					p3Count++;
+					priorityCountMap.put(Constant.P3, p3Count);
+				} else if (StringUtils.containsIgnoreCase(
+						customApiConfig.getpriorityP4().replaceAll(Constant.WHITESPACE, "").trim(),
+						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+					p4Count++;
+					priorityCountMap.put(Constant.P4, p4Count);
+				} else {
+					p5Count++;
+					priorityCountMap.put(Constant.MISC, p5Count);
+				}
+			}
+		}
+
+		return priorityCountMap;
+	}
+
+	public static Map<String, Long> setpriorityScrumForBacklog(List<IssueBacklog> sprintWiseDefectDataList,
+													 CustomApiConfig customApiConfig) {
+		Map<String, Long> priorityCountMap = new HashMap<>();
+		Long p1Count = 0L;
+		Long p2Count = 0L;
+		Long p3Count = 0L;
+		Long p4Count = 0L;
+		Long p5Count = 0L;
+
+		for (IssueBacklog issue : sprintWiseDefectDataList) {
 
 			if (StringUtils.isBlank(issue.getPriority())) {
 				p5Count++;
