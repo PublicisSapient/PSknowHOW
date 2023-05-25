@@ -26,10 +26,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +57,6 @@ import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -205,11 +208,12 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public void populateIterationDataForDefectWithoutStory(List<IterationKpiModalValue> overAllModalValues,
-			JiraIssue jiraIssue) {
+														   IssueBacklog issueBacklog) {
+
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setIssueId(issueBacklog.getNumber());
+		iterationKpiModalValue.setIssueURL(issueBacklog.getUrl());
+		iterationKpiModalValue.setDescription(issueBacklog.getName());
 		overAllModalValues.add(iterationKpiModalValue);
 	}
 
@@ -300,4 +304,19 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return jiraService.getJiraIssueReleaseForProject(basicProjectConfigId);
 	}
 
+	public void getModifiedSprintDetailsFromBaseClass(List<SprintDetails> sprintDetails, ConfigHelperService configHelperService) {
+		jiraService.processSprintBasedOnFieldMapping(sprintDetails, configHelperService);
+	}
+	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
+									List<IterationKpiModalValue> modalValues, IssueBacklog issueBacklog) {
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueType(issueBacklog.getTypeName());
+		iterationKpiModalValue.setIssueURL(issueBacklog.getUrl());
+		iterationKpiModalValue.setIssueId(issueBacklog.getNumber());
+		iterationKpiModalValue.setDescription(issueBacklog.getName());
+		iterationKpiModalValue.setPriority(issueBacklog.getPriority());
+		iterationKpiModalValue.setIssueSize(Optional.ofNullable(issueBacklog.getStoryPoints()).orElse(0.0).toString());
+		overAllmodalValues.add(iterationKpiModalValue);
+		modalValues.add(iterationKpiModalValue);
+	}
 }

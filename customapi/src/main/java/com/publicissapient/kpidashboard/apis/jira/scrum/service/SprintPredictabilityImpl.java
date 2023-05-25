@@ -178,6 +178,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				List<SprintDetails> sprintDetails = sprintDetailsList.stream()
 						.limit(Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT)
 						.collect(Collectors.toList());
+				getModifiedSprintDetailsFromBaseClass(sprintDetails,configHelperService);
 				sprintDetails.stream().forEach(sprintDetail -> {
 					if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 						List<String> sprintWiseIssueIds = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(

@@ -367,15 +367,15 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));
 			} else {
 				hours = (ChronoUnit.HOURS.between(sprintStartDate, nextEntryActivityDate)
-						- minusHoursOfWeekEndDays(sprintStartDate, nextEntryActivityDate));;
+						- minusHoursOfWeekEndDays(sprintStartDate, nextEntryActivityDate));
 			}
 		} else {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
 				hours = (ChronoUnit.HOURS.between(entryActivityDate, sprintEndDate)
-						- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate));;
+						- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate));
 			} else {
 				hours = (ChronoUnit.HOURS.between(sprintStartDate, sprintEndDate)
-						- minusHoursOfWeekEndDays(sprintStartDate, sprintEndDate));;
+						- minusHoursOfWeekEndDays(sprintStartDate, sprintEndDate));
 			}
 		}
 		return hours;
@@ -393,7 +393,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 				} else {
 
 					hours = (ChronoUnit.HOURS.between(entryActivityDate, sprintEndDate)
-							- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate));;
+							- minusHoursOfWeekEndDays(entryActivityDate, sprintEndDate));
 				}
 			}
 		} else {
