@@ -108,6 +108,7 @@ import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/una
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
 import { CommentsComponent } from './component/comments/comments.component';
 import { MilestoneComponent } from './dashboard/milestone/milestone.component';
+import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
 import { HorizontalPercentBarChartComponent } from './component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
 
 
@@ -171,6 +172,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         UnauthorisedAccessComponent,
         GroupBarChartComponent,
         MilestoneComponent,
+        StackedAreaChartComponent
         HorizontalPercentBarChartComponent
     ],
     imports: [
