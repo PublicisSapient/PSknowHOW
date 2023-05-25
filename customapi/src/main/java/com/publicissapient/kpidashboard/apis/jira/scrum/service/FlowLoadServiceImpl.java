@@ -200,7 +200,7 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 			Map<String, Map<String, Integer>> dateWithStatusCount) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& !Objects.isNull(dateWithStatusCount)) {
-			KPIExcelUtility.populateFlowLoad(dateWithStatusCount, excelData);
+			KPIExcelUtility.populateFlowKPI(dateWithStatusCount, excelData);
 		}
 	}
 }
