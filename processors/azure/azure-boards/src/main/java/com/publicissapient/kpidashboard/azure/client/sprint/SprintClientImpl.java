@@ -390,7 +390,10 @@ public class SprintClientImpl implements SprintClient {
 	}
 
 	private List<String> getIssuesIdList(Set<SprintIssue> sprintIssueSet) {
-		return sprintIssueSet.stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
-				.collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(sprintIssueSet)) {
+			return sprintIssueSet.stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
+					.collect(Collectors.toList());
+		}
+		return new ArrayList<>();
 	}
 }
