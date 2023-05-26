@@ -1440,7 +1440,7 @@ public class KPIExcelUtility {
 			Map<String, Integer> typeCountMap = entry.getValue();
 			KPIExcelData kpiExcelData = new KPIExcelData();
 			if (MapUtils.isNotEmpty(typeCountMap)) {
-				kpiExcelData.setDate(date);
+				kpiExcelData.setDate(DateUtil.dateTimeConverter(date, DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 				kpiExcelData.setCount(typeCountMap);
 				excelData.add(kpiExcelData);
 			}
