@@ -110,6 +110,10 @@ export class SharedService {
     this.selectedTab = selectedTab;
   }
 
+  setSelectedType(selectedType) {
+    this.selectedtype = selectedType;
+  }
+
   // getter for type i.e scrum or kanban
   getSelectedTab() {
     return this.selectedTab;

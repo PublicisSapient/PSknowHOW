@@ -54,7 +54,7 @@ export class CommentsComponent implements OnInit {
       kpiId: this.kpiId,
       commentsInfo: [
         {
-          commentBy: localStorage.getItem('user_name'),
+          commentBy: this.service.getCurrentUserDetails('user_name'),
           comment: this.commentText
         }
       ]
