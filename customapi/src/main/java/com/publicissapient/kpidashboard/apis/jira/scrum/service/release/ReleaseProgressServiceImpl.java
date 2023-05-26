@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -175,7 +176,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	private DataCount getStatusWiseCountList(List<JiraIssue> jiraIssueList,
 			JiraIssueReleaseStatus jiraIssueReleaseStatus) {
 		DataCount dataCount = new DataCount();
-		Map<String, Double> releaseProgressCount = new HashMap<>();
+		Map<String, Double> releaseProgressCount = new LinkedHashMap<>();
 		releaseProgressCount.put(TO_DO,
 				(double) jiraIssueList.stream().filter(
 						jiraIssue -> jiraIssueReleaseStatus.getToDoList().values().contains(jiraIssue.getStatus()))

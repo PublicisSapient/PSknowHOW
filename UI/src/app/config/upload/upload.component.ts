@@ -1037,7 +1037,8 @@ export class UploadComponent implements OnInit {
             if (assigneeFormControls.plannedCapacity.value > 0) {
                 assigneeFormControls.leaves.setValidators([Validators.max(assignee.plannedCapacity)]);
                 assigneeFormControls.leaves.enable();
-                assignee.availableCapacity = assignee.plannedCapacity - assignee.leaves;
+                let totalCapacity = assignee.plannedCapacity - assignee.leaves;
+                assignee.availableCapacity  = Math.round(totalCapacity * 100) / 100;
             } else {
                 assigneeFormControls.leaves.setValue(0);
                 assigneeFormControls.leaves.disable();
@@ -1072,7 +1073,7 @@ export class UploadComponent implements OnInit {
         selectedSprint.assigneeCapacity.forEach(assignee => {
             totalCapacity += assignee?.availableCapacity ? assignee?.availableCapacity : 0;
         });
-        return totalCapacity;
+         return Math.round(totalCapacity * 100) / 100;
     }
 
     onSprintCapacityEdit(selectedSprint) {
@@ -1203,7 +1204,7 @@ export class UploadComponent implements OnInit {
         this.http_service.uploadCertificate(file).pipe(first())
         .subscribe(
           data => {
-            if (data['status'] && data['status'] === 417) {               
+            if (data['status'] && data['status'] === 417) {
               this.error = data['message'];
             } else {
               this.message = data['message'];
