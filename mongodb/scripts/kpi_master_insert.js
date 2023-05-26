@@ -3443,7 +3443,7 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi125",
-    "kpiName": "Daily Closures",
+    "kpiName": "Iteration Burnup",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",

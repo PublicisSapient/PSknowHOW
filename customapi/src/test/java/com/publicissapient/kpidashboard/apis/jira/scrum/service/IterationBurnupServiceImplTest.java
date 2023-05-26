@@ -44,7 +44,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.*;
@@ -56,7 +55,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DailyClosureServiceImplTest {
+public class IterationBurnupServiceImplTest {
     private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
     private Map<String, Object> filterLevelMap;
 
@@ -78,7 +77,7 @@ public class DailyClosureServiceImplTest {
     ConfigHelperService configHelperService;
 
     @InjectMocks
-    DailyClosureServiceImpl dailyClosureService;
+    IterationBurnupServiceImpl dailyClosureService;
 
     @Mock
     JiraIssueCustomHistoryRepository jiraIssueHistoryRepository;
@@ -88,7 +87,7 @@ public class DailyClosureServiceImplTest {
     @Before
     public void setup() {
         KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-        kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DAILY_CLOSURES.getKpiId());
+        kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.ITERATION_BURNUP.getKpiId());
         kpiRequest.setLabel("PROJECT");
         SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
         sprintWiseStoryList = sprintWiseStoryDataFactory.getSprintWiseStories();
@@ -164,7 +163,7 @@ public class DailyClosureServiceImplTest {
     }
     @Test
     public void testGetQualifierType() {
-        assertThat(dailyClosureService.getQualifierType(), equalTo(KPICode.DAILY_CLOSURES.name()));
+        assertThat(dailyClosureService.getQualifierType(), equalTo(KPICode.ITERATION_BURNUP.name()));
     }
 
 }
