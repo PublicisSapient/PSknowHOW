@@ -24,4 +24,6 @@ public interface IssueBacklogCustomHistoryRepository extends CrudRepository<Issu
 	List<IssueBacklogCustomHistory> findByBasicProjectConfigIdIn(String basicProjectConfigId);
 
     List<IssueBacklogCustomHistory> findByBasicProjectConfigId(String basicProjectConfigId);
+
+	List<IssueBacklogCustomHistory> findByBasicProjectConfigIdOrderByCreatedDateAsc(String basicProjectConfigId);
 }
