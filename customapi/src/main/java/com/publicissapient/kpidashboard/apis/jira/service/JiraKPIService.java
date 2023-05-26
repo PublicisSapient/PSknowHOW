@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
@@ -306,6 +307,10 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 	public void getModifiedSprintDetailsFromBaseClass(List<SprintDetails> sprintDetails, ConfigHelperService configHelperService) {
 		jiraService.processSprintBasedOnFieldMapping(sprintDetails, configHelperService);
+	}
+
+	public List<IssueBacklogCustomHistory> getIssueCustomHistoryFromBaseClass(String basicProjectConfigId) {
+		return jiraService.getIssueCustomHistoryForProject(basicProjectConfigId);
 	}
 	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
 									List<IterationKpiModalValue> modalValues, IssueBacklog issueBacklog) {

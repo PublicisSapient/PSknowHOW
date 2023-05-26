@@ -31,10 +31,6 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
@@ -62,13 +58,19 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class handle all Scrum JIRA based KPI request and call each KPIs service
@@ -104,6 +106,8 @@ public class JiraServiceR {
 	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
+	@Autowired
+	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 
@@ -509,4 +513,7 @@ public class JiraServiceR {
 		return getCombinationalCompletedSet(typeWiseIssues, statusWiseIssues);
 	}
 
+	public List<IssueBacklogCustomHistory> getIssueCustomHistoryForProject(String basicProjectConfigId) {
+		return issueBacklogCustomHistoryRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
+	}
 }

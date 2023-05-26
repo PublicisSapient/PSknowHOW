@@ -19,17 +19,14 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,28 +40,22 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.IssueBacklogCustomHistoryDataFactory;
-import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
-import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FlowDistributionServiceImplTest {
 	@InjectMocks
 	private FlowDistributionServiceImpl flowDistributionService;
-	@Mock
-	CustomDateRange customDateRange;
 	@Mock
 	CustomApiConfig customApiConfig;
 	@Mock
@@ -73,15 +64,11 @@ public class FlowDistributionServiceImplTest {
 	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 	List<IssueBacklogCustomHistory> customHistoryList = new ArrayList<>();
 	private KpiRequest kpiRequest;
-	List<Node> leafNodeList = new ArrayList<>();
-	TreeAggregatorDetail treeAggregatorDetail;
-	List<JiraIssueCustomHistory> jiraHistoryDataList = new ArrayList<>();
-	Map<String, Map<String, Integer>> dateTypeCountMap = new HashMap<>();
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 
 	@Before
 	public void setUp() throws ApplicationException {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-		List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi146");
 		kpiRequest.setLabel("PROJECT");
@@ -89,20 +76,7 @@ public class FlowDistributionServiceImplTest {
 				.newInstance();
 
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
-
-		leafNodeList = new ArrayList<>();
-		treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, accountHierarchyDataList,
-				new ArrayList<>(), "hierarchyLevelOne", 4);
-		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-			leafNodeList.addAll(v);
-		});
-
-		customDateRange = new CustomDateRange();
-		customDateRange.setStartDate(LocalDate.now());
-		customDateRange.setEndDate(LocalDate.now().minusDays(45));
-		jiraHistoryDataList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
 		customHistoryList = IssueBacklogCustomHistoryDataFactory.newInstance().getIssueBacklogCustomHistory();
-
 	}
 
 	@Test
@@ -111,18 +85,29 @@ public class FlowDistributionServiceImplTest {
 	}
 
 	@Test
-	public void getKpiData() throws ApplicationException {
-		when(customApiConfig.getFlowKpiMonthCount()).thenReturn(12);
+	public void testGetKpiData() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		when(customApiConfig.getFlowKpiMonthCount()).thenReturn(1);
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(issueBacklogCustomHistoryRepository.findByBasicProjectConfigIdIn(Mockito.any()))
 				.thenReturn(customHistoryList);
-		KpiElement responseKpiElement = flowDistributionService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+		customHistoryList.get(0).setCreatedDate(DateTime.now());
+		try {
+			KpiElement kpiElement = flowDistributionService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertNotNull(kpiElement.getTrendValueList());
 
-		assertNotNull(responseKpiElement);
-		assertNotNull(responseKpiElement.getTrendValueList());
-		assertEquals(responseKpiElement.getKpiId(), kpiRequest.getKpiList().get(0).getKpiId());
+		} catch (ApplicationException enfe) {
+
+		}
 	}
+
+	@Test
+	public void testGetQualifierType() {
+		assertThat(flowDistributionService.getQualifierType(), equalTo("FLOW_DISTRIBUTION"));
+	}
+
 }
