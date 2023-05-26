@@ -1980,3 +1980,11 @@ p-dialog .p-button-cancel.p-button-secondary {
   margin-top: -2px;
   margin-left: 3px;
 }
+.wrapper-w-50{
+  width: 50%;
+}
+@media only screen and (max-width:768px){
+  .wrapper-w-50{
+      width: 100%;
+  }
+}

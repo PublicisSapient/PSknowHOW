@@ -35,10 +35,6 @@
     text-decoration: underline;
 }
 
-.p-w-50 {
-    width: 50%;
-}
-
 .p-flex-basis-auto {
     flex-basis: auto;
 }
