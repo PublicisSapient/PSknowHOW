@@ -102,8 +102,8 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 		if (leafNode != null) {
 			LOGGER.info("Flow Distribution kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			List<IssueBacklogCustomHistory> issueBacklogCustomHistoryList = getIssueCustomHistoryFromBaseClass(
-					basicProjectConfigId);
+			List<IssueBacklogCustomHistory> issueBacklogCustomHistoryList = issueBacklogCustomHistoryRepository.
+					findByBasicProjectConfigIdIn(basicProjectConfigId);
 			resultListMap.put(BACKLOG_CUSTOM_HISTORY, new ArrayList<>(issueBacklogCustomHistoryList));
 		}
 		return resultListMap;
@@ -255,7 +255,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 	private Map<String, Integer> startDateTypeCount(String startDate,
 			TreeMap<String, Map<String, Integer>> sortedByDateTypeCountMap) {
 		Map<String, Integer> startDateTypeCount = new HashMap<>();
-		for (Map.Entry<String, Map<String, Integer>> entry : sortedByDateTypeCountMap.entrySet()) {
+		for (Map.Entry<String, Map<String, Integer>> entry : sortedByDateTypeCountMap.entrySet() ) {
 			String date = entry.getKey();
 			Map<String, Integer> typeCountMap = entry.getValue();
 

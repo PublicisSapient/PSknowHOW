@@ -64,8 +64,6 @@ public class FlowDistributionServiceImplTest {
 	CacheService cacheService;
 	@Mock
 	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
-	@Mock
-	private JiraServiceR jiraService;
 
 	List<IssueBacklogCustomHistory> customHistoryList = new ArrayList<>();
 	private KpiRequest kpiRequest;
@@ -97,7 +95,7 @@ public class FlowDistributionServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(jiraService.getIssueCustomHistoryForProject(Mockito.any()))
+		when(issueBacklogCustomHistoryRepository.findByBasicProjectConfigIdIn(Mockito.any()))
 				.thenReturn(customHistoryList);
 		customHistoryList.get(0).setCreatedDate(DateTime.now());
 		try {

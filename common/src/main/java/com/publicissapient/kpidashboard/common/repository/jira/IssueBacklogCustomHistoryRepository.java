@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.common.repository.jira;
 
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
@@ -21,5 +22,6 @@ public interface IssueBacklogCustomHistoryRepository extends CrudRepository<Issu
 
 	List<IssueBacklogCustomHistory> findByStoryIDIn(List<String> storyList);
 
+	@Query(value = "{ 'basicProjectConfigId' : ?0  }", fields = "{ 'storyType' : 1, 'createdDate' : 1}")
 	List<IssueBacklogCustomHistory> findByBasicProjectConfigIdIn(String basicProjectConfigId);
 }

@@ -516,5 +516,5 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Flow Distribution',
         type: ['Other'],
         fieldNames : { }
-      },
+      }
 	  ]);

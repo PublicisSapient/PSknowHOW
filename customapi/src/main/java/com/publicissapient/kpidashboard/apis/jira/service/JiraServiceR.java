@@ -106,8 +106,6 @@ public class JiraServiceR {
 	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
-	@Autowired
-	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 
@@ -513,7 +511,4 @@ public class JiraServiceR {
 		return getCombinationalCompletedSet(typeWiseIssues, statusWiseIssues);
 	}
 
-	public List<IssueBacklogCustomHistory> getIssueCustomHistoryForProject(String basicProjectConfigId) {
-		return issueBacklogCustomHistoryRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
-	}
 }
