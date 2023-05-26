@@ -164,7 +164,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 			populateTrendValueList(trendValueList, cumulativeAddedCountMap);
 			populateExcelDataObject(requestTrackerId, excelData, mapAfterStartDate);
 			LOGGER.info("FlowDistributionServiceImpl -> request id : {} dateWiseCountMap : {}", requestTrackerId,
-					mapAfterStartDate);
+					cumulativeAddedCountMap);
 		}
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.FLOW_DISTRIBUTION.getColumns());

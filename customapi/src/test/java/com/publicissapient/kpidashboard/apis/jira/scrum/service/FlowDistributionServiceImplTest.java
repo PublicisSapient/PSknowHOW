@@ -26,7 +26,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,6 +64,9 @@ public class FlowDistributionServiceImplTest {
 	CacheService cacheService;
 	@Mock
 	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
+	@Mock
+	private JiraServiceR jiraService;
+
 	List<IssueBacklogCustomHistory> customHistoryList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -92,7 +97,7 @@ public class FlowDistributionServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(issueBacklogCustomHistoryRepository.findByBasicProjectConfigIdIn(Mockito.any()))
+		when(jiraService.getIssueCustomHistoryForProject(Mockito.any()))
 				.thenReturn(customHistoryList);
 		customHistoryList.get(0).setCreatedDate(DateTime.now());
 		try {
@@ -109,5 +114,9 @@ public class FlowDistributionServiceImplTest {
 	public void testGetQualifierType() {
 		assertThat(flowDistributionService.getQualifierType(), equalTo("FLOW_DISTRIBUTION"));
 	}
+	@After
+	public void cleanup() {
+		issueBacklogCustomHistoryRepository.deleteAll();
 
+	}
 }

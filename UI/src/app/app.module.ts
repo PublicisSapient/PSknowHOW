@@ -173,7 +173,6 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         GroupBarChartComponent,
         MilestoneComponent,
         HorizontalPercentBarChartComponent,
-        MilestoneComponent,
         StackedAreaChartComponent
     ],
     imports: [
