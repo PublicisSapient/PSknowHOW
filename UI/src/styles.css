@@ -1973,3 +1973,10 @@ p-dialog .p-button-cancel.p-button-secondary {
   top: -0.5rem;
   right: -0.5rem;
 }
+.kpi-info-icon{
+  color: #707070;
+  height: 13.5px;
+  vertical-align: middle;
+  margin-top: -2px;
+  margin-left: 3px;
+}

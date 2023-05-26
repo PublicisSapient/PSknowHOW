@@ -23,131 +23,144 @@
       <div class="{{selectedtype}}" id="{{selectedtype}}">
         <div class="clearfix">
           <div class="right-container col">
-            <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard" cdkDropList
-              (cdkDropListDropped)="drop($event)">
-              <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
-                <div *ngFor="let kpi of upDatedConfigData" cdkDrag class="p-w-50 p-h-fit-content">
+            <p-tabView class="iteration-tabs">
+              <p-tabPanel *ngFor="let board of navigationTabs" [header]="board">
+                <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard" cdkDropList
+                  (cdkDropListDropped)="drop($event)">
+                  <ng-container
+                    *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
+                    <div *ngFor="let kpi of upDatedConfigData" cdkDrag class="p-w-50 p-h-fit-content">
 
-                  <!-- iteration kpi card container -->
-
-                  <div class="card-type-1 p-mb-3 p-pr-3 p-pl-0" *ngIf="kpi?.kpiDetail?.boxType !== 'chart' ;else chart">
-                    <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                      (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
-                      [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
-                      [showExport]="false" [isShow]="true" [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true">
-                      <ng-container *ngIf="!noTabAccess else noDataAccess">
-                        <div class="p-d-flex p-justify-around p-align-center w-100"
-                          *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
-                          <ng-container *ngFor="let item of kpiChartData[kpi?.kpiId]; let index=index">
-                            <div *ngFor="let x of item.data; let i = index" class="p-3 p-text-center"
-                              [ngClass]="{'p-w-50' : true ,'kpi-content-container': item.data.length ==2 && i!==1 }">
-                              <div class="p-d-flex p-flex-column p-justify-center kpi-sub-headings">
-                                <h3 class="text-label">{{x?.label}}
-                                  <img *ngIf="x?.hasOwnProperty('modalValues') && x?.modalValues?.length > 0"
-                                    src="../../../assets/img/arrow-down.svg" alt="arrow-down" class="btn-arrow-down"
-                                    (click)="handleArrowClick(kpi, x?.label, x?.modalValues)" />
-                                </h3>
-                                <p *ngIf="x?.labelInfo" class="p-m-0">{{x?.labelInfo}}</p>
+                      <ng-container *ngIf="kpi?.kpiDetail?.subCategoryBoard == board">
+                        <!-- iteration kpi card container -->
+                        <div class="card-type-1 p-mb-3 p-pr-3 p-pl-0"
+                          *ngIf="kpi?.kpiDetail?.boxType !== 'chart' ;else chart">
+                          <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
+                            (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
+                            [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
+                            (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="false" [isShow]="true"
+                            [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true">
+                            <ng-container *ngIf="!noTabAccess else noDataAccess">
+                              <div class="p-d-flex p-justify-around p-align-center w-100"
+                                *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
+                                <ng-container *ngFor="let item of kpiChartData[kpi?.kpiId]; let index=index">
+                                  <div *ngFor="let x of item.data; let i = index" class="p-3 p-text-center"
+                                    [ngClass]="{'p-w-50' : true ,'kpi-content-container': item.data.length ==2 && i!==1 }">
+                                    <div class="p-d-flex p-flex-column p-justify-center kpi-sub-headings">
+                                      <h3 class="text-label">{{x?.label}}
+                                        <img *ngIf="x?.hasOwnProperty('modalValues') && x?.modalValues?.length > 0"
+                                          src="../../../assets/img/arrow-down.svg" alt="arrow-down"
+                                          class="btn-arrow-down"
+                                          (click)="handleArrowClick(kpi, x?.label, x?.modalValues)" />
+                                      </h3>
+                                      <p *ngIf="x?.labelInfo" class="p-m-0">{{x?.labelInfo}}</p>
+                                    </div>
+                                    <p class="text-data">
+                                      <span
+                                        [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
+                                        != -99 ?
+                                        convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
+                                      <span
+                                        [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit == '%'}"
+                                        *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours' && x?.unit?.toLowerCase() !== 'day'">
+                                        {{ x?.value != -99 ? x?.unit: ''}}
+                                      </span>
+                                      <span *ngIf="(x?.value1 !== '') && x?.value1 != -99 && x?.value1 != undefined"
+                                        [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
+                                        (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ?
+                                          convertToHoursIfTime(x?.value1,x?.unit1) : x?.value1)}}</span>
+                                          <span
+                                            [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' 
+                                            || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit1 == '%'}"
+                                            *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
+                                            {{ x?.value1 != -99 ? x?.unit1 : ''}}
+                                          </span>
+                                    </p>
+                                  </div>
+                                </ng-container>
                               </div>
-                              <p class="text-data">
-                                <span
-                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
-                                  != -99 ?
-                                  convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
-                                <span
-                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit == '%'}"
-                                  *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours' && x?.unit?.toLowerCase() !== 'day'">
-                                  {{ x?.value != -99 ? x?.unit: ''}}
-                                </span>
-                                <span *ngIf="(x?.value1 !== '') && x?.value1 != -99 && x?.value1 != undefined"
-                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
-                                  (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ?
-                                    convertToHoursIfTime(x?.value1,x?.unit1) : x?.value1)}}</span>
-                                    <span
-                                      [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' 
-                                      || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit1 == '%'}"
-                                      *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
-                                      {{ x?.value1 != -99 ? x?.unit1 : ''}}
-                                    </span>
-                              </p>
-                            </div>
-                          </ng-container>
+                            </ng-container>
+                          </app-kpi-card>
                         </div>
-                      </ng-container>
-                    </app-kpi-card>
-                  </div>
 
-                  <!--chart container-->
-                  <ng-template #chart>
-                    <div class="p-sm-12 p-mb-3 p-pr-3 p-pl-0 iteration-chart p-pt-0 p-pb-0">
-                      <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                        (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
-                        [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
-                        [showExport]="true" [isShow]="true"
-                        [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
-                        [showCommentIcon]="true">
-                        <ng-container *ngIf="!noTabAccess else noDataAccess">
-                          <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
-                            <div class="p-pl-3 p-pr-3 w-100 position-relative" [ngSwitch]="kpi?.kpiDetail?.chartType"
-                              *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
-                              <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
-                                <app-groupstackchart *ngSwitchCase="'stackedColumn'"
-                                  [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                  [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
-                                  [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
-                                  [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
-                                </app-groupstackchart>
-                                <app-group-bar-chart *ngSwitchCase="'GroupBarChart'"
-                                [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
-                                [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
-                                [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
-                              </app-group-bar-chart>
+                        <!--chart container-->
+                        <ng-template #chart>
+                          <div class="p-sm-12 p-mb-3 p-pr-3 p-pl-0 iteration-chart p-pt-0 p-pb-0">
+                            <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
+                              (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                              [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
+                              (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
+                              [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
+                              [showCommentIcon]="true">
+                              <ng-container *ngIf="!noTabAccess else noDataAccess">
+                                <ng-container
+                                  *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
+                                  <div class="p-pl-3 p-pr-3 w-100 position-relative"
+                                    [ngSwitch]="kpi?.kpiDetail?.chartType"
+                                    *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
+                                    <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
+                                      <app-groupstackchart *ngSwitchCase="'stackedColumn'"
+                                        [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                        [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                                        [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
+                                        [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
+                                      </app-groupstackchart>
+                                      <app-group-bar-chart *ngSwitchCase="'GroupBarChart'"
+                                        [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                        [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                                        [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
+                                        [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
+                                      </app-group-bar-chart>
 
 
-                                <app-piechart *ngSwitchCase="'pieChart'"
-                                  [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
-                                <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
-                                  [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
-                                  [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                  [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
-                                  [selectedtype]="selectedtype">
-                                </app-multiline>
+                                      <app-piechart *ngSwitchCase="'pieChart'"
+                                        [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
+                                      <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
+                                        [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                        [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
+                                        [selectedtype]="selectedtype">
+                                      </app-multiline>
+                                    </ng-container>
+                                  </div>
+                                </ng-container>
+
                               </ng-container>
-                            </div>
-                          </ng-container>
+                            </app-kpi-card>
+                          </div>
+                        </ng-template>
+                      </ng-container>
 
-                        </ng-container>
-                      </app-kpi-card>
+
+                      <ng-template #noData>
+                        <div class="overlay"
+                          *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader">
+
+                          <div class="loading-img"></div>
+                        </div>
+                        <div class="min-ht"
+                          *ngIf="kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false">
+                          <div class="err">No Data Available</div>
+                        </div>
+                      </ng-template>
+                      <ng-template #loader>
+                        <div class="overlay">
+                          <div class="loading-img"></div>
+                        </div>
+                      </ng-template>
                     </div>
-                  </ng-template>
 
-
-
-                  <ng-template #noData>
-                    <div class="overlay"
-                      *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader">
-
-                      <div class="loading-img"></div>
-                    </div>
-                    <div class="min-ht"
-                      *ngIf="kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false">
-                      <div class="err">No Data Available</div>
-                    </div>
-                  </ng-template>
-                  <ng-template #loader>
-                    <div class="overlay">
-                      <div class="loading-img"></div>
-                    </div>
-                  </ng-template>
+                    <ng-template #noDataAccess>
+                      <div class="min-ht">
+                        <div class="err"> No Data Available</div>
+                      </div>
+                    </ng-template>
+                  </ng-container>
                 </div>
-                <ng-template #noDataAccess>
-                  <div class="min-ht">
-                    <div class="err"> No Data Available</div>
-                  </div>
-                </ng-template>
-              </ng-container>
-            </div>
+              </p-tabPanel>
+            </p-tabView>
           </div>
         </div>
       </div>
@@ -177,59 +190,61 @@
     <div>
       {{modalDetails['header']}}
       <div class="export-button">
-        <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Save"
-          class="p-p-2 p-mr-2" (click)="saveTableColumnOrder()"></button>
+        <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Save" class="p-p-2 p-mr-2"
+          (click)="saveTableColumnOrder()"></button>
         <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export"
           class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('filtered')"></button>
-          <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export All"
-            class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')"></button>
+        <button *ngIf="modalDetails['tableValues'].length > 0" pButton pRipple label="Export All"
+          class="p-button-secondary p-p-2 p-mr-2" (click)="generateExcel('all')"></button>
       </div>
     </div>
-   
+
     <div *ngIf="markerInfo?.length > 0" class="p-d-flex  p-flex-wrap">
-      <span *ngFor="let marker of markerInfo" class="p-m-2 markerInfo"> <i class='fas fa-square' [ngStyle]="{'color': marker?.color}"></i> {{marker?.info}}</span>
+      <span *ngFor="let marker of markerInfo" class="p-m-2 markerInfo"> <i class='fas fa-square'
+          [ngStyle]="{'color': marker?.color}"></i> {{marker?.info}}</span>
     </div>
   </p-header>
   <div class="dialog-body p-mb-4">
-    <p-table #table [value]="modalDetails['tableValues']" [reorderableColumns]="true" [columns]="tableHeaders" styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img" [globalFilterFields]="modalDetails['tableHeadings']">
+    <p-table #table [value]="modalDetails['tableValues']" [reorderableColumns]="true" [columns]="tableHeaders"
+      styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img"
+      [globalFilterFields]="modalDetails['tableHeadings']">
       <ng-template pTemplate="caption">
         <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
-        selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'" optionDisabled="isDefault" [style]="{minWidth: '220px', 'border':'none'}" placeholder="Choose Columns">
-        <ng-template pTemplate="selectedItems">
-          <p-button styleClass="p-button-outlined column-btn">Column &nbsp; <img src="../../../assets/img/column-triple-svgrepo-com.svg" alt="Column filter icon"/></p-button>
-        </ng-template>
-      <ng-template pTemplate="footer">
-        <hr>
-        <p-button label="Apply" class="p-mb-2 p-mr-2 columns-btn" (click)="applyColumnFilter()"></p-button>
+          selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
+          optionDisabled="isDefault" [style]="{minWidth: '220px', 'border':'none'}" placeholder="Choose Columns">
+          <ng-template pTemplate="selectedItems">
+            <p-button styleClass="p-button-outlined column-btn">Column &nbsp; <img
+                src="../../../assets/img/column-triple-svgrepo-com.svg" alt="Column filter icon" /></p-button>
+          </ng-template>
+          <ng-template pTemplate="footer">
+            <hr>
+            <p-button label="Apply" class="p-mb-2 p-mr-2 columns-btn" (click)="applyColumnFilter()"></p-button>
+          </ng-template>
+
+        </p-multiSelect>
       </ng-template>
-      
-      </p-multiSelect>
-    </ng-template>
       <ng-template pTemplate="header" let-columns>
         <tr>
-          <th *ngFor="let item of tableHeaders;let i = index;" 
-          [ngClass]="{'overlap': filteredColumn === item }" pReorderableColumn>
+          <th *ngFor="let item of tableHeaders;let i = index;" [ngClass]="{'overlap': filteredColumn === item }"
+            pReorderableColumn>
             <div class="table-head">
               <span [ngStyle]="{'width':'max-content','margin-right': '2rem'}">{{item}}</span>
               <div class="p-d-flex">
-                <p-columnFilter *ngIf="!excludeColumnFilter.includes(item)"
-                  [field]="item" matchMode="in" [showMenu]="false" [showMatchModes]="false"
-                  [showOperator]="false" [showAddButton]="false" [showClearButton]="false" [showApplyButton]="false"
-                  [style]="{'margin-top':'2px'}">
+                <p-columnFilter *ngIf="!excludeColumnFilter.includes(item)" [field]="item" matchMode="in"
+                  [showMenu]="false" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                  [showClearButton]="false" [showApplyButton]="false" [style]="{'margin-top':'2px'}">
                   <ng-template pTemplate="filter" let-value let-filter="filterCallback" #filter>
-                    <p-multiSelect resetFilterOnHide="true" autofocusFilter="true"  (onPanelShow)="onFilterClick(item)" (onPanelHide)="onFilterBlur(item)"
-                      [options]="this.tableColumnData[item]"
-                      [placeholder]="'Select '+ item" (onChange)="filter($event.value)"
-                      [optionValue]="'value'" [optionLabel]="'name'"
-                      [ngModel]="tableColumnForm[item]">
+                    <p-multiSelect resetFilterOnHide="true" autofocusFilter="true" (onPanelShow)="onFilterClick(item)"
+                      (onPanelHide)="onFilterBlur(item)" [options]="this.tableColumnData[item]"
+                      [placeholder]="'Select '+ item" (onChange)="filter($event.value)" [optionValue]="'value'"
+                      [optionLabel]="'name'" [ngModel]="tableColumnForm[item]">
                       <ng-template pTemplate="selectedItems">
                         <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
                       </ng-template>
                     </p-multiSelect>
                   </ng-template>
                 </p-columnFilter>
-                <p-sortIcon [pSortableColumn]="item"
-                  [field]="item"></p-sortIcon>
+                <p-sortIcon [pSortableColumn]="item" [field]="item"></p-sortIcon>
               </div>
             </div>
           </th>
@@ -240,19 +255,20 @@
 
 
           <ng-container *ngFor="let item of tableHeaders; let i = index;">
-          <ng-container *ngIf="item == 'Issue Id'">
-            <td class="font-small p-p-0 first-cell text-center">
-              <div class="cell-indicator">
-                <div class="color-indicator" [ngStyle]="{'background-color': x['marker'] ? x['marker'] : ''}"></div>
-                <a [href]="x['Issue URL']" class="text-blue p-ml-1" target="_blank">{{x['Issue Id']}}</a>
-              </div>
-            </td>
-          </ng-container>
+            <ng-container *ngIf="item == 'Issue Id'">
+              <td class="font-small p-p-0 first-cell text-center">
+                <div class="cell-indicator">
+                  <div class="color-indicator" [ngStyle]="{'background-color': x['marker'] ? x['marker'] : ''}"></div>
+                  <a [href]="x['Issue URL']" class="text-blue p-ml-1" target="_blank">{{x['Issue Id']}}</a>
+                </div>
+              </td>
+            </ng-container>
             <ng-container *ngIf="item !== 'Issue Id'">
 
               <td *ngIf="item && typeOf(x[item]); else elseBlock" class="font-small">
                 <ng-container *ngFor="let k of x[item]|keyvalue">
-                  <a [href]="k.value" class="p-d-block text-blue" target="_blank" *ngIf="k.value.includes('http'); else showText">{{k.key}}</a>
+                  <a [href]="k.value" class="p-d-block text-blue" target="_blank"
+                    *ngIf="k.value.includes('http'); else showText">{{k.key}}</a>
                   <ng-template #showText>{{k.value}}<br></ng-template>
                 </ng-container>
               </td>
