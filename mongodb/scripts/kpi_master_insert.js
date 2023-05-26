@@ -1473,7 +1473,7 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter" : true,
-    "maturityRange": ["-16","16-8","8-4","4-2","2-"]
+    "maturityRange": ["-48","48-16","16-8","8-4","4-"]
   },
   {
     "kpiId": "kpi11",

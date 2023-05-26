@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,13 +39,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class IssueBacklogCustomHistoryRepositoryImpl implements IssueBacklogCustomHistoryQueryRepository {
 
-	public static final String COUNT = "count";
-	public static final String TYPE_COUNT_MAP = "typeCountMap";
-	public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-	/**
-	 * The operations.
-	 */
+	/** The operations. */
 	@Autowired
 	private MongoOperations operations;
 
@@ -77,5 +70,4 @@ public class IssueBacklogCustomHistoryRepositoryImpl implements IssueBacklogCust
 		Query query = new Query(criteriaProjectLevelAdded);
 		return operations.find(query, IssueBacklogCustomHistory.class);
 	}
-
 }

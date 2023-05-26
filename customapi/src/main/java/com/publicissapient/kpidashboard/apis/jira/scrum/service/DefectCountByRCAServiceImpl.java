@@ -252,10 +252,10 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIE_CHART.getColumns());
 					kpiElement.setExcelData(excelData);
 					sortedFilterDataList.add(filterDataList.stream()
-							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(TOTAL_ISSUES))
+							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(CREATED_DURING_ITERATION))
 							.findFirst().orElse(new IterationKpiValue()));
 					filterDataList
-							.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(TOTAL_ISSUES));
+							.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(CREATED_DURING_ITERATION));
 					sortListByKey(filterDataList);
 					sortedFilterDataList.addAll(filterDataList);
 					// filterDataList will consist of iterationKpiValue for all the available

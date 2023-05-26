@@ -13,7 +13,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'First Time Pass Rate',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus','jiraDefectRejectionStatus','jiraIterationCompletionStatusCustomField'], 'Issue Types Mapping' : ['jiraFTPRStoryIdentification'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] ,'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField']}
+        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus','jiraDefectRejectionStatus','jiraIterationCompletionStatusCustomField'],'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] ,'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField','jiraFTPRStoryIdentification']}
         },
 
       {
@@ -522,5 +522,5 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Flow Distribution',
         type: ['Other'],
         fieldNames : { }
-      },
+      }
 	  ]);
