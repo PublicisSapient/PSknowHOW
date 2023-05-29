@@ -194,7 +194,7 @@
     <p-table #table [value]="modalDetails['tableValues']" [reorderableColumns]="true" [columns]="tableHeaders"
       styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img"
       [globalFilterFields]="modalDetails['tableHeadings']" [scrollable]="true"
-      scrollHeight="70vh">
+      scrollHeight="65vh">
       <ng-template pTemplate="caption">
         <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
           selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
@@ -213,7 +213,7 @@
       <ng-template pTemplate="header" let-columns>
         <tr>
           <ng-container *ngFor="let item of tableHeaders;let i = index;">
-            <th [ngClass]="{'overlap': filteredColumn === item }" pReorderableColumn pFrozenColumn alignFrozen="left"
+            <th [ngClass]="{'overlap': filteredColumn === item }" pReorderableColumn [pReorderableColumnDisabled]="forzenColumns.includes(item.toLowerCase())" pFrozenColumn alignFrozen="left"
             [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width">
               <div class="table-head">
                 <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
