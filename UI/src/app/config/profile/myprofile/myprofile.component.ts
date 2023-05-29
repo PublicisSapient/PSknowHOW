@@ -21,7 +21,7 @@ import { UntypedFormGroup, Validators, UntypedFormBuilder } from '@angular/forms
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { HttpService } from '../../../services/http.service';
 import { ProfileComponent } from '../profile.component';
-import { TextEncryptionService } from '../../../services/text.encryption.service';
+import { SharedService } from 'src/app/services/shared.service';
 import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-myprofile',
@@ -34,12 +34,12 @@ export class MyprofileComponent implements OnInit {
   emailSubmitted = false;
   emailConfigured = false;
   userEmailForm: UntypedFormGroup;
-  userName = localStorage.getItem('user_name') ? localStorage.getItem('user_name') : '--';
-  authorities = this.aesEncryption.convertText(localStorage.getItem('authorities'), 'decrypt');
+  userName : string 
+  authorities = this.sharedService.getCurrentUserDetails('authorities');
 
 
-  userRole = this.authorities && JSON.parse(this.authorities).length ? JSON.parse(this.authorities).join(',') : '--';
-  userEmail = localStorage.getItem('user_email') ? localStorage.getItem('user_email') : '--';
+  userRole = this.authorities?.length ? this.authorities.join(',') : '--';
+  userEmail : string
   userEmailConfigured = false;
   message: string;
   dataLoading = false;
@@ -48,7 +48,10 @@ export class MyprofileComponent implements OnInit {
   adLogin = false;
   dynamicCols: Array<any> = [];
   ssoLogin = environment.SSO_LOGIN;
-  constructor(private formBuilder: UntypedFormBuilder, private getAuthorizationService: GetAuthorizationService, private http: HttpService, private profile: ProfileComponent, private aesEncryption: TextEncryptionService) { }
+  constructor(private formBuilder: UntypedFormBuilder, private getAuthorizationService: GetAuthorizationService, private http: HttpService, private profile: ProfileComponent,
+    private sharedService : SharedService) { }
+
+
 
   ngOnInit() {
     if (this.getAuthorizationService.checkIfSuperUser()) {
@@ -60,16 +63,22 @@ export class MyprofileComponent implements OnInit {
       this.isProjectAdmin = true;
     }
 
-    if ((!this.isSuperAdmin) && (localStorage.getItem('projectsAccess') === 'undefined' || !JSON.parse(localStorage.getItem('projectsAccess')).length)) {
+    if ((!this.isSuperAdmin) && (this.sharedService.getCurrentUserDetails('projectsAccess') === 'undefined' || !this.sharedService.getCurrentUserDetails('projectsAccess').length)) {
       this.noAccess = true;
     }
+   
+    this.sharedService.currentUserDetailsObs.subscribe(details=>{
+      if(details){
+        this.userName = details['user_name'] ? details['user_name'] : '--';
+        this.userEmail = details['user_email'] ? details['user_email'] : '--';
+        if (details['user_email']) {
+          this.emailConfigured = true;
+        }
+      }
+    })
 
-    if (localStorage.getItem('user_email')) {
-      this.emailConfigured = true;
-    }
-
-    if (!!localStorage.projectsAccess && JSON.parse(localStorage.projectsAccess).length) {
-      const accessList = JSON.parse(localStorage.projectsAccess);
+    if (!!this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess')?.length) {
+      const accessList = JSON.parse(JSON.stringify(this.sharedService.getCurrentUserDetails('projectsAccess')));
 
       this.groupProjects(accessList);
       this.getTableHeadings();
@@ -137,13 +146,13 @@ export class MyprofileComponent implements OnInit {
     }
     this.dataLoading = true;
     // call http service
-    this.http.changeEmail(this.getEmailForm.email.value, localStorage.getItem('user_name'))
+    this.http.changeEmail(this.getEmailForm.email.value, this.sharedService.getCurrentUserDetails('user_name') )
       .subscribe(
         response => {
           this.dataLoading = false;
           if (response && response['success']) {
             this.userEmail = response['data'].emailAddress;
-            localStorage.setItem('user_email', this.userEmail);
+            this.sharedService.setCurrentUserDetails({user_email: this.userEmail});
             this.userEmailConfigured = true;
             this.profile.changePswdDisabled = false;
             this.message = '';

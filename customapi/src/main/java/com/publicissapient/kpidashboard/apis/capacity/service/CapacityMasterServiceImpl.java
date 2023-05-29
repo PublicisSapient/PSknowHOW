@@ -125,7 +125,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 
 			if (capacityKpiData != null) {
 				capacityMaster.setId(capacityKpiData.getId());
-				capacityMaster.setCapacity(capacityKpiData.getCapacityPerSprint());
+				capacityMaster.setCapacity(Math.round(capacityKpiData.getCapacityPerSprint() * 100) / 100.0);
 				if(CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity()) && project.isSaveAssigneeDetails()){
 					capacityKpiData.getAssigneeCapacity().stream().forEach(assigneeCapacity -> assigneeCapacity.setLeaves(Optional.ofNullable(assigneeCapacity.getLeaves()).orElse(0D)));
 					capacityMaster.setAssigneeCapacity(capacityKpiData.getAssigneeCapacity());
@@ -400,7 +400,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			double sum = assigneeList.stream()
 					.mapToDouble(assignee -> Optional.ofNullable(assignee.getAvailableCapacity()).orElse(0.0d)).sum();
 			data.setAssigneeCapacity(assigneeList);
-			data.setCapacityPerSprint(sum);
+			data.setCapacityPerSprint(Math.round(sum * 100) / 100.0);
 		} else {
 			data.setCapacityPerSprint(capacityMaster.getCapacity());
 		}

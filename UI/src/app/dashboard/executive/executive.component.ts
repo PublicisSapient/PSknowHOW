@@ -109,7 +109,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     isGlobalDownload = false;
     kpiTrendsObj = {};
     selectedTab= 'iteration';
+    showCommentIcon = false;
     noProjects = false;
+    sprintsOverlayVisible : boolean = false
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -233,6 +235,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     click apply and call kpi
      **/
     receiveSharedData($event) {
+        this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false
         if(localStorage?.getItem('completeHierarchyData')){
             const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
             if(Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype.toLowerCase()]){
@@ -315,6 +318,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     });
                 } else {
                     this.noTabAccess = true;
+                }
+                if(this.hierarchyLevel && this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelId === 'project'){
+                    this.showCommentIcon = true;
+                } else {
+                    this.showCommentIcon = false;
                 }
             }
         }
@@ -1064,7 +1072,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         let trend:string = '';
         if(item?.value?.length > 0){
             let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value; 
-            let unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit.trim() : '';
+            var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit.trim() : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
         if(item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
@@ -1099,7 +1107,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }else{
             trend = 'NA';
         }
-        return [latest, trend];
+        return [latest, trend, unit];
       }
 
       createTrendsData(kpiId){
@@ -1109,7 +1117,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             for(let i = 0; i < this.kpiChartData[kpiId]?.length; i++){
                 if(this.kpiChartData[kpiId][i]?.value?.length > 0){
                     let trendObj = {};
-                    const [latest, trend] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
+                    const [latest, trend,unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
                     trendObj = {
                         "hierarchyName": this.kpiChartData[kpiId][i]?.data,
                         "value": latest,
@@ -1117,7 +1125,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ? 
                                     this.checkMaturity(this.kpiChartData[kpiId][i]) 
                                     : 'M'+this.kpiChartData[kpiId][i]?.maturity,
-                        "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue
+                        "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue,
+                        "kpiUnit" : unit
                     };
                     if(kpiId === 'kpi997'){
                         trendObj['value'] = 'NA';

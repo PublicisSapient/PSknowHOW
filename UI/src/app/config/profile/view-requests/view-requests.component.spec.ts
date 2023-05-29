@@ -267,51 +267,6 @@ describe('ViewRequestsComponent', () => {
   });
 
   it('should load roles data on load', (done) => {
-    localStorage.setItem('projectsAccess', JSON.stringify([
-      {
-        role: 'ROLE_PROJECT_ADMIN',
-        projects: [
-          {
-            projectName: 'Tools proj',
-            projectId: '6332f0a468b5d05cf59c42a6',
-            hierarchy: [
-              {
-                hierarchyLevel: {
-                  level: 1,
-                  hierarchyLevelId: 'corporate',
-                  hierarchyLevelName: 'Corporate Name'
-                },
-                value: 'Org1'
-              },
-              {
-                hierarchyLevel: {
-                  level: 2,
-                  hierarchyLevelId: 'business',
-                  hierarchyLevelName: 'Business Name'
-                },
-                value: 'Org2'
-              },
-              {
-                hierarchyLevel: {
-                  level: 3,
-                  hierarchyLevelId: 'account',
-                  hierarchyLevelName: 'Account Name'
-                },
-                value: 'Level3'
-              },
-              {
-                hierarchyLevel: {
-                  level: 4,
-                  hierarchyLevelId: 'subaccount',
-                  hierarchyLevelName: 'Subaccount'
-                },
-                value: 'Level4'
-              }
-            ]
-          }
-        ]
-      }
-    ]));
     component.ngOnInit();
     fixture.detectChanges();
     httpMock.match(baseUrl + '/api/roles')[0].flush(fakeRolesData);

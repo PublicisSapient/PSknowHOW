@@ -1,9 +1,12 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,6 +21,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryQueryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +53,9 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -70,10 +79,19 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	private JiraIssueRepository jiraIssueRepository;
 
 	@Autowired
+	private IssueBacklogRepository issueBacklogRepository;
+
+	@Autowired
 	private ConfigHelperService configHelperService;
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+
+	@Autowired
+	private KpiHelperService kpiHelperService;
+
+	@Autowired
+	private IssueBacklogCustomHistoryQueryRepository issueBacklogCustomHistoryQueryRepository;
 
 	/**
 	 * Gets qualifier type
@@ -148,24 +166,23 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 				if (reopenJiraHistoryMap.containsKey(jiraIssue.getNumber())) {
 					JiraIssueCustomHistory jiraIssueCustomHistory = reopenJiraHistoryMap.get(jiraIssue.getNumber());
 					List<String> closedStatusList = closedStatusMap.getOrDefault(jiraIssue.getBasicProjectConfigId(), new ArrayList<>());
-					List<JiraIssueSprint> issueHistoryList = jiraIssueCustomHistory.getStorySprintDetails();
-					Optional<JiraIssueSprint> closedHistoryOptional = issueHistoryList.stream()
+					List<JiraHistoryChangeLog> issueHistoryList = jiraIssueCustomHistory.getStatusUpdationLog();
+					Optional<JiraHistoryChangeLog> closedHistoryOptional = issueHistoryList.stream()
 							.filter(Objects::nonNull)
-							.filter(issueHistory -> closedStatusList.contains(issueHistory.getFromStatus()))
+							.filter(issueHistory -> closedStatusList.contains(issueHistory.getChangedTo()))
 							.findFirst();
 					if (closedHistoryOptional.isPresent()) {
-						JiraIssueSprint closedHistory = closedHistoryOptional.get();
-						Optional<JiraIssueSprint> reopenHistoryOptional = issueHistoryList.stream().filter(
-								sprintDetail -> sprintDetail.getActivityDate().isAfter(closedHistory.getActivityDate())
-										&& !closedStatusList.contains(sprintDetail.getFromStatus()))
+						JiraHistoryChangeLog closedHistory = closedHistoryOptional.get();
+						Optional<JiraHistoryChangeLog> reopenHistoryOptional = issueHistoryList.stream().filter(
+								sprintDetail -> sprintDetail.getUpdatedOn().isAfter(closedHistory.getUpdatedOn())
+										&& !closedStatusList.contains(sprintDetail.getChangedTo()))
 								.findFirst();
 						if (reopenHistoryOptional.isPresent()) {
-							JiraIssueSprint reopenHistory = reopenHistoryOptional.get();
+							JiraHistoryChangeLog reopenHistory = reopenHistoryOptional.get();
 							IterationKpiModalValue iterationModal = crateIterationKpiModal(jiraIssue, closedHistory,
 									reopenHistory);
 							modalValues.add(iterationModal);
-							double duration = (double) TimeUnit.DAYS.convert(reopenHistory.getActivityDate().getMillis()
-									- closedHistory.getActivityDate().getMillis(), TimeUnit.MILLISECONDS);
+							double duration = ChronoUnit.DAYS.between( closedHistory.getUpdatedOn(), reopenHistory.getUpdatedOn());
 							totalDuration.set(0, totalDuration.get(0) + duration);
 						}
 					}
@@ -197,7 +214,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	 */
 	private void addToIterationKpiValues(List<IterationKpiValue> iterationKpiValues, String priority,
 			List<JiraIssue> jiraIssueList, List<IterationKpiModalValue> modalValues, List<Double> totalDuration) {
-		double averageTimeToReopen = totalDuration.get(0) > 0 && modalValues.size() > 0
+		double averageTimeToReopen = totalDuration.get(0) > 0 && !modalValues.isEmpty()
 				? Math.ceil(totalDuration.get(0) / modalValues.size())
 				: 0;
 
@@ -217,17 +234,16 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	 * @param reopenHistory
 	 * @return IterationKpiModalValue
 	 */
-	private IterationKpiModalValue crateIterationKpiModal(JiraIssue issue, JiraIssueSprint closedHistory,
-			JiraIssueSprint reopenHistory) {
-		Long closedTimeMillis = closedHistory.getActivityDate().getMillis();
-		Long reopenTimeMillis = reopenHistory.getActivityDate().getMillis();
-		LocalDateTime closedTime = DateUtil.convertMillisToLocalDateTime(closedTimeMillis);
-		LocalDateTime reopenTime = DateUtil.convertMillisToLocalDateTime(reopenTimeMillis);
+	private IterationKpiModalValue crateIterationKpiModal(JiraIssue issue, JiraHistoryChangeLog closedHistory,
+			JiraHistoryChangeLog reopenHistory) {
+		LocalDateTime closedTime = closedHistory.getUpdatedOn();
+		LocalDateTime reopenTime = reopenHistory.getUpdatedOn();
 		String duration = String
-				.valueOf(TimeUnit.DAYS.convert(reopenTimeMillis - closedTimeMillis, TimeUnit.MILLISECONDS));
+				.valueOf(ChronoUnit.DAYS.between( closedHistory.getUpdatedOn(), reopenHistory.getUpdatedOn()));
 		return IterationKpiModalValue.builder().issueId(issue.getNumber()).issueURL(issue.getUrl())
 				.description(issue.getName()).priority(issue.getPriority()).issueStatus(issue.getStatus())
-				.closedDate(closedTime.toLocalDate().toString()).reopenDate(reopenTime.toLocalDate().toString())
+				.closedDate(DateUtil.localDateTimeConverter(closedTime.toLocalDate()))
+				.reopenDate(DateUtil.localDateTimeConverter(reopenTime.toLocalDate()))
 				.durationToReopen(duration + "d").build();
 	}
 
@@ -239,8 +255,8 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	 */
 	private IterationKpiData createReopenRateIterationData(List<IterationKpiModalValue> reopenIssueList,
 			Integer totalDefects) {
-		reopenIssueList.sort((issue1, issue2) -> LocalDate.parse(issue2.getReopenDate())
-				.compareTo(LocalDate.parse(issue1.getReopenDate())));
+		reopenIssueList.sort((issue1, issue2) -> DateUtil.stringToLocalDate(issue2.getReopenDate(),DateUtil.DISPLAY_DATE_FORMAT)
+				.compareTo(DateUtil.stringToLocalDate(issue1.getReopenDate(),DateUtil.DISPLAY_DATE_FORMAT)));
 		Double overAllReopenRate = totalDefects != 0 ? (double) reopenIssueList.size() / totalDefects : 0;
 		BigDecimal bdOverallRate = BigDecimal.valueOf(overAllReopenRate * 100).setScale(2, RoundingMode.HALF_DOWN);
 		return IterationKpiData.builder().label(DEFECT_REOPEN_RATE)
@@ -296,8 +312,11 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		});
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().map(ObjectId::toString).distinct().collect(Collectors.toList()));
-		List<JiraIssue> jiraIssueList = jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters,
+		List<JiraIssue> jiraIssues = jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters,
 				uniqueProjectMap);
+		List<IssueBacklog> issueBacklogs = issueBacklogRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters,
+				uniqueProjectMap);
+		List<JiraIssue> jiraIssueList = ListUtils.union(jiraIssues, kpiHelperService.convertBacklogToJiraIssue(issueBacklogs));
 		resultMap.put(TOTAL_JIRA_ISSUE, jiraIssueList);
 
 		List<String> notClosedJiraIssueNumbers = jiraIssueList.stream().map(JiraIssue::getNumber)
@@ -308,7 +327,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			List<String> closedStatusList = (List<String>) CollectionUtils
 					.emptyIfNull(fieldMapping.getJiraDefectClosedStatus());
 			closedStatusListBasicConfigMap.put(basicProjectConfigObjectId.toString(), closedStatusList);
-			mapOfProjectFilters.put("storySprintDetails.story.fromStatus",
+			mapOfProjectFilters.put("statusUpdationLog.story.changedTo",
 					CommonUtils.convertToPatternList(closedStatusList));
 			uniqueProjectMap.put(basicProjectConfigObjectId.toString(), mapOfProjectFilters);
 		});
@@ -318,8 +337,12 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		// we get all the data that are once closed and now in open state.
 		List<JiraIssueCustomHistory> jiraReopenIssueCustomHistories = jiraIssueCustomHistoryRepository
 				.findByFilterAndFromStatusMap(mapOfFiltersForHistory, uniqueProjectMap);
+		List<IssueBacklogCustomHistory> backlogReopenIssueCustomHistories = issueBacklogCustomHistoryQueryRepository
+				.findByFilterAndFromStatusMap(mapOfFiltersForHistory, uniqueProjectMap);
+		List<JiraIssueCustomHistory> reopenIssueCustomHistories = ListUtils.union(jiraReopenIssueCustomHistories,
+				kpiHelperService.convertBacklogHistoryToJiraHistory(backlogReopenIssueCustomHistories));
 		resultMap.put(PROJECT_CLOSED_STATUS_MAP, closedStatusListBasicConfigMap);
-		resultMap.put(JIRA_REOPEN_HISTORY, jiraReopenIssueCustomHistories);
+		resultMap.put(JIRA_REOPEN_HISTORY, reopenIssueCustomHistories);
 		return resultMap;
 	}
 

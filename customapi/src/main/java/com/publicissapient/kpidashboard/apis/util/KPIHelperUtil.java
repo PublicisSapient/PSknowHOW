@@ -31,9 +31,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.publicissapient.kpidashboard.apis.model.ReleaseFilter;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,9 +50,12 @@ import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
+import com.publicissapient.kpidashboard.apis.model.ReleaseFilter;
 import com.publicissapient.kpidashboard.apis.model.SprintFilter;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
@@ -177,7 +183,7 @@ public final class KPIHelperUtil {
 			if (isAccountHierarchyData(node)) {
 				Node newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(),
 						node.getGroupName(), node.getAccountHierarchy(), node.getProjectFilter(),
-						node.getSprintFilter(),node.getReleaseFilter());
+						node.getSprintFilter(), node.getReleaseFilter());
 				leafNodeList.add(newNode);
 			} else if (isAccountHierarchyDataKanban(node)) {
 				Node newNode = new Node(node.getValue(), node.getId(), node.getName(), node.getParentId(),
@@ -189,13 +195,21 @@ public final class KPIHelperUtil {
 		List<Node> children = node.getChildren();
 		for (Node child : children) {
 			if (child.getChildren() != null) {
-				if (child.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
-						&& !child.getChildren().isEmpty() && child.getChildren().get(0).getGroupName()
-								.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)) {
-					child.getChildren().stream().filter(filter->filter.getSprintFilter()!=null)
-							.collect(Collectors.toList())
-							.sort((node1, node2) -> node2.getSprintFilter().getStartDate()
-									.compareTo(node1.getSprintFilter().getStartDate()));
+				if (child.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
+					List<Node> sortedChildNodes = new ArrayList<>();
+					Map<String, List<Node>> allChildrenMap = child.getChildren().stream()
+							.collect(Collectors.groupingBy(Node::getGroupName));
+					allChildrenMap.computeIfPresent(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, (k, v) -> {
+						v.sort((node1, node2) -> node2.getSprintFilter().getStartDate()
+								.compareTo(node1.getSprintFilter().getStartDate()));
+						sortedChildNodes.addAll(v);
+						return v;
+					});
+					allChildrenMap.computeIfPresent(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE, (k, v) -> {
+						sortedChildNodes.addAll(v);
+						return v;
+					});
+					child.setChildren(sortedChildNodes);
 				}
 				getLeafNodes(child, leafNodeList);
 			}
@@ -344,6 +358,51 @@ public final class KPIHelperUtil {
 		Long p5Count = 0L;
 
 		for (JiraIssue issue : sprintWiseDefectDataList) {
+
+			if (StringUtils.isBlank(issue.getPriority())) {
+				p5Count++;
+				priorityCountMap.put(Constant.MISC, p5Count);
+			} else {
+				if (StringUtils.containsIgnoreCase(
+						customApiConfig.getpriorityP1().replaceAll(Constant.WHITESPACE, "").trim(),
+						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+					p1Count++;
+					priorityCountMap.put(Constant.P1, p1Count);
+				} else if (StringUtils.containsIgnoreCase(
+						customApiConfig.getpriorityP2().replaceAll(Constant.WHITESPACE, "").trim(),
+						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+					p2Count++;
+					priorityCountMap.put(Constant.P2, p2Count);
+				} else if (StringUtils.containsIgnoreCase(
+						customApiConfig.getpriorityP3().replaceAll(Constant.WHITESPACE, "").trim(),
+						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+					p3Count++;
+					priorityCountMap.put(Constant.P3, p3Count);
+				} else if (StringUtils.containsIgnoreCase(
+						customApiConfig.getpriorityP4().replaceAll(Constant.WHITESPACE, "").trim(),
+						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
+					p4Count++;
+					priorityCountMap.put(Constant.P4, p4Count);
+				} else {
+					p5Count++;
+					priorityCountMap.put(Constant.MISC, p5Count);
+				}
+			}
+		}
+
+		return priorityCountMap;
+	}
+
+	public static Map<String, Long> setpriorityScrumForBacklog(List<IssueBacklog> sprintWiseDefectDataList,
+													 CustomApiConfig customApiConfig) {
+		Map<String, Long> priorityCountMap = new HashMap<>();
+		Long p1Count = 0L;
+		Long p2Count = 0L;
+		Long p3Count = 0L;
+		Long p4Count = 0L;
+		Long p5Count = 0L;
+
+		for (IssueBacklog issue : sprintWiseDefectDataList) {
 
 			if (StringUtils.isBlank(issue.getPriority())) {
 				p5Count++;

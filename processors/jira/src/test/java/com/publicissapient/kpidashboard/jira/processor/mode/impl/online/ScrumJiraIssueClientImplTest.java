@@ -37,6 +37,9 @@ import java.util.Optional;
 
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
+import com.publicissapient.kpidashboard.jira.client.jiraissue.HandleJiraHistory;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
@@ -162,6 +165,16 @@ public class ScrumJiraIssueClientImplTest {
 
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
+
+	@Mock
+	private HandleJiraHistory handleJiraHistory;
+
+	@Mock
+	private IssueBacklogRepository issueBacklogRepository;
+
+	@Mock
+	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
+
 
 	@BeforeEach
 	public void setUp() throws Exception {

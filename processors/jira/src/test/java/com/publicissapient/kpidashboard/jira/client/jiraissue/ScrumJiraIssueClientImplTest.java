@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -70,6 +72,9 @@ public class ScrumJiraIssueClientImplTest {
     private ScrumJiraIssueClientImpl scrumJiraIssueClient;
 
     @Mock
+    private HandleJiraHistory handleJiraHistory;
+
+    @Mock
     private JiraIssueRepository jiraIssueRepository;
 
     @Mock
@@ -98,6 +103,12 @@ public class ScrumJiraIssueClientImplTest {
 
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
+
+    @Mock
+    private IssueBacklogRepository issueBacklogRepository;
+
+    @Mock
+    private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 
 
     @Test

@@ -39,8 +39,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.atlassian.jira.rest.client.api.domain.Status;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -150,6 +158,18 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
+	@Autowired
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+
+	@Autowired
+	private HandleJiraHistory handleJiraHistory;
+
+	@Autowired
+	private IssueBacklogRepository issueBacklogRepository;
+
+	@Autowired
+	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
+
 	/**
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
@@ -206,6 +226,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			String userTimeZone = jiraAdapter.getUserTimeZone(projectConfig);
 			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
 
+			List<Status> projectStatuses = jiraAdapter.getStatus();
+			processAndSaveProjectStatusCategory(projectStatuses, projectConfig.getBasicProjectConfigId().toString());
+
 			for (int i = 0; hasMore; i += pageSize) {
 				Instant startProcessingJiraIssues = Instant.now();
 				SearchResult searchResult = jiraAdapter.getIssues(projectConfig, maxChangeDatesByIssueTypeWithAddedTime,
@@ -242,6 +265,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				if (issues.size() < pageSize) {
 					break;
 				}
+				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 			}
 			processorFetchingComplete = true;
 		} catch (JSONException e) {
@@ -293,6 +317,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			String userTimeZone = jiraAdapter.getUserTimeZone(projectConfig);
 			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
 			List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
+			List<Status> projectStatuses = jiraAdapter.getStatus();
+			processAndSaveProjectStatusCategory(projectStatuses, projectConfig.getBasicProjectConfigId().toString());
 			for(BoardDetails board : boardDetailsList) {
 				psLogData.setBoardId(board.getBoardId());
 				int boardTotal = 0;
@@ -335,6 +361,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					if (issues.size() < pageSize) {
 						break;
 					}
+					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 				}
 				Instant epicProcessStartTime = Instant.now();
 				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig,board.getBoardId());
@@ -569,9 +596,15 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	public List<JiraIssue> saveJiraIssueDetails(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
 												Set<SprintDetails> setForCacheClean, JiraAdapter jiraAdapter, boolean dataFromBoard) throws JSONException,InterruptedException {
 
+		Set<Assignee> assigneeSetToSave = new HashSet<>();
 		List<JiraIssue> jiraIssuesToSave = new ArrayList<>();
 		List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
-		Set<Assignee> assigneeSetToSave = new HashSet<>();
+		List<IssueBacklog> issueBacklogToSave =new ArrayList<>();
+		List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToSave=new ArrayList<>();
+		List<JiraIssue> jiraIssuesToDelete = new ArrayList<>();
+		List<JiraIssueCustomHistory> jiraIssueHistoryToDelete = new ArrayList<>();
+		List<IssueBacklog> issueBacklogToDelete =new ArrayList<>();
+		List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToDelete=new ArrayList<>();
 
 		if (null == currentPagedJiraRs) {
 			log.error("JIRA Processor | No list of current paged JIRA's issues found");
@@ -598,6 +631,10 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 			JiraIssue jiraIssue= getJiraIssue(projectConfig, issueId);
 			JiraIssueCustomHistory jiraIssueHistory=getIssueCustomHistory(projectConfig, issueNumber);
+			IssueBacklog issueBacklog = getIssueBacklog(projectConfig, issueId);
+			IssueBacklogCustomHistory issueBacklogCustomHistory = getIssueBacklogCustomHistory(projectConfig, issueNumber);
+			boolean jiraIssuePresentInDb = jiraIssue.getIssueId()!=null? true : false;
+			boolean backlogPresentInDb = issueBacklog.getIssueId()!=null? true : false;
 
 			Map<String, IssueField> fields = JiraIssueClientUtil.buildFieldMap(issue.getFields());
 
@@ -665,8 +702,26 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
-				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);
-				if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
+				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
+				if (isIssueBacklog(jiraIssue, sprint) && StringUtils.isNotBlank(jiraIssue.getProjectID())
+						&& !jiraIssue.getTypeName().equalsIgnoreCase("Epic")) {
+					concertJiraIssueToBacklog(jiraIssue, issueBacklog);
+					concertJiraIssueHistoryToBacklogHistory(jiraIssueHistory, issueBacklogCustomHistory);
+					//When issue is moved from active sprint to backlog/future sprint
+					if(jiraIssuePresentInDb)
+					{
+						jiraIssuesToDelete.add(jiraIssue);
+						jiraIssueHistoryToDelete.add(jiraIssueHistory);
+					}
+					issueBacklogCustomHistoryToSave.add(issueBacklogCustomHistory);
+					issueBacklogToSave.add(issueBacklog);
+				}
+				else if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
+                     if(backlogPresentInDb)
+					 {
+						 issueBacklogToDelete.add(issueBacklog);
+						 issueBacklogCustomHistoryToDelete.add(issueBacklogCustomHistory);
+					 }
 					jiraIssuesToSave.add(jiraIssue);
 					jiraIssueHistoryToSave.add(jiraIssueHistory);
 				}
@@ -674,9 +729,17 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			}
 		}
 
+		// Deleting from MongoDB
+		jiraIssueRepository.deleteAll(jiraIssuesToDelete);
+		jiraIssueCustomHistoryRepository.deleteAll(jiraIssueHistoryToDelete);
+		issueBacklogRepository.deleteAll(issueBacklogToDelete);
+		issueBacklogCustomHistoryRepository.deleteAll(issueBacklogCustomHistoryToDelete);
+
 		// Saving back to MongoDB
 		jiraIssueRepository.saveAll(jiraIssuesToSave);
 		jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
+		issueBacklogRepository.saveAll(issueBacklogToSave);
+		issueBacklogCustomHistoryRepository.saveAll(issueBacklogCustomHistoryToSave);
 		saveAccountHierarchy(jiraIssuesToSave, projectConfig);
 		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
 		if (!dataFromBoard) {
@@ -687,6 +750,157 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
 				.collect(Collectors.toSet()));
 		return jiraIssuesToSave;
+	}
+
+	private void concertJiraIssueHistoryToBacklogHistory(JiraIssueCustomHistory jiraIssueHistory, IssueBacklogCustomHistory issueBacklogCustomHistory) {
+		issueBacklogCustomHistory.setProjectID(jiraIssueHistory.getProjectID());
+		issueBacklogCustomHistory.setStoryID(jiraIssueHistory.getStoryID());
+		issueBacklogCustomHistory.setStoryType(jiraIssueHistory.getStoryType());
+		issueBacklogCustomHistory.setDefectStoryID(jiraIssueHistory.getDefectStoryID());
+		issueBacklogCustomHistory.setEstimate(jiraIssueHistory.getEstimate());
+		issueBacklogCustomHistory.setBufferedEstimateTime(jiraIssueHistory.getBufferedEstimateTime());
+		issueBacklogCustomHistory.setCreatedDate(jiraIssueHistory.getCreatedDate());
+		issueBacklogCustomHistory.setDevicePlatform(jiraIssueHistory.getDevicePlatform());
+		issueBacklogCustomHistory.setProjectKey(jiraIssueHistory.getProjectKey());
+		issueBacklogCustomHistory.setProjectComponentId(jiraIssueHistory.getProjectComponentId());
+		issueBacklogCustomHistory.setDeveloperId(jiraIssueHistory.getDeveloperId());
+		issueBacklogCustomHistory.setDeveloperName(jiraIssueHistory.getDeveloperName());
+		issueBacklogCustomHistory.setQaId(jiraIssueHistory.getQaId());
+		issueBacklogCustomHistory.setQaName(jiraIssueHistory.getQaName());
+		issueBacklogCustomHistory.setBuildId(jiraIssueHistory.getBuildId());
+		issueBacklogCustomHistory.setBuildNumber(jiraIssueHistory.getBuildNumber());
+		issueBacklogCustomHistory.setProjectName(jiraIssueHistory.getProjectName());
+		issueBacklogCustomHistory.setBasicProjectConfigId(jiraIssueHistory.getBasicProjectConfigId());
+		issueBacklogCustomHistory.setStatusUpdationLog(jiraIssueHistory.getStatusUpdationLog());
+		issueBacklogCustomHistory.setAssigneeUpdationLog(jiraIssueHistory.getAssigneeUpdationLog());
+		issueBacklogCustomHistory.setPriorityUpdationLog(jiraIssueHistory.getPriorityUpdationLog());
+		issueBacklogCustomHistory.setFixVersionUpdationLog(jiraIssueHistory.getFixVersionUpdationLog());
+		issueBacklogCustomHistory.setLabelUpdationLog(jiraIssueHistory.getLabelUpdationLog());
+		issueBacklogCustomHistory.setDueDateUpdationLog(jiraIssueHistory.getDueDateUpdationLog());
+		issueBacklogCustomHistory.setSprintUpdationLog(jiraIssueHistory.getSprintUpdationLog());
+		issueBacklogCustomHistory.setAdditionalFilters(jiraIssueHistory.getAdditionalFilters());
+		issueBacklogCustomHistory.setUrl(jiraIssueHistory.getUrl());
+		issueBacklogCustomHistory.setDescription(jiraIssueHistory.getDescription());
+	}
+
+	private void concertJiraIssueToBacklog(JiraIssue jiraIssue, IssueBacklog issueBacklog) {
+		issueBacklog.setProcessorId(jiraIssue.getProcessorId());
+		issueBacklog.setIssueId(jiraIssue.getIssueId());
+		issueBacklog.setNumber(jiraIssue.getNumber());
+		issueBacklog.setName(jiraIssue.getName());
+		issueBacklog.setTypeId(jiraIssue.getTypeId());
+		issueBacklog.setTypeName(jiraIssue.getTypeName());
+		issueBacklog.setStatus(jiraIssue.getStatus());
+		issueBacklog.setState(jiraIssue.getState());
+		issueBacklog.setEstimate(jiraIssue.getEstimate());
+		issueBacklog.setStoryPoints(jiraIssue.getStoryPoints());
+		issueBacklog.setEstimateTime(jiraIssue.getEstimateTime());
+		issueBacklog.setUrl(jiraIssue.getUrl());
+		issueBacklog.setChangeDate(jiraIssue.getChangeDate());
+		issueBacklog.setIsDeleted(jiraIssue.getIsDeleted());
+		issueBacklog.setPriority(jiraIssue.getPriority());
+		issueBacklog.setCount(jiraIssue.getCount());
+		issueBacklog.setLabels(jiraIssue.getLabels());
+		issueBacklog.setCreatedDate(jiraIssue.getCreatedDate());
+		issueBacklog.setDueDate(jiraIssue.getDueDate());
+		issueBacklog.setEnvImpacted(jiraIssue.getEnvImpacted());
+		issueBacklog.setBuildNumber(jiraIssue.getBuildNumber());
+		issueBacklog.setRootCauseList(jiraIssue.getRootCauseList());
+		issueBacklog.setOwnersID(jiraIssue.getOwnersID());
+		issueBacklog.setOwnersIsDeleted(jiraIssue.getOwnersIsDeleted());
+		issueBacklog.setOwnersChangeDate(jiraIssue.getOwnersChangeDate());
+		issueBacklog.setOwnersState(jiraIssue.getOwnersState());
+		issueBacklog.setOwnersUsername(jiraIssue.getOwnersUsername());
+		issueBacklog.setOwnersFullName(jiraIssue.getOwnersFullName());
+		issueBacklog.setOwnersShortName(jiraIssue.getOwnersShortName());
+		issueBacklog.setTeamIsDeleted(jiraIssue.getTeamIsDeleted());
+		issueBacklog.setTeamAssetState(jiraIssue.getTeamAssetState());
+		issueBacklog.setTeamChangeDate(jiraIssue.getTeamChangeDate());
+		issueBacklog.setTeamName(jiraIssue.getTeamName());
+		issueBacklog.setSprintIsDeleted(jiraIssue.getSprintIsDeleted());
+		issueBacklog.setTestAutomated(jiraIssue.getTestAutomated());
+		issueBacklog.setIsTestAutomated(jiraIssue.getIsTestAutomated());
+		issueBacklog.setIsTestCanBeAutomated(jiraIssue.getIsTestCanBeAutomated());
+		issueBacklog.setTestAutomatedDate(jiraIssue.getTestAutomatedDate());
+		issueBacklog.setSprintChangeDate(jiraIssue.getSprintChangeDate());
+		issueBacklog.setSprintAssetState(jiraIssue.getSprintAssetState());
+		issueBacklog.setSprintEndDate(jiraIssue.getSprintEndDate());
+		issueBacklog.setSprintBeginDate(jiraIssue.getSprintBeginDate());
+		issueBacklog.setSprintName(jiraIssue.getSprintName());
+		issueBacklog.setSprintID(jiraIssue.getSprintID());
+		issueBacklog.setSprintUrl(jiraIssue.getSprintUrl());
+		issueBacklog.setSprintIdList(jiraIssue.getSprintIdList());
+		issueBacklog.setEpicIsDeleted(jiraIssue.getEpicIsDeleted());
+		issueBacklog.setEpicChangeDate(jiraIssue.getEpicChangeDate());
+		issueBacklog.setEpicAssetState(jiraIssue.getEpicAssetState());
+		issueBacklog.setEpicType(jiraIssue.getEpicType());
+		issueBacklog.setEpicEndDate(jiraIssue.getEpicEndDate());
+		issueBacklog.setEpicBeginDate(jiraIssue.getEpicBeginDate());
+		issueBacklog.setEpicName(jiraIssue.getEpicName());
+		issueBacklog.setEpicUrl(jiraIssue.getEpicUrl());
+		issueBacklog.setEpicNumber(jiraIssue.getEpicNumber());
+		issueBacklog.setEpicID(jiraIssue.getEpicID());
+		issueBacklog.setReopeningCounter(jiraIssue.getReopeningCounter());
+		issueBacklog.setCostOfDelay(jiraIssue.getCostOfDelay());
+		issueBacklog.setJobSize(jiraIssue.getJobSize());
+		issueBacklog.setWsjf(jiraIssue.getWsjf());
+		issueBacklog.setBusinessValue(jiraIssue.getBusinessValue());
+		issueBacklog.setTimeCriticality(jiraIssue.getTimeCriticality());
+		issueBacklog.setRiskReduction(jiraIssue.getRiskReduction());
+		issueBacklog.setProjectPath(jiraIssue.getProjectPath());
+		issueBacklog.setProjectIsDeleted(jiraIssue.getProjectIsDeleted());
+		issueBacklog.setProjectState(jiraIssue.getProjectState());
+		issueBacklog.setProjectChangeDate(jiraIssue.getProjectChangeDate());
+		issueBacklog.setProjectEndDate(jiraIssue.getProjectEndDate());
+		issueBacklog.setProjectBeginDate(jiraIssue.getProjectBeginDate());
+		issueBacklog.setProjectName(jiraIssue.getProjectName());
+		issueBacklog.setProjectID(jiraIssue.getProjectID());
+		issueBacklog.setProjectKey(jiraIssue.getProjectKey());
+		issueBacklog.setJiraProjectName(jiraIssue.getJiraProjectName());
+		issueBacklog.setBufferedEstimateTime(jiraIssue.getBufferedEstimateTime());
+		issueBacklog.setResolution(jiraIssue.getResolution());
+		issueBacklog.setAffectedVersions(jiraIssue.getAffectedVersions());
+		issueBacklog.setWorkStreamID(jiraIssue.getWorkStreamID());
+		issueBacklog.setWorkStream(jiraIssue.getWorkStream());
+		issueBacklog.setAdditionalFilters(jiraIssue.getAdditionalFilters());
+		issueBacklog.setRelease(jiraIssue.getRelease());
+		issueBacklog.setReleaseId(jiraIssue.getReleaseId());
+		issueBacklog.setReleaseDate(jiraIssue.getReleaseDate());
+		issueBacklog.setAssigneeId(jiraIssue.getAssigneeId());
+		issueBacklog.setAssigneeName(jiraIssue.getAssigneeName());
+		issueBacklog.setDeveloperId(jiraIssue.getDeveloperId());
+		issueBacklog.setDeveloperName(jiraIssue.getDeveloperName());
+		issueBacklog.setQaId(jiraIssue.getQaId());
+		issueBacklog.setQaName(jiraIssue.getQaName());
+		issueBacklog.setAssignAttributeValue(jiraIssue.getAssignAttributeValue());
+		issueBacklog.setTeamNameValue(jiraIssue.getTeamNameValue());
+		issueBacklog.setStoryDemonstratedFieldValue(jiraIssue.getStoryDemonstratedFieldValue());
+		issueBacklog.setStoryDemonstratedFieldValueDate(jiraIssue.getStoryDemonstratedFieldValueDate());
+		issueBacklog.setDevicePlatform(jiraIssue.getDevicePlatform());
+		issueBacklog.setDefectRaisedBy(jiraIssue.getDefectRaisedBy());
+		issueBacklog.setJiraStatus(jiraIssue.getJiraStatus());
+		issueBacklog.setDefectStoryID(jiraIssue.getDefectStoryID());
+		issueBacklog.setSpeedyIssueType(jiraIssue.getSpeedyIssueType());
+		issueBacklog.setTimeSpentInMinutes(jiraIssue.getTimeSpentInMinutes());
+		issueBacklog.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
+		issueBacklog.setTestCaseFolderName(jiraIssue.getTestCaseFolderName());
+		issueBacklog.setReleaseVersions(jiraIssue.getReleaseVersions());
+		issueBacklog.setDefectRaisedByQA(jiraIssue.isDefectRaisedByQA());
+		issueBacklog.setOriginalEstimateMinutes(jiraIssue.getOriginalEstimateMinutes());
+		issueBacklog.setRemainingEstimateMinutes(jiraIssue.getRemainingEstimateMinutes());
+		issueBacklog.setProductionDefect(jiraIssue.isProductionDefect());
+		issueBacklog.setAggregateTimeOriginalEstimateMinutes(jiraIssue.getAggregateTimeOriginalEstimateMinutes());
+		issueBacklog.setAggregateTimeRemainingEstimateMinutes(jiraIssue.getAggregateTimeRemainingEstimateMinutes());
+		issueBacklog.setUpdateDate(jiraIssue.getUpdateDate());
+		issueBacklog.setDevDueDate(jiraIssue.getDevDueDate());
+
+	}
+
+
+	private boolean isIssueBacklog(JiraIssue jiraIssue, IssueField sprintField) {
+		return  sprintField == null || sprintField.getValue() == null
+				|| JiraConstants.EMPTY_STR.equals(sprintField.getValue())
+				|| jiraIssue.getSprintAssetState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE);
 	}
 
 	/**
@@ -977,7 +1191,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	private void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,
-			FieldMapping fieldMapping) {
+			FieldMapping fieldMapping, Map<String, IssueField> fields) {
 
 		jiraIssueHistory.setProjectID(jiraIssue.getProjectName());
 		jiraIssueHistory.setProjectComponentId(jiraIssue.getProjectID());
@@ -988,7 +1202,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		jiraIssueHistory.setDescription(jiraIssue.getName());
 		// This method is not setup method. write it to keep
 		// custom history
-		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);
+		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
 
 		jiraIssueHistory.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
 	}
@@ -1151,11 +1365,11 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			// imply kanban
 			// as a story on a scrum board without a sprint is really on the
 			// backlog
-			jiraIssue.setSprintID("");
-			jiraIssue.setSprintName("");
-			jiraIssue.setSprintBeginDate("");
-			jiraIssue.setSprintEndDate("");
-			jiraIssue.setSprintAssetState("");
+			 jiraIssue.setSprintID("");
+			 jiraIssue.setSprintName("");
+			 jiraIssue.setSprintBeginDate("");
+			 jiraIssue.setSprintEndDate("");
+			 jiraIssue.setSprintAssetState("");
 		} else {
 			Object sValue = sprintField.getValue();
 			try {
@@ -1164,7 +1378,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
 				Collections.sort(sprints, JiraIssueClientUtil.SPRINT_COMPARATOR);
 				setSprintData(sprints, jiraIssue, sValue, projectConfig, sprintDetailsSet);
-
 			} catch (ParseException | JSONException e) {
 				log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
 			}
@@ -1287,7 +1500,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 *            Project field Mapping
 	 */
 	private void processJiraIssueHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue,
-			Issue issue, FieldMapping fieldMapping) {
+			Issue issue, FieldMapping fieldMapping, Map<String, IssueField> fields) {
 		List<ChangelogGroup> changeLogList = JiraIssueClientUtil.sortChangeLogGroup(issue);
 		List<ChangelogGroup> modChangeLogList = new ArrayList<>();
 
@@ -1300,16 +1513,13 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (null != jiraIssue.getDevicePlatform()) {
 			jiraIssueCustomHistory.setDevicePlatform(jiraIssue.getDevicePlatform());
 		}
-
 		if (null == jiraIssueCustomHistory.getStoryID()) {
-			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, fieldMapping);
+			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, fieldMapping, fields);
 		} else {
 			if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 				jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 			}
-			List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
-					fieldMapping);
-			jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
+			handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
 		}
 
 	}
@@ -1327,11 +1537,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 *            Change Log list
 	 */
 	private void addStoryHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue, Issue issue,
-			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping) {
-		List<JiraIssueSprint> listIssueSprint = getChangeLog(jiraIssue, changeLogList, issue.getCreationDate(),
-				fieldMapping);
+			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields) {
+		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
 		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
-		jiraIssueCustomHistory.setStorySprintDetails(listIssueSprint);
 		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
 
 		// estimate
@@ -1341,206 +1549,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 		}
 
-	}
-
-	/**
-	 * Process change log and create array of status in Jira issue history
-	 *
-	 * @param jiraIssue
-	 *            JiraIssue
-	 * @param changeLogList
-	 *            ChangeLogList
-	 * @param issueCreatedDate
-	 *            Jira Issue creation date
-	 * @param fieldMapping
-	 *            Field Config Mapping
-	 * @return
-	 */
-	private List<JiraIssueSprint> getChangeLog(JiraIssue jiraIssue, List<ChangelogGroup> changeLogList, // NOPMD
-																										// //NOSONAR
-			DateTime issueCreatedDate, FieldMapping fieldMapping) {
-
-		List<JiraIssueSprint> issueHistory = new ArrayList<>();
-		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
-		List<String> jiraStatusForQa = fieldMapping.getJiraStatusForQa();
-		// creating first entry of issue
-		if (null != issueCreatedDate) {
-			JiraIssueSprint jiraIssueSprint = new JiraIssueSprint();
-			jiraIssueSprint.setActivityDate(issueCreatedDate);
-			jiraIssueSprint.setFromStatus(fieldMapping.getStoryFirstStatus());
-			jiraIssueSprint.setSprintId("");
-			jiraIssueSprint.setSprintComponentId("");
-			jiraIssueSprint.setStatus("");
-			issueHistory.add(jiraIssueSprint);
-		}
-		Map<String, String> values = new HashMap<>();
-
-		if (CollectionUtils.isNotEmpty(changeLogList)) {
-			for (ChangelogGroup history : changeLogList) {
-				getHistory(history, values, jiraIssue, issueHistory, jiraStatusForDevelopment, jiraStatusForQa);
-			}
-		}
-		/**
-		 * check if no sprint found in changelog but sprint present in issue
-		 * update sprint in all changelog
-		 */
-		if (StringUtils.isEmpty(values.get("fromSprint")) && StringUtils.isEmpty(values.get("toSprint"))
-				&& !StringUtils.isEmpty(jiraIssue.getSprintName())) {
-			updateChangeLogWithSprint(issueHistory, jiraIssue);
-		}
-		return issueHistory;
-	}
-
-	/**
-	 * @param history
-	 * @param values
-	 * @param jiraIssue
-	 * @param issueHistory
-	 * @param jiraStatusForDevelopment
-	 * @param jiraStatusForQa
-	 * @return
-	 */
-	private void getHistory(ChangelogGroup history, Map<String, String> values, JiraIssue jiraIssue,
-			List<JiraIssueSprint> issueHistory, List<String> jiraStatusForDevelopment, List<String> jiraStatusForQa) {
-		String fromSprint = "";
-		String fromSprintId = "";
-		String toSprint = "";
-		String toSprintId = "";
-		String sprintStatus = "";
-		boolean sprintUpdated = true;
-		boolean sprintChanged = false;
-
-		for (ChangelogItem changelogItem : history.getItems()) {
-
-			setJiraIssueForTestAutomated(changelogItem, jiraIssue, history);
-
-			if (changelogItem.getField().equalsIgnoreCase(JiraConstants.SPRINT)) {
-				fromSprint = changelogItem.getFromString() == null ? "" : changelogItem.getFromString();
-				fromSprintId = changelogItem.getFrom();
-				toSprint = changelogItem.getToString() == null ? null
-						: changelogItem.getToString().replace(fromSprint + ",", "").trim();
-
-				toSprintId = changelogItem.getTo();
-				sprintChanged = true;
-			} else if (changelogItem.getField().equalsIgnoreCase(JiraConstants.STATUS)) {
-				JiraIssueSprint jiraIssueSprint = new JiraIssueSprint();
-				jiraIssueSprint.setStatus(sprintStatus);
-				jiraIssueSprint.setSprintId(toSprint);
-
-				setSprintComponentId(jiraIssueSprint, toSprintId, jiraIssue);
-
-				jiraIssueSprint.setStatus(sprintStatus);
-				jiraIssueSprint.setFromStatus(changelogItem.getToString());
-				jiraIssueSprint.setActivityDate(history.getCreated());
-				issueHistory.add(jiraIssueSprint);
-			}
-			if (sprintUpdated && sprintChanged) {
-				setIssueHistory(issueHistory, fromSprintId, jiraIssue);
-				sprintUpdated = false;
-			}
-
-			/*
-			 * check if only sprint changed. In this case only sprint name need
-			 * to be updated with last status
-			 */
-			sprintChanged = updateIfSprintChanged(jiraIssue, toSprint, toSprintId, sprintChanged, issueHistory);
-			values.put("fromSprint", fromSprint);
-			values.put("toSprint", toSprint);
-		}
-	}
-
-	/**
-	 * @param jiraIssueSprint
-	 * @param toSprintId
-	 * @param jiraIssue
-	 */
-	private void setSprintComponentId(JiraIssueSprint jiraIssueSprint, String toSprintId, JiraIssue jiraIssue) {
-		if (StringUtils.isNotBlank(toSprintId)) {
-			jiraIssueSprint.setSprintComponentId(toSprintId + "_" + jiraIssue.getProjectName());
-		} else {
-			jiraIssueSprint.setSprintComponentId(toSprintId);
-		}
-	}
-
-	/**
-	 * @param changelogItem
-	 * @param jiraIssue
-	 * @param history
-	 */
-	private void setJiraIssueForTestAutomated(ChangelogItem changelogItem, JiraIssue jiraIssue,
-			ChangelogGroup history) {
-		if (changelogItem.getField().equalsIgnoreCase(JiraConstants.TEST_AUTOMATED)) {
-			if (changelogItem.getToString().equalsIgnoreCase(JiraConstants.YES)) {
-				jiraIssue.setTestAutomatedDate(JiraProcessorUtil
-						.getFormattedDate(JiraProcessorUtil.deodeUTF8String(history.getCreated().toString())));
-			} else {
-				jiraIssue.setTestAutomatedDate("");
-
-			}
-		}
-	}
-
-	/**
-	 * @param issueHistory
-	 * @param fromSprintId
-	 * @param jiraIssue
-	 */
-	private void setIssueHistory(List<JiraIssueSprint> issueHistory, String fromSprintId, JiraIssue jiraIssue) {
-		for (int i = 0; i < issueHistory.size() - 1; i++) {
-			JiraIssueSprint fsprint = issueHistory.get(i);
-			String[] toSprintIdArrFrom = {};
-
-			if (fromSprintId != null && fromSprintId.contains(",")) {
-				toSprintIdArrFrom = fromSprintId.split(",");
-			}
-			if (toSprintIdArrFrom.length > 0) {
-				fsprint.setSprintId(fromSprintId);
-				if (StringUtils.isNotBlank(fromSprintId)) {
-					fsprint.setSprintComponentId(fromSprintId + "_" + jiraIssue.getProjectName());
-				} else {
-					fsprint.setSprintComponentId(fromSprintId);
-				}
-			}
-			issueHistory.set(i, fsprint);
-		}
-	}
-
-	private boolean updateIfSprintChanged(JiraIssue jiraIssue, String toSprint, String toSprintId,
-			boolean sprintChanged, List<JiraIssueSprint> issueHistory) {
-		boolean changed = sprintChanged;
-		if (sprintChanged && toSprint != null
-				&& !(toSprint.equals(issueHistory.get(issueHistory.size() - 1).getSprintId()))) {
-			JiraIssueSprint fsprint = issueHistory.get(issueHistory.size() - 1);
-
-			fsprint.setSprintId(toSprint);
-			if (StringUtils.isNotBlank(toSprintId)) {
-				fsprint.setSprintComponentId(toSprintId + "_" + jiraIssue.getProjectName());
-			} else {
-				fsprint.setSprintComponentId(toSprintId);
-			}
-
-			issueHistory.set(issueHistory.size() - 1, fsprint);
-			changed = false;
-		}
-		return changed;
-	}
-
-	/**
-	 * Updates Change log with Sprint
-	 *
-	 * @param issueHistory
-	 *            List of JiraIssueSprint containing History data
-	 * @param jiraIssue
-	 *            JiraIssue
-	 */
-	private void updateChangeLogWithSprint(List<JiraIssueSprint> issueHistory, JiraIssue jiraIssue) {
-		for (int i = 0; i < issueHistory.size(); i++) {
-			JiraIssueSprint fsprint = issueHistory.get(i);
-			fsprint.setSprintId(jiraIssue.getSprintName());
-			fsprint.setSprintComponentId(jiraIssue.getSprintID());
-			fsprint.setStatus(jiraIssue.getSprintAssetState());
-			issueHistory.set(i, fsprint);
-		}
 	}
 
 	/**
@@ -1787,6 +1795,64 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	private static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig, Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog, LocalDateTime configuredStartDate, String issueType) {
 		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
 			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
+		}
+	}
+
+	private IssueBacklog getIssueBacklog(ProjectConfFieldMapping projectConfig, String issueId){
+		List<IssueBacklog> issueBacklogs = issueBacklogRepository.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId),
+				projectConfig.getBasicProjectConfigId().toString());
+
+		if (issueBacklogs.size() > 1) {
+			log.error("JIRA Processor | More than one Issue Backlog item found for id {}", issueId);
+		}
+
+		if (!issueBacklogs.isEmpty()) {
+			return issueBacklogs.get(0);
+		}
+		return new IssueBacklog();
+
+	}
+
+	private IssueBacklogCustomHistory getIssueBacklogCustomHistory(ProjectConfFieldMapping projectConfig, String storyId){
+		List<IssueBacklogCustomHistory> issueBacklogCustomHistorys = issueBacklogCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(storyId,
+				projectConfig.getBasicProjectConfigId().toString());
+		if (issueBacklogCustomHistorys.size() > 1) {
+			log.error("JIRA Processor | More than one Issue backlog History item found for id {}", storyId);
+		}
+
+		if (!issueBacklogCustomHistorys.isEmpty()) {
+			return issueBacklogCustomHistorys.get(0);
+		}
+		return  new IssueBacklogCustomHistory();
+
+	}
+
+	private void processAndSaveProjectStatusCategory(List<Status> listOfProjectStatus, String basicProjectConfigId) {
+		if (CollectionUtils.isNotEmpty(listOfProjectStatus)) {
+			JiraIssueReleaseStatus jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository
+					.findByBasicProjectConfigId(basicProjectConfigId);
+			if (jiraIssueReleaseStatus == null) {
+				jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
+				jiraIssueReleaseStatus.setBasicProjectConfigId(basicProjectConfigId);
+			}
+			Map<Long, String> toDosList = new HashMap<>();
+			Map<Long, String> inProgressList = new HashMap<>();
+			Map<Long, String> closedList = new HashMap<>();
+
+			listOfProjectStatus.stream().forEach(status -> {
+				if (JiraConstants.TO_DO.equals(status.getStatusCategory().getName())) {
+					toDosList.put(status.getId(), status.getName());
+				} else if (JiraConstants.DONE.equals(status.getStatusCategory().getName())) {
+					closedList.put(status.getId(), status.getName());
+				} else {
+					inProgressList.put(status.getId(), status.getName());
+				}
+			});
+			jiraIssueReleaseStatus.setToDoList(toDosList);
+			jiraIssueReleaseStatus.setInProgressList(inProgressList);
+			jiraIssueReleaseStatus.setClosedList(closedList);
+			jiraIssueReleaseStatusRepository.save(jiraIssueReleaseStatus);
+			log.debug("saved project status category");
 		}
 	}
 }

@@ -32,7 +32,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Router, Routes } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { MessageService } from 'primeng/api';
-import { TextEncryptionService } from '../../services/text.encryption.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { of, throwError } from 'rxjs';
@@ -43,7 +42,6 @@ describe('FilterComponent', () => {
   let fixture: ComponentFixture<FilterComponent>;
   let httpService: HttpService;
   let messageService: MessageService;
-  let aesEncryption;
   let httpMock;
   let sharedService: SharedService;
   let getAuthorizationService: GetAuthorizationService;
@@ -91,7 +89,7 @@ describe('FilterComponent', () => {
     }],
   }
 
-  const releaseList = [{ 
+  const releaseList = [{
     labelName: "release",
     level: 5,
     nodeId: "844_DOTC_63b51633f33fd2360e9e72bd",
@@ -206,7 +204,7 @@ describe('FilterComponent', () => {
       imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule,
         RouterTestingModule.withRoutes(routes),
       ],
-      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, TextEncryptionService, MessageService, HelperService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService, { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
   });
@@ -216,14 +214,11 @@ describe('FilterComponent', () => {
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService);
     httpService = TestBed.inject(HttpService);
-    aesEncryption = TestBed.inject(TextEncryptionService);
     getAuthorizationService = TestBed.inject(GetAuthorizationService);
     helperService = TestBed.inject(HelperService);
     messageService = TestBed.inject(MessageService);
     excelService = TestBed.inject(ExcelService);
     httpMock = TestBed.inject(HttpTestingController);
-    localStorage.setItem('user_name', 'Fake user name');
-    localStorage.setItem('authorities', aesEncryption.convertText('["ROLE_PROJECT_ADMIN"]', 'encrypt'));
     spyOn(sharedService.passDataToDashboard, 'emit');
   });
 
@@ -428,7 +423,7 @@ describe('FilterComponent', () => {
     component.selectedTab = 'Iteration';
     component.processMasterData(fakeMasterData);
     expect(spyhandleIteration).toHaveBeenCalled();
-    
+
   });
 
   it('should set filters empty when selected tab is iteraiton', () => {
@@ -487,7 +482,7 @@ describe('FilterComponent', () => {
     expect(component.selectedFilterArray[0].grossMaturity).toEqual(result);
   });
 
-  
+
 
   it('should get filter data on load', () => {
     spyOn(sharedService, 'getFilterData').and.returnValue(fakeFilterData);
@@ -558,13 +553,13 @@ describe('FilterComponent', () => {
   });
 
   it('should  assign UserName For KpiData', () => {
+    spyOn(sharedService,'getCurrentUserDetails').and.returnValue('dummy user')
     component.kpiListData = {
       username: undefined,
       id: 1
     };
-    spyOn(localStorage, 'getItem').and.returnValue('project_admin');
     component.assignUserNameForKpiData();
-    expect(component.kpiListData.username).toBe('project_admin');
+    expect(component.kpiListData.username).toBe('dummy user');
   });
 
   it('should navigate To Selected Tab', inject([Router], (router: Router) => {
@@ -611,7 +606,7 @@ describe('FilterComponent', () => {
     component.processKpiList();
     expect(component.kpiList).not.toBeNull();
   });
-  
+
   it('should kpiList not blank for backlog', () => {
     component.selectedTab = 'Backlog';
     component.kanban = false;
@@ -696,7 +691,7 @@ describe('FilterComponent', () => {
         nodeName: 'BITBUCKET_DEMO',
         path: 't3_subaccount###t2_account###t1_business###bittest_corporate',
         labelName: 'project1',
-        parentId: 't3_subaccount',
+        parentId: 't3',
         level: 5,
         basicProjectConfigId: '632c46c6728e93266f5d5631'
       }];
@@ -715,7 +710,7 @@ describe('FilterComponent', () => {
         nodeName: 'BITBUCKET_DEMO',
         path: 't3_subaccount###t2_account###t1_business###bittest_corporate',
         labelName: 'project',
-        parentId: 't3_subaccount',
+        parentId: 't3',
         level: 5,
         basicProjectConfigId: '632c46c6728e93266f5d5631'
       }];
@@ -736,19 +731,19 @@ describe('FilterComponent', () => {
       {
         id: '63244d35d1d9f4caf85056f9',
         level: 3,
-        hierarchyLevelId: 'account',
-        hierarchyLevelName: 'Account Name'
+        hierarchyLevelId: 'dummyaccount',
+        hierarchyLevelName: 'dummyAccount Name'
       },
       {
         id: '63244d35d1d9f4caf85056fa',
         level: 4,
-        hierarchyLevelId: 'subaccount',
-        hierarchyLevelName: 'Subaccount'
+        hierarchyLevelId: 'dummysubaccount',
+        hierarchyLevelName: 'dummySubaccount'
       },
       {
         level: 5,
-        hierarchyLevelId: 'project',
-        hierarchyLevelName: 'Project'
+        hierarchyLevelId: 'dummyproject',
+        hierarchyLevelName: 'dummyProject'
       }
     ];
     component.selectedTab = '';
@@ -761,7 +756,7 @@ describe('FilterComponent', () => {
   });
 
   it('should check if Add Filter Disabled', () => {
-  
+
     component.filterForm = new UntypedFormGroup({
       selectedLevel: new UntypedFormControl('project')
     });
@@ -831,6 +826,7 @@ describe('FilterComponent', () => {
   });
 
   it('should get format date based on iteration/milestone', () => {
+    component.selectedTab = 'iteration';
     component.filteredAddFilters = {
       sprint: [
         {
@@ -853,11 +849,11 @@ describe('FilterComponent', () => {
       selectedSprintValue: new UntypedFormControl('38998_DEMO_SONAR_63284960fdd20276d60e4df5')
     });
 
-    let result = component.getFormatDateBasedOnIterationAndMilestone('start','sprint', "selectedSprintValue", "sprintStartDate", "sprintEndDate");
-    expect(result).toBe('07/09/2022');
+    let result = component.getDate('start');
+    expect(result).toBe('07/Sep/2022');
 
-    let result2 = component.getFormatDateBasedOnIterationAndMilestone('end','sprint', "selectedSprintValue", "sprintStartDate", "sprintEndDate");
-    expect(result2).toBe('27/09/2022');
+    let result2 = component.getDate('end');
+    expect(result2).toBe('27/Sep/2022');
   });
 
   it("should call formatted date for iteration",()=>{
@@ -991,7 +987,7 @@ describe('FilterComponent', () => {
   })
 
   it("should apply filters based on node selection",()=>{
-   
+
     component.hierarchyLevels = hierarchyLevels;
     component.trendLineValueList = trendLineValueList;
     component.additionalFiltersDdn =  additionalFiltersDdn;
@@ -1061,7 +1057,7 @@ describe('FilterComponent', () => {
   it("should labels come when addtional filter are applied for sprint",()=>{
 
     component.selectedFilterArray = selectedFilterArrayNestedArray;
-  
+
     component.filterApplyData = {
       ids: [
         'bittest_corporate'
@@ -1487,6 +1483,36 @@ describe('FilterComponent', () => {
     component.filterForm?.get('selectedTrendValue').setValue('DOTC_63b51633f33fd2360e9e72bd')
     component.handleMilestoneFilter('project');
     expect(spyFunct).toHaveBeenCalled();
+  })
+
+  it('should get date and status of jira processor when status is success',()=>{
+    let fakeTraceLog = {
+           "id": "6458fcffc5ef9b0a35606e16",
+            "processorName": "Jira",
+            "basicProjectConfigId": "6458c6685decd920d5eb2edd",
+            "executionStartedAt": 1683552962413,
+            "executionEndedAt": 1683590549223,
+            "executionSuccess": true,
+            "lastSuccessfulRun": "2023-05-09 00:02",
+    }
+    spyOn(component,'findTraceLogForTool').and.returnValue(fakeTraceLog)
+    component.showExecutionDate();
+    expect(component.selectedProjectLastSyncStatus).toBe('SUCCESS');
+  })
+
+  it('should get date and status of jira processor when status is false',()=>{
+    let fakeTraceLog = {
+           "id": "6458fcffc5ef9b0a35606e16",
+            "processorName": "Jira",
+            "basicProjectConfigId": "6458c6685decd920d5eb2edd",
+            "executionStartedAt": 1683552962413,
+            "executionEndedAt": 1683590549223,
+            "executionSuccess": false,
+            "lastSuccessfulRun": "2023-05-09 00:02",
+    }
+    spyOn(component,'findTraceLogForTool').and.returnValue(fakeTraceLog)
+    component.showExecutionDate();
+    expect(component.selectedProjectLastSyncStatus).toBe("FAILURE");
   })
 
 });

@@ -13,10 +13,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +45,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -93,7 +94,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			if (Optional.ofNullable(fieldMapping.getJiraIntakeToDorIssueType()).isPresent()) {
 
 				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
-						fieldMapping.getJiraIntakeToDorIssueType(), JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
+						fieldMapping.getJiraIntakeToDorIssueType(),
+						JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 			}
@@ -339,9 +341,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				CycleTime cycleTime = new CycleTime();
 				cycleTime.setIntakeTime(jiraIssueCustomHistory.getCreatedDate());
 				cycleTimeValidationData.setIntakeDate(jiraIssueCustomHistory.getCreatedDate());
-				jiraIssueCustomHistory.getStorySprintDetails()
-						.forEach(sprintDetail -> updateCycleTimeValidationData(dor, dod, live, cycleTimeValidationData,
-								cycleTime, sprintDetail));
+				jiraIssueCustomHistory.getStatusUpdationLog().forEach(sprintDetail -> updateCycleTimeValidationData(dor,
+						dod, live, cycleTimeValidationData, cycleTime, sprintDetail));
 				setCycleTimeAsPerFilter(intakeDorTime, dorDodTime, dodLiveTime, intakeLiveTime, cycleTime);
 				cycleTimeList.add(cycleTimeValidationData);
 			}
@@ -405,19 +406,20 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	 *            FeatureSprint
 	 */
 	private void updateCycleTimeValidationData(String dor, List<String> dod, String live,
-			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime, JiraIssueSprint jiraIssueSprint) {
-		if (cycleTime.getReadyTime() == null && null != dor && dor.equalsIgnoreCase(jiraIssueSprint.getFromStatus())) {
-			cycleTime.setReadyTime(jiraIssueSprint.getActivityDate());
-			cycleTimeValidationData.setDorDate(jiraIssueSprint.getActivityDate());
+			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
+			JiraHistoryChangeLog jiraIssueSprint) {
+		if (cycleTime.getReadyTime() == null && null != dor && dor.equalsIgnoreCase(jiraIssueSprint.getChangedTo())) {
+			cycleTime.setReadyTime(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
+			cycleTimeValidationData.setDorDate(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
 		}
 		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(dod)
-				&& dod.contains(jiraIssueSprint.getFromStatus())) {
-			cycleTime.setDeliveryTime(jiraIssueSprint.getActivityDate());
-			cycleTimeValidationData.setDodDate(jiraIssueSprint.getActivityDate());
+				&& dod.contains(jiraIssueSprint.getChangedTo())) {
+			cycleTime.setDeliveryTime(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
+			cycleTimeValidationData.setDodDate(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
 		}
-		if (Optional.ofNullable(live).isPresent() && live.equalsIgnoreCase(jiraIssueSprint.getFromStatus())) {
-			cycleTime.setLiveTime(jiraIssueSprint.getActivityDate());
-			cycleTimeValidationData.setLiveDate(jiraIssueSprint.getActivityDate());
+		if (Optional.ofNullable(live).isPresent() && live.equalsIgnoreCase(jiraIssueSprint.getChangedTo())) {
+			cycleTime.setLiveTime(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
+			cycleTimeValidationData.setLiveDate(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
 		}
 	}
 

@@ -29,6 +29,10 @@ public final class JiraConstants {
     public static final Set<String> ISSUE_FIELD_SET = new HashSet<>();//NOSONAR
     public static final String SPRINT = "Sprint";
     public static final String STATUS = "status";
+    public static final String ASSIGNEE = "assignee";
+    public static final String PRIORITY = "priority";
+    public static final String FIXVERSION = "fix version";
+    public static final String DUEDATE = "duedate";
     public static final String LABELS = "Labels";
     public static final String CUSTOM_FIELD = "CustomField";
     public static final String ISSUE_TYPE = "IssueType";
@@ -72,6 +76,8 @@ public final class JiraConstants {
 	public static final String CAN_BE_AUTOMATED = "Manual";
     public static final String PARENT = "parent";
     public static final String KEY = "key";
+    public static final String TO_DO = "To Do";
+    public static final String DONE = "Done";
 
     static {
         ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");

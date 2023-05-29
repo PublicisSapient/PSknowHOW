@@ -22,12 +22,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationFixture;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.DeleteLastAdminException;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.UserNotFoundException;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -35,10 +37,14 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.Project
 import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
+import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
+import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
+import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +55,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -63,7 +71,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -104,6 +111,18 @@ public class UserInfoServiceImplTest {
 	@Mock
 	private ProjectAccessManager projectAccessManager;
 
+	@Mock
+	private HttpServletRequest httpServletRequest;
+
+	@Mock
+	private UserTokenReopository userTokenReopository;
+
+	@Mock
+	private CookieUtil cookieUtil;
+
+	@Mock
+	private Cookie cookie;
+	
 	@Mock
 	TokenAuthenticationService tokenAuthenticationService;
 
@@ -398,11 +417,31 @@ public class UserInfoServiceImplTest {
 	}
 
 	@Test
-	public void getOrSaveUserInfoTest() {
-		when(userInfoRepository.findByUsername(anyString())).thenReturn(null);
-		UserInfo userInfo = new UserInfo();
-		userInfo.setUsername("user");
-		assertEquals(service.getOrSaveUserInfo("user", null, null), userInfo);
+	public void getUserDetailsByToken() {
+		UserInfo user = new UserInfo();
+		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
+				new Cookie("authCookie", AuthenticationFixture.getJwtToken("dummyUser", "dummyData", 100000L)));
+		when(userTokenReopository.findByUserToken(anyString()))
+				.thenReturn(new UserTokenData("dummyUser", "dummyToken",null));
+		when(authenticationRepository.findByUsername(anyString())).thenReturn(new Authentication());
+
+		user.setUsername("dummyUser");
+		user.setAuthType(AuthType.STANDARD);
+		user.setAuthorities(Lists.newArrayList("ROLE_SUPERADMIN"));
+		user.setEmailAddress("email");
+
+		Authentication authentication = new Authentication();
+		authentication.setUsername("dummyUser");
+		authentication.setEmail("emailId");
+
+		List<RoleWiseProjects> roleWiseProjects = new ArrayList<>();
+
+		when(userInfoRepository.findByUsername(Mockito.anyString())).thenReturn(user);
+		when(authenticationRepository.findByUsername(Mockito.anyString())).thenReturn(null);
+		when(projectAccessManager.getProjectAccessesWithRole(Mockito.anyString())).thenReturn(roleWiseProjects);
+
+		UserDetailsResponseDTO userDetailsResponseDTO = service.getUserInfoByToken(httpServletRequest);
+		assertNotNull(userDetailsResponseDTO);
 	}
 
 }

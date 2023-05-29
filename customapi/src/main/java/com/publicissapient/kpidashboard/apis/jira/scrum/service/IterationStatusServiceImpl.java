@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -362,9 +363,9 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 					}
 					List<IterationKpiData> data = new ArrayList<>();
 					IterationKpiData issueAtRisk = new IterationKpiData(NET_DELAYED_ISSUES,
-							Double.valueOf(delayNumberCount),null, null, DAYS, modalValues);
-					IterationKpiData issuecd = new IterationKpiData(ISSUES_CAUSING_DELAY, Double.valueOf(cdCount),
-							null, LABELINFO, "", null);
+							Double.valueOf(delayNumberCount), null, null, DAYS, modalValues);
+					IterationKpiData issuecd = new IterationKpiData(ISSUES_CAUSING_DELAY, Double.valueOf(cdCount), null,
+							LABELINFO, "", null);
 					IterationKpiData issuebt = new IterationKpiData(ISSUES_DONE_BEFORE_TIME, Double.valueOf(btCount),
 							null, LABELINFO, "", null);
 					data.add(issueAtRisk);
@@ -483,7 +484,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		iterationStatus.setPriority(issueObject.getPriority());
 		iterationStatus.setIssueDescription(issueObject.getName());
 		iterationStatus.setIssueStatus(issueObject.getStatus());
-		iterationStatus.setDueDate(issueObject.getDueDate());
+		iterationStatus.setDueDate(DateUtil.dateTimeConverter(issueObject.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT));
 		if (issueObject.getRemainingEstimateMinutes() != null) {
 			iterationStatus.setRemainingEstimateMinutes(issueObject.getRemainingEstimateMinutes() / 60);
 		}
@@ -518,7 +519,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			v.addAll(jiraDelayIssueList);
 			return v;
 		});
-		resultList.putIfAbsent(DELAY_DETAILS,jiraDelayIssueList);
+		resultList.putIfAbsent(DELAY_DETAILS, jiraDelayIssueList);
 		resultListOpenIssues.put(OPEN_ISSUES, jiraNegativeDelayIssueList);
 		return resultListOpenIssues;
 	}
@@ -649,9 +650,9 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	public String findClosedDate(JiraIssueCustomHistory issueHistoryObject, String startDate, String endDate,
 			String status) {
 		String date;
-		for (int i = 0; i < issueHistoryObject.getStorySprintDetails().size(); i++) {
-			if (issueHistoryObject.getStorySprintDetails().get(i).getFromStatus().equalsIgnoreCase(status)) {
-				date = issueHistoryObject.getStorySprintDetails().get(i).getActivityDate().toString();
+		for (int i = 0; i < issueHistoryObject.getStatusUpdationLog().size(); i++) {
+			if (issueHistoryObject.getStatusUpdationLog().get(i).getChangedTo().equalsIgnoreCase(status)) {
+				date = issueHistoryObject.getStatusUpdationLog().get(i).getUpdatedOn().toString();
 				DateTime closedDate = DateTime.parse(date);
 				DateTime startDateValue = DateTime.parse(startDate);
 				DateTime endDateValue = DateTime.parse(endDate);

@@ -1473,7 +1473,7 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter" : true,
-    "maturityRange": ["-16","16-8","8-4","4-2","2-"]
+    "maturityRange": ["-48","48-16","16-8","8-4","4-"]
   },
   {
     "kpiId": "kpi11",
@@ -3136,7 +3136,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 14,
+    "defaultOrder": 22,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3174,7 +3174,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 6,
+    "defaultOrder": 7,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3211,7 +3211,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Story Point",
     "isDeleted": "False",
-    "defaultOrder": 5,
+    "defaultOrder": 6,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3286,7 +3286,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 12,
+    "defaultOrder": 21,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3324,7 +3324,7 @@ db.getCollection('kpi_master').insert(
          "maxValue": "",
          "kpiUnit": "Count",
          "isDeleted": "False",
-         "defaultOrder": 7,
+         "defaultOrder": 14,
          "kpiCategory": "Iteration",
          "kpiSource": "Jira",
          "groupId": 8,
@@ -3362,7 +3362,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 9,
+    "defaultOrder": 12,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3413,7 +3413,7 @@ db.getCollection('kpi_master').insert(
      "maxValue": "",
      "kpiUnit": "Count",
      "isDeleted": "False",
-     "defaultOrder": 3,
+     "defaultOrder": 5,
      "kpiCategory": "Iteration",
      "kpiSource": "Jira",
      "groupId": 8,
@@ -3447,7 +3447,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 13,
+    "defaultOrder": 8,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3481,7 +3481,7 @@ db.getCollection('kpi_master').insert(
      "maxValue": "",
      "kpiUnit": "Hours",
      "isDeleted": "False",
-     "defaultOrder": 11,
+     "defaultOrder": 9,
      "kpiCategory": "Iteration",
      "kpiSource": "Jira",
      "groupId": 8,
@@ -3527,7 +3527,7 @@ db.getCollection('kpi_master').insert(
        "maxValue": "",
        "kpiUnit": "Hours",
        "isDeleted": "False",
-       "defaultOrder": 10,
+       "defaultOrder": 11,
        "kpiCategory": "Iteration",
        "kpiSource": "Jira",
        "groupId": 8,
@@ -3658,7 +3658,7 @@ db.getCollection('kpi_master').insert(
      "maxValue": "",
      "kpiUnit": "Count",
      "isDeleted": "False",
-     "defaultOrder": 8,
+     "defaultOrder": 13,
      "kpiCategory": "Iteration",
      "kpiSource": "Jira",
      "groupId": 8,
@@ -3814,7 +3814,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 7,
+    "defaultOrder": 15,
     "kpiCategory": "Iteration",
     "kpiSource": "Jira",
     "groupId": 8,
@@ -3832,5 +3832,138 @@ db.getCollection('kpi_master').insert(
     "kpiFilter": "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
-  }
+  },
+  {
+      "kpiId": "kpi147",
+      "kpiName": "Release Progress",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 1,
+      "kpiCategory": "Release",
+      "kpiSource": "Jira",
+      "groupId": 9,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "horizontalPercentBarChart",
+      "kpiInfo": {
+          "definition": "Release progress KPI explains the count of issues in To, In Progress, Done. It also gives the breakup (To, In Progress, Done) based on size (story points)"
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiSelectDropDown",
+      "boxType": "chart",
+      "calculateMaturity": false
+  },
+  {
+          "kpiId": "kpi145",
+          "kpiName": "Dev Completion Status",
+          "maxValue": "",
+          "kpiUnit": "Count",
+          "isDeleted": "False",
+          "defaultOrder": 3,
+          "kpiCategory": "Iteration",
+          "kpiSource": "Jira",
+          "groupId": 8,
+          "thresholdValue": "",
+          "kanban": false,
+          "chartType": null,
+          "kpiInfo": {
+            "details": [
+              {
+                  "type": "paragraph",
+                  "value": "Dev Completed status explains the Dev Completed vs actual progress weighed in terms of issues and size of work."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "if dev due date is after the sprint end date then the issue is not considered in the kpi calculation."
+              },
+              {
+                "type": "paragraph",
+                "value": "For the KPI to reflect meaningful info,"
+              },
+              {
+                "type": "paragraph",
+                "value": "Map all ‘In Progress status’ in mappings for your project."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "Ensure Original Estimate & Dev Due Date is added to all issues in a sprint."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "Assignees should be kept up to date in Jira."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "Completed work is based on the ‘Issues completed’ list in Sprint report in Jira."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "Dev Completed is based on 'Dev Due Date'."
+              },
+              {
+                "type": "paragraph",
+                "value": "Issue count - Total no. of issues that are completed."
+              },
+              {
+                "type": "paragraph",
+                "value": "Story Points - Sum of story points of all issues that are completed"
+              },
+              {
+                "type": "paragraph",
+                "value": "In addition, the information on overlay lets the user know the delay for each issue that has been completed.The delay is calculated by comparing the time an issue took to get completed, from the time it was 'In Progress' with the 'Original Estimate' of issue."
+              },
+              {
+                "type": "paragraph",
+                "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+              }
+            ]
+          },
+          "xAxisLabel": "",
+          "yAxisLabel": "",
+          "isPositiveTrend": true,
+          "showTrend": false,
+          "isSquadSupport": false,
+          "kpiFilter": "multiSelectDropDown",
+          "boxType": "3_column",
+          "calculateMaturity": false
+        },
+     {
+       "kpiId": "kpi138",
+       "kpiName": "Backlog Readiness",
+       "maxValue": "",
+       "kpiUnit": "Count",
+       "isDeleted": "False",
+       "defaultOrder": 5,
+       "kpiCategory": "Backlog",
+       "kpiSource": "Jira",
+       "groupId": 2,
+       "thresholdValue": "",
+       "kanban": false,
+       "chartType": null,
+       "kpiInfo": {
+         "details": [
+           {
+             "type": "paragraph",
+             "value": "Backlog Readiness KPI compares the total size of ready Product Backlog items (PBI) against the average velocity of last five sprints to ascertain if enough backlog items are always available for the team to start development. It also calculates the average time taken for Backlog items to be ready for development."
+           },
+           {
+             "type": "paragraph",
+             "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+           }
+         ]
+       },
+       "xAxisLabel": "",
+       "yAxisLabel": "",
+       "isPositiveTrend": true,
+       "showTrend": false,
+       "isAdditionalFilterSupport": false,
+       "kpiFilter": "multiSelectDropDown",
+       "boxType": "3_column",
+       "calculateMaturity": false
+     }
 ]);

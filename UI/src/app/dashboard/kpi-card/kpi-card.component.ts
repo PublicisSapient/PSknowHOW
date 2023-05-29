@@ -28,6 +28,22 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   @Input() showChartView = true;
   @Input() cols: Array<object> = [];
   @Input() iSAdditionalFilterSelected =false;
+  @Input() showCommentIcon: boolean;
+  selectedTab: string;
+  @Input() trendValueList : any
+  @Input() colors : Array<any>;
+  selectedTabIndex : number = 0;
+  @Input() sprintsOverlayVisible : boolean = false;
+  projectList : Array<string>;
+  displaySprintDetailsModal : boolean = false;
+  columnList = [
+    { field: 'duration', header: 'Duration' },
+    { field: 'value', header: 'Kpi Value (Units)' },
+    { field: 'params', header: 'Parameters' },
+ ];
+ sprintDetailsList : Array<any>;
+ colorCssClassArray = ['sprint-hover-project1','sprint-hover-project2','sprint-hover-project3','sprint-hover-project4','sprint-hover-project5','sprint-hover-project6'];
+
 
   constructor(private service: SharedService) {
   }
@@ -53,6 +69,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
           }
         }
       }
+      this.selectedTab = this.service.getSelectedTab() ? this.service.getSelectedTab().toLowerCase() : '';
     }));
     /** assign 1st value to radio button by default */
     if(this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length > 0){
@@ -120,6 +137,49 @@ export class KpiCardComponent implements OnInit, OnDestroy {
     } else {
       this.filterMultiSelectOptionsData = {};
     }
+  }
+
+  prepareData() {
+    this.projectList = [];
+    this.sprintDetailsList = [];
+    this.selectedTabIndex = 0;
+    this.projectList = Object.values(this.colors).map(obj=> obj['nodeName']);
+    this.projectList.forEach((project,index)=>{
+      const selectedProjectTrend = this.trendValueList.find(obj=>obj.data === project);
+      const tempColorObjArray = Object.values(this.colors).find(obj=>obj['nodeName'] === project)['color'];
+      if(selectedProjectTrend && selectedProjectTrend.value){
+        let hoverObjectListTemp = []
+        selectedProjectTrend.value.forEach(element => {
+          let tempObj = {};
+          tempObj['duration'] = element['sSprintName'] || element['date'];
+          tempObj['value'] = (Math.round(element['value'] * 100) / 100) + ' ' + this.kpiData.kpiDetail?.kpiUnit
+          if (element['hoverValue'] && Object.keys(element['hoverValue'])?.length > 0) {
+            tempObj['params'] = Object.entries(element['hoverValue']).map(([key, value]) => `${key} : ${value}`).join('<br />');
+          }
+          hoverObjectListTemp.push(tempObj);
+        });
+        this.sprintDetailsList.push({
+          ['project']: selectedProjectTrend['data'],
+          ['hoverList']: hoverObjectListTemp,
+          ['color']:tempColorObjArray
+        })
+      }else{
+        this.sprintDetailsList.push({
+          ['project']: project,
+          ['hoverList']: [],
+          ['color']:tempColorObjArray
+        })
+      }
+    })
+    this.displaySprintDetailsModal = true;
+  }
+
+  hasData(field: string): boolean {
+    return this.sprintDetailsList[this.selectedTabIndex]['hoverList'].some(rowData => rowData[field] !== null && rowData[field] !== undefined);
+  }
+
+  getColorCssClasses(index){
+    return this.colorCssClassArray[index];
   }
 
   ngOnDestroy() {
