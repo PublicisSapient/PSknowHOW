@@ -1259,6 +1259,17 @@ export class JiraConfigComponent implements OnInit {
                 changeHandler: this.branchSelectHandler,
                 isLoading: false
               },
+              {
+                type: 'text',
+                label: 'SDM ID',
+                id: 'gitLabSdmID',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `This key would not use for Sonar.<br />
+              <i>
+                Impacted : GitLab processor</i>`,
+              },
             ],
           };
         }
