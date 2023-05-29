@@ -239,6 +239,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setJiraCanBeAutomatedTestValue(projectToolConfig.getJiraCanBeAutomatedTestValue());
 		projectTool.setTestCaseStatus(projectToolConfig.getTestCaseStatus());
 		projectTool.setMetadataTemplateCode(projectToolConfig.getMetadataTemplateCode());
+		projectTool.setSonarSDMId(projectToolConfig.getSonarSDMId());
 		log.info("Successfully update project_tools  into db");
 		toolRepository.save(projectTool);
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
@@ -397,6 +398,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setJiraRegressionTestValue(e.getJiraRegressionTestValue());
 			projectConfToolDto.setJiraCanBeAutomatedTestValue(e.getJiraCanBeAutomatedTestValue());
 			projectConfToolDto.setTestCaseStatus(e.getTestCaseStatus());
+			projectConfToolDto.setSonarSDMId(e.getSonarSDMId());
 		});
 
 		return projectConfToolDtoList;

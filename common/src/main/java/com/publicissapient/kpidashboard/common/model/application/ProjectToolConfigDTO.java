@@ -97,4 +97,7 @@ public class ProjectToolConfigDTO {
 
 	//template ID
 	private String metadataTemplateCode;
+
+	//Sonar SDM ID use for GSm
+	private String sonarSDMId;
 }
