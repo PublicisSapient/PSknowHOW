@@ -224,17 +224,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		Map<String, Object> resultListMap = new HashMap<>();
 		List<String> sprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
-		Map<String, Pair<String, String>> sprintWithDateMap = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
-
-			sprintWithDateMap.put(leaf.getSprintFilter().getId(),
-					Pair.of(leaf.getSprintFilter().getStartDate(), leaf.getSprintFilter().getEndDate()));
-
-
 
 		});
 
