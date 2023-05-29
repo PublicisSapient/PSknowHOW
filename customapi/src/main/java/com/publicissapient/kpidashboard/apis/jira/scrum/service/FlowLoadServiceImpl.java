@@ -165,6 +165,11 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 			} catch (Exception e) {
 				LOGGER.info("Flow Load exception " + String.valueOf(e));
 			}
+			Map<String, Map<String, Integer>> finalDateWithStatusCount1 = dateWithStatusCount;
+			dateWithStatusCount.forEach((date, statusCountMap)->{
+				if(statusCountMap.isEmpty())
+					finalDateWithStatusCount1.remove(date);
+			});
 
 			if (!Objects.isNull(dateWithStatusCount)) {
 				populateTrendValueList(trendValueList, dateWithStatusCount);
