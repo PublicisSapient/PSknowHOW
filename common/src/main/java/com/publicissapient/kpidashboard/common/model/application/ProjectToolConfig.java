@@ -99,6 +99,6 @@ public class ProjectToolConfig extends BasicModel {
 	private String metadataTemplateCode;
 
 	//Sonar SDM ID use for GS
-	private String sonarSDMId;
+	private String gitLabSdmID;
 
 }
