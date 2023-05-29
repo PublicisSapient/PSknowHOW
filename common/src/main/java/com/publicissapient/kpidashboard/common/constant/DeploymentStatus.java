@@ -5,7 +5,7 @@ package com.publicissapient.kpidashboard.common.constant;
  */
 public enum DeploymentStatus {
 
-	SUCCESS, FAILURE, UNSTABLE, ABORTED, IN_PROGRESS, UNKNOWN;
+	SUCCESS, FAILURE, UNSTABLE, ABORTED, IN_PROGRESS, UNKNOWN, INACTIVE;
 
 	public static DeploymentStatus fromString(String value) {
 		for (DeploymentStatus deploymentStatus : values()) {

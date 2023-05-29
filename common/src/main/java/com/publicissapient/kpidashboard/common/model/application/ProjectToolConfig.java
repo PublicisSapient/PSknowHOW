@@ -97,6 +97,8 @@ public class ProjectToolConfig extends BasicModel {
 
 	//template ID
 	private String metadataTemplateCode;
+	//workflows ID for github Action processor
+	private String workflowID;
 
 	// jiraIterationCompletionStatusCustomField field mapping update identifier
 	private boolean azureIterationStatusFieldUpdate;

@@ -60,6 +60,7 @@ public class ProcessorToolConnection {
 	private String boardQuery;
 	private List<BoardDetails> boards;
 	private String repositoryName;
+	private String workflowID;
 	private ObjectId connectionId;
 	private String type;
 	private String connectionName;
