@@ -225,6 +225,8 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 
 		}
 
+		log.info("new deployments added " + newJobs.size());
+
 		if (!CollectionUtils.isEmpty(newJobs)) {
 			deploymentRepository.saveAll(newJobs);
 		}

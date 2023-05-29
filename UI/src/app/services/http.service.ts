@@ -145,8 +145,6 @@ import { SharedService } from './shared.service';
     private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
     private postKpiColumnsConfigUrl =this.baseUrl + '/api/kpi-column-config/kpiColumnConfig';
     private gitActionWorkflowNameUrl = this.baseUrl + '/api/githubAction/workflowName';
-
-    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
     userName : string;
     userEmail : string;
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private sharedService : SharedService) {
