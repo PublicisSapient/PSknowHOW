@@ -3965,5 +3965,29 @@ db.getCollection('kpi_master').insert(
        "kpiFilter": "multiSelectDropDown",
        "boxType": "3_column",
        "calculateMaturity": false
-     }
+  },
+  {
+    "kpiId": "kpi146",
+    "kpiName": "Flow Distribution",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 2,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "stacked-area",
+    "kpiInfo": {
+      "definition": "Flow Distribution evaluates the amount of each kind of work (issue types) which are open in the backlog over a period of time."
+    },
+    "xAxisLabel": "Time",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": false,
+    "kpiFilter": "",
+    "showTrend": false,
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+  }
 ]);
