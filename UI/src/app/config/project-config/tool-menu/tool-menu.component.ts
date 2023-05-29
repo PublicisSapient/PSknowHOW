@@ -209,6 +209,15 @@ export class ToolMenuComponent implements OnInit {
             queryParams1: 'GitHub',
             index: 10
           },
+          {
+            toolName: 'GitHub Action',
+            category: 'ABC',
+            description: '-',
+            icon: 'fab fa-github',
+            routerLink: '/dashboard/Config/JiraConfig',
+            queryParams1: 'GitHubAction',
+            index: 11
+          },
 
 
         ];
@@ -265,6 +274,10 @@ export class ToolMenuComponent implements OnInit {
     }
     if(toolName === 'Azure Repo') {
       toolName = 'AzureRepository';
+    }
+
+    if(toolName === 'GitHub Action'){
+      toolName = 'GitHubAction';
     }
     const configuredProject = this.selectedTools.filter((tool) => tool.toolName.toLowerCase() == toolName.toLowerCase());
     return (configuredProject && configuredProject.length > 0 ? true : false);

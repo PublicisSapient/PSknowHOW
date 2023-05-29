@@ -97,8 +97,8 @@ public class ProjectToolConfigDTO {
 
 	//template ID
 	private String metadataTemplateCode;
-
+	//workflows ID for github Action processor
+	private String workflowID;
 	//Sonar SDM ID use for GSm
 	private String gitLabSdmID;
-
 }
