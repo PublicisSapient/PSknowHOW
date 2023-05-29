@@ -194,7 +194,7 @@
     <p-table #table [value]="modalDetails['tableValues']" [reorderableColumns]="true" [columns]="tableHeaders"
       styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img"
       [globalFilterFields]="modalDetails['tableHeadings']" [scrollable]="true"
-      [scrollHeight]="'calc(90vh - 20vh)'">
+      scrollHeight="70vh">
       <ng-template pTemplate="caption">
         <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
           selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
