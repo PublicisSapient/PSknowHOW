@@ -53,9 +53,9 @@ export class StackedAreaChartComponent implements OnInit {
           obj[k] = 0
         });
       }
+      delete obj['value'];
       return obj;
     });
-    
     
     // set the dimensions and margins of the graph
     const margin = { top: 20, right: 20, bottom: 150, left: 50 },
