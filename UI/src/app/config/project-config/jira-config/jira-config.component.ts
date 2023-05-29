@@ -102,6 +102,7 @@ export class JiraConfigComponent implements OnInit {
   ];
 
   jiraTemplate : any[];
+  cloudEnv : any ;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -297,6 +298,11 @@ export class JiraConfigComponent implements OnInit {
     }
 
     if (this.urlParam === 'Sonar') {
+      this.cloudEnv = connection.cloudEnv
+      this.tool['gitLabSdmID'].setValue('');
+      this.tool['apiVersion'].enable();
+      this.tool['projectKey'].enable();
+      this.tool['branch'].enable();
       this.clearSonarForm();
       this.updateSonarConnectionTypeAndVersionList(connection.cloudEnv);
       this.enableDisableOrganizationKey(connection.cloudEnv);
@@ -1199,8 +1205,9 @@ export class JiraConfigComponent implements OnInit {
             { field: 'apiVersion', header: 'API Version', class: 'normal' },
             { field: 'projectKey', header: 'Project Key', class: 'long-text' },
             { field: 'branch', header: 'Branch', class: 'long-text' },
+            { field: 'gitLabSdmID', header: 'SDM ID', class: 'long-text' },
           ];
-
+          
           this.formTemplate = {
             group: 'Sonar',
             elements: [
@@ -1263,12 +1270,18 @@ export class JiraConfigComponent implements OnInit {
                 type: 'text',
                 label: 'SDM ID',
                 id: 'gitLabSdmID',
-                validators: ['required'],
+                validators: [{
+                  type : 'pattern',
+                  value : '^[a-zA-Z0-9,: ]+$'
+                }],
                 containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `This key would not use for Sonar.<br />
               <i>
                 Impacted : GitLab processor</i>`,
+                onFocusOut : this.onSdmIdChange,
+                errorMsg : "Only Alphanumeric,Comma and SemiColon allowed.",
+                placeholder : "This key would not use for Sonar."
               },
             ],
           };
@@ -1979,7 +1992,12 @@ export class JiraConfigComponent implements OnInit {
       if (inputTemplate.validators) {
         const validatorArr = [];
         inputTemplate.validators.forEach((element) => {
-          validatorArr.push(Validators[element]);
+          if(element === 'required'){
+            validatorArr.push(Validators[element]);
+          }else{
+            validatorArr.push(Validators.pattern(element.value));
+          }
+          
         });
 
         group[inputTemplate.id] = new UntypedFormControl('', validatorArr);
@@ -2363,16 +2381,32 @@ export class JiraConfigComponent implements OnInit {
   }
 
   getJiraTemplate(){
-    const isKanban = this.selectedProject.Type?.toLowerCase() === 'kanban' ? true : false;
-    this.http.getJiraTemplate(this.selectedProject.id).subscribe(resp=>{
+    const isKanban = this.selectedProject?.Type?.toLowerCase() === 'kanban' ? true : false;
+    this.http.getJiraTemplate(this.selectedProject?.id).subscribe(resp=>{
       this.jiraTemplate = resp.filter(temp=>temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
      if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
         const selectedTemplate = this.jiraTemplate.find(tem=>tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
-        this.toolForm.get('metadataTemplateCode').setValue(selectedTemplate);
+        this.toolForm.get('metadataTemplateCode')?.setValue(selectedTemplate);
         if(selectedTemplate?.templateName === 'Custom Template'){
           this.toolForm.get('metadataTemplateCode').disable();
         }
       }
     })
+  }
+
+  onSdmIdChange(event,self){
+    const sdmID = self.toolForm.get('gitLabSdmID').value.trim();
+     if(sdmID){
+      self.clearSonarForm()
+      self.tool['organizationKey'].disable();
+      self.tool['apiVersion'].disable();
+      self.tool['projectKey'].disable();
+      self.tool['branch'].disable();
+     }else{
+      self.enableDisableOrganizationKey(self.cloudEnv);
+      self.tool['apiVersion'].enable();
+      self.tool['projectKey'].enable();
+      self.tool['branch'].enable();
+     }
   }
 }

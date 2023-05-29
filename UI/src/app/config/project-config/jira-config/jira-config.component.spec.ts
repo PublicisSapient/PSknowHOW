@@ -801,4 +801,20 @@ describe('JiraConfigComponent', () => {
     expect(component.toolForm.get('metadataTemplateCode').disabled).toBeFalsy();
   })
 
+  it('should disable sonar fields if sdm ID is not blank',()=>{
+     component.initializeFields('Sonar');
+     component.toolForm.get('gitLabSdmID').setValue("fakeKey");
+     spyOn(component,'enableDisableOrganizationKey');
+    component.onSdmIdChange({target : {value : 'ID'}},component);
+    expect(component.toolForm.get('apiVersion').disabled).toBeTruthy();
+  })
+
+   it('should enable sonar fields if sdm ID is blank',()=>{
+     component.initializeFields('Sonar');
+     component.toolForm.get('gitLabSdmID').setValue("");
+     spyOn(component,'enableDisableOrganizationKey');
+    component.onSdmIdChange({target : {value : 'ID'}},component);
+    expect(component.toolForm.get('apiVersion').disabled).not.toBeTruthy();
+  })
+
 });
