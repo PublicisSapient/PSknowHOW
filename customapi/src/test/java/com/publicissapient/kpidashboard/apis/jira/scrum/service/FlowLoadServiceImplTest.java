@@ -107,7 +107,7 @@ public class FlowLoadServiceImplTest {
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put(ISSUE_BACKLOG_HISTORY, issueBacklogHistoryDataList);
         List<Map<String, Object>> typeCountMap = new ArrayList<>();
-        when(issueBacklogCustomHistoryRepository.findByBasicProjectConfigIdOrderByCreatedDateAsc(Mockito.any()))
+        when(issueBacklogCustomHistoryRepository.findByBasicProjectConfigIdIn(Mockito.any()))
                 .thenReturn(issueBacklogHistoryDataList);
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
         KpiElement responseKpiElement = flowLoadService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

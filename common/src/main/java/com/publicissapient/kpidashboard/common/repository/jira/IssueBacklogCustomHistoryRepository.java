@@ -22,8 +22,6 @@ public interface IssueBacklogCustomHistoryRepository extends CrudRepository<Issu
 
 	List<IssueBacklogCustomHistory> findByStoryIDIn(List<String> storyList);
 
-	@Query(value = "{ 'basicProjectConfigId' : ?0  }", fields = "{ 'storyType' : 1, 'createdDate' : 1}")
+	@Query(value = "{ 'basicProjectConfigId' : ?0  }", fields = "{ 'storyType' : 1, 'createdDate' : 1,'statusUpdationLog':1}")
 	List<IssueBacklogCustomHistory> findByBasicProjectConfigIdIn(String basicProjectConfigId);
-
-	List<IssueBacklogCustomHistory> findByBasicProjectConfigIdOrderByCreatedDateAsc(String basicProjectConfigId);
 }

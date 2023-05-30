@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;;
@@ -20,6 +38,7 @@ import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHist
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +70,6 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 	@Autowired
 	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FlowLoadServiceImpl.class);
-
 	@Override
 	public String getQualifierType() {
 		return KPICode.FLOW_LOAD.name();
@@ -69,10 +86,10 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 
 		if (leafNode != null) {
-			LOGGER.info("Flow Load kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
+			log.info("Flow Load kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			List<IssueBacklogCustomHistory> typeCountByDateRange = issueBacklogCustomHistoryRepository
-					.findByBasicProjectConfigIdOrderByCreatedDateAsc(basicProjectConfigId);
+					.findByBasicProjectConfigIdIn(basicProjectConfigId);
 			resultListMap.put(ISSUE_BACKLOG_HISTORY, typeCountByDateRange);
 		}
 
@@ -110,7 +127,6 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 
 		leafNode.forEach(node -> {
 			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate = new HashMap<>();
-			try {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(node.getProjectFilter().getBasicProjectConfigId());
 				issueBacklogCustomHistories.forEach(issueBacklogCustomHistory -> {
@@ -133,18 +149,15 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
 								(oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
-				if (!Objects.isNull(dateWithStatusCount)) {
+				if (MapUtils.isNotEmpty(dateWithStatusCount)) {
 					populateTrendValueList(trendValueList, dateWithStatusCount);
 					populateExcelDataObject(requestTrackerId, excelData, dateWithStatusCount);
-					LOGGER.info("FlowLoadServiceImpl -> request id : {} dateWithStatusCount : {}", requestTrackerId,
+					log.debug("FlowLoadServiceImpl -> request id : {} dateWithStatusCount : {}", requestTrackerId,
 							dateWithStatusCount);
 				}
 				kpiElement.setExcelData(excelData);
 				kpiElement.setExcelColumns(KPIExcelColumn.FLOW_LOAD.getColumns());
 				kpiElement.setTrendValueList(trendValueList);
-			} catch (Exception e) {
-				LOGGER.info("Flow Load Exception" + e);
-			}
 		});
 
 	}
