@@ -47,6 +47,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
@@ -97,15 +98,15 @@ public class IterationBurnupServiceImplTest {
         filterLevelMap = new LinkedHashMap<>();
         filterLevelMap.put("PROJECT", Filters.PROJECT);
         filterLevelMap.put("SPRINT", Filters.SPRINT);
-        JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+        JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance("/json/default/iteration/jira_issues_new_structure.json");
         jiraIssues = jiraIssueDataFactory.getJiraIssues();
-        SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
-        sprintDetailsList = sprintDetailsDataFactory.getSprintDetails();
-        JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
+        SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance("/json/default/iteration/sprint_details.json");
+        sprintDetailsList = sprintDetailsDataFactory.getSprintDetails().stream().filter(sprintDetails -> sprintDetails.getBasicProjectConfigId().equals(new ObjectId("63d9280d5ce3ee7d77551313"))).collect(Collectors.toList());
+        JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance("/json/default/iteration/jira_issue_custom_history_new_structure.json");
         jiraIssuesCustomHistory = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
         ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-        projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
-        projectConfig.setProjectName("Scrum Project");
+        projectConfig.setId(new ObjectId("63d9280d5ce3ee7d77551313"));
+        projectConfig.setProjectName("Iteration Status");
         projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
         FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
                 .newInstance("/json/default/scrum_project_field_mappings.json");
@@ -144,13 +145,15 @@ public class IterationBurnupServiceImplTest {
         TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
                 accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-        when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetailsList.get(0));
+        when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetailsList.get(2));
         when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
         String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
                 .thenReturn(kpiRequestTrackerId);
         when(dailyClosureService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+        when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint())
+                .thenReturn(jiraIssuesCustomHistory);
         try {
             KpiElement kpiElement = dailyClosureService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);
