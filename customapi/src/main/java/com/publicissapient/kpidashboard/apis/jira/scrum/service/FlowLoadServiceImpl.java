@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.time.LocalDate;;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,8 +40,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCusto
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -127,37 +126,41 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 
 		leafNode.forEach(node -> {
 			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate = new HashMap<>();
-				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-						.get(node.getProjectFilter().getBasicProjectConfigId());
-				issueBacklogCustomHistories.forEach(issueBacklogCustomHistory -> {
-					createDateRangeForStatuses(endDate, startDate, statusesWithStartAndEndDate,
-							issueBacklogCustomHistory, fieldMapping);
-				});
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(node.getProjectFilter().getBasicProjectConfigId());
+			// Iterating Over All issues history's statusUpdationLog and saving start and
+			// end date for each status
+			issueBacklogCustomHistories.forEach(issueBacklogCustomHistory -> createDateRangeForStatuses(endDate,
+					startDate, statusesWithStartAndEndDate, issueBacklogCustomHistory, fieldMapping));
 
-				Map<String, Map<String, Integer>> dateWithStatusCount = new HashMap<>();
-				LocalDate tempStartDate = startDate;
-				while (tempStartDate.compareTo(endDate) <= 0) {
-					dateWithStatusCount.put(tempStartDate.toString(), new HashMap<>());
-					tempStartDate = tempStartDate.plusDays(1);
-				}
-				long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 2;
-				Map<String, Map<String, Integer>> finalDateWithStatusCount = dateWithStatusCount;
+			Map<String, Map<String, Integer>> dateWithStatusCount = new HashMap<>();
+			LocalDate tempStartDate = startDate;
+			while (tempStartDate.compareTo(endDate) <= 0) {
+				dateWithStatusCount.put(tempStartDate.toString(), new HashMap<>());
+				tempStartDate = tempStartDate.plusDays(1);
+			}
+			long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 2;
+			Map<String, Map<String, Integer>> finalDateWithStatusCount = dateWithStatusCount;
+			// Marking startDate index with plus 1 and end date next index with -1
+			// StartDate and EndDate index are calculated with respect to startDate
+			// Now compute the prefix sum, Since the beginning is marked with one, all the
+			// values after beginning will be incremented by one. Now as increment is only
+			// targeted only till the end of the range, the decrement on index endDate+1
+			// prevents that for every range present after endDate.
+			calculateStatusCountForEachDay(startDate, statusesWithStartAndEndDate, totalDays, finalDateWithStatusCount);
+			dateWithStatusCount = dateWithStatusCount.entrySet().stream().sorted(Map.Entry.comparingByKey())
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
+							LinkedHashMap::new));
 
-				calculateStatusCountForEachDay(startDate, statusesWithStartAndEndDate, totalDays,
-						finalDateWithStatusCount);
-				dateWithStatusCount = dateWithStatusCount.entrySet().stream().sorted(Map.Entry.comparingByKey())
-						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-								(oldValue, newValue) -> oldValue, LinkedHashMap::new));
-
-				if (MapUtils.isNotEmpty(dateWithStatusCount)) {
-					populateTrendValueList(trendValueList, dateWithStatusCount);
-					populateExcelDataObject(requestTrackerId, excelData, dateWithStatusCount);
-					log.debug("FlowLoadServiceImpl -> request id : {} dateWithStatusCount : {}", requestTrackerId,
-							dateWithStatusCount);
-				}
-				kpiElement.setExcelData(excelData);
-				kpiElement.setExcelColumns(KPIExcelColumn.FLOW_LOAD.getColumns());
-				kpiElement.setTrendValueList(trendValueList);
+			if (MapUtils.isNotEmpty(dateWithStatusCount)) {
+				populateTrendValueList(trendValueList, dateWithStatusCount);
+				populateExcelDataObject(requestTrackerId, excelData, dateWithStatusCount);
+				log.debug("FlowLoadServiceImpl -> request id : {} dateWithStatusCount : {}", requestTrackerId,
+						dateWithStatusCount);
+			}
+			kpiElement.setExcelData(excelData);
+			kpiElement.setExcelColumns(KPIExcelColumn.FLOW_LOAD.getColumns());
+			kpiElement.setTrendValueList(trendValueList);
 		});
 
 	}
@@ -200,27 +203,20 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		// If Issue is processed before startDate
 		if (size > 0 && statusChangeLog.get(size - 1).getUpdatedOn().toLocalDate().isBefore(startDate)) {
 			status = statusChangeLog.get(statusChangeLog.size() - 1).getChangedTo();
-			savingDateRangeInMap(statusesWithStartAndEndDate, status, startDate, endDate, fieldMapping);
+			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, startDate, endDate, fieldMapping);
 		}
 
 		// When issue is created after end date
 		else if (LocalDate.parse(issueBacklogCustomHistory.getCreatedDate().toString().split("T")[0])
-				.isAfter(endDate)) {
-			return;
-		} else {
+				.isAfter(endDate)) return;
+		else {
 			for (int index = 0; index + 1 < statusChangeLog.size(); index++) {
 				JiraHistoryChangeLog changeLog = statusChangeLog.get(index);
 				JiraHistoryChangeLog nextChangeLog = statusChangeLog.get(index + 1);
 				status = changeLog.getChangedTo();
 				LocalDate intervalStartDate = changeLog.getUpdatedOn().toLocalDate();
 				LocalDate intervalEndDate = nextChangeLog.getUpdatedOn().toLocalDate();
-				if (intervalEndDate.isBefore(startDate) || intervalStartDate.isAfter(endDate))
-					continue;
-				if (intervalStartDate.isBefore(startDate))
-					intervalStartDate = startDate;
-				if (intervalEndDate.isAfter(endDate))
-					intervalEndDate = endDate;
-				savingDateRangeInMap(statusesWithStartAndEndDate, status, intervalStartDate, intervalEndDate,
+				savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, intervalStartDate, intervalEndDate,
 						fieldMapping);
 			}
 			JiraHistoryChangeLog lastChangeLog = statusChangeLog.get(statusChangeLog.size() - 1);
@@ -229,17 +225,25 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 			if (intervalStartDate.isAfter(endDate))
 				return;
 			LocalDate intervalEndDate = endDate;
-			savingDateRangeInMap(statusesWithStartAndEndDate, status, intervalStartDate, intervalEndDate, fieldMapping);
+			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, intervalStartDate, intervalEndDate, fieldMapping);
 		}
 	}
 
-	private void savingDateRangeInMap(Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate,
+	private void savingDateRangeInMap(LocalDate startDate, LocalDate endDate , Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate,
 			String status, LocalDate intervalStartDate, LocalDate intervalEndDate, FieldMapping fieldMapping) {
 		if (isStatusValid(fieldMapping, status)) {
+			if (intervalEndDate.isBefore(startDate) || intervalStartDate.isAfter(endDate))
+				return ;
+			if (intervalStartDate.isBefore(startDate))
+				intervalStartDate = startDate;
+			if (intervalEndDate.isAfter(endDate))
+				intervalEndDate = endDate;
 			Pair<LocalDate, LocalDate> intervalRange = Pair.of(intervalStartDate, intervalEndDate);
 			status = status.replace(" ", "-");
 			if (!statusesWithStartAndEndDate.containsKey(status))
+			{
 				statusesWithStartAndEndDate.put(status, new ArrayList<>());
+			}
 			statusesWithStartAndEndDate.get(status).add(intervalRange);
 		}
 	}

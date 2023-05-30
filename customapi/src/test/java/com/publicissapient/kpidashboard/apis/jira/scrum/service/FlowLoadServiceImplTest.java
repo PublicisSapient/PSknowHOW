@@ -58,16 +58,15 @@ public class FlowLoadServiceImplTest {
     private static final String ISSUE_BACKLOG_HISTORY = "Issue Backlog History";
     private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
     private KpiRequest kpiRequest;
-    private FieldMapping fieldMapping;
     List<Node> leafNodeList = new ArrayList<>();
     TreeAggregatorDetail treeAggregatorDetail;
     List<IssueBacklogCustomHistory> issueBacklogHistoryDataList = new ArrayList<>();
-    Map<String, Map<String, Integer>> dateTypeCountMap = new HashMap<>();
+
 
     @Before
     public void setUp() throws ApplicationException {
         KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-        List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+        List<AccountHierarchyData> accountHierarchyDataList;
 
         kpiRequest = kpiRequestFactory.findKpiRequest("kpi148");
         kpiRequest.setLabel("PROJECT");
