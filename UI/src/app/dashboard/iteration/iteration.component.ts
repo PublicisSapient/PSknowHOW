@@ -94,7 +94,6 @@ export class IterationComponent implements OnInit, OnDestroy {
   markerInfo=[];
   globalConfig;
   sharedObject;
-  navigationTabs:Array<object> = [];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -143,10 +142,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121'); 
-    for(let i = 0; i<this.upDatedConfigData?.length; i++){
-      let board = this.upDatedConfigData[i]?.kpiDetail?.subCategoryBoard;
-      if(!this.navigationTabs.includes(board)) this.navigationTabs.push(board);
-    }
     
     if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
@@ -173,7 +168,6 @@ export class IterationComponent implements OnInit, OnDestroy {
   receiveSharedData($event) {
     if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
-      //this.configGlobalData = require('../../../test/resource/fakeUserBoardConfig.json')['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
       this.processKpiConfigData();
       this.masterData = $event.masterData;
       this.filterData = $event.filterData;
