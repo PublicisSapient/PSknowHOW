@@ -1248,7 +1248,7 @@ export class JiraConfigComponent implements OnInit {
               <i>
                 Impacted : GitLab processor</i>`,
                 onFocusOut : this.onSdmIdChange,
-                errorMsg : "Only Alphanumeric,Comma and SemiColon allowed.",
+                errorMsg : "Only Alphanumeric,Comma and Colon allowed.",
                 placeholder : "This key would not use for Sonar."
               },
               {
