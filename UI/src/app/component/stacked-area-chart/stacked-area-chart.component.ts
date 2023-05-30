@@ -53,9 +53,9 @@ export class StackedAreaChartComponent implements OnInit {
           obj[k] = 0
         });
       }
+      delete obj['value'];
       return obj;
     });
-    
     
     // set the dimensions and margins of the graph
     const margin = { top: 20, right: 20, bottom: 150, left: 50 },
@@ -133,7 +133,7 @@ export class StackedAreaChartComponent implements OnInit {
 
       // Add Y axis
       const y = d3.scaleLinear()
-        .domain([0, yMax + 150])
+        .domain([0, yMax + 200])
         .range([height, 0]);
       svg.append("g")
         .call(d3.axisLeft(y).ticks(5))
