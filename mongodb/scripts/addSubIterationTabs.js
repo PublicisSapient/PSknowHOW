@@ -4,7 +4,6 @@ let projects = db.user_board_config.find({});
 function isIterationReviewKpi(kpiId) {
 
     return kpiId == "kpi148" || kpiId == "kpi140";
-
 }
 
 function isIterationProgressKpi(kpiId) {

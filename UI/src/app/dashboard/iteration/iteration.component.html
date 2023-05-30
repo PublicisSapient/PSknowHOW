@@ -31,7 +31,7 @@
                     *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
                     <div *ngFor="let kpi of upDatedConfigData" cdkDrag class="wrapper-w-50 p-h-fit-content">
 
-                      <ng-container *ngIf="kpi?.kpiDetail?.subCategoryBoard == board">
+                      <ng-container *ngIf="kpi?.subCategoryBoard == board">
                         <!-- iteration kpi card container -->
                         <div class="card-type-1 p-mb-3 p-pr-3 p-pl-0"
                           *ngIf="kpi?.kpiDetail?.boxType !== 'chart' ;else chart">
@@ -70,7 +70,7 @@
                                         (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ?
                                           convertToHoursIfTime(x?.value1,x?.unit1) : x?.value1)}}</span>
                                           <span
-                                            [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' 
+                                            [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'
                                             || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit1 == '%'}"
                                             *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
                                             {{ x?.value1 != -99 ? x?.unit1 : ''}}

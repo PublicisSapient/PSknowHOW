@@ -142,12 +142,12 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
-    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121'); 
+    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
-      let board = this.upDatedConfigData[i]?.kpiDetail?.subCategoryBoard;
+      let board = this.upDatedConfigData[i]?.subCategoryBoard;
       if(!this.navigationTabs.includes(board)) this.navigationTabs.push(board);
     }
-    
+
     if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
     } else {
@@ -615,7 +615,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.kpiDropdowns[kpiId].push(obj);
       }
     }
-    
+
   }
 
   handleSelectedOption(event, kpi) {
