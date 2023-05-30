@@ -66,6 +66,7 @@
                 <module>bitbucket</module>
                 <module>gitlab</module>
 				<module>github</module>
+				<module>githubaction</module>
                 <module>sonar</module>
                 <module>jenkins</module>
                 <module>bamboo</module>
