@@ -1236,6 +1236,23 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'text',
+                label: 'SDM ID',
+                id: 'gitLabSdmID',
+                validators: [{
+                  type : 'pattern',
+                  value : '^[a-zA-Z0-9,: ]+$'
+                }],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `This key would not use for Sonar.<br />
+              <i>
+                Impacted : GitLab processor</i>`,
+                onFocusOut : this.onSdmIdChange,
+                errorMsg : "Only Alphanumeric,Comma and SemiColon allowed.",
+                placeholder : "This key would not use for Sonar."
+              },
+              {
+                type: 'text',
                 label: 'Organization Key',
                 id: 'organizationKey',
                 validators: ['required'],
@@ -1288,23 +1305,6 @@ export class JiraConfigComponent implements OnInit {
                 optionsList: this.branchList,
                 changeHandler: this.branchSelectHandler,
                 isLoading: false
-              },
-              {
-                type: 'text',
-                label: 'SDM ID',
-                id: 'gitLabSdmID',
-                validators: [{
-                  type : 'pattern',
-                  value : '^[a-zA-Z0-9,: ]+$'
-                }],
-                containerClass: 'p-sm-6',
-                show: true,
-                tooltip: `This key would not use for Sonar.<br />
-              <i>
-                Impacted : GitLab processor</i>`,
-                onFocusOut : this.onSdmIdChange,
-                errorMsg : "Only Alphanumeric,Comma and SemiColon allowed.",
-                placeholder : "This key would not use for Sonar."
               },
             ],
           };
