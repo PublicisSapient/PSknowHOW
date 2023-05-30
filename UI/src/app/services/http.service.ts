@@ -144,6 +144,7 @@ import { SharedService } from './shared.service';
     private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData';
     private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
     private postKpiColumnsConfigUrl =this.baseUrl + '/api/kpi-column-config/kpiColumnConfig';
+    private gitActionWorkflowNameUrl = this.baseUrl + '/api/githubAction/workflowName';
     userName : string;
     userEmail : string;
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private sharedService : SharedService) {
@@ -730,7 +731,7 @@ import { SharedService } from './shared.service';
             }
         });
     }
-    
+
     generateToken(postData): Observable<any> {
         return this.http.post<any>(this.generateTokenUrl, postData);
     }
@@ -937,14 +938,19 @@ import { SharedService } from './shared.service';
     }
 
     getJiraTemplate(projectId) {
-        return this.http.get<any>(`${this.jiraTemplateUrl}/${projectId}`)     
+        return this.http.get<any>(`${this.jiraTemplateUrl}/${projectId}`)
     }
 
     getMappingTemplateFlag(toolID,data){
-        return this.http.post(`${this.fieldMappingsUrl}/${toolID}/saveMapping`,data);   
+        return this.http.post(`${this.fieldMappingsUrl}/${toolID}/saveMapping`,data);
     }
 
     getCurrentUserDetails(){
       return this.http.get<any>(this.currentUserDetailsURL);
+    }
+
+    /** Get workflow name list for Github Action tool */
+    getGitActionWorkFlowName(data){
+        return this.http.post(`${this.gitActionWorkflowNameUrl}/${data.connectionID}`,data);
     }
 }
