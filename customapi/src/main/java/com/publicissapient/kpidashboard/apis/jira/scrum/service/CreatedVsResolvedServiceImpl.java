@@ -503,8 +503,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
 					.findFirst().orElse(new JiraIssueCustomHistory());
 			Optional<JiraHistoryChangeLog> issueSprint = jiraIssueCustomHistory.getStatusUpdationLog().stream()
-					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
-							.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00.00.00"), DATE_TIME_FORMATTER),
+					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(jiraIssueSprint.getUpdatedOn().toLocalDate(),
 							sprintStartDate, sprintEndDate))
 					.reduce((a, b) -> b);
 			if (issueSprint.isPresent() && fieldMapping.getJiraIssueDeliverdStatus().contains(issueSprint.get().getChangedTo()))

@@ -46,7 +46,7 @@ export class CommentsComponent implements OnInit {
   }
 
   submitComment(filterData=this.selectedFilters[this.selectedTabIndex]){
-    
+
     const reqObj = {
       node: this.selectedTab !== 'iteration' ? filterData.nodeId : filterData.parentId[0],
       level: filterData.level,
