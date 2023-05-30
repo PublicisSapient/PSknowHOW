@@ -50,6 +50,7 @@ public class KpiMaster extends BasicModel {
 	private String isDeleted;
 	private Integer defaultOrder;
 	private String kpiCategory;
+	private String kpiSubCategory;
 	private String kpiInAggregatedFeed;
 	private List<String> kpiOnDashboard;
 	private String kpiBaseLine;

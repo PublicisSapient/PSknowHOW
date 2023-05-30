@@ -437,6 +437,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		boardKpis.setShown(true);
 		boardKpis.setIsEnabled(true);
 		boardKpis.setOrder(kpiMaster.getDefaultOrder());
+		boardKpis.setSubCategoryBoard(kpiMaster.getKpiSubCategory());
 		boardKpis.setKpiDetail(kpiMaster);
 		boardKpisList.add(boardKpis);
 	}
@@ -470,7 +471,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 *
 	 * @param userBoardConfig
 	 *            userBoardConfig
-	 * @return UserBoardConfigDTO
+	 * @return UserBoardConfigDTOb
 	 */
 	private UserBoardConfigDTO convertToUserBoardConfigDTO(UserBoardConfig userBoardConfig) {
 		UserBoardConfigDTO userBoardConfigDTO = null;
