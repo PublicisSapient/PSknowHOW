@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,7 +39,6 @@ import lombok.ToString;
 public class DataCountGroup implements Serializable {
 	private static final long serialVersionUID = -2956276113452875220L;
 	private String filter;
-	private String date;
 	private List<DataCount> value;
 
 }
