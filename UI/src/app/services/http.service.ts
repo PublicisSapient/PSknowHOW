@@ -134,7 +134,7 @@ import { SharedService } from './shared.service';
     private authDetailsUrl = this.baseUrl + '/api/authdetails';
     private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
     private getCommentUrl = this.baseUrl + '/api/comments/getCommentsByKpiId';
-    private submitCommentUrl = this.baseUrl + '/api/comments/submitComments'
+    private submitCommentUrl = this.baseUrl + '/api/comments/submitComments';
     private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
     private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
     private saveAssigneeForProjectUrl =this.baseUrl +'/api/capacity/assignee';
@@ -917,8 +917,14 @@ import { SharedService } from './shared.service';
         return this.http.delete(this.deleteProjectUrl + `/${projectId}/tools/clean/` + toolId);
     }
 
-    getComment(selectedTab, selectedFilter, kpiId){
-        return this.http.get<any>(`${this.getCommentUrl}?node=${(selectedTab!=='iteration')?selectedFilter?.nodeId:selectedFilter?.parentId[0]}&sprintId=${(selectedTab==='iteration')?selectedFilter.nodeId:''}&kpiId=${kpiId}&level=${selectedFilter?.level}`);
+    getComment(selectedTab, selectedFilter, kpiId) {
+        const postData = {
+            node: selectedTab !== 'iteration' ? selectedFilter?.nodeId : selectedFilter?.parentId[0],
+            sprintId: selectedTab === 'iteration' ? selectedFilter.nodeId : '',
+            kpiId: kpiId,
+            level: selectedFilter?.level
+        };
+        return this.http.post<any>(this.getCommentUrl, postData);
     }
 
     submitComment(data): Observable<any> {
