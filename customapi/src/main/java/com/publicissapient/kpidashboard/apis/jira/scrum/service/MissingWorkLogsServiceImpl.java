@@ -236,10 +236,11 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 			howerMap.put(UNLOGGED_STORIES, unloggedStory.size());
 			howerMap.put(TOTAL_STORY_LIST, sumTotalStories.intValue());
 
-			Double value = Double.valueOf(100 * ((Double)howerMap.get(UNLOGGED_STORIES)) / (Double) howerMap.get(STORY_LIST));
+			Double value = Double.valueOf(100 * ((Integer)howerMap.get(UNLOGGED_STORIES)) / (Integer) howerMap.get(STORY_LIST));
 
 			if (CollectionUtils.isNotEmpty(totalStory)) {
-				populateValidationDataObject(kpiElement, requestTrackerId, totalStory, validationDataMap);
+				populateValidationDataObject(kpiElement, requestTrackerId, totalStory, validationDataMap,
+						kpiRequest.getFilterToShowOnTrend(), node);
 			}
 
 			LOGGER.debug("[MISSING-WORK-LOGS-SPRINT-WISE][{}]. Total Stories Count for sprint {}  is {}",
@@ -291,9 +292,12 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 	 * @param requestTrackerId
 	 * @param sprintWiseStoriesList
 	 * @param validationDataMap
+	 * @param filterToShowOnTrend
+	 * @param node
 	 */
 	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			List<JiraIssue> sprintWiseStoriesList, Map<String, ValidationData> validationDataMap) {
+			List<JiraIssue> sprintWiseStoriesList, Map<String, ValidationData> validationDataMap,
+			String filterToShowOnTrend, Node node) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			String keyForValidation = sprintWiseStoriesList.get(0).getSprintName();
 			List<String> storyKeyList = new ArrayList<>();
