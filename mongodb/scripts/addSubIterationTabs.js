@@ -1,46 +1,59 @@
+let userBoardData = db.user_board_config.find({});
 
-let projects = db.user_board_config.find({});
+const iterationReviewKpi = ["kpi119", "kpi138"];
+
+const iterationProgressKpi = ["kpi121"];
 
 function isIterationReviewKpi(kpiId) {
 
-    return kpiId == "kpi148" || kpiId == "kpi140";
+    for (let kpi of iterationReviewKpi)
+
+       if(kpi===kpiId) {
+        return true;
+       }
+    return false;
 }
 
 function isIterationProgressKpi(kpiId) {
 
-    return kpiId == "kpi146";
+    for (let kpi of iterationProgressKpi)
 
+       if(kpi==kpiId) {
+       return true;
+       }
+    return false;
 }
 
-for (let i = 0; i < projects.size(); i++) {
 
-    let scrum = projects[i].scrum;
 
-    let _id = projects[i]._id;
+for (let i = 0; i < userBoardData.size(); i++) {
+
+    let scrum = userBoardData[i].scrum;
+
+    let _id = userBoardData[i]._id;
 
     for (let j = 0; j < scrum.length; j++) {
 
-        if (scrum[j].boardId == 5) {
+        if (scrum[j].boardName == "Iteration") {
 
             let kpis = scrum[j].kpis;
 
             kpis.forEach(kpi => {
 
-                // if(isIterationReviewKpi(kpi.kpiId))
+                if (isIterationReviewKpi(kpi.kpiId))
 
-                kpi.subCategoryBoard = "Iteration Review";
+                    kpi.subCategoryBoard = "Iteration Review";
 
-                // if(isIterationProgressKpi(kpi.kpiId))
+                if (isIterationProgressKpi(kpi.kpiId))
 
-                //kpi.subCategoryBoard = "Iteration Progress" ;
+                    kpi.subCategoryBoard = "Iteration Progress";
 
             })
-
         }
-
     }
 
-    var result = db.user_board_config.updateOne({
+
+    const result = db.user_board_config.updateOne({
 
         "_id": _id
 
