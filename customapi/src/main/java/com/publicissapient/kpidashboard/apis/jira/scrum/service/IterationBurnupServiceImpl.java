@@ -90,6 +90,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 	public static final String ACTUAL_COMPLETION = "Completion Till Date";
 	public static final String PREDICTED_COMPLETION = "Predicted Completion";
 	public static final String MIN_PREDICTED = "Minimum Prediction Date";
+	public static final String MAX_REMOVAL = "Maximum Removal Date";
 	public static final String MAX_COMPLETION = "Maximum Completion Date";
 	public static final String DATE = "date";
 	public static final String FULL_SPRINT_ISSUES = "Full Sprint Issues";
@@ -184,6 +185,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 						createCompletedIssuesDateWiseMap(sprintDetails, totalIssueList, completedIssues,
 								removedCompletedIssues, issueHistory, sprintStartDate);
 					});
+					
 					resultListMap.put(FULL_SPRINT_ISSUES, fullSprintIssues);
 					resultListMap.put(CommonConstant.PUNTED_ISSUES, removedIssues);
 					resultListMap.put(CommonConstant.ADDED_ISSUES, addedIssues);
@@ -314,6 +316,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 	 * if for closed sprint updation is happening after sprint end date time then it
 	 * would be counted under the last day of sprint
 	 */
+
 	private LocalDate limitDateInSprint(LocalDate updatedLog, LocalDate sprintEndDate) {
 		if (ObjectUtils.isNotEmpty(updatedLog) && updatedLog.isAfter(sprintEndDate.minusDays(1))) {
 			return sprintEndDate;
@@ -409,20 +412,22 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 					.stringToLocalDate(sprintDetails.getEndDate(), DateUtil.TIME_FORMAT_WITH_SEC).plusDays(1);
 
 			Map<String, LocalDate> maxCompleteAndMinPCDDate = getMaxCompleteAndMinPCDDate(completedIssueMap,
-					potentialDelay);
+					potentialDelay,removedIssuesMap);
 			LocalDate maxCompletionDate = maxCompleteAndMinPCDDate.get(MAX_COMPLETION);
 			LocalDate minimumpredicateddate = maxCompleteAndMinPCDDate.get(MIN_PREDICTED);
+			LocalDate maximumRemovalDate = maxCompleteAndMinPCDDate.get(MAX_REMOVAL);
 
 			List<DataCountGroup> dataCountGroups = new ArrayList<>();
 			List<JiraIssue> processedAllIssues = new ArrayList<>();
 			List<JiraIssue> processedPlannedIssues = new ArrayList<>();
 			List<JiraIssue> processCompletedIssues = new ArrayList<>();
 			List<JiraIssue> pcdIssues = new ArrayList<>();
+
 			for (LocalDate date = sprintStartDate; date.isBefore(sprintEndDate); date = date.plusDays(1)) {
 				DataCountGroup dataCountGroup = new DataCountGroup();
 				List<DataCount> dataCountList = new ArrayList<>();
 				Long dueDateWiseTypeCountMap = calculateOverallScopeDayWise(fullSprintIssuesMap, removedIssuesMap,
-						addedIssuesMap, processedAllIssues, date, sprintDetails);
+						addedIssuesMap, processedAllIssues, date, sprintDetails,maximumRemovalDate);
 				Long plannedDateWiseTypeCount = processFieldWiseeIssues(processedAllIssues, date,
 						processedPlannedIssues, DUE_DATE);
 
@@ -430,6 +435,9 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 					List<JiraIssue> completedIssues = completedIssueMap.getOrDefault(date, new ArrayList<>());
 					completedIssues.addAll(processCompletedIssues);
 					completedIssues.retainAll(processedAllIssues);
+					removeExtraTransitionOnSprintEndDate(sprintDetails, maxCompletionDate, completedIssues,
+							sprintDetails.getNotCompletedIssues().stream().map(SprintIssue::getNumber)
+									.collect(Collectors.toList()));
 					completedIssues.removeAll(removedFromClosed.getOrDefault(date, new HashSet<>()));
 					Long closedDateWiseCount = processFieldWiseeIssues(completedIssues, date, processCompletedIssues,
 							UPDATE_DATE);
@@ -479,21 +487,23 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 	}
 
 	private Long calculateOverallScopeDayWise(Map<LocalDate, List<JiraIssue>> allIssues,
-			Map<LocalDate, List<JiraIssue>> removedIssues, Map<LocalDate, List<JiraIssue>> addedIssues,
-			List<JiraIssue> processedIssues, LocalDate date, SprintDetails sprintDetails) {
+											  Map<LocalDate, List<JiraIssue>> removedIssues, Map<LocalDate, List<JiraIssue>> addedIssues,
+											  List<JiraIssue> processedIssues, LocalDate date, SprintDetails sprintDetails, LocalDate maximumRemovalDate) {
 		List<JiraIssue> allIssuesOrDefault = allIssues.getOrDefault(date, new ArrayList<>());
 		List<JiraIssue> removedJiraIssues = removedIssues.getOrDefault(date, new ArrayList<>());
 		List<JiraIssue> addedJiraIssues = addedIssues.getOrDefault(date, new ArrayList<>());
 		Set<String> puntedIssues = sprintDetails.getPuntedIssues().stream().map(SprintIssue::getNumber)
 				.collect(Collectors.toSet());
+		removeExtraTransitionOnSprintEndDate(sprintDetails, maximumRemovalDate, removedJiraIssues,sprintDetails.getTotalIssues().stream().map(SprintIssue::getNumber).collect(Collectors.toList()));
+
 		// if an issue is present in both on the same day, then whatever in the punted
 		// issues those should be removed once and for all
-		List<JiraIssue> intersection = (List<JiraIssue>) CollectionUtils.intersection(removedJiraIssues,
+		List<JiraIssue> commonIssues = (List<JiraIssue>) CollectionUtils.intersection(removedJiraIssues,
 				addedJiraIssues);
-		// if punted issues are present in intersection
+		// if punted issues are present in commonIssues
 		// remove from both, else just remove from added
-		if (CollectionUtils.isNotEmpty(intersection)) {
-			intersection.stream().forEach(issue -> {
+		if (CollectionUtils.isNotEmpty(commonIssues)) {
+			commonIssues.stream().forEach(issue -> {
 				if (puntedIssues.contains(issue.getNumber())) {
 					removedJiraIssues.removeIf(jira -> issue.getNumber().equalsIgnoreCase(jira.getNumber()));
 					addedJiraIssues.removeIf(jira -> issue.getNumber().equalsIgnoreCase(jira.getNumber()));
@@ -510,6 +520,17 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 		processedIssues = processedIssues.stream().distinct().collect(Collectors.toList());
 		return (long) processedIssues.size();
 
+	}
+
+	/*
+	if on the last day of sprint closure, some issues get closed after the sprint end time
+	but sprint report has fixed them in not completed segment, then those has to be removed from completed Issue Map
+	 */
+	private void removeExtraTransitionOnSprintEndDate(SprintDetails sprintDetails, LocalDate maximumRemovalDate, List<JiraIssue> baseIssues,List<String> issuesToBeRemoved) {
+		if (sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_CLOSED)
+				&& ObjectUtils.isNotEmpty(maximumRemovalDate)) {
+			baseIssues.removeIf(issue -> issuesToBeRemoved.contains(issue.getNumber()));
+		}
 	}
 
 	/**
@@ -558,7 +579,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 	 * cumulation, otherwise till today-1 date
 	 */
 	private Map<String, LocalDate> getMaxCompleteAndMinPCDDate(Map<LocalDate, List<JiraIssue>> completedIssueMap,
-			Map<LocalDate, List<JiraIssue>> potentialDelay) {
+															   Map<LocalDate, List<JiraIssue>> potentialDelay, Map<LocalDate, List<JiraIssue>> removedIssuesMap) {
 		Map<String, LocalDate> dateMap = new HashMap<>();
 		LocalDate maxCompletionDate = null;
 		LocalDate minimumpredicateddate = null;
@@ -575,6 +596,8 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 		}
 		dateMap.put(MAX_COMPLETION, maxCompletionDate);
 		dateMap.put(MIN_PREDICTED, minimumpredicateddate);
+		dateMap.put(MAX_REMOVAL, removedIssuesMap.keySet().stream().filter(Objects::nonNull).min(LocalDate::compareTo)
+				.orElse(null));
 		return dateMap;
 	}
 

@@ -78,7 +78,7 @@ public class IterationBurnupServiceImplTest {
     ConfigHelperService configHelperService;
 
     @InjectMocks
-    IterationBurnupServiceImpl dailyClosureService;
+    IterationBurnupServiceImpl iterationBurnupService;
 
     @Mock
     JiraIssueCustomHistoryRepository jiraIssueHistoryRepository;
@@ -134,7 +134,7 @@ public class IterationBurnupServiceImplTest {
         when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
         when(jiraService
                 .getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
-        Map<String, Object> defectDataListMap = dailyClosureService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
+        Map<String, Object> defectDataListMap = iterationBurnupService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
                 kpiRequest);
         assertNotNull(defectDataListMap);
     }
@@ -150,12 +150,12 @@ public class IterationBurnupServiceImplTest {
         String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
                 .thenReturn(kpiRequestTrackerId);
-        when(dailyClosureService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+        when(iterationBurnupService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
         when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint())
                 .thenReturn(jiraIssuesCustomHistory);
         try {
-            KpiElement kpiElement = dailyClosureService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+            KpiElement kpiElement = iterationBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);
             assertNotNull( kpiElement.getTrendValueList());
 
@@ -166,7 +166,7 @@ public class IterationBurnupServiceImplTest {
     }
     @Test
     public void testGetQualifierType() {
-        assertThat(dailyClosureService.getQualifierType(), equalTo(KPICode.ITERATION_BURNUP.name()));
+        assertThat(iterationBurnupService.getQualifierType(), equalTo(KPICode.ITERATION_BURNUP.name()));
     }
 
 }
