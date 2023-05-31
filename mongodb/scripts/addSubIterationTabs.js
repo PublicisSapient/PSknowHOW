@@ -1,8 +1,9 @@
 let userBoardData = db.user_board_config.find({});
 
-const iterationReviewKpi = ["kpi119", "kpi138"];
+const iterationReviewKpi = ["kpi121", "kpi119", "kpi128", "kpi75", "kpi123", "kpi122", "kpi120", "kpi124", "kpi132",
+ "kpi133", "kpi134", "kpi125", "kpi131", "kpi135", "kpi136", "kpi140"];
 
-const iterationProgressKpi = ["kpi121"];
+const iterationProgressKpi = ["kpi145"];
 
 function isIterationReviewKpi(kpiId) {
 
