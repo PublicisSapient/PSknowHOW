@@ -104,7 +104,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                 window.location.reload();
                             });
                         }
-                    } else if(err.status === 403){
+                    } else if(err.status === 403 && environment.SSO_LOGIN){
                         this.httpService.unauthorisedAccess =true;
                         this.router.navigate(['/dashboard/unauthorized-access']);
                     } else {
