@@ -41,11 +41,11 @@ for (let i = 0; i < userBoardData.size(); i++) {
 
             kpis.forEach(kpi => {
 
-                if (isIterationReviewKpi(kpi.kpiId))
+                if (isIterationReviewKpi(kpi.kpiId) && kpi.subCategoryBoard == undefined)
 
                     kpi.subCategoryBoard = "Iteration Review";
 
-                if (isIterationProgressKpi(kpi.kpiId))
+                if (isIterationProgressKpi(kpi.kpiId) && kpi.subCategoryBoard == undefined)
 
                     kpi.subCategoryBoard = "Iteration Progress";
 
