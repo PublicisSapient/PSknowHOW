@@ -180,7 +180,6 @@ public class SprintVelocityServiceImplTest {
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
-		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("On");
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put(SPRINTVELOCITYKEY, totalIssueList);
 		resultListMap.put(SUBGROUPCATEGORY, "sprint");
@@ -189,7 +188,8 @@ public class SprintVelocityServiceImplTest {
 		resultListMap.put(PREVIOUS_SPRINT_VELOCITY,previousTotalIssueList);
 		resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, new ArrayList<>());
 		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any(),any())).thenReturn(resultListMap);
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(any(),any())).thenReturn(sprintDetailsList);
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(any(),any(),any())).thenReturn(sprintDetailsList);
+		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		Map<String, Object> velocityListMap = sprintVelocityServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
 		assertThat("Velocity value :", ((List<JiraIssue>) (velocityListMap.get(SPRINTVELOCITYKEY))).size(),
@@ -224,7 +224,8 @@ public class SprintVelocityServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintVelocityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(any(),any())).thenReturn(sprintDetailsList);
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(any(),any(),any())).thenReturn(sprintDetailsList);
+		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		try {
 			KpiElement kpiElement = sprintVelocityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -258,7 +259,8 @@ public class SprintVelocityServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintVelocityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(any(),any())).thenReturn(sprintDetailsList);
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(any(),any(),any())).thenReturn(sprintDetailsList);
+		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		try {
 			KpiElement kpiElement = sprintVelocityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

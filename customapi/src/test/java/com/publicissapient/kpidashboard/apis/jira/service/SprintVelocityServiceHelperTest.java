@@ -55,13 +55,13 @@ public class SprintVelocityServiceHelperTest {
     public void testCalculateSprintVelocityValue() {
         Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
         Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
-        sprintVelocityServiceHelper.getSprintForProject(storyList, sprintWiseIssues, sprintDetails,
+        sprintVelocityServiceHelper.getSprintIssuesForProject(storyList, sprintWiseIssues, sprintDetails,
                 currentSprintLeafVelocityMap);
         Assert.assertTrue(currentSprintLeafVelocityMap.size() > 0);
 
         Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssue = new HashMap<>();
         Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocity = new HashMap<>();
-        sprintVelocityServiceHelper.getSprintForProject(storyList, sprintWiseIssue, new ArrayList<SprintDetails>(),
+        sprintVelocityServiceHelper.getSprintIssuesForProject(storyList, sprintWiseIssue, new ArrayList<SprintDetails>(),
                 currentSprintLeafVelocity);
         Assert.assertTrue(sprintWiseIssue.size() > 0);
 
