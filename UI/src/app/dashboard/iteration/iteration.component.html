@@ -25,13 +25,13 @@
           <div class="right-container col">
             <p-tabView class="iteration-tabs">
               <p-tabPanel *ngFor="let board of navigationTabs" [header]="board">
-                <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard" cdkDropList
+                <div class="p-grid p-justify-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard" cdkDropList
                   (cdkDropListDropped)="drop($event)">
                   <ng-container
                     *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
-                    <div *ngFor="let kpi of upDatedConfigData" cdkDrag class="wrapper-w-50 p-h-fit-content">
+                    <ng-container *ngFor="let kpi of upDatedConfigData">
 
-                      <ng-container *ngIf="kpi?.subCategoryBoard == board">
+                      <div *ngIf="kpi?.subCategoryBoard == board" cdkDrag class="wrapper-w-50 p-h-fit-content">
                         <!-- iteration kpi card container -->
                         <div class="card-type-1 p-mb-3 p-pr-3 p-pl-0"
                           *ngIf="kpi?.kpiDetail?.boxType !== 'chart' ;else chart">
@@ -83,32 +83,36 @@
                           </app-kpi-card>
                         </div>
 
-                  <!--chart container-->
-                  <ng-template #chart>
-                    <div class="p-sm-12 p-mb-3 p-pr-3 p-pl-0 iteration-chart p-pt-0 p-pb-0">
-                      <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                        (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
-                        [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
-                        [showExport]="true" [isShow]="true"
-                        [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
-                        [showCommentIcon]="true">
-                        <ng-container *ngIf="!noTabAccess else noDataAccess">
-                          <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
-                            <div class="p-pl-3 p-pr-3 w-100 position-relative" [ngSwitch]="kpi?.kpiDetail?.chartType"
-                              *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
-                              <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
-                                <app-groupstackchart *ngSwitchCase="'stackedColumn'"
-                                  [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                  [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
-                                  [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
-                                  [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
-                                </app-groupstackchart>
-                                <app-group-bar-chart *ngSwitchCase="'GroupBarChart'"
-                                  [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                                  [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
-                                  [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
-                                  [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
-                                </app-group-bar-chart>
+                        <!--chart container-->
+                        <ng-template #chart>
+                          <div class="p-sm-12 p-mb-3 p-pr-3 p-pl-0 iteration-chart p-pt-0 p-pb-0">
+                            <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
+                              (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
+                              [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
+                              (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
+                              [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
+                              [showCommentIcon]="true">
+                              <ng-container *ngIf="!noTabAccess else noDataAccess">
+                                <ng-container
+                                  *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
+                                  <div class="p-pl-3 p-pr-3 w-100 position-relative"
+                                    [ngSwitch]="kpi?.kpiDetail?.chartType"
+                                    *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
+                                    <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
+                                      <app-groupstackchart *ngSwitchCase="'stackedColumn'"
+                                        [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                        [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                                        [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
+                                        [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
+                                      </app-groupstackchart>
+                                      <app-group-bar-chart *ngSwitchCase="'GroupBarChart'"
+                                        [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
+                                        [unit]="kpi?.kpiDetail?.kpiUnit"
+                                        [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                                        [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
+                                        [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
+                                      </app-group-bar-chart>
 
 
                                       <app-piechart *ngSwitchCase="'pieChart'"
@@ -127,7 +131,7 @@
                             </app-kpi-card>
                           </div>
                         </ng-template>
-                      </ng-container>
+                      </div>
 
 
                       <ng-template #noData>
@@ -146,7 +150,7 @@
                           <div class="loading-img"></div>
                         </div>
                       </ng-template>
-                    </div>
+                    </ng-container>
 
                     <ng-template #noDataAccess>
                       <div class="min-ht">
@@ -203,8 +207,7 @@
   <div class="dialog-body p-mb-4">
     <p-table #table [value]="modalDetails['tableValues']" [reorderableColumns]="true" [columns]="tableHeaders"
       styleClass="p-datatable-gridlines kpi-table" loadingIcon="loading-img"
-      [globalFilterFields]="modalDetails['tableHeadings']" [scrollable]="true"
-      scrollHeight="65vh">
+      [globalFilterFields]="modalDetails['tableHeadings']" [scrollable]="true" scrollHeight="65vh">
       <ng-template pTemplate="caption">
         <p-multiSelect [options]="tableColumns" [(ngModel)]="selectedColumns" resetFilterOnHide="true"
           selectedItemsLabel="{0} columns selected" [optionValue]="'columnName'" [optionLabel]="'columnName'"
@@ -223,8 +226,9 @@
       <ng-template pTemplate="header" let-columns>
         <tr>
           <ng-container *ngFor="let item of tableHeaders;let i = index;">
-            <th [ngClass]="{'overlap': filteredColumn === item }" pReorderableColumn [pReorderableColumnDisabled]="forzenColumns.includes(item.toLowerCase())" pFrozenColumn alignFrozen="left"
-            [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width">
+            <th [ngClass]="{'overlap': filteredColumn === item }" pReorderableColumn
+              [pReorderableColumnDisabled]="forzenColumns.includes(item.toLowerCase())" pFrozenColumn alignFrozen="left"
+              [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width">
               <div class="table-head">
                 <span [ngStyle]="{'width':'max-content','margin-right': '1rem'}">{{item}}</span>
                 <div class="p-d-flex">
@@ -263,15 +267,17 @@
               </td>
             </ng-container>
             <ng-container *ngIf="item !== 'Issue Id'">
-              <td *ngIf="item && typeOf(x[item]); else elseBlock" class="font-small min-max-width" pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" >
-                <ng-container *ngFor="let k of x[item]|keyvalue"> 
+              <td *ngIf="item && typeOf(x[item]); else elseBlock" class="font-small min-max-width" pFrozenColumn
+                [frozen]="forzenColumns.includes(item.toLowerCase())">
+                <ng-container *ngFor="let k of x[item]|keyvalue">
                   <a [href]="k.value" class="p-d-block text-blue" target="_blank"
                     *ngIf="k.value.includes('http'); else showText">{{k.key}}</a>
                   <ng-template #showText>{{k.value}}<br></ng-template>
                 </ng-container>
               </td>
               <ng-template #elseBlock>
-                <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width">{{x[item]}}</td>
+                <td pFrozenColumn [frozen]="forzenColumns.includes(item.toLowerCase())" class="min-max-width">
+                  {{x[item]}}</td>
               </ng-template>
             </ng-container>
 
