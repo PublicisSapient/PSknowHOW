@@ -250,17 +250,6 @@ public class CustomApiConfig {// NOPMD
 	private String samlUrlStartString;
 	private String samlUrlEndString;
 
-	@Value("${sprint.count}")
-	private int sprintCount;
-
-	public int getSprintCount() {
-		return sprintCount;
-	}
-
-	public void setSprintCount(int sprintCount) {
-		this.sprintCount = sprintCount;
-	}
-
 	public int getJiraXaxisMonthCount() {
 		return jiraXaxisMonthCount;
 	}

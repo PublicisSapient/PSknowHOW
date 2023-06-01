@@ -52,31 +52,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculates the DRR and trend analysis of the DRR.
@@ -176,16 +166,14 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 						s -> s.stream().map(node -> node.getSprintFilter().getId()).collect(Collectors.toList()))));
 		Map<String, Object> resultListMap = new HashMap<>();
 		Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
-		leafNodeList.forEach(leaf -> {
-			basicProjectConfigObjectIds.add(leaf.getProjectFilter().getBasicProjectConfigId());
-		});
+		leafNodeList.forEach(leaf -> basicProjectConfigObjectIds.add(leaf.getProjectFilter().getBasicProjectConfigId()));
 		List<SprintDetails> totalSprintDetails = sprintRepository
-				.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,SprintDetails.SPRINT_STATE_CLOSED,PageRequest.of(0, customApiConfig.getSprintCountForFilters() + sprintVelocityLimit));
+				.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(basicProjectConfigObjectIds,SprintDetails.SPRINT_STATE_CLOSED,PageRequest.of(0, customApiConfig.getSprintCountForFilters() + sprintVelocityLimit));
 		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
 			Map<ObjectId, List<String>> projectWisePreviousSprintDetails = totalSprintDetails.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId,
 							Collectors.collectingAndThen(Collectors.toList(),
-									s -> s.stream().map(sprint -> sprint.getSprintID())
+									s -> s.stream().map(SprintDetails::getSprintID)
 											.skip(customApiConfig.getSprintCountForFilters())
 											.collect(Collectors.toList()))));
 			resultListMap = kpiHelperService
@@ -355,18 +343,19 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		AtomicDouble sumVelocity =new AtomicDouble();
 		AtomicInteger count = new AtomicInteger();
 		AtomicInteger validCount = new AtomicInteger();
+		int sprintCountForAvgVel=sprintVelocityLimit+1;
 		sprintVelocityMap.entrySet().forEach(velocityMap -> {
 			if (velocityMap.getKey().getKey().equals(basicProjId)) {
 				count.set(count.get() + 1);
-				if (count.get() > sprintCount || sprintVelocityMap.size()<=customApiConfig.getSprintCount()) {
+				if (count.get() > sprintCount || sprintVelocityMap.size()<=sprintCountForAvgVel) {
 					validCount.set(validCount.get() + 1);
 					sumVelocity.set(sumVelocity.get() + velocityMap.getValue());
 				}
 			}
 		});
 		log.debug("The average velocity of sprint {} is {}", sprintCount, sumVelocity.get());
-		if (validCount.get() == customApiConfig.getSprintCount()) {
-			return sumVelocity.get() / customApiConfig.getSprintCount();
+		if (validCount.get() == sprintCountForAvgVel) {
+			return sumVelocity.get() / sprintCountForAvgVel;
 		}
 		return sumVelocity.get()/validCount.get();
 	}
