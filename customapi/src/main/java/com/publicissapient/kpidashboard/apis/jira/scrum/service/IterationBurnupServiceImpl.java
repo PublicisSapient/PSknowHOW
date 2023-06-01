@@ -430,7 +430,9 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 						addedIssuesMap, processedAllIssues, date, sprintDetails,maximumRemovalDate);
 				Long plannedDateWiseTypeCount = processFieldWiseeIssues(processedAllIssues, date,
 						processedPlannedIssues, DUE_DATE);
-
+				dataCountList.add(getDataCountObject(dueDateWiseTypeCountMap, latestSprint.getId(), OVERALL_SCOPE));
+				dataCountList
+						.add(getDataCountObject(plannedDateWiseTypeCount, latestSprint.getId(), PLANNED_COMPLETION));
 				if (date.isBefore(Objects.requireNonNull(maxCompletionDate)) || date.isEqual(maxCompletionDate)) {
 					List<JiraIssue> completedIssues = completedIssueMap.getOrDefault(date, new ArrayList<>());
 					completedIssues.addAll(processCompletedIssues);
@@ -449,9 +451,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 					dataCountList.add(
 							getDataCountObject((long) pcdIssues.size(), latestSprint.getId(), PREDICTED_COMPLETION));
 				}
-				dataCountList.add(getDataCountObject(dueDateWiseTypeCountMap, latestSprint.getId(), OVERALL_SCOPE));
-				dataCountList
-						.add(getDataCountObject(plannedDateWiseTypeCount, latestSprint.getId(), PLANNED_COMPLETION));
+
 
 				dataCountGroup.setFilter(date.toString());
 				dataCountGroup.setValue(dataCountList);
