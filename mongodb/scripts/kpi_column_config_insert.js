@@ -2595,6 +2595,15 @@ db.kpi_column_configs.insertMany([{
                                                                                 isShown: true,
                                                                                 isDefault: true
                                                                             }]
+                                                                        },
+                                                                        {
+                                                                            basicProjectConfigId: null,
+                                                                            kpiId: 'Kpi148',
+                                                                            kpiColumnDetails: [{
+                                                                                columnName: 'Date',
+                                                                                order: 0,
+                                                                                isShown: true,
+                                                                                isDefault: true
+                                                                            }]
                                                                         }
-
                                   ]);
