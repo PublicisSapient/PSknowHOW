@@ -268,6 +268,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				BoardKpisDTO existingKPI = kpiWiseUserBoardConfig.get(defaultKPIList.getKpiId());
 				boardKpis.setShown(existingKPI.isShown());
 				boardKpis.setIsEnabled(existingKPI.getIsEnabled());
+				boardKpis.setSubCategoryBoard(existingKPI.getSubCategoryBoard());
 				if (defaultBoardDTO.getBoardName().equals(ITERATION)) {
 					iterationOrderSize.getAndIncrement();
 					boardKpis.setOrder(existingKPI.getOrder());
@@ -277,6 +278,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			} else {
 				boardKpis.setShown(defaultKPIList.isShown());
 				boardKpis.setIsEnabled(defaultKPIList.getIsEnabled());
+				boardKpis.setSubCategoryBoard(defaultKPIList.getSubCategoryBoard());
 				if (!defaultBoardDTO.getBoardName().equalsIgnoreCase(ITERATION)) {
 					boardKpis.setOrder(defaultKPIList.getOrder());
 				}
