@@ -11,10 +11,7 @@ export class StackedAreaChartComponent implements OnInit {
   elem;
   constructor(private viewContainerRef: ViewContainerRef) { }
 
-  ngOnInit(): void {
-    this.draw();
-    
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges) {
     // only run when property "data" changed

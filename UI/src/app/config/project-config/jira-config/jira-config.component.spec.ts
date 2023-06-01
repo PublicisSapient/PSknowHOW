@@ -801,4 +801,48 @@ describe('JiraConfigComponent', () => {
     expect(component.toolForm.get('metadataTemplateCode').disabled).toBeFalsy();
   })
 
+  it("should get api response for GitHub action tool",()=>{
+    component.selectedConnection =  { id: '5fc643cd11193836e6545560' };
+    component.initializeFields('GitHubAction');
+    const fakeResponse = {
+      "message": "FETCHED_SUCCESSFULLY",
+      "success": true,
+      "data": [
+          {
+              "workflowName": "fakeWorkflowName",
+              "workflowID": "8847411"
+          }
+      ]
+  }
+     spyOn(httpService,'getGitActionWorkFlowName').and.returnValue(of(fakeResponse))
+     component.getGitActionWorkflowName({target : {value : "fakeRepo"}},component);
+     expect(component.gitActionWorkflowNameList.length).toBeGreaterThan(0);
+  })
+
+  it("should get api response but workflow list come as blank for GitHub action tool",()=>{
+    component.selectedConnection =  { id: '5fc643cd11193836e6545560' };
+    component.initializeFields('GitHubAction');
+    const fakeResponse = {
+      "message": "FETCHED_SUCCESSFULLY",
+      "success": false,
+      "data": [
+          {
+              "workflowName": "fakeWorkflowName",
+              "workflowID": "8847411"
+          }
+      ]
+  }
+     spyOn(httpService,'getGitActionWorkFlowName').and.returnValue(of(fakeResponse))
+     component.getGitActionWorkflowName({target : {value : "fakeRepo"}},component);
+     expect(component.gitActionWorkflowNameList.length).toBe(0);
+  })
+
+  it("should not call workflow api if connection id or repo name is blank",()=>{
+     component.selectedConnection =  { id: '' };
+     component.initializeFields('GitHubAction');
+     const spy = spyOn(httpService,'getGitActionWorkFlowName');
+     component.getGitActionWorkflowName({target : {value : ""}},component);
+     expect(spy).not.toHaveBeenCalled();
+  })
+
 });

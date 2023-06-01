@@ -214,7 +214,7 @@ padding: 0.75rem !important;
 :host::ng-deep.kpi-table.p-datatable .p-datatable-thead > tr > th{
     top: 0;
     position: sticky;
-    z-index: 1;
+    /* z-index: 1; */ 
     padding: 0px;
     border: none;
 }
@@ -231,23 +231,12 @@ padding: 0.75rem !important;
     text-align: center !important;
 }
 
-:host::ng-deep.iteration-tabs .p-tabview-nav-link{
-    border: 1px solid #707070 !important;
-    border-radius: 5px !important;
-    padding: 10px !important;
-    margin: 10px !important;
-}
-:host::ng-deep.iteration-tabs .p-tabview .p-tabview-nav-container{
-    padding: 0;
-}
-:host::ng-deep.iteration-tabs li.p-highlight .p-tabview-nav-link{
-    color: #fff !important;
-    background: var(--color-cyan-blue) !important;
-}   
-:host::ng-deep.iteration-tabs .p-tabview .p-tabview-panels{
-    background: transparent;
-    padding: 0 ;
+::ng-deep .p-dialog-content{
+    overflow-y: hidden;
 }
 
-
-
+.min-max-width{
+    min-width:190px;
+    max-width: 190px;
+    word-break: break-word;
+}
