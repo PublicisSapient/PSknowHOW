@@ -3473,6 +3473,7 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiselectdropdown",
     "boxType": "chart",
+    "kpiWidth":100,
     "calculateMaturity": false
   },
   {
