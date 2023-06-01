@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.common.repository.application;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -26,7 +27,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.application.Build;
-import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 
 /**
  * Repository for {@link Build} data.
@@ -47,6 +47,7 @@ public interface BuildRepository
 	void deleteByProjectToolConfigId(ObjectId projectToolConfigId);
 
 	Build findByProjectToolConfigIdAndNumber(ObjectId projectToolConfigId, String number);
+	List<Build> findByProjectToolConfigIdAndNumberIn(ObjectId projectToolConfigId, Set<String> number);
 
 	Build findByNumberAndBuildJobAndBasicProjectConfigId(String number,String buildJob,ObjectId basicProjectConfigId);
 

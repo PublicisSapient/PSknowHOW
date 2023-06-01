@@ -77,6 +77,16 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String NIN = "nin";
 	private static final String JIRA_UPDATED_DATE = "updateDate";
 	private static final String RELEASE_VERSION = "releaseVersions.releaseName";
+	private static final String STATUS = "status";
+	private static final String RESOLUTION = "resolution";
+	private static final String PRIORITY = "priority";
+	private static final String PROJECT_NAME = "projectName";
+	private static final String DEFECT_RAISED_BY_QA = "defectRaisedByQA";
+	private static final String DEFECT_RAISED_BY = "defectRaisedBy";
+	private static final String ORIGINAL_ESTIMATE_MINUTES = "originalEstimateMinutes";
+	private static final String ESTIMATE = "estimate";
+	private static final String AGGREGATE_TIME_REMAINING_ESTIMATE_MINUTES = "aggregateTimeRemainingEstimateMinutes";
+	private static final String AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES = "aggregateTimeOriginalEstimateMinutes";
 
 	@Autowired
 	private MongoTemplate operations;
@@ -181,7 +191,24 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 			query = new Query(criteriaProjectLevelAdded);
 		}
-
+		query.fields().include(CONFIG_ID);
+		query.fields().include(NUMBER);
+		query.fields().include(STATUS);
+		query.fields().include(RESOLUTION);
+		query.fields().include(PROJECT_NAME);
+		query.fields().include(SPRINT_ID);
+		query.fields().include(SPRINT_NAME);
+		query.fields().include(STORY_POINTS);
+		query.fields().include(JIRA_ISSUE_STATUS);
+		query.fields().include(DEFECT_STORY_ID);
+		query.fields().include(ORIGINAL_ESTIMATE_MINUTES);
+		query.fields().include(ESTIMATE);
+		query.fields().include(URL);
+		query.fields().include(NAME);
+		query.fields().include(TYPE_NAME);
+		query.fields().include(PRIORITY);
+		query.fields().include(AGGREGATE_TIME_REMAINING_ESTIMATE_MINUTES);
+		query.fields().include(AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -243,6 +270,17 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria);
 
 		Query query = new Query(criteriaProjectLevelAdded);
+		query.fields().include(CONFIG_ID);
+		query.fields().include(NUMBER);
+		query.fields().include(STATUS);
+		query.fields().include(RESOLUTION);
+		query.fields().include(PRIORITY);
+		query.fields().include(ROOT_CAUSE);
+		query.fields().include(DEFECT_STORY_ID);
+		query.fields().include(STORY_POINTS);
+		query.fields().include(DEFECT_RAISED_BY_QA);
+		query.fields().include(DEFECT_RAISED_BY);
+		query.fields().include(JIRA_ISSUE_STATUS);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -357,6 +395,12 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		criteria = criteria.and(ROOT_CAUSE).exists(Boolean.TRUE);
 
 		Query query = new Query(criteria);
+		query.fields().include(CONFIG_ID);
+		query.fields().include(STATUS);
+		query.fields().include(RESOLUTION);
+		query.fields().include(NUMBER);
+		query.fields().include(DEFECT_STORY_ID);
+		query.fields().include(ROOT_CAUSE);
 
 		return operations.find(query, JiraIssue.class);
 
@@ -402,8 +446,17 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		Criteria criteria = new Criteria();
 		criteria.and(TYPE_NAME).is(typeName).and(DEFECT_STORY_ID).in(defectStoryIds);
+		Query query = new Query(criteria);
+		query.fields().include(CONFIG_ID);
+		query.fields().include(STATUS);
+		query.fields().include(RESOLUTION);
+		query.fields().include(PROJECT_NAME);
+		query.fields().include(PRIORITY);
+		query.fields().include(ROOT_CAUSE);
+		query.fields().include(NUMBER);
+		query.fields().include(DEFECT_STORY_ID);
 
-		return operations.find(new Query(criteria), JiraIssue.class);
+		return operations.find(query, JiraIssue.class);
 	}
 
 	@Override

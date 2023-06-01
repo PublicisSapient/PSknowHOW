@@ -274,6 +274,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
+		getModifiedSprintDetailsFromBaseClass(sprintDetails,configHelperService);
 		Set<String> totalIssue = new HashSet<>();
 		sprintDetails.stream().forEach(sprintDetail -> {
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {

@@ -35,7 +35,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -454,6 +457,14 @@ public class KPIExcelUtility {
 			IssueDetails issueDetails = (IssueDetails) object;
 			url = StringUtils.isEmpty(issueDetails.getUrl()) ? Constant.EMPTY_STRING : issueDetails.getUrl();
 		}
+		if(object instanceof IssueBacklog){
+			IssueBacklog issueBacklog = (IssueBacklog) object;
+			url = StringUtils.isEmpty(issueBacklog.getUrl()) ? Constant.EMPTY_STRING : issueBacklog.getUrl();
+		}
+		if(object instanceof IssueBacklogCustomHistory){
+			IssueBacklogCustomHistory issueBacklogCustomHistory = (IssueBacklogCustomHistory) object;
+			url = StringUtils.isEmpty(issueBacklogCustomHistory.getUrl()) ? Constant.EMPTY_STRING : issueBacklogCustomHistory.getUrl();
+		}
 
 		return url;
 
@@ -846,7 +857,7 @@ public class KPIExcelUtility {
 
 	}
 
-	public static void populateDefectWithoutIssueLinkExcelData(List<JiraIssue> defectWithoutStory,
+	public static void populateDefectWithoutIssueLinkExcelData(List<IssueBacklog> defectWithoutStory,
 			List<KPIExcelData> kpiExcelData, String sprintName) {
 		if (CollectionUtils.isNotEmpty(defectWithoutStory)) {
 			defectWithoutStory.forEach(defect -> {
@@ -992,7 +1003,7 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateProductionDefectAgingExcelData(String projectName, List<JiraIssue> defectList,
+	public static void populateProductionDefectAgingExcelData(String projectName, List<IssueBacklog> defectList,
 			List<KPIExcelData> kpiExcelData) {
 		if (CollectionUtils.isNotEmpty(defectList)) {
 			defectList.forEach(defect -> {
@@ -1316,7 +1327,7 @@ public class KPIExcelUtility {
 	 * @param jiraDateMap
 	 */
 	public static void populateRefinementRejectionExcelData(List<KPIExcelData> excelDataList,
-															List<JiraIssue> issuesExcel, Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, Map<String, LocalDateTime> jiraDateMap) {
+															List<IssueBacklog> issuesExcel, Map<String, Map<String, List<IssueBacklog>>> weekAndTypeMap, Map<String, LocalDateTime> jiraDateMap) {
 
 		if (CollectionUtils.isNotEmpty(issuesExcel)) {
 			issuesExcel.forEach(e -> {
@@ -1346,11 +1357,11 @@ public class KPIExcelUtility {
 	 * @param weekAndTypeMap
 	 * @param e
 	 */
-	private static HashMap<String,String> getStatusNameAndWeekName(Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e) {
+	private static HashMap<String,String> getStatusNameAndWeekName(Map<String, Map<String, List<IssueBacklog>>> weekAndTypeMap, IssueBacklog e) {
 		HashMap<String,String> data = new HashMap<>();
 		for (String week : weekAndTypeMap.keySet()) {
 			for (String type : weekAndTypeMap.get(week).keySet()) {
-				for (JiraIssue issue : weekAndTypeMap.get(week).get(type)) {
+				for (IssueBacklog issue : weekAndTypeMap.get(week).get(type)) {
 					if (issue.getNumber().equalsIgnoreCase(e.getNumber())) {
 						data.put(STATUS,type);
 						data.put(WEEK,week);

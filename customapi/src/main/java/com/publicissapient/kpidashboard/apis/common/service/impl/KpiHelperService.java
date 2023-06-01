@@ -36,7 +36,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +47,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -144,6 +148,9 @@ public class KpiHelperService { // NOPMD
 	@Autowired
 	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
 
+	@Autowired
+	JiraServiceR jiraKPIService;
+
 	/**
 	 * Prepares Kpi Elemnts on the basis of kpi master data.
 	 *
@@ -219,9 +226,9 @@ public class KpiHelperService { // NOPMD
 				daysDifference = duration.getStandardDays();
 			}
 		} else {
-			DateTime firstDate = new DateTime(jiraIssueCustomHistory.getCreatedDate(), DateTimeZone.UTC);
-			DateTime secondDate = new DateTime(
-					jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn().toString(), DateTimeZone.UTC);
+			DateTime firstDate = new DateTime(jiraIssueCustomHistory.getCreatedDate().toString(), DateTimeZone.UTC);
+			DateTime secondDate = new DateTime(jiraIssueCustomHistory.getStatusUpdationLog().get(0).getUpdatedOn().toString(),
+					DateTimeZone.UTC);
 			Duration duration = new Duration(firstDate, secondDate);
 			daysDifference = duration.getStandardDays();
 		}
@@ -461,6 +468,7 @@ public class KpiHelperService { // NOPMD
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
+		jiraKPIService.processSprintBasedOnFieldMapping(sprintDetails,configHelperService);
 
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
@@ -1384,39 +1392,85 @@ public class KpiHelperService { // NOPMD
 	public void removeStoriesWithReturnTransaction(List<JiraIssue> firstTimePassStories,
 														  List<JiraIssueCustomHistory> storiesHistory) {
 
-		firstTimePassStories.removeIf(issue -> hasReturnTransaction(issue, storiesHistory));
+		firstTimePassStories.removeIf(issue -> hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory));
 
 	}
 
-	private boolean hasReturnTransaction(JiraIssue issue, List<JiraIssueCustomHistory> storiesHistory) {
+	private boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue, List<JiraIssueCustomHistory> storiesHistory) {
 		JiraIssueCustomHistory jiraIssueCustomHistory = storiesHistory.stream()
 				.filter(issueHistory -> issueHistory.getStoryID().equals(issue.getNumber())).findFirst().orElse(null);
 		if (jiraIssueCustomHistory == null) {
 			return false;
 		} else {
-
 			List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistory.getStatusUpdationLog();
-			Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
-
-			JiraHistoryChangeLog latestClosedStatusDetail = statusUpdationLog.stream()
-					.filter(statusHistory -> statusHistory.getChangedTo().equals(issue.getJiraStatus())).findFirst()
-					.orElse(null);
-
-			if (latestClosedStatusDetail != null) {
-				Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
-				FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
-				List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
-						.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
-				DateTime latestClosedStatusTime = DateTime.parse(latestClosedStatusDetail.getUpdatedOn().toString());
-				return statusUpdationLog.stream()
-						.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString())
-								.isAfter(latestClosedStatusTime))
-						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getChangedTo()));
+			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
+			FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraFtprRejectStatus())) {
+				//if rejected field is mentioned then we will not calculate return transactions
+				return CollectionUtils.isNotEmpty(statusUpdationLog.stream().filter(
+						statusHistory -> fieldMapping.getJiraFtprRejectStatus().contains(statusHistory.getChangedTo()))
+						.collect(Collectors.toList()));
+			} else {
+				Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
+				//if after qa field we get some status which signifies statusfor development then we will consider that as return transaction
+				List<String> jiraStatusForQa = (List<String>) CollectionUtils
+						.emptyIfNull(fieldMapping.getJiraStatusForQa());
+				JiraHistoryChangeLog latestQAField = statusUpdationLog.stream()
+						.filter(statusHistory -> jiraStatusForQa.contains(statusHistory.getChangedTo())).findFirst()
+						.orElse(null);
+				if (latestQAField != null) {
+					List<String> jiraStatusForDevelopemnt = (List<String>) CollectionUtils
+							.emptyIfNull(fieldMapping.getJiraStatusForDevelopment());
+					DateTime latestQAFieldActivityDate = DateTime
+							.parse(latestQAField.getUpdatedOn().toString());
+					return statusUpdationLog.stream()
+							.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString())
+									.isAfter(latestQAFieldActivityDate))
+							.anyMatch(statusHistory -> jiraStatusForDevelopemnt.contains(statusHistory.getChangedTo()));
+				}
 			}
 			return false;
 		}
-
 	}
 
 
+	public List<JiraIssue> convertBacklogToJiraIssue(List<IssueBacklog> issueBacklogList)
+	{
+		List<JiraIssue> jiraIssues = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		issueBacklogList.forEach(issueBacklog ->
+			jiraIssues.add(mapper.map(issueBacklog, JiraIssue.class))
+		);
+		return jiraIssues;
+	}
+
+	public List<IssueBacklog> convertJiraIssueToBacklog(List<JiraIssue> jiraIssueList)
+	{
+		List<IssueBacklog> issueBacklogs = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		jiraIssueList.forEach(jiraIssue ->
+			issueBacklogs.add(mapper.map(jiraIssue, IssueBacklog.class))
+		);
+		return issueBacklogs;
+	}
+
+	public List<JiraIssueCustomHistory> convertBacklogHistoryToJiraHistory(
+			List<IssueBacklogCustomHistory> issueBacklogCustomHistories) {
+		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		issueBacklogCustomHistories.forEach(issueHistory->
+			jiraIssueCustomHistoryList.add(mapper.map(issueHistory, JiraIssueCustomHistory.class))
+		);
+		return jiraIssueCustomHistoryList;
+	}
+
+	public List<IssueBacklogCustomHistory> convertJiraHistoryToBacklogHistory(
+			List<JiraIssueCustomHistory> jiraIssueCustomHistories) {
+		List<IssueBacklogCustomHistory> issueBacklogCustomHistoryList = new ArrayList<>();
+		ModelMapper mapper = new ModelMapper();
+		jiraIssueCustomHistories.forEach(jiraIssueCustomHistory->
+				issueBacklogCustomHistoryList.add(mapper.map(jiraIssueCustomHistory, IssueBacklogCustomHistory.class))
+		);
+		return issueBacklogCustomHistoryList;
+	}
 }

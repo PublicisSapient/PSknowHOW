@@ -78,6 +78,8 @@ public class Connection extends BasicModel{
 	private String jaasUser;
 	private String userPrincipal;
 	private String samlEndPoint;
+	private String repoOwnerName;
+	private String repositoryName;
 
 	public void setIsOAuth(boolean isOAuth) {
 		this.isOAuth = isOAuth;
