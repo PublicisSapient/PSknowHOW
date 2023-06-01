@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -48,6 +49,7 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 	 * @param storyList the story list
 	 * @return the list
 	 */
+	@Query(value = "{ 'storyID' : { $in: ?0 } }", fields = "{ 'storyID' : 1, 'storySprintDetails' : 1}")
 	List<JiraIssueCustomHistory> findByStoryIDIn(List<String> storyList);
 
 	/**

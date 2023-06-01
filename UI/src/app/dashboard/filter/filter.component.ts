@@ -84,6 +84,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedDateFilter = '';
   beginningDate;
   selectedProjectLastSyncDate: any;
+  selectedProjectLastSyncDetails: any;
+  selectedProjectLastSyncStatus: any;
   processorsTracelogs = [];
   processorName = 'jira';
   heirarchyCount: number;
@@ -297,7 +299,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
-    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release'){
+    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'mydashboard'){
       this.allowMultipleSelection = false;
     }else{
       this.allowMultipleSelection = true;
@@ -635,6 +637,18 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
       this.selectedTab = boardDetails?.boardName;
         this.router.navigateByUrl(`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`);
+    }
+  }
+
+  navigateToHomePage(){
+    const previousSelectedTab = this.router.url.split('/')[2];
+    if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
+      this.kanban = false;
+      this.selectedTab = 'iteration';
+      this.service.setEmptyFilter();
+      this.service.setSelectedType('scrum');
+      this.projectIndex = 0;
+      this.router.navigateByUrl(`/dashboard/iteration`);
     }
   }
 
@@ -1074,7 +1088,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (selectedField) {
         const obj = this.filteredAddFilters[filteredAddFiltersKey]?.filter((x) => x['nodeId'] == selectedField)[0];
         
-        if((obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
+        if(obj && (obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
           return dateString;
         }
 
@@ -1140,7 +1154,19 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   showExecutionDate() {
-    this.selectedProjectLastSyncDate = this.findTraceLogForTool();
+    this.selectedProjectLastSyncDetails = this.findTraceLogForTool();
+    if(this.selectedProjectLastSyncDetails != undefined && this.selectedProjectLastSyncDetails != null){
+      if(this.selectedProjectLastSyncDetails.executionSuccess){
+        this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
+        this.selectedProjectLastSyncStatus = "SUCCESS";
+      }else{
+        this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
+        this.selectedProjectLastSyncStatus = "FAILURE";
+      }
+    }else{
+      this.selectedProjectLastSyncStatus = "";
+      this.selectedProjectLastSyncDate = "NA"
+   }
   }
   setSelectedDateType(label: string) {
     this.selectedDayType = label;

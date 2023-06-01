@@ -60,6 +60,7 @@ import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
@@ -98,6 +99,8 @@ public class SprintVelocityServiceImplTest {
 	KpiHelperService kpiHelperService;
 	@Mock
 	ConfigHelperService configHelperService;
+	@Mock
+	SprintVelocityServiceHelper velocityHelper;
 	@InjectMocks
 	SprintVelocityServiceImpl sprintVelocityServiceImpl;
 	@Mock

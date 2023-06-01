@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -126,6 +127,9 @@ public class KpiHelperServiceTest {
 
 	@Mock
 	private SprintRepository sprintRepository;
+
+	@Mock
+	private JiraServiceR jiraKPIService;
 
 	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
 

@@ -1485,4 +1485,34 @@ describe('FilterComponent', () => {
     expect(spyFunct).toHaveBeenCalled();
   })
 
+  it('should get date and status of jira processor when status is success',()=>{
+    let fakeTraceLog = {
+           "id": "6458fcffc5ef9b0a35606e16",
+            "processorName": "Jira",
+            "basicProjectConfigId": "6458c6685decd920d5eb2edd",
+            "executionStartedAt": 1683552962413,
+            "executionEndedAt": 1683590549223,
+            "executionSuccess": true,
+            "lastSuccessfulRun": "2023-05-09 00:02",
+    }
+    spyOn(component,'findTraceLogForTool').and.returnValue(fakeTraceLog)
+    component.showExecutionDate();
+    expect(component.selectedProjectLastSyncStatus).toBe('SUCCESS');
+  })
+
+  it('should get date and status of jira processor when status is false',()=>{
+    let fakeTraceLog = {
+           "id": "6458fcffc5ef9b0a35606e16",
+            "processorName": "Jira",
+            "basicProjectConfigId": "6458c6685decd920d5eb2edd",
+            "executionStartedAt": 1683552962413,
+            "executionEndedAt": 1683590549223,
+            "executionSuccess": false,
+            "lastSuccessfulRun": "2023-05-09 00:02",
+    }
+    spyOn(component,'findTraceLogForTool').and.returnValue(fakeTraceLog)
+    component.showExecutionDate();
+    expect(component.selectedProjectLastSyncStatus).toBe("FAILURE");
+  })
+
 });

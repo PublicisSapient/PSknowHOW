@@ -1,20 +1,20 @@
-/*******************************************************************************
-* Copyright 2014 CapitalOne, LLC.
-* Further development Copyright 2022 Sapient Corporation.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ /*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
@@ -30,6 +30,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -96,9 +106,11 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	private SprintRepository sprintRepository;
 	@Autowired
 	private SprintVelocityServiceHelper velocityHelper;
-	
+
 	@Value("${sprint.velocity.limit}")
 	private int sprintVelocityLimit;
+	@Autowired
+	private SprintVelocityServiceHelper velocityServiceHelper;
 
 	/**
 	 * Gets Qualifier Type
@@ -239,7 +251,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		Map<Pair<String, String>, List<JiraIssue>> oldSprintWiseIssues = new HashMap<>();
 		List<SprintDetails> oldSprintDetails = (List<SprintDetails>) sprintVelocityStoryMap
 				.get(PREVIOUS_SPRINT_WISE_DETAILS);
-		
+
 		if (CollectionUtils.isNotEmpty(oldSprintDetails)) {
 			Collections.sort(oldSprintDetails, Comparator.comparing(SprintDetails::getStartDate));
 			List<JiraIssue> oldAllJiraIssue = (List<JiraIssue>) sprintVelocityStoryMap.get(PREVIOUS_SPRINT_VELOCITY);
@@ -304,7 +316,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 
 	/**
 	 * Create map consisting of sprint and its velocity
-	 * 
+	 *
 	 * @param sprintWiseIssues
 	 * @param currentSprintLeafVelocityMap
 	 * @param oldSprintDetails
@@ -332,9 +344,9 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 
 	/**
 	 * Get average velocity of 5 sprints
-	 * 
+	 *
 	 * @param sprintVelocityMap
-	 * @param 
+	 * @param
 	 * @param basicProjId
 	 * @return
 	 */
