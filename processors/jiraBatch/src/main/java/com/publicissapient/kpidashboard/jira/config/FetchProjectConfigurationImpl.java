@@ -33,13 +33,13 @@ import lombok.extern.slf4j.Slf4j;
 public class FetchProjectConfigurationImpl implements FetchProjectConfiguration {
 
 	@Autowired
-	private ProjectBasicConfigRepository projectConfigRepository;
-
-	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
+	
+	@Autowired
+	private ProjectBasicConfigRepository projectConfigRepository;
 
 	@Autowired
 	private ConnectionRepository connectionRepository;

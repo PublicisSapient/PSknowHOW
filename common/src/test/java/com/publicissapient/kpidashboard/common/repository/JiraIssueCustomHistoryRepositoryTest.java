@@ -252,7 +252,6 @@ public class JiraIssueCustomHistoryRepositoryTest {
 		rt.setProjectID(projectID);
 		rt.setStoryID(storyID);
 		rt.setStoryType(storyType);
-		rt.setStorySprintDetails(storySprintDetails);
 		return rt;
 	}
 
