@@ -54,23 +54,14 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
     private AdditionalFilterHelper additionalFilterHelper;
 
     @Autowired
-    private CreateAccountHierarchy createAccountHierarchy;
+    private CreateJiraIssueHistory createJiraIssueHistory;
 
     @Autowired
-    private FetchSprintReportImpl fetchSprintReport;
-
-    @Autowired
-    private CreateJiraIssueHistoryImpl createJiraIssueHistory;
-
-    @Autowired
-    private SaveData saveData;
-
-    @Autowired
-    private CreateAssigneeDetails createAssigneeDetails;
+    private CreateIssueBacklog createIssueBacklog;
 
     @Override
     public List<JiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
-                                              boolean dataFromBoard, List<JiraIssueCustomHistory> jiraIssueHistoryToSave, Set<SprintDetails> sprintDetailsSet,Set<Assignee> assigneeSetToSave) throws JSONException, InterruptedException {
+                                              boolean dataFromBoard, List<JiraIssueCustomHistory> jiraIssueHistoryToSave, Set<SprintDetails> sprintDetailsSet, Set<Assignee> assigneeSetToSave, List<JiraIssue> jiraIssuesToDelete, List<JiraIssueCustomHistory> jiraIssueHistoryToDelete, List<IssueBacklog> issueBacklogToSave, List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToSave, List<IssueBacklog> issueBacklogToDelete, List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToDelete) throws JSONException, InterruptedException {
 
         List<JiraIssue> jiraIssuesToSave=new ArrayList<>();
 
@@ -133,7 +124,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
                     setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave,projectConfig);
                     setEstimates(jiraIssue, issue);
                     setDueDates(jiraIssue, issue,fields,fieldMapping);
-//                    JiraIssueCustomHistory jiraIssueCustomHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig,issueId,jiraIssue,issue,fieldMapping,fields);
+//                    JiraIssueCustomHistory jiraIssueCustomHistory=createJiraIssueHistory.createIssueCustomHistory(projectConfig,issueId,jiraIssue,issue,fieldMapping,fields)
                     if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
                         jiraIssuesToSave.add(jiraIssue);
 //                        jiraIssueHistoryToSave.add(jiraIssueCustomHistory);
@@ -201,10 +192,10 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
 
     private void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig, List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
         if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
-            List<String> ownerName = assigneeName.stream().map(i->hash(i))
+            List<String> ownerName = assigneeName.stream().map(TransformFetchedIssueToJiraIssueImpl::hash)
                     .collect(Collectors.toList());
-            List<String> ownerId = assigneeKey.stream().map(i->hash(i)).collect(Collectors.toList());
-            List<String> ownerFullName = assigneeDisplayName.stream().map(i->hash(i))
+            List<String> ownerId = assigneeKey.stream().map(TransformFetchedIssueToJiraIssueImpl::hash).collect(Collectors.toList());
+            List<String> ownerFullName = assigneeDisplayName.stream().map(TransformFetchedIssueToJiraIssueImpl::hash)
                     .collect(Collectors.toList());
             jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
             jiraIssue.setAssigneeName(hash(jiraIssue.getAssigneeId() + jiraIssue.getAssigneeName()));

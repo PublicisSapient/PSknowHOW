@@ -11,6 +11,7 @@ import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
@@ -74,8 +75,6 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 public class JiraCommonService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JiraCommonService.class);
-
-    String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
     private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
     private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
@@ -485,7 +484,7 @@ public class JiraCommonService {
             projectTraceLog = traceLogs.get(0);
         }
         LocalDateTime configuredStartDate = LocalDateTime.parse(jiraProcessorConfig.getStartDate(),
-                DateTimeFormatter.ofPattern(QUERYDATEFORMAT));
+                DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
 
         for (String issueType : uniqueIssueTypes) {
 
@@ -603,8 +602,8 @@ public class JiraCommonService {
                 boolean hasMore = true;
                 for (int i = 0; hasMore; i += pageSize) {
 
-                    SearchResult searchResult = getIssues(board, projectConfig, queryDate,
-                            userTimeZone, i, dataExist);
+                    SearchResult searchResult = getIssues(board, queryDate,
+                            userTimeZone, i);
                     List<Issue> issues = JiraHelper.getIssuesFromResult(searchResult);
                     totalIssues.addAll(issues);
                     if (boardTotal == 0) {
@@ -656,9 +655,9 @@ public class JiraCommonService {
         return totalIssues;
     }
 
-    public SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig,
-                                  String startDateTimeByIssueType, String userTimeZone, int pageStart,
-                                  boolean dataExist) throws InterruptedException{
+    public SearchResult getIssues(BoardDetails boardDetails,
+                                  String startDateTimeByIssueType, String userTimeZone, int pageStart
+                                 ) throws InterruptedException{
         SearchResult searchResult = null;
 
         if (client == null) {
@@ -697,6 +696,83 @@ public class JiraCommonService {
         }
 
         return searchResult;
+    }
+
+    public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {
+        List<ProjectVersion> projectVersionList = new ArrayList<>();
+        PSLogData versionLog = new PSLogData();
+        versionLog.setAction(CommonConstant.RELEASE_DATA);
+        try {
+            JiraToolConfig jiraToolConfig = projectConfig.getJira();
+            if (null != jiraToolConfig) {
+                versionLog.setProjectKey(jiraToolConfig.getProjectKey());
+                Instant start = Instant.now();
+                URL url = getVersionUrl(projectConfig);
+                versionLog.setUrl(url.toString());
+                parseVersionData(getDataFromClient(projectConfig, url, krb5Client ), projectVersionList);
+                versionLog.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
+            }
+        } catch (RestClientException rce) {
+            log.error("Client exception when fetching versions " + rce, kv(CommonConstant.PSLOGDATA, versionLog));
+        } catch (MalformedURLException mfe) {
+            log.error("Malformed url for fetching versions", mfe, kv(CommonConstant.PSLOGDATA, versionLog));
+        } catch (IOException ioe) {
+            log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, versionLog));
+        }
+        return projectVersionList;
+    }
+
+    private URL getVersionUrl(ProjectConfFieldMapping projectConfig)
+            throws MalformedURLException {
+
+        Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+        boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
+        String serverURL = jiraProcessorConfig.getJiraVersionApi();
+        if (isCloudEnv) {
+            serverURL = jiraProcessorConfig.getJiraCloudVersionApi();
+        }
+        serverURL = serverURL.replace("{projectKey}", projectConfig.getJira().getProjectKey());
+        String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+        return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
+
+    }
+
+    private void parseVersionData(String dataFromServer, List<ProjectVersion> projectVersionDetailList) {
+        if (StringUtils.isNotBlank(dataFromServer)) {
+            try {
+                JSONArray obj = (JSONArray) new JSONParser().parse(dataFromServer);
+                if (null != obj) {
+                    ((JSONArray) new JSONParser().parse(dataFromServer)).forEach(values -> {
+                        ProjectVersion projectVersion = new ProjectVersion();
+                        projectVersion.setId(
+                                Long.valueOf(Objects.requireNonNull(getOptionalString((JSONObject) values, "id"))));
+                        projectVersion.setName(getOptionalString((JSONObject) values, "name"));
+                        projectVersion
+                                .setArchived(Boolean.parseBoolean(getOptionalString((JSONObject) values, "archived")));
+                        projectVersion
+                                .setReleased(Boolean.parseBoolean(getOptionalString((JSONObject) values, "released")));
+                        if (getOptionalString((JSONObject) values, "startDate") != null) {
+                            projectVersion.setStartDate(DateUtil.stringToDateTime(Objects.requireNonNull(getOptionalString((JSONObject) values, "startDate")),"yyyy-MM-dd"));
+                        }
+                        if (getOptionalString((JSONObject) values, "releaseDate") != null) {
+                            projectVersion.setReleaseDate(DateUtil.stringToDateTime(Objects.requireNonNull(getOptionalString((JSONObject) values, "releaseDate")),"yyyy-MM-dd"));
+                        }
+                        projectVersionDetailList.add(projectVersion);
+                    });
+                }
+            } catch (Exception pe) {
+                log.error("Parser exception when parsing versions", pe);
+            }
+
+        }
+    }
+
+    private String getOptionalString(final JSONObject jsonObject, final String attributeName) {
+        final Object res = jsonObject.get(attributeName);
+        if (res == null) {
+            return null;
+        }
+        return res.toString();
     }
 }
 
