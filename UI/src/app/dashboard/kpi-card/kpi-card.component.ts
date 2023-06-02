@@ -33,12 +33,12 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   @Input() trendValueList : any
   @Input() colors : Array<any>;
   selectedTabIndex : number = 0;
-  @Input() sprintsOverlayVisible : boolean = false;
+  @Input() sprintsOverlayVisible : boolean;
   projectList : Array<string>;
   displaySprintDetailsModal : boolean = false;
   columnList = [
-    { field: 'duration', header: 'Duration' },
-    { field: 'value', header: 'Kpi Value (Units)' },
+    { field: 'duration', header: 'Duration'  },
+    { field: 'value', header: 'Kpi Value (Units)', unit : 'unit' },
     { field: 'params', header: 'Parameters' },
  ];
  sprintDetailsList : Array<any>;
@@ -152,7 +152,8 @@ export class KpiCardComponent implements OnInit, OnDestroy {
         selectedProjectTrend.value.forEach(element => {
           let tempObj = {};
           tempObj['duration'] = element['sSprintName'] || element['date'];
-          tempObj['value'] = (Math.round(element['value'] * 100) / 100) + ' ' + this.kpiData.kpiDetail?.kpiUnit
+          tempObj['value'] = (Math.round(element['value'] * 100) / 100);
+          tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
           if (element['hoverValue'] && Object.keys(element['hoverValue'])?.length > 0) {
             tempObj['params'] = Object.entries(element['hoverValue']).map(([key, value]) => `${key} : ${value}`).join('<br />');
           }

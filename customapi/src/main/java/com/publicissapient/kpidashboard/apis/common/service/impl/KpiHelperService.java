@@ -1392,38 +1392,45 @@ public class KpiHelperService { // NOPMD
 	public void removeStoriesWithReturnTransaction(List<JiraIssue> firstTimePassStories,
 														  List<JiraIssueCustomHistory> storiesHistory) {
 
-		firstTimePassStories.removeIf(issue -> hasReturnTransaction(issue, storiesHistory));
+		firstTimePassStories.removeIf(issue -> hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory));
 
 	}
 
-	private boolean hasReturnTransaction(JiraIssue issue, List<JiraIssueCustomHistory> storiesHistory) {
+	private boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue, List<JiraIssueCustomHistory> storiesHistory) {
 		JiraIssueCustomHistory jiraIssueCustomHistory = storiesHistory.stream()
 				.filter(issueHistory -> issueHistory.getStoryID().equals(issue.getNumber())).findFirst().orElse(null);
 		if (jiraIssueCustomHistory == null) {
 			return false;
 		} else {
-
 			List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistory.getStatusUpdationLog();
-			Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
-
-			JiraHistoryChangeLog latestClosedStatusDetail = statusUpdationLog.stream()
-					.filter(statusHistory -> statusHistory.getChangedTo().equals(issue.getJiraStatus())).findFirst()
-					.orElse(null);
-
-			if (latestClosedStatusDetail != null) {
-				Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
-				FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
-				List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
-						.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
-				DateTime latestClosedStatusTime = DateTime.parse(latestClosedStatusDetail.getUpdatedOn().toString());
-				return statusUpdationLog.stream()
-						.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString())
-								.isAfter(latestClosedStatusTime))
-						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getChangedTo()));
+			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
+			FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraFtprRejectStatus())) {
+				//if rejected field is mentioned then we will not calculate return transactions
+				return CollectionUtils.isNotEmpty(statusUpdationLog.stream().filter(
+						statusHistory -> fieldMapping.getJiraFtprRejectStatus().contains(statusHistory.getChangedTo()))
+						.collect(Collectors.toList()));
+			} else {
+				Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
+				//if after qa field we get some status which signifies statusfor development then we will consider that as return transaction
+				List<String> jiraStatusForQa = (List<String>) CollectionUtils
+						.emptyIfNull(fieldMapping.getJiraStatusForQa());
+				JiraHistoryChangeLog latestQAField = statusUpdationLog.stream()
+						.filter(statusHistory -> jiraStatusForQa.contains(statusHistory.getChangedTo())).findFirst()
+						.orElse(null);
+				if (latestQAField != null) {
+					List<String> jiraStatusForDevelopemnt = (List<String>) CollectionUtils
+							.emptyIfNull(fieldMapping.getJiraStatusForDevelopment());
+					DateTime latestQAFieldActivityDate = DateTime
+							.parse(latestQAField.getUpdatedOn().toString());
+					return statusUpdationLog.stream()
+							.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString())
+									.isAfter(latestQAFieldActivityDate))
+							.anyMatch(statusHistory -> jiraStatusForDevelopemnt.contains(statusHistory.getChangedTo()));
+				}
 			}
 			return false;
 		}
-
 	}
 
 
@@ -1446,7 +1453,7 @@ public class KpiHelperService { // NOPMD
 		);
 		return issueBacklogs;
 	}
-	
+
 	public List<JiraIssueCustomHistory> convertBacklogHistoryToJiraHistory(
 			List<IssueBacklogCustomHistory> issueBacklogCustomHistories) {
 		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
