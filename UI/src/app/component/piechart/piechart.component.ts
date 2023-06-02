@@ -40,7 +40,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
 
   svg: any;
   margin = 50;
-  width = 480;
+  width = 482;
   height = 298;
   // The radius of the pie chart is half the smallest side
   radius = this.height / 2 - this.margin;
@@ -91,6 +91,13 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       }
       )
     }
+    this.pieChartValuesArray.sort((a, b) => {
+      if (a.value === b.value) {
+        return a.title.localeCompare(b.title);
+      } else {
+        return b.value - a.value;
+      }
+    });
     const svg = d3
       .select(this.elem)
       .select('#pie')
@@ -119,7 +126,7 @@ export class PiechartComponent implements OnChanges, OnDestroy {
       .style('stroke-width', '1px');
 
     const foreignObject = svg.append("foreignObject")
-      .attr("width", 220)
+      .attr("width", 222)
       .attr("height", this.height - (2 * this.margin))
       .style('overflow-y', 'auto')
       .attr("transform", `translate(140,${-(this.height / 2 - this.margin)})`)

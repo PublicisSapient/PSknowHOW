@@ -98,6 +98,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDefectCountlIssueType;
 
 	private List<String> jiraIssueDeliverdStatus;
+	private String readyForDevelopmentStatus;
 
 	private String jiraDor;
 
@@ -209,6 +210,10 @@ public class FieldMapping extends BasicModel {
 
 	// For DTS_21154 - field for Stakeholder refinement status
 	private List<String> jiraReadyForRefinement;
+	private List<String> jiraFtprRejectStatus;
+
+	private List<String> jiraIterationCompletionStatusCustomField;
+	private List<String> jiraIterationCompletionTypeCustomField;
 
 	/**
 	 * Get jira issue type names string [ ].

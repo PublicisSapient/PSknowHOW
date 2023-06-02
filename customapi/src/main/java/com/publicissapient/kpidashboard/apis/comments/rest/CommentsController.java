@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.apis.comments.rest;
 
 import com.publicissapient.kpidashboard.apis.comments.service.CommentsService;
+import com.publicissapient.kpidashboard.common.model.comments.CommentRequestDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -29,17 +30,14 @@ public class CommentsController {
 	/**
 	 * This method will get the comments data based on the selected project from the organization level. This feature will work for both, Scrum and Kanban KPIs.
 	 *
-	 * @param node
-	 * @param level
-	 * @param sprintId
-	 * @param kpiId
+	 * @param commentRequestDTO
 	 * @return
 	 */
-	@GetMapping("/getCommentsByKpiId")
-	public ResponseEntity<ServiceResponse> getCommentsByKPI(@RequestParam String node, String level, String sprintId,
-			String kpiId) {
+	@PostMapping("/getCommentsByKpiId")
+	public ResponseEntity<ServiceResponse> getCommentsByKPI(@RequestBody CommentRequestDTO commentRequestDTO) {
 
-		final Map<String, Object> mappedCommentInfo = commentsService.findCommentByKPIId(node, level, sprintId, kpiId);
+		final Map<String, Object> mappedCommentInfo = commentsService.findCommentByKPIId(commentRequestDTO.getNode(),
+				commentRequestDTO.getLevel(), commentRequestDTO.getSprintId(), commentRequestDTO.getKpiId());
 		if (MapUtils.isEmpty(mappedCommentInfo)) {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(false, "Comment not found", mappedCommentInfo));

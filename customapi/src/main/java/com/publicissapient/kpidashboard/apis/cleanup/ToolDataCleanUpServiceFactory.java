@@ -86,6 +86,7 @@ public class ToolDataCleanUpServiceFactory {
 		case ProcessorConstants.JENKINS:
 		case ProcessorConstants.TEAMCITY:
 		case ProcessorConstants.AZUREPIPELINE:
+		case ProcessorConstants.GITHUBACTION:
 			toolCategory = ProcessorType.BUILD.toString();
 			break;
 		case ProcessorConstants.BITBUCKET:

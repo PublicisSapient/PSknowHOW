@@ -84,6 +84,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedDateFilter = '';
   beginningDate;
   selectedProjectLastSyncDate: any;
+  selectedProjectLastSyncDetails: any;
+  selectedProjectLastSyncStatus: any;
   processorsTracelogs = [];
   processorName = 'jira';
   heirarchyCount: number;
@@ -638,6 +640,18 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
+  navigateToHomePage(){
+    const previousSelectedTab = this.router.url.split('/')[2];
+    if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
+      this.kanban = false;
+      this.selectedTab = 'iteration';
+      this.service.setEmptyFilter();
+      this.service.setSelectedType('scrum');
+      this.projectIndex = 0;
+      this.router.navigateByUrl(`/dashboard/iteration`);
+    }
+  }
+
   /** get kpi ordered list starts */
   get kpiFormValue() {
     return this.kpiForm.controls;
@@ -1140,7 +1154,19 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   showExecutionDate() {
-    this.selectedProjectLastSyncDate = this.findTraceLogForTool();
+    this.selectedProjectLastSyncDetails = this.findTraceLogForTool();
+    if(this.selectedProjectLastSyncDetails != undefined && this.selectedProjectLastSyncDetails != null){
+      if(this.selectedProjectLastSyncDetails.executionSuccess){
+        this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
+        this.selectedProjectLastSyncStatus = "SUCCESS";
+      }else{
+        this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
+        this.selectedProjectLastSyncStatus = "FAILURE";
+      }
+    }else{
+      this.selectedProjectLastSyncStatus = "";
+      this.selectedProjectLastSyncDate = "NA"
+   }
   }
   setSelectedDateType(label: string) {
     this.selectedDayType = label;

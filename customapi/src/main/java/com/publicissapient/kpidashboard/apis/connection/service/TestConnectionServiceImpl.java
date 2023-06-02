@@ -38,6 +38,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -147,14 +148,17 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 								   String password, boolean isSonarWithAccessToken) {
 		boolean isValidConnection = false;
 		if(connection.isJaasKrbAuth()){
-			KerberosClient client = new KerberosClient(connection.getJaasConfigFilePath(),
-					connection.getKrb5ConfigFilePath(), connection.getJaasUser(), connection.getSamlEndPoint(),
-					connection.getBaseUrl());
-			client.login(customApiConfig.getSamlTokenStartString(), customApiConfig.getSamlTokenEndString(),
-					customApiConfig.getSamlUrlStartString(), customApiConfig.getSamlUrlEndString());
-			HttpResponse response = getApiResponseWithKerbAuth(client, apiUrl);
-			if(null != response && response.getStatusLine().getStatusCode() == 200){
-				isValidConnection = true;
+			try {
+				KerberosClient client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(), connection.getJaasUser(), connection.getSamlEndPoint(),
+						connection.getBaseUrl());
+				client.login(customApiConfig.getSamlTokenStartString(), customApiConfig.getSamlTokenEndString(),
+						customApiConfig.getSamlUrlStartString(), customApiConfig.getSamlUrlEndString());
+				HttpResponse response = getApiResponseWithKerbAuth(client, apiUrl);
+				if (null != response && response.getStatusLine().getStatusCode() == 200) {
+					isValidConnection = true;
+				}
+			}catch (RestClientException ex){
+				log.error("exception occured while trying to hit api.");
 			}
 		}else {
 			HttpStatus status = getApiResponseWithBasicAuth(connection.getUsername(), password, apiUrl, toolName,

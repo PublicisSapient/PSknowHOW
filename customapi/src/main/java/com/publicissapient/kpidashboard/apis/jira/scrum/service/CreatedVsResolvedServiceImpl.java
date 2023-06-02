@@ -503,8 +503,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
 					.findFirst().orElse(new JiraIssueCustomHistory());
 			Optional<JiraHistoryChangeLog> issueSprint = jiraIssueCustomHistory.getStatusUpdationLog().stream()
-					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(LocalDate
-							.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00.00.00"), DATE_TIME_FORMATTER),
+					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(jiraIssueSprint.getUpdatedOn().toLocalDate(),
 							sprintStartDate, sprintEndDate))
 					.reduce((a, b) -> b);
 			if (issueSprint.isPresent() && fieldMapping.getJiraIssueDeliverdStatus().contains(issueSprint.get().getChangedTo()))
@@ -577,34 +576,4 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		}
 		return hoverMap;
 	}
-
-	/**
-	 * Populates Validation Data Object
-	 * 
-	 * @param kpiElement
-	 * @param requestTrackerId
-	 * @param validationDataMap
-	 * @param totalCreatedTickets
-	 * @param totalResolvedTickets
-	 * @param node
-	 */
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
-			Map<String, ValidationData> validationDataMap, Node node, List<JiraIssue> totalCreatedTickets,
-			List<JiraIssue> totalResolvedTickets, List<JiraIssue> totalCreatedIssuesAfter) {
-
-        if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-
-            String keyForValidation = node.getSprintFilter().getName();
-
-            ValidationData validationData = new ValidationData();
-
-            validationData.setCreatedTicketList(
-                totalCreatedTickets.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
-            validationData.setResolvedTickets(
-                totalResolvedTickets.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
-            validationData.setDefectsAddedAfterSprint(
-                totalCreatedIssuesAfter.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
-            validationDataMap.put(keyForValidation, validationData);
-       }
-  }
 }

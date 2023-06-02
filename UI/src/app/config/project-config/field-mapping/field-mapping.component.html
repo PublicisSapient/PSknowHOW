@@ -180,7 +180,7 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraIssueDeliverdStatus') || fieldstoShow.length === 0">
-                        <label class="field-title">Issue Delivered Status - Velocity <span class="fa fa-info-circle"
+                        <label class="field-title">Issue Delivered Status <span class="fa fa-info-circle"
                                 aria-hidden="true" pTooltip='<span>
                                                 Definition:
                                                 Status from workflow on which issue is delivered. <br>
@@ -381,20 +381,37 @@
                             <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
                                     This field should consider all status that are considered Closed in Jira for e.g. Closed, Done etc <br>
                                                    </span>' tooltipPosition="top" tooltipEvent="hover"
-                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
-                        <div class="p-inputgroup">
-                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
-                                   inputId="jiraDefectClosedStatus" formControlName="jiraDefectClosedStatus"
-                                   placeholder="Enter Status to identify 'Closed' status" addOnBlur="true">
-                            </p-chips>
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                  (click)="showDialogToAddValue(false, 'jiraDefectClosedStatus', 'workflow')"></button>
-                        </div>
-                    </div>
-                  <div class="p-mb-3 p-d-flex p-align-center"
-                       *ngIf="fieldstoShow?.includes('jiraReadyForRefinement') || fieldstoShow.length === 0">
-                    <label class="field-title">Ready For Refinement <span class="fa fa-info-circle"
-                                                                          aria-hidden="true" pTooltip='<span>
+                    tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+            <div class="p-inputgroup">
+              <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                       inputId="jiraDefectClosedStatus" formControlName="jiraDefectClosedStatus"
+                       placeholder="Enter Status to identify 'Closed' status" addOnBlur="true">
+              </p-chips>
+              <button type="button" pButton pRipple icon="pi pi-search"
+                      (click)="showDialogToAddValue(false, 'jiraDefectClosedStatus', 'workflow')"></button>
+            </div>
+          </div>
+          <div class="p-mb-3 p-d-flex p-align-center"
+               *ngIf="fieldstoShow?.includes('readyForDevelopmentStatus') || fieldstoShow.length === 0">
+            <label class="field-title">Status to identify issues Ready for Development <span class="fa fa-info-circle"
+                                                                                             aria-hidden="true"
+                                                                                             pTooltip='<span>
+                                Definition:
+                                Status to identify Ready for development from the backlog.
+                              </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                                                                             [escape]="false"></span></label>
+            <div class="p-inputgroup">
+              <input type="text" pInputText id="readyForDevelopmentStatus" formControlName="readyForDevelopmentStatus"
+                     placeholder="Enter backlog ready for development status"
+                     [style]="{'max-width':'initial','width':'60vw'}">
+              <button type="button" pButton pRipple icon="pi pi-search"
+                      (click)="showDialogToAddValue(true, 'readyForDevelopmentStatus', 'workflow')"></button>
+            </div>
+          </div>
+          <div class="p-mb-3 p-d-flex p-align-center"
+               *ngIf="fieldstoShow?.includes('jiraReadyForRefinement') || fieldstoShow.length === 0">
+            <label class="field-title">Ready For Refinement <span class="fa fa-info-circle"
+                                                                  aria-hidden="true" pTooltip='<span>
                                                     Definition:
                                                     Status that Defines Jira Issue is Ready for Refinement<br>
                                                     Example: Ready For Refinement
@@ -467,6 +484,57 @@
                       </p-chips>
                       <button type="button" pButton pRipple icon="pi pi-search"
                               (click)="showDialogToAddValue(false, 'jiraRejectedInRefinement', 'workflow')"></button>
+                    </div>
+                  </div>
+                  <div class="p-mb-3 p-d-flex p-align-center"
+                       *ngIf="fieldstoShow?.includes('jiraIterationCompletionStatusCustomField') || fieldstoShow.length === 0">
+                    <label class="field-title">Iteration Dashboard & SPEED KPIs Completion Status <span class="fa fa-info-circle"
+                                                                            aria-hidden="true" pTooltip='<span>
+                                                                                Iteration Dashboard
+                                                                                SPEED KPIs - Sprint Velocity, Commitment Reliability, Story Count, Sprint Predictability
+                                              </span>' tooltipPosition="top" tooltipEvent="hover"
+                                                                            tooltipStyleClass="tooltiptext"
+                                                                            [escape]="false"></span></label>
+                    <div class="p-inputgroup">
+                      <p-chips [style]="{'max-width':'initial','width':'60vw'}"
+                               inputId="jiraIterationCompletionStatusCustomField" formControlName="jiraIterationCompletionStatusCustomField"
+                               placeholder="Enter Custom Completion Status" addOnBlur="true"
+                               pTooltip='<span>
+                                                    Definition:
+                                                    Status that Defines Jira Issue is Rejected In Refinement. <br>
+                                                    Example: Rejected in Refinement
+                                              </span>'
+                               tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                               [escape]="false">
+                      </p-chips>
+                      <button type="button" pButton pRipple icon="pi pi-search"
+                              (click)="showDialogToAddValue(false, 'jiraIterationCompletionStatusCustomField', 'workflow')"></button>
+                    </div>
+                  </div>
+                  <div class="p-mb-3 p-d-flex p-align-center"
+                       *ngIf="fieldstoShow?.includes('jiraFtprRejectStatus') || fieldstoShow.length === 0">
+                    <label class="field-title">FTPR Rejection Status <span class="fa fa-info-circle"
+                                                                            aria-hidden="true" pTooltip='<span>
+                                                    Definition:
+                                                    This status depicts the stories which have not passed QA. FTP stories can also be identified by a return transition but if status is mentioned that will be considered. <br>
+                                                    Impacted Kpis: FTPR(Quality Dasboard) and FTPR(Iteration Dashboard)
+                                              </span>' tooltipPosition="top" tooltipEvent="hover"
+                                                                            tooltipStyleClass="tooltiptext"
+                                                                            [escape]="false"></span></label>
+                    <div class="p-inputgroup">
+                      <p-chips [style]="{'max-width':'initial','width':'60vw'}"
+                               inputId="jiraFtprRejectStatus" formControlName="jiraFtprRejectStatus"
+                               placeholder="Enter status for FTPR Rejection" addOnBlur="true"
+                               pTooltip='<span>
+                                                    Definition:
+                                                    This status depicts the stories which have not passed QA. FTP stories can also be identified by a return transition but if status is mentioned that will be considered. <br>
+                                                    Impacted Kpis: FTPR(Quality Dasboard) and FTPR(Iteration Dashboard)
+                                              </span>'
+                               tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                               [escape]="false">
+                      </p-chips>
+                      <button type="button" pButton pRipple icon="pi pi-search"
+                              (click)="showDialogToAddValue(false, 'jiraFtprRejectStatus', 'workflow')"></button>
                     </div>
                   </div>
                 </div>
@@ -755,6 +823,23 @@
                             </p-chips>
                             <button type="button" pButton pRipple icon="pi pi-search"
                                 (click)="showDialogToAddValue(false, 'jiraIssueEpicType', 'Issue_Type')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('jiraIterationCompletionTypeCustomField') || fieldstoShow.length === 0">
+                        <label class="field-title">Iteration Board Issue types <span class="fa fa-info-circle" aria-hidden="true"
+                                pTooltip='<span>
+                                    Iteration Dashboard
+                                    SPEED KPIs - Sprint Velocity, Commitment Reliability, Story Count, Sprint Predictability
+                              </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                                [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw'}" inputId="jiraIterationCompletionTypeCustomField"
+                                formControlName="jiraIterationCompletionTypeCustomField" placeholder="Enter Custom Completion Types"
+                                addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'jiraIterationCompletionTypeCustomField', 'Issue_Type')"></button>
                         </div>
                     </div>
                 </div>

@@ -1,8 +1,5 @@
 print("Start : script for creating and migrating data in backlog collection");
 
-db.createCollection("issue_backlog");
-db.createCollection("issue_backlog_custom_history");
-
 let backlogs = db.jira_issue.find({"sprintAssetState" : {"$in":["","FUTURE"]}, "typeName": { '$ne': "Epic" }});
 print("Backlog Fetched : "+backlogs.size());
 

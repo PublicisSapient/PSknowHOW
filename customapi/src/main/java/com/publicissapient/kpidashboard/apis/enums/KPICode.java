@@ -354,6 +354,11 @@ public enum KPICode {
 	PLANNED_WORK_STATUS("kpi128", KPISource.JIRA.name()),
 
 	/**
+	 * Dev Completed Status KPI Code
+	 */
+	DEV_COMPLETED_STATUS("kpi145", KPISource.JIRA.name()),
+
+	/**
 	 * Quality Status
 	 */
 	QUALITY_STATUS("kpi133", KPISource.JIRA.name()),
@@ -367,6 +372,7 @@ public enum KPICode {
 	 * Issues Without Story Link
 	 */
 	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name()),
+	BACKLOG_READINESS_EFFICIENCY("kpi138", KPISource.JIRA.name()),
 
 	/**
 	 * Wastage
