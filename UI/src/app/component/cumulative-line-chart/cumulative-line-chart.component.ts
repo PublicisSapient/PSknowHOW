@@ -28,7 +28,7 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
     const chart = d3.select('#chart');
     chart.select('svg').remove();
     const margin = { top: 30, right: 22, bottom: 20, left: 10 };
-    const width = window.innerWidth-320 - margin.left - margin.right;
+    const width = window.innerWidth-340 - margin.left - margin.right;
     const height = 220 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
@@ -65,6 +65,8 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
       .domain(xCoordinates)
       .range([0, width])
       .paddingOuter(0);
+
+    const initialCoordinate = x(xCoordinates[1]);
 
     const svgX = svg.append('g')
       .attr('class', 'xAxis')
@@ -108,11 +110,11 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
 
     //Add vertical gridlines for each x tick
     svg.append('g')
-      .attr('transform', `translate(50, ${height})`)
+      .attr('transform', `translate(0, ${height})`)
       .selectAll('line.gridline').data(xCoordinates).enter()
       .append('svg:line')
-      .attr('x1', d => x(d) - 14)
-      .attr('x2', d => x(d) - 14)
+      .attr('x1', d => x(d)+initialCoordinate/2 )
+      .attr('x2', d => x(d)+initialCoordinate/2)
       .attr('y1', 0)
       .attr('y2', -height)
       .style('stroke', '#dedede')
@@ -132,7 +134,7 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
         .data(linedata)
         .join('div')
         .attr('class', 'tooltip')
-        .style('left', d => x(d.filter) + margin.left + 30 + 'px')
+        .style('left', d => x(d.filter) + initialCoordinate/2 + 'px')
         .style('top', d => y(d.value) + 14 + 'px')
         .text(d => d.value)
         .transition()
@@ -155,11 +157,11 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
 
       const line = svg
         .append('g')
-        .attr('transform', `translate(${margin.left},0)`)
+        .attr('transform', `translate(0,0)`)
         .append('path')
         .datum(lineData)
         .attr('d', d3.line()
-          .x((d) => x(d.filter) + 27)
+          .x((d) => x(d.filter) + initialCoordinate/2)
           .y((d) => y(d.value))
         )
         .attr('stroke', (d) => color(kpiGroup))
@@ -180,12 +182,12 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
       const circlegroup = svg
         .append('g')
         .attr('class', 'circle-group')
-        .attr('transform', `translate(${margin.left},0)`)
+        .attr('transform', `translate(0,0)`)
         .selectAll('circle')
         .data(lineData)
         .enter()
         .append('circle')
-        .attr('cx', d => x(d.filter) + 27)
+        .attr('cx', d => x(d.filter) + initialCoordinate/2)
         .attr('cy', d => y(d.value))
         .attr('r', 3)
         .style('stroke-width', 1)
@@ -243,11 +245,11 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
       categories.push(this.data[0].additionalGroup[0]);
       svg
         .append('g')
-        .attr('transform', `translate(${margin.left},0)`)
+        .attr('transform', `translate(0,0)`)
         .append('path')
         .datum(dottedLineData)
         .attr('d', d3.line()
-          .x((d) => x(d.filter) + 27)
+          .x((d) => x(d.filter)+ initialCoordinate/2 )
           .y((d) => y(d.value))
         )
         .attr('stroke', '#D8725F')
