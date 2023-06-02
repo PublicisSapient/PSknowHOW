@@ -71,4 +71,11 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 
 	@Query("{ 'hierarchy' : { $elemMatch: { 'hierarchyLevel.hierarchyLevelId' : ?0 }} , 'hierarchy.value' : { $in : ?1 } }")
 	List<ProjectBasicConfig> findByHierarchyLevelIdAndValues(String accessLevel, List<String> hierarchyLevelValues);
+	
+	/*
+	 * Returns ProjectBasicConfig by kanban or scrum
+	 * @param isKanban
+	 * @return {@link ProjectBasicConfig} {@code List<ProjectBasicConfig>}
+	 */
+	List<ProjectBasicConfig> findByKanban(Boolean isKanban);
 }

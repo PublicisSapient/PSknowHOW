@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.jira.adapter.impl.async.impl;
+package com.publicissapient.kpidashboard.jira.client;
 
 import java.net.URI;
 
@@ -26,8 +26,6 @@ import com.atlassian.jira.rest.client.api.IssueRestClient;
 import com.atlassian.jira.rest.client.api.SearchRestClient;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClient;
 import com.atlassian.jira.rest.client.internal.async.DisposableHttpClient;
-import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.client.CustomAsynchronousIssueRestClient;
-import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 
 public class ProcessorAsynchJiraRestClient extends AsynchronousJiraRestClient implements ProcessorJiraRestClient {
 
