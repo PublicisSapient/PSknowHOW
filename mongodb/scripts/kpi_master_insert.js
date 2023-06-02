@@ -3467,16 +3467,7 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": "CumulativeMultilineChart",
     "kpiInfo": {
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "Daily Closures KPI gives a graphical representation of daily progress in terms of no. of issues planned, actual no. of issues closed till the current day and the predicted daily closures for the remaining days of the iteration."
-        },
-        {
-          "type": "paragraph",
-          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings."
-        }
-      ]
+        "definition": "Iteration Burnup KPI shows the cumulative actual progress against the overall scope of the iteration on a daily basis. For teams putting due dates at the beginning of iteration, the graph additionally shows the actual progress in comparison to the planning done and also predicts the probable progress for the remaining days of the iteration."
     },
     "xAxisLabel": "Days",
     "yAxisLabel": "Count",

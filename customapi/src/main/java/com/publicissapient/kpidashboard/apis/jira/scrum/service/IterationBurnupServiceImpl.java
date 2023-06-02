@@ -145,8 +145,6 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 			if (null != sprintDetails) {
 				LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
 						DATE_TIME_FORMATTER);
-				LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0],
-						DATE_TIME_FORMATTER);
 
 				List<String> allIssues = new ArrayList<>();
 				List<String> notCompleted = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
@@ -177,10 +175,8 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 							List<JiraHistoryChangeLog> sprintUpdationLog = issueHistory.getSprintUpdationLog();
 							Collections.sort(sprintUpdationLog,
 									Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
-							createAddedIssueDateWiseMap(sprintDetails, totalIssueList, addedIssues, fullSprintIssues,
-									issueHistory, sprintUpdationLog, sprintStartDate);
-							createPuntedIssueDateWiseMap(sprintDetails, totalIssueList, removedIssues, issueHistory,
-									sprintUpdationLog, sprintStartDate, sprintEndDate);
+							createAddedandRemovedIssueDateWiseMap(sprintDetails, totalIssueList, addedIssues, removedIssues,fullSprintIssues,
+									issueHistory, sprintUpdationLog);
 						}
 						createCompletedIssuesDateWiseMap(sprintDetails, totalIssueList, completedIssues,
 								removedCompletedIssues, issueHistory, sprintStartDate);
@@ -199,40 +195,26 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 		return resultListMap;
 	}
 
-	/*
-	 * within sprint duration if an issue is removed then to be maintained in a map
-	 */
-	private void createPuntedIssueDateWiseMap(SprintDetails sprintDetails, Set<JiraIssue> totalIssueList,
-			Map<LocalDate, List<JiraIssue>> removedIssues, JiraIssueCustomHistory issueHistory,
-			List<JiraHistoryChangeLog> withInSprintLogs, LocalDate sprintStartDate, LocalDate sprintEndDate) {
-		withInSprintLogs.stream()
-				.filter(updateLogs -> updateLogs.getChangedFrom().equalsIgnoreCase(sprintDetails.getSprintName())
-						&& DateUtil.isWithinDateRange(updateLogs.getUpdatedOn().toLocalDate(), sprintStartDate,
-								sprintEndDate))
-				.forEach(updateLogs -> {
-					List<JiraIssue> jiraIssueList = new ArrayList<>(
-							getRespectiveJiraIssue(totalIssueList, issueHistory));
-					LocalDate updatedLog = updateLogs.getUpdatedOn().toLocalDate();
-					removedIssues.computeIfPresent(updatedLog, (k, v) -> {
-						v.addAll(jiraIssueList);
-						return v;
-					});
-					removedIssues.putIfAbsent(updatedLog, jiraIssueList);
-				});
-	}
 
 	/*
 	 * if last index of sprintUpdateLog is selected sprint then it means, the issue
 	 * was present throughout put that issue in full-Sprint map and that list will
 	 * be the base list. while all the other dynamics within sprint will be stored
 	 * in AddedIssuesMap
+	 * within sprint duration if an issue is removed then to be maintained in removedIssues map
 	 */
-	private void createAddedIssueDateWiseMap(SprintDetails sprintDetails, Set<JiraIssue> totalIssueList,
-			Map<LocalDate, List<JiraIssue>> addedIssuesMap, Map<LocalDate, List<JiraIssue>> fullSprintMap,
-			JiraIssueCustomHistory issueHistory, List<JiraHistoryChangeLog> sprintUpdationLog, LocalDate startDate) {
+	private void createAddedandRemovedIssueDateWiseMap(SprintDetails sprintDetails, Set<JiraIssue> totalIssueList,
+													   Map<LocalDate, List<JiraIssue>> addedIssuesMap, Map<LocalDate, List<JiraIssue>> removedIssues,
+													   Map<LocalDate, List<JiraIssue>> fullSprintMap, JiraIssueCustomHistory issueHistory,
+													   List<JiraHistoryChangeLog> sprintUpdationLog) {
+		LocalDate startDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0], DATE_TIME_FORMATTER);
+		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0], DATE_TIME_FORMATTER);
+
 		int lastIndex = sprintUpdationLog.size() - 1;
 		sprintUpdationLog.stream()
-				.filter(updateLogs -> updateLogs.getChangedTo().equalsIgnoreCase(sprintDetails.getSprintName()))
+				.filter(updateLogs -> updateLogs.getChangedTo().equalsIgnoreCase(sprintDetails.getSprintName())
+						|| (updateLogs.getChangedFrom().equalsIgnoreCase(sprintDetails.getSprintName()) && DateUtil
+								.isWithinDateRange(updateLogs.getUpdatedOn().toLocalDate(), startDate, sprintEndDate)))
 				.forEach(updateLogs -> {
 					List<JiraIssue> jiraIssueList = new ArrayList<>(
 							getRespectiveJiraIssue(totalIssueList, issueHistory));
@@ -245,12 +227,23 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 					}
 					LocalDate updatedLog = updateLogs.getUpdatedOn().toLocalDate().isBefore(startDate.plusDays(1))
 							? startDate
-							: updateLogs.getUpdatedOn().toLocalDate();
+							: limitDateInSprint(updateLogs.getUpdatedOn().toLocalDate(),sprintEndDate);
 					addedIssuesMap.computeIfPresent(updatedLog, (k, v) -> {
 						v.addAll(jiraIssueList);
 						return v;
 					});
 					addedIssuesMap.putIfAbsent(updatedLog, jiraIssueList);
+
+					if (updateLogs.getChangedFrom().equalsIgnoreCase(sprintDetails.getSprintName()) && DateUtil
+							.isWithinDateRange(updateLogs.getUpdatedOn().toLocalDate(), startDate, sprintEndDate)) {
+						List<JiraIssue> removeJiraIssueLIst = new ArrayList<>(jiraIssueList);
+						updatedLog = updateLogs.getUpdatedOn().toLocalDate();
+						removedIssues.computeIfPresent(updatedLog, (k, v) -> {
+							v.addAll(removeJiraIssueLIst);
+							return v;
+						});
+						removedIssues.putIfAbsent(updatedLog, removeJiraIssueLIst);
+					}
 				});
 	}
 
