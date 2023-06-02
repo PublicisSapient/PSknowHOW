@@ -1217,6 +1217,7 @@ h3{
 
 /****************PrimeNg 10 Styles start*************/
 .p-component {
+  font-family: 'FuturaNext_Medium', sans-serif;
   font-weight: normal;
 }
 
@@ -1972,4 +1973,19 @@ p-dialog .p-button-cancel.p-button-secondary {
   position: absolute;
   top: -0.5rem;
   right: -0.5rem;
+}
+.kpi-info-icon{
+  color: #707070;
+  height: 13.5px;
+  vertical-align: middle;
+  margin-top: -2px;
+  margin-left: 3px;
+}
+.wrapper-w-50{
+  width: 50%;
+}
+@media only screen and (max-width:768px){
+  .wrapper-w-50{
+      width: 100%;
+  }
 }

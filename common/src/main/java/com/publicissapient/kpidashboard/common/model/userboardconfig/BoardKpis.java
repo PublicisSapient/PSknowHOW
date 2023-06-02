@@ -31,6 +31,7 @@ public class BoardKpis {
 	private boolean isEnabled;
 	private boolean isShown;
 	private int order;
+	private String subCategoryBoard;
 
 	/**
 	 * getter for isEnabled
