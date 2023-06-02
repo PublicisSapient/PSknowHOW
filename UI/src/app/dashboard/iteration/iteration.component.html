@@ -24,14 +24,14 @@
         <div class="clearfix">
           <div class="right-container col">
             <p-tabView class="iteration-tabs">
-              <p-tabPanel *ngFor="let board of navigationTabs" [header]="board">
+              <p-tabPanel *ngFor="let board of navigationTabs" [header]="board.label" [disabled]="board.count == 0">
                 <div class="p-grid p-justify-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard" cdkDropList
                   (cdkDropListDropped)="drop($event)">
                   <ng-container
                     *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
                     <ng-container *ngFor="let kpi of upDatedConfigData">
 
-                      <div *ngIf="kpi?.subCategoryBoard == board" cdkDrag class="wrapper-w-50 p-h-fit-content">
+                      <div *ngIf="kpi?.subCategoryBoard == board.label" cdkDrag class="wrapper-w-50 p-h-fit-content">
                         <!-- iteration kpi card container -->
                         <div class="card-type-1 p-mb-3 p-pr-3 p-pl-0"
                           *ngIf="kpi?.kpiDetail?.boxType !== 'chart' ;else chart">

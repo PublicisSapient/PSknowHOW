@@ -94,7 +94,10 @@ export class IterationComponent implements OnInit, OnDestroy {
   markerInfo=[];
   globalConfig;
   sharedObject;
-  navigationTabs:Array<object> = [];
+  navigationTabs:Array<object> = [
+    {'label':'Iteration Review', 'count': 0}, 
+    {'label':'Iteration Progress', 'count': 0}
+  ];
   forzenColumns = ['issue id','issue description'];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
@@ -146,9 +149,9 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
       let board = this.upDatedConfigData[i]?.subCategoryBoard;
-      if(!this.navigationTabs.includes(board)) this.navigationTabs.push(board);
+      let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
+      if(idx != -1) this.navigationTabs[idx]['count']++; 
     }
-
     if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
     } else {
