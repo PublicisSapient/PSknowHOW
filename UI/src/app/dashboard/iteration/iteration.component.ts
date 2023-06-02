@@ -482,17 +482,9 @@ export class IterationComponent implements OnInit, OnDestroy {
         const filters = this.kpiSelectedFilterObj[kpiId]['filter1'];
         let preAggregatedValues = [];
         for (let i = 0; i < filters?.length; i++) {
-          preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'] == filters[i])];
+          preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'].toLowerCase() === filters[i].toLowerCase())];
         }
-        if (preAggregatedValues?.length > 1) {
-          if (this.getKpiChartType(kpiId)?.toLowerCase() === 'groupbarchart') {
-            this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
-            } else {
-                this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
-            }
-        } else {
-          this.kpiChartData[kpiId] = [...preAggregatedValues];
-        }
+        this.kpiChartData[kpiId] = [...preAggregatedValues];
       }else{
 
         this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
