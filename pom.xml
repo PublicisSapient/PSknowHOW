@@ -1,5 +1,5 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  Copyright 2014 CapitalOne, LLC.
+  Copyright 2014 CapitalOne, LLC
   Further development Copyright 2022 Sapient Corporation.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@
     <packaging>pom</packaging>
     <groupId>com.publicissapient.kpidashboard</groupId>
     <artifactId>Kpidashboard</artifactId>
-    <version>6.10.1-SNAPSHOT</version>
+    <version>6.11.0-SNAPSHOT</version>
 
     <properties>
         <docker.useConfigFile>false</docker.useConfigFile>
@@ -48,6 +48,7 @@
                 <module>processors/bitbucket</module>
                 <module>processors/gitlab</module>
                 <module>processors/github</module>
+                <module>processors/githubaction</module>
                 <module>processors/sonar</module>
                 <module>processors/jira</module>
                 <module>processors/jiratest</module>
@@ -100,6 +101,7 @@
                 <module>processors/bitbucket</module>
                 <module>processors/gitlab</module>
                 <module>processors/github</module>
+                <module>processors/githubaction</module>
                 <module>processors/sonar</module>
                 <module>processors/jenkins</module>
                 <module>processors/bamboo</module>
@@ -131,6 +133,7 @@
                                         <BITBUCKET_JAR_FILE>processors/bitbucket/target/bitbucket-processor-exec.jar</BITBUCKET_JAR_FILE>
                                         <GITLAB_JAR_FILE>processors/gitlab/target/gitlab-processor-exec.jar</GITLAB_JAR_FILE>
                                         <GITHUB_JAR_FILE>processors/github/target/github-processor-exec.jar</GITHUB_JAR_FILE>
+                                        <GITHUBACTION_JAR_FILE>processors/githubaction/target/githubaction-processor-exec.jar</GITHUBACTION_JAR_FILE>
                                         <SONAR_JAR_FILE>processors/sonar/target/sonar-processor-exec.jar</SONAR_JAR_FILE>
                                         <JENKINS_JAR_FILE>processors/jenkins/target/jenkins-processor-exec.jar</JENKINS_JAR_FILE>
                                         <BAMBOO_JAR_FILE>processors/bamboo/target/bamboo-processor-exec.jar</BAMBOO_JAR_FILE>

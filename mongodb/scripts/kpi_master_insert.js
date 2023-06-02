@@ -1473,7 +1473,7 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter" : true,
-    "maturityRange": ["-16","16-8","8-4","4-2","2-"]
+    "maturityRange": ["-48","48-16","16-8","8-4","4-"]
   },
   {
     "kpiId": "kpi11",
@@ -3568,7 +3568,7 @@ db.getCollection('kpi_master').insert(
     "defaultOrder": 1,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
-    "groupId": 2,
+    "groupId": 10,
     "thresholdValue": "",
     "kanban": false,
     "chartType": null,
@@ -3612,7 +3612,7 @@ db.getCollection('kpi_master').insert(
     "defaultOrder": 3,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
-    "groupId": 2,
+    "groupId": 10,
     "thresholdValue": "",
     "kanban": false,
     "chartType": "line",
@@ -3636,7 +3636,7 @@ db.getCollection('kpi_master').insert(
 		"defaultOrder": 4,
 		"kpiCategory": "Backlog",
 		"kpiSource": "Jira",
-		"groupId": 2,
+		"groupId": 10,
 		"thresholdValue": "",
 		"kanban": false,
 		"chartType": "line",
@@ -3684,7 +3684,7 @@ db.getCollection('kpi_master').insert(
     "defaultOrder":2,
     "kpiCategory":"Backlog",
     "kpiSource":"Jira",
-    "groupId":2,
+    "groupId":10,
     "thresholdValue":"",
     "kanban":false,
     "kpiInfo": {
@@ -3931,5 +3931,39 @@ db.getCollection('kpi_master').insert(
           "kpiFilter": "multiSelectDropDown",
           "boxType": "3_column",
           "calculateMaturity": false
-        }
+        },
+     {
+       "kpiId": "kpi138",
+       "kpiName": "Backlog Readiness",
+       "maxValue": "",
+       "kpiUnit": "Count",
+       "isDeleted": "False",
+       "defaultOrder": 5,
+       "kpiCategory": "Backlog",
+       "kpiSource": "Jira",
+       "groupId": 10,
+       "thresholdValue": "",
+       "kanban": false,
+       "chartType": null,
+       "kpiInfo": {
+         "details": [
+           {
+             "type": "paragraph",
+             "value": "Backlog Readiness KPI compares the total size of ready Product Backlog items (PBI) against the average velocity of last five sprints to ascertain if enough backlog items are always available for the team to start development. It also calculates the average time taken for Backlog items to be ready for development."
+           },
+           {
+             "type": "paragraph",
+             "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings"
+           }
+         ]
+       },
+       "xAxisLabel": "",
+       "yAxisLabel": "",
+       "isPositiveTrend": true,
+       "showTrend": false,
+       "isAdditionalFilterSupport": false,
+       "kpiFilter": "multiSelectDropDown",
+       "boxType": "3_column",
+       "calculateMaturity": false
+     }
 ]);
