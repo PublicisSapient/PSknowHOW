@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
@@ -6,7 +6,7 @@ import * as d3 from 'd3';
   templateUrl: './cumulative-line-chart.component.html',
   styleUrls: ['./cumulative-line-chart.component.css']
 })
-export class CumulativeLineChartComponent implements OnInit {
+export class CumulativeLineChartComponent implements OnInit,OnChanges {
   @Input() data;
   @Input() kpiId;
   @Input() xCaption;
@@ -17,6 +17,9 @@ export class CumulativeLineChartComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
     this.graphData= this.data[0]['dataGroup'];
     this.draw();
   }
@@ -25,7 +28,7 @@ export class CumulativeLineChartComponent implements OnInit {
     const chart = d3.select('#chart');
     chart.select('svg').remove();
     const margin = { top: 30, right: 22, bottom: 20, left: 10 };
-    const width = document.getElementById('container').offsetWidth-50 - margin.left - margin.right;
+    const width = window.innerWidth-320 - margin.left - margin.right;
     const height = 220 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
@@ -218,7 +221,7 @@ export class CumulativeLineChartComponent implements OnInit {
       .text(this.yCaption);
 
     const legendDiv = d3.select('#legendContainer')
-      .style('margin-left', 40 + 'px');
+      .style('margin-left', 60 + 'px');
 
     legendDiv.transition()
       .duration(200)
