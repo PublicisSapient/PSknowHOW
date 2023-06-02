@@ -3455,12 +3455,7 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": "CumulativeMultilineChart",
     "kpiInfo": {
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "Iteration Burnup KPI shows the cumulative actual progress against the overall scope of the iteration on a daily basis. For teams putting due dates at the beginning of iteration, the graph additionally shows the actual progress in comparison to the planning done and also predicts the probable progress for the remaining days of the iteration."
-        }
-      ]
+        "definition": "Iteration Burnup KPI shows the cumulative actual progress against the overall scope of the iteration on a daily basis. For teams putting due dates at the beginning of iteration, the graph additionally shows the actual progress in comparison to the planning done and also predicts the probable progress for the remaining days of the iteration."
     },
     "xAxisLabel": "Days",
     "yAxisLabel": "Count",
