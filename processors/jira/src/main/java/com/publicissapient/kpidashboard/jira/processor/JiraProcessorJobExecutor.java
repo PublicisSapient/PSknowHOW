@@ -26,10 +26,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.jira.fetchData.FetchProjectConfiguration;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,10 +45,13 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepos
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.fetchData.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
 import com.publicissapient.kpidashboard.jira.processor.mode.ModeBasedProcessor;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Collects {@link JiraProcessor} data from feature content source system.
