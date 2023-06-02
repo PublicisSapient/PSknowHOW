@@ -25,7 +25,7 @@ export class CumulativeLineChartComponent implements OnInit {
     const chart = d3.select('#chart');
     chart.select('svg').remove();
     const margin = { top: 30, right: 22, bottom: 20, left: 10 };
-    const width = this.graphData.length * 75 - margin.left - margin.right;
+    const width = document.getElementById('container').offsetWidth-50 - margin.left - margin.right;
     const height = 220 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
