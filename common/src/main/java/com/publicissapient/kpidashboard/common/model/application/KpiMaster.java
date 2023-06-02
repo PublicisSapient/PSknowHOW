@@ -88,5 +88,6 @@ public class KpiMaster extends BasicModel {
 	private List<KpiFormula> trendCalculation;
 	private boolean isAdditionalFilterSupport;
 	private List<String> maturityRange;
+	private String kpiWidth;
 	private List<MaturityLevel> maturityLevel;
 }
