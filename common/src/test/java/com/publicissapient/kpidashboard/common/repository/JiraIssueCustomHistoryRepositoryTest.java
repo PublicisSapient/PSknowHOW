@@ -275,7 +275,6 @@ public class JiraIssueCustomHistoryRepositoryTest {
 		}
 		return regexList;
 	}
-
 	public static Pattern convertToPatternText(String text) {
 		return Pattern.compile(text, Pattern.CASE_INSENSITIVE);
 	}
