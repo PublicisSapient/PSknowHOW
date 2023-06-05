@@ -97,8 +97,6 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	@Autowired
 	private SprintVelocityServiceHelper velocityHelper;
 
-	@Value("${sprint.velocity.limit}")
-	private int sprintVelocityLimit;
 	@Autowired
 	private SprintVelocityServiceHelper velocityServiceHelper;
 
@@ -168,7 +166,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
 		leafNodeList.forEach(leaf -> basicProjectConfigObjectIds.add(leaf.getProjectFilter().getBasicProjectConfigId()));
 		List<SprintDetails> totalSprintDetails = sprintRepository
-				.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(basicProjectConfigObjectIds,SprintDetails.SPRINT_STATE_CLOSED,PageRequest.of(0, customApiConfig.getSprintCountForFilters() + sprintVelocityLimit));
+				.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(basicProjectConfigObjectIds,SprintDetails.SPRINT_STATE_CLOSED,PageRequest.of(0, customApiConfig.getSprintCountForFilters() + customApiConfig.getSprintVelocityLimit()));
 		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
 			Map<ObjectId, List<String>> projectWisePreviousSprintDetails = totalSprintDetails.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId,
@@ -343,7 +341,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		AtomicDouble sumVelocity =new AtomicDouble();
 		AtomicInteger count = new AtomicInteger();
 		AtomicInteger validCount = new AtomicInteger();
-		int sprintCountForAvgVel=sprintVelocityLimit+1;
+		int sprintCountForAvgVel=customApiConfig.getSprintVelocityLimit()+1;
 		sprintVelocityMap.entrySet().forEach(velocityMap -> {
 			if (velocityMap.getKey().getKey().equals(basicProjId)) {
 				count.set(count.get() + 1);

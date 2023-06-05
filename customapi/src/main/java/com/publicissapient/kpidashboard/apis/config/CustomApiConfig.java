@@ -202,6 +202,17 @@ public class CustomApiConfig {// NOPMD
 	@Value(("${backlog.sprint.count}"))
 	private int sprintCountForBackLogStrength;
 
+	@Value("${sprint.velocity.limit}")
+	private int sprintVelocityLimit;
+
+	public int getSprintVelocityLimit() {
+		return sprintVelocityLimit;
+	}
+
+	public void setSprintVelocityLimit(int sprintVelocityLimit) {
+		this.sprintVelocityLimit = sprintVelocityLimit;
+	}
+
 	private int pushDataLimit;//limit of data allowed to push through api
 
 	private int exposeAPITokenExpiryDays; // expose api token expiry after days limit
