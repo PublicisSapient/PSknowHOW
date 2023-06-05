@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -249,7 +250,7 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 	}
 
 	@Override
-	public AzureWiqlModel getWiqlResponse(AzureServer azureServer, Map<String, Long> startTimesByIssueType,
+	public AzureWiqlModel getWiqlResponse(AzureServer azureServer, Map<String, LocalDateTime> startTimesByIssueType,
 										  ProjectConfFieldMapping projectConfig,boolean dataExist) {
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
 		StringBuilder url = new StringBuilder(
@@ -266,7 +267,7 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 	}
 
 	private AzureWiqlModel prepareWiqlResponse(AzureServer azureServer, ProjectConfFieldMapping projectConfig,
-											   Map<String, Long> startTimesByIssueType, StringBuilder url,boolean dataExist) {
+											   Map<String, LocalDateTime> startTimesByIssueType, StringBuilder url,boolean dataExist) {
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
 		String finalQuery = null;
 
@@ -378,7 +379,7 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 
 	}
 
-	private String prepareDefaultQuery(ProjectConfFieldMapping projectConfig, Map<String, Long> startTimesByIssueType) {
+	private String prepareDefaultQuery(ProjectConfFieldMapping projectConfig, Map<String, LocalDateTime> startTimesByIssueType) {
 		StringBuilder query = new StringBuilder();
 		String selectQuery = azureProcessorConfig.getWiqlSelectQuery();
 		query.append(selectQuery);
@@ -386,13 +387,12 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 		int size = startTimesByIssueType.entrySet().size();
 		int count = 0;
 		StringBuilder issueTypeQuery = new StringBuilder("");
-		for (Map.Entry<String, Long> entry : startTimesByIssueType.entrySet()) {
+		for (Map.Entry<String, LocalDateTime> entry : startTimesByIssueType.entrySet()) {
 			count++;
 			String type = entry.getKey();
-			SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT, Locale.US);
-			String dateTime = sdf.format(new Date(entry.getValue()));
+			String date = entry.getValue().toLocalDate().toString();
 			issueTypeQuery.append("([System.WorkItemType] ='" + type + "' AND [System.ChangedDate] >="
-					+ getFromattedQueryInput(dateTime) + ") ");
+					+ getFromattedQueryInput(date) + ") ");
 			if (count < size) {
 				issueTypeQuery.append(" OR ");
 			}
@@ -403,7 +403,7 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 		return query.toString();
 	}
 
-	private String processProvidedQuery(String userProvidedQuery, Map<String, Long> startDateTimeStrByIssueType,boolean dataExist) {
+	private String processProvidedQuery(String userProvidedQuery, Map<String, LocalDateTime> startDateTimeStrByIssueType,boolean dataExist) {
 		StringBuilder finalQuery = new StringBuilder();
 		if (StringUtils.isEmpty(userProvidedQuery) || startDateTimeStrByIssueType == null) {
 			return finalQuery.toString();
@@ -412,13 +412,12 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 		int size = startDateTimeStrByIssueType.entrySet().size();
 		int count = 0;
 		StringBuilder issueTypeQuery = new StringBuilder(" ");
-		for (Map.Entry<String, Long> entry : startDateTimeStrByIssueType.entrySet()) {
+		for (Map.Entry<String, LocalDateTime> entry : startDateTimeStrByIssueType.entrySet()) {
 			count++;
 			String type = entry.getKey();
-			SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT, Locale.US);
-			String dateTime = sdf.format(new Date(entry.getValue()));
+			String date = entry.getValue().toLocalDate().toString();
 			issueTypeQuery.append("([System.WorkItemType] ='" + type + "' AND [System.ChangedDate] >="
-					+ getFromattedQueryInput(dateTime) + ") ");
+					+ getFromattedQueryInput(date) + ") ");
 			if (count < size) {
 				issueTypeQuery.append(" OR ");
 			}

@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.azure.adapter.impl;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +96,7 @@ public class OnlineAdapter implements AzureAdapter {
 	}
 
 	@Override
-	public AzureWiqlModel getWiqlModel(AzureServer azureServer, Map<String, Long> startTimesByIssueType,
+	public AzureWiqlModel getWiqlModel(AzureServer azureServer, Map<String, LocalDateTime> startTimesByIssueType,
 			ProjectConfFieldMapping projectConfig, boolean dataExist) {
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
 		if (client == null) {

@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.azure.adapter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,7 @@ public interface AzureAdapter {
 	 * 
 	 * @return the wiql model
 	 */
-	AzureWiqlModel getWiqlModel(AzureServer azureServer, Map<String, Long> startTimesByIssueType,
+	AzureWiqlModel getWiqlModel(AzureServer azureServer, Map<String, LocalDateTime> startTimesByIssueType,
 			ProjectConfFieldMapping projectConfig, boolean dataExist);
 
 	/**

@@ -58,11 +58,9 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 
 	@Override
 	public void run() {
-		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-				onlineprojectConfigMap.getBasicProjectConfigId().toHexString());
+
 		try {
 			long start = System.currentTimeMillis();
-			processorExecutionTraceLog.setExecutionStartedAt(start);
 			MDC.put("ProjectDataStartTime", String.valueOf(start));
 			MDC.put("ProjectKey", projectKey);
 			if (azureConfig.isFetchMetadata()) {
@@ -74,16 +72,9 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 
 			long end = System.currentTimeMillis();
 			MDC.put("ProjectDataEndTime", String.valueOf(end));
-			processorExecutionTraceLog.setExecutionEndedAt(end);
-
-			processorExecutionTraceLog.setExecutionSuccess(true);
-			processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 		} catch (Exception ex){
-			processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-			processorExecutionTraceLog.setExecutionSuccess(false);
-			processorExecutionTraceLogService.save(processorExecutionTraceLog);
-			log.error(ex.getMessage(), ex);
+			log.error("Exception in processing Azure Project", ex);
 		} finally {
 			log.info("run() complete.");
 			latch.countDown();

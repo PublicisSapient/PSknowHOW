@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.azure.client.azureissue;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -25,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.azure.util.AzureConstants;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -62,11 +65,10 @@ public final class AzureIssueClientUtil {
 	 *            Jira Processor Configuration
 	 * @return return Adjusted Date Time string
 	 */
-	public static String getChangeDateMinutePrior(String changeDateISO, AzureProcessorConfig jiraProcessorConfig) {
-		int priorMinutes = jiraProcessorConfig.getMinsToReduce();
-		return AzureProcessorUtil.getFormattedDateString(AzureProcessorUtil
-				.getTimeAdjustedDate(AzureProcessorUtil.getFormattedDateTime(changeDateISO), priorMinutes));
-	}
+	/*public static String getChangeDateMinutePrior(LocalDateTime v, AzureProcessorConfig azureProcessorConfig) {
+		long priorMinutes   = azureProcessorConfig.getMinsToReduce();
+		return DateUtil.dateTimeFormatter(v.minusMinutes(priorMinutes) , AzureConstants.DATE_TIME_FORMAT);
+	}*/
 
 	/**
 	 * Builds Filed Map

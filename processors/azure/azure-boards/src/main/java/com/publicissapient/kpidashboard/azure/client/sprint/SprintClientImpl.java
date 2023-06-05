@@ -148,14 +148,14 @@ public class SprintClientImpl implements SprintClient {
 							toBeSavedCompletedIssues, toBeSavedNotCompletedIssues, toBeSavedTotalIssues);
 
 					toBeSavedCompletedIssues.addAll(dbSprintDetails.getCompletedIssues());
-					toBeSavedTotalIssues.addAll(toBeSavedCompletedIssues);
+					toBeSavedTotalIssues.addAll(dbSprintDetails.getTotalIssues());
 
 					Set<SprintIssue> dbNotCompletedIssues = dbSprintDetails.getNotCompletedIssues();
 					dbNotCompletedIssues.removeAll(toBeSavedCompletedIssues);
 
 					fetchedSprintDetails.setCompletedIssues(toBeSavedCompletedIssues);
 					fetchedSprintDetails.setNotCompletedIssues(dbNotCompletedIssues);
-					fetchedSprintDetails.setTotalIssues(dbSprintDetails.getTotalIssues());
+					fetchedSprintDetails.setTotalIssues(toBeSavedTotalIssues);
 					fetchedSprintDetails.setAddedIssues(dbSprintDetails.getAddedIssues());
 					fetchedSprintDetails.setPuntedIssues(dbSprintDetails.getPuntedIssues());
 

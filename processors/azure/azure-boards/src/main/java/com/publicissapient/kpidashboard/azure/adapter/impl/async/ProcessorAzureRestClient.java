@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.azure.adapter.impl.async;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +53,7 @@ public interface ProcessorAzureRestClient {
 	 * @param dataExist data present in db or not
 	 * @return AzureWiqlModel
 	 */
-	AzureWiqlModel getWiqlResponse(AzureServer azureServer, Map<String, Long> startTimesByIssueType, ProjectConfFieldMapping projectConfig,boolean dataExist);
+	AzureWiqlModel getWiqlResponse(AzureServer azureServer, Map<String, LocalDateTime> startTimesByIssueType, ProjectConfFieldMapping projectConfig,boolean dataExist);
 
 	/**
 	 * Gets Iterations Response from Azure API

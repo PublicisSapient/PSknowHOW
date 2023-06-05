@@ -30,6 +30,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +109,7 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		mapper = new ObjectMapper();
 		restClient = azureRestClientFactory = new ProcessorAsynchAzureRestClientFactory(restOperationsFactory,
 			azureProcessorConfig, mapper);
-
+		azureProcessorConfig.setStartDate("2022-01-07T00:00:00.0000000");
 	}
 
 	private AzureServer prepareAzureServer() {
@@ -146,13 +148,11 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 	public void getWiqlResponse() throws RestClientException, URISyntaxException, JsonParseException,
 		JsonMappingException, IOException, ParseException, IllegalAccessException, InvocationTargetException {
 		prepareProjectConfigFieldMapping();
-		long startTime1 = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-				.parse("2019-01-07T00:00:00.000000").getTime();
-		Map<String, Long> time = new HashMap();
-		time.put("User Story", startTime1);
-		time.put("Issue", startTime1);
-		long startTime = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-			.parse("2019-01-07T00:00:00.000000").getTime();
+		LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
+				DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
+		Map<String, LocalDateTime> time = new HashMap();
+		time.put("User Story", configuredStartDate);
+		time.put("Issue", configuredStartDate);
 		AzureServer azureServer = prepareAzureServer();
 		ResponseEntity<String> response = new ResponseEntity<>(createWiqlResponse(), HttpStatus.OK);
 		Mockito.when(
@@ -262,13 +262,11 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		azureToolConfig.setBoardQuery(
 				"Select [System.Id], [System.Title], [System.State] From WorkItems Where ([System.WorkItemType] ='Bug')order by [System.CreatedDate] asc");
 		projectConfFieldMapping.setAzure(azureToolConfig);
-		long startTime1 = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-				.parse("2019-01-07T00:00:00.000000").getTime();
-		Map<String, Long> time = new HashMap();
-		time.put("User Story", startTime1);
-		time.put("Issue", startTime1);
-		long startTime = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-				.parse("2019-01-07T00:00:00.000000").getTime();
+		LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
+				DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
+		Map<String, LocalDateTime> time = new HashMap();
+		time.put("User Story", configuredStartDate);
+		time.put("Issue", configuredStartDate);
 		AzureServer azureServer = prepareAzureServer();
 		ResponseEntity<String> response = new ResponseEntity<>(createWiqlResponse(), HttpStatus.OK);
 		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.POST), Mockito.<HttpEntity<String>>any(),
@@ -277,7 +275,6 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 				false);
 		AzureWiqlModel expectedModel = new AzureWiqlModel();
 		expectedModel.setAsOf("2020-07-17T12:01:50.663Z");
-		;
 		assertEquals(expectedModel.getAsOf(), actualModel.getAsOf(), "Checking for values");
 		azureToolConfig.setBoardQuery(
 				"Select [System.Id], [System.Title], [System.State] From WorkItems Where ([System.WorkItemType] ='Bug' AND [system.changeddate] > '2020-01-01') order by [System.CreatedDate] asc");
@@ -307,13 +304,11 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		azureToolConfig.setBoardQuery(
 				"Select [System.Id], [System.Title], [System.State] From WorkItems Where ([System.WorkItemType] ='Bug')order by [System.CreatedDate] asc");
 		projectConfFieldMapping.setAzure(azureToolConfig);
-		long startTime1 = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-				.parse("2019-01-07T00:00:00.000000").getTime();
-		Map<String, Long> time = new HashMap();
-		time.put("User Story", startTime1);
-		time.put("Issue", startTime1);
-		long startTime = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-				.parse("2019-01-07T00:00:00.000000").getTime();
+		LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
+				DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
+		Map<String, LocalDateTime> time = new HashMap();
+		time.put("User Story", configuredStartDate);
+		time.put("Issue", configuredStartDate);
 		AzureServer azureServer = prepareAzureServer();
 		ResponseEntity<String> response = new ResponseEntity<>(createWiqlResponse(), HttpStatus.OK);
 		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.POST), Mockito.<HttpEntity<String>>any(),

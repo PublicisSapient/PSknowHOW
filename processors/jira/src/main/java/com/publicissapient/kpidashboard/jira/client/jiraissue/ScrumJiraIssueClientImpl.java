@@ -694,7 +694,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
 
-				setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave,projectConfig);
+				setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave, projectConfig);
 
 				setEstimates(jiraIssue, issue);
 

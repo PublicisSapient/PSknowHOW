@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.azure.client.azureissue;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,7 +28,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -80,7 +87,7 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	 * @param sprintDetailsSet  sprint details set
 	 * @throws JSONException Error while JSON parsing
 	 */
-	public abstract void saveAzureIssueDetails(List<Value> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
+	public abstract int saveAzureIssueDetails(List<Value> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
 			Set<SprintDetails> sprintDetailsSet) throws JSONException;
 
 	/**
@@ -329,7 +336,7 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	 * @param fields     Jira issue User Object
 	 */
 	public void setJiraAssigneeDetails(JiraIssue azureIssue,
-			com.publicissapient.kpidashboard.common.model.azureboards.Fields fields) {
+			com.publicissapient.kpidashboard.common.model.azureboards.Fields fields , Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfFieldMapping) {
 
 		SystemAssignedTo systemAssignedTo = fields.getSystemAssignedTo();
 		SystemCreatedBy systemCreatedBy = fields.getSystemCreatedBy();
@@ -349,6 +356,7 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 			azureIssue.setOwnersUsername(ownersUsername);
 			azureIssue.setOwnersID(ownersId);
 			azureIssue.setOwnersFullName(ownersFullname);
+			updateOwnerDetailsToggleWise(azureIssue , projectConfFieldMapping , ownersUsername , ownersId , ownersFullname);
 		}
 
 		if (systemAssignedTo == null) {
@@ -357,7 +365,47 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 		} else {
 			azureIssue.setAssigneeId(systemAssignedTo.getId());
 			azureIssue.setAssigneeName(systemAssignedTo.getDisplayName());
+			updateAssigneeDetailsToggleWise(azureIssue, assigneeSetToSave, projectConfFieldMapping);
 		}
+	}
+
+	private void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, Set<Assignee> assigneeSetToSave,
+			ProjectConfFieldMapping projectConfig) {
+		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+			jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
+			jiraIssue.setAssigneeName(hash(jiraIssue.getAssigneeId() + jiraIssue.getAssigneeName()));
+		} else {
+			assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
+		}
+	}
+
+	private void updateOwnerDetailsToggleWise(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
+			List<String> assigneeName, List<String>  assigneeKey, List<String> assigneeDisplayName) {
+		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+			List<String> ownerName = assigneeName.stream().map(AzureIssueClient::hash).collect(Collectors.toList());
+			List<String> ownerId = assigneeKey.stream().map(AzureIssueClient::hash).collect(Collectors.toList());
+			List<String> ownerFullName = assigneeDisplayName.stream().map(AzureIssueClient::hash)
+					.collect(Collectors.toList());
+			jiraIssue.setOwnersUsername(ownerName);
+			jiraIssue.setOwnersID(ownerId);
+			jiraIssue.setOwnersFullName(ownerFullName);
+		}
+	}
+
+	public static String hash(String input) {
+		return String.valueOf(Objects.hash(input));
+	}
+
+	public static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig,
+			Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog,
+			LocalDateTime configuredStartDate, String issueType) {
+		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
+			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
+		}
+	}
+
+	public boolean isAttemptSuccess(int total, int savedCount) {
+		return savedCount > 0 && total == savedCount;
 	}
 
 }
