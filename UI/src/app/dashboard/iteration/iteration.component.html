@@ -23,7 +23,7 @@
       <div class="{{selectedtype}}" id="{{selectedtype}}">
         <div class="clearfix">
           <div class="right-container col">
-            <p-tabView class="iteration-tabs">
+            <p-tabView class="iteration-tabs" [activeIndex]="navigationTabs[0].count > 0 ? 0 : 1">
               <p-tabPanel *ngFor="let board of navigationTabs" [header]="board.label" [disabled]="board.count == 0">
                 <div class="p-grid p-justify-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard" cdkDropList
                   (cdkDropListDropped)="drop($event)">

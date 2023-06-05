@@ -242,15 +242,15 @@ padding: 0.75rem !important;
 }
 :host::ng-deep.iteration-tabs li.p-highlight .p-tabview-nav-link{
     color: #fff !important;
-    background: var(--color-cyan-blue) !important;
+    background: var(--color-black) !important;
 }   
 :host::ng-deep.iteration-tabs .p-tabview .p-tabview-panels{
     background: transparent;
     padding: 0 ;
 }
-::ng-deep .p-dialog-content{
+/* ::ng-deep .p-dialog-content{
     overflow-y: hidden;
-}
+} */
 
 .min-max-width{
     min-width:190px;
