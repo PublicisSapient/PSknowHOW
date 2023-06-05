@@ -147,6 +147,10 @@ export class IterationComponent implements OnInit, OnDestroy {
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
+    /**reset the kpi count */
+    this.navigationTabs = this.navigationTabs.map((x) => {
+      return { ...x, count: 0}
+    })
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
       let board = this.upDatedConfigData[i]?.subCategoryBoard;
       let idx = this.navigationTabs.findIndex(x => (x['label'] == board));

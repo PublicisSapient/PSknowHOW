@@ -242,7 +242,7 @@ padding: 0.75rem !important;
 }
 :host::ng-deep.iteration-tabs li.p-highlight .p-tabview-nav-link{
     color: #fff !important;
-    background: var(--color-cyan-blue) !important;
+    background: var(--color-black) !important;
 }   
 :host::ng-deep.iteration-tabs .p-tabview .p-tabview-panels{
     background: transparent;
