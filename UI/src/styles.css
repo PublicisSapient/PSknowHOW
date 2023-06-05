@@ -151,24 +151,21 @@ html {
 html, body{
   margin:0;
   height: 100%;
-  font-family: 'FuturaNext_Medium', sans-serif;
+  font-size: 14px !important;
+  font-family: 'FuturaNext_Book', sans-serif;
 }
 h1, h2, h3, h4, h5, h6{
   font-weight: 500;
+  font-family: 'FuturaNext_Medium', sans-serif;
 }
-.p-component,
-.p-component .p-component, html
-{
-    font-size: 14px !important;
+label{
+  font-family: 'FuturaNext_Medium', sans-serif;
+  font-weight: 500;
 }
 
 .selectedSideTab {
   background-color: #e5e5e5 !important;
 }
-
-/* .p-component, .p-component input[type="text"] {
-  font-size: 14px;
-} */
 
 .mar-16 {
   margin: 16px;
@@ -1216,11 +1213,6 @@ h3{
 /****************Left Nav Styles end*****************/
 
 /****************PrimeNg 10 Styles start*************/
-.p-component {
-  font-family: inherit;
-  font-weight: normal;
-}
-
 a:hover {
   text-decoration: none;
 }
@@ -1983,6 +1975,9 @@ p-dialog .p-button-cancel.p-button-secondary {
 }
 .wrapper-w-50{
   width: 50%;
+}
+.ng-select .ng-select-container .ng-value-container .ng-placeholder{
+  top: 22px;
 }
 @media only screen and (max-width:768px){
   .wrapper-w-50{

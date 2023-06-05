@@ -248,6 +248,9 @@ padding: 0.75rem !important;
     background: transparent;
     padding: 0 ;
 }
+:host::ng-deep .p-tabview .p-tabview-nav .p-tabview-ink-bar{
+    display: none;
+}
 /* ::ng-deep .p-dialog-content{
     overflow-y: hidden;
 } */
