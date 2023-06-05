@@ -231,9 +231,9 @@ padding: 0.75rem !important;
     text-align: center !important;
 }
 
-::ng-deep .p-dialog-content{
+/* ::ng-deep .p-dialog-content{
     overflow-y: hidden;
-}
+} */
 
 .min-max-width{
     min-width:190px;
