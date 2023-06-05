@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.azure.client.azureissue;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -33,15 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.jira.Assignee;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -69,10 +58,12 @@ import com.publicissapient.kpidashboard.azure.util.AzureProcessorUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.azureboards.AzureBoardsWIModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.Fields;
 import com.publicissapient.kpidashboard.common.model.azureboards.SystemAssignedTo;
@@ -81,14 +72,20 @@ import com.publicissapient.kpidashboard.common.model.azureboards.Value;
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUpdatesModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.WorkItem;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

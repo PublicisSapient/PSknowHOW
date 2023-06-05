@@ -19,8 +19,6 @@
 package com.publicissapient.kpidashboard.azure.client.azureissue;
 
 import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
