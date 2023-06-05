@@ -38,6 +38,7 @@ import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHist
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -250,8 +251,9 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 
 	private boolean isStatusValid(FieldMapping fieldMapping, String status) {
 		return fieldMapping.getStoryFirstStatus().equalsIgnoreCase(status)
-				|| fieldMapping.getJiraStatusForInProgress().contains(status)
-				|| fieldMapping.getJiraStatusForQa().contains(status) || fieldMapping.getJiraDod().contains(status)
+				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress()) && fieldMapping.getJiraStatusForInProgress().contains(status))
+				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForQa()) && fieldMapping.getJiraStatusForQa().contains(status))
+				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraDod()) && fieldMapping.getJiraDod().contains(status))
 				|| fieldMapping.getJiraLiveStatus().toLowerCase().contains(status.toLowerCase());
 	}
 
