@@ -313,7 +313,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 	 */
 
 	private LocalDate limitDateInSprint(LocalDate updatedLog, LocalDate sprintEndDate) {
-		if (ObjectUtils.isNotEmpty(updatedLog) && updatedLog.isAfter(sprintEndDate.minusDays(1))) {
+		if (Objects.nonNull(updatedLog) && updatedLog.isAfter(sprintEndDate.minusDays(1))) {
 			return sprintEndDate;
 		} else {
 			return updatedLog;
@@ -408,8 +408,8 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 
 			Map<String, LocalDate> maxCompleteAndMinPCDDate = getMaxCompleteAndMinPCDDate(completedIssueMap,
 					potentialDelay, removedIssuesMap);
-			LocalDate maxCompletionDate = maxCompleteAndMinPCDDate.get(MAX_COMPLETION);
-			LocalDate minimumpredicateddate = maxCompleteAndMinPCDDate.get(MIN_PREDICTED);
+			LocalDate maxCompletionDate = maxCompleteAndMinPCDDate.getOrDefault(MAX_COMPLETION,null);
+			LocalDate minimumpredicateddate = maxCompleteAndMinPCDDate.getOrDefault(MIN_PREDICTED,null);
 			LocalDate maximumRemovalDate = maxCompleteAndMinPCDDate.get(MAX_REMOVAL);
 
 			List<DataCountGroup> dataCountGroups = new ArrayList<>();
@@ -428,7 +428,8 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 				dataCountList.add(getDataCountObject(dueDateWiseTypeCountMap, latestSprint.getId(), OVERALL_SCOPE));
 				dataCountList
 						.add(getDataCountObject(plannedDateWiseTypeCount, latestSprint.getId(), PLANNED_COMPLETION));
-				if (date.isBefore(Objects.requireNonNull(maxCompletionDate)) || date.isEqual(maxCompletionDate)) {
+				if (ObjectUtils.isNotEmpty(maxCompletionDate)
+						&& (date.isBefore(maxCompletionDate) || date.isEqual(maxCompletionDate))) {
 					List<JiraIssue> completedIssues = completedIssueMap.getOrDefault(date, new ArrayList<>());
 					completedIssues.addAll(processCompletedIssues);
 					completedIssues.retainAll(processedAllIssues);
@@ -440,8 +441,8 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 							UPDATE_DATE);
 					dataCountList.add(getDataCountObject(closedDateWiseCount, latestSprint.getId(), ACTUAL_COMPLETION));
 				}
-				if (date.isEqual(Objects.requireNonNull(minimumpredicateddate))
-						|| date.isAfter(minimumpredicateddate)) {
+				if (ObjectUtils.isNotEmpty(minimumpredicateddate)
+						&& (date.isEqual(minimumpredicateddate) || date.isAfter(minimumpredicateddate))) {
 					pcdIssues.addAll(potentialDelay.getOrDefault(date, new ArrayList<>()));
 					dataCountList.add(
 							getDataCountObject((long) pcdIssues.size(), latestSprint.getId(), PREDICTED_COMPLETION));
@@ -576,6 +577,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 	 * completed today then actual completion to be shown till today with
 	 * cumulation, otherwise till today-1 date
 	 */
+
 	private Map<String, LocalDate> getMaxCompleteAndMinPCDDate(Map<LocalDate, List<JiraIssue>> completedIssueMap,
 			Map<LocalDate, List<JiraIssue>> potentialDelay, Map<LocalDate, List<JiraIssue>> removedIssuesMap) {
 		Map<String, LocalDate> dateMap = new HashMap<>();
@@ -589,11 +591,13 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 			minimumpredicateddate = potentialDelay.keySet().stream().filter(Objects::nonNull).min(LocalDate::compareTo)
 					.orElse(null);
 		}
-		if (Objects.requireNonNull(maxCompletionDate).isBefore(Objects.requireNonNull(minimumpredicateddate))) {
+		if ((Objects.nonNull(maxCompletionDate) && Objects.nonNull(minimumpredicateddate))
+				&& (maxCompletionDate.isBefore(minimumpredicateddate))) {
 			maxCompletionDate = minimumpredicateddate.minusDays(1);
+
 		}
-		dateMap.put(MAX_COMPLETION, maxCompletionDate);
 		dateMap.put(MIN_PREDICTED, minimumpredicateddate);
+		dateMap.put(MAX_COMPLETION, maxCompletionDate);
 		dateMap.put(MAX_REMOVAL,
 				removedIssuesMap.keySet().stream().filter(Objects::nonNull).min(LocalDate::compareTo).orElse(null));
 		return dateMap;
