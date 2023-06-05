@@ -26,7 +26,7 @@
             <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard" cdkDropList
               (cdkDropListDropped)="drop($event)">
               <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
-                <div *ngFor="let kpi of upDatedConfigData" cdkDrag class="p-w-50 p-h-fit-content">
+                <div *ngFor="let kpi of upDatedConfigData" cdkDrag [cdkDragDisabled]="kpi?.kpiId=='kpi120'" class="p-h-fit-content" [ngClass]="{'p-w-50': kpi?.kpiId != 'kpi120', 'w-80 p-mx-auto': kpi?.kpiId == 'kpi120'}">
 
                   <!-- iteration kpi card container -->
 
