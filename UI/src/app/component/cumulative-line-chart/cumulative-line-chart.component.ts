@@ -28,9 +28,12 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
     const chart = d3.select('#chart');
     chart.select('svg').remove();
     const margin = { top: 30, right: 22, bottom: 20, left: 10 };
-    const width = window.innerWidth-340 - margin.left - margin.right;
+    let width = window.innerWidth-340 - margin.left - margin.right;
     const height = 220 - margin.top - margin.bottom;
 
+    if(this.graphData.length > 14){
+      width += (this.graphData.length - 14 ) * 79;
+    }
     // append the svg object to the body of the page
     const svg = chart
       .append('svg')
@@ -135,7 +138,7 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
         .join('div')
         .attr('class', 'tooltip')
         .style('left', d => x(d.filter) + initialCoordinate/2 + 'px')
-        .style('top', d => y(d.value) + 14 + 'px')
+        .style('top', d => y(d.value) + 8 + 'px')
         .text(d => d.value)
         .transition()
         .duration(500)
@@ -154,6 +157,7 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
 
     for (const kpiGroup of categories) {
       const lineData = this.graphData.filter(d => d['lineDataCategorywise'].hasOwnProperty(kpiGroup)).map(d => d['lineDataCategorywise'][kpiGroup]);
+
 
       const line = svg
         .append('g')
@@ -179,7 +183,7 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
           hideTooltip();
         });
 
-      const circlegroup = svg
+        const circlegroup = svg
         .append('g')
         .attr('class', 'circle-group')
         .attr('transform', `translate(0,0)`)
@@ -190,22 +194,24 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
         .attr('cx', d => x(d.filter) + initialCoordinate/2)
         .attr('cy', d => y(d.value))
         .attr('r', 3)
-        .style('stroke-width', 1)
-        .attr('stroke', 'none')
+        .style('stroke-width', 5)
+        .attr('stroke', 'transparent')
         .attr('fill', color(kpiGroup))
         .on('mouseover', function(event) {
           d3.select(this)
             .transition()
             .duration(500)
             .style('cursor', 'pointer')
-            .attr('r', 3);
+            .attr('r', 3)
+            .style('stroke-width', 10);
           showTooltip(lineData);
         })
         .on('mouseout', function(event, d) {
           d3.select(this)
             .transition()
             .duration(500)
-            .attr('r', 3);
+            .attr('r', 3)
+            .style('stroke-width', 5);
           hideTooltip();
         });
     }
