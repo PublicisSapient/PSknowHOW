@@ -155,6 +155,9 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
     for (const kpiGroup of categories) {
       const lineData = this.graphData.filter(d => d['lineDataCategorywise'].hasOwnProperty(kpiGroup)).map(d => d['lineDataCategorywise'][kpiGroup]);
 
+
+      let circleHover=false;
+      let lineHover = false;
       const line = svg
         .append('g')
         .attr('transform', `translate(0,0)`)
@@ -169,17 +172,23 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
         .style('fill', 'none')
         .style('cursor', 'pointer')
         .on('mouseover', function(event, linedata) {
-          d3.select(this)
+          if(!circleHover){
+            lineHover = true;
+            d3.select(this)
             .style('stroke-width', 4);
           showTooltip(linedata);
+          }
         })
         .on('mouseout', function(event, d) {
-          d3.select(this)
+          if(!circleHover){
+            lineHover=false;
+            d3.select(this)
             .style('stroke-width', 2);
           hideTooltip();
+          }
         });
 
-      const circlegroup = svg
+        const circlegroup = svg
         .append('g')
         .attr('class', 'circle-group')
         .attr('transform', `translate(0,0)`)
@@ -190,23 +199,29 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
         .attr('cx', d => x(d.filter) + initialCoordinate/2)
         .attr('cy', d => y(d.value))
         .attr('r', 3)
-        .style('stroke-width', 1)
-        .attr('stroke', 'none')
+        .style('stroke-width', 5)
+        .attr('stroke', 'transparent')
         .attr('fill', color(kpiGroup))
         .on('mouseover', function(event) {
-          d3.select(this)
+          if(!lineHover){
+            circleHover =true;
+            d3.select(this)
             .transition()
             .duration(500)
             .style('cursor', 'pointer')
             .attr('r', 3);
           showTooltip(lineData);
+          }
         })
         .on('mouseout', function(event, d) {
-          d3.select(this)
+          if(!lineHover){
+            circleHover = false;
+            d3.select(this)
             .transition()
             .duration(500)
             .attr('r', 3);
           hideTooltip();
+          }
         });
     }
     //Add xCaption
