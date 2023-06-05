@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
@@ -25,7 +26,7 @@ public class CreateIssueBacklogImpl implements CreateIssueBacklog {
     private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 
     @Override
-    public void createIssueBacklogandIssueBacklogHistory(List<JiraIssue> jiraIssuesToSave, List<JiraIssueCustomHistory> jiraIssueHistoryToSave, List<JiraIssue> jiraIssuesToDelete, List<JiraIssueCustomHistory> jiraIssueHistoryToDelete, List<IssueBacklog> issueBacklogToSave, List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToSave, List<IssueBacklog> issueBacklogToDelete, List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToDelete, JiraIssue jiraIssue, JiraIssueCustomHistory jiraIssueHistory, IssueField sprint, String issueId, ProjectConfFieldMapping projectConfig, String issueNumber) {
+    public void createIssueBacklogandIssueBacklogHistory(List<JiraIssue> jiraIssuesToSave, List<JiraIssueCustomHistory> jiraIssueHistoryToSave, List<JiraIssue> jiraIssuesToDelete, List<JiraIssueCustomHistory> jiraIssueHistoryToDelete, List<IssueBacklog> issueBacklogToSave, List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToSave, List<IssueBacklog> issueBacklogToDelete, List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToDelete, JiraIssue jiraIssue, JiraIssueCustomHistory jiraIssueHistory, IssueField sprint, String issueId, ProjectConfFieldMapping projectConfig, String issueNumber, FieldMapping fieldMapping) {
 
         IssueBacklog issueBacklog = getIssueBacklog(projectConfig, issueId);
         IssueBacklogCustomHistory issueBacklogCustomHistory = getIssueBacklogCustomHistory(projectConfig, issueNumber);
@@ -33,7 +34,8 @@ public class CreateIssueBacklogImpl implements CreateIssueBacklog {
         boolean backlogPresentInDb = issueBacklog.getIssueId() != null;
 
         if (isIssueBacklog(jiraIssue, sprint) && StringUtils.isNotBlank(jiraIssue.getProjectID())
-                && !jiraIssue.getTypeName().equalsIgnoreCase("Epic")) {
+                && !jiraIssue.getTypeName().equalsIgnoreCase("Epic") &&
+                isValidBacklogStatus(fieldMapping, jiraIssue)) {
             concertJiraIssueToBacklog(jiraIssue, issueBacklog);
             concertJiraIssueHistoryToBacklogHistory(jiraIssueHistory, issueBacklogCustomHistory);
             //When issue is moved from active sprint to backlog/future sprint
@@ -51,6 +53,11 @@ public class CreateIssueBacklogImpl implements CreateIssueBacklog {
             jiraIssuesToSave.add(jiraIssue);
             jiraIssueHistoryToSave.add(jiraIssueHistory);
         }
+    }
+
+    private boolean isValidBacklogStatus(FieldMapping fieldMapping, JiraIssue jiraIssue) {
+            return !(fieldMapping.getJiraDod().contains(jiraIssue.getStatus())
+                    || fieldMapping.getJiraLiveStatus().toLowerCase().equalsIgnoreCase(jiraIssue.getStatus()));
     }
 
     private IssueBacklog getIssueBacklog(ProjectConfFieldMapping projectConfig, String issueId) {
