@@ -313,8 +313,12 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 				List<String> completedSprintIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
 						CommonConstant.COMPLETED_ISSUES);
 				List<JiraIssue> totalIssues = allJiraIssue.stream()
-						.filter(element -> availableIssues.contains(element.getNumber())).collect(Collectors.toList());
-				List<JiraIssue> totalSubTask = getTotalSubTasks(allSubTaskBugs, sd);
+						.filter(element -> availableIssues.contains(element.getNumber()))
+						.collect(Collectors.toList());
+				List<JiraIssue> totalSubTask = getTotalSubTasks(allSubTaskBugs.stream()
+						.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
+								&& jiraIssue.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
+						.collect(Collectors.toList()), sd, allSubTaskBugsHistory);
 				totalIssues.addAll(totalSubTask);
 				List<JiraIssue> completedIssues = getCompletedIssues(
 						allJiraIssue.stream().filter(element -> completedSprintIssues.contains(element.getNumber()))
