@@ -25,7 +25,7 @@
           <div class="right-container col">
             <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
             <!-- Iteration commitment kpi start -->
-            <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard w-80 p-mx-auto" *ngIf="commitmentReliabilityKpi">
+            <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard w-100 p-mx-auto" *ngIf="commitmentReliabilityKpi">
               <div class="card-type-1 p-pr-3 p-pl-0">
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="commitmentReliabilityKpi"
                   (downloadExcel)="downloadExcel(commitmentReliabilityKpi.kpiId, commitmentReliabilityKpi.kpiName, commitmentReliabilityKpi.kpiDetail.kanban)"
