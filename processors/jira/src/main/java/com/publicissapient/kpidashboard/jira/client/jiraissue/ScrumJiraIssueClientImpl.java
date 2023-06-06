@@ -754,7 +754,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	private boolean isValidBacklogStatus(FieldMapping fieldMapping, JiraIssue jiraIssue) {
-		return !(fieldMapping.getJiraDod().contains(jiraIssue.getStatus())
+		return !((CollectionUtils.isNotEmpty(fieldMapping.getJiraDod()) && fieldMapping.getJiraDod().contains(jiraIssue.getStatus()))
 				|| fieldMapping.getJiraLiveStatus().toLowerCase().equalsIgnoreCase(jiraIssue.getStatus()));
 	}
 
