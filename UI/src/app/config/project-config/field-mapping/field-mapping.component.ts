@@ -477,7 +477,8 @@ export class FieldMappingComponent implements OnInit {
       excludeRCAFromFTPR: [[]],
       jiraReadyForRefinement: [[]],
       jiraAcceptedInRefinement: [[]],
-      jiraRejectedInRefinement: [[]]
+      jiraRejectedInRefinement: [[]],
+      jiraFtprRejectStatus: [[]]
     };
 
     this.addAdditionalFilterOptions();

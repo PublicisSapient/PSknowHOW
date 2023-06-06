@@ -86,7 +86,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 		String url = processorUrlConfig.getProcessorUrl(processorName);
 		boolean isSuccess = true;
 		
-		httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(); 
+		httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 		String token = httpServletRequest.getHeader("Authorization");
 		token = CommonUtils.handleCrossScriptingTaintedValue(token);
 		int statuscode = HttpStatus.NOT_FOUND.value();
