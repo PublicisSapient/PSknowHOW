@@ -10,7 +10,7 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 import java.util.List;
 
-public interface CreateIssueBacklog {
+public interface CreateIssueBacklogandIssueBacklogHistory {
 
     void createIssueBacklogandIssueBacklogHistory(List<JiraIssue> jiraIssuesToSave, List<JiraIssueCustomHistory> jiraIssueHistoryToSave, List<JiraIssue> jiraIssuesToDelete, List<JiraIssueCustomHistory> jiraIssueHistoryToDelete, List<IssueBacklog> issueBacklogToSave, List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToSave, List<IssueBacklog> issueBacklogToDelete, List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToDelete, JiraIssue jiraIssue, JiraIssueCustomHistory jiraIssueHistory, IssueField sprint, String issueId, ProjectConfFieldMapping projectConfig, String issueNumber, FieldMapping fieldMapping);
 }

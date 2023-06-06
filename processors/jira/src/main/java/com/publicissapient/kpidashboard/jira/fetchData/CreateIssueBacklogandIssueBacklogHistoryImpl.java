@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class CreateIssueBacklogImpl implements CreateIssueBacklog {
+public class CreateIssueBacklogandIssueBacklogHistoryImpl implements CreateIssueBacklogandIssueBacklogHistory {
 
     @Autowired
     private IssueBacklogRepository issueBacklogRepository;
@@ -88,7 +88,7 @@ public class CreateIssueBacklogImpl implements CreateIssueBacklog {
         return new IssueBacklogCustomHistory();
     }
 
-        private boolean isIssueBacklog(JiraIssue jiraIssue, IssueField sprintField) {
+    private boolean isIssueBacklog(JiraIssue jiraIssue, IssueField sprintField) {
         return  sprintField == null || sprintField.getValue() == null
                 || JiraConstants.EMPTY_STR.equals(sprintField.getValue())
                 || jiraIssue.getSprintAssetState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE);
