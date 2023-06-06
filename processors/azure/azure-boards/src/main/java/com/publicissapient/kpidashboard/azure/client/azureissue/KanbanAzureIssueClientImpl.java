@@ -1158,7 +1158,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 			projectTraceLog = traceLogs.get(0);
 		}
 		LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
-				DateTimeFormatter.ofPattern(DateUtil.DATE_TIME_FORMAT));
+				DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
 
 		for (String issueType : uniqueIssueTypes) {
 
