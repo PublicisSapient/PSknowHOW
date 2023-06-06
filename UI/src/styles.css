@@ -68,6 +68,8 @@
   --color-secondary-blue: #079FFF;
   --color-secondary-yellow: #cdba38;
   --color-secondary-green: #00E6C3;
+  --font-regular: 'FuturaNext_Book', sans-serif;
+  --font-medium: 'FuturaNext_Medium', sans-serif;
 }
 
 
@@ -152,14 +154,14 @@ html, body{
   margin:0;
   height: 100%;
   font-size: 14px !important;
-  font-family: 'FuturaNext_Book', sans-serif;
+  font-family: var(--font-regular);
 }
 h1, h2, h3, h4, h5, h6{
   font-weight: 500;
-  font-family: 'FuturaNext_Medium', sans-serif;
+  font-family: var(--font-medium);
 }
-label{
-  font-family: 'FuturaNext_Medium', sans-serif;
+label, .p-tabview-title, .navigation li a, .text-data,.col-head, .p-tabmenu-nav a, .p-datatable .p-datatable-thead > tr > th{
+  font-family: var(--font-medium);
   font-weight: 500;
 }
 
@@ -1976,8 +1978,8 @@ p-dialog .p-button-cancel.p-button-secondary {
 .wrapper-w-50{
   width: 50%;
 }
-.ng-select .ng-select-container .ng-value-container .ng-placeholder{
-  top: 22px;
+.p-component{
+  font-family: inherit;
 }
 @media only screen and (max-width:768px){
   .wrapper-w-50{
