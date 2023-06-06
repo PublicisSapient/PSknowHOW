@@ -23,9 +23,59 @@
       <div class="{{selectedtype}}" id="{{selectedtype}}">
         <div class="clearfix">
           <div class="right-container col">
+            <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
+            <!-- Iteration commitment kpi start -->
+            <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard w-80 p-mx-auto" *ngIf="commitmentReliabilityKpi">
+              <div class="card-type-1 p-pr-3 p-pl-0">
+                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="commitmentReliabilityKpi"
+                  (downloadExcel)="downloadExcel(commitmentReliabilityKpi.kpiId, commitmentReliabilityKpi.kpiName, commitmentReliabilityKpi.kpiDetail.kanban)"
+                  [dropdownArr]="kpiDropdowns[commitmentReliabilityKpi?.kpiId]" (optionSelected)="handleSelectedOption($event, commitmentReliabilityKpi)"
+                  [showExport]="false" [isShow]="true" [showChartView]="commitmentReliabilityKpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true">
+                  <ng-container *ngIf="!noTabAccess else noDataAccess">
+                    <div class="p-d-flex p-justify-around p-align-center w-100"
+                      *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[commitmentReliabilityKpi?.kpiId]?.length > 0;else noData">
+                      <ng-container *ngFor="let item of kpiChartData[commitmentReliabilityKpi?.kpiId]; let index=index">
+                        <div *ngFor="let x of item.data; let i = index" class="p-3 p-text-center"
+                          [ngClass]="{'p-w-50' : true ,'kpi-content-container': item.data.length ==2 && i!==1 }">
+                          <div class="p-d-flex p-flex-column p-justify-center kpi-sub-headings">
+                            <h3 class="text-label">{{x?.label}}
+                              <img *ngIf="x?.hasOwnProperty('modalValues') && x?.modalValues?.length > 0"
+                                src="../../../assets/img/arrow-down.svg" alt="arrow-down" class="btn-arrow-down"
+                                (click)="handleArrowClick(commitmentReliabilityKpi, x?.label, x?.modalValues)" />
+                            </h3>
+                            <p *ngIf="x?.labelInfo" class="p-m-0">{{x?.labelInfo}}</p>
+                          </div>
+                          <p class="text-data">
+                            <span
+                              [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
+                              != -99 ?
+                              convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
+                            <span
+                              [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit == '%'}"
+                              *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours' && x?.unit?.toLowerCase() !== 'day'">
+                              {{ x?.value != -99 ? x?.unit: ''}}
+                            </span>
+                            <span *ngIf="(x?.value1 !== '') && x?.value1 != -99 && x?.value1 != undefined"
+                              [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
+                              (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ?
+                                convertToHoursIfTime(x?.value1,x?.unit1) : x?.value1)}}</span>
+                                <span
+                                  [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' 
+                                  || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit1 == '%'}"
+                                  *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
+                                  {{ x?.value1 != -99 ? x?.unit1 : ''}}
+                                </span>
+                          </p>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                </app-kpi-card>
+              </div>
+            </div>
+            <!-- Iteration commitment kpi end -->
             <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard" cdkDropList
               (cdkDropListDropped)="drop($event)">
-              <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
                 <div *ngFor="let kpi of upDatedConfigData" cdkDrag class="p-w-50 p-h-fit-content">
 
                   <!-- iteration kpi card container -->
@@ -146,8 +196,8 @@
                     <div class="err"> No Data Available</div>
                   </div>
                 </ng-template>
-              </ng-container>
-            </div>
+              </div>
+            </ng-container>
           </div>
         </div>
       </div>

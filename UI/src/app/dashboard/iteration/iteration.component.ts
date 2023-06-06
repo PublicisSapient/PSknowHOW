@@ -95,6 +95,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   globalConfig;
   sharedObject;
   forzenColumns = ['issue id','issue description'];
+  commitmentReliabilityKpi: object = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -142,7 +143,8 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
-    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
+    this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
+    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi120');
     if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
     } else {
