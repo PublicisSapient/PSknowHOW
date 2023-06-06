@@ -87,7 +87,7 @@
   }
 
   ::ng-deep div.inner-content{
-    font-family: 'FuturaNext_Medium', sans-serif;
+    font-family: var(--font-medium);
     color: #333;
     background-color: #fbfbfb;
     margin: -10px -10px;
