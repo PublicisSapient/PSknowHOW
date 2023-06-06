@@ -191,10 +191,11 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 
 					JenkinsClient jenkinsClient = jenkinsClientFactory.getJenkinsClient(jobType);
 					if (BUILD.equalsIgnoreCase(jobType)) {
-						processBuildJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog, count, proBasicConfig);
+						count += processBuildJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog, proBasicConfig);
 						MDC.put("totalUpdatedCount", String.valueOf(count));
 					} else {
-						processDeployJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog);
+						count += processDeployJob(jenkinsClient, jenkinsServer, processor, processorExecutionTraceLog);
+						MDC.put("totalUpdatedCount", String.valueOf(count));
 					}
 				} catch (RestClientException exception) {
 					executionStatus = false;
@@ -218,15 +219,16 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		return executionStatus;
 	}
 
-	private void processBuildJob(JenkinsClient jenkinsClient, ProcessorToolConnection jenkinsServer,
-			JenkinsProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog, int count,
+	private int processBuildJob(JenkinsClient jenkinsClient, ProcessorToolConnection jenkinsServer,
+			JenkinsProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog,
 			ProjectBasicConfig proBasicConfig) {
+		int buildCount = 0;
 		Map<ObjectId, Set<Build>> buildsByJob = jenkinsClient.getBuildJobsFromServer(jenkinsServer, proBasicConfig);
 		if (MapUtils.isNotEmpty(buildsByJob)) {
 
 			int updatedJobs = addNewBuildDetails(buildsByJob, jenkinsServer, processor.getId(), proBasicConfig);
-			count += updatedJobs;
-			log.info("Job updated for :{}", count);
+			buildCount += updatedJobs;
+			log.info("build Job updated count :{}", buildCount);
 
 		} else {
 			log.error("Job Details not fetched for : {}, job : {}", jenkinsServer.getUrl(), jenkinsServer.getJobName());
@@ -236,11 +238,13 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		processorExecutionTraceLog.setExecutionSuccess(true);
 		processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
+		return buildCount;
 	}
 
 
-	private void processDeployJob(JenkinsClient jenkinsClient, ProcessorToolConnection jenkinsServer,
+	private int processDeployJob(JenkinsClient jenkinsClient, ProcessorToolConnection jenkinsServer,
 			JenkinsProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog) {
+		int deployCount = 0;
 		Map<String, Set<Deployment>> deploymentsByJob = jenkinsClient.getDeployJobsFromServer(jenkinsServer, processor);
 		List<Deployment> existingDeployments = deploymentRepository
 				.findByProjectToolConfigIdAndJobName(jenkinsServer.getId(), jenkinsServer.getJobName());
@@ -249,6 +253,8 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 			if (!saveDeployments(deployments)) {
 				log.info("Deployments already present for job: {} ", jenkinsServer.getJobName());
 			}
+			deployCount = deployments.size();
+			log.info("deploy Job updated count :{}" , deployCount);
 		} else {
 			log.error("Deployments not fetched for : {}, job : {}", jenkinsServer.getUrl(), jenkinsServer.getJobName());
 		}
@@ -256,6 +262,7 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLog.setExecutionSuccess(true);
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
+		return deployCount;
 	}
 
 	private Set<Deployment> findNewDeployments(Map<String, Set<Deployment>> deploymentsByJob,

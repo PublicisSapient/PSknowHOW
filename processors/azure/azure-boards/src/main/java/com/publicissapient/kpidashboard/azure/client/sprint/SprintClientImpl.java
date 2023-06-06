@@ -94,8 +94,7 @@ public class SprintClientImpl implements SprintClient {
 				// fetched and db sprint is active then issues bucket compare as per
 				if (fetchedSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 						&& dbSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)) {
-					log.debug(
-							"DB Active Sprint State -> {} , dbCompletedIssues -> {} , dbNotCompletedIssues -> {} , dbAddedIssues -> {} , dbPuntedIssues -> {}",
+					log.debug("DB Active Sprint State -> {} , dbCompletedIssues -> {} , dbNotCompletedIssues -> {} , dbAddedIssues -> {} , dbPuntedIssues -> {}",
 							fetchedSprintDetails.getSprintID(), getIssuesIdList(dbSprintDetails.getCompletedIssues()),
 							getIssuesIdList(dbSprintDetails.getNotCompletedIssues()), dbSprintDetails.getAddedIssues(),
 							getIssuesIdList(dbSprintDetails.getPuntedIssues()));
@@ -198,9 +197,7 @@ public class SprintClientImpl implements SprintClient {
 			}
 		});
 
-		if (CollectionUtils.isNotEmpty(toBeSavedSprintDetails)) {
-			sprintRepository.saveAll(toBeSavedSprintDetails);
-		}
+		sprintRepository.saveAll(toBeSavedSprintDetails);
 
 		iterationStatusUpdateSPIssuesShuffle(projectConfig, completedIssuesStatus);
 	}
@@ -289,7 +286,7 @@ public class SprintClientImpl implements SprintClient {
 						.filter(sprintIssue -> addedIssues.contains(sprintIssue.getNumber()))
 						.collect(Collectors.toSet());
 				List<String> puntedAndAddedIds = getIssuesIdList(puntedAndAddedWithInSprint);
-				dbPuntedIssues.removeAll(puntedAndAddedIds);
+				dbPuntedIssues.removeAll(puntedAndAddedWithInSprint);
 				dbSprintDetails.setPuntedIssues(dbPuntedIssues);
 				toBeSavedAddedIssues.removeAll(puntedAndAddedIds);
 				log.debug("Sprint Id -> {} , puntedAndAddedIds -> {}", dbSprintDetails.getSprintID(),

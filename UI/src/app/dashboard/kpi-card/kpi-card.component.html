@@ -8,7 +8,7 @@
                         <app-tooltip *ngIf="isTooltip" [data]="kpiData?.kpiDetail?.kpiInfo"
                             (mouseleave)="showTooltip(false)" [showChartView]="showChartView"></app-tooltip>
                     </span>
-                    <img src="../../../assets/img/database-svg.svg" *ngIf="sprintsOverlayVisible && trendValueList?.length > 0"  (click)="prepareData();op.toggle($event);" alt="Sprint Details" class="cursor-pointer p-ml-1 sprint-hover-icon"   pTooltip='<div class="inner-content">
+                    <img src="../../../assets/img/database-svg.svg" *ngIf="sprintsOverlayVisible"  (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event) : '' ;" alt="Sprint Details" class="cursor-pointer p-ml-1 sprint-hover-icon"   pTooltip='<div class="inner-content">
                         Please click on icon for all sprint details.
                     </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper" />
                     <app-comments *ngIf="showCommentIcon" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName" [selectedTab]="selectedTab"></app-comments>
@@ -129,7 +129,7 @@
                         <ng-template pTemplate="body" let-rowData let-columns="columns">
                             <tr>
                                 <ng-container *ngFor="let col of columns">
-                                    <td *ngIf="hasData(col.field)" [innerHTML]="rowData[col.field]" class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}">
+                                    <td *ngIf="hasData(col.field)" [innerHTML]="col.field == 'value' ? rowData[col.field]+rowData['unit'] : rowData[col.field]" class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value','col1':col.field ==='duration'}">
                                     </td>
                                </ng-container>
                             </tr>

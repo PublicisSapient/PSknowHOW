@@ -19,8 +19,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -37,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -65,7 +62,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -99,6 +95,9 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 	@Autowired
 	private FilterHelperService flterHelperService;
+
+	@Autowired
+	private KpiHelperService kpiHelperService;
 
 	@Override
 	public String getQualifierType() {
@@ -317,7 +316,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		List<String> storyIds = getIssueIds(defectListWoDrop);
 		List<JiraIssueCustomHistory> storiesHistory = jiraIssueCustomHistoryRepository.findByStoryIDIn(storyIds);
 
-		removeStoriesWithReturnTransaction(defectListWoDrop, storiesHistory);
+		kpiHelperService.removeStoriesWithReturnTransaction(defectListWoDrop, storiesHistory);
 
 		List<String> storyIdList = new ArrayList<>();
 		sprintWiseStories.forEach(s -> storyIdList.addAll(s.getStoryList()));
@@ -386,42 +385,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		issuesBySprintAndType.removeIf(issue -> storyIdsWithDefect.contains(issue.getNumber()));
 	}
 
-	private void removeStoriesWithReturnTransaction(List<JiraIssue> issuesBySprintAndType,
-			List<JiraIssueCustomHistory> storiesHistory) {
-
-		issuesBySprintAndType.removeIf(issue -> hasReturnTransaction(issue, storiesHistory));
-
-	}
-
-	private boolean hasReturnTransaction(JiraIssue issue, List<JiraIssueCustomHistory> storiesHistory) {
-		JiraIssueCustomHistory jiraIssueCustomHistory = storiesHistory.stream()
-				.filter(issueHistory -> issueHistory.getStoryID().equals(issue.getNumber())).findFirst().orElse(null);
-		if (jiraIssueCustomHistory == null) {
-			return false;
-		} else {
-
-			List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistory.getStatusUpdationLog();
-			Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
-
-			JiraHistoryChangeLog latestClosedStatusDetail = statusUpdationLog.stream()
-					.filter(statusHistory -> statusHistory.getChangedTo().equals(issue.getJiraStatus())).findFirst()
-					.orElse(null);
-
-			if (latestClosedStatusDetail != null) {
-				Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
-				FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
-				List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
-						.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
-				DateTime latestClosedStatusTime = DateTime.parse(latestClosedStatusDetail.getUpdatedOn().toString());
-				return statusUpdationLog.stream()
-						.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString())
-								.isAfter(latestClosedStatusTime))
-						.anyMatch(statusHistory -> storyDeliveredStatuses.contains(statusHistory.getChangedTo()));
-			}
-			return false;
-		}
-
-	}
 
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiId) {

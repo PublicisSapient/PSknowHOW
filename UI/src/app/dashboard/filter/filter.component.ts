@@ -640,6 +640,18 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
+  navigateToHomePage(){
+    const previousSelectedTab = this.router.url.split('/')[2];
+    if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
+      this.kanban = false;
+      this.selectedTab = 'iteration';
+      this.service.setEmptyFilter();
+      this.service.setSelectedType('scrum');
+      this.projectIndex = 0;
+      this.router.navigateByUrl(`/dashboard/iteration`);
+    }
+  }
+
   /** get kpi ordered list starts */
   get kpiFormValue() {
     return this.kpiForm.controls;
