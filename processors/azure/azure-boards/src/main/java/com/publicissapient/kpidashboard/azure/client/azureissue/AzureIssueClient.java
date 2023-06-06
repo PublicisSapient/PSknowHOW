@@ -296,7 +296,7 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 		if (Objects.nonNull(fields.getMicrosoftVSTSSchedulingOriginalEstimate())) {
 			Double originalEstimateInHours = fields.getMicrosoftVSTSSchedulingOriginalEstimate();
 			Double originalEstimateInMinutes = originalEstimateInHours * 60;
-			azureIssue.setRemainingEstimateMinutes(originalEstimateInMinutes.intValue());
+			azureIssue.setOriginalEstimateMinutes(originalEstimateInMinutes.intValue());
 		}
 
 		if (Objects.nonNull(fields.getMicrosoftVSTSSchedulingRemainingWork())) {

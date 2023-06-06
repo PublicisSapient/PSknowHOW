@@ -375,8 +375,6 @@ public class SprintClientImpl implements SprintClient {
 		sprintIssue.setPriority(azureIssue.getPriority());
 		if (azureIssue.getStoryPoints() != null)
 			sprintIssue.setStoryPoints(azureIssue.getStoryPoints());
-		if (azureIssue.getEstimate() != null)
-			sprintIssue.setOriginalEstimate(Double.valueOf(azureIssue.getEstimate()));
 		return sprintIssue;
 	}
 
