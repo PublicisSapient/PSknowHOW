@@ -26,7 +26,7 @@ public class AssigneeCapacity {
 	private Double plannedCapacity;
 	private Double leaves;
 	private Double availableCapacity;
-	private Double happinessRating = 0d;
+	private Integer happinessRating;
 
 
 	@Override

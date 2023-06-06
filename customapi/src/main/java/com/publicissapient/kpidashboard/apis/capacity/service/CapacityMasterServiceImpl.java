@@ -3,15 +3,12 @@ package com.publicissapient.kpidashboard.apis.capacity.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
+import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
+import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -68,6 +65,9 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 	@Autowired
 	private CustomApiConfig customApiConfig;
 
+	@Autowired
+	private HappinessKpiDataRepository happinessKpiDataRepository;
+
 	/**
 	 * This method process the capacity data.
 	 * 
@@ -115,11 +115,18 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				sprintDetailsService.getSprintDetails(project.getId().toHexString()));
 		List<String> sprintIds = sprintDetails.stream().map(SprintDetails::getSprintID).collect(Collectors.toList());
 		List<CapacityKpiData> capacityKpiDataList = capacityKpiDataRepository.findBySprintIDIn(sprintIds);
+		List<HappinessKpiData> happinessKpiDataList = happinessKpiDataRepository.findBySprintIDIn(sprintIds);
 		List<AssigneeCapacity> assigneeCapacityList=null;
 		for (SprintDetails sprint : sprintDetails) {
 			CapacityKpiData capacityKpiData = capacityKpiDataList.stream()
 					.filter(capacityData -> capacityData.getSprintID().equals(sprint.getSprintID())).findAny()
 					.orElse(null);
+
+			HappinessKpiData happinessKpiData = happinessKpiDataList.stream()
+					.filter(data -> data.getSprintID().equals(sprint.getSprintID()))
+					.sorted(Comparator.comparing(HappinessKpiData::getDateOfSubmission).reversed())
+					.findFirst().orElse(null);
+
 
 			CapacityMaster capacityMaster = new CapacityMaster();
 
@@ -128,9 +135,11 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 				capacityMaster.setCapacity(Math.round(capacityKpiData.getCapacityPerSprint() * 100) / 100.0);
 				if(CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity()) && project.isSaveAssigneeDetails()){
 					capacityKpiData.getAssigneeCapacity().stream().forEach(assigneeCapacity -> assigneeCapacity.setLeaves(Optional.ofNullable(assigneeCapacity.getLeaves()).orElse(0D)));
+					setHappinessIndex(happinessKpiData,capacityKpiData.getAssigneeCapacity());
 					capacityMaster.setAssigneeCapacity(capacityKpiData.getAssigneeCapacity());
 					//if in normal flow assignees found saving it for future
 					assigneeCapacityList= createAssigneeData(capacityKpiData.getAssigneeCapacity());
+
 				}
 			} else {
 				capacityMaster.setId(null);
@@ -149,6 +158,18 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 		//reversing the list to show future->active->closed
 		Collections.reverse(capacityMasterList);
 		return capacityMasterList;
+	}
+
+	private void setHappinessIndex(HappinessKpiData happinessKpiData, List<AssigneeCapacity> assigneeCapacityList) {
+	  if(Objects.nonNull(happinessKpiData)&&CollectionUtils.isNotEmpty(happinessKpiData.getUserRatingList())){
+	  	assigneeCapacityList.forEach(assigneeCapacity -> {
+			UserRatingData userRatingData = happinessKpiData.getUserRatingList().stream().filter(data -> data.getUserId().equals(assigneeCapacity.getUserId())).findFirst().orElse(null);
+			if(Objects.nonNull(userRatingData)){
+				assigneeCapacity.setHappinessRating(userRatingData.getRating());
+			}
+		});
+
+	  }
 	}
 
 	private List<SprintDetails> filterSprints(List<SprintDetails> allSprints) {
@@ -253,6 +274,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 			capacity.setRole(assignee.getRole());
 			capacity.setPlannedCapacity(assignee.getPlannedCapacity());
 			capacity.setLeaves(0.0d);
+			capacity.setHappinessRating(assignee.getHappinessRating());
 			newAssigneeList.add(capacity);
 		});
 		return newAssigneeList;
