@@ -1429,6 +1429,7 @@ public class KPIExcelUtility {
 				populateAssignee(jiraIssue, excelData);
 				excelData.setRootCause(jiraIssue.getRootCauseList());
 				excelData.setPriority(jiraIssue.getPriority());
+				excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());
 				kpiExcelData.add(excelData);
 			});
 		}

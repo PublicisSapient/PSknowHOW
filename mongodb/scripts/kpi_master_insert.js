@@ -3965,5 +3965,30 @@ db.getCollection('kpi_master').insert(
        "kpiFilter": "multiSelectDropDown",
        "boxType": "3_column",
        "calculateMaturity": false
-     }
+     },
+     {
+         "kpiId": "kpi150",
+         "kpiName": "Release Burnup",
+         "maxValue": "",
+         "kpiUnit": "Count",
+         "isDeleted": "False",
+         "defaultOrder": 1,
+         "kpiCategory": "Release",
+         "kpiSource": "Jira",
+         "groupId": 9,
+         "thresholdValue": "",
+         "kanban": false,
+         "chartType": "CumulativeMultilineChart",
+         "kpiInfo": {
+             "definition": "Release Burnup KPI shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release."
+         },
+         "xAxisLabel": "",
+         "yAxisLabel": "Count",
+         "isPositiveTrend": true,
+         "showTrend": false,
+         "isAdditionalFilterSupport": false,
+         "kpiFilter": "radioButton",
+         "boxType": "chart",
+         "calculateMaturity": false
+       }
 ]);
