@@ -1100,6 +1100,22 @@ export class UploadComponent implements OnInit {
         delete postData['sprintState'];
         this.http_service.saveOrUpdateAssignee(postData).subscribe(response => {
             if (response && response?.success && response?.data) {
+                this.sendSprintHappinessIndex(selectedSprint);
+            } else {
+                this.messageService.add({ severity: 'error', summary: 'Error in Saving Assignee Details. Please try after sometime!' });
+            }
+        });
+    }
+
+    sendSprintHappinessIndex(selectedSprint) {
+        const postData = {
+            basicProjectConfigId: selectedSprint['basicProjectConfigId'],
+            sprintID: selectedSprint['sprintNodeId'],
+            userRatingList: selectedSprint['assigneeCapacity'].map(assignee => ({ userId: assignee['userId'], userName: assignee['userName'], rating: assignee['happinessRating'] }))
+        };
+
+        this.http_service.saveOrUpdateSprintHappinessIndex(postData).subscribe(response => {
+            if (response && response?.success && response?.data) {
                 this.getCapacityData(selectedSprint['basicProjectConfigId']);
                 this.messageService.add({ severity: 'success', summary: 'Assignee Details saved successfully!' });
             } else {

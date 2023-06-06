@@ -347,47 +347,64 @@
                           [rowsPerPageOptions]="[20,25,30]" [showCurrentPageReport]="true">
                             <ng-template pTemplate="header">
                                 <tr class="expanded-table-header-row">
-                                  <th pSortableColumn="userName" class="expanded-table-header-cell" [style]="{'width':'25%'}">User Name <p-sortIcon field="userName"></p-sortIcon></th>
-                                  <th pSortableColumn="happinessRating" class="expanded-table-header-cell" [style]="{'width':'25%'}">Happiness Rating <p-sortIcon field="happinessRating"></p-sortIcon></th>
-                                  <th pSortableColumn="role" class="expanded-table-header-cell" [style]="{'width':'25%'}">Domain <p-sortIcon field="role"></p-sortIcon></th>
-                                  <th pSortableColumn="plannedCapacity" class="expanded-table-header-cell">Planned Capacity (in Hrs) <p-sortIcon field="plannedCapacity"></p-sortIcon></th>
-                                  <th pSortableColumn="leaves" class="expanded-table-header-cell">Leaves (in Hrs) <p-sortIcon field="leaves"></p-sortIcon></th>
-                                  <th pSortableColumn="availableCapacity" class="expanded-table-header-cell">Available Capacity (in Hrs) <p-sortIcon field="availableCapacity"></p-sortIcon></th>
+                                  <th pSortableColumn="userName" class="expanded-table-header-cell" [style]="{'width':'25%'}">
+                                    <div>
+                                      <span [ngClass]="{'editable': projectCapacityEditMode}">User Name</span>
+                                      <p-sortIcon field="userName"></p-sortIcon>
+                                    </div>
+                                  </th>
+                                  <th pSortableColumn="happinessRating" class="expanded-table-header-cell" [style]="{'width':'25%'}">
+                                    <div>
+                                      <span [ngClass]="{'editable': projectCapacityEditMode}">Happiness Rating</span>
+                                      <p-sortIcon field="happinessRating"></p-sortIcon>
+                                    </div>
+                                  </th>
+                                  <th pSortableColumn="role" class="expanded-table-header-cell" [style]="{'width':'25%'}">
+                                    <div>
+                                      <span [ngClass]="{'editable': projectCapacityEditMode}">Domain</span>
+                                      <p-sortIcon field="role"></p-sortIcon>
+                                    </div>
+                                  </th>
+                                  <th pSortableColumn="plannedCapacity" class="expanded-table-header-cell">
+                                    <div>
+                                      <span [ngClass]="{'editable': projectCapacityEditMode}">Planned Capacity (in Hrs)</span>
+                                      <p-sortIcon field="plannedCapacity"></p-sortIcon>
+                                    </div>
+                                  </th>
+                                  <th pSortableColumn="leaves" class="expanded-table-header-cell">
+                                    <div>
+                                      <span [ngClass]="{'editable': projectCapacityEditMode}">Leaves (in Hrs)</span>
+                                      <p-sortIcon field="leaves"></p-sortIcon>
+                                    </div>
+                                  </th>
+                                  <th pSortableColumn="availableCapacity" class="expanded-table-header-cell">
+                                    <div>
+                                      <span [ngClass]="{'editable': projectCapacityEditMode}">Available Capacity (in Hrs)</span>
+                                      <p-sortIcon field="availableCapacity"></p-sortIcon>
+                                    </div>
+                                  </th>
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-assignee let-rowIndex="rowIndex">
                                 <tr class="expanded-table-body-row">
                                   <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '- -'}}</td>
                                   <td class="expanded-table-body-cell">
-                                    <form id="smileys">
-        
-                                      <!-- <label for="disappointed" class="disappointed"></label> -->
-                                      <input type="radio" name="smiley" value="1" id="disappointed" class="disappointed">
-                  
-                                      <input type="radio" name="smiley" value="2" class="sad">
-                  
-                                      <input type="radio" name="smiley" value="3" class="neutral">
-                  
-                                      <input type="radio" name="smiley" value="4" class="happy">
-                  
-                                      <input type="radio" name="smiley" value="5" class="ecstatic">
-                  
-                                    </form>
+                                    <app-rating [editable]="projectCapacityEditMode" [currentAssignee]="assignee"></app-rating>
                                   </td>
                                   <td class="expanded-table-body-cell">
-                                    <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'200px'}"
+                                    <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'150px'}"
                                     [formControl]="selectedSprintAssigneFormArray[rowIndex]?.role" (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'role')"></p-dropdown>
                                     <ng-template #showRole>{{assignee?.role ? projectAssigneeRolesObj[assignee?.role] : '- -'}}</ng-template>
                                   </td>
                                   <td class="expanded-table-body-cell">
                                     <input type="number" min="0" pInputText *ngIf="projectCapacityEditMode;else showPlannedCapacity"
-                                    (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'plannedCapacity')" [style]="{'width':'150px'}"
+                                    (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'plannedCapacity')" [style]="{'width':'120px'}"
                                     [formControl]="selectedSprintAssigneFormArray[rowIndex]?.plannedCapacity" (keypress)="validateInput($event)">
                                     <ng-template #showPlannedCapacity>{{assignee?.plannedCapacity ? assignee?.plannedCapacity : '- -'}}</ng-template></td>
                                   <td class="expanded-table-body-cell" [style]="{'position':'relative'}">
                                     <input type="number"  min="0" (keypress)="validateInput($event)"
                                     pInputText *ngIf="projectCapacityEditMode;else showLeaves" [formControl]="selectedSprintAssigneFormArray[rowIndex]?.leaves"
-                                    (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'leaves')" [style]="{'width':'150px'}" [ngClass]="{'ng-invalid':selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors }">
+                                    (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'leaves')" [style]="{'width':'120px'}" [ngClass]="{'ng-invalid':selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors }">
                                     <small *ngIf="selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors && projectCapacityEditMode"  class="p-error-block">value must be less than or equal to plannedCapacity.</small>
                                     <ng-template #showLeaves>{{assignee?.leaves ? assignee?.leaves : '- -'}}</ng-template></td>
                                   <td class="expanded-table-body-cell">{{assignee?.availableCapacity ? assignee?.availableCapacity : '- -'}}</td>

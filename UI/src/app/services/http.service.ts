@@ -144,6 +144,7 @@ import { SharedService } from './shared.service';
     private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData';
     private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
     private postKpiColumnsConfigUrl =this.baseUrl + '/api/kpi-column-config/kpiColumnConfig';
+    private saveHappinessIndexForSprintUrl = this.baseUrl + '/api/jira/happiness';
     userName : string;
     userEmail : string;
     constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private sharedService : SharedService) {
@@ -745,6 +746,10 @@ import { SharedService } from './shared.service';
 
     saveOrUpdateAssignee(postData){
         return this.http.post<any>(this.saveAssigneeForProjectUrl,postData);
+    }
+
+    saveOrUpdateSprintHappinessIndex(postData) {
+        return this.http.post<any>(this.saveHappinessIndexForSprintUrl, postData);
     }
 
     getkpiColumns(projectBasicConfigId,kpiId){
