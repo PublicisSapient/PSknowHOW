@@ -172,7 +172,7 @@ export class MultilineComponent implements OnChanges {
       ++power;
     }
     divisor = Math.pow(10, power > 1 ? power - 1 : 1);
-    if (maxYValue > 0 && maxYValue <= 5) {
+    if (maxYValue >= 0 && maxYValue <= 5) {
       maxYValue = 5;
     } else if (maxYValue > 5 && maxYValue <= 50) {
       maxYValue = 50;
@@ -184,6 +184,10 @@ export class MultilineComponent implements OnChanges {
       maxYValue = 500;
     } else if (maxYValue > 500) {
       maxYValue += divisor;
+    }
+
+    if (this.kpiId === 'kpi149') {
+      maxYValue = 5;
     }
 
     const yScale = d3
