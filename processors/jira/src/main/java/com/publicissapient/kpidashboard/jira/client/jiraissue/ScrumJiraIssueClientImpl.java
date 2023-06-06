@@ -704,7 +704,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// jira_issue_custom_history
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
 				if (isIssueBacklog(jiraIssue, sprint) && StringUtils.isNotBlank(jiraIssue.getProjectID())
-						&& !jiraIssue.getTypeName().equalsIgnoreCase("Epic")) {
+						&& !jiraIssue.getTypeName().equalsIgnoreCase("Epic") &&
+						isValidBacklogStatus(fieldMapping, jiraIssue)) {
 					concertJiraIssueToBacklog(jiraIssue, issueBacklog);
 					concertJiraIssueHistoryToBacklogHistory(jiraIssueHistory, issueBacklogCustomHistory);
 					//When issue is moved from active sprint to backlog/future sprint
@@ -750,6 +751,11 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
 				.collect(Collectors.toSet()));
 		return jiraIssuesToSave;
+	}
+
+	private boolean isValidBacklogStatus(FieldMapping fieldMapping, JiraIssue jiraIssue) {
+		return !((CollectionUtils.isNotEmpty(fieldMapping.getJiraDod()) && fieldMapping.getJiraDod().contains(jiraIssue.getStatus()))
+				|| fieldMapping.getJiraLiveStatus().toLowerCase().equalsIgnoreCase(jiraIssue.getStatus()));
 	}
 
 	private void concertJiraIssueHistoryToBacklogHistory(JiraIssueCustomHistory jiraIssueHistory, IssueBacklogCustomHistory issueBacklogCustomHistory) {
