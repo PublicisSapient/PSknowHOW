@@ -96,7 +96,6 @@ class FetchScrumReleaseDataImplTest {
 
     private void prepareProjectConfig() {
         //Online Project Config data
-
         scrumProjectMapping.setBasicProjectConfigId(new ObjectId("5e15d8b195fe1300014538ce"));
         scrumProjectMapping.setProjectName("TEST Project Internal");
         SubProjectConfig subProjectConfig = new SubProjectConfig();
