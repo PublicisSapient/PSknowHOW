@@ -475,12 +475,14 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		return calculateKpiValueForDouble(valueList, kpiName);
 	}
 
+	
+
 	public List<JiraIssue> getTotalSubTasks(List<JiraIssue> allSubTasks, SprintDetails sprintDetails,
 			List<JiraIssueCustomHistory> subTaskHistory) {
-		LocalDateTime sprintEndDate = sprintDetails.getState().equalsIgnoreCase(CLOSED)
+		LocalDateTime sprintEndDate = sprintDetails.getCompleteDate() != null
 				? LocalDateTime.parse(sprintDetails.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
 				: LocalDateTime.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
-		LocalDateTime sprintStartDate = sprintDetails.getState().equalsIgnoreCase(CLOSED)
+		LocalDateTime sprintStartDate = sprintDetails.getActivatedDate() != null
 				? LocalDateTime.parse(sprintDetails.getActivatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
 				: LocalDateTime.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
 		FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetails.getBasicProjectConfigId());
