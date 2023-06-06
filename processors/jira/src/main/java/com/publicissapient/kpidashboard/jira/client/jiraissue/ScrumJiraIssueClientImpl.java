@@ -703,28 +703,23 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
-				if (isIssueBacklog(jiraIssue, sprint) && StringUtils.isNotBlank(jiraIssue.getProjectID())
-						&& !jiraIssue.getTypeName().equalsIgnoreCase("Epic") &&
-						isValidBacklogStatus(fieldMapping, jiraIssue)) {
-					concertJiraIssueToBacklog(jiraIssue, issueBacklog);
-					concertJiraIssueHistoryToBacklogHistory(jiraIssueHistory, issueBacklogCustomHistory);
-					//When issue is moved from active sprint to backlog/future sprint
-					if(jiraIssuePresentInDb)
+				if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
+					if (backlogPresentInDb
+							&& !(isIssueBacklog(jiraIssue, sprint) && isValidBacklogStatus(fieldMapping, jiraIssue)))
 					{
-						jiraIssuesToDelete.add(jiraIssue);
-						jiraIssueHistoryToDelete.add(jiraIssueHistory);
+						issueBacklogToDelete.add(issueBacklog);
+						issueBacklogCustomHistoryToDelete.add(issueBacklogCustomHistory);
 					}
-					issueBacklogCustomHistoryToSave.add(issueBacklogCustomHistory);
-					issueBacklogToSave.add(issueBacklog);
-				}
-				else if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
-                     if(backlogPresentInDb)
-					 {
-						 issueBacklogToDelete.add(issueBacklog);
-						 issueBacklogCustomHistoryToDelete.add(issueBacklogCustomHistory);
-					 }
 					jiraIssuesToSave.add(jiraIssue);
 					jiraIssueHistoryToSave.add(jiraIssueHistory);
+				}
+				if (isIssueBacklog(jiraIssue, sprint) && StringUtils.isNotBlank(jiraIssue.getProjectID())
+						&& !jiraIssue.getTypeName().equalsIgnoreCase("Epic")
+						&& isValidBacklogStatus(fieldMapping, jiraIssue)) {
+					concertJiraIssueToBacklog(jiraIssue, issueBacklog);
+					concertJiraIssueHistoryToBacklogHistory(jiraIssueHistory, issueBacklogCustomHistory);
+					issueBacklogCustomHistoryToSave.add(issueBacklogCustomHistory);
+					issueBacklogToSave.add(issueBacklog);
 				}
 
 			}
