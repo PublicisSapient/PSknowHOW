@@ -231,6 +231,7 @@
                           <th pSortableColumn="userName" class="expanded-table-header-cell" [style]="{'width':'25%'}">User Name <p-sortIcon field="userName">
                             </p-sortIcon>
                           </th>
+                
                           <th pSortableColumn="role" class="expanded-table-header-cell" [style]="{'width':'25%'}">Domain <p-sortIcon
                               field="role"></p-sortIcon>
                           </th>
@@ -248,6 +249,7 @@
                       <ng-template pTemplate="body" let-assignee let-rowIndex="rowIndex">
                         <tr class="expanded-table-body-row">
                           <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '- -'}}</td>
+      
                           <td class="expanded-table-body-cell">
                             <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'200px'}"
                             [formControl]="selectedSprintAssigneFormArray[rowIndex]?.role" (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'role')"></p-dropdown>
@@ -346,6 +348,7 @@
                             <ng-template pTemplate="header">
                                 <tr class="expanded-table-header-row">
                                   <th pSortableColumn="userName" class="expanded-table-header-cell" [style]="{'width':'25%'}">User Name <p-sortIcon field="userName"></p-sortIcon></th>
+                                  <th pSortableColumn="happinessRating" class="expanded-table-header-cell" [style]="{'width':'25%'}">Happiness Rating <p-sortIcon field="happinessRating"></p-sortIcon></th>
                                   <th pSortableColumn="role" class="expanded-table-header-cell" [style]="{'width':'25%'}">Domain <p-sortIcon field="role"></p-sortIcon></th>
                                   <th pSortableColumn="plannedCapacity" class="expanded-table-header-cell">Planned Capacity (in Hrs) <p-sortIcon field="plannedCapacity"></p-sortIcon></th>
                                   <th pSortableColumn="leaves" class="expanded-table-header-cell">Leaves (in Hrs) <p-sortIcon field="leaves"></p-sortIcon></th>
@@ -355,6 +358,22 @@
                             <ng-template pTemplate="body" let-assignee let-rowIndex="rowIndex">
                                 <tr class="expanded-table-body-row">
                                   <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '- -'}}</td>
+                                  <td class="expanded-table-body-cell">
+                                    <form id="smileys">
+        
+                                      <!-- <label for="disappointed" class="disappointed"></label> -->
+                                      <input type="radio" name="smiley" value="1" id="disappointed" class="disappointed">
+                  
+                                      <input type="radio" name="smiley" value="2" class="sad">
+                  
+                                      <input type="radio" name="smiley" value="3" class="neutral">
+                  
+                                      <input type="radio" name="smiley" value="4" class="happy">
+                  
+                                      <input type="radio" name="smiley" value="5" class="ecstatic">
+                  
+                                    </form>
+                                  </td>
                                   <td class="expanded-table-body-cell">
                                     <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles" optionLabel="name" optionValue="value" *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'200px'}"
                                     [formControl]="selectedSprintAssigneFormArray[rowIndex]?.role" (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'role')"></p-dropdown>

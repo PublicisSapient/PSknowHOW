@@ -145,13 +145,13 @@ public class JiraServiceR {
 					return responseList;
 				}
 
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(), groupId,
-						kpiRequest.getSprintIncluded());
-				if (!kpiRequest.getRequestTrackerId().toLowerCase()
-						.contains(KPISource.EXCEL.name().toLowerCase()) && null != cachedData) {
-					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
-					return (List<KpiElement>) cachedData;
-				}
+//				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(), groupId,
+//						kpiRequest.getSprintIncluded());
+//				if (!kpiRequest.getRequestTrackerId().toLowerCase()
+//						.contains(KPISource.EXCEL.name().toLowerCase()) && null != cachedData) {
+//					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
+//					return (List<KpiElement>) cachedData;
+//				}
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),

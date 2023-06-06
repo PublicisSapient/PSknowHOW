@@ -21,8 +21,14 @@
             <ng-container *ngIf="!checkIfArray(rowData[column]); else displayArrayData">
               <a *ngIf="rowData[column]?.hasOwnProperty('hyperlink') ; else displayCellData"
                 [href]="rowData[column]['hyperlink']" class="text-blue" target="_blank">{{rowData[column]['text']}}</a>
-              <ng-template #displayCellData>{{rowData[column]?.length > 60 ? (rowData[column].slice(0,60)+'...') :
-                rowData[column]}}
+              <ng-template #displayCellData>
+                <ng-container *ngIf="column.toLowerCase() === 'sprint rating'; else showOtherData">
+                  <img [src]="sprintRatingObj[rowData[column]]" />
+                </ng-container>
+                <ng-template #showOtherData> 
+                  {{rowData[column]?.length > 60 ? (rowData[column].slice(0,60)+'...') :
+                  rowData[column]}}
+                </ng-template>
               </ng-template>
             </ng-container>
 

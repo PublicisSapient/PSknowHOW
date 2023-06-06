@@ -22,8 +22,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.apis.jira.scrum.service.HappinessKpiServiceImpl;
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiDTO;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +77,9 @@ public class JiraController {
 
 	@Autowired
 	private CacheService cacheService;
+
+	@Autowired
+	private HappinessKpiServiceImpl happinessKpiService;
 
 	@Autowired
 	private JiraToolConfigServiceImpl jiraToolConfigService;
@@ -170,5 +176,12 @@ public class JiraController {
 			response = new ServiceResponse(false, "Error while fetching Assignee List", assigneeResponseDTO);
 		}
 		return response;
+	}
+
+	@PostMapping(value = "/jira/happiness", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> saveHappinessKPIData(
+			@Valid @RequestBody HappinessKpiDTO happinessKpiDTO) {
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(happinessKpiService.saveHappinessKpiData(happinessKpiDTO));
 	}
 }

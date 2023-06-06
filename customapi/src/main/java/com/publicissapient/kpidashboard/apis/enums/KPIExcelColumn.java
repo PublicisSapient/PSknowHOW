@@ -213,7 +213,9 @@ public enum KPIExcelColumn {
 
     DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
 
-    RELEASE_PROGRESS("kpi147",Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority","Assignee", "Issue Status"));
+    RELEASE_PROGRESS("kpi147",Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority","Assignee", "Issue Status")),
+
+    HAPPINESS_INDEX_RATE("kpi149",Arrays.asList("Sprint Name","User Name","Sprint Rating"));
 
     // @formatter:on
 

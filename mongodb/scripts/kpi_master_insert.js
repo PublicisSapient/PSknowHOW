@@ -3965,5 +3965,34 @@ db.getCollection('kpi_master').insert(
        "kpiFilter": "multiSelectDropDown",
        "boxType": "3_column",
        "calculateMaturity": false
-     }
+     },
+     {
+            "kpiId": "kpi149",
+            "kpiName": "Happiness KPI",
+            "maxValue": "5",
+            "kpiUnit": "",
+            "isDeleted": "False",
+            "defaultOrder": 5,
+            "kpiSource": "Jira",
+            "groupId": 2,
+            "thresholdValue": "",
+            "kanban": false,
+            "chartType": "line",
+            "kpiInfo": {
+              "details": [
+                {
+                  "type": "paragraph",
+                  "value": "Need to track people related KPI, the first KPI will be tracking moral of team members"
+                }
+              ]
+            },
+            "xAxisLabel": "Sprints",
+            "yAxisLabel": "Rating",
+            "isPositiveTrend": true,
+            "showTrend": false,
+            "isAdditionalFilterSupport": false,
+            "kpiFilter": "multiSelectDropDown",
+            "boxType": "3_column",
+            "calculateMaturity": false
+          }
 ]);
