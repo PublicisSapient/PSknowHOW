@@ -8,7 +8,7 @@
             <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard" cdkDropList
               (cdkDropListDropped)="drop($event)">
               <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
-                <div *ngFor="let kpi of upDatedConfigData" cdkDrag class="p-w-50 p-h-fit-content">
+                <div *ngFor="let kpi of upDatedConfigData" cdkDrag class="wrapper-w-50 p-h-fit-content">
                   <!-- Milestone kpi card container -->
 
                   <div class="card-type-1 p-mb-3 p-pr-3 p-pl-0" *ngIf="kpi?.kpiDetail?.boxType !== 'chart' ;else chart">
@@ -21,7 +21,7 @@
                           *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
                           <ng-container *ngFor="let item of kpiChartData[kpi?.kpiId]; let index=index">
                             <div *ngFor="let x of item.data; let i = index" class="p-3 p-text-center"
-                              [ngClass]="{'p-w-50' : true ,'kpi-content-container': item.data.length ==2 && i!==1 }">
+                              [ngClass]="{'wrapper-w-50' : true ,'kpi-content-container': item.data.length ==2 && i!==1 }">
                               <div class="p-d-flex p-flex-column p-justify-center kpi-sub-headings">
                                 <h3 class="text-label">{{x?.label}}
                                   <img *ngIf="x?.hasOwnProperty('modalValues') && x?.modalValues?.length > 0"

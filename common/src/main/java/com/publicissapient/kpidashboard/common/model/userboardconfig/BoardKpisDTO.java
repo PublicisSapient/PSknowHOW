@@ -33,6 +33,7 @@ public class BoardKpisDTO {
 	private boolean isEnabled;
 	private boolean isShown;
 	private int order;
+	private String subCategoryBoard;
 	private KpiMaster kpiDetail;
 
 	/**
