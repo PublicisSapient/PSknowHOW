@@ -276,16 +276,15 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			} else {
 				dataCount.setLineValue(sprintVelocityForCurrentLeaf / fieldMapping.getStoryPointToHourMapping());
 			}
-			dataCount.setHoverValue(new HashMap<>());
 			if (!avgVelocityCount.containsKey(projId)) {
 				avgVelocityCount.put(projId, 0);
 			}
 
 			double averageVelocity = getAverageVelocity(sprintVelocity, avgVelocityCount.get(projId), projId);
 			if (averageVelocity > 0) {
-				dataCount.setValue(dataCount.getLineValue());
+				dataCount.setValue(averageVelocity);
 				Map<String, Object> hoverValue = new HashMap<>();
-				hoverValue.put(AVERAGE_VELOCITY, String.valueOf(averageVelocity));
+				hoverValue.put(AVERAGE_VELOCITY, String.valueOf(Math.round(averageVelocity)));
 				hoverValue.put(VELOCITY, dataCount.getLineValue());
 				dataCount.setHoverValue(hoverValue);
 				avgVelocityCount.put(projId, avgVelocityCount.get(projId) + 1);

@@ -1271,13 +1271,12 @@ db.getCollection('kpi_master').insert(
     "maxValue": "300",
     "kpiUnit": "SP",
     "isDeleted": "False",
-    "kpiCategory":"Backlog",
     "defaultOrder": 5,
     "kpiSource": "Jira",
     "groupId": 2,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "line",
+    "chartType": "grouped_column_plus_line",
     "kpiInfo": {
       "definition": "SPRINT VELOCITY measures the rate at which a team can deliver every Sprint.Since a stable velocity helps in forecasting, the KPI also measures the last 5 sprints average velocity and plots it along with the sprint velocity",
       "formula": [
