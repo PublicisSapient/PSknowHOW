@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,12 +42,14 @@ public class IterationKpiValue implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String filter1;
-
 	private String filter2;
 	private List<IterationKpiData> data;
 	private List<DataCount> value;
+	private List<DataCountGroup> dataGroup;
 	private List<String> metaDataColumns;
+	private List<String> additionalGroup;
 	private Map<String,String> markerInfo;
+
 	public IterationKpiValue(String filter1, String filter2, List<IterationKpiData> data) {
 		this.filter1 = filter1;
 		this.filter2 = filter2;
