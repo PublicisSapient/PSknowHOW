@@ -393,7 +393,9 @@ public enum KPICode {
 	/**
 	 * Refinement Rejection Rate
 	 */
-	REFINEMENT_REJECTION_RATE("kpi139", KPISource.JIRA.name());
+	REFINEMENT_REJECTION_RATE("kpi139", KPISource.JIRA.name()),
+
+	RELEASE_BURNUP("kpi150", KPISource.JIRA.name());
 
 	// @formatter:on
 

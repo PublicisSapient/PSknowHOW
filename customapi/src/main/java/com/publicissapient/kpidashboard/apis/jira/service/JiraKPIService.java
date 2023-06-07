@@ -284,6 +284,10 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 				.collect(Collectors.toList());
 	}
 
+	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass() {
+		return jiraService.getJiraIssuesCustomHistoryForCurrentSprint();
+	}
+
 	public List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(Map<String, Set<String>> projectWiseDefectTypes) {
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		List<JiraIssue> jiraIssuesForCurrentSprint = jiraService.getJiraIssuesForCurrentSprint();
@@ -319,4 +323,9 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		overAllmodalValues.add(iterationKpiModalValue);
 		modalValues.add(iterationKpiModalValue);
 	}
+
+	public List<String> getReleaseList() {
+		return jiraService.getReleaseList();
+	}
+
 }
