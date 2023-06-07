@@ -8,6 +8,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepos
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,31 +34,30 @@ public class CreateIssueBacklogandIssueBacklogHistoryImpl implements CreateIssue
         boolean jiraIssuePresentInDb = jiraIssue.getIssueId() != null;
         boolean backlogPresentInDb = issueBacklog.getIssueId() != null;
 
-        if (isIssueBacklog(jiraIssue, sprint) && StringUtils.isNotBlank(jiraIssue.getProjectID())
-                && !jiraIssue.getTypeName().equalsIgnoreCase("Epic") &&
-                isValidBacklogStatus(fieldMapping, jiraIssue)) {
-            concertJiraIssueToBacklog(jiraIssue, issueBacklog);
-            concertJiraIssueHistoryToBacklogHistory(jiraIssueHistory, issueBacklogCustomHistory);
-            //When issue is moved from active sprint to backlog/future sprint
-            if (jiraIssuePresentInDb) {
-                jiraIssuesToDelete.add(jiraIssue);
-                jiraIssueHistoryToDelete.add(jiraIssueHistory);
-            }
-            issueBacklogCustomHistoryToSave.add(issueBacklogCustomHistory);
-            issueBacklogToSave.add(issueBacklog);
-        } else if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
-            if (backlogPresentInDb) {
+        if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
+            if (backlogPresentInDb
+                    && !(isIssueBacklog(jiraIssue, sprint) && isValidBacklogStatus(fieldMapping, jiraIssue)))
+            {
                 issueBacklogToDelete.add(issueBacklog);
                 issueBacklogCustomHistoryToDelete.add(issueBacklogCustomHistory);
             }
             jiraIssuesToSave.add(jiraIssue);
             jiraIssueHistoryToSave.add(jiraIssueHistory);
         }
+
+        if (isIssueBacklog(jiraIssue, sprint) && StringUtils.isNotBlank(jiraIssue.getProjectID())
+                && !jiraIssue.getTypeName().equalsIgnoreCase("Epic") &&
+                isValidBacklogStatus(fieldMapping, jiraIssue)) {
+            concertJiraIssueToBacklog(jiraIssue, issueBacklog);
+            concertJiraIssueHistoryToBacklogHistory(jiraIssueHistory, issueBacklogCustomHistory);
+            issueBacklogCustomHistoryToSave.add(issueBacklogCustomHistory);
+            issueBacklogToSave.add(issueBacklog);
+        }
     }
 
     private boolean isValidBacklogStatus(FieldMapping fieldMapping, JiraIssue jiraIssue) {
-            return !(fieldMapping.getJiraDod().contains(jiraIssue.getStatus())
-                    || fieldMapping.getJiraLiveStatus().toLowerCase().equalsIgnoreCase(jiraIssue.getStatus()));
+        return !((CollectionUtils.isNotEmpty(fieldMapping.getJiraDod()) && fieldMapping.getJiraDod().contains(jiraIssue.getStatus()))
+                || fieldMapping.getJiraLiveStatus().toLowerCase().equalsIgnoreCase(jiraIssue.getStatus()));
     }
 
     private IssueBacklog getIssueBacklog(ProjectConfFieldMapping projectConfig, String issueId) {
