@@ -64,6 +64,7 @@ public class DataCount implements Serializable {
 	private String executed;
 	private String passed;
 	private String subFilter;
+	private String lineCategory;
 	private String date;
 	private Integer noOfRelease;
 	private String startDate;
