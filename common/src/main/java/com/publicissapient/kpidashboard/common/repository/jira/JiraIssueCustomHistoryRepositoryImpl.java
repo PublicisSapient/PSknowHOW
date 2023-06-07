@@ -54,13 +54,12 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	@Autowired
 	private MongoOperations operations;
 
-	private static final String STORY_SPRINT_DETAILS = "storySprintDetails";
 	private static final String STATUS_CHANGE_LOG = "statusUpdationLog";
+	private static final String VERSION_CHANGE_LOG = "fixVersionUpdationLog";
 	private static final String UPDATED_ON = "statusUpdationLog.updatedOn";
 	private static final String STORY_ID = "storyID";
 	private static final String STORY_TYPE = "storyType";
 	private static final String TICKET_CREATED_DATE_FIELD = "createdDate";
-	private static final String PROJECT_COMP_ID = "projectComponentId";
 	private static final String STATUS = "statusUpdationLog.changedTo";
 	private static final String START_TIME = "T00:00:00.000Z";
 	private static final String END_TIME = "T23:59:59.000Z";
@@ -233,6 +232,10 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
+		query.fields().include(STORY_ID);
+		query.fields().include(BASIC_PROJ_CONF_ID);
+		query.fields().include(STATUS_CHANGE_LOG);
+		query.fields().include(VERSION_CHANGE_LOG);
 		return operations.find(query, JiraIssueCustomHistory.class);
 
 	}

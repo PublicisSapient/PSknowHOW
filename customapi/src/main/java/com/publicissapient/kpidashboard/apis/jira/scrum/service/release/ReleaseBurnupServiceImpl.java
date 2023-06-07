@@ -126,11 +126,11 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			Collections.sort(fixVersionUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 			int lastIndex = fixVersionUpdationLog.size() - 1;
 			fixVersionUpdationLog.stream().filter(updateLogs -> updateLogs.getChangedTo().equalsIgnoreCase(releaseName)
-					|| updateLogs.getChangedFrom().equalsIgnoreCase(releaseName)).forEach(updateLogs -> {
+					|| updateLogs.getChangedFrom().contains(releaseName)).forEach(updateLogs -> {
 						List<JiraIssue> jiraIssueList = getRespectiveJiraIssue(releaseIssue, issueHistory);
 						LocalDate updatedLog = updateLogs.getUpdatedOn().toLocalDate();
-						if (updateLogs.getChangedTo().equalsIgnoreCase(releaseName)) {
-							if (fixVersionUpdationLog.get(lastIndex).getChangedTo().equalsIgnoreCase(releaseName)) {
+						if (updateLogs.getChangedTo().contains(releaseName)) {
+							if (fixVersionUpdationLog.get(lastIndex).getChangedTo().contains(releaseName)) {
 								List<JiraIssue> cloneList = new ArrayList<>(jiraIssueList);
 								fullReleaseMap.computeIfPresent(updatedLog, (k, v) -> {
 									v.addAll(cloneList);
@@ -145,7 +145,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 							});
 							addedIssuesMap.putIfAbsent(updatedLog, jiraIssueList);
 						}
-						if (updateLogs.getChangedFrom().equalsIgnoreCase(releaseName)) {
+						if (updateLogs.getChangedFrom().contains(releaseName)) {
 							List<JiraIssue> removeJiraIssueLIst = new ArrayList<>(jiraIssueList);
 							updatedLog = updateLogs.getUpdatedOn().toLocalDate();
 							removeIssueMap.computeIfPresent(updatedLog, (k, v) -> {
@@ -253,9 +253,9 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				LocalDate startLocalDate = StringUtils.isEmpty(startDate)
 						? fullReleaseIssueMap.keySet().stream().filter(Objects::nonNull).min(LocalDate::compareTo)
 								.orElse(null)
-						: LocalDate.parse(startDate);
+						: LocalDate.parse(startDate.split("T")[0],DATE_TIME_FORMATTER);
 				LocalDate endLocalDate = StringUtils.isEmpty(endDate) ? LocalDate.now()
-						: LocalDate.parse(endDate, DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT_WITH_SEC));
+						: LocalDate.parse(endDate.split("T")[0],DATE_TIME_FORMATTER);
 
 				Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
 				duration = durationRangeMap.keySet().stream().findFirst().orElse("");
