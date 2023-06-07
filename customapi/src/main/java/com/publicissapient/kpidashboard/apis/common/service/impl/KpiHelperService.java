@@ -441,7 +441,6 @@ public class KpiHelperService { // NOPMD
 
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
-
 		List<String> sprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
 
