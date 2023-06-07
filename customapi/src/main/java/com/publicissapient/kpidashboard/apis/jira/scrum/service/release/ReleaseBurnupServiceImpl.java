@@ -281,23 +281,24 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 					issueCountDataGroup.add(issueCount);
 					issueSizeCountDataGroup.add(issueSize);
 				}
+				if(CollectionUtils.isNotEmpty(issueCountDataGroup)) {
+					populateExcelDataObject(requestTrackerId, excelData, releaseIssues);
+					IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
+					kpiValueIssueCount.setDataGroup(issueCountDataGroup);
+					kpiValueIssueCount.setFilter1(ISSUE_COUNT);
+					IterationKpiValue kpiValueSizeCount = new IterationKpiValue();
+					kpiValueSizeCount.setDataGroup(issueSizeCountDataGroup);
+					kpiValueSizeCount.setFilter1(STORY_POINT);
+					iterationKpiValueList.add(kpiValueSizeCount);
+					iterationKpiValueList.add(kpiValueIssueCount);
 
-				populateExcelDataObject(requestTrackerId, excelData, releaseIssues);
-
-				IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
-				kpiValueIssueCount.setDataGroup(issueCountDataGroup);
-				kpiValueIssueCount.setFilter1(ISSUE_COUNT);
-				IterationKpiValue kpiValueSizeCount = new IterationKpiValue();
-				kpiValueSizeCount.setDataGroup(issueSizeCountDataGroup);
-				kpiValueSizeCount.setFilter1(STORY_POINT);
-				iterationKpiValueList.add(kpiValueSizeCount);
-				iterationKpiValueList.add(kpiValueIssueCount);
-
-				kpiElement.setModalHeads(KPIExcelColumn.RELEASE_BURNUP.getColumns());
-				kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_BURNUP.getColumns());
-				kpiElement.setExcelData(excelData);
+					kpiElement.setModalHeads(KPIExcelColumn.RELEASE_BURNUP.getColumns());
+					kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_BURNUP.getColumns());
+					kpiElement.setExcelData(excelData);
+				}
 			}
 			kpiElement.setTrendValueList(iterationKpiValueList);
+
 		}
 	}
 
