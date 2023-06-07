@@ -92,9 +92,11 @@
     height: 18px;
     display: inline-block;
     vertical-align: middle;
+    margin-right: 3px;
   }
-  ::ng-deep .legend_color_indicator.current_day{
-    height: 2px;
+  ::ng-deep .legend_color_indicator.line-indicator{
+    height: 5px;
+    width: 30px
   }
   ::ng-deep div.legend-tooltip {
     position: absolute;

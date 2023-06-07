@@ -37,6 +37,8 @@ export class GroupBarChartComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (this.selectedtype?.toLowerCase() === 'kanban') {
       this.xCaption = this.service.getSelectedDateFilter();
+    }else{
+      this.xCaption = this.data[0]?.dataGroup[0]?.duration;
     }
     // only run when property "data" changed
     if (changes['data']) {
@@ -324,13 +326,16 @@ export class GroupBarChartComponent implements OnChanges {
       .attr('class', 'p-d-flex p-flex-wrap normal-legend');
 
     let htmlString = '';
-    subgroups.concat(this.lineGroups).forEach((d, i) => {
+    var counter = 0;
+    subgroups.forEach((d, i) => {
+      counter = i;
       htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${colorList[i]}"></div> : ${d}</div>`;
     });
-
-    if (this.kpiId === 'kpi125') {
-      htmlString += `<div class="legend_item"><div class="legend_color_indicator current_day" style="background-color: ${'#079FFF'}"></div> : Current Day</div>`;
-    }
+    counter ++
+    this.lineGroups.forEach((d, i) => {
+      htmlString += `<div class="legend_item"><div class="legend_color_indicator line-indicator" style="background-color: ${colorList[counter]}"></div> : ${d}</div>`;
+      counter ++;
+    })
 
     legendDiv.html(htmlString)
       .style('left', 40 + 'px')
@@ -376,11 +381,11 @@ export class GroupBarChartComponent implements OnChanges {
 
     });
     const resultDataList = Object.values(resultData);
-    // if(!isNaN(Date.parse(resultDataList[0]['group']))){
+    if(this.xCaption.toLowerCase() === 'weeks' || this.xCaption.toLowerCase() === 'days'){
       return this.formatDateOnXAxis(resultDataList);
-    // }else{
-    //   return resultDataList;
-    // }
+    }else{
+      return resultDataList;
+    }
   }
 
   formatDateOnXAxis(data){
@@ -401,7 +406,6 @@ export class GroupBarChartComponent implements OnChanges {
         if (date.toDateString() === currentDate.toDateString()) {
           this.currentDayIndex = i;
         }
-        
         d['group'] = `${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
       return d;
       }
