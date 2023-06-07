@@ -27,9 +27,9 @@
               <p-tabPanel *ngFor="let board of navigationTabs" [header]="board.label" [disabled]="board.count == 0">
                 <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
                   <!-- Iteration commitment kpi start -->
-                  <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard w-100 p-mx-auto"
-                    *ngIf="commitmentReliabilityKpi">
-                    <div class="card-type-1 p-pr-3 p-pl-0">
+                  <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard w-100"
+                    *ngIf="commitmentReliabilityKpi && commitmentReliabilityKpi?.subCategoryBoard == board.label">
+                    <div class="card-type-1 p-pl-0">
                       <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="commitmentReliabilityKpi"
                         (downloadExcel)="downloadExcel(commitmentReliabilityKpi.kpiId, commitmentReliabilityKpi.kpiName, commitmentReliabilityKpi.kpiDetail.kanban)"
                         [dropdownArr]="kpiDropdowns[commitmentReliabilityKpi?.kpiId]"
@@ -227,31 +227,27 @@
                       </ng-template>
                     </ng-container>
 
-                    <ng-template #noDataAccess>
-                      <div class="min-ht">
-                        <div class="err"> No Data Available</div>
-                      </div>
-                    </ng-template>
+
+                  </div>
                 </ng-container>
+              </p-tabPanel>
+            </p-tabView>
           </div>
-          </p-tabPanel>
-          </p-tabView>
         </div>
       </div>
-</div>
 
-</ng-container>
-</ng-container>
-<ng-template #noSprintsTemplate>
-  <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
-    <h2 class="msg">The selected project need to have atleast one sprint available for the KPI's to show up</h2>
-  </div>
-</ng-template>
-<ng-template #noProjectsTemplate>
-  <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
-    <h2 class="msg">Access to atleast one Scrum Project is required for the Iteration dashboard to be enabled</h2>
-  </div>
-</ng-template>
+    </ng-container>
+  </ng-container>
+  <ng-template #noSprintsTemplate>
+    <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
+      <h2 class="msg">The selected project need to have atleast one sprint available for the KPI's to show up</h2>
+    </div>
+  </ng-template>
+  <ng-template #noProjectsTemplate>
+    <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
+      <h2 class="msg">Access to atleast one Scrum Project is required for the Iteration dashboard to be enabled</h2>
+    </div>
+  </ng-template>
 </div>
 
 <ng-template #noKpiTemplate>
