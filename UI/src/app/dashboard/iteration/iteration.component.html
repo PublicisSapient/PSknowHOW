@@ -27,7 +27,7 @@
               <p-tabPanel *ngFor="let board of navigationTabs" [header]="board.label" [disabled]="board.count == 0">
                 <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
                   <!-- Iteration commitment kpi start -->
-                  <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard w-100"
+                  <div class="p-grid justify-content-start p-mt-0 p-pl-3 iteration-dashboard w-100"
                     *ngIf="commitmentReliabilityKpi && commitmentReliabilityKpi?.subCategoryBoard == board.label">
                     <div class="card-type-1 p-pl-0">
                       <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="commitmentReliabilityKpi"
