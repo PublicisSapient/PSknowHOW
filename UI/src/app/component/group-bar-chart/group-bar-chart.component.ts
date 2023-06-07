@@ -376,24 +376,35 @@ export class GroupBarChartComponent implements OnChanges {
 
     });
     const resultDataList = Object.values(resultData);
-    if(!isNaN(Date.parse(resultDataList[0]['group']))){
+    // if(!isNaN(Date.parse(resultDataList[0]['group']))){
       return this.formatDateOnXAxis(resultDataList);
-    }else{
-      return resultDataList;
-    }
+    // }else{
+    //   return resultDataList;
+    // }
   }
 
   formatDateOnXAxis(data){
     const days = ["SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"];
     return data.map((d, i) => {
-      const date = new Date(d['group']);
-      const currentDate = new Date();
-
-      if (date.toDateString() === currentDate.toDateString()) {
-        this.currentDayIndex = i;
-      }
-      d['group'] = `${days[date.getDay()]} ${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
+      if(d['group'].includes('to')){
+        d['group'] = d['group'].replace(" ",'');
+        const dateArray = d['group'].split('to');
+        const date1 = new Date(dateArray[0]);
+        const date2 = new Date(dateArray[1]);
+        const currentDate = new Date();
+        d['group'] = `${(date1.getDate() < 10) ? ('0' + date1.getDate()) : date1.getDate()}/${(date1.getMonth() + 1) < 10 ? '0' + (date1.getMonth() + 1) : date1.getMonth() + 1} -
+        ${(date2.getDate() < 10) ? ('0' + date2.getDate()) : date2.getDate()}/${(date2.getMonth() + 1) < 10 ? '0' + (date2.getMonth() + 1) : date2.getMonth() + 1}`;
       return d;
+      }else{
+        const date = new Date(d['group']);
+        const currentDate = new Date();
+        if (date.toDateString() === currentDate.toDateString()) {
+          this.currentDayIndex = i;
+        }
+        
+        d['group'] = `${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
+      return d;
+      }
     });
   }
 
