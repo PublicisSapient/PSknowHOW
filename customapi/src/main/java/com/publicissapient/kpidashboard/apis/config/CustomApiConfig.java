@@ -994,4 +994,15 @@ public class CustomApiConfig {// NOPMD
 	public int getSprintCountForBackLogStrength() {
 		return sprintCountForBackLogStrength;
 	}
+
+	// repo x axis count days rangeForCheckInsAndMergeRequests
+	private Integer repoXAxisCountForCheckInsAndMergeRequests;
+
+	public Integer getRepoXAxisCountForCheckInsAndMergeRequests() {
+		return repoXAxisCountForCheckInsAndMergeRequests;
+	}
+
+	public void setRepoXAxisCountForCheckInsAndMergeRequests(Integer repoXAxisCountForCheckInsAndMergeRequests) {
+		this.repoXAxisCountForCheckInsAndMergeRequests = repoXAxisCountForCheckInsAndMergeRequests;
+	}
 }

@@ -68,6 +68,8 @@
   --color-secondary-blue: #079FFF;
   --color-secondary-yellow: #cdba38;
   --color-secondary-green: #00E6C3;
+  --font-regular: 'FuturaNext_Book', sans-serif;
+  --font-medium: 'FuturaNext_Medium', sans-serif;
 }
 
 
@@ -151,24 +153,21 @@ html {
 html, body{
   margin:0;
   height: 100%;
-  font-family: 'FuturaNext_Medium', sans-serif;
+  font-size: 14px !important;
+  font-family: var(--font-regular);
 }
 h1, h2, h3, h4, h5, h6{
   font-weight: 500;
+  font-family: var(--font-medium);
 }
-.p-component,
-.p-component .p-component, html
-{
-    font-size: 14px !important;
+label, .p-tabview-title, .navigation li a, .text-data,.col-head, .p-tabmenu-nav a, .p-datatable .p-datatable-thead > tr > th{
+  font-family: var(--font-medium);
+  font-weight: 500;
 }
 
 .selectedSideTab {
   background-color: #e5e5e5 !important;
 }
-
-/* .p-component, .p-component input[type="text"] {
-  font-size: 14px;
-} */
 
 .mar-16 {
   margin: 16px;
@@ -1216,10 +1215,6 @@ h3{
 /****************Left Nav Styles end*****************/
 
 /****************PrimeNg 10 Styles start*************/
-.p-component {
-  font-weight: normal;
-}
-
 a:hover {
   text-decoration: none;
 }
@@ -1972,4 +1967,22 @@ p-dialog .p-button-cancel.p-button-secondary {
   position: absolute;
   top: -0.5rem;
   right: -0.5rem;
+}
+.kpi-info-icon{
+  color: #707070;
+  height: 13.5px;
+  vertical-align: middle;
+  margin-top: -2px;
+  margin-left: 3px;
+}
+.wrapper-w-50{
+  width: 50%;
+}
+.p-component{
+  font-family: inherit;
+}
+@media only screen and (max-width:768px){
+  .wrapper-w-50{
+      width: 100%;
+  }
 }

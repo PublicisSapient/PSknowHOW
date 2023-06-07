@@ -172,7 +172,7 @@
                 [icon]="expanded ? 'pi pi-minus' : 'pi pi-plus'"></button>
 
 
-              <button type="button" pRipple pButton
+              <button type="button" pRipple pButton [disabled]="rowData.authorities.includes('ROLE_SUPERADMIN')"
                 class="p-button-text p-button-plain btn-toggle p-ml-1" [icon]="'pi pi-trash'"
                 (click)="deleteUser(rowData?.username,rowData?.authorities)"></button>
 
