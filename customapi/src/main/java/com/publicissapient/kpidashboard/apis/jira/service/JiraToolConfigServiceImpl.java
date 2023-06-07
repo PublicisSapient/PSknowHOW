@@ -46,6 +46,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -95,12 +96,16 @@ public class JiraToolConfigServiceImpl {
 		List<BoardDetailsDTO> responseList = new ArrayList<>();
 		Optional<Connection> optConnection = connectionRepository
 				.findById(new ObjectId(boardRequestDTO.getConnectionId()));
-		if (optConnection.isPresent()) {
-			Connection connection = optConnection.get();
-			String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
-			HttpEntity<?> httpEntity = getHttpEntity(connection);
-			fetchBoardDetailsRestAPICall(boardRequestDTO, responseList, baseUrl, httpEntity);
-			return responseList;
+		try {
+			if (optConnection.isPresent()) {
+				Connection connection = optConnection.get();
+				String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
+				HttpEntity<?> httpEntity = getHttpEntity(connection);
+				fetchBoardDetailsRestAPICall(boardRequestDTO, responseList, baseUrl, httpEntity);
+				return responseList;
+			}
+		}catch (RestClientException exception){
+			log.error("exception occured while trying to hit api.");
 		}
 		return responseList;
 	}
