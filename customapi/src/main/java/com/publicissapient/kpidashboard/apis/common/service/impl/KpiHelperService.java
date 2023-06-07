@@ -443,15 +443,15 @@ public class KpiHelperService { // NOPMD
 		Map<String, Object> resultListMap = new HashMap<>();
 
 		List<String> sprintList = new ArrayList<>();
+		List<String> previousSprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
 
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		Map<String, List<String>> closedStatusMap = new HashMap<>();
-		Map<String, List<String>> typeNameMap = new HashMap<>();
 
-		projectWiseSprintDetails(projectWiseSprintsForFilter,basicProjectConfigIds, uniqueProjectMap, closedStatusMap, typeNameMap);
-		projectWiseSprintDetails(previousSprintProjectWiseSprintsForFilter,basicProjectConfigIds, uniqueProjectMap, closedStatusMap, typeNameMap);
+		projectWiseSprintDetails(projectWiseSprintsForFilter, sprintList, basicProjectConfigIds, uniqueProjectMap);
+		projectWiseSprintDetails(previousSprintProjectWiseSprintsForFilter, previousSprintList, basicProjectConfigIds, uniqueProjectMap);
 
+		sprintList.addAll(previousSprintList);
 		List<String> currentIssueIds = new ArrayList<>();
 		List<SprintDetails> previousSrintDetails = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
@@ -504,28 +504,12 @@ public class KpiHelperService { // NOPMD
 		List<String> basicProjectConfigIds = new ArrayList<>();
 
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		Map<String, List<String>> closedStatusMap = new HashMap<>();
-		Map<String, List<String>> typeNameMap = new HashMap<>();
 
-		leafNodeList.forEach(leaf -> {
-			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-
-			sprintList.add(leaf.getSprintFilter().getId());
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
-
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueType()));
-
-			mapOfProjectFilters.put(JiraFeature.STATUS.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatus()));
-			closedStatusMap.put(basicProjectConfigId.toString(), fieldMapping.getJiraIssueDeliverdStatus());
-			typeNameMap.put(basicProjectConfigId.toString(), fieldMapping.getJiraSprintVelocityIssueType());
-
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
-		});
+		Map<ObjectId, List<String>> projectWiseSprintsForFilter =leafNodeList.stream().collect(Collectors.groupingBy(
+				node -> node.getProjectFilter().getBasicProjectConfigId(),
+				Collectors.collectingAndThen(Collectors.toList(),
+						s -> s.stream().map(node -> node.getSprintFilter().getId()).collect(Collectors.toList()))));
+		projectWiseSprintDetails(projectWiseSprintsForFilter,sprintList,basicProjectConfigIds, uniqueProjectMap);
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
 		jiraKPIService.processSprintBasedOnFieldMapping(sprintDetails,configHelperService);
@@ -573,12 +557,13 @@ public class KpiHelperService { // NOPMD
 		return resultListMap;
 	}
 
-	private void projectWiseSprintDetails(Map<ObjectId, List<String>> previousSprintProjectWiseSprintsForFilter, List<String> basicProjectConfigIds, Map<String, Map<String, Object>> uniqueProjectMap, Map<String, List<String>> closedStatusMap, Map<String, List<String>> typeNameMap) {
+	private void projectWiseSprintDetails(Map<ObjectId, List<String>> previousSprintProjectWiseSprintsForFilter, List<String> sprintList, List<String> basicProjectConfigIds, Map<String, Map<String, Object>> uniqueProjectMap) {
 		previousSprintProjectWiseSprintsForFilter.entrySet().forEach(entry -> {
 			ObjectId basicProjectConfigId = entry.getKey();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
+			sprintList.addAll(entry.getValue());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
@@ -586,8 +571,6 @@ public class KpiHelperService { // NOPMD
 
 			mapOfProjectFilters.put(JiraFeature.STATUS.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatus()));
-			closedStatusMap.put(basicProjectConfigId.toString(), fieldMapping.getJiraIssueDeliverdStatus());
-			typeNameMap.put(basicProjectConfigId.toString(), fieldMapping.getJiraSprintVelocityIssueType());
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
