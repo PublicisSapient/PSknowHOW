@@ -305,7 +305,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	List<Integer> calculateWaitAndBlockTime(JiraIssueCustomHistory issueCustomHistory, SprintDetails sprintDetail,
 			List<String> blockedStatusList, List<String> waitStatusList, boolean flagIncluded) {
 		List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
-		List<JiraHistoryChangeLog> flagStatusUpdationLog = new ArrayList<>();
+		List<JiraHistoryChangeLog> flagStatusUpdationLog;
 		List<Integer> resultList = new ArrayList<>();
 
 		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
