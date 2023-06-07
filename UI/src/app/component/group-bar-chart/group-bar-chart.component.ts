@@ -30,6 +30,7 @@ export class GroupBarChartComponent implements OnChanges {
   dataLength = 0;
   currentDayIndex;
   subGroups = [];
+  lineGroups = [];
 
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
@@ -61,7 +62,7 @@ export class GroupBarChartComponent implements OnChanges {
     d3.select(elem).select('#svgLegend').select('svg').remove();
     d3.select(elem).select('#legendIndicator').select('svg').remove();
     d3.select(elem).select('#xCaptionContainer').select('text').remove();
-    let data = this.data[0]?.value;
+    let data = this.data[0]?.dataGroup;
     data = this.formatData(data);
 
     const subgroups = this.subGroups;
@@ -113,7 +114,7 @@ export class GroupBarChartComponent implements OnChanges {
       .range([0, subgroups.length * barWidth])
       .paddingInner(0);
 
-    const colorList = ['#4472C4', '#DDE8B9', '#00B1B0'];
+    const colorList = ['#049fff', '#fee63b', '#f8404d', '#00e1ba'];
     const color = d3.scaleOrdinal()
       .domain(subgroups)
       .range(colorList);
@@ -186,7 +187,7 @@ export class GroupBarChartComponent implements OnChanges {
       .append("g")
       .attr("transform", d => "translate(" + x(d.group) + ",0)")
       .selectAll("rect")
-      .data(d => subgroups.map(key => ({ key, value: d[key], group: d[d.groupBy] , hoverValue:d[key+'HoverValue']})))
+      .data(d => subgroups.map(key => ({ key, value: d[key], group: d['date'] , hoverValue:d[key+'HoverValue']})))
       .enter().append("rect")
       .attr("x", d => xSubgroup(d.key))
       .attr("y", d=> y(0))
@@ -207,7 +208,7 @@ export class GroupBarChartComponent implements OnChanges {
             .style('opacity', .9);
 
 
-          div.html(`${d?.group}` + ' : ' + '<span class=\'toolTipValue\'> </span>')
+          div.html(`${d?.group} : ${Object.values(d?.hoverValue).reduce((a:number, b:number) => a + b, 0)} `+ '<span class=\'toolTipValue\'> </span>')
             .style('left', xPosition + 20 + 'px')
             .style('top', yPosition + 20 + 'px')
             .style('position', 'fixed');
@@ -227,7 +228,90 @@ export class GroupBarChartComponent implements OnChanges {
       .delay((d) => 200)
       .duration(800)
       .attr("y", d=> y(d.value))
-      .attr("height", d=> height - y(d.value) - spacingVariable);;
+      .attr("height", d=> height - y(d.value) - spacingVariable);
+
+      const tooltipContainer = d3.select('#horizontalSVG').select('.tooltip-container');
+      const showTooltip = (linedata) => {
+        tooltipContainer
+          .selectAll('div')
+          .data(linedata)
+          .join('div')
+          .attr('class', 'tooltip')
+          .style('left', d => x(d.filter)  + 15 + 'px')
+          .style('top', d => y(d.value) + 5 + 'px')
+          .text(d => d.value)
+          .transition()
+          .duration(500)
+          .style('display', 'block')
+          .style('opacity', 1);
+      };
+      const hideTooltip = () => {
+        tooltipContainer
+          .selectAll('.tooltip')
+          .transition()
+          .duration(500)
+          .style('display', 'none')
+          .style('opacity', 0);
+        tooltipContainer.selectAll('.tooltip').remove();
+      };
+
+      for (const kpiGroup of this.lineGroups) {
+        const lineData = data.filter(d => d.hasOwnProperty(kpiGroup)).map(d=>{ return { "filter" : d['group'],"value" : d[kpiGroup]}})
+  
+        const line = svgX
+          .append('g')
+          .attr('transform', `translate(10,0)`)
+          .append('path')
+          .datum(lineData)
+          .attr('d', d3.line()
+            .x((d) => x(d.filter) + 17)
+            .y((d) => y(d.value))
+          )
+          .attr('stroke', (d) => color(kpiGroup))
+          .style('stroke-width', 2)
+          .style('fill', 'none')
+          .style('cursor', 'pointer')
+          .on('mouseover', function(event, linedata) {
+            d3.select(this)
+              .style('stroke-width', 4);
+            showTooltip(linedata);
+          })
+          .on('mouseout', function(event, d) {
+            d3.select(this)
+              .style('stroke-width', 2);
+            hideTooltip();
+          });
+  
+        const circlegroup = svgX
+          .append('g')
+          .attr('class', 'circle-group')
+          .attr('transform', `translate(10,0)`)
+          .selectAll('circle')
+          .data(lineData)
+          .enter()
+          .append('circle')
+          .attr('cx', d => x(d.filter) + 17)
+          .attr('cy', d => y(d.value))
+          .attr('r', 3)
+          .style('stroke-width', 1)
+          .attr('stroke', 'none')
+          .attr('fill', color(kpiGroup))
+          .on('mouseover', function(event) {
+            d3.select(this)
+              .transition()
+              .duration(500)
+              .style('cursor', 'pointer')
+              .attr('r', 3);
+            showTooltip(lineData);
+          })
+          .on('mouseout', function(event, d) {
+            d3.select(this)
+              .transition()
+              .duration(500)
+              .attr('r', 3);
+            hideTooltip();
+          });
+      }
 
     const legendDiv = d3.select(this.elem).select('#groupstackchart').append('div');
     legendDiv.style('margin-top', '20px');
@@ -240,7 +324,7 @@ export class GroupBarChartComponent implements OnChanges {
       .attr('class', 'p-d-flex p-flex-wrap normal-legend');
 
     let htmlString = '';
-    subgroups.forEach((d, i) => {
+    subgroups.concat(this.lineGroups).forEach((d, i) => {
       htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${colorList[i]}"></div> : ${d}</div>`;
     });
 
@@ -270,10 +354,26 @@ export class GroupBarChartComponent implements OnChanges {
   formatData(data) {
     const resultData = {};
     data.forEach((d) => {
-      if (!this.subGroups.includes(d.subFilter)) {
-        this.subGroups.push(d.subFilter);
-      }
-      resultData[d[d.groupBy]] = { ...d, ...resultData[d[d.groupBy]], [d.subFilter]: d.value, group: d[d.groupBy], [d.subFilter+'HoverValue']:d.hoverValue};
+      const date = d.filter;
+      let graphData = {};
+      d.value.forEach(groupD=>{
+         if (!this.subGroups.includes(groupD.kpiGroup) && groupD.graphType === 'bar' ) {
+           this.subGroups.push(groupD.kpiGroup);
+         }
+         if (!this.lineGroups.includes(groupD.kpiGroup) && groupD.graphType === 'line' ) {
+          this.lineGroups.push(groupD.kpiGroup);
+        }
+         graphData = { ...graphData,
+          [groupD.kpiGroup]: groupD.value,
+          group: date,
+          date : date,
+          [groupD.kpiGroup+'HoverValue']:groupD?.hoverValue,
+          sprojectName : groupD.sprojectName
+         }
+
+      })
+      resultData[date] = {...graphData};
+
     });
     const resultDataList = Object.values(resultData);
     if(!isNaN(Date.parse(resultDataList[0]['group']))){
