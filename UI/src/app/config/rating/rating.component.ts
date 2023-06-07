@@ -19,10 +19,10 @@ export class RatingComponent implements OnInit , OnChanges{
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.form.controls['happinessRating'].setValue(String(this.currentAssignee.happinessRating));
       if(changes['editable']['currentValue']){
         this.form.controls['happinessRating'].enable();
       }else{
-        this.form.controls['happinessRating'].setValue(String(this.currentAssignee.happinessRating));
         this.form.controls['happinessRating'].disable();
       }
   }
