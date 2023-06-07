@@ -93,8 +93,6 @@ public class CustomApiConfig {// NOPMD
 	@Value("${filter.date.range.show:true}")
 	private boolean showDateRangeFilter;
 
-	private String rsaPrivateKey;
-
 	@Value("${testconnection.jiraApi}")
 	private String jiraTestConnection;
 
@@ -200,6 +198,9 @@ public class CustomApiConfig {// NOPMD
 
 	@Value("${flag.mailWithoutKafka}")
 	private boolean mailWithoutKafka;
+
+	@Value(("${backlog.sprint.count}"))
+	private int sprintCountForBackLogStrength;
 
 	private int pushDataLimit;//limit of data allowed to push through api
 
@@ -657,25 +658,6 @@ public class CustomApiConfig {// NOPMD
 		this.maxPendingRequestsPerUsername = maxPendingRequestsPerUsername;
 	}
 
-	/**
-	 * Gets rsa private key.
-	 *
-	 * @return the rsa private key
-	 */
-	public String getRsaPrivateKey() {
-		return rsaPrivateKey;
-	}
-
-	/**
-	 * Sets rsa private key.
-	 *
-	 * @param rsaPrivateKey
-	 *            the rsa private key
-	 */
-	public void setRsaPrivateKey(String rsaPrivateKey) {
-		this.rsaPrivateKey = rsaPrivateKey;
-	}
-
 	public String getZephyrTestConnection() {
 		return zephyrTestConnection;
 	}
@@ -1008,5 +990,19 @@ public class CustomApiConfig {// NOPMD
 
 	public String getSamlUrlEndString() {
 		return samlUrlEndString;
+	}
+	public int getSprintCountForBackLogStrength() {
+		return sprintCountForBackLogStrength;
+	}
+
+	// repo x axis count days rangeForCheckInsAndMergeRequests
+	private Integer repoXAxisCountForCheckInsAndMergeRequests;
+
+	public Integer getRepoXAxisCountForCheckInsAndMergeRequests() {
+		return repoXAxisCountForCheckInsAndMergeRequests;
+	}
+
+	public void setRepoXAxisCountForCheckInsAndMergeRequests(Integer repoXAxisCountForCheckInsAndMergeRequests) {
+		this.repoXAxisCountForCheckInsAndMergeRequests = repoXAxisCountForCheckInsAndMergeRequests;
 	}
 }

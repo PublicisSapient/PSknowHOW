@@ -66,7 +66,7 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
-
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -232,7 +232,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 						.getOrDefault(tool.getProcessorItemList().get(0).getId(), new HashMap<>());
 				while (currentDate.compareTo(endDate) <= 0) {
 					commitCountValue = commitCountValue + commitDateMap.getOrDefault(currentDate.toString(), 0l);
-					excelLoader.put(DATE + currentDate, commitCountValue);
+					excelLoader.put(DATE + DateUtil.localDateTimeConverter(currentDate), commitCountValue);
 					currentDate = currentDate.plusDays(1);
 				}
 				// if data is there for any branch then only will shown on excel
@@ -291,7 +291,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (CommonConstant.WEEK.equalsIgnoreCase(kpiRequest.getDuration())) {
-			range = dateRange.getStartDate().toString() + " to " + dateRange.getEndDate().toString();
+			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (CommonConstant.MONTH.equalsIgnoreCase(kpiRequest.getDuration())) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
 		} else {

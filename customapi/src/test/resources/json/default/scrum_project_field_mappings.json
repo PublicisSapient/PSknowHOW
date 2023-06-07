@@ -25,6 +25,7 @@
       "Epic"
     ],
     "storyFirstStatus": "Open",
+    "readyForDevelopmentStatus": "Ready for Development",
     "rootCause": "customfield_19121",
     "jiraStatusForDevelopment": [
       "Implementing",

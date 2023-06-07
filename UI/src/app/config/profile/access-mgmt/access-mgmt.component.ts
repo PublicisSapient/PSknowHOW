@@ -317,7 +317,7 @@ export class AccessMgmtComponent implements OnInit {
 		if (accessItem && accessItem?.value?.length && !Object.keys(accessItem.valueRemoved)?.length && accessItem.accessType !== 'project') {
 			const accessIndex = this.addedProjectsOrNodes.findIndex((x) => x.accessLevel === accessItem.accessType);
 			if (accessIndex != -1) {
-				this.addedProjectsOrNodes[accessIndex].accessItems = [...this.addedProjectsOrNodes[accessIndex].accessItems, ...accessItem.value];
+				this.addedProjectsOrNodes[accessIndex]['accessItems'] = [...this.addedProjectsOrNodes[accessIndex].accessItems, ...accessItem.value];
 			} else {
 				this.addedProjectsOrNodes = accessItem.value.map((item) => ({
 						accessLevel: accessItem.accessType,
@@ -327,7 +327,7 @@ export class AccessMgmtComponent implements OnInit {
 		} else if (accessItem.accessType === 'project') {
 			const accessIndex = this.addedProjectsOrNodes.findIndex((x) => x.accessLevel === accessItem.accessType);
 			if (accessIndex != -1) {
-				this.addedProjectsOrNodes[accessIndex].accessItems = [...accessItem.value];
+				this.addedProjectsOrNodes[accessIndex]['accessItems'] = [...accessItem.value];
 			} else {
 				this.addedProjectsOrNodes = accessItem.value.map((item) => ({
 						accessLevel: accessItem.accessType,

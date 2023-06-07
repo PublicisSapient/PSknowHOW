@@ -14,7 +14,6 @@ import com.publicissapient.kpidashboard.common.model.application.ValidationMessa
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -31,9 +30,6 @@ public class AuthTypesConfigServiceImpl implements AuthTypesConfigService {
 
     @Autowired
     private GlobalConfigRepository globalConfigRepository;
-
-    @Autowired
-    private RsaEncryptionService rsaEncryptionService;
 
     @Autowired
     private AesEncryptionService aesEncryptionService;
@@ -125,9 +121,7 @@ public class AuthTypesConfigServiceImpl implements AuthTypesConfigService {
         return globalConfig;
     }
 
-    private String encryptStringForDb(String rasEncryptedStringFromClient) {
-        String plainText = rsaEncryptionService.decrypt(rasEncryptedStringFromClient,
-                customApiConfig.getRsaPrivateKey());
+    private String encryptStringForDb(String plainText) {
         String encryptedString = aesEncryptionService.encrypt(plainText, customApiConfig.getAesEncryptionKey());
         return encryptedString == null ? "" : encryptedString;
     }

@@ -46,11 +46,17 @@ export class ToolMenuComponent implements OnInit {
   isAssigneeSwitchChecked : boolean = false;
   isAssigneeSwitchDisabled : boolean = false;
   assigneeSwitchInfo = "Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project";
+  userName : string;
   constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private confirmationService: ConfirmationService, private getAuthorizationService: GetAuthorizationService) {
 
   }
 
   ngOnInit(): void {
+    this.sharedService.currentUserDetailsObs.subscribe(details=>{
+      if(details){
+        this.userName = details['user_name'];
+      }
+    });
     this.projectTypeOptions = [
       { name: 'Jira', value: false },
       { name: 'Azure Boards', value: true }
@@ -203,6 +209,15 @@ export class ToolMenuComponent implements OnInit {
             queryParams1: 'GitHub',
             index: 10
           },
+          {
+            toolName: 'GitHub Action',
+            category: 'ABC',
+            description: '-',
+            icon: 'fab fa-github',
+            routerLink: '/dashboard/Config/JiraConfig',
+            queryParams1: 'GitHubAction',
+            index: 11
+          },
 
 
         ];
@@ -260,6 +275,10 @@ export class ToolMenuComponent implements OnInit {
     if(toolName === 'Azure Repo') {
       toolName = 'AzureRepository';
     }
+
+    if(toolName === 'GitHub Action'){
+      toolName = 'GitHubAction';
+    }
     const configuredProject = this.selectedTools.filter((tool) => tool.toolName.toLowerCase() == toolName.toLowerCase());
     return (configuredProject && configuredProject.length > 0 ? true : false);
   }
@@ -283,7 +302,7 @@ export class ToolMenuComponent implements OnInit {
     const postData = {
       basicProjectConfigId: projectDetails['id'],
       projectName: projectDetails['Project'],
-      userName: localStorage.getItem('user_name')
+      userName: this.userName
     };
 
     this.http.generateToken(postData).subscribe(response =>{

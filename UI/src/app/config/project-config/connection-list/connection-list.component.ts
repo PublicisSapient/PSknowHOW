@@ -22,7 +22,8 @@ import { ConfirmationService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { TestConnectionService } from '../../../services/test-connection.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { RsaEncryptionService } from 'src/app/services/rsa.encryption.service';
+import { SharedService } from 'src/app/services/shared.service';
+
 interface JiraConnectionField {
   'type': string,
   'connectionName': string,
@@ -428,15 +429,19 @@ export class ConnectionListComponent implements OnInit {
   }
   jiraConnectionDialog: boolean;
 
-  constructor(private httpService: HttpService, private formBuilder: UntypedFormBuilder, private rsa: RsaEncryptionService, private confirmationService: ConfirmationService, private testConnectionService: TestConnectionService
-    , private authorization: GetAuthorizationService) { }
+  constructor(private httpService: HttpService, private formBuilder: UntypedFormBuilder, private confirmationService: ConfirmationService, private testConnectionService: TestConnectionService
+    , private authorization: GetAuthorizationService,private sharedService : SharedService) { }
 
   ngOnInit(): void {
     this.roleAccessAssign();
     this.getConnectionList();
     this.connectionTypeFieldsAssignment();
     this.isRoleViewer = this.authorization.getRole() === 'roleViewer' ? true : false;
-    this.currentUser = localStorage && localStorage.getItem('user_name') ? localStorage.getItem('user_name') : '';
+    this.sharedService.currentUserDetailsObs.subscribe(details=>{
+      if(details){
+        this.currentUser = details['user_name'] ? details['user_name'] : '';
+      }
+    });
     this.getZephyrUrl();
     this.initializeForms(this.jiraConnectionFields);
   }
@@ -799,24 +804,24 @@ export class ConnectionListComponent implements OnInit {
       reqData['id'] = this.connection['id'];
     }
 
-    if (!!reqData['password']) {
-      reqData['password'] = this.rsa.encrypt(reqData['password']);
+    if (!!this.connection['password']) {
+      reqData['password'] = this.connection['password'];
     }
 
-    if (!!reqData['patOAuthToken']) {
-      reqData['patOAuthToken'] = this.rsa.encrypt(reqData['patOAuthToken']);
+    if (!!this.connection['patOAuthToken']) {
+          reqData['patOAuthToken'] = this.connection['patOAuthToken'];
     }
 
-    if (!!reqData['pat']) {
-      reqData['pat'] = this.rsa.encrypt(reqData['pat']);
+    if (!!this.connection['pat']) {
+      reqData['pat'] = this.connection['pat'];
     }
 
-    if (!!reqData['accessToken'] && this.connection['type'].toLowerCase() !== 'zephyr') {
-      reqData['accessToken'] = this.rsa.encrypt(reqData['accessToken']);
+    if (!!this.connection['accessToken'] && this.connection['type'].toLowerCase() !== 'zephyr') {
+      reqData['accessToken'] = this.connection['accessToken'];
     }
 
-    if (!!reqData['apiKey']) {
-      reqData['apiKey'] = this.rsa.encrypt(reqData['apiKey']);
+    if (!!this.connection['apiKey']) {
+      reqData['apiKey'] = this.connection['apiKey'];
     }
 
     if (this.connection['type'].toLowerCase() === 'zephyr' && this.connection['cloudEnv']) {

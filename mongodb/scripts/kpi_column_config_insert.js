@@ -2472,5 +2472,118 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: true
                                  		}]
-                                 	}
+                                 	},
+                                 	{
+                                    basicProjectConfigId: null,
+                                    kpiId: 'kpi147',
+                                    kpiColumnDetails: [{
+                                      columnName: 'Issue ID',
+                                      order: 0,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Issue Type',
+                                      order: 3,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Issue Description',
+                                      order: 1,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Priority',
+                                      order: 6,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Assignee',
+                                      order: 7,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Issue Status',
+                                      order: 4,
+                                      isShown: true,
+                                      isDefault: true
+                                    }]
+                                  },
+                                  {
+                                                                              basicProjectConfigId: null,
+                                                                              kpiId: 'kpi145',
+                                                                              kpiColumnDetails: [{
+                                                                              columnName: 'Issue Id',
+                                                                              order: 0,
+                                                                              isShown: true,
+                                                                              isDefault: true
+                                                                          }, {
+                                                                              columnName: 'Issue Description',
+                                                                              order: 1,
+                                                                              isShown: true,
+                                                                              isDefault: true
+                                                                          }, {
+                                                                              columnName: 'Issue Status',
+                                                                              order: 2,
+                                                                              isShown: true,
+                                                                              isDefault: true
+                                                                          }, {
+                                                                              columnName: 'Issue Type',
+                                                                              order: 3,
+                                                                              isShown: true,
+                                                                              isDefault: true
+                                                                          }, {
+                                                                              columnName: 'Size(story point/hours)',
+                                                                              order: 4,
+                                                                              isShown: true,
+                                                                              isDefault: true
+                                                                          }, {
+                                                                              columnName: 'Remaining Estimate',
+                                                                              order: 5,
+                                                                              isShown: true,
+                                                                              isDefault: false
+                                                                          }, {
+                                                                              columnName: 'Dev Due Date',
+                                                                              order: 6,
+                                                                              isShown: true,
+                                                                              isDefault: false
+                                                                          }, {
+                                                                              columnName: 'Dev Completion Date',
+                                                                              order: 7,
+                                                                              isShown: true,
+                                                                              isDefault: false
+                                                                          }]
+                                                                      },
+
+                                    									{
+                                                                     		basicProjectConfigId: null,
+                                                                     		kpiId: 'kpi138',
+                                                                     		kpiColumnDetails: [{
+                                                                     			columnName: 'Issue Id',
+                                                                     			order: 0,
+                                                                     			isShown: true,
+                                                                     			isDefault: true
+                                                                     		}, {
+                                                                     			columnName: 'Issue Type',
+                                                                     			order: 1,
+                                                                     			isShown: true,
+                                                                     			isDefault: true
+                                                                     		},{
+                                                                     			columnName: 'Issue Description',
+                                                                     			order: 2,
+                                                                     			isShown: true,
+                                                                     			isDefault: true
+                                                                     		},  {
+                                                                     			columnName: 'Priority',
+                                                                     			order: 3,
+                                                                     			isShown: true,
+                                                                     			isDefault: false
+                                                                     		}, {
+                                                                     			columnName: 'Size(story point/hours)',
+                                                                     			order: 4,
+                                                                     			isShown: true,
+                                                                     			isDefault: false
+                                                                     		}]
+                                                                     	}
                                  ]);

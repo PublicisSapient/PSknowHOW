@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject} from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, forkJoin, BehaviorSubject } from 'rxjs';
 import { catchError, map, mapTo, tap } from 'rxjs/operators';
@@ -26,10 +26,9 @@ import { Router } from '@angular/router';
 import { Account } from '../model/Account';
 import { KPIScore } from '../model/KPIScore';
 import { ScoreCard } from '../model/ScoreCard';
-import { RsaEncryptionService } from '../services/rsa.encryption.service';
-import { TextEncryptionService } from './text.encryption.service';
 import { NotificationResponseDTO } from '../model/NotificationDTO.model';
 import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/userAccessApprovalDTO.model';
+import { SharedService } from './shared.service';
 @Injectable({
     providedIn: 'root'
 }
@@ -135,16 +134,28 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     private authDetailsUrl = this.baseUrl + '/api/authdetails';
     private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
     private getCommentUrl = this.baseUrl + '/api/comments/getCommentsByKpiId';
-    private submitCommentUrl = this.baseUrl + '/api/comments/submitComments'
+    private submitCommentUrl = this.baseUrl + '/api/comments/submitComments';
     private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
     private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
     private saveAssigneeForProjectUrl =this.baseUrl +'/api/capacity/assignee';
     private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
 
     private jiraTemplateUrl = this.baseUrl +'/api/templates';
+    private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData';
     private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
     private postKpiColumnsConfigUrl =this.baseUrl + '/api/kpi-column-config/kpiColumnConfig';
-    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private rsa: RsaEncryptionService, private aesEncryption: TextEncryptionService) { }
+    private gitActionWorkflowNameUrl = this.baseUrl + '/api/githubAction/workflowName';
+    userName : string;
+    userEmail : string;
+    constructor(private router: Router, private http: HttpClient, @Inject(APP_CONFIG) private config: IAppConfig, private sharedService : SharedService) {
+        this.sharedService.currentUserDetailsObs.subscribe(details=>{
+            if(details){
+                this.userName = details['user_name'];
+                this.userEmail = details['user_email'];
+            }
+          });
+    }
+
 
     /**get analytics on/off switch */
     getAnalyticsFlag() {
@@ -276,11 +287,8 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         /* Send request to server and store token and username in localstore for authentication */
         return this.http.post<any>(loginUrl, postData, httpOptions)
             .pipe(tap(res => {
-                localStorage.setItem('user_name', username);
-                localStorage.setItem('user_email', res.body['user_email']);
-                localStorage.setItem('projectsAccess', JSON.stringify(res.body['projectsAccess']));
-                localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(res.body['authorities']), 'encrypt'));
-            }),
+                this.sharedService.setCurrentUserDetails(res.body);
+           }),
                 catchError(this.handleError<object>('errorData', ['error'])));
     }
 
@@ -292,13 +300,13 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
             .pipe(tap(res => {
                 if (res !== 'email' && res !== 'username' && res !== 'password') {
 
-                    localStorage.setItem('user_name', username);
-                    localStorage.setItem('user_email', email);
+                    this.sharedService.setCurrentUserDetails({user_name: username});
+                    this.sharedService.setCurrentUserDetails({user_email: email});
                     if(res['authorities']?.length > 0){
-                        localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify([...res['authorities']]), 'encrypt'));
+                        this.sharedService.setCurrentUserDetails({authorities: res['authorities']});
                     }
                     if(res['projectsAccess']){
-                        localStorage.setItem('projectsAccess', JSON.stringify(res['projectsAccess']));
+                        this.sharedService.setCurrentUserDetails({projectsAccess: res['projectsAccess']});
                     }
                 }
             }));
@@ -315,7 +323,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
     /** POST: Change the password for loggedin user*/
     changePassword(oldpassword, password): Observable<any> {
-        const postData = { oldPassword: oldpassword, password, email: localStorage.getItem('user_email'), user: localStorage.getItem('user_name') };
+        const postData = { oldPassword: oldpassword, password, email: this.userEmail, user: this.userName};
         return this.http.post(this.changePasswordUrl, postData).pipe(tap(res => {
         }));
     }
@@ -700,7 +708,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
 
 
     getAuthDetails() {
-        const existingRoles = JSON.parse(localStorage?.getItem('projectsAccess')).map(projectRolesDetails => projectRolesDetails?.role);
+        const existingRoles = this.sharedService.getCurrentUserDetails('projectsAccess')?.map(projectRolesDetails => projectRolesDetails?.role);
         this.http.get<any>(this.authDetailsUrl).subscribe(response => {
 
             if (response && response?.success && response?.data) {
@@ -712,10 +720,10 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
                     roleAlreadyExist = false;
                   }
                 });
-                localStorage.setItem('user_name', authDetails['username']);
-                localStorage.setItem('user_email', authDetails['emailAddress']);
-                localStorage.setItem('projectsAccess', JSON.stringify(authDetails['projectsAccess']));
-                localStorage.setItem('authorities', this.aesEncryption.convertText(JSON.stringify(authDetails['authorities']), 'encrypt'));
+                this.sharedService.setCurrentUserDetails({username: authDetails['username']});
+                this.sharedService.setCurrentUserDetails({user_email:authDetails['emailAddress']});
+                this.sharedService.setCurrentUserDetails({projectsAccess : authDetails['projectsAccess']});
+                this.sharedService.setCurrentUserDetails({authorities :authDetails['authorities']});
                 if(!this.unauthorisedAccess && !roleAlreadyExist){
                     this.loadApp.next(true);
                     this.unauthorisedAccess = false;
@@ -723,7 +731,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
             }
         });
     }
-    
+
     generateToken(postData): Observable<any> {
         return this.http.post<any>(this.generateTokenUrl, postData);
     }
@@ -753,8 +761,7 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         return (error: any): Observable<T> => {
             if (error.status === 401) {
                 localStorage.removeItem('auth_token');
-                localStorage.removeItem('user_name');
-                localStorage.removeItem('authorities');
+                this.sharedService.setCurrentUserDetails({});
 
                 this.router.navigate(['./authentication/login']);
             }
@@ -910,8 +917,14 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
         return this.http.delete(this.deleteProjectUrl + `/${projectId}/tools/clean/` + toolId);
     }
 
-    getComment(selectedTab, selectedFilter, kpiId){
-        return this.http.get<any>(`${this.getCommentUrl}?node=${(selectedTab!=='iteration')?selectedFilter?.nodeId:selectedFilter?.parentId[0]}&sprintId=${(selectedTab==='iteration')?selectedFilter.nodeId:''}&kpiId=${kpiId}&level=${selectedFilter?.level}`);
+    getComment(selectedTab, selectedFilter, kpiId) {
+        const postData = {
+            node: selectedTab !== 'iteration' ? selectedFilter?.nodeId : selectedFilter?.parentId[0],
+            sprintId: selectedTab === 'iteration' ? selectedFilter.nodeId : '',
+            kpiId: kpiId,
+            level: selectedFilter?.level
+        };
+        return this.http.post<any>(this.getCommentUrl, postData);
     }
 
     submitComment(data): Observable<any> {
@@ -931,10 +944,19 @@ import { UserAccessApprovalResponseDTO, UserAccessReqPayload } from '../model/us
     }
 
     getJiraTemplate(projectId) {
-        return this.http.get<any>(`${this.jiraTemplateUrl}/${projectId}`)     
+        return this.http.get<any>(`${this.jiraTemplateUrl}/${projectId}`)
     }
 
     getMappingTemplateFlag(toolID,data){
-        return this.http.post(`${this.fieldMappingsUrl}/${toolID}/saveMapping`,data);   
+        return this.http.post(`${this.fieldMappingsUrl}/${toolID}/saveMapping`,data);
+    }
+
+    getCurrentUserDetails(){
+      return this.http.get<any>(this.currentUserDetailsURL);
+    }
+
+    /** Get workflow name list for Github Action tool */
+    getGitActionWorkFlowName(data){
+        return this.http.post(`${this.gitActionWorkflowNameUrl}/${data.connectionID}`,data);
     }
 }

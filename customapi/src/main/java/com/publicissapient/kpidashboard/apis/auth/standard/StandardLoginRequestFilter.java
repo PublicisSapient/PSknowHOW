@@ -18,10 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.auth.standard;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
+import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +32,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
-import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.service.RsaEncryptionService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFilter {
-	private RsaEncryptionService rsaEncryptionService;
 	private CustomApiConfig customApiConfig;
 
 	@Autowired
@@ -52,14 +49,13 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 	 */
 	public StandardLoginRequestFilter(String path, AuthenticationManager authManager,
 			AuthenticationResultHandler authenticationResultHandler,
-			CustomAuthenticationFailureHandler authenticationFailureHandler, RsaEncryptionService rsaEncryptionService,
+			CustomAuthenticationFailureHandler authenticationFailureHandler,
 			CustomApiConfig customApiConfig, AuthTypesConfigService authTypesConfigService) {
 		super();
 		setAuthenticationManager(authManager);
 		setAuthenticationSuccessHandler(authenticationResultHandler);
 		setAuthenticationFailureHandler(authenticationFailureHandler);
 		setFilterProcessesUrl(path);
-		this.rsaEncryptionService = rsaEncryptionService;
 		this.customApiConfig = customApiConfig;
 		this.authTypesConfigService = authTypesConfigService;
 	}
@@ -87,7 +83,7 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 		}
 
 		String username = obtainUsername(request);
-		String password = rsaEncryptionService.decrypt(obtainPassword(request), customApiConfig.getRsaPrivateKey());
+		String password = obtainPassword(request);
 
 		if (username == null) {
 			username = "";

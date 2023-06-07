@@ -80,6 +80,9 @@ export class SharedService {
   selectedLevel = {};
   selectedTrends = [];
   public isSideNav;
+  currentUserDetails = null;
+  currentUserDetailsSubject = new BehaviorSubject<any>(null);
+  currentUserDetailsObs = this.currentUserDetailsSubject.asObservable();
   public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
   noRelease = new BehaviorSubject<any>(false);
   noReleaseObs = this.noRelease.asObservable();
@@ -105,6 +108,10 @@ export class SharedService {
 
   setSelectedTab(selectedTab) {
     this.selectedTab = selectedTab;
+  }
+
+  setSelectedType(selectedType) {
+    this.selectedtype = selectedType;
   }
 
   // getter for type i.e scrum or kanban
@@ -307,6 +314,24 @@ export class SharedService {
   // calls when sidenav refresh
   setSideNav(flag) {
     this.isSideNav.emit(flag);
+  }
+
+  setCurrentUserDetails(details){
+
+    if(!this.currentUserDetails  || !details || Object.keys(details).length === 0){
+      this.currentUserDetails=details;
+    }else{
+      this.currentUserDetails={...this.currentUserDetails,...details};
+    }
+
+    this.currentUserDetailsSubject.next(this.currentUserDetails);
+  }
+
+  getCurrentUserDetails(key){
+    if(this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)){
+      return this.currentUserDetails[key] ;
+     }
+    return false;
   }
 
   setNoRelease(value){

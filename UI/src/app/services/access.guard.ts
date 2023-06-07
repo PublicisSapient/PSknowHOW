@@ -20,15 +20,16 @@ import { Injectable } from '@angular/core';
 import { Router, CanActivate } from '@angular/router';
 import { GetAuthorizationService } from './get-authorization.service';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { SharedService } from './shared.service';
 
 @Injectable()
 export class AccessGuard implements CanActivate {
     hasAccess = <boolean>false;
-    constructor(private router: Router, private getAuthorization: GetAuthorizationService) { }
+    constructor(private router: Router, private getAuthorization: GetAuthorizationService, private sharedService: SharedService) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 
-        if (this.getAuthorization.checkIfSuperUser() || (localStorage.getItem('projectsAccess') && localStorage.getItem('projectsAccess') !== 'undefined' && JSON.parse(localStorage.getItem('projectsAccess')).length)) {
+        if (this.getAuthorization.checkIfSuperUser() || (this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess').length)) {
             this.hasAccess = true;
             return this.hasAccess;
         }

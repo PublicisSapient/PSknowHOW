@@ -81,8 +81,6 @@ import { APP_CONFIG, AppConfig } from './services/app.config';
 import { HelperService } from './services/helper.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { JsonExportImportService } from './services/json-export-import.service';
-import { RsaEncryptionService } from './services/rsa.encryption.service';
-import { TextEncryptionService } from './services/text.encryption.service';
 import { IterationComponent } from './dashboard/iteration/iteration.component';
 import { OverlappedProgressbarComponent } from './component/overlapped-progressbar/overlapped-progressbar.component';
 import { HorizontalStackProgressbarComponent } from './component/horizontal-stack-progressbar/horizontal-stack-progressbar.component';
@@ -110,6 +108,8 @@ import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/una
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
 import { CommentsComponent } from './component/comments/comments.component';
 import { MilestoneComponent } from './dashboard/milestone/milestone.component';
+import { HorizontalPercentBarChartComponent } from './component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
+
 
 /******************************************************/
 
@@ -170,7 +170,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         SsoAuthFailureComponent,
         UnauthorisedAccessComponent,
         GroupBarChartComponent,
-        MilestoneComponent
+        MilestoneComponent,
+        HorizontalPercentBarChartComponent
     ],
     imports: [
         DropdownModule,
@@ -211,9 +212,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         HelperService,
         GetAuthorizationService,
         JsonExportImportService,
-        RsaEncryptionService,
         MessageService,
-        TextEncryptionService,
         DatePipe,
         { provide: APP_CONFIG, useValue: AppConfig },
         { provide: APP_CONFIG, useValue: AppConfig },

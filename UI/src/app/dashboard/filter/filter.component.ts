@@ -28,7 +28,6 @@ import { MessageService, MenuItem } from 'primeng/api';
 import { faRotateRight } from '@fortawesome/fontawesome-free';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
-import { TextEncryptionService } from 'src/app/services/text.encryption.service';
 import { first } from 'rxjs/operators';
 
 @Component({
@@ -85,6 +84,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedDateFilter = '';
   beginningDate;
   selectedProjectLastSyncDate: any;
+  selectedProjectLastSyncDetails: any;
+  selectedProjectLastSyncStatus: any;
   processorsTracelogs = [];
   processorName = 'jira';
   heirarchyCount: number;
@@ -140,11 +141,15 @@ export class FilterComponent implements OnInit, OnDestroy {
     public router: Router,
     private ga: GoogleAnalyticsService,
     private messageService: MessageService,
-    private helperService: HelperService,
-    private aesEncryption: TextEncryptionService,
+    private helperService: HelperService
   ) { }
 
   ngOnInit() {
+    this.service.currentUserDetailsObs.subscribe(details=>{
+      if(details){
+        this.username = details['user_name'];
+      }
+    });
 
     this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
     this.service.setSelectedDateFilter(this.selectedDayType);
@@ -215,11 +220,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.getAuthorizationService.checkIfSuperUser()) {
       this.isSuperAdmin = true;
     }
-    this.username = localStorage.getItem('user_name');
+    // this.username = this.service.getCurrentUserDetails('user_name');
 
     let authoritiesArr;
-    if (localStorage.getItem('authorities')) {
-      authoritiesArr = this.aesEncryption.convertText(localStorage.getItem('authorities'),'decrypt');
+    if (this.service.getCurrentUserDetails('authorities')) {
+      authoritiesArr = this.service.getCurrentUserDetails('authorities');
     }
     if (authoritiesArr && authoritiesArr.includes('ROLE_GUEST')) {
       this.isGuest = true;
@@ -294,7 +299,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
-    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release'){
+    if(this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'mydashboard'){
       this.allowMultipleSelection = false;
     }else{
       this.allowMultipleSelection = true;
@@ -450,7 +455,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (!this.kpiListData['username']) {
       delete this.kpiListData['id'];
     }
-    this.kpiListData['username'] = localStorage.getItem('user_name');
+    this.kpiListData['username'] = this.service.getCurrentUserDetails('user_name');
   }
 
   closeAllDropdowns() {
@@ -632,6 +637,18 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
       this.selectedTab = boardDetails?.boardName;
         this.router.navigateByUrl(`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`);
+    }
+  }
+
+  navigateToHomePage(){
+    const previousSelectedTab = this.router.url.split('/')[2];
+    if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
+      this.kanban = false;
+      this.selectedTab = 'iteration';
+      this.service.setEmptyFilter();
+      this.service.setSelectedType('scrum');
+      this.projectIndex = 0;
+      this.router.navigateByUrl(`/dashboard/iteration`);
     }
   }
 
@@ -1066,11 +1083,12 @@ export class FilterComponent implements OnInit, OnDestroy {
   /** Get formated start/end date for Iteration and Milestone   */
   getFormatDateBasedOnIterationAndMilestone(type,filteredAddFiltersKey,formfield,startDateField,endDateField){
     let dateString = 'N/A';
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const selectedField = this.filterForm?.get(formfield)?.value;
       if (selectedField) {
         const obj = this.filteredAddFilters[filteredAddFiltersKey]?.filter((x) => x['nodeId'] == selectedField)[0];
-
-        if((obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
+        
+        if(obj && (obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
           return dateString;
         }
 
@@ -1081,7 +1099,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           } else {
             d = new Date(obj[endDateField]);
           }
-          dateString = [this.pad(d.getDate()),this.pad(d.getMonth() + 1),d.getFullYear()].join('/');
+          dateString = [this.pad(d.getDate()),this.pad(monthNames[d.getMonth()]),d.getFullYear()].join('/');
         }
       }
 
@@ -1136,7 +1154,19 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   showExecutionDate() {
-    this.selectedProjectLastSyncDate = this.findTraceLogForTool();
+    this.selectedProjectLastSyncDetails = this.findTraceLogForTool();
+    if(this.selectedProjectLastSyncDetails != undefined && this.selectedProjectLastSyncDetails != null){
+      if(this.selectedProjectLastSyncDetails.executionSuccess){
+        this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
+        this.selectedProjectLastSyncStatus = "SUCCESS";
+      }else{
+        this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
+        this.selectedProjectLastSyncStatus = "FAILURE";
+      }
+    }else{
+      this.selectedProjectLastSyncStatus = "";
+      this.selectedProjectLastSyncDate = "NA"
+   }
   }
   setSelectedDateType(label: string) {
     this.selectedDayType = label;
@@ -1201,15 +1231,10 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.httpService.logout().subscribe((getData) => {
       if (!(getData !== null && getData[0] === 'error')) {
         this.helperService.isKanban = false;
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user_name');
-        localStorage.removeItem('authorities');
-        localStorage.removeItem('projectsAccess');
-        if (localStorage.getItem('loginType') === 'AD') {
-          localStorage.removeItem('SpeedyPassword');
-        }
+        localStorage.clear();
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
+        this.service.setCurrentUserDetails({});
         this.router.navigate(['./authentication/login']);
       }
     });
@@ -1268,6 +1293,13 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
    }
 
+   getCurrentUserDetails(){
+    this.httpService.getCurrentUserDetails().subscribe(details=>{
+      if(details['success']){
+        this.service.setCurrentUserDetails(details['data']);
+      }
+    });
+   }
   handleMilestoneFilter(level) {
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
     this.filteredAddFilters['release'] = []
