@@ -72,6 +72,22 @@
                   </ng-container>
                 </app-kpi-card>
               </div>
+              <ng-template #noData>
+                <div class="overlay"
+                  *ngIf="(kpiChartData[commitmentReliabilityKpi?.kpiId] && kpiChartData[commitmentReliabilityKpi?.kpiId]?.length)|| kpiLoader">
+
+                  <div class="loading-img"></div>
+                </div>
+                <div class="min-ht"
+                  *ngIf="kpiChartData[commitmentReliabilityKpi?.kpiId] &&  kpiChartData[commitmentReliabilityKpi?.kpiId]?.length === 0 && kpiLoader === false">
+                  <div class="err">No Data Available</div>
+                </div>
+              </ng-template>
+              <ng-template #loader>
+                <div class="overlay">
+                  <div class="loading-img"></div>
+                </div>
+              </ng-template>
             </div>
             <!-- Iteration commitment kpi end -->
             <div class="p-grid justify-content-start p-mt-0 p-pt-3 p-pl-3 iteration-dashboard" cdkDropList
