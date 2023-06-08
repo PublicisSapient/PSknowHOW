@@ -1112,9 +1112,9 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi40",
-    "kpiName": "Story Count",
+    "kpiName": "Issue Count",
     "maxValue": "",
-    "kpiUnit": "Stories",
+    "kpiUnit": "Count",
     "isDeleted": "False",
     "defaultOrder": 17,
     "kpiSource": "Jira",
@@ -1123,7 +1123,7 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
-      "definition": "STORY COUNT measures the overall work taken in a sprint",
+      "definition": "Issue COUNT measures the overall work taken in a sprint",
       "formula": [
         {
           "lhs": "No. of stories tagged to a Sprint"
@@ -1135,6 +1135,7 @@ db.getCollection('kpi_master').insert(
     "isPositiveTrend": true,
     "showTrend": false,
     "aggregationCriteria": "sum",
+    "kpiFilter": "radioButton",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },

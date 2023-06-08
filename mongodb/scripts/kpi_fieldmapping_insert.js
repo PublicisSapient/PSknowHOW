@@ -116,7 +116,7 @@ db.getCollection('kpi_fieldmapping').insert(
       },
       {
         kpiId: 'kpi40',
-        kpiName: 'Story Count',
+        kpiName: 'Issue Count',
 		kpiSource: 'Jira',
         type: ['Scrum'],
         fieldNames : {'Issue Types Mapping' : ['jiraStoryIdentification','jiraIterationCompletionTypeCustomField'] ,'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField']}
