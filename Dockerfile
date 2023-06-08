@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-slim-stretch
+FROM openjdk:8-jre-slim-buster
 
 # There are environment variables with periods in the names so change bash as default
 RUN ln -sf /bin/bash /bin/sh 
@@ -19,6 +19,7 @@ ARG BAMBOO_JAR_FILE=processors/bamboo/target/bamboo-processor.jar
 ARG TEAMCITY_JAR_FILE=processors/teamcity/target/teamcity-processor.jar
 ARG GITLAB_JAR_FILE=processors/gitlab/target/gitlab-processor.jar
 ARG GITHUB_JAR_FILE=processors/github/target/github-processor.jar
+ARG GITHUBACTION_JAR_FILE=processors/githubaction/target/githubaction-processor.jar
 
 ARG JENKINS_PROPERTIES_FILE_NAME=jenkins.properties
 ARG BAMBOO_PROPERTIES_FILE_NAME=bamboo.properties
@@ -29,6 +30,7 @@ ARG JIRATEST_PROPERTIES_FILE_NAME=jiratest.properties
 ARG TEAMCITY_PROPERTIES_FILE_NAME=teamcity.properties
 ARG GITLAB_PROPERTIES_FILE_NAME=gitlab.properties
 ARG GITHUB_PROPERTIES_FILE_NAME=github.properties
+ARG GITHUBACTION_PROPERTIES_FILE_NAME=githubaction.properties
 
 ADD ${ZEPHYR_JAR_FILE} /app/zephyr.jar
 ADD ${JIRA_TEST_JAR_FILE} /app/jiratest.jar
@@ -39,6 +41,7 @@ ADD ${BITBUCKET_JAR_FILE} /app/bitbucket.jar
 ADD ${TEAMCITY_JAR_FILE} /app/teamcity.jar
 ADD ${GITLAB_JAR_FILE} /app/gitlab.jar
 ADD ${GITHUB_JAR_FILE} /app/github.jar
+ADD ${GITHUBACTION_JAR_FILE} /app/githubaction.jar
 
 
 WORKDIR /app
@@ -53,6 +56,7 @@ EXPOSE 50012
 EXPOSE 50014
 EXPOSE 50019
 EXPOSE 50020
+EXPOSE 50022
 
 ADD processors/nonjira_combined_processor_docker/start_combined_collector.sh start_combined_collector.sh
 RUN ["chmod", "+x", "/app/start_combined_collector.sh"]

@@ -55,6 +55,7 @@ public class ProcessorUrlConfig {
 	String azurerepository;
 	String teamcity;
 	String github;
+	String githubAction;
 
 	public String getProcessorUrl(String processor) {
 		switch (processor) {
@@ -68,6 +69,8 @@ public class ProcessorUrlConfig {
 			return getGitlab();
 		case ProcessorConstants.GITHUB:
 			return getGithub();
+		case ProcessorConstants.GITHUBACTION:
+			return getGithubAction();
 		case ProcessorConstants.EXCEL:
 			return getExcel();
 		case ProcessorConstants.BAMBOO:

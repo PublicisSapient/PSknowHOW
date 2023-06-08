@@ -94,6 +94,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   markerInfo=[];
   globalConfig;
   sharedObject;
+  forzenColumns = ['issue id','issue description'];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {

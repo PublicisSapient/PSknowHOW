@@ -163,6 +163,8 @@ export class HttpService {
   private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
   private postKpiColumnsConfigUrl =
     this.baseUrl + '/api/kpi-column-config/kpiColumnConfig';
+  private gitActionWorkflowNameUrl =
+    this.baseUrl + '/api/githubAction/workflowName';
   private saveHappinessIndexForSprintUrl =
     this.baseUrl + '/api/capacity/jira/happiness';
   userName: string;
@@ -236,6 +238,10 @@ export class HttpService {
     return this.http.get(this.saveConfigurl + 's', {
       headers,
     });
+  }
+
+  saveOrUpdateSprintHappinessIndex(postData) {
+    return this.http.post<any>(this.saveHappinessIndexForSprintUrl, postData);
   }
 
   /** GET getMasterData from the server */
@@ -847,10 +853,6 @@ export class HttpService {
     return this.http.post<any>(this.saveAssigneeForProjectUrl, postData);
   }
 
-  saveOrUpdateSprintHappinessIndex(postData) {
-    return this.http.post<any>(this.saveHappinessIndexForSprintUrl, postData);
-  }
-
   getkpiColumns(projectBasicConfigId, kpiId) {
     return this.http.get(
       this.getKpiColumnsUrl + '/' + projectBasicConfigId + '/' + kpiId,
@@ -1049,15 +1051,16 @@ export class HttpService {
   }
 
   getComment(selectedTab, selectedFilter, kpiId) {
-    return this.http.get<any>(
-      `${this.getCommentUrl}?node=${
+    const postData = {
+      node:
         selectedTab !== 'iteration'
           ? selectedFilter?.nodeId
-          : selectedFilter?.parentId[0]
-      }&sprintId=${
-        selectedTab === 'iteration' ? selectedFilter.nodeId : ''
-      }&kpiId=${kpiId}&level=${selectedFilter?.level}`,
-    );
+          : selectedFilter?.parentId[0],
+      sprintId: selectedTab === 'iteration' ? selectedFilter.nodeId : '',
+      kpiId: kpiId,
+      level: selectedFilter?.level,
+    };
+    return this.http.post<any>(this.getCommentUrl, postData);
   }
 
   submitComment(data): Observable<any> {
@@ -1089,5 +1092,13 @@ export class HttpService {
 
   getCurrentUserDetails() {
     return this.http.get<any>(this.currentUserDetailsURL);
+  }
+
+  /** Get workflow name list for Github Action tool */
+  getGitActionWorkFlowName(data) {
+    return this.http.post(
+      `${this.gitActionWorkflowNameUrl}/${data.connectionID}`,
+      data,
+    );
   }
 }

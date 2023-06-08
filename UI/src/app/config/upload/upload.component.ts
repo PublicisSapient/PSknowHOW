@@ -1100,7 +1100,12 @@ export class UploadComponent implements OnInit {
         delete postData['sprintState'];
         this.http_service.saveOrUpdateAssignee(postData).subscribe(response => {
             if (response && response?.success && response?.data) {
-                this.sendSprintHappinessIndex(selectedSprint);
+                if (!this.kanban) {
+                    this.sendSprintHappinessIndex(selectedSprint);
+                } else {
+                    this.getCapacityData(selectedSprint['basicProjectConfigId']);
+                    this.messageService.add({ severity: 'success', summary: 'Assignee Details saved successfully!' });
+                }
             } else {
                 this.messageService.add({ severity: 'error', summary: 'Error in Saving Assignee Details. Please try after sometime!' });
             }
@@ -1111,11 +1116,12 @@ export class UploadComponent implements OnInit {
         const postData = {
             basicProjectConfigId: selectedSprint['basicProjectConfigId'],
             sprintID: selectedSprint['sprintNodeId'],
-            userRatingList: selectedSprint['assigneeCapacity'].map(assignee => ({ userId: assignee['userId'], userName: assignee['userName'], rating: assignee['happinessRating'] }))
+            userRatingList: selectedSprint['assigneeCapacity'].map(assignee => ({ userId: assignee['userId'], userName: assignee['userName'], rating: assignee['happinessRating'] ?  assignee['happinessRating'] : 0}))
         };
 
         this.http_service.saveOrUpdateSprintHappinessIndex(postData).subscribe(response => {
             if (response && response?.success && response?.data) {
+                this.projectCapacityEditMode = false;
                 this.getCapacityData(selectedSprint['basicProjectConfigId']);
                 this.messageService.add({ severity: 'success', summary: 'Assignee Details saved successfully!' });
             } else {
