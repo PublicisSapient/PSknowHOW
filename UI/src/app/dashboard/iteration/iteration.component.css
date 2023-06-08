@@ -182,6 +182,10 @@ padding: 0.75rem !important;
     left:0px !important;
 }
 
+:host::ng-deep .p-dialog .p-dialog-header .p-dialog-title {
+    font-weight: bold;
+}
+
 :host ::ng-deep.p-dialog.p-component.p-dialog-draggable{
     min-height: 400px;
 }
@@ -222,6 +226,13 @@ padding: 0.75rem !important;
 :host::ng-deep.kpi-table.p-datatable .p-datatable-thead > tr > th.dragged{
     border: 2px dashed #1D4ED8;
     /* display: none; */
+}
+
+:host::ng-deep.p-datatable-scrollable .p-datatable-tbody>tr>td.multidata-col{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: initial;
 }
 
 .overlap{
