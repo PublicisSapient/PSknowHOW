@@ -60,6 +60,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -95,7 +96,6 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 	private static final String PROJECT_WISE_CLOSED_STORY_STATUS = "projectWiseClosedStoryStatus";
 	private static final String TAGGED_DEFECTS_CREATED_AFTER_SPRINT = "Added Defects";
 	private static final String TAGGED_DEFECTS = "Total Defects";
-	private static final String CLOSED = "CLOSED";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	@Autowired
@@ -330,7 +330,10 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 					List<JiraIssue> totalIssues = allJiraIssue.stream()
 							.filter(element -> availableIssues.contains(element.getNumber()))
 							.collect(Collectors.toList());
-					List<JiraIssue> totalSubTask = getTotalSubTasks(allSubTaskBugs, sd);
+					List<JiraIssue> totalSubTask = getTotalSubTasks(allSubTaskBugs.stream()
+							.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
+									&& jiraIssue.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
+							.collect(Collectors.toList()), sd, allSubTaskBugsHistory);
 					totalIssues.addAll(totalSubTask);
 					List<JiraIssue> completedIssues = getCompletedIssues(
 							allJiraIssue.stream().filter(element -> completedSprintIssues.contains(element.getNumber()))
@@ -471,18 +474,38 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		return calculateKpiValueForDouble(valueList, kpiName);
 	}
 
-	public List<JiraIssue> getTotalSubTasks(List<JiraIssue> allSubTasks, SprintDetails sprintDetails) {
-		LocalDate sprintEndDate = sprintDetails.getState().equalsIgnoreCase(CLOSED)
-				? LocalDate.parse(sprintDetails.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
-				: LocalDate.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
-		List<JiraIssue> subTaskTaggedWithSprint = allSubTasks.stream()
-				.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
-						&& jiraIssue.getSprintIdList().contains(sprintDetails.getSprintID().split("_")[0]))
-				.collect(Collectors.toList());
-		return subTaskTaggedWithSprint.stream()
-				.filter(jiraIssue -> sprintEndDate
-						.isAfter(LocalDate.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)))
-				.collect(Collectors.toList());
+	/**
+	 *
+	 * @param allSubTasks
+	 * @param sprintDetails
+	 * @param subTaskHistory
+	 * @return sprint sub task bugs
+	 */
+	public List<JiraIssue> getTotalSubTasks(List<JiraIssue> allSubTasks, SprintDetails sprintDetails,
+			List<JiraIssueCustomHistory> subTaskHistory) {
+		LocalDateTime sprintEndDate = sprintDetails.getCompleteDate() != null
+				? LocalDateTime.parse(sprintDetails.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDateTime sprintStartDate = sprintDetails.getActivatedDate() != null
+				? LocalDateTime.parse(sprintDetails.getActivatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetails.getBasicProjectConfigId());
+		List<JiraIssue> subTaskTaggedWithSprint = new ArrayList<>();
+
+		allSubTasks.forEach(jiraIssue -> {
+			JiraIssueCustomHistory jiraIssueCustomHistory = subTaskHistory.stream().filter(
+					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
+					.findFirst().orElse(new JiraIssueCustomHistory());
+			Optional<JiraHistoryChangeLog> jiraHistoryChangeLog = jiraIssueCustomHistory.getStatusUpdationLog().stream()
+					.filter(changeLog -> fieldMapping.getJiraIssueDeliverdStatus().contains(changeLog.getChangedTo())
+							&& changeLog.getUpdatedOn().isAfter(sprintStartDate))
+					.findFirst();
+			if (jiraHistoryChangeLog.isPresent() && sprintEndDate
+					.isAfter(LocalDateTime.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)))
+				subTaskTaggedWithSprint.add(jiraIssue);
+
+		});
+		return subTaskTaggedWithSprint;
 	}
 
 	/**
@@ -576,4 +599,5 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		}
 		return hoverMap;
 	}
+
 }

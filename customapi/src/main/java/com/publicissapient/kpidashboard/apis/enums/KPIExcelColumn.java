@@ -87,8 +87,6 @@ public enum KPIExcelColumn {
 
     COST_OF_DELAY("kpi113", Arrays.asList("Project Name", "Cost of Delay", "Epic ID", "Epic Name", "Epic End Date", "Month")),
 
-    DAILY_CLOSURES("kpi125", Arrays.asList("Issue ID", "Issue Type",  "Issue Description", "Issue Status", "Size(story point/hours)", "Planned Completion Date (Due Date)", "Actual Completion Date", "Remaining Estimate", "Potential Delay(in days)","Predicted Completion Date","Assignee")),
-
     RELEASE_FREQUENCY("kpi73", Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
     DEPLOYMENT_FREQUENCY("kpi118", Arrays.asList("Project Name", "Date", "Job Name", "Month", "Environment")),
@@ -213,7 +211,10 @@ public enum KPIExcelColumn {
 
     DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
 
-    RELEASE_PROGRESS("kpi147",Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority","Assignee", "Issue Status"));
+    RELEASE_PROGRESS("kpi147",Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority","Assignee", "Issue Status")),
+
+    FLOW_DISTRIBUTION("Kpi146",Arrays.asList("Date")),
+    FLOW_LOAD("kpi148",Arrays.asList("Date"));
 
     // @formatter:on
 

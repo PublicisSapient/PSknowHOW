@@ -334,9 +334,9 @@ public enum KPICode {
 	ESTIMATION_HYGIENE("kpi124", KPISource.JIRA.name()),
 	
 	/**
-	 * Daily Closures
+	 * ITERATION_BURNUP
 	 */
-	DAILY_CLOSURES("kpi125", KPISource.JIRA.name()),
+	ITERATION_BURNUP("kpi125", KPISource.JIRA.name()),
 	
 	/**
 	 * Created Vs Resolved
@@ -393,7 +393,16 @@ public enum KPICode {
 	/**
 	 * Refinement Rejection Rate
 	 */
-	REFINEMENT_REJECTION_RATE("kpi139", KPISource.JIRA.name());
+	REFINEMENT_REJECTION_RATE("kpi139", KPISource.JIRA.name()),
+
+	/**
+	 * Flow Distribution
+	 */
+	FLOW_DISTRIBUTION("kpi146",KPISource.JIRA.name()),
+	/*
+	* Flow Load
+	* */
+	FLOW_LOAD("kpi148",KPISource.JIRA.name());
 
 	// @formatter:on
 
