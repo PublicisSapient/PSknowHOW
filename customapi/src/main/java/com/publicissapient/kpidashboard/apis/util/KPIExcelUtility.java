@@ -891,8 +891,8 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateStoryCountExcelData(String sprint, List<KPIExcelData> kpiExcelData,
-			List<JiraIssue> allJiraIssueList, List<String> totalPresentJiraIssue) {
+	public static void populateIssueCountExcelData(String sprint, List<KPIExcelData> kpiExcelData,
+												   List<JiraIssue> allJiraIssueList, List<String> totalPresentJiraIssue) {
 
 		if (CollectionUtils.isNotEmpty(allJiraIssueList)) {
 			allJiraIssueList.stream().filter(issue -> totalPresentJiraIssue.contains(issue.getNumber()))
