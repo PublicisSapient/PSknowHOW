@@ -98,9 +98,9 @@ public enum KPICode {
 	 */
 	SPRINT_VELOCITY("kpi39", KPISource.JIRA.name()),
 	/**
-	 * Story count kpi code.
+	 * Issue count kpi code.
 	 */
-	STORY_COUNT("kpi40", KPISource.JIRA.name()),
+	ISSUE_COUNT("kpi40", KPISource.JIRA.name()),
 
 	/**
 	 * Total defect count kpi code.
