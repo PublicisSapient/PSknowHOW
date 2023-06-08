@@ -1288,6 +1288,13 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
         }
         this.service.setFilterData(JSON.parse(JSON.stringify(filterApiData)));
+        const selectedTrends = this.service.getSelectedTrends();
+        const selectedTrendNodeIds = selectedTrends.map(trend => trend.nodeId);
+        const filteredTrendValue = this.trendLineValueList.filter(trend => selectedTrendNodeIds.includes(trend.nodeId));
+        this.service.setSelectedTrends(filteredTrendValue);
+        if(filteredTrendValue.length  === 0){
+          this.checkIfFilterAlreadySelected();
+        }
         this.navigateToSelectedTab();
       });
     });

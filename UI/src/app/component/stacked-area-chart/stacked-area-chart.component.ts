@@ -9,6 +9,7 @@ import * as d3 from 'd3';
 export class StackedAreaChartComponent implements OnInit {
   @Input() data: any; // json data
   elem;
+  @Input() kpiId:string = ''; 
   constructor(private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {}
@@ -26,7 +27,7 @@ export class StackedAreaChartComponent implements OnInit {
 
   draw() {
     d3.select(this.elem).select('#stacked-area').select('svg').remove();
-    
+    let kpiId = this.kpiId;
     let keys = Object.keys(this.data[0]?.value);
     let yMax = 0;
     /** calculating yMax and extracting keys */
@@ -169,7 +170,7 @@ export class StackedAreaChartComponent implements OnInit {
         .selectAll("mylayers")
         .data(stackedData)
         .join("path")
-        .attr("class", function (d) { return "myArea " + d.key })
+        .attr("class", function (d) { return `${"myArea-"+kpiId}` + " " +d.key })
         .style("fill", function (d) { return color(d.key); })
         .attr("d", area)
 
@@ -213,14 +214,14 @@ export class StackedAreaChartComponent implements OnInit {
       // What to do when one group is hovered
       const highlight = function (event, d) {
         // reduce opacity of all groups
-        d3.selectAll(".myArea").style("opacity", .1)
+        d3.selectAll(".myArea-"+kpiId).style("opacity", .1)
         // expect the one that is hovered
         d3.select("." + d).style("opacity", 1)
       }
 
       // And when it is not hovered anymore
       const noHighlight = function (event, d) {
-        d3.selectAll(".myArea").style("opacity", 1)
+        d3.selectAll(".myArea-"+kpiId).style("opacity", 1)
       }
 
       //////////
