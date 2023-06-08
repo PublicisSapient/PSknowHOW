@@ -17,9 +17,13 @@ export class ExportExcelComponent implements OnInit {
   kpiExcelData;
   sprintRatingObj = {
     '1': '../assets/img/smiley-1.svg',
+
     '2': '../assets/img/smiley-2.svg',
+
     '3': '../assets/img/smiley-3.svg',
+
     '4': '../assets/img/smiley-4.svg',
+
     '5': '../assets/img/smiley-5.svg',
   };
 
@@ -39,6 +43,7 @@ export class ExportExcelComponent implements OnInit {
     filterApplyData,
     filterData,
     iSAdditionalFilterSelected,
+    chartType?,
   ) {
     const sprintIncluded =
       filterApplyData.sprintIncluded.length > 0
@@ -59,8 +64,25 @@ export class ExportExcelComponent implements OnInit {
             getData['excelData'] ||
             !getData?.hasOwnProperty('validationData')
           ) {
-            this.kpiExcelData =
-              this.excelService.generateExcelModalData(getData);
+            if (chartType == 'stacked-area') {
+              let kpiObj = JSON.parse(JSON.stringify(getData));
+              kpiObj['excelData'] = kpiObj['excelData'].map((item) => {
+                for (let key in item['Count']) {
+                  if (!kpiObj['columns']?.includes(key)) {
+                    kpiObj['columns'] = [...kpiObj['columns'], key];
+                  }
+                }
+                let obj = { ...item, ...item['Count'] };
+                delete obj['Count'];
+                return obj;
+              });
+              this.kpiExcelData =
+                this.excelService.generateExcelModalData(kpiObj);
+            } else {
+              this.kpiExcelData =
+                this.excelService.generateExcelModalData(getData);
+            }
+
             this.modalDetails['tableHeadings'] =
               this.kpiExcelData.headerNames.map((column) => column.header);
             this.modalDetails['tableValues'] = this.kpiExcelData.excelData;

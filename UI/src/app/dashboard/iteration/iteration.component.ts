@@ -94,6 +94,10 @@ export class IterationComponent implements OnInit, OnDestroy {
   markerInfo=[];
   globalConfig;
   sharedObject;
+  navigationTabs:Array<object> = [
+    {'label':'Iteration Review', 'count': 0}, 
+    {'label':'Iteration Progress', 'count': 0}
+  ];
   forzenColumns = ['issue id','issue description'];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
@@ -143,6 +147,15 @@ export class IterationComponent implements OnInit, OnDestroy {
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
+    /**reset the kpi count */
+    this.navigationTabs = this.navigationTabs.map((x) => {
+      return { ...x, count: 0}
+    })
+    for(let i = 0; i<this.upDatedConfigData?.length; i++){
+      let board = this.upDatedConfigData[i]?.subCategoryBoard;
+      let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
+      if(idx != -1) this.navigationTabs[idx]['count']++; 
+    }
     if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
     } else {
@@ -482,17 +495,9 @@ export class IterationComponent implements OnInit, OnDestroy {
         const filters = this.kpiSelectedFilterObj[kpiId]['filter1'];
         let preAggregatedValues = [];
         for (let i = 0; i < filters?.length; i++) {
-          preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'] == filters[i])];
+          preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'].toLowerCase() === filters[i].toLowerCase())];
         }
-        if (preAggregatedValues?.length > 1) {
-          if (this.getKpiChartType(kpiId)?.toLowerCase() === 'groupbarchart') {
-            this.kpiChartData[kpiId] = this.applyAggregationForChart(preAggregatedValues);
-            } else {
-                this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
-            }
-        } else {
-          this.kpiChartData[kpiId] = [...preAggregatedValues];
-        }
+        this.kpiChartData[kpiId] = [...preAggregatedValues];
       }else{
 
         this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
@@ -609,7 +614,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.kpiDropdowns[kpiId].push(obj);
       }
     }
-    
+
   }
 
   handleSelectedOption(event, kpi) {
