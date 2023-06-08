@@ -181,7 +181,6 @@ export class IterationComponent implements OnInit, OnDestroy {
   receiveSharedData($event) {
     if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
-      //this.configGlobalData = require('../../../test/resource/fakeUserBoardConfig.json')['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
       this.processKpiConfigData();
       this.masterData = $event.masterData;
       this.filterData = $event.filterData;

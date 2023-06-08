@@ -228,6 +228,9 @@ public class CustomApiConfig {// NOPMD
 	@Value("${backlogWeekCount}")
 	private int backlogWeekCount;
 
+	@Value("${flowKpiMonthCount}")
+	private int flowKpiMonthCount;
+
 	public int getPushDataLimit() {
 		return pushDataLimit;
 	}
@@ -1015,5 +1018,13 @@ public class CustomApiConfig {// NOPMD
 
 	public void setRepoXAxisCountForCheckInsAndMergeRequests(Integer repoXAxisCountForCheckInsAndMergeRequests) {
 		this.repoXAxisCountForCheckInsAndMergeRequests = repoXAxisCountForCheckInsAndMergeRequests;
+	}
+
+	public int getFlowKpiMonthCount() {
+		return flowKpiMonthCount;
+	}
+
+	public void setFlowKpiMonthCount(int flowKpiMonthCount) {
+		this.flowKpiMonthCount = flowKpiMonthCount;
 	}
 }

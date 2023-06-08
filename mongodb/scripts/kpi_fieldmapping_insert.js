@@ -510,5 +510,17 @@ db.getCollection('kpi_fieldmapping').insert(
       		kpiSource: 'Jira',
               type: ['Other'],
               fieldNames : {'Workflow Status Mapping' : ['readyForDevelopmentStatus'] }
-            }
+            },
+            {
+             kpiId: 'Kpi148',
+             kpiName: 'Flow Load',
+             type: ['Other'],
+             fieldNames : { }
+            },
+      {
+        kpiId: 'Kpi146',
+        kpiName: 'Flow Distribution',
+        type: ['Other'],
+        fieldNames : { }
+      }
 	  ]);
