@@ -957,6 +957,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 
 ::ng-deep .ng-select-container .ng-placeholder {
   font-size: 12px;
+  font-weight: bold;
 }
 
 ::ng-deep .ng-select-container.ng-has-value .ng-placeholder {
