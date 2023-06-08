@@ -334,9 +334,9 @@ public enum KPICode {
 	ESTIMATION_HYGIENE("kpi124", KPISource.JIRA.name()),
 	
 	/**
-	 * Daily Closures
+	 * ITERATION_BURNUP
 	 */
-	DAILY_CLOSURES("kpi125", KPISource.JIRA.name()),
+	ITERATION_BURNUP("kpi125", KPISource.JIRA.name()),
 	
 	/**
 	 * Created Vs Resolved
