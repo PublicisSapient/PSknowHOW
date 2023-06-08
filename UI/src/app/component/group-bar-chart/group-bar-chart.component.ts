@@ -72,9 +72,9 @@ export class GroupBarChartComponent implements OnChanges {
 
     const currentDayIndex = this.currentDayIndex;
     const barWidth = 18;
-    const width = data.length <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : data.length * barWidth * (subgroups.length + 3);
+    const width = data.length <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : data.length * barWidth * (subgroups.length + 2);
     const spacingVariable = 50;
-    const height = 190;
+    const height = 175;
     const margin = 50;
     const marginLeft = 40;
     const marginTop = 35;
@@ -104,7 +104,7 @@ export class GroupBarChartComponent implements OnChanges {
     const x = d3.scaleBand()
       .domain(groups)
       .range([0, width - margin])
-      .paddingInner(0.8)
+      .paddingInner(2)
       .paddingOuter(0.5);
 
     const y = d3.scaleLinear()
@@ -142,7 +142,8 @@ export class GroupBarChartComponent implements OnChanges {
       svgX
         .select('.xAxis')
         .selectAll(`.tick:nth-of-type(${currentDayIndex + 1}) text`)
-        .style('color', '#079FFF');
+        .style('color', '#079FFF').
+        style("font-weight", "bolder")
     }
 
     svgX
@@ -239,8 +240,8 @@ export class GroupBarChartComponent implements OnChanges {
           .data(linedata)
           .join('div')
           .attr('class', 'tooltip')
-          .style('left', d => x(d.filter)  + 15 + 'px')
-          .style('top', d => y(d.value) + 5 + 'px')
+          .style('left', d => x(d.filter)  + 0 + 'px')
+          .style('top', d => y(d.value) + 6 + 'px')
           .text(d => d.value)
           .transition()
           .duration(500)
@@ -262,11 +263,11 @@ export class GroupBarChartComponent implements OnChanges {
   
         const line = svgX
           .append('g')
-          .attr('transform', `translate(10,0)`)
+          .attr('transform', `translate(17,0)`)
           .append('path')
           .datum(lineData)
           .attr('d', d3.line()
-            .x((d) => x(d.filter) + 17)
+            .x((d) => x(d.filter))
             .y((d) => y(d.value))
           )
           .attr('stroke', (d) => color(kpiGroup))
@@ -287,12 +288,12 @@ export class GroupBarChartComponent implements OnChanges {
         const circlegroup = svgX
           .append('g')
           .attr('class', 'circle-group')
-          .attr('transform', `translate(10,0)`)
+          .attr('transform', `translate(17,0)`)
           .selectAll('circle')
           .data(lineData)
           .enter()
           .append('circle')
-          .attr('cx', d => x(d.filter) + 17)
+          .attr('cx', d => x(d.filter))
           .attr('cy', d => y(d.value))
           .attr('r', 3)
           .style('stroke-width', 1)
@@ -396,9 +397,14 @@ export class GroupBarChartComponent implements OnChanges {
         const dateArray = d['group'].split('to');
         const date1 = new Date(dateArray[0]);
         const date2 = new Date(dateArray[1]);
-        const currentDate = new Date();
-        d['group'] = `${(date1.getDate() < 10) ? ('0' + date1.getDate()) : date1.getDate()}/${(date1.getMonth() + 1) < 10 ? '0' + (date1.getMonth() + 1) : date1.getMonth() + 1} -
-        ${(date2.getDate() < 10) ? ('0' + date2.getDate()) : date2.getDate()}/${(date2.getMonth() + 1) < 10 ? '0' + (date2.getMonth() + 1) : date2.getMonth() + 1}`;
+        const today = new Date();
+        const startOfCurrentWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+        const endOfCurrentWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + (6 - today.getDay()));
+        if (date1 <= endOfCurrentWeek && date2 >= startOfCurrentWeek) {
+          this.currentDayIndex = i;
+        }
+        d['group'] = `${(date1.getDate() < 10) ? ('0' + date1.getDate()) : date1.getDate()}/${(date1.getMonth() + 1) < 10 ? '0' + (date1.getMonth() + 1) : date1.getMonth() + 1} - `+
+        `${(date2.getDate() < 10) ? ('0' + date2.getDate()) : date2.getDate()}/${(date2.getMonth() + 1) < 10 ? '0' + (date2.getMonth() + 1) : date2.getMonth() + 1}`;
       return d;
       }else{
         const date = new Date(d['group']);
