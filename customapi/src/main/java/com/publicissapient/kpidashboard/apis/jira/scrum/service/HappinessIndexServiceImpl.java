@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -25,9 +44,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class HappinessIndexImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
+public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HappinessIndexImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HappinessIndexServiceImpl.class);
 
     @Autowired
     private SprintRepository sprintRepository;
@@ -118,15 +137,18 @@ public class HappinessIndexImpl extends JiraKPIService<Double, List<Object>, Map
         if (CollectionUtils.isNotEmpty(sprintDetails) && CollectionUtils.isNotEmpty(happinessKpiDataList)) {
             sprintDetails.forEach(sd -> {
 
+                //Finding total ratings for a particular project and sprint
                 List<Integer> totalRatings = happinessKpiDataList.stream()
                         .filter(data -> data.getBasicProjectConfigId().toString().equals(sd.getBasicProjectConfigId().toString()) && data.getSprintID().equals(sd.getSprintID()))
                         .flatMap(filteredData -> filteredData.getUserRatingList().stream().map(UserRatingData::getRating))
-                        .filter(rating -> Objects.nonNull(rating) && rating > 0)
+                        .filter(rating -> Objects.nonNull(rating))
                         .collect(Collectors.toList());
 
 
                 sprintWiseHappinessIndexNumbers.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
                         totalRatings);
+
+
             });
         }
 
@@ -134,19 +156,19 @@ public class HappinessIndexImpl extends JiraKPIService<Double, List<Object>, Map
         List<KPIExcelData> excelData = new ArrayList<>();
 
 
-        for (Node node : sprintLeafNodeList){
+        for (Node node : sprintLeafNodeList) {
 
             // Leaf node wise data
             String trendLineName = node.getProjectFilter().getName();
             String currentSprintComponentId = node.getSprintFilter().getId();
             Pair<String, String> currentNodeIdentifier = Pair
                     .of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
-            Integer happinessIndexValue = 0;
+            Double happinessIndexValue = 0.0;
 
             if (CollectionUtils.isNotEmpty(sprintWiseHappinessIndexNumbers.get(currentNodeIdentifier))) {
-                List<Integer> totalRatingsValue = sprintWiseHappinessIndexNumbers.get(currentNodeIdentifier);
-                happinessIndexValue = totalRatingsValue.stream().mapToInt(Integer::intValue).sum()/totalRatingsValue.size();
-                populateExcelData(requestTrackerId,excelData, node,happinessKpiDataList);
+                List<Double> totalRatingsValue = sprintWiseHappinessIndexNumbers.get(currentNodeIdentifier).stream().map(Integer::doubleValue).collect(Collectors.toList());
+                happinessIndexValue = calculateKpiValue(totalRatingsValue, KPICode.HAPPINESS_INDEX_RATE.getKpiId());
+                populateExcelData(requestTrackerId, excelData, node, happinessKpiDataList);
             }
 
             LOGGER.debug("[HAPPINESS-INDEX-SPRINT-WISE][{}]. happiness index for sprint {}  is {}", requestTrackerId,
@@ -181,15 +203,15 @@ public class HappinessIndexImpl extends JiraKPIService<Double, List<Object>, Map
      * @param node
      * @param excelData
      */
-    private void populateExcelData(String requestTrackerId, List<KPIExcelData> excelData, Node node,List<HappinessKpiData> happinessKpiDataList) {
+    private void populateExcelData(String requestTrackerId, List<KPIExcelData> excelData, Node node, List<HappinessKpiData> happinessKpiDataList) {
 
-        if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())){
+        if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
             String sprintName = node.getSprintFilter().getName();
             String sprintId = node.getSprintFilter().getId();
             List<HappinessKpiData> happinessKpiSprintDataList = happinessKpiDataList.stream()
                     .filter(data -> data.getSprintID().equals(sprintId))
                     .collect(Collectors.toList());
-            KPIExcelUtility.populateHappinessIndexExcelData(sprintName, excelData,happinessKpiSprintDataList);
+            KPIExcelUtility.populateHappinessIndexExcelData(sprintName, excelData, happinessKpiSprintDataList);
         }
 
     }
@@ -234,5 +256,10 @@ public class HappinessIndexImpl extends JiraKPIService<Double, List<Object>, Map
         resultListMap.put(HAPPINESS_INDEX_DETAILS, happinessKpiDataList);
 
         return resultListMap;
+    }
+
+    @Override
+    public Double calculateKpiValue(List<Double> valueList, String kpiName) {
+        return calculateKpiValueForDouble(valueList, kpiName);
     }
 }

@@ -18,32 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.jira.rest;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
-import java.util.List;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import com.publicissapient.kpidashboard.apis.jira.scrum.service.HappinessKpiServiceImpl;
-import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiDTO;
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.publicissapient.kpidashboard.apis.capacity.service.HappinessKpiCapacityImpl;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -56,6 +31,21 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * This controller class handles Jira KPIs request. It handles all KPIs of Scrum
@@ -79,7 +69,7 @@ public class JiraController {
 	private CacheService cacheService;
 
 	@Autowired
-	private HappinessKpiServiceImpl happinessKpiService;
+	private HappinessKpiCapacityImpl happinessKpiService;
 
 	@Autowired
 	private JiraToolConfigServiceImpl jiraToolConfigService;
@@ -178,10 +168,4 @@ public class JiraController {
 		return response;
 	}
 
-	@PostMapping(value = "/jira/happiness", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> saveHappinessKPIData(
-			@Valid @RequestBody HappinessKpiDTO happinessKpiDTO) {
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(happinessKpiService.saveHappinessKpiData(happinessKpiDTO));
-	}
 }
