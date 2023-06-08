@@ -412,7 +412,7 @@ export class GroupBarChartComponent implements OnChanges {
         if (date.toDateString() === currentDate.toDateString()) {
           this.currentDayIndex = i;
         }
-        d['group'] = `${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
+        d['group'] = `${days[date.getDay()]} ${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
       return d;
       }
     });
