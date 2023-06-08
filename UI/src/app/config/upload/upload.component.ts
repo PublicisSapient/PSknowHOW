@@ -1116,7 +1116,7 @@ export class UploadComponent implements OnInit {
         const postData = {
             basicProjectConfigId: selectedSprint['basicProjectConfigId'],
             sprintID: selectedSprint['sprintNodeId'],
-            userRatingList: selectedSprint['assigneeCapacity'].map(assignee => ({ userId: assignee['userId'], userName: assignee['userName'], rating: assignee['happinessRating'] }))
+            userRatingList: selectedSprint['assigneeCapacity'].map(assignee => ({ userId: assignee['userId'], userName: assignee['userName'], rating: assignee['happinessRating'] ?  assignee['happinessRating'] : 0}))
         };
 
         this.http_service.saveOrUpdateSprintHappinessIndex(postData).subscribe(response => {
