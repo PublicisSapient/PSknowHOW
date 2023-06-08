@@ -164,7 +164,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		String requestTrackerId = getRequestTrackerId();
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(YYYYMMDD);
 		String endDate = formatter.print(DateTime.now());
-		String startDate = formatter.print(DateTime.now().minusDays(customApiConfig.getRepoXAxisCount() - 1));
+		String startDate = formatter.print(DateTime.now().minusDays(customApiConfig.getRepoXAxisCountForCheckInsAndMergeRequests() - 1));
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();

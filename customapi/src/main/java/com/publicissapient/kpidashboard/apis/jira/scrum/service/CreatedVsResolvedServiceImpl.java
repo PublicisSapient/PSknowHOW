@@ -96,7 +96,6 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 	private static final String PROJECT_WISE_CLOSED_STORY_STATUS = "projectWiseClosedStoryStatus";
 	private static final String TAGGED_DEFECTS_CREATED_AFTER_SPRINT = "Added Defects";
 	private static final String TAGGED_DEFECTS = "Total Defects";
-	private static final String CLOSED = "CLOSED";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	@Autowired
@@ -475,12 +474,19 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		return calculateKpiValueForDouble(valueList, kpiName);
 	}
 
+	/**
+	 *
+	 * @param allSubTasks
+	 * @param sprintDetails
+	 * @param subTaskHistory
+	 * @return sprint sub task bugs
+	 */
 	public List<JiraIssue> getTotalSubTasks(List<JiraIssue> allSubTasks, SprintDetails sprintDetails,
 			List<JiraIssueCustomHistory> subTaskHistory) {
-		LocalDateTime sprintEndDate = sprintDetails.getState().equalsIgnoreCase(CLOSED)
+		LocalDateTime sprintEndDate = sprintDetails.getCompleteDate() != null
 				? LocalDateTime.parse(sprintDetails.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
 				: LocalDateTime.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
-		LocalDateTime sprintStartDate = sprintDetails.getState().equalsIgnoreCase(CLOSED)
+		LocalDateTime sprintStartDate = sprintDetails.getActivatedDate() != null
 				? LocalDateTime.parse(sprintDetails.getActivatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
 				: LocalDateTime.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
 		FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetails.getBasicProjectConfigId());

@@ -382,7 +382,7 @@ db.getCollection('kpi_fieldmapping').insert(
       },
       {
         kpiId: 'kpi125',
-        kpiName: 'Daily Closures',
+        kpiName: 'Iteration Burnup',
 		kpiSource: 'Jira',
         type: ['Other'],
         fieldNames : {'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
