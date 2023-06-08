@@ -111,6 +111,7 @@ import { MilestoneComponent } from './dashboard/milestone/milestone.component';
 import { HorizontalPercentBarChartComponent } from './component/horizontal-percent-bar-chart/horizontal-percent-bar-chart.component';
 import { CumulativeLineChartComponent } from './component/cumulative-line-chart/cumulative-line-chart.component';
 
+import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
 
 /******************************************************/
 
@@ -173,7 +174,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         GroupBarChartComponent,
         MilestoneComponent,
         HorizontalPercentBarChartComponent,
-        CumulativeLineChartComponent
+        CumulativeLineChartComponent,
+        StackedAreaChartComponent
     ],
     imports: [
         DropdownModule,

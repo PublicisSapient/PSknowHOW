@@ -23,12 +23,28 @@ export class ExportExcelComponent implements OnInit {
     }
 
     // download excel functionality
-    downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, filterApplyData, filterData, iSAdditionalFilterSelected) {
+    downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, filterApplyData, filterData, iSAdditionalFilterSelected, chartType?) {
         const sprintIncluded = (filterApplyData.sprintIncluded.length > 0) ? filterApplyData.sprintIncluded : ['CLOSED'];
         if (!(!additionalFilterSupport && iSAdditionalFilterSelected)) {
             this.helperService.downloadExcel(kpiId, kpiName, isKanban, filterApplyData, filterData, sprintIncluded).subscribe(getData => {
                 if (getData['excelData'] || !getData?.hasOwnProperty('validationData')) {
-                    this.kpiExcelData = this.excelService.generateExcelModalData(getData);
+                    if (chartType == 'stacked-area') {
+                        let kpiObj = JSON.parse(JSON.stringify(getData));
+                        kpiObj['excelData'] = kpiObj['excelData'].map((item) => {
+                            for (let key in item['Count']) {
+                                if (!kpiObj['columns']?.includes(key)) {
+                                    kpiObj['columns'] = [...kpiObj['columns'], key];
+                                }
+                            }
+                            let obj = { ...item, ...item['Count'] };
+                            delete obj['Count'];
+                            return obj;
+                        });
+                        this.kpiExcelData = this.excelService.generateExcelModalData(kpiObj);
+                    } else {
+                        this.kpiExcelData = this.excelService.generateExcelModalData(getData);
+                    }
+
                     this.modalDetails['tableHeadings'] = this.kpiExcelData.headerNames.map(column => column.header);
                     this.modalDetails['tableValues'] = this.kpiExcelData.excelData;
                     this.modalDetails['header'] = kpiName;
