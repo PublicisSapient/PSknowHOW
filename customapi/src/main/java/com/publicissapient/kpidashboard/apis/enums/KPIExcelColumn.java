@@ -213,6 +213,9 @@ public enum KPIExcelColumn {
 
     RELEASE_PROGRESS("kpi147",Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority","Assignee", "Issue Status")),
 
+    FLOW_DISTRIBUTION("Kpi146",Arrays.asList("Date")),
+    FLOW_LOAD("kpi148",Arrays.asList("Date")),
+
     RELEASE_BURNUP("kpi150",Arrays.asList("Issue ID", "Issue Type", "Issue Description","Story Size(In story point)","Priority","Assignee", "Issue Status"));
 
     // @formatter:on

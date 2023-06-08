@@ -1433,4 +1433,18 @@ public class KPIExcelUtility {
 			});
 		}
 	}
+
+	public static void populateFlowKPI(Map<String, Map<String, Integer>> dateTypeCountMap,
+									   List<KPIExcelData> excelData) {
+		for (Map.Entry<String, Map<String, Integer>> entry : dateTypeCountMap.entrySet()) {
+			String date = entry.getKey();
+			Map<String, Integer> typeCountMap = entry.getValue();
+			KPIExcelData kpiExcelData = new KPIExcelData();
+			if (MapUtils.isNotEmpty(typeCountMap)) {
+				kpiExcelData.setDate(DateUtil.dateTimeConverter(date, DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				kpiExcelData.setCount(typeCountMap);
+				excelData.add(kpiExcelData);
+			}
+		}
+	}
 }

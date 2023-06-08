@@ -395,6 +395,15 @@ public enum KPICode {
 	 */
 	REFINEMENT_REJECTION_RATE("kpi139", KPISource.JIRA.name()),
 
+	/**
+	 * Flow Distribution
+	 */
+	FLOW_DISTRIBUTION("kpi146",KPISource.JIRA.name()),
+	/*
+	* Flow Load
+	* */
+	FLOW_LOAD("kpi148",KPISource.JIRA.name()),
+
 	RELEASE_BURNUP("kpi150", KPISource.JIRA.name());
 
 	// @formatter:on
