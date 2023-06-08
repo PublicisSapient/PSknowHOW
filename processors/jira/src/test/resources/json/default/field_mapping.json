@@ -12,7 +12,7 @@
     "jiraStatusForDevelopment" : [ "Implementing", "In Development", "In Analysis" ],
     "jiraStatusForQa" : [ "In Testing" ],
     "jiraDefectInjectionIssueType" : [ "Story", "Enabler Story", "Change request" ],
-    "jiraDod" : [ "Closed", "Ready for Delivery" ],
+    "jiraDod" : ["Ready for Delivery" ],
     "jiraDefectCreatedStatus" : "Open",
     "jiraTechDebtIssueType" : [ "Story", "Enabler Story", "Change request" ],
     "jiraDefectSeepageIssueType" : [ "Story", "Enabler Story", "Change request" ],
@@ -45,6 +45,7 @@
     "jiraFTPRStoryIdentification" : [ "Story", "Enabler Story", "Change request" ],
     "jiraDueDateCustomField": "customfield_20303",
     "jiraDueDateField": "Custom Field",
+    "jiraLiveStatus": "",
     "_class" : "com.publicissapient.kpidashboard.common.model.application.FieldMapping"
   },
 

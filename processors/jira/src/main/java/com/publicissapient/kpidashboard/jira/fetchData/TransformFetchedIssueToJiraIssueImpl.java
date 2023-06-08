@@ -57,7 +57,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
     private CreateJiraIssueHistory createJiraIssueHistory;
 
     @Autowired
-    private CreateIssueBacklog createIssueBacklog;
+    private CreateIssueBacklogandIssueBacklogHistory createIssueBacklog;
 
     @Override
     public List<JiraIssue> convertToJiraIssue(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
@@ -845,7 +845,7 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
         Boolean cloudEnv = connectionOptional.map(Connection::isCloudEnv).get();
         String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
         baseUrl= baseUrl + (baseUrl.endsWith("/") ? "" : "/");
-        if(cloudEnv){
+        if(Boolean.TRUE.equals(cloudEnv)){
             baseUrl=baseUrl.equals("")?"": baseUrl+jiraProcessorConfig.getJiraCloudDirectTicketLinkKey() + ticketNumber;
         }else{
             baseUrl=baseUrl.equals("")?"": baseUrl+jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
