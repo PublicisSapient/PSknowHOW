@@ -56,19 +56,6 @@ public final class AzureIssueClientUtil {
 		super();
 	}
 
-	/**
-	 * Gets a ISODate into a date/time string.
-	 *
-	 * @param changeDateISO
-	 *            ISO date String
-	 * @param jiraProcessorConfig
-	 *            Jira Processor Configuration
-	 * @return return Adjusted Date Time string
-	 */
-	/*public static String getChangeDateMinutePrior(LocalDateTime v, AzureProcessorConfig azureProcessorConfig) {
-		long priorMinutes   = azureProcessorConfig.getMinsToReduce();
-		return DateUtil.dateTimeFormatter(v.minusMinutes(priorMinutes) , AzureConstants.DATE_TIME_FORMAT);
-	}*/
 
 	/**
 	 * Builds Filed Map
