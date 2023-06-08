@@ -15,22 +15,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JobScheduler {
-	
+
 	@Autowired
 	JobLauncher jobLauncher;
-	
-	@Qualifier("fetchIssueScrumJob")
+
+	@Qualifier("fetchIssueScrumBoardJob")
 	@Autowired
-	Job fetchIssueScrumJob;
+	Job fetchIssueScrumBoardJob;
 
 	@Async
-	@Scheduled(cron="0 0/1 * 1/1 * ?")
+	@Scheduled(cron = "0 0/1 * 1/1 * ?")
 	public void fetchIssueScrumStarter() throws Exception {
 		Map<String, JobParameter> params = new HashMap<>();
 		params.put("currentTime", new JobParameter(System.currentTimeMillis()));
 		JobParameters jobParameters = new JobParameters(params);
-		jobLauncher.run(fetchIssueScrumJob, jobParameters);
+		jobLauncher.run(fetchIssueScrumBoardJob, jobParameters);
 		System.out.println("Fetch Issue for Scrum Job Started .....");
-		
+
 	}
 }

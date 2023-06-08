@@ -17,20 +17,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/job")
 public class JobController {
-	
+
 	@Autowired
 	JobLauncher jobLauncher;
-	
-	@Qualifier("fetchIssueScrumJob")
+
+	@Qualifier("fetchIssueScrumBoardJob")
 	@Autowired
-	Job fetchIssueScrumJob;
+	Job fetchIssueScrumBoardJob;
 
 	@GetMapping("/start/{jobName}")
 	public String startJob(@PathVariable String jobName) throws Exception {
 		Map<String, JobParameter> params = new HashMap<>();
 		params.put("currentTime", new JobParameter(System.currentTimeMillis()));
 		JobParameters jobParameters = new JobParameters(params);
-		jobLauncher.run(fetchIssueScrumJob, jobParameters);
+		jobLauncher.run(fetchIssueScrumBoardJob, jobParameters);
 		return "job started ....";
 	}
 }

@@ -12,7 +12,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,11 +22,8 @@ import org.springframework.stereotype.Component;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.config.JiraOAuthProperties;
@@ -54,9 +50,6 @@ public class JiraClient {
 	private ToolCredentialProvider toolCredentialProvider;
 
 	@Autowired
-	private ProjectToolConfigRepository toolRepository;
-
-	@Autowired
 	private JiraOAuthProperties jiraOAuthProperties;
 
 	@Autowired
@@ -67,33 +60,21 @@ public class JiraClient {
 
 	private ProcessorJiraRestClient client;
 
-	KerberosClient krb5Client;
-
-	public ProcessorJiraRestClient getClient(Map.Entry<String, ProjectConfFieldMapping> entry) {
+	public ProcessorJiraRestClient getClient(Map.Entry<String, ProjectConfFieldMapping> entry,KerberosClient krb5Client) {
 		ProjectConfFieldMapping projectConfig = entry.getValue();
-		List<ProjectToolConfig> jiraDetails = toolRepository.findByToolNameAndBasicProjectConfigId(
-				ProcessorConstants.JIRA, projectConfig.getBasicProjectConfigId());
-		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(jiraDetails)
-				&& jiraDetails.get(0).getConnectionId() != null) {
-			Optional<Connection> jiraConn = connectionRepository.findById(jiraDetails.get(0).getConnectionId());
-			if (jiraConn.isPresent() && projectConfig.getJira().getConnection().isPresent()) {
-				projectConfig.setProjectToolConfig(jiraDetails.get(0));
-				boolean isOauth = jiraConn.get().getIsOAuth();
-				Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-				if (connectionOptional.isPresent()) {
-					Connection conn = connectionOptional.get();
-					client = getProcessorRestClient(entry, isOauth, conn);
-				}
-			}
+		if (projectConfig.getJira().getConnection().isPresent()) {
+			Connection connection = projectConfig.getJira().getConnection().get();
+			boolean isOauth = connection.getIsOAuth();
+			krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
+					connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
+			client = getProcessorRestClient(entry, isOauth, connection,krb5Client);
 		}
 		return client;
 	}
 
 	private ProcessorJiraRestClient getProcessorRestClient(Map.Entry<String, ProjectConfFieldMapping> entry,
-			boolean isOauth, Connection conn) {
+			boolean isOauth, Connection conn,KerberosClient krb5Client) {
 		if (conn.isJaasKrbAuth()) {
-			KerberosClient krb5Client = new KerberosClient(conn.getJaasConfigFilePath(), conn.getKrb5ConfigFilePath(),
-					conn.getJaasUser(), conn.getSamlEndPoint(), conn.getBaseUrl());
 			return getSpnegoSamlClient(krb5Client);
 		} else {
 			return getProcessorJiraRestClient(entry, isOauth, conn);

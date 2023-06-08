@@ -37,30 +37,30 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
-	
+
 	@Autowired
 	private ProjectBasicConfigRepository projectConfigRepository;
 
 	@Autowired
 	private ConnectionRepository connectionRepository;
-	
+
 	private List<String> projectsBasicConfigIds;
 
 	@Override
-	public Map<String, ProjectConfFieldMapping> fetchConfiguration(Boolean isKanban) {
+	public Map<String, ProjectConfFieldMapping> fetchConfiguration(Boolean isKanban, Boolean isJQLSetup) {
 		List<ProjectBasicConfig> allProjects = projectConfigRepository.findByKanban(isKanban);
 		List<FieldMapping> fieldMappingList = fieldMappingRepository.findAll();
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
-			return createProjectConfigMap(getRelevantProjects(allProjects), fieldMappingList);
+			return createProjectConfigMap(getRelevantProjects(allProjects), fieldMappingList, isJQLSetup);
 		}
 
 		List<ProjectBasicConfig> projectBasicConfigs = CollectionUtils.emptyIfNull(allProjects).stream().filter(
 				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
 		log.info("ProjectBasicConfig: " + projectBasicConfigs);
-		return createProjectConfigMap(projectBasicConfigs, fieldMappingList);
+		return createProjectConfigMap(projectBasicConfigs, fieldMappingList, isJQLSetup);
 	}
 
 	private List<String> getProjectsBasicConfigIds() {
@@ -68,59 +68,90 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 	}
 
 	private Map<String, ProjectConfFieldMapping> createProjectConfigMap(List<ProjectBasicConfig> projectConfigList,
-			List<FieldMapping> fieldMappingList) {
+			List<FieldMapping> fieldMappingList, Boolean isJQLSetup) {
 		Map<String, ProjectConfFieldMapping> projectConfigMap = new HashMap<>();
 		CollectionUtils.emptyIfNull(projectConfigList).forEach(projectConfig -> {
-			ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-			try {
-				BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
-				projectConfFieldMapping.setProjectBasicConfig(projectConfig);
-				projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
-				projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
-				projectConfFieldMapping.setJira(getJiraToolConfig(projectConfig.getId()));
-				projectConfFieldMapping.setJiraToolConfigId(getToolConfigId(projectConfig.getId()));
-
-			} catch (IllegalAccessException e) {
-				log.error("Error while copying Project Config to ProjectConfFieldMapping", e);
-			} catch (InvocationTargetException e) {
-				log.error("Error while copying Project Config to ProjectConfFieldMapping invocation error", e);
+			ProjectToolConfig projectToolConfig = null;
+			if (isJQLSetup) {
+				projectToolConfig = getJiraToolConfigForJQL(projectConfig.getId());
+			} else {
+				projectToolConfig = getJiraToolConfigForBoard(projectConfig.getId());
 			}
-			CollectionUtils.emptyIfNull(fieldMappingList).stream()
-					.filter(fieldMapping -> projectConfig.getId().equals(fieldMapping.getBasicProjectConfigId()))
-					.forEach(fieldMapping -> projectConfFieldMapping.setFieldMapping(fieldMapping));
-			projectConfigMap.putIfAbsent(projectConfig.getProjectName(), projectConfFieldMapping);
-			//
+			if (null != projectToolConfig) {
+				ProjectConfFieldMapping projectConfFieldMapping = createProjectConfFieldMapping(fieldMappingList,
+						projectConfig, projectToolConfig);
+				projectConfigMap.putIfAbsent(projectConfig.getProjectName(), projectConfFieldMapping);
+			}
 		});
 		return projectConfigMap;
 	}
 
-	private JiraToolConfig getJiraToolConfig(ObjectId basicProjectConfigId) {
-		JiraToolConfig toolObj = new JiraToolConfig();
-		List<ProjectToolConfig> jiraDetails = toolRepository
-				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA, basicProjectConfigId);
-		if (CollectionUtils.isNotEmpty(jiraDetails)) {
+	private ProjectConfFieldMapping createProjectConfFieldMapping(List<FieldMapping> fieldMappingList,
+			ProjectBasicConfig projectConfig, ProjectToolConfig projectToolConfig) {
+		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
+		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
+		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
+		projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
+		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
+		JiraToolConfig jiraToolConfig = createJiraToolConfig(projectToolConfig);
+		projectConfFieldMapping.setJira(jiraToolConfig);
+		projectConfFieldMapping.setProjectToolConfig(projectToolConfig);
+		projectConfFieldMapping.setJiraToolConfigId(projectToolConfig.getId());
+		CollectionUtils.emptyIfNull(fieldMappingList).stream()
+				.filter(fieldMapping -> projectConfig.getId().equals(fieldMapping.getBasicProjectConfigId()))
+				.forEach(fieldMapping -> projectConfFieldMapping.setFieldMapping(fieldMapping));
+		return projectConfFieldMapping;
+	}
 
-			try {
-				BeanUtils.copyProperties(toolObj, jiraDetails.get(0));
-			} catch (IllegalAccessException | InvocationTargetException e) {
-				log.error("Could not set JiraToolConfig", e);
-			}
-			if (jiraDetails.get(0).getConnectionId() != null) {
-				Optional<Connection> conn = connectionRepository.findById(jiraDetails.get(0).getConnectionId());
-				if (conn.isPresent()) {
-					toolObj.setConnection(conn);
-				}
+	private ProjectToolConfig getJiraToolConfigForJQL(ObjectId basicProjectConfigId) {
+		List<ProjectToolConfig> toolConfigs = toolRepository
+				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA, basicProjectConfigId);
+		if (CollectionUtils.isNotEmpty(toolConfigs)) {
+			ProjectToolConfig projectToolConfig = toolConfigs.get(0);
+			if (projectToolConfig.isQueryEnabled()) {
+				return projectToolConfig;
 			}
 		}
-		return toolObj;
+		return null;
 	}
 
-	private ObjectId getToolConfigId(ObjectId basicProjectConfigId) {
-		List<ProjectToolConfig> boardsDetails = toolRepository
+	private ProjectToolConfig getJiraToolConfigForBoard(ObjectId basicProjectConfigId) {
+		List<ProjectToolConfig> toolConfigs = toolRepository
 				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA, basicProjectConfigId);
-		return CollectionUtils.isNotEmpty(boardsDetails) ? boardsDetails.get(0).getId() : null;
+		if (CollectionUtils.isNotEmpty(toolConfigs)) {
+			ProjectToolConfig projectToolConfig = toolConfigs.get(0);
+			if (!projectToolConfig.isQueryEnabled()) {
+				return projectToolConfig;
+			}
+		}
+		return null;
 	}
-	
+
+	private ProjectToolConfig getJiraToolConfig(ObjectId basicProjectConfigId) {
+		List<ProjectToolConfig> toolConfigs = toolRepository
+				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA, basicProjectConfigId);
+		if (CollectionUtils.isNotEmpty(toolConfigs)) {
+			return toolConfigs.get(0);
+		}
+		return null;
+	}
+
+	private JiraToolConfig createJiraToolConfig(ProjectToolConfig projectToolConfig) {
+		JiraToolConfig JiraToolConfig = new JiraToolConfig();
+		try {
+			BeanUtils.copyProperties(JiraToolConfig, projectToolConfig);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			log.error("Could not set JiraToolConfig", e);
+		}
+			if (projectToolConfig.getConnectionId() != null) {
+				Optional<Connection> conn = connectionRepository.findById(projectToolConfig.getConnectionId());
+				if (conn.isPresent()) {
+					JiraToolConfig.setConnection(conn);
+				}
+			}
+		return JiraToolConfig;
+	}
+
 	private List<ProjectBasicConfig> getRelevantProjects(List<ProjectBasicConfig> projectConfigList) {
 		List<ProjectBasicConfig> onlineJiraProjects = new ArrayList<>();
 		for (ProjectBasicConfig config : projectConfigList) {
