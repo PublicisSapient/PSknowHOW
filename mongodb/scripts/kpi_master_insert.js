@@ -4181,6 +4181,9 @@ db.getCollection("kpi_master").insert([
     calculateMaturity: false,
   },
   {
+    kpiId: "kpi149",
+    kpiName: "Happiness KPI",
+    kpiSource: "Jira",
     aggregationCriteria: "average",
     boxType: "3_column",
     calculateMaturity: false,
@@ -4192,7 +4195,6 @@ db.getCollection("kpi_master").insert([
     isPositiveTrend: true,
     kanban: false,
     kpiFilter: "multiSelectDropDown",
-    kpiId: "kpi149",
     kpiInfo: {
       details: [
         {
@@ -4201,8 +4203,6 @@ db.getCollection("kpi_master").insert([
         },
       ],
     },
-    kpiName: "Happiness KPI",
-    kpiSource: "Jira",
     kpiUnit: "",
     maxValue: "5",
     showTrend: false,
