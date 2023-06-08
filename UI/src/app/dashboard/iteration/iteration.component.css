@@ -214,7 +214,7 @@ padding: 0.75rem !important;
 :host::ng-deep.kpi-table.p-datatable .p-datatable-thead > tr > th{
     top: 0;
     position: sticky;
-    /* z-index: 1; */ 
+    /* z-index: 1; */
     padding: 0px;
     border: none;
 }
@@ -243,7 +243,7 @@ padding: 0.75rem !important;
 :host::ng-deep.iteration-tabs li.p-highlight .p-tabview-nav-link{
     color: #fff !important;
     background: var(--color-black) !important;
-}   
+}
 :host::ng-deep.iteration-tabs .p-tabview .p-tabview-panels{
     background: transparent;
     padding: 0 ;
