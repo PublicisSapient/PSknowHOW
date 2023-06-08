@@ -180,7 +180,9 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		// for storing projectWise Total Count type Categories
 		Map<String, List<String>> projectWiseJiraIdentification = new HashMap<>();
 		// fetching story Type Categories
-		List<String> storyCategories = customApiConfig.getIssueCountStoryCategories();
+		List<String> storyCategories = customApiConfig.getIssueCountStoryCategories().stream()
+				.map(String::toLowerCase)
+				.collect(Collectors.toList());
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
@@ -191,7 +193,9 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 			List<String> jiraStoryIdentification = new ArrayList<>();
 			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
-				jiraStoryIdentification = fieldMapping.getJiraStoryIdentification();
+				jiraStoryIdentification = fieldMapping.getJiraStoryIdentification().stream()
+						.map(String::toLowerCase)
+						.collect(Collectors.toList());
 			}
 			projectWiseJiraIdentification.put(basicProjectConfigId.toString(), jiraStoryIdentification);
 			List<String> categories = new ArrayList<>(jiraStoryIdentification);
@@ -307,11 +311,11 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 							.get(sd.getBasicProjectConfigId().toString());
 					// filtering out issues belong to storyCategories
 					List<JiraIssue> storyCatIssues = totalJiraIssues.stream()
-							.filter(issue -> storyCategories.contains(issue.getTypeName()))
+							.filter(issue -> storyCategories.contains(issue.getTypeName().toLowerCase()))
 							.collect(Collectors.toList());
 					// filtering out issues belong to totalCategories
 					List<JiraIssue> totalCatIssues = totalJiraIssues.stream()
-							.filter(issue -> totalIssueCatOfProj.contains(issue.getTypeName()))
+							.filter(issue -> totalIssueCatOfProj.contains(issue.getTypeName().toLowerCase()))
 							.collect(Collectors.toList());
 					sprintWiseStoryCatIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 							new ArrayList<>(storyCatIssues));
@@ -334,11 +338,11 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 						List<String> totalIssueCatOfProj = projectWiseTotalCategories.get(basicProjectConfigId);
 						// filtering out issues belong to storyCategories
 						List<JiraIssue> storyCatIssues = sprintWiseJiraIssue.stream()
-								.filter(issue -> storyCategories.contains(issue.getTypeName()))
+								.filter(issue -> storyCategories.contains(issue.getTypeName().toLowerCase()))
 								.collect(Collectors.toList());
 						// filtering out issues belong to totalCategories
 						List<JiraIssue> totalCatIssues = sprintWiseJiraIssue.stream()
-								.filter(issue -> totalIssueCatOfProj.contains(issue.getTypeName()))
+								.filter(issue -> totalIssueCatOfProj.contains(issue.getTypeName().toLowerCase()))
 								.collect(Collectors.toList());
 						sprintWiseStoryCatIssues.put(Pair.of(basicProjectConfigId, sprintId),
 								new ArrayList<>(storyCatIssues));
