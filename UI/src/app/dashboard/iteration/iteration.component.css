@@ -39,9 +39,6 @@
     flex-basis: auto;
 }
 
-.kpi-content-container {
-    border-right: 1px solid #c0c0c0;
-}
 
 .kpi-sub-headings {
     height: 40px;
@@ -271,6 +268,6 @@ padding: 0.75rem !important;
     max-width: 190px;
     word-break: break-word;
 }
-
-
-
+.w-80{
+    width: 80%;   
+}
