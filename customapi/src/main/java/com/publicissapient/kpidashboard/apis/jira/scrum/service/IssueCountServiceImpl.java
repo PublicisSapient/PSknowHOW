@@ -151,7 +151,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			dataCountGroups.add(dataCountGroup);
 		});
 
-		LOGGER.debug("[COMMITMENT-RELIABILITY-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
+		LOGGER.debug("[ISSUE-COUNT-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
 		kpiElement.setTrendValueList(dataCountGroups);
@@ -431,7 +431,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			List<KPIExcelData> excelData, Node node, List<String> totalPresentJiraIssue) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			String sprintName = node.getSprintFilter().getName();
-			KPIExcelUtility.populateStoryCountExcelData(sprintName, excelData, allJiraIssuesList,
+			KPIExcelUtility.populateIssueCountExcelData(sprintName, excelData, allJiraIssuesList,
 					totalPresentJiraIssue);
 
 		}
