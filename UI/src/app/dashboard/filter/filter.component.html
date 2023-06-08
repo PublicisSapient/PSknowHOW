@@ -56,7 +56,7 @@
                            </ng-template>
                         </ng-select>
                      </div>
-                     <div *ngIf="!allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container abc" style="min-width: 289px;">
+                     <div *ngIf="!allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container abc" style="max-width: 250px;">
                         <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value)"
                            [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project') : (selectedTab?.toLowerCase() === 'release') ? handleMilestoneFilter('project') : onSelectedTrendValueChange()"

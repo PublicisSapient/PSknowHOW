@@ -179,3 +179,7 @@
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
+
+:host::ng-deep button:disabled{
+    border: 1px solid rgba(0, 0, 0, 0.38) !important;
+}

@@ -51,6 +51,10 @@ function running_js()
 	echo "############ Inserting KPI Master on Date `date` ###########"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/kpi_master_insert.js
 
+	echo "############ Add Sub-Tabs on Iteration `date` ###########"
+  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/addSubIterationTabs.js
+
+
     echo "########## add default kpi column config ############"
     mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/kpi_column_config_insert.js
 
@@ -122,7 +126,7 @@ function running_js()
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/create_release_hierarchy.js
 
   echo "########## Migrate backlog from jira issue to issue_backlog collection `date`############"
-    mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/migrate_backlogs_from_jira_issue_collection.js
+  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/migrate_backlogs_from_jira_issue_collection.js
 
 
 
