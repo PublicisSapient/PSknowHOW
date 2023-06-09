@@ -23,7 +23,7 @@
 	<description>bamboo processor</description>
 	<packaging>jar</packaging>
 	<artifactId>bamboo-processor</artifactId>
-	<version>6.11.1-SNAPSHOT</version>
+	<version>6.12.0-SNAPSHORT</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
