@@ -86,13 +86,10 @@ public class HappinessIndexServiceImplTest {
     private HappinessIndexServiceImpl happinessIndexImpl;
     private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 
-    private static final String SPRINTSDETAILS = "sprints";
-    private static final String HAPPINESS_INDEX_DETAILS = "heppinessIndexDetails";
-
     @Before
     public void setup(){
         KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-        kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.STORY_COUNT.getKpiId());
+        kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.HAPPINESS_INDEX_RATE.getKpiId());
         kpiRequest.setLabel("PROJECT");
 
         AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
@@ -111,7 +108,6 @@ public class HappinessIndexServiceImplTest {
         fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
         configHelperService.setProjectConfigMap(projectConfigMap);
         configHelperService.setFieldMappingMap(fieldMappingMap);
-//        when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
     }
 
@@ -145,7 +141,7 @@ public class HappinessIndexServiceImplTest {
                 treeAggregatorDetail);
         List<DataCount> dataCountList = (List<DataCount>) kpiElement.getTrendValueList();
 
-        assertEquals("Story Count : ", dataCountList.size(), 1);
+        assertEquals("Story Count : ", 1,dataCountList.size());
 
 
 
@@ -176,7 +172,7 @@ public class HappinessIndexServiceImplTest {
                 treeAggregatorDetail);
         List<DataCount> dataCountList = (List<DataCount>) kpiElement.getTrendValueList();
 
-        assertEquals("Story Count : ", dataCountList.size(), 1);
+        assertEquals("Story Count : ", 1, dataCountList.size());
 
 
 
