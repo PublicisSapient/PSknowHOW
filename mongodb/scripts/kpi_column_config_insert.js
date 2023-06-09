@@ -2585,5 +2585,46 @@ db.kpi_column_configs.insertMany([{
                                                                      			isShown: true,
                                                                      			isDefault: false
                                                                      		}]
+                                                                     	},
+                                                                        {
+                                                                            basicProjectConfigId: null,
+                                                                            kpiId: 'Kpi146',
+                                                                            kpiColumnDetails: [{
+                                                                                 columnName: 'Date',
+                                                                                 order: 0,
+                                                                                 isShown: true,
+                                                                                 isDefault: true
+                                                                            }]
+                                                                        },
+                                                                        {
+                                                                            basicProjectConfigId: null,
+                                                                            kpiId: 'Kpi148',
+                                                                            kpiColumnDetails: [{
+                                                                                 columnName: 'Date',
+                                                                                 order: 0,
+                                                                                 isShown: true,
+                                                                                 isDefault: true
+                                                                            }]
+                                                                        },
+                                                                        {
+                                                                     		basicProjectConfigId: null,
+                                                                     		kpiId: 'kpi149',
+                                                                     		kpiColumnDetails: [{
+                                                                     			columnName: 'Sprint Name',
+                                                                     			order: 0,
+                                                                     			isShown: true,
+                                                                     			isDefault: true
+                                                                     		}, {
+                                                                     			columnName: 'User Name',
+                                                                     			order: 1,
+                                                                     			isShown: true,
+                                                                     			isDefault: true
+                                                                     		},{
+                                                                     			columnName: 'Sprint Rating',
+                                                                     			order: 2,
+                                                                     			isShown: true,
+                                                                     			isDefault: true
+                                                                     		}]
                                                                      	}
-                                 ]);
+
+                                  ]);

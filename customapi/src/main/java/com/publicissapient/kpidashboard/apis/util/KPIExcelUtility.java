@@ -35,9 +35,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
+import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,16 +55,20 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.ResolutionTimeValidation;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * The class contains mapping of kpi and Excel columns.
@@ -887,8 +890,8 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateStoryCountExcelData(String sprint, List<KPIExcelData> kpiExcelData,
-			List<JiraIssue> allJiraIssueList, List<String> totalPresentJiraIssue) {
+	public static void populateIssueCountExcelData(String sprint, List<KPIExcelData> kpiExcelData,
+												   List<JiraIssue> allJiraIssueList, List<String> totalPresentJiraIssue) {
 
 		if (CollectionUtils.isNotEmpty(allJiraIssueList)) {
 			allJiraIssueList.stream().filter(issue -> totalPresentJiraIssue.contains(issue.getNumber()))
@@ -1428,4 +1431,51 @@ public class KPIExcelUtility {
 			});
 		}
 	}
+
+	public static void populateFlowKPI(Map<String, Map<String, Integer>> dateTypeCountMap,
+									   List<KPIExcelData> excelData) {
+		for (Map.Entry<String, Map<String, Integer>> entry : dateTypeCountMap.entrySet()) {
+			String date = entry.getKey();
+			Map<String, Integer> typeCountMap = entry.getValue();
+			KPIExcelData kpiExcelData = new KPIExcelData();
+			if (MapUtils.isNotEmpty(typeCountMap)) {
+				kpiExcelData.setDate(DateUtil.dateTimeConverter(date, DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				kpiExcelData.setCount(typeCountMap);
+				excelData.add(kpiExcelData);
+			}
+		}
+	}
+
+	public static void populateHappinessIndexExcelData(String sprintName, List<KPIExcelData> excelDataList,
+			List<HappinessKpiData> happinessKpiSprintDataList) {
+		Map<Pair<String, String>, List<Integer>> userRatingsForSprintMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(happinessKpiSprintDataList)) {
+			happinessKpiSprintDataList.forEach(data -> {
+				List<UserRatingData> userRatingList = data.getUserRatingList();
+				userRatingList.forEach(user -> populateUserMapForHappinessIndexKpi(userRatingsForSprintMap, user));
+			});
+
+			userRatingsForSprintMap.forEach((k, v) -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(sprintName);
+				excelData.setUserName(k.getValue());
+				Integer averageUserRatingPerSprint = v.stream().mapToInt(Integer::intValue).sum() / v.size();
+				excelData.setSprintRating(averageUserRatingPerSprint);
+				excelDataList.add(excelData);
+			});
+
+		}
+
+	}
+
+	private static void populateUserMapForHappinessIndexKpi(
+			Map<Pair<String, String>, List<Integer>> userRatingsForSprintMap, UserRatingData user) {
+		if (Objects.nonNull(user.getRating()) && !user.getRating().equals(0)) {
+			Pair<String, String> userIdentifier = Pair.of(user.getUserId(), user.getUserName());
+			List<Integer> userRatings = userRatingsForSprintMap.getOrDefault(userIdentifier, new ArrayList<>());
+			userRatings.add(user.getRating());
+			userRatingsForSprintMap.put(userIdentifier, userRatings);
+		}
+	}
+
 }

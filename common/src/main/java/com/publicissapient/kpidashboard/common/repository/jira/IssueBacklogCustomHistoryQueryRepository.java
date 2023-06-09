@@ -33,5 +33,4 @@ public interface IssueBacklogCustomHistoryQueryRepository {
 
 	List<IssueBacklogCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
 																 Map<String, Map<String, Object>> uniqueProjectMap);
-
 }

@@ -503,6 +503,18 @@ div.main {
   border: 1px solid var(--color-gray-c6);
 }
 
+:host ::ng-deep .custom-grid .p-datatable .p-datatable-thead>tr>th.expanded-table-header-cell div{
+  display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep .custom-grid .p-datatable .p-datatable-thead>tr>th.expanded-table-header-cell span.editable{
+  display: inline-flex;
+  max-width: 90%;
+  white-space: break-spaces;
+}
+
+
 :host ::ng-deep .custom-grid .p-datatable .p-datatable-tbody>tr>td.expanded-table-body-cell {
   padding: 1rem;
   text-align: left;
