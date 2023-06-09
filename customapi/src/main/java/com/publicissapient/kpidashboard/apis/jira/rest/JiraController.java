@@ -18,18 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.jira.rest;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
-import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceKanbanR;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraToolConfigServiceImpl;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +41,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.NotNull;
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
+import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceKanbanR;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraToolConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 
 /**
  * This controller class handles Jira KPIs request. It handles all KPIs of Scrum
@@ -72,7 +74,6 @@ public class JiraController {
 
 	@Autowired
 	private CacheService cacheService;
-
 
 	@Autowired
 	private JiraToolConfigServiceImpl jiraToolConfigService;
@@ -170,5 +171,4 @@ public class JiraController {
 		}
 		return response;
 	}
-
 }

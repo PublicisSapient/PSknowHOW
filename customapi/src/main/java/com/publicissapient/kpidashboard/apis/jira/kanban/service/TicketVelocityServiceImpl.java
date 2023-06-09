@@ -275,6 +275,7 @@ public class TicketVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			ticketEstimate = totalTicket.stream().mapToDouble(value -> Double.parseDouble(value.getEstimate())).sum();
 		}
 		return ticketEstimate;
+
 	}
 
 	@Override

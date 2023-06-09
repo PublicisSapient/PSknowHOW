@@ -328,7 +328,7 @@ public enum KPICode {
 	PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING("kpi127", KPISource.JIRA.name()),
 	/**
 
-	 /**
+	/**
 	 * Estimation Hygiene
 	 */
 	ESTIMATION_HYGIENE("kpi124", KPISource.JIRA.name()),
@@ -404,8 +404,8 @@ public enum KPICode {
 	 */
 	HAPPINESS_INDEX_RATE("kpi149", KPISource.JIRA.name()),
 	/*
-	 * Flow Load
-	 * */
+	* Flow Load
+	* */
 	FLOW_LOAD("kpi148",KPISource.JIRA.name());
 
 	// @formatter:on

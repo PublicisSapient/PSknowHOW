@@ -155,16 +155,16 @@ public enum KPIExcelColumn {
     ESTIMATE_VS_ACTUAL("kpi75",
             Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Issue Type", "Original Estimate", "Logged Work","Assignee")),
 
-    PLANNED_WORK_STATUS("kpi128", Arrays.asList(new KPIExcelColumnInfo("Issue Id", ""),
-            new KPIExcelColumnInfo("Issue Description", ""), new KPIExcelColumnInfo("Issue Status", ""),
-            new KPIExcelColumnInfo("Issue Type", ""), new KPIExcelColumnInfo("Size(story point/hours)", ""),
-            new KPIExcelColumnInfo("Original Estimate", ""), new KPIExcelColumnInfo("Remaining Estimate", ""),
-            new KPIExcelColumnInfo("Due Date", ""), new KPIExcelColumnInfo("Actual Start Date", ""),
-            new KPIExcelColumnInfo("Dev Completion Date", ""), new KPIExcelColumnInfo("Actual Completion Date", ""),
-            new KPIExcelColumnInfo("Delay(in days)",
-                    "Delay is calculated based on difference between time taken to complete an issue that depends on the Due date and Actual completion date (In Days)"),
-            new KPIExcelColumnInfo("Predicted Completion Date", ""),
-            new KPIExcelColumnInfo("Potential Delay(in days)", ""), new KPIExcelColumnInfo("Assignee", ""))),
+	PLANNED_WORK_STATUS("kpi128", Arrays.asList(new KPIExcelColumnInfo("Issue Id", ""),
+			new KPIExcelColumnInfo("Issue Description", ""), new KPIExcelColumnInfo("Issue Status", ""),
+			new KPIExcelColumnInfo("Issue Type", ""), new KPIExcelColumnInfo("Size(story point/hours)", ""),
+			new KPIExcelColumnInfo("Original Estimate", ""), new KPIExcelColumnInfo("Remaining Estimate", ""),
+			new KPIExcelColumnInfo("Due Date", ""), new KPIExcelColumnInfo("Actual Start Date", ""),
+			new KPIExcelColumnInfo("Dev Completion Date", ""), new KPIExcelColumnInfo("Actual Completion Date", ""),
+			new KPIExcelColumnInfo("Delay(in days)",
+					"Delay is calculated based on difference between time taken to complete an issue that depends on the Due date and Actual completion date (In Days)"),
+			new KPIExcelColumnInfo("Predicted Completion Date", ""),
+			new KPIExcelColumnInfo("Potential Delay(in days)", ""), new KPIExcelColumnInfo("Assignee", ""))),
 
     DEV_COMPLETION_STATUS("kpi145", Arrays.asList(new KPIExcelColumnInfo("Issue Id", ""),
             new KPIExcelColumnInfo("Issue Description", ""), new KPIExcelColumnInfo("Issue Status", ""),
@@ -193,11 +193,11 @@ public enum KPIExcelColumn {
     BACKLOG_READINESS_EFFICIENCY("kpi138",
             Arrays.asList("Issue Id", "Issue Type", "Issue Description", "Priority", "Size(story point/hours)")),
 
-    FIRST_TIME_PASS_RATE_ITERATION("kpi135",
-            Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority")),
+	FIRST_TIME_PASS_RATE_ITERATION("kpi135",
+			Arrays.asList("Issue Id", "Issue Description", "First Time Pass", "Linked Defect", "Defect Priority")),
 
-    DEFECT_REOPEN_RATE("kpi137", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Priority",
-            "Closed Date", "Reopen Date", "Time taken to reopen")),
+	DEFECT_REOPEN_RATE("kpi137", Arrays.asList("Issue Id", "Issue Description", "Issue Status", "Priority",
+			"Closed Date", "Reopen Date", "Time taken to reopen")),
 
     REFINEMENT_REJECTION_RATE("kpi139",
             Arrays.asList("Issue ID", "Issue Description", "Priority", "Status", "Change Date", "Weeks",
@@ -228,20 +228,20 @@ public enum KPIExcelColumn {
 
     private List<KPIExcelColumnInfo> kpiExcelColumnInfo;
 
-    KPIExcelColumn(String kpiID, List<Object> columns) {
-        this.kpiId = kpiID;
-        if (columns.get(0) instanceof String) {
-            this.columns = columns.stream().map(Object::toString).collect(Collectors.toList());
-        } else {
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<KPIExcelColumnInfo> kpiExcelColumnInfoList = new ArrayList<>();
-            columns.forEach(o -> {
-                KPIExcelColumnInfo kpiExcelColumnInfo1 = objectMapper.convertValue(o, KPIExcelColumnInfo.class);
-                kpiExcelColumnInfoList.add(kpiExcelColumnInfo1);
-            });
-            this.kpiExcelColumnInfo = kpiExcelColumnInfoList;
-        }
-    }
+	KPIExcelColumn(String kpiID, List<Object> columns) {
+		this.kpiId = kpiID;
+		if (columns.get(0) instanceof String) {
+			this.columns = columns.stream().map(Object::toString).collect(Collectors.toList());
+		} else {
+			ObjectMapper objectMapper = new ObjectMapper();
+			List<KPIExcelColumnInfo> kpiExcelColumnInfoList = new ArrayList<>();
+			columns.forEach(o -> {
+				KPIExcelColumnInfo kpiExcelColumnInfo1 = objectMapper.convertValue(o, KPIExcelColumnInfo.class);
+				kpiExcelColumnInfoList.add(kpiExcelColumnInfo1);
+			});
+			this.kpiExcelColumnInfo = kpiExcelColumnInfoList;
+		}
+	}
 
     /**
      * Gets kpi id.
