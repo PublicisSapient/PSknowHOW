@@ -2606,6 +2606,26 @@ db.kpi_column_configs.insertMany([{
                                         isDefault: true
                                         }]
                                   },
+{
+                                                                     		basicProjectConfigId: null,
+                                                                     		kpiId: 'kpi149',
+                                                                     		kpiColumnDetails: [{
+                                                                     			columnName: 'Sprint Name',
+                                                                     			order: 0,
+                                                                     			isShown: true,
+                                                                     			isDefault: true
+                                                                     		}, {
+                                                                     			columnName: 'User Name',
+                                                                     			order: 1,
+                                                                     			isShown: true,
+                                                                     			isDefault: true
+                                                                     		},{
+                                                                     			columnName: 'Sprint Rating',
+                                                                     			order: 2,
+                                                                     			isShown: true,
+                                                                     			isDefault: true
+                                                                     		}]
+                                                                     	}
                                   {
                                     basicProjectConfigId: null,
                                     kpiId: 'kpi150',

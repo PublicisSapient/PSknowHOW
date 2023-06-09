@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,9 +36,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
+import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,16 +56,20 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.ResolutionTimeValidation;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * The class contains mapping of kpi and Excel columns.
@@ -1447,4 +1451,37 @@ public class KPIExcelUtility {
 			}
 		}
 	}
+
+	public static void populateHappinessIndexExcelData(String sprintName, List<KPIExcelData> excelDataList,
+			List<HappinessKpiData> happinessKpiSprintDataList) {
+		Map<Pair<String, String>, List<Integer>> userRatingsForSprintMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(happinessKpiSprintDataList)) {
+			happinessKpiSprintDataList.forEach(data -> {
+				List<UserRatingData> userRatingList = data.getUserRatingList();
+				userRatingList.forEach(user -> populateUserMapForHappinessIndexKpi(userRatingsForSprintMap, user));
+			});
+
+			userRatingsForSprintMap.forEach((k, v) -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(sprintName);
+				excelData.setUserName(k.getValue());
+				Integer averageUserRatingPerSprint = v.stream().mapToInt(Integer::intValue).sum() / v.size();
+				excelData.setSprintRating(averageUserRatingPerSprint);
+				excelDataList.add(excelData);
+			});
+
+		}
+
+	}
+
+	private static void populateUserMapForHappinessIndexKpi(
+			Map<Pair<String, String>, List<Integer>> userRatingsForSprintMap, UserRatingData user) {
+		if (Objects.nonNull(user.getRating()) && !user.getRating().equals(0)) {
+			Pair<String, String> userIdentifier = Pair.of(user.getUserId(), user.getUserName());
+			List<Integer> userRatings = userRatingsForSprintMap.getOrDefault(userIdentifier, new ArrayList<>());
+			userRatings.add(user.getRating());
+			userRatingsForSprintMap.put(userIdentifier, userRatings);
+		}
+	}
+
 }
