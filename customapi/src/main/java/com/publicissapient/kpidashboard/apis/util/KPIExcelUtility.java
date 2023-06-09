@@ -689,6 +689,7 @@ public class KPIExcelUtility {
 	public static void populateCommittmentReliability(String sprint, Map<String, JiraIssue> totalStoriesMap,
 													  List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
 		if (MapUtils.isNotEmpty(totalStoriesMap)) {
+
 			totalStoriesMap.forEach((storyId, jiraIssue) -> {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setSprintName(sprint);
