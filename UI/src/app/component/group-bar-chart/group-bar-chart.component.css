@@ -162,3 +162,8 @@
   .tooltip-container{
       position: relative;
   }
+
+  ::ng-deep .legend_color_indicator.line-indicator{
+    height: 5px;
+    width: 30px
+  }
