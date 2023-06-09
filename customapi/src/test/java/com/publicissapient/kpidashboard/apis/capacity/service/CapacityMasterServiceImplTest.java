@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -73,6 +74,9 @@ public class CapacityMasterServiceImplTest {
 
 	@Mock
 	private SprintDetailsService sprintDetailsService;
+
+	@Mock
+	private HappinessKpiDataRepository happinessKpiDataRepository;
 
 	CapacityMaster scrumCapacityMaster;
 	CapacityMaster scrumCapacityAssigneeMaster;
@@ -223,6 +227,7 @@ public class CapacityMasterServiceImplTest {
 		when(sprintDetailsService.getSprintDetails(anyString())).thenReturn(sprintDetailsList);
 
 		when(capacityKpiDataRepository.findBySprintIDIn(anyList())).thenReturn(new ArrayList<>());
+		when(happinessKpiDataRepository.findBySprintIDIn(Mockito.any())).thenReturn(new ArrayList<>());
 
 		List<CapacityMaster> capacities = capacityMasterServiceImpl.getCapacities("6335363749794a18e8a4479b");
 
@@ -285,6 +290,7 @@ public class CapacityMasterServiceImplTest {
 					capacityKpiData -> capacityKpiData.getSprintID().equalsIgnoreCase(sprintDetails.getSprintID()))
 					.collect(Collectors.toList()));
 		}
+		when(happinessKpiDataRepository.findBySprintIDIn(Mockito.any())).thenReturn(new ArrayList<>());
 		when(capacityKpiDataRepository.findBySprintIDIn(anyList())).thenReturn(collect);
 		List<CapacityMaster> capacities = capacityMasterServiceImpl.getCapacities("6335363749794a18e8a4479b");
 		assertEquals(2,

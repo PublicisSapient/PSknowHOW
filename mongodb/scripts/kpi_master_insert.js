@@ -4023,5 +4023,35 @@ db.getCollection('kpi_master').insert(
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi149",
+    "kpiName": "Happiness KPI",
+    "kpiSource": "Jira",
+    "aggregationCriteria": "average",
+    "boxType": "3_column",
+    "calculateMaturity": false,
+    "chartType": "line",
+    "defaultOrder": 5,
+    "groupId": 2,
+    "isAdditionalFilterSupport": false,
+    "isDeleted": "False",
+    "isPositiveTrend": true,
+    "kanban": false,
+    "kpiFilter": "multiSelectDropDown",
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "KPI for tracking moral of team members",
+        },
+      ],
+    },
+    "kpiUnit": "",
+    "maxValue": "5",
+    "showTrend": false,
+    "thresholdValue": "",
+    "xAxisLabel": "Sprints",
+    "yAxisLabel": "Rating",
   }
 ]);
