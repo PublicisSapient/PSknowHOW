@@ -437,14 +437,14 @@ public class KpiHelperService { // NOPMD
 	 *            the kpi request
 	 * @return map
 	 */
-	public Map<String, Object> fetchSprintVelocityDataFromDb(Map<ObjectId, List<String>> previousSprintProjectWiseSprintsForFilter, KpiRequest kpiRequest, Map<ObjectId, List<String>> projectWiseSprintsForFilter, List<SprintDetails> sprintDetails) {
+	public Map<String, Object> fetchSprintVelocityDataFromDb(Map<ObjectId, List<String>> previousSprintProjectWiseSprintsForFilter, KpiRequest kpiRequest, Map<ObjectId, List<String>> projectWiseSprintsForFilter, List<SprintDetails> totalSprintDetails) {
 
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
 
 		List<String> sprintList = new ArrayList<>();
 		List<String> previousSprintList = new ArrayList<>();
-		List<String> basicProjectConfigIds = new ArrayList<>();
+		Set<String> basicProjectConfigIds = new HashSet<>();
 
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 
@@ -452,21 +452,35 @@ public class KpiHelperService { // NOPMD
 		projectWiseSprintDetails(previousSprintProjectWiseSprintsForFilter, previousSprintList, basicProjectConfigIds, uniqueProjectMap);
 
 		sprintList.addAll(previousSprintList);
-		List<String> currentIssueIds = new ArrayList<>();
+		Set<String> sprintSet = new HashSet<>(sprintList);
+		List<SprintDetails> sprintDetails=totalSprintDetails.stream()
+				.filter(s -> sprintSet.contains(s.getSprintID()))
+				.collect(Collectors.toList());
+
+		List<String> totalIssueIds = new ArrayList<>();
+		List<String> previousSprintTotalIssueIds = new ArrayList<>();
 		List<SprintDetails> previousSrintDetails = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
-			List<SprintDetails> currentSprintDetails = sprintDetails.stream().limit(customApiConfig.getSprintCountForFilters()).collect(Collectors.toList());
-			previousSrintDetails = sprintDetails.stream().skip(customApiConfig.getSprintCountForFilters()).collect(Collectors.toList());
+			List<SprintDetails> currentSprintDetails = sprintDetails;
+			previousSrintDetails = sprintDetails.stream().filter(sprintDetail -> previousSprintList.contains(sprintDetail.getSprintID())).collect(Collectors.toList());
 			currentSprintDetails.stream().forEach(sprintDetail -> {
 
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
-					currentIssueIds.addAll(sprintWiseIssueIds);
+					totalIssueIds.addAll(sprintWiseIssueIds);
+				}
+			});
+			previousSrintDetails.stream().forEach(sprintDetail -> {
+
+				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
+					List<String> sprintWiseIssueIds = KpiDataHelper
+							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
+					previousSprintTotalIssueIds.addAll(sprintWiseIssueIds);
 				}
 			});
 			mapOfFilters.put(JiraFeature.ISSUE_NUMBER.getFieldValueInFeature(),
-					currentIssueIds.stream().distinct().collect(Collectors.toList()));
+					totalIssueIds.stream().distinct().collect(Collectors.toList()));
 		} else {
 			mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
 					sprintList.stream().distinct().collect(Collectors.toList()));
@@ -478,14 +492,27 @@ public class KpiHelperService { // NOPMD
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		if (CollectionUtils.isNotEmpty(currentIssueIds)) {
+		if (CollectionUtils.isNotEmpty(totalIssueIds)) {
 			List<JiraIssue> sprintVelocityList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 					new HashMap<>());
+
 			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
-			resultListMap.put(PREVIOUS_SPRINT_VELOCITY, null);
-			resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, previousSrintDetails);
 
+		} else {
+			List<JiraIssue> sprintVelocityList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
+					uniqueProjectMap);
+			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
+			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, null);
+		}
+
+		mapOfFilters.put(JiraFeature.ISSUE_NUMBER.getFieldValueInFeature(),
+				previousSprintTotalIssueIds.stream().distinct().collect(Collectors.toList()));
+		if (CollectionUtils.isNotEmpty(previousSprintTotalIssueIds)) {
+			List<JiraIssue> sprintVelocityList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
+					new HashMap<>());
+			resultListMap.put(PREVIOUS_SPRINT_VELOCITY, sprintVelocityList);
+			resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, previousSrintDetails);
 		} else {
 			List<JiraIssue> sprintVelocityList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 					uniqueProjectMap);
@@ -501,7 +528,7 @@ public class KpiHelperService { // NOPMD
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
 		List<String> sprintList = new ArrayList<>();
-		List<String> basicProjectConfigIds = new ArrayList<>();
+		Set<String> basicProjectConfigIds = new HashSet<>();
 
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 
@@ -557,7 +584,7 @@ public class KpiHelperService { // NOPMD
 		return resultListMap;
 	}
 
-	private void projectWiseSprintDetails(Map<ObjectId, List<String>> previousSprintProjectWiseSprintsForFilter, List<String> sprintList, List<String> basicProjectConfigIds, Map<String, Map<String, Object>> uniqueProjectMap) {
+	private void projectWiseSprintDetails(Map<ObjectId, List<String>> previousSprintProjectWiseSprintsForFilter, List<String> sprintList, Set<String> basicProjectConfigIds, Map<String, Map<String, Object>> uniqueProjectMap) {
 		previousSprintProjectWiseSprintsForFilter.entrySet().forEach(entry -> {
 			ObjectId basicProjectConfigId = entry.getKey();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();

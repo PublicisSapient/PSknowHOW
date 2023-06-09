@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -34,7 +33,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
  */
 
 @Repository
-public interface SprintRepository extends MongoRepository<SprintDetails, ObjectId> {
+public interface SprintRepository extends MongoRepository<SprintDetails, ObjectId>{
 
 	/**
 	 * @param basicProjectConfigId
@@ -88,7 +87,7 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 
 	@Query(value = "{ 'basicProjectConfigId' : { $in: ?0 }, 'state' : ?1 }", fields = "{ 'sprintID' : 1, 'basicProjectConfigId' : 1, 'completedIssues' : 1, 'sprintName' : 1, 'startDate' : 1}", sort = "{ 'startDate' : -1 }")
 	List<SprintDetails> findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(Set<ObjectId> basicProjectConfigIds,
-																				 String state, Pageable pageable);
+																				 String state);
 	
 	/**
 	 * Find all which matches provided ids
