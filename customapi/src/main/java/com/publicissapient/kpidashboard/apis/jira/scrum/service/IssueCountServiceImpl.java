@@ -368,7 +368,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			List<JiraIssue> totalPresentStoryIssue = new ArrayList<>();
 			List<JiraIssue> totalPresentTotalIssue = new ArrayList<>();
 
-			if (CollectionUtils.isNotEmpty(sprintWiseStoryCatIssues.get(currentNodeIdentifier))) {
+			if (CollectionUtils.isNotEmpty(sprintWiseIssueNumbers.get(currentNodeIdentifier))) {
 				List<String> totalPresentJiraIssue = sprintWiseIssueNumbers.get(currentNodeIdentifier);
 				storyCount = ((Integer) totalPresentJiraIssue.size()).doubleValue();
 				totalPresentStoryIssue = sprintWiseStoryCatIssues.get(currentNodeIdentifier);
