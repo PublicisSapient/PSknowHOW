@@ -4043,7 +4043,7 @@ db.getCollection('kpi_master').insert(
       "details": [
         {
           "type": "paragraph",
-          "value": "KPI for tracking moral of team members",
+          "value": "KPI for tracking moral of team members"
         },
       ],
     },
