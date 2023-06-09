@@ -344,7 +344,7 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: false
                                  		}, {
-                                 			columnName: 'Closed',
+                                 			columnName: 'Issue Status',
                                  			order: 2,
                                  			isShown: true,
                                  			isDefault: false

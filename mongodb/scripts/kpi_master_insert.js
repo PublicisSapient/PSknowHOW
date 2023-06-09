@@ -1209,7 +1209,7 @@ db.getCollection('kpi_master').insert(
     "isPositiveTrend": true,
     "showTrend": true,
     "aggregationCriteria": "average",
-    "kpiFilter": "radioButton",
+    "kpiFilter": "dropDown",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
     "maturityRange": ["-40","40-60","60-75","75-90","90-"]
