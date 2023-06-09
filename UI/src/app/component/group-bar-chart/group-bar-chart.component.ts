@@ -53,6 +53,7 @@ export class GroupBarChartComponent implements OnChanges {
   draw() {
     const elem = this.elem;
     const self = this;
+    this.maxYValue = 0;
     d3.select(elem).select('svg').remove();
     d3.select(elem).select('.tooltip').remove();
     d3.select(elem).select('.legend').remove();
@@ -72,9 +73,9 @@ export class GroupBarChartComponent implements OnChanges {
 
     const currentDayIndex = this.currentDayIndex;
     const barWidth = 18;
-    const width = data.length <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : data.length * barWidth * (subgroups.length + 2);
+    const width = data.length <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : data.length * barWidth * (subgroups.length + 4);
     const spacingVariable = 50;
-    const height = 175;
+    const height = 195;
     const margin = 50;
     const marginLeft = 40;
     const marginTop = 35;
@@ -116,7 +117,7 @@ export class GroupBarChartComponent implements OnChanges {
       .range([0, subgroups.length * barWidth])
       .paddingInner(0);
 
-    const colorList = ['#049fff', '#fee63b', '#f8404d', '#00e1ba'];
+    const colorList = ['#049fff', '#f4aa46', '#f8404d', '#00e1ba'];
     const color = d3.scaleOrdinal()
       .domain(subgroups)
       .range(colorList);
