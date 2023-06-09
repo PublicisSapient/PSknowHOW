@@ -27,7 +27,6 @@ form#ratingForm{
     height: 20px;
     border: none;
     cursor: pointer;
-    transition: border 0.2s ease;
     filter: opacity(0.3);
     margin: 0 5px;
     transition: all 0.2s ease;
