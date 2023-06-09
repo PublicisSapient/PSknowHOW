@@ -394,7 +394,7 @@ export class JiraConfigComponent implements OnInit {
   getConnectionList(toolName) {
     this.loading = true;
     let finalToolName = "";
-    if(toolName === 'jiratest'){
+    if(toolName === 'JiraTest'){
       finalToolName = 'Jira';
     }else if(toolName === 'GitHubAction'){
       finalToolName = 'GitHub';
@@ -1839,14 +1839,14 @@ export class JiraConfigComponent implements OnInit {
               { field: 'username', header: 'User Name', class: 'normal' },
               { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
             ];
-  
+
             this.configuredToolTableCols = [
               { field: 'connectionName',header: 'Connection Name',class: 'long-text'},
               {field: 'repositoryName', header: 'Repository Name', class: 'long-text'},
               { field: 'jobType', header: 'Job Type', class: 'long-text' },
               { field: 'jobName', header: 'Workflow Name', class: 'long-text' },
             ];
-  
+
             this.formTemplate = {
               group: 'GitHub Action',
               elements: [
@@ -2201,7 +2201,7 @@ export class JiraConfigComponent implements OnInit {
           delete submitData[obj];
         }
       }
-     
+
     }
 
     if(this.urlParam === 'Jira'){
@@ -2479,7 +2479,7 @@ export class JiraConfigComponent implements OnInit {
     })
 
   }
- 
+
   /** Generic method for showing notification prompt */
   showPrompt(type,msg){
     this.messenger.add({
@@ -2488,5 +2488,5 @@ export class JiraConfigComponent implements OnInit {
     });
   }
 
-  
+
 }

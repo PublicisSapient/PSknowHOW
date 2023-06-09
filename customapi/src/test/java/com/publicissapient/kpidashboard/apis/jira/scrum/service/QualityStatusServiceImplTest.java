@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
@@ -95,6 +96,7 @@ public class QualityStatusServiceImplTest {
 	private SprintDetails sprintDetails = new SprintDetails();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
+	private List<JiraIssue> linkedStories = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -112,11 +114,12 @@ public class QualityStatusServiceImplTest {
 
 		List<String> jiraIssueList = sprintDetails.getTotalIssues().stream().filter(Objects::nonNull)
 				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
-
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		storyList = jiraIssueDataFactory.findIssueByNumberList(jiraIssueList);
 
 		bugList = jiraIssueDataFactory.getBugs();
+		List<String> linked = bugList.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream).collect(Collectors.toList());
+		linkedStories = jiraIssueDataFactory.findIssueByNumberList(linked);
 	}
 
 	private void setMockProjectConfig() {
@@ -144,7 +147,7 @@ public class QualityStatusServiceImplTest {
 
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
-
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(linkedStories);
 		when(jiraIssueRepository.findLinkedDefects(anyMap() , any() , anyMap())).thenReturn(bugList);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9 ";

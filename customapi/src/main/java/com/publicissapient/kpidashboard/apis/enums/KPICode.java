@@ -98,9 +98,9 @@ public enum KPICode {
 	 */
 	SPRINT_VELOCITY("kpi39", KPISource.JIRA.name()),
 	/**
-	 * Story count kpi code.
+	 * Issue count kpi code.
 	 */
-	STORY_COUNT("kpi40", KPISource.JIRA.name()),
+	ISSUE_COUNT("kpi40", KPISource.JIRA.name()),
 
 	/**
 	 * Total defect count kpi code.
@@ -393,7 +393,16 @@ public enum KPICode {
 	/**
 	 * Refinement Rejection Rate
 	 */
-	REFINEMENT_REJECTION_RATE("kpi139", KPISource.JIRA.name());
+	REFINEMENT_REJECTION_RATE("kpi139", KPISource.JIRA.name()),
+
+	/**
+	 * Flow Distribution
+	 */
+	FLOW_DISTRIBUTION("kpi146",KPISource.JIRA.name()),
+	/*
+	* Flow Load
+	* */
+	FLOW_LOAD("kpi148",KPISource.JIRA.name());
 
 	// @formatter:on
 

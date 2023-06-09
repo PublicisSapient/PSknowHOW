@@ -239,7 +239,7 @@ public class JiraServiceRTest {
 		jiraServiceCache.put(KPICode.DEFECT_COUNT_BY_PRIORITY.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.DEFECT_REMOVAL_EFFICIENCY.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.TECH_DEBT.name(), mcokAbstract);
-		jiraServiceCache.put(KPICode.STORY_COUNT.name(), mcokAbstract);
+		jiraServiceCache.put(KPICode.ISSUE_COUNT.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.SPRINT_VELOCITY.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.LEAD_TIME.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.TOTAL_DEFECT_COUNT.name(), mcokAbstract);
@@ -260,7 +260,7 @@ public class JiraServiceRTest {
 					.thenReturn(mcokAbstract);
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TECH_DEBT.name()))
 					.thenReturn(mcokAbstract);
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.STORY_COUNT.name()))
+			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.ISSUE_COUNT.name()))
 					.thenReturn(mcokAbstract);
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.SPRINT_VELOCITY.name()))
 					.thenReturn(mcokAbstract);
@@ -316,8 +316,8 @@ public class JiraServiceRTest {
 				assertThat("Kpi Name :", k.getKpiName(), equalTo("TECH_DEBT"));
 				break;
 
-			case STORY_COUNT:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("STORY_COUNT"));
+			case ISSUE_COUNT:
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("ISSUE_COUNT"));
 
 				break;
 			case SPRINT_VELOCITY:
@@ -355,7 +355,7 @@ public class JiraServiceRTest {
 		jiraServiceCache.put(KPICode.DEFECT_COUNT_BY_PRIORITY.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.DEFECT_REMOVAL_EFFICIENCY.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.TECH_DEBT.name(), mcokAbstract);
-		jiraServiceCache.put(KPICode.STORY_COUNT.name(), mcokAbstract);
+		jiraServiceCache.put(KPICode.ISSUE_COUNT.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.SPRINT_VELOCITY.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.LEAD_TIME.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.TOTAL_DEFECT_COUNT.name(), mcokAbstract);
@@ -376,7 +376,7 @@ public class JiraServiceRTest {
 					.thenReturn(mcokAbstract);
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TECH_DEBT.name()))
 					.thenReturn(mcokAbstract);
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.STORY_COUNT.name()))
+			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.ISSUE_COUNT.name()))
 					.thenReturn(mcokAbstract);
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.SPRINT_VELOCITY.name()))
 					.thenReturn(mcokAbstract);
@@ -466,7 +466,7 @@ public class JiraServiceRTest {
 		addKpiElement(kpiList, KPICode.TECH_DEBT.getKpiId(), KPICode.TECH_DEBT.name(), "Category One", "Days");
 		addKpiElement(kpiList, KPICode.TOTAL_DEFECT_COUNT.getKpiId(), KPICode.TOTAL_DEFECT_COUNT.name(), "Category One",
 				"");
-		addKpiElement(kpiList, KPICode.STORY_COUNT.getKpiId(), KPICode.STORY_COUNT.name(), "Category One", "SP");
+		addKpiElement(kpiList, KPICode.ISSUE_COUNT.getKpiId(), KPICode.ISSUE_COUNT.name(), "Category One", "SP");
 		addKpiElement(kpiList, KPICode.SPRINT_VELOCITY.getKpiId(), KPICode.SPRINT_VELOCITY.name(), "Category One",
 				"SP");
 		addKpiElement(kpiList, KPICode.LEAD_TIME.getKpiId(), KPICode.LEAD_TIME.name(), "Category Two", "Days");

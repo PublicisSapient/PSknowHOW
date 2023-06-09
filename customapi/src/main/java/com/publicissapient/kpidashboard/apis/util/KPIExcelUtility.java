@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -892,8 +891,8 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateStoryCountExcelData(String sprint, List<KPIExcelData> kpiExcelData,
-			List<JiraIssue> allJiraIssueList, List<String> totalPresentJiraIssue) {
+	public static void populateIssueCountExcelData(String sprint, List<KPIExcelData> kpiExcelData,
+												   List<JiraIssue> allJiraIssueList, List<String> totalPresentJiraIssue) {
 
 		if (CollectionUtils.isNotEmpty(allJiraIssueList)) {
 			allJiraIssueList.stream().filter(issue -> totalPresentJiraIssue.contains(issue.getNumber()))
@@ -1431,6 +1430,20 @@ public class KPIExcelUtility {
 				excelData.setPriority(jiraIssue.getPriority());
 				kpiExcelData.add(excelData);
 			});
+		}
+	}
+
+	public static void populateFlowKPI(Map<String, Map<String, Integer>> dateTypeCountMap,
+									   List<KPIExcelData> excelData) {
+		for (Map.Entry<String, Map<String, Integer>> entry : dateTypeCountMap.entrySet()) {
+			String date = entry.getKey();
+			Map<String, Integer> typeCountMap = entry.getValue();
+			KPIExcelData kpiExcelData = new KPIExcelData();
+			if (MapUtils.isNotEmpty(typeCountMap)) {
+				kpiExcelData.setDate(DateUtil.dateTimeConverter(date, DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				kpiExcelData.setCount(typeCountMap);
+				excelData.add(kpiExcelData);
+			}
 		}
 	}
 }
