@@ -275,30 +275,34 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 					Map<String, List<JiraIssue>> filterWiseGroupedMap = createFilterWiseGroupedMap(dateRange,
 							addedIssuesMap, removeIssueMap, fullReleaseIssueMap, overallIssues, completedReleaseMap,
 							overallCompletedIssues);
+					overallCompletedIssues=filterWiseGroupedMap.getOrDefault("OVERALL COMPLETED",new ArrayList<>());
 					String date = getRange(dateRange, duration);
 					populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, issueSize, date, duration);
 					startLocalDate = getNextRangeDate(duration, startLocalDate);
 					issueCountDataGroup.add(issueCount);
 					issueSizeCountDataGroup.add(issueSize);
 				}
-				if(CollectionUtils.isNotEmpty(issueCountDataGroup)) {
-					populateExcelDataObject(requestTrackerId, excelData, releaseIssues);
-					IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
-					kpiValueIssueCount.setDataGroup(issueCountDataGroup);
-					kpiValueIssueCount.setFilter1(ISSUE_COUNT);
-					IterationKpiValue kpiValueSizeCount = new IterationKpiValue();
-					kpiValueSizeCount.setDataGroup(issueSizeCountDataGroup);
-					kpiValueSizeCount.setFilter1(STORY_POINT);
-					iterationKpiValueList.add(kpiValueSizeCount);
-					iterationKpiValueList.add(kpiValueIssueCount);
-
-					kpiElement.setModalHeads(KPIExcelColumn.RELEASE_BURNUP.getColumns());
-					kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_BURNUP.getColumns());
-					kpiElement.setExcelData(excelData);
-				}
+				createExcelDataAndTrendValueList(kpiElement, requestTrackerId, excelData, releaseIssues, iterationKpiValueList, issueCountDataGroup, issueSizeCountDataGroup);
 			}
 			kpiElement.setTrendValueList(iterationKpiValueList);
+		}
+	}
 
+	private void createExcelDataAndTrendValueList(KpiElement kpiElement, String requestTrackerId, List<KPIExcelData> excelData, List<JiraIssue> releaseIssues, List<IterationKpiValue> iterationKpiValueList, List<DataCountGroup> issueCountDataGroup, List<DataCountGroup> issueSizeCountDataGroup) {
+		if(CollectionUtils.isNotEmpty(issueCountDataGroup)) {
+			populateExcelDataObject(requestTrackerId, excelData, releaseIssues);
+			IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
+			kpiValueIssueCount.setDataGroup(issueCountDataGroup);
+			kpiValueIssueCount.setFilter1(ISSUE_COUNT);
+			IterationKpiValue kpiValueSizeCount = new IterationKpiValue();
+			kpiValueSizeCount.setDataGroup(issueSizeCountDataGroup);
+			kpiValueSizeCount.setFilter1(STORY_POINT);
+			iterationKpiValueList.add(kpiValueSizeCount);
+			iterationKpiValueList.add(kpiValueIssueCount);
+
+			kpiElement.setModalHeads(KPIExcelColumn.RELEASE_BURNUP.getColumns());
+			kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_BURNUP.getColumns());
+			kpiElement.setExcelData(excelData);
 		}
 	}
 
@@ -318,7 +322,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				});
 				rangedCompletedMap.putIfAbsent(startLocalDate, issues);
 			} else {
-				rangedCompletedMap.putIfAbsent(date, issues);
+				rangedCompletedMap.put(date, issues);
 			}
 		});
 		return rangedCompletedMap;
@@ -441,12 +445,15 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		overallIssues.removeAll(removedIssues);
 		overallIssues = overallIssues.stream().distinct().collect(Collectors.toList());
 
-		// out of the overallIssues, what all issues were completed
+
+		//issues which were completed within Release duration, but were out of selected release when completed
 		overallCompletedIssues.addAll(completedIssues);
-		overallCompletedIssues.retainAll(overallIssues);
-		overallCompletedIssues = overallCompletedIssues.stream().distinct().collect(Collectors.toList());
+		List<JiraIssue> allCompletedIssuesOutOfOverall= new ArrayList<>(overallCompletedIssues);
+		// out of the overallIssues, what all issues were completed
+		allCompletedIssuesOutOfOverall.retainAll(overallIssues);
 		groupedMap.put(RELEASE_SCOPE, overallIssues);
-		groupedMap.put(RELEASE_PROGRESS, overallCompletedIssues);
+		groupedMap.put(RELEASE_PROGRESS, allCompletedIssuesOutOfOverall);
+		groupedMap.put("OVERALL COMPLETED", overallCompletedIssues.stream().distinct().collect(Collectors.toList()));
 
 		return groupedMap;
 	}
