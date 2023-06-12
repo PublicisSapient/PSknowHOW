@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public enum KPIExcelColumn {
 
     CODE_BUILD_TIME("kpi8", Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url", "Weeks")),
-    STORY_COUNT("kpi40", Arrays.asList("Sprint Name", "Story ID", "Issue Description")),
+    ISSUE_COUNT("kpi40", Arrays.asList("Sprint Name", "Story ID", "Issue Description")),
     CODE_COMMIT("kpi11", Arrays.asList("Project Name", "Repository Url", "Branch", "Day", "No. Of Commit", "No. of Merge")),
 
     MEAN_TIME_TO_MERGE("kpi84", Arrays.asList("Project", "Repository Url", "Branch", "Weeks", "Mean Time To Merge (In Hours)")),
@@ -212,7 +212,7 @@ public enum KPIExcelColumn {
     DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
 
     RELEASE_PROGRESS("kpi147",Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority","Assignee", "Issue Status")),
-
+    HAPPINESS_INDEX_RATE("kpi149", Arrays.asList("Sprint Name", "User Name", "Sprint Rating")),
     FLOW_DISTRIBUTION("Kpi146",Arrays.asList("Date")),
     FLOW_LOAD("kpi148",Arrays.asList("Date"));
 

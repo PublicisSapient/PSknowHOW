@@ -1112,9 +1112,9 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi40",
-    "kpiName": "Story Count",
+    "kpiName": "Issue Count",
     "maxValue": "",
-    "kpiUnit": "Stories",
+    "kpiUnit": "",
     "isDeleted": "False",
     "defaultOrder": 17,
     "kpiSource": "Jira",
@@ -1123,7 +1123,7 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
-      "definition": "STORY COUNT measures the overall work taken in a sprint",
+      "definition": "ISSUE COUNT measures the overall work taken in a sprint",
       "formula": [
         {
           "lhs": "No. of stories tagged to a Sprint"
@@ -1135,6 +1135,7 @@ db.getCollection('kpi_master').insert(
     "isPositiveTrend": true,
     "showTrend": false,
     "aggregationCriteria": "sum",
+    "kpiFilter": "radioButton",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
@@ -4022,5 +4023,35 @@ db.getCollection('kpi_master').insert(
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi149",
+    "kpiName": "Happiness Index",
+    "kpiSource": "Jira",
+    "aggregationCriteria": "average",
+    "boxType": "3_column",
+    "calculateMaturity": false,
+    "chartType": "line",
+    "defaultOrder": 5,
+    "groupId": 2,
+    "isAdditionalFilterSupport": false,
+    "isDeleted": "False",
+    "isPositiveTrend": true,
+    "kanban": false,
+    "kpiFilter": "multiSelectDropDown",
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "KPI for tracking moral of team members",
+        },
+      ],
+    },
+    "kpiUnit": "",
+    "maxValue": "5",
+    "showTrend": false,
+    "thresholdValue": "",
+    "xAxisLabel": "Sprints",
+    "yAxisLabel": "Rating",
   }
 ]);

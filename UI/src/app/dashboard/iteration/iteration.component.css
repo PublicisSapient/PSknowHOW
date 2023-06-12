@@ -39,9 +39,6 @@
     flex-basis: auto;
 }
 
-.kpi-content-container {
-    border-right: 1px solid #c0c0c0;
-}
 
 .kpi-sub-headings {
     height: 40px;
@@ -164,6 +161,10 @@ padding: 0.75rem !important;
     padding-top: 0px;
 }
 
+:host ::ng-deep.p-datatable-scrollable .p-datatable-wrapper{
+    min-height: 45vh;
+}
+
 :host ::ng-deep.p-multiselect{
     border: none;
     background-color: transparent;
@@ -180,6 +181,10 @@ padding: 0.75rem !important;
 
 :host ::ng-deep th:first-child .p-multiselect-panel{
     left:0px !important;
+}
+
+:host::ng-deep .p-dialog .p-dialog-header .p-dialog-title {
+    font-weight: bold;
 }
 
 :host ::ng-deep.p-dialog.p-component.p-dialog-draggable{
@@ -224,6 +229,13 @@ padding: 0.75rem !important;
     /* display: none; */
 }
 
+:host::ng-deep.p-datatable-scrollable .p-datatable-tbody>tr>td.multidata-col{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: initial;
+}
+
 .overlap{
     z-index: 1000 !important;
 }
@@ -260,6 +272,6 @@ padding: 0.75rem !important;
     max-width: 190px;
     word-break: break-word;
 }
-
-
-
+.w-80{
+    width: 80%;   
+}
