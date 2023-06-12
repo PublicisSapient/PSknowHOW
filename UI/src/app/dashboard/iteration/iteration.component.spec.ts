@@ -2814,9 +2814,10 @@ describe('IterationComponent', () => {
         }
 
         const spyObj = spyOn(component, 'applyAggregationLogic');
-        spyOn(component,'getKpiChartType');
-        component.getChartData('kpi124', 0)
-        expect(spyObj).toHaveBeenCalled();
+        // spyOn(component,'getKpiChartType');
+        component.getChartData('kpi124', 0);
+        expect(component.kpiChartData['kpi124'].length).toEqual(4);
+        // expect(spyObj).toHaveBeenCalled();
     })
 
     it('should get chartdata for kpi when trendValueList is an Array without filter', () => {

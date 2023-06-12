@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -58,8 +60,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * The class contains methods for helping kpi to prepare data
@@ -326,20 +326,23 @@ public final class KpiDataHelper {
 	public static List<String> getIssuesIdListBasedOnTypeFromSprintDetails(SprintDetails sprintDetails,
 			String issueType) {
 		if (issueType.equalsIgnoreCase(CommonConstant.COMPLETED_ISSUES)) {
-			return CollectionUtils.emptyIfNull(sprintDetails.getCompletedIssues()).stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
-					.distinct().collect(Collectors.toList());
-		} else if (issueType.equalsIgnoreCase(CommonConstant.NOT_COMPLETED_ISSUES)) {
-			return CollectionUtils.emptyIfNull(sprintDetails.getNotCompletedIssues()).stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
-					.distinct().collect(Collectors.toList());
-		} else if (issueType.equalsIgnoreCase(CommonConstant.PUNTED_ISSUES)) {
-			return CollectionUtils.emptyIfNull(sprintDetails.getPuntedIssues()).stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
-					.distinct().collect(Collectors.toList());
-		} else if (issueType.equalsIgnoreCase(CommonConstant.COMPLETED_ISSUES_ANOTHER_SPRINT)) {
-			return CollectionUtils.emptyIfNull(sprintDetails.getCompletedIssuesAnotherSprint()).stream().filter(Objects::nonNull)
+			return CollectionUtils.emptyIfNull(sprintDetails.getCompletedIssues()).stream().filter(Objects::nonNull)
 					.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
+		} else if (issueType.equalsIgnoreCase(CommonConstant.NOT_COMPLETED_ISSUES)) {
+			return CollectionUtils.emptyIfNull(sprintDetails.getNotCompletedIssues()).stream().filter(Objects::nonNull)
+					.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
+		} else if (issueType.equalsIgnoreCase(CommonConstant.PUNTED_ISSUES)) {
+			return CollectionUtils.emptyIfNull(sprintDetails.getPuntedIssues()).stream().filter(Objects::nonNull)
+					.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
+		} else if (issueType.equalsIgnoreCase(CommonConstant.COMPLETED_ISSUES_ANOTHER_SPRINT)) {
+			return CollectionUtils.emptyIfNull(sprintDetails.getCompletedIssuesAnotherSprint()).stream()
+					.filter(Objects::nonNull).map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
 		} else if (issueType.equalsIgnoreCase(CommonConstant.TOTAL_ISSUES)) {
-			return CollectionUtils.emptyIfNull(sprintDetails.getTotalIssues()).stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
-					.distinct().collect(Collectors.toList());
+			return CollectionUtils.emptyIfNull(sprintDetails.getTotalIssues()).stream().filter(Objects::nonNull)
+					.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
+		} else if (issueType.equalsIgnoreCase(CommonConstant.ADDED_ISSUES)) {
+			return CollectionUtils.emptyIfNull(sprintDetails.getAddedIssues()).stream().filter(Objects::nonNull)
+					.collect(Collectors.toList());
 		} else {
 			return new ArrayList<>();
 		}

@@ -30,6 +30,8 @@
 }
 
 .indicator-heading {
+    font-weight: 500;
+    font-family: var(--font-medium);
     font-size: 0.8rem;
     margin: 0 0 7px 0;
 }

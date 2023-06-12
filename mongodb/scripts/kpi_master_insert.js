@@ -1112,9 +1112,9 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi40",
-    "kpiName": "Story Count",
+    "kpiName": "Issue Count",
     "maxValue": "",
-    "kpiUnit": "Stories",
+    "kpiUnit": "",
     "isDeleted": "False",
     "defaultOrder": 17,
     "kpiSource": "Jira",
@@ -1123,7 +1123,7 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
-      "definition": "STORY COUNT measures the overall work taken in a sprint",
+      "definition": "ISSUE COUNT measures the overall work taken in a sprint",
       "formula": [
         {
           "lhs": "No. of stories tagged to a Sprint"
@@ -1135,6 +1135,7 @@ db.getCollection('kpi_master').insert(
     "isPositiveTrend": true,
     "showTrend": false,
     "aggregationCriteria": "sum",
+    "kpiFilter": "radioButton",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
@@ -2956,6 +2957,7 @@ db.getCollection('kpi_master').insert(
     "isDeleted": "False",
     "defaultOrder": 0,
     "kpiCategory": "Iteration",
+    "kpiSubCategory" : "Iteration Review",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
@@ -2989,6 +2991,7 @@ db.getCollection('kpi_master').insert(
     "isDeleted": "False",
     "defaultOrder": 4,
     "kpiCategory": "Iteration",
+    "kpiSubCategory" : "Iteration Review",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
@@ -3068,6 +3071,7 @@ db.getCollection('kpi_master').insert(
     "isDeleted": "False",
     "defaultOrder": 2,
     "kpiCategory": "Iteration",
+    "kpiSubCategory" : "Iteration Review",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
@@ -3138,6 +3142,7 @@ db.getCollection('kpi_master').insert(
     "isDeleted": "False",
     "defaultOrder": 22,
     "kpiCategory": "Iteration",
+    "kpiSubCategory" : "Iteration Review",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
@@ -3176,6 +3181,7 @@ db.getCollection('kpi_master').insert(
     "isDeleted": "False",
     "defaultOrder": 7,
     "kpiCategory": "Iteration",
+    "kpiSubCategory" : "Iteration Review",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
@@ -3213,6 +3219,7 @@ db.getCollection('kpi_master').insert(
     "isDeleted": "False",
     "defaultOrder": 6,
     "kpiCategory": "Iteration",
+    "kpiSubCategory" : "Iteration Review",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
@@ -3250,6 +3257,7 @@ db.getCollection('kpi_master').insert(
     "isDeleted": "False",
     "defaultOrder": 1,
     "kpiCategory": "Iteration",
+    "kpiSubCategory" : "Iteration Review",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
@@ -3288,6 +3296,7 @@ db.getCollection('kpi_master').insert(
     "isDeleted": "False",
     "defaultOrder": 21,
     "kpiCategory": "Iteration",
+    "kpiSubCategory" : "Iteration Review",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
@@ -3326,6 +3335,7 @@ db.getCollection('kpi_master').insert(
          "isDeleted": "False",
          "defaultOrder": 14,
          "kpiCategory": "Iteration",
+         "kpiSubCategory" : "Iteration Review",
          "kpiSource": "Jira",
          "groupId": 8,
          "thresholdValue": "",
@@ -3364,6 +3374,7 @@ db.getCollection('kpi_master').insert(
     "isDeleted": "False",
     "defaultOrder": 12,
     "kpiCategory": "Iteration",
+    "kpiSubCategory" : "Iteration Review",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
@@ -3415,6 +3426,7 @@ db.getCollection('kpi_master').insert(
      "isDeleted": "False",
      "defaultOrder": 5,
      "kpiCategory": "Iteration",
+     "kpiSubCategory" : "Iteration Review",
      "kpiSource": "Jira",
      "groupId": 8,
      "thresholdValue": "",
@@ -3443,28 +3455,20 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi125",
-    "kpiName": "Daily Closures",
+    "kpiName": "Iteration Burnup",
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
     "defaultOrder": 8,
     "kpiCategory": "Iteration",
+    "kpiSubCategory" : "Iteration Progress",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "GroupBarChart",
+    "chartType": "CumulativeMultilineChart",
     "kpiInfo": {
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "Daily Closures KPI gives a graphical representation of daily progress in terms of no. of issues planned, actual no. of issues closed till the current day and the predicted daily closures for the remaining days of the iteration."
-        },
-        {
-          "type": "paragraph",
-          "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from KnowHOW settings."
-        }
-      ]
+        "definition": "Iteration Burnup KPI shows the cumulative actual progress against the overall scope of the iteration on a daily basis. For teams putting due dates at the beginning of iteration, the graph additionally shows the actual progress in comparison to the planning done and also predicts the probable progress for the remaining days of the iteration."
     },
     "xAxisLabel": "Days",
     "yAxisLabel": "Count",
@@ -3473,6 +3477,7 @@ db.getCollection('kpi_master').insert(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiselectdropdown",
     "boxType": "chart",
+    "kpiWidth":100,
     "calculateMaturity": false
   },
   {
@@ -3483,6 +3488,7 @@ db.getCollection('kpi_master').insert(
      "isDeleted": "False",
      "defaultOrder": 9,
      "kpiCategory": "Iteration",
+     "kpiSubCategory" : "Iteration Review",
      "kpiSource": "Jira",
      "groupId": 8,
      "thresholdValue": "",
@@ -3529,6 +3535,7 @@ db.getCollection('kpi_master').insert(
        "isDeleted": "False",
        "defaultOrder": 11,
        "kpiCategory": "Iteration",
+       "kpiSubCategory" : "Iteration Review",
        "kpiSource": "Jira",
        "groupId": 8,
        "thresholdValue": "",
@@ -3660,6 +3667,7 @@ db.getCollection('kpi_master').insert(
      "isDeleted": "False",
      "defaultOrder": 13,
      "kpiCategory": "Iteration",
+     "kpiSubCategory" : "Iteration Review",
      "kpiSource": "Jira",
      "groupId": 8,
      "thresholdValue": "",
@@ -3816,6 +3824,7 @@ db.getCollection('kpi_master').insert(
     "isDeleted": "False",
     "defaultOrder": 15,
     "kpiCategory": "Iteration",
+    "kpiSubCategory" : "Iteration Review",
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
@@ -3866,6 +3875,7 @@ db.getCollection('kpi_master').insert(
           "isDeleted": "False",
           "defaultOrder": 3,
           "kpiCategory": "Iteration",
+          "kpiSubCategory" : "Iteration Review",
           "kpiSource": "Jira",
           "groupId": 8,
           "thresholdValue": "",
@@ -3965,5 +3975,83 @@ db.getCollection('kpi_master').insert(
        "kpiFilter": "multiSelectDropDown",
        "boxType": "3_column",
        "calculateMaturity": false
-     }
+     },
+   {
+    "kpiId": "kpi148",
+    "kpiName": "Flow Load",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 10,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "stacked-area",
+    "kpiInfo": {
+    "definition": " Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues"
+    },
+    "xAxisLabel": "Time",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": false,
+    "kpiFilter": "",
+    "showTrend": false,
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi146",
+    "kpiName": "Flow Distribution",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 10,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "stacked-area",
+    "kpiInfo": {
+      "definition": "Flow Distribution evaluates the amount of each kind of work (issue types) which are open in the backlog over a period of time."
+    },
+    "xAxisLabel": "Time",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": false,
+    "kpiFilter": "",
+    "showTrend": false,
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi149",
+    "kpiName": "Happiness Index",
+    "kpiSource": "Jira",
+    "aggregationCriteria": "average",
+    "boxType": "3_column",
+    "calculateMaturity": false,
+    "chartType": "line",
+    "defaultOrder": 5,
+    "groupId": 2,
+    "isAdditionalFilterSupport": false,
+    "isDeleted": "False",
+    "isPositiveTrend": true,
+    "kanban": false,
+    "kpiFilter": "multiSelectDropDown",
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "KPI for tracking moral of team members",
+        },
+      ],
+    },
+    "kpiUnit": "",
+    "maxValue": "5",
+    "showTrend": false,
+    "thresholdValue": "",
+    "xAxisLabel": "Sprints",
+    "yAxisLabel": "Rating",
+  }
 ]);

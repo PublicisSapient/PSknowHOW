@@ -44,10 +44,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
@@ -56,7 +56,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DailyClosureServiceImplTest {
+public class IterationBurnupServiceImplTest {
     private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
     private Map<String, Object> filterLevelMap;
 
@@ -78,7 +78,7 @@ public class DailyClosureServiceImplTest {
     ConfigHelperService configHelperService;
 
     @InjectMocks
-    DailyClosureServiceImpl dailyClosureService;
+    IterationBurnupServiceImpl iterationBurnupService;
 
     @Mock
     JiraIssueCustomHistoryRepository jiraIssueHistoryRepository;
@@ -88,7 +88,7 @@ public class DailyClosureServiceImplTest {
     @Before
     public void setup() {
         KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-        kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DAILY_CLOSURES.getKpiId());
+        kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.ITERATION_BURNUP.getKpiId());
         kpiRequest.setLabel("PROJECT");
         SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
         sprintWiseStoryList = sprintWiseStoryDataFactory.getSprintWiseStories();
@@ -98,15 +98,15 @@ public class DailyClosureServiceImplTest {
         filterLevelMap = new LinkedHashMap<>();
         filterLevelMap.put("PROJECT", Filters.PROJECT);
         filterLevelMap.put("SPRINT", Filters.SPRINT);
-        JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+        JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance("/json/default/iteration/jira_issues_new_structure.json");
         jiraIssues = jiraIssueDataFactory.getJiraIssues();
-        SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
-        sprintDetailsList = sprintDetailsDataFactory.getSprintDetails();
-        JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
+        SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance("/json/default/iteration/sprint_details.json");
+        sprintDetailsList = sprintDetailsDataFactory.getSprintDetails().stream().filter(sprintDetails -> sprintDetails.getBasicProjectConfigId().equals(new ObjectId("63d9280d5ce3ee7d77551313"))).collect(Collectors.toList());
+        JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance("/json/default/iteration/jira_issue_custom_history_new_structure.json");
         jiraIssuesCustomHistory = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
         ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-        projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
-        projectConfig.setProjectName("Scrum Project");
+        projectConfig.setId(new ObjectId("63d9280d5ce3ee7d77551313"));
+        projectConfig.setProjectName("Iteration Status");
         projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
         FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
                 .newInstance("/json/default/scrum_project_field_mappings.json");
@@ -134,7 +134,7 @@ public class DailyClosureServiceImplTest {
         when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
         when(jiraService
                 .getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
-        Map<String, Object> defectDataListMap = dailyClosureService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
+        Map<String, Object> defectDataListMap = iterationBurnupService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
                 kpiRequest);
         assertNotNull(defectDataListMap);
     }
@@ -145,15 +145,17 @@ public class DailyClosureServiceImplTest {
         TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
                 accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-        when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetailsList.get(0));
+        when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetailsList.get(2));
         when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
         String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
         when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
                 .thenReturn(kpiRequestTrackerId);
-        when(dailyClosureService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+        when(iterationBurnupService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
         when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+        when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint())
+                .thenReturn(jiraIssuesCustomHistory);
         try {
-            KpiElement kpiElement = dailyClosureService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+            KpiElement kpiElement = iterationBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);
             assertNotNull( kpiElement.getTrendValueList());
 
@@ -164,7 +166,7 @@ public class DailyClosureServiceImplTest {
     }
     @Test
     public void testGetQualifierType() {
-        assertThat(dailyClosureService.getQualifierType(), equalTo(KPICode.DAILY_CLOSURES.name()));
+        assertThat(iterationBurnupService.getQualifierType(), equalTo(KPICode.ITERATION_BURNUP.name()));
     }
 
 }

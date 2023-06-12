@@ -116,7 +116,7 @@ db.getCollection('kpi_fieldmapping').insert(
       },
       {
         kpiId: 'kpi40',
-        kpiName: 'Story Count',
+        kpiName: 'Issue Count',
 		kpiSource: 'Jira',
         type: ['Scrum'],
         fieldNames : {'Issue Types Mapping' : ['jiraStoryIdentification','jiraIterationCompletionTypeCustomField'] ,'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField']}
@@ -382,7 +382,7 @@ db.getCollection('kpi_fieldmapping').insert(
       },
       {
         kpiId: 'kpi125',
-        kpiName: 'Daily Closures',
+        kpiName: 'Iteration Burnup',
 		kpiSource: 'Jira',
         type: ['Other'],
         fieldNames : {'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
@@ -510,5 +510,17 @@ db.getCollection('kpi_fieldmapping').insert(
       		kpiSource: 'Jira',
               type: ['Other'],
               fieldNames : {'Workflow Status Mapping' : ['readyForDevelopmentStatus'] }
-            }
+            },
+            {
+             kpiId: 'Kpi148',
+             kpiName: 'Flow Load',
+             type: ['Other'],
+             fieldNames : { }
+            },
+      {
+        kpiId: 'Kpi146',
+        kpiName: 'Flow Distribution',
+        type: ['Other'],
+        fieldNames : { }
+      }
 	  ]);

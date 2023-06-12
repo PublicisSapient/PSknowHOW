@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +36,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
+import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +69,7 @@ import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExe
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * The class contains mapping of kpi and Excel columns.
@@ -891,8 +895,8 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateStoryCountExcelData(String sprint, List<KPIExcelData> kpiExcelData,
-			List<JiraIssue> allJiraIssueList, List<String> totalPresentJiraIssue) {
+	public static void populateIssueCountExcelData(String sprint, List<KPIExcelData> kpiExcelData,
+												   List<JiraIssue> allJiraIssueList, List<String> totalPresentJiraIssue) {
 
 		if (CollectionUtils.isNotEmpty(allJiraIssueList)) {
 			allJiraIssueList.stream().filter(issue -> totalPresentJiraIssue.contains(issue.getNumber()))
@@ -1432,4 +1436,51 @@ public class KPIExcelUtility {
 			});
 		}
 	}
+
+	public static void populateFlowKPI(Map<String, Map<String, Integer>> dateTypeCountMap,
+									   List<KPIExcelData> excelData) {
+		for (Map.Entry<String, Map<String, Integer>> entry : dateTypeCountMap.entrySet()) {
+			String date = entry.getKey();
+			Map<String, Integer> typeCountMap = entry.getValue();
+			KPIExcelData kpiExcelData = new KPIExcelData();
+			if (MapUtils.isNotEmpty(typeCountMap)) {
+				kpiExcelData.setDate(DateUtil.dateTimeConverter(date, DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				kpiExcelData.setCount(typeCountMap);
+				excelData.add(kpiExcelData);
+			}
+		}
+	}
+
+	public static void populateHappinessIndexExcelData(String sprintName, List<KPIExcelData> excelDataList,
+			List<HappinessKpiData> happinessKpiSprintDataList) {
+		Map<Pair<String, String>, List<Integer>> userRatingsForSprintMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(happinessKpiSprintDataList)) {
+			happinessKpiSprintDataList.forEach(data -> {
+				List<UserRatingData> userRatingList = data.getUserRatingList();
+				userRatingList.forEach(user -> populateUserMapForHappinessIndexKpi(userRatingsForSprintMap, user));
+			});
+
+			userRatingsForSprintMap.forEach((k, v) -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(sprintName);
+				excelData.setUserName(k.getValue());
+				Integer averageUserRatingPerSprint = v.stream().mapToInt(Integer::intValue).sum() / v.size();
+				excelData.setSprintRating(averageUserRatingPerSprint);
+				excelDataList.add(excelData);
+			});
+
+		}
+
+	}
+
+	private static void populateUserMapForHappinessIndexKpi(
+			Map<Pair<String, String>, List<Integer>> userRatingsForSprintMap, UserRatingData user) {
+		if (Objects.nonNull(user.getRating()) && !user.getRating().equals(0)) {
+			Pair<String, String> userIdentifier = Pair.of(user.getUserId(), user.getUserName());
+			List<Integer> userRatings = userRatingsForSprintMap.getOrDefault(userIdentifier, new ArrayList<>());
+			userRatings.add(user.getRating());
+			userRatingsForSprintMap.put(userIdentifier, userRatings);
+		}
+	}
+
 }
