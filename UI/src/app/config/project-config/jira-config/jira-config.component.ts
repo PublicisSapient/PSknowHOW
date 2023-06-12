@@ -303,7 +303,6 @@ export class JiraConfigComponent implements OnInit {
       this.tool['gitLabSdmID'].setValue('');
       this.tool['apiVersion'].enable();
       this.tool['projectKey'].enable();
-      this.tool['branch'].enable();
       this.clearSonarForm();
       this.updateSonarConnectionTypeAndVersionList(connection.cloudEnv);
       this.enableDisableOrganizationKey(connection.cloudEnv);
@@ -745,7 +744,7 @@ export class JiraConfigComponent implements OnInit {
                   code: element
                 });
               });
-
+              this.tool['branch'].enable()
               this.hideLoadingOnFormElement('projectKey');
               this.disableBranchDropDown = this.isVersionSupported(version);
             } else {
@@ -2286,6 +2285,10 @@ export class JiraConfigComponent implements OnInit {
 
               // empty the form
               this.toolForm.reset();
+              if(this.urlParam === 'Sonar'){
+                this.tool['apiVersion'].enable();
+                 this.tool['projectKey'].enable();
+              }
 
               this.configuredTools.push(response['data']);
               this.configuredTools.forEach((tool) => {
@@ -2526,10 +2529,10 @@ export class JiraConfigComponent implements OnInit {
       self.tool['projectKey'].disable();
       self.tool['branch'].disable();
      }else{
+      self.toolForm.get('gitLabSdmID').setValidators([Validators.pattern('^[a-zA-Z0-9,: ]+$')]);
       self.enableDisableOrganizationKey(self.cloudEnv);
       self.tool['apiVersion'].enable();
       self.tool['projectKey'].enable();
-      self.tool['branch'].enable();
      }
   }
   
