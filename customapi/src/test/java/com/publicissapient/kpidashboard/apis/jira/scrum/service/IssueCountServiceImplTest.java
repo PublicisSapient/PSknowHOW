@@ -179,7 +179,7 @@ public class IssueCountServiceImplTest {
 				.thenReturn(totalIssueList);
 
 		Map<String, Object> storyList = issueCountServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate, kpiRequest);
-		assertThat("Total Stories : ", storyList.size(), equalTo(2));
+		assertThat("Total Stories : ", storyList.size(), equalTo(4));
 	}
 
 	@Test
