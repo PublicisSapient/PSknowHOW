@@ -144,6 +144,8 @@
 #xCaptionContainer {
   text-align: center;
   color: #437495;
+  margin: 3px 0px;
+  font-size: 13px;
 }
 
 #legendContainer {

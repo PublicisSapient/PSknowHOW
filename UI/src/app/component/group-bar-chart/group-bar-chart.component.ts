@@ -38,7 +38,8 @@ export class GroupBarChartComponent implements OnChanges {
     if (this.selectedtype?.toLowerCase() === 'kanban') {
       this.xCaption = this.service.getSelectedDateFilter();
     }else{
-      this.xCaption = this.data[0]?.dataGroup[0]?.duration;
+      const duration = this.data[0]?.dataGroup[0]?.duration;
+      this.xCaption = duration.charAt(0).toUpperCase() + duration.slice(1).toLowerCase();
     }
     // only run when property "data" changed
     if (changes['data']) {
