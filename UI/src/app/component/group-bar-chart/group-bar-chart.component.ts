@@ -198,6 +198,7 @@ export class GroupBarChartComponent implements OnChanges {
       .attr("width", barWidth)
       .attr("height", d=> height - y(0) - spacingVariable)
       .attr("fill", d=> color(d.key))
+      .style('cursor', 'pointer')
       .on('mouseover', (event, d)=> {
         if (d.hoverValue) {
           const circle = event.target;
