@@ -193,7 +193,7 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 			totalIssues.addAll(initialIssues);
 		}
 		if(CollectionUtils.isNotEmpty(addedIssues)) {
-			totalIssues.addAll(initialIssues);
+			totalIssues.addAll(addedIssues);
 		}
 		if(CollectionUtils.isNotEmpty(puntedIssues)) {
 			totalIssues.removeAll(puntedIssues);
