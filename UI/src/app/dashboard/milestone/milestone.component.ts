@@ -337,6 +337,8 @@ export class MilestoneComponent implements OnInit {
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
         }
         this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+      }else if(!trendValueList || trendValueList?.length == 0) {
+        this.getDropdownArray(data[key]?.kpiId);
       }
       this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1));
     }
@@ -571,6 +573,8 @@ export class MilestoneComponent implements OnInit {
         obj['options'] = dropdownArr;
         this.kpiDropdowns[kpiId] = [];
         this.kpiDropdowns[kpiId].push(obj);
+      }else if(!trendValueList || trendValueList?.length == 0 ){
+        this.kpiDropdowns[kpiId] = [];
       }
     }
   }
