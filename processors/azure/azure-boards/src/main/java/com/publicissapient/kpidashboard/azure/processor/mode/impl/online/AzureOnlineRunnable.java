@@ -20,20 +20,17 @@ package com.publicissapient.kpidashboard.azure.processor.mode.impl.online;
 
 import java.util.concurrent.CountDownLatch;
 
-import com.publicissapient.kpidashboard.azure.adapter.helper.AzureRestClientFactory;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.azure.adapter.AzureAdapter;
+import com.publicissapient.kpidashboard.azure.adapter.helper.AzureRestClientFactory;
 import com.publicissapient.kpidashboard.azure.client.azureissue.AzureIssueClient;
 import com.publicissapient.kpidashboard.azure.client.azureissue.AzureIssueClientFactory;
 import com.publicissapient.kpidashboard.azure.client.metadata.MetaDataClientImpl;
 import com.publicissapient.kpidashboard.azure.config.AzureProcessorConfig;
 import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
@@ -54,15 +51,12 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 	private MetadataIdentifierRepository metadataIdentifierRepository;
 	private FieldMappingRepository fieldMappingRepository;
 	private AzureRestClientFactory azureRestClientFactory;
-	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
 	@Override
 	public void run() {
-		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-				onlineprojectConfigMap.getBasicProjectConfigId().toHexString());
+
 		try {
 			long start = System.currentTimeMillis();
-			processorExecutionTraceLog.setExecutionStartedAt(start);
 			MDC.put("ProjectDataStartTime", String.valueOf(start));
 			MDC.put("ProjectKey", projectKey);
 			if (azureConfig.isFetchMetadata()) {
@@ -74,16 +68,9 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 
 			long end = System.currentTimeMillis();
 			MDC.put("ProjectDataEndTime", String.valueOf(end));
-			processorExecutionTraceLog.setExecutionEndedAt(end);
-
-			processorExecutionTraceLog.setExecutionSuccess(true);
-			processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 		} catch (Exception ex){
-			processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-			processorExecutionTraceLog.setExecutionSuccess(false);
-			processorExecutionTraceLogService.save(processorExecutionTraceLog);
-			log.error(ex.getMessage(), ex);
+			log.error("Exception in processing Azure Project", ex);
 		} finally {
 			log.info("run() complete.");
 			latch.countDown();
@@ -112,8 +99,7 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 			ProjectConfFieldMapping onlineprojectConfigMap, String projectKey, AzureIssueClientFactory factory, // NOSONAR
 			AzureProcessorConfig azureConfig, BoardMetadataRepository boardMetadataRepository, // NOSONAR
 			MetadataIdentifierRepository metadataIdentifierRepository, FieldMappingRepository fieldMappingRepository,
-			AzureRestClientFactory azureRestClientFactory,
-			ProcessorExecutionTraceLogService processorExecutionTraceLogService)// NOSONAR
+			AzureRestClientFactory azureRestClientFactory)// NOSONAR
 	{
 		this.latch = latch;
 		this.azureAdapter = azureAdapter;
@@ -125,7 +111,6 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 		this.metadataIdentifierRepository = metadataIdentifierRepository;
 		this.fieldMappingRepository = fieldMappingRepository;
 		this.azureRestClientFactory = azureRestClientFactory;
-		this.processorExecutionTraceLogService = processorExecutionTraceLogService;
 	}
 
 	public AzureOnlineRunnable() {
@@ -150,13 +135,6 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 		MDC.put("AzureIssueCount", String.valueOf(count));
 		long end = System.currentTimeMillis();
 		MDC.put("storyDataEndTime", String.valueOf(end));
-	}
-
-	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId){
-		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-		processorExecutionTraceLog.setProcessorName(ProcessorConstants.AZURE);
-		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
-		return processorExecutionTraceLog;
 	}
 
 	/**

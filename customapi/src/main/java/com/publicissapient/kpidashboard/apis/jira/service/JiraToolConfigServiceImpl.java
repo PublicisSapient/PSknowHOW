@@ -187,8 +187,7 @@ public class JiraToolConfigServiceImpl {
 
 	public AssigneeResponseDTO getProjectAssigneeDetails(String projectConfigId) {
 		AssigneeResponseDTO assigneeResponseDTO = new AssigneeResponseDTO();
-		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(projectConfigId,
-				ProcessorConstants.JIRA);
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigId(projectConfigId);
 		List<AssigneeDetailsDTO> assigneeDetailsDTOResponseList = new ArrayList<>();
 		if (assigneeDetails != null && CollectionUtils.isNotEmpty(assigneeDetails.getAssignee())) {
 			assigneeDetails.getAssignee().stream().forEach(assignee -> {
