@@ -110,7 +110,6 @@ public class IssueCountServiceImplTest {
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private List<JiraIssue> storyList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
-	private List<DataCount> dataCountList = new ArrayList<>();
 	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
 	private List<JiraIssue> totalIssueList = new ArrayList<>();
 
@@ -214,42 +213,6 @@ public class IssueCountServiceImplTest {
 			}
 			});
 
-		} catch (ApplicationException enfe) {
-
-		}
-
-	}
-
-	@Test
-	public void testGetStoryList_EmptySprintDetails_AzureCase() throws ApplicationException {
-		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(new ArrayList<>());
-		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any())).thenReturn(totalIssueList);
-		when(customApiConfig.getIssueCountStoryCategories()).thenReturn(Arrays.asList("Story"));
-		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-				.thenReturn(kpiRequestTrackerId);
-		when(issueCountServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		try {
-			KpiElement kpiElement = issueCountServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
-
-			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
-
-				String status = dc.getFilter();
-				switch (status) {
-					case "Story  Count":
-						assertThat("Story  Count :", dc.getValue().size(), equalTo(1));
-						break;
-					case "Total  Count":
-						assertThat("Total  Count :", dc.getValue().size(), equalTo(1));
-						break;
-					default:
-						break;
-				}
-
-			});
 		} catch (ApplicationException enfe) {
 
 		}
