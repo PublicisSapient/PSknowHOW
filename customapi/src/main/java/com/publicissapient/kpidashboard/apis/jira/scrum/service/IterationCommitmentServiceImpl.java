@@ -73,6 +73,7 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 	private static final String EXCLUDE_ADDED_ISSUES = "excludeAddedIssues";
 	private static final String SCOPE_ADDED = "Scope added";
 	private static final String SCOPE_REMOVED = "Scope removed";
+	public static final String OVERALL_COMMITMENT = "Overall Commitment";
 	private static final String INITIAL_COMMITMENT = "Initial Commitment";
 	private static final String OVERALL = "Overall";
 
@@ -177,14 +178,41 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 		List<JiraIssue> puntedIssues = (List<JiraIssue>) resultMap.get(PUNTED_ISSUES);
 		List<JiraIssue> addedIssues = (List<JiraIssue>) resultMap.get(ADDED_ISSUES);
 		List<JiraIssue> initialIssues = (List<JiraIssue>) resultMap.get(EXCLUDE_ADDED_ISSUES);
+		List<JiraIssue> totalIssues = new ArrayList<>();
 		Set<String> issueTypes = new HashSet<>();
 		Set<String> statuses = new HashSet<>();
 		List<IterationKpiModalValue> overAllAddmodalValues = new ArrayList<>();
 		List<IterationKpiModalValue> overAllRemovedmodalValues = new ArrayList<>();
 		List<IterationKpiModalValue> overAllInitialmodalValues = new ArrayList<>();
+		List<IterationKpiModalValue> overAllTotalmodalValues = new ArrayList<>();
 
 		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 		List<IterationKpiData> data = new ArrayList<>();
+		// for totalIssue adding initialIssues + addedIssues - puntedIssues
+		if(CollectionUtils.isNotEmpty(initialIssues)) {
+			totalIssues.addAll(initialIssues);
+		}
+		if(CollectionUtils.isNotEmpty(addedIssues)) {
+			totalIssues.addAll(addedIssues);
+		}
+		if(CollectionUtils.isNotEmpty(puntedIssues)) {
+			totalIssues.removeAll(puntedIssues);
+		}
+
+		if (CollectionUtils.isNotEmpty(totalIssues)) {
+			LOGGER.info("Scope Change -> request id : {} total jira Issues : {}", requestTrackerId,
+					totalIssues.size());
+			List<Integer> overAllTotalIssueCount = Arrays.asList(0);
+			List<Double> overAllTotalIssueSp = Arrays.asList(0.0);
+			List<Double> overAllTotalOriginalEstimate = Arrays.asList(0.0);
+			setScopeChange(issueTypes, statuses, totalIssues, iterationKpiValues,
+					overAllTotalIssueCount, overAllTotalIssueSp, overAllTotalmodalValues, OVERALL_COMMITMENT,
+					fieldMapping, overAllTotalOriginalEstimate);
+			IterationKpiData overAllTotalCount = setIterationKpiData(fieldMapping, overAllTotalIssueCount,
+					overAllTotalIssueSp, overAllTotalOriginalEstimate, overAllTotalmodalValues, OVERALL_COMMITMENT);
+			data.add(overAllTotalCount);
+		}
+
 
 		if(CollectionUtils.isNotEmpty(initialIssues)) {
 			LOGGER.info("Scope Change -> request id : {} initial jira Issues : {}", requestTrackerId, initialIssues.size());

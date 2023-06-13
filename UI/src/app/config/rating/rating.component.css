@@ -1,0 +1,69 @@
+  /*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+/*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Smiley css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
+form#ratingForm{
+    width: max-content;
+  }
+  
+  form#ratingForm input[type=radio] {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: none;
+    cursor: pointer;
+    filter: opacity(0.3);
+    margin: 0 5px;
+    transition: all 0.2s ease;
+  }
+  
+  form#ratingForm input[type=radio]:hover,
+  
+  form#ratingForm input[type=radio]:checked {
+    filter: grayscale(0);
+  }
+  
+  form#ratingForm input[type=radio]:focus {
+    outline: 0;
+  }
+  
+  form#ratingForm input[type=radio].ecstatic {
+    background: url("../../../assets/img/smiley-5.svg") center;
+    background-size: cover;
+  }
+  
+  form#ratingForm input[type=radio].happy {
+    background: url("../../../assets/img/smiley-4.svg") center;
+    background-size: cover;
+  }
+  
+  form#ratingForm input[type=radio].neutral {
+    background: url("../../../assets/img/smiley-3.svg") center;
+    background-size: cover;
+  }
+  
+  form#ratingForm input[type=radio].sad {
+    background: url("../../../assets/img/smiley-2.svg") center;
+    background-size: cover;
+  }
+  
+  form#ratingForm input[type=radio].disappointed {
+    background: url("../../../assets/img/smiley-1.svg") center;
+    background-size: cover;
+  }
+  

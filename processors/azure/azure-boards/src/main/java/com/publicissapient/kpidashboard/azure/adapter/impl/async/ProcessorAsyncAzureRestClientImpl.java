@@ -16,21 +16,21 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.azure.adapter.impl.async.factory;
+package com.publicissapient.kpidashboard.azure.adapter.impl.async;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -44,7 +44,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.publicissapient.kpidashboard.azure.adapter.impl.async.ProcessorAzureRestClient;
 import com.publicissapient.kpidashboard.azure.config.AzureProcessorConfig;
 import com.publicissapient.kpidashboard.azure.model.AzureServer;
 import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
@@ -60,7 +59,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRestClient {
+public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClient {
 
 	private static final String ERROR_GET_WIQL_RESPONSE_API = "Error while parsing getWiqlResponse API ";
 	private static final String ERROR_GET_WORK_ITEM_INFO_API = "Error while parsing getWorkItemInfo API ";
@@ -71,12 +70,10 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 	private final RestOperations restOperations;
 	private final AzureProcessorConfig azureProcessorConfig;
 
-	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd";
-
 	ObjectMapper mapper;
 
 	@Autowired
-	public ProcessorAsynchAzureRestClientFactory(RestOperationsFactory<RestOperations> restOperationsFactory,
+	public ProcessorAsyncAzureRestClientImpl(RestOperationsFactory<RestOperations> restOperationsFactory,
 												 AzureProcessorConfig azureProcessorConfig, ObjectMapper mapper) {
 		this.restOperations = restOperationsFactory.getTypeInstance();
 		this.azureProcessorConfig = azureProcessorConfig;
@@ -247,7 +244,7 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 	}
 
 	@Override
-	public AzureWiqlModel getWiqlResponse(AzureServer azureServer, Map<String, Long> startTimesByIssueType,
+	public AzureWiqlModel getWiqlResponse(AzureServer azureServer, Map<String, LocalDateTime> startTimesByIssueType,
 										  ProjectConfFieldMapping projectConfig,boolean dataExist) {
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
 		StringBuilder url = new StringBuilder(
@@ -264,7 +261,7 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 	}
 
 	private AzureWiqlModel prepareWiqlResponse(AzureServer azureServer, ProjectConfFieldMapping projectConfig,
-											   Map<String, Long> startTimesByIssueType, StringBuilder url,boolean dataExist) {
+											   Map<String, LocalDateTime> startTimesByIssueType, StringBuilder url,boolean dataExist) {
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
 		String finalQuery = null;
 
@@ -376,7 +373,7 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 
 	}
 
-	private String prepareDefaultQuery(ProjectConfFieldMapping projectConfig, Map<String, Long> startTimesByIssueType) {
+	private String prepareDefaultQuery(ProjectConfFieldMapping projectConfig, Map<String, LocalDateTime> startTimesByIssueType) {
 		StringBuilder query = new StringBuilder();
 		String selectQuery = azureProcessorConfig.getWiqlSelectQuery();
 		query.append(selectQuery);
@@ -384,13 +381,12 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 		int size = startTimesByIssueType.entrySet().size();
 		int count = 0;
 		StringBuilder issueTypeQuery = new StringBuilder("");
-		for (Map.Entry<String, Long> entry : startTimesByIssueType.entrySet()) {
+		for (Map.Entry<String, LocalDateTime> entry : startTimesByIssueType.entrySet()) {
 			count++;
 			String type = entry.getKey();
-			SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT, Locale.US);
-			String dateTime = sdf.format(new Date(entry.getValue()));
+			String date = entry.getValue().toLocalDate().toString();
 			issueTypeQuery.append("([System.WorkItemType] ='" + type + "' AND [System.ChangedDate] >="
-					+ getFromattedQueryInput(dateTime) + ") ");
+					+ getFromattedQueryInput(date) + ") ");
 			if (count < size) {
 				issueTypeQuery.append(" OR ");
 			}
@@ -401,7 +397,7 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 		return query.toString();
 	}
 
-	private String processProvidedQuery(String userProvidedQuery, Map<String, Long> startDateTimeStrByIssueType,boolean dataExist) {
+	private String processProvidedQuery(String userProvidedQuery, Map<String, LocalDateTime> startDateTimeStrByIssueType,boolean dataExist) {
 		StringBuilder finalQuery = new StringBuilder();
 		if (StringUtils.isEmpty(userProvidedQuery) || startDateTimeStrByIssueType == null) {
 			return finalQuery.toString();
@@ -410,13 +406,12 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 		int size = startDateTimeStrByIssueType.entrySet().size();
 		int count = 0;
 		StringBuilder issueTypeQuery = new StringBuilder(" ");
-		for (Map.Entry<String, Long> entry : startDateTimeStrByIssueType.entrySet()) {
+		for (Map.Entry<String, LocalDateTime> entry : startDateTimeStrByIssueType.entrySet()) {
 			count++;
 			String type = entry.getKey();
-			SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT, Locale.US);
-			String dateTime = sdf.format(new Date(entry.getValue()));
+			String date = entry.getValue().toLocalDate().toString();
 			issueTypeQuery.append("([System.WorkItemType] ='" + type + "' AND [System.ChangedDate] >="
-					+ getFromattedQueryInput(dateTime) + ") ");
+					+ getFromattedQueryInput(date) + ") ");
 			if (count < size) {
 				issueTypeQuery.append(" OR ");
 			}
@@ -473,5 +468,44 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 		StringBuilder sb = new StringBuilder();
 		sb.append(preQuery.replace(AzureConstants.CHANGEDDATE, " (" + postQuery + ") "));
 		return sb;
+	}
+
+	/**
+	 * fetched all issues tag to sprint
+	 * @param azureServer
+	 * @param sprintId
+	 * @return
+	 */
+	@Override
+	public List<String>  getIssuesBySprintResponse(AzureServer azureServer, String sprintId) {
+		List<String> sprintWiseItemIdList = new ArrayList<>();
+		StringBuilder url = new StringBuilder(AzureProcessorUtil.joinURL(azureServer.getUrl(),
+				azureProcessorConfig.getApiEndpointIterations(), "/" + sprintId + "/workitems"));
+		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
+
+		ResponseEntity<String> responseEntity = doRestCall(url.toString(), azureServer);
+		String response = responseEntity.getBody();
+		try {
+			JSONObject jsonObject = (JSONObject) new JSONParser().parse(response);
+			JSONArray jsonArray = (JSONArray) jsonObject.get("workItemRelations");
+			for(Object workItemObj : jsonArray){
+				JSONObject workItemJson = (JSONObject)workItemObj;
+				JSONObject targetJsonValue = (JSONObject) workItemJson.get("target");
+				if(targetJsonValue != null) {
+					String itemId = convertToString(targetJsonValue , "id");
+					sprintWiseItemIdList.add(itemId);
+				}
+			}
+		//} catch (IOException e) {
+			//log.error("Error while parsing getUpdate API", e.getMessage());
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+		return sprintWiseItemIdList;
+	}
+
+	public String convertToString(JSONObject jsonData, String key) {
+		Object jsonObj = jsonData.get(key);
+		return jsonObj == null ? null : jsonObj.toString();
 	}
 }

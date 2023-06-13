@@ -98,9 +98,9 @@ public enum KPICode {
 	 */
 	SPRINT_VELOCITY("kpi39", KPISource.JIRA.name()),
 	/**
-	 * Story count kpi code.
+	 * Issue count kpi code.
 	 */
-	STORY_COUNT("kpi40", KPISource.JIRA.name()),
+	ISSUE_COUNT("kpi40", KPISource.JIRA.name()),
 
 	/**
 	 * Total defect count kpi code.
@@ -252,7 +252,7 @@ public enum KPICode {
 	 * Missing workLogs kpi code
 	 */
 	MISSING_WORK_LOGS("kpi115", KPISource.JIRA.name()),
-	
+
 	/**
 	 * ACTUAL vs Remaining - add hygiene kpiId in HYGIENE_KPI_LIST variable defined in Constant.java class
 	 */
@@ -286,7 +286,7 @@ public enum KPICode {
 	 * Open Ticket Aging By Priority kpi code
 	 */
 	OPEN_TICKET_AGING_BY_PRIORITY("kpi997", KPISource.JIRAKANBAN.name()),
-	
+
 	/**
 	 * Work Remaining
 	 */
@@ -307,17 +307,17 @@ public enum KPICode {
 	 * Scope Change
 	 */
 	ITERATION_COMMITMENT("kpi120", KPISource.JIRA.name()),
-	
+
 	/**
-	 * Capacity 
+	 * Capacity
 	 */
 	CAPACITY("kpi121", KPISource.JIRA.name()),
-	
+
 	/**
-	 * Closure Possible Today 
+	 * Closure Possible Today
 	 */
 	CLOSURE_POSSIBLE_TODAY("kpi122", KPISource.JIRA.name()),
-	
+
 	/**
 	 * Issue Likely to Spill
 	 */
@@ -327,22 +327,22 @@ public enum KPICode {
 	 */
 	PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING("kpi127", KPISource.JIRA.name()),
 	/**
-	
+
 	/**
 	 * Estimation Hygiene
 	 */
 	ESTIMATION_HYGIENE("kpi124", KPISource.JIRA.name()),
-	
+
 	/**
 	 * ITERATION_BURNUP
 	 */
 	ITERATION_BURNUP("kpi125", KPISource.JIRA.name()),
-	
+
 	/**
 	 * Created Vs Resolved
 	 */
 	CREATED_VS_RESOLVED_DEFECTS("kpi126", KPISource.JIRA.name()),
-	
+
 	/**
 	 * Invalid kpi code.
 	 */
@@ -393,7 +393,22 @@ public enum KPICode {
 	/**
 	 * Refinement Rejection Rate
 	 */
-	REFINEMENT_REJECTION_RATE("kpi139", KPISource.JIRA.name());
+	REFINEMENT_REJECTION_RATE("kpi139", KPISource.JIRA.name()),
+
+	/**
+	 * Flow Distribution
+	 */
+	FLOW_DISTRIBUTION("kpi146",KPISource.JIRA.name()),
+	/**
+	 * Happiness index Rate
+	 */
+	HAPPINESS_INDEX_RATE("kpi149", KPISource.JIRA.name()),
+	/*
+	* Flow Load
+	* */
+	FLOW_LOAD("kpi148",KPISource.JIRA.name()),
+
+	RELEASE_BURNUP("kpi150", KPISource.JIRA.name());
 
 	// @formatter:on
 

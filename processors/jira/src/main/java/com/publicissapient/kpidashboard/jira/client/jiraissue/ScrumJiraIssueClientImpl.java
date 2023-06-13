@@ -42,13 +42,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.atlassian.jira.rest.client.api.domain.Status;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -62,7 +55,6 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.MDC;
@@ -77,6 +69,7 @@ import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.collect.Lists;
@@ -93,15 +86,20 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueSprint;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
@@ -694,7 +692,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
 
-				setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave,projectConfig);
+				setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave, projectConfig);
 
 				setEstimates(jiraIssue, issue);
 
@@ -703,27 +701,23 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
-				if (isIssueBacklog(jiraIssue, sprint) && StringUtils.isNotBlank(jiraIssue.getProjectID())
-						&& !jiraIssue.getTypeName().equalsIgnoreCase("Epic")) {
-					concertJiraIssueToBacklog(jiraIssue, issueBacklog);
-					concertJiraIssueHistoryToBacklogHistory(jiraIssueHistory, issueBacklogCustomHistory);
-					//When issue is moved from active sprint to backlog/future sprint
-					if(jiraIssuePresentInDb)
+				if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
+					if (backlogPresentInDb
+							&& !(isIssueBacklog(jiraIssue, sprint) && isValidBacklogStatus(fieldMapping, jiraIssue)))
 					{
-						jiraIssuesToDelete.add(jiraIssue);
-						jiraIssueHistoryToDelete.add(jiraIssueHistory);
+						issueBacklogToDelete.add(issueBacklog);
+						issueBacklogCustomHistoryToDelete.add(issueBacklogCustomHistory);
 					}
-					issueBacklogCustomHistoryToSave.add(issueBacklogCustomHistory);
-					issueBacklogToSave.add(issueBacklog);
-				}
-				else if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
-                     if(backlogPresentInDb)
-					 {
-						 issueBacklogToDelete.add(issueBacklog);
-						 issueBacklogCustomHistoryToDelete.add(issueBacklogCustomHistory);
-					 }
 					jiraIssuesToSave.add(jiraIssue);
 					jiraIssueHistoryToSave.add(jiraIssueHistory);
+				}
+				if (isIssueBacklog(jiraIssue, sprint) && StringUtils.isNotBlank(jiraIssue.getProjectID())
+						&& !jiraIssue.getTypeName().equalsIgnoreCase("Epic")
+						&& isValidBacklogStatus(fieldMapping, jiraIssue)) {
+					concertJiraIssueToBacklog(jiraIssue, issueBacklog);
+					concertJiraIssueHistoryToBacklogHistory(jiraIssueHistory, issueBacklogCustomHistory);
+					issueBacklogCustomHistoryToSave.add(issueBacklogCustomHistory);
+					issueBacklogToSave.add(issueBacklog);
 				}
 
 			}
@@ -750,6 +744,13 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
 				.collect(Collectors.toSet()));
 		return jiraIssuesToSave;
+	}
+
+	private boolean isValidBacklogStatus(FieldMapping fieldMapping, JiraIssue jiraIssue) {
+		return !((CollectionUtils.isNotEmpty(fieldMapping.getJiraDod())
+				&& fieldMapping.getJiraDod().contains(jiraIssue.getStatus()))
+				|| (StringUtils.isNotEmpty(fieldMapping.getJiraLiveStatus()))
+						&& fieldMapping.getJiraLiveStatus().toLowerCase().equalsIgnoreCase(jiraIssue.getStatus()));
 	}
 
 	private void concertJiraIssueHistoryToBacklogHistory(JiraIssueCustomHistory jiraIssueHistory, IssueBacklogCustomHistory issueBacklogCustomHistory) {

@@ -103,6 +103,7 @@ export class JiraConfigComponent implements OnInit {
 
   jiraTemplate : any[];
   gitActionWorkflowNameList : any[];
+  cloudEnv : any ;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -298,6 +299,10 @@ export class JiraConfigComponent implements OnInit {
     }
 
     if (this.urlParam === 'Sonar') {
+      this.cloudEnv = connection.cloudEnv
+      this.tool['gitLabSdmID'].setValue('');
+      this.tool['apiVersion'].enable();
+      this.tool['projectKey'].enable();
       this.clearSonarForm();
       this.updateSonarConnectionTypeAndVersionList(connection.cloudEnv);
       this.enableDisableOrganizationKey(connection.cloudEnv);
@@ -394,7 +399,7 @@ export class JiraConfigComponent implements OnInit {
   getConnectionList(toolName) {
     this.loading = true;
     let finalToolName = "";
-    if(toolName === 'jiratest'){
+    if(toolName === 'JiraTest'){
       finalToolName = 'Jira';
     }else if(toolName === 'GitHubAction'){
       finalToolName = 'GitHub';
@@ -739,7 +744,7 @@ export class JiraConfigComponent implements OnInit {
                   code: element
                 });
               });
-
+              this.tool['branch'].enable()
               this.hideLoadingOnFormElement('projectKey');
               this.disableBranchDropDown = this.isVersionSupported(version);
             } else {
@@ -1222,11 +1227,29 @@ export class JiraConfigComponent implements OnInit {
             { field: 'apiVersion', header: 'API Version', class: 'normal' },
             { field: 'projectKey', header: 'Project Key', class: 'long-text' },
             { field: 'branch', header: 'Branch', class: 'long-text' },
+            { field: 'gitLabSdmID', header: 'SDM ID', class: 'long-text' },
           ];
-
+          
           this.formTemplate = {
             group: 'Sonar',
             elements: [
+              {
+                type: 'text',
+                label: 'SDM ID',
+                id: 'gitLabSdmID',
+                validators: [{
+                  type : 'pattern',
+                  value : '^[a-zA-Z0-9,: ]+$'
+                }],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `This key would not use for Sonar.<br />
+              <i>
+                Impacted : GitLab processor</i>`,
+                onFocusOut : this.onSdmIdChange,
+                errorMsg : "Only Alphanumeric,Comma and Colon allowed.",
+                placeholder : "This key would not use for Sonar."
+              },
               {
                 type: 'text',
                 label: 'Organization Key',
@@ -1839,14 +1862,14 @@ export class JiraConfigComponent implements OnInit {
               { field: 'username', header: 'User Name', class: 'normal' },
               { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
             ];
-  
+
             this.configuredToolTableCols = [
               { field: 'connectionName',header: 'Connection Name',class: 'long-text'},
               {field: 'repositoryName', header: 'Repository Name', class: 'long-text'},
               { field: 'jobType', header: 'Job Type', class: 'long-text' },
               { field: 'jobName', header: 'Workflow Name', class: 'long-text' },
             ];
-  
+
             this.formTemplate = {
               group: 'GitHub Action',
               elements: [
@@ -2052,7 +2075,12 @@ export class JiraConfigComponent implements OnInit {
       if (inputTemplate.validators) {
         const validatorArr = [];
         inputTemplate.validators.forEach((element) => {
-          validatorArr.push(Validators[element]);
+          if(element === 'required'){
+            validatorArr.push(Validators[element]);
+          }else{
+            validatorArr.push(Validators.pattern(element.value));
+          }
+          
         });
 
         group[inputTemplate.id] = new UntypedFormControl('', validatorArr);
@@ -2201,7 +2229,7 @@ export class JiraConfigComponent implements OnInit {
           delete submitData[obj];
         }
       }
-     
+
     }
 
     if(this.urlParam === 'Jira'){
@@ -2257,6 +2285,10 @@ export class JiraConfigComponent implements OnInit {
 
               // empty the form
               this.toolForm.reset();
+              if(this.urlParam === 'Sonar'){
+                this.tool['apiVersion'].enable();
+                 this.tool['projectKey'].enable();
+              }
 
               this.configuredTools.push(response['data']);
               this.configuredTools.forEach((tool) => {
@@ -2439,8 +2471,8 @@ export class JiraConfigComponent implements OnInit {
   }
 
   getJiraTemplate(){
-    const isKanban = this.selectedProject.Type?.toLowerCase() === 'kanban' ? true : false;
-    this.http.getJiraTemplate(this.selectedProject.id).subscribe(resp=>{
+    const isKanban = this.selectedProject?.Type?.toLowerCase() === 'kanban' ? true : false;
+    this.http.getJiraTemplate(this.selectedProject?.id).subscribe(resp=>{
       this.jiraTemplate = resp.filter(temp=>temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
      if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
         const selectedTemplate = this.jiraTemplate.find(tem=>tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
@@ -2479,7 +2511,7 @@ export class JiraConfigComponent implements OnInit {
     })
 
   }
- 
+
   /** Generic method for showing notification prompt */
   showPrompt(type,msg){
     this.messenger.add({
@@ -2488,5 +2520,20 @@ export class JiraConfigComponent implements OnInit {
     });
   }
 
+  onSdmIdChange(event,self){
+    const sdmID = self.toolForm.get('gitLabSdmID').value.trim();
+     if(sdmID){
+      self.clearSonarForm()
+      self.tool['organizationKey'].disable();
+      self.tool['apiVersion'].disable();
+      self.tool['projectKey'].disable();
+      self.tool['branch'].disable();
+     }else{
+      self.toolForm.get('gitLabSdmID').setValidators([Validators.pattern('^[a-zA-Z0-9,: ]+$')]);
+      self.enableDisableOrganizationKey(self.cloudEnv);
+      self.tool['apiVersion'].enable();
+      self.tool['projectKey'].enable();
+     }
+  }
   
 }

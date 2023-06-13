@@ -1112,9 +1112,9 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi40",
-    "kpiName": "Story Count",
+    "kpiName": "Issue Count",
     "maxValue": "",
-    "kpiUnit": "Stories",
+    "kpiUnit": "",
     "isDeleted": "False",
     "defaultOrder": 17,
     "kpiSource": "Jira",
@@ -1123,7 +1123,7 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
-      "definition": "STORY COUNT measures the overall work taken in a sprint",
+      "definition": "ISSUE COUNT measures the overall work taken in a sprint",
       "formula": [
         {
           "lhs": "No. of stories tagged to a Sprint"
@@ -1135,6 +1135,7 @@ db.getCollection('kpi_master').insert(
     "isPositiveTrend": true,
     "showTrend": false,
     "aggregationCriteria": "sum",
+    "kpiFilter": "radioButton",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": false
   },
@@ -3998,5 +3999,108 @@ db.getCollection('kpi_master').insert(
        "kpiFilter": "multiSelectDropDown",
        "boxType": "3_column",
        "calculateMaturity": false
-     }
+     },
+   {
+    "kpiId": "kpi148",
+    "kpiName": "Flow Load",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 10,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "stacked-area",
+    "kpiInfo": {
+    "definition": " Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues"
+    },
+    "xAxisLabel": "Time",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": false,
+    "kpiFilter": "",
+    "showTrend": false,
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi146",
+    "kpiName": "Flow Distribution",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 10,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "stacked-area",
+    "kpiInfo": {
+      "definition": "Flow Distribution evaluates the amount of each kind of work (issue types) which are open in the backlog over a period of time."
+    },
+    "xAxisLabel": "Time",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": false,
+    "kpiFilter": "",
+    "showTrend": false,
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi149",
+    "kpiName": "Happiness Index",
+    "kpiSource": "Jira",
+    "aggregationCriteria": "average",
+    "boxType": "3_column",
+    "calculateMaturity": false,
+    "chartType": "line",
+    "defaultOrder": 5,
+    "groupId": 2,
+    "isAdditionalFilterSupport": false,
+    "isDeleted": "False",
+    "isPositiveTrend": true,
+    "kanban": false,
+    "kpiFilter": "multiSelectDropDown",
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "KPI for tracking moral of team members"
+        },
+      ],
+    },
+    "kpiUnit": "",
+    "maxValue": "5",
+    "showTrend": false,
+    "thresholdValue": "",
+    "xAxisLabel": "Sprints",
+    "yAxisLabel": "Rating",
+  },
+  {
+    "kpiId": "kpi150",
+    "kpiName": "Release Burnup",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Release",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "CumulativeMultilineChart",
+    "kpiInfo": {
+             "definition": "Release Burnup KPI shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release."
+               },
+     "xAxisLabel": "",
+     "yAxisLabel": "Count",
+     "isPositiveTrend": true,
+     "showTrend": false,
+     "isAdditionalFilterSupport": false,
+     "kpiFilter": "radioButton",
+     "boxType": "chart",
+     "calculateMaturity": false
+  }
 ]);

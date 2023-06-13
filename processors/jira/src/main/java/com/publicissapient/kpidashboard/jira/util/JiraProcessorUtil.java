@@ -30,7 +30,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONArray;
 import org.springframework.stereotype.Service;
-import org.stringtemplate.v4.ST;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;

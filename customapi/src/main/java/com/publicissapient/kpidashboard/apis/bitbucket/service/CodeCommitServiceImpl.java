@@ -358,20 +358,6 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 
 	}
 
-	private String formatDate(String startDateTime) {
-		SimpleDateFormat existingFormat = new SimpleDateFormat(YYYYMMDD);
-		SimpleDateFormat updatedFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-		String reformattedStr = "";
-		try {
-
-			reformattedStr = updatedFormat.format(existingFormat.parse(startDateTime));
-		} catch (ParseException e) {
-			log.error("Got exception while formating the Date from yyyymmdd to ddmmyyy: {}", e);
-		}
-		return reformattedStr;
-	}
-
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {

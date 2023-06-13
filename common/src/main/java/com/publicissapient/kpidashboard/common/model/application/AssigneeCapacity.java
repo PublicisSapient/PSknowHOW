@@ -26,6 +26,8 @@ public class AssigneeCapacity {
 	private Double plannedCapacity;
 	private Double leaves;
 	private Double availableCapacity;
+	private Integer happinessRating;
+
 
 	@Override
 	public boolean equals(Object obj) {
