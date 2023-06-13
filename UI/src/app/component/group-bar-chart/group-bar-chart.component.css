@@ -100,10 +100,12 @@
   height: 18px;
   display: inline-block;
   vertical-align: middle;
+  margin-right: 1px;
 }
 
 ::ng-deep .legend_color_indicator.current_day {
-  height: 2px;
+   height: 5px;
+   width: 30px
 }
 
 ::ng-deep div.legend-tooltip {
@@ -142,19 +144,28 @@
 #xCaptionContainer {
   text-align: center;
   color: #437495;
+  margin: 3px 0px;
+  font-size: 13px;
 }
 
 #legendContainer {
   max-width: 100%;
 }
 
-#svgLegend {
-  height: 20px;
-}
+  #svgLegend{
+    height: 20px;
+  }
+  ::ng-deep div.normal-legend{
+    font-size: 10px;
+    color: var(--color-gray-34);
+    position: absolute;
+    bottom: 0;
+  }
+  .tooltip-container{
+      position: relative;
+  }
 
-::ng-deep div.normal-legend {
-  font-size: 10px;
-  color: var(--color-gray-34);
-  position: absolute;
-  bottom: 0;
-}
+  ::ng-deep .legend_color_indicator.line-indicator{
+    height: 5px;
+    width: 25px
+  }
