@@ -370,14 +370,13 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	private void azureSprintReportStatusUpdateBasedOnFieldChange(FieldMapping fieldMapping, FieldMapping existingFieldMapping,
 			ProjectBasicConfig projectBasicConfig, Optional<ProjectToolConfig> projectToolConfigOpt) {
 		List<String> azureIterationStatusFieldList = Arrays.asList("jiraIterationCompletionStatusCustomField");
-		if ((!projectBasicConfig.getIsKanban()
-				&& isMappingUpdated(fieldMapping, existingFieldMapping, azureIterationStatusFieldList))) {
-			if (projectToolConfigOpt.isPresent()
-					&& projectToolConfigOpt.get().getToolName().equals(ProcessorConstants.AZURE)) {
-				ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
-				projectToolConfig.setAzureIterationStatusFieldUpdate(true);
-				toolConfigRepository.save(projectToolConfig);
-			}
+		if (projectToolConfigOpt.isPresent()
+				&& projectToolConfigOpt.get().getToolName().equals(ProcessorConstants.AZURE)
+				&& !projectBasicConfig.getIsKanban()
+				&& isMappingUpdated(fieldMapping, existingFieldMapping, azureIterationStatusFieldList)) {
+			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
+			projectToolConfig.setAzureIterationStatusFieldUpdate(true);
+			toolConfigRepository.save(projectToolConfig);
 		}
 	}
 
