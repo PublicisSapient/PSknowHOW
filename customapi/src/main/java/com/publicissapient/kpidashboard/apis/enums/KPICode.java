@@ -406,7 +406,9 @@ public enum KPICode {
 	/*
 	* Flow Load
 	* */
-	FLOW_LOAD("kpi148",KPISource.JIRA.name());
+	FLOW_LOAD("kpi148",KPISource.JIRA.name()),
+
+	RELEASE_BURNUP("kpi150", KPISource.JIRA.name());
 
 	// @formatter:on
 

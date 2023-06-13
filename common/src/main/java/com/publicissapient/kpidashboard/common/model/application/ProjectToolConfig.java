@@ -100,6 +100,9 @@ public class ProjectToolConfig extends BasicModel {
 	//workflows ID for github Action processor
 	private String workflowID;
 
+	//Sonar SDM ID use for GS
+	private String gitLabSdmID;
+
 	// jiraIterationCompletionStatusCustomField field mapping update identifier
 	private boolean azureIterationStatusFieldUpdate;
 

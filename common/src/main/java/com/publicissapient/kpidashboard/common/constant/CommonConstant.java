@@ -162,6 +162,10 @@ public final class CommonConstant {
 	public static final String CRON = "cron";
 	public static final String JIRA_WAIT_STATUS = "jiraWaitStatus";
 	public static final String JIRA_BLOCKED_STATUS = "jiraBlockedStatus";
+
+	public static final String IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE="Include Flagged Issue";
+	public static final String REQUIRED_ATTENTION_FLAG = "Requires attention";
+	public static final String BLOCKED_STATUS_WASTAGE="Blocked Status";
 	public static final String JIRA_IN_PROGRESS_STATUS = "jiraStatusForInProgress";
 
 	public static final String STORY_POINT = "Story Point";
