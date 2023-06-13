@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,7 +61,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private static final String INITIAL_STORY_POINT = "Initial Commitment (Story Points)";
 
 	private static final String PROJECT_WISE_TOTAL_ISSUE = "projectWiseTotalIssues";
-	private static final String PROJECT_WISE_INITIAL_ISSUE = "projectWiseInitialIssues";
 	private static final String DEV = "DeveloperKpi";
 	private static final String TOTAL_ISSUE_SIZE = "totalIssueSize";
 	private static final String COMPLETED_ISSUE_SIZE = "completedIssueSize";
@@ -164,7 +164,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 
 		List<JiraIssue> allJiraIssue = (List<JiraIssue>) resultMap.get(PROJECT_WISE_TOTAL_ISSUE);
-		List<JiraIssue> allInitialJiraIssue = (List<JiraIssue>) resultMap.get(PROJECT_WISE_INITIAL_ISSUE);
 
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINT_DETAILS);
 
@@ -174,7 +173,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		Map<Pair<String, String>, List<JiraIssue>> sprintWisePuntedIssues = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseInitialScopeCompletedIssues = new HashMap<>();
 
-		if (CollectionUtils.isNotEmpty(allJiraIssue) && CollectionUtils.isNotEmpty(allInitialJiraIssue)) {
+		if (CollectionUtils.isNotEmpty(allJiraIssue)) {
 			if (CollectionUtils.isNotEmpty(sprintDetails)) {
 				sprintDetails.forEach(sd -> {
 					Set<JiraIssue> totalIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
@@ -182,23 +181,22 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 					Set<JiraIssue> completedIssues = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd, sd.getCompletedIssues(),
 									allJiraIssue);
-					Set<JiraIssue> totalInitialIssues = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd, sd.getTotalIssues(),
-									allInitialJiraIssue);
-					Set<JiraIssue> puntedIssues = KpiDataHelper
+					Set<JiraIssue> totalInitialIssues = new HashSet<>(totalIssues);
+					//Add the punted issues
+					totalInitialIssues.addAll(KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd, sd.getPuntedIssues(),
-									allInitialJiraIssue);
-					Set<JiraIssue> totalCompltdInitialIssues = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd, sd.getCompletedIssues(),
-									allInitialJiraIssue);
+									allJiraIssue));
+					//removed added issues
+					totalInitialIssues.removeIf(issue -> sd.getAddedIssues().contains(issue.getNumber()));
+					Set<JiraIssue> totalCompltdInitialIssues= new HashSet<>(totalInitialIssues);
+					totalCompltdInitialIssues = new HashSet<>(CollectionUtils.intersection(totalCompltdInitialIssues, completedIssues));
+
 					sprintWiseCreatedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 							new ArrayList<>(totalIssues));
 					sprintWiseClosedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 							new ArrayList<>(completedIssues));
 					sprintWiseInitialScopeIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 							new ArrayList<>(totalInitialIssues));
-					sprintWisePuntedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-							new ArrayList<>(puntedIssues));
 					sprintWiseInitialScopeCompletedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 							new ArrayList<>(totalCompltdInitialIssues));
 				});
@@ -315,20 +313,18 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
 		getModifiedSprintDetailsFromBaseClass(sprintDetails,configHelperService);
 		Set<String> totalIssue = new HashSet<>();
-		Set<String> overAllIssues = new HashSet<>();
-		Set<String> addedIssue = new HashSet<>();
 		sprintDetails.stream().forEach(sprintDetail -> {
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));
 			}
 			if(CollectionUtils.isNotEmpty(sprintDetail.getPuntedIssues())){
-				overAllIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.PUNTED_ISSUES));
 
 			}
 			if(CollectionUtils.isNotEmpty(sprintDetail.getAddedIssues())){
-				addedIssue.addAll(sprintDetail.getAddedIssues());
+				totalIssue.addAll(sprintDetail.getAddedIssues());
 			}
 
 		});
@@ -336,21 +332,12 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		/** additional filter **/
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
 
-		overAllIssues.addAll(totalIssue);
-
-		if(CollectionUtils.isNotEmpty(addedIssue)){
-			overAllIssues.removeAll(addedIssue);
-		}
-
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		if (CollectionUtils.isNotEmpty(totalIssue) && CollectionUtils.isNotEmpty(overAllIssues)) {
+		if (CollectionUtils.isNotEmpty(totalIssue)) {
 			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE,
 					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, new HashMap<>()));
-			resultListMap.put(PROJECT_WISE_INITIAL_ISSUE,
-					jiraIssueRepository.findIssueByNumber(mapOfFilters, overAllIssues, new HashMap<>()));
-
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 		} else {
 			// start: for azure board sprint details collections put is empty due to we did
