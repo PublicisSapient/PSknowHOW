@@ -328,4 +328,7 @@ public class KPIExcelData {
     @JsonProperty("Count")
     private Map<String, Integer> count;
 
+    @JsonProperty("Initial Commitment")
+    private String initialCommited;
+
 }
