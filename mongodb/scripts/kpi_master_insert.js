@@ -4026,7 +4026,7 @@ db.getCollection('kpi_master').insert(
   },
   {
     "kpiId": "kpi149",
-    "kpiName": "Happiness KPI",
+    "kpiName": "Happiness Index",
     "kpiSource": "Jira",
     "aggregationCriteria": "average",
     "boxType": "3_column",

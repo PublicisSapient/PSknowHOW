@@ -84,6 +84,7 @@ export class FieldMappingComponent implements OnInit {
     }
   };
  dueDateTypes: any = [];
+ wastageBlockedCriteria: any = [];
 
   constructor(private formBuilder: UntypedFormBuilder, private router: Router, private sharedService: SharedService,
     private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService,private confirmationService: ConfirmationService) { }
@@ -193,6 +194,16 @@ export class FieldMappingComponent implements OnInit {
         value: 'Labels'
       }
     ];
+    this.wastageBlockedCriteria = [
+      {
+        label: 'Blocked Status',
+        value: 'Blocked Status'
+      },
+      {
+        label: 'Include Flagged Issue',
+        value: 'Include Flagged Issue'
+      }
+    ]
 
     this.filterHierarchy = JSON.parse(localStorage.getItem('completeHierarchyData')).scrum;
 
@@ -420,7 +431,8 @@ export class FieldMappingComponent implements OnInit {
       resolutionTypeForRejection: [],
       jiraStatusForDevelopment: [[]],
       jiraStatusForQa: [[]],
-      jiraBlockedStatus:[],
+      jiraBlockedStatus:[[]],
+      jiraIncludeBlockedStatus:[],
       jiraWaitStatus:[],
       jiraStatusForInProgress: [],
       jiraDevDoneStatus : [],
