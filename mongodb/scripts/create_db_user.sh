@@ -19,21 +19,21 @@
 ################################################################################
 
 # Admin User
-MONGODB_ADMIN_USER=${MONGODB_ADMIN_USER:-"admin"}
-MONGODB_ADMIN_PASS=${MONGODB_ADMIN_PASS:-"sapient@123"}
+# MONGODB_ADMIN_USER=${MONGODB_ADMIN_USER:-"admin"}
+# MONGODB_ADMIN_PASS=${MONGODB_ADMIN_PASS:-"sapient@123"}
  
-# Application Database User
-MONGODB_APPLICATION_DATABASE=${MONGODB_APPLICATION_DATABASE:-"kpidashboard"}
-MONGODB_APPLICATION_USER=${MONGODB_APPLICATION_USER:-"devadmin"}
-MONGODB_APPLICATION_PASS=${MONGODB_APPLICATION_PASS:-"admin@123"}
+# # Application Database User
+# MONGODB_APPLICATION_DATABASE=${MONGODB_APPLICATION_DATABASE:-"kpidashboard"}
+# MONGODB_APPLICATION_USER=${MONGODB_APPLICATION_USER:-"devadmin"}
+# MONGODB_APPLICATION_PASS=${MONGODB_APPLICATION_PASS:-"admin@123"}
  
-MONGODB_ARCHIVE_DATABASE=${MONGODB_ARCHIVE_DATABASE:-"archivedb"}
-MONGODB_ARCHIVE_USER=${MONGODB_ARCHIVE_USER:-"archive"}
-MONGODB_ARCHIVE_PASS=${MONGODB_ARCHIVE_PASS:-"archive@123"}
+# MONGODB_ARCHIVE_DATABASE=${MONGODB_ARCHIVE_DATABASE:-"archivedb"}
+# MONGODB_ARCHIVE_USER=${MONGODB_ARCHIVE_USER:-"archive"}
+# MONGODB_ARCHIVE_PASS=${MONGODB_ARCHIVE_PASS:-"archive@123"}
 
-MONGODB_BACKUP_DATABASE=${MONGODB_BACKUP_DATABASE:-"speedydb_backup"}
-MONGODB_BACKUP_USER=${MONGODB_BACKUP_USER:-"speedy_backup"}
-MONGODB_BACKUP_PASS=${MONGODB_BACKUP_PASS:-"speedy@123"}
+# MONGODB_BACKUP_DATABASE=${MONGODB_BACKUP_DATABASE:-"speedydb_backup"}
+# MONGODB_BACKUP_USER=${MONGODB_BACKUP_USER:-"speedy_backup"}
+# MONGODB_BACKUP_PASS=${MONGODB_BACKUP_PASS:-"speedy@123"}
  
 # Wait for MongoDB to start
 echo "========================================================================" >> ${LOG_DIR}/create_user.log 2>&1
@@ -59,7 +59,7 @@ fi
 
 sleep 10
  
-if [ "${MONGODB_APPLICATION_DATABASE}" != "admin" ]; then
+if [ "${MONGODB_APPLICATION_DATABASE}" != "${MONGODB_ADMIN_USER}" ]; then
     echo "=> Creating an ${MONGODB_APPLICATION_DATABASE} user with a password in MongoDB" >> ${LOG_DIR}/create_user.log 2>&1
     mongo admin -u ${MONGODB_ADMIN_USER} -p ${MONGODB_ADMIN_PASS} << EOF
 use ${MONGODB_APPLICATION_DATABASE}
@@ -76,7 +76,7 @@ fi
 
 sleep 5
 
-if [ "${MONGODB_ARCHIVE_DATABASE}" != "admin" ]; then
+if [ "${MONGODB_ARCHIVE_DATABASE}" != "${MONGODB_ADMIN_USER}" ]; then
     echo "=> Creating an ${MONGODB_ARCHIVE_DATABASE} user with a password in MongoDB" >> ${LOG_DIR}/create_user.log 2>&1
     mongo admin -u ${MONGODB_ADMIN_USER} -p ${MONGODB_ADMIN_PASS} << EOF
 use ${MONGODB_ARCHIVE_DATABASE}
