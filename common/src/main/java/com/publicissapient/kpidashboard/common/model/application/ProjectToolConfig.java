@@ -103,4 +103,7 @@ public class ProjectToolConfig extends BasicModel {
 	//Sonar SDM ID use for GS
 	private String gitLabSdmID;
 
+	// jiraIterationCompletionStatusCustomField field mapping update identifier
+	private boolean azureIterationStatusFieldUpdate;
+
 }

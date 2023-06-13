@@ -229,15 +229,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			resultListMap.put(STORY_LIST,
 					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, uniqueProjectMap));
 			resultListMap.put(SPRINTSDETAILS, sprintDetails);
-		} else {
-			// start : for azure board sprint details collections put is empty due to we did
-			// not have required data of issues.
-			resultListMap.put(STORY_LIST,
-					jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap));
-			resultListMap.put(SPRINTSDETAILS, null);
 		}
-		// end : for azure board sprint details collections put is empty due to we did
-		// not have required data of issues.
 		resultListMap.put(STORY_CATEGORIES, storyCategories);
 		resultListMap.put(PROJECT_WISE_TOTAL_CATEGORIES, projectWiseJiraIdentification);
 		return resultListMap;
@@ -290,13 +282,12 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		List<String> storyCategories = (List<String>) resultMap.get(STORY_CATEGORIES);
 		Map<String, List<String>> projectWiseTotalCategories = (Map<String, List<String>>) resultMap
 				.get(PROJECT_WISE_TOTAL_CATEGORIES);
-		
+
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseStoryCatIssues = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseTotalCatIssues = new HashMap<>();
 
 		Map<Pair<String, String>, List<String>> sprintWiseIssueNumbers = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allJiraIssue)) {
-			if (CollectionUtils.isNotEmpty(sprintDetails)) {
 				sprintDetails.forEach(sd -> {
 					List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
 							CommonConstant.TOTAL_ISSUES);
@@ -322,37 +313,6 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 					sprintWiseTotalCatIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 							new ArrayList<>(totalCatIssues));
 				});
-			} else {
-				// start : for azure board sprint details collections empty so that we have to
-				// prepare data from jira issue.
-				Map<String, List<JiraIssue>> projectWiseJiraIssues = allJiraIssue.stream()
-						.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
-				projectWiseJiraIssues.forEach((basicProjectConfigId, projectWiseIssuesList) -> {
-					Map<String, List<JiraIssue>> sprintWiseJiraIssues = projectWiseIssuesList.stream()
-							.filter(jiraIssue -> Objects.nonNull(jiraIssue.getSprintID()))
-							.collect(Collectors.groupingBy(JiraIssue::getSprintID));
-					sprintWiseJiraIssues.forEach((sprintId, sprintWiseJiraIssue) -> {
-						List<String> totalIssues = sprintWiseJiraIssue.stream().filter(Objects::nonNull)
-								.map(JiraIssue::getNumber).distinct().collect(Collectors.toList());
-						sprintWiseIssueNumbers.put(Pair.of(basicProjectConfigId, sprintId), totalIssues);
-						List<String> totalIssueCatOfProj = projectWiseTotalCategories.get(basicProjectConfigId);
-						// filtering out issues belong to storyCategories
-						List<JiraIssue> storyCatIssues = sprintWiseJiraIssue.stream()
-								.filter(issue -> storyCategories.contains(issue.getTypeName().toLowerCase()))
-								.collect(Collectors.toList());
-						// filtering out issues belong to totalCategories
-						List<JiraIssue> totalCatIssues = sprintWiseJiraIssue.stream()
-								.filter(issue -> totalIssueCatOfProj.contains(issue.getTypeName().toLowerCase()))
-								.collect(Collectors.toList());
-						sprintWiseStoryCatIssues.put(Pair.of(basicProjectConfigId, sprintId),
-								new ArrayList<>(storyCatIssues));
-						sprintWiseTotalCatIssues.put(Pair.of(basicProjectConfigId, sprintId),
-								new ArrayList<>(totalCatIssues));
-					});
-				});
-			}
-			// end : for azure board sprint details collections empty so that we have to
-			// prepare data from jira issue.
 		}
 
 
@@ -397,7 +357,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 				dataCountMap.put(map.getKey(), new ArrayList<>(Arrays.asList(dataCount)));
 			}
 			mapTmp.get(node.getId()).setValue(dataCountMap);
-			
+
 		}
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.ISSUE_COUNT.getColumns());

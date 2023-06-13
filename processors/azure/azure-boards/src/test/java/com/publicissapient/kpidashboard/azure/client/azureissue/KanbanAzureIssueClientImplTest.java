@@ -10,9 +10,12 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
@@ -103,7 +106,14 @@ public class KanbanAzureIssueClientImplTest {
 	@Mock
 	private HierarchyLevelService hierarchyLevelService;
 
+	@Mock
+	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
+
 	AzureUpdatesModel azureUpdatesModel;
+	ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 	
 	Fields field;
 	com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields fields;
@@ -136,8 +146,8 @@ public class KanbanAzureIssueClientImplTest {
 		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE)).thenReturn(azureProcessor);
 		when(azureProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));
 		when(azureAdapter.getPageSize()).thenReturn(30);
-		when(azureProcessorConfig.getMinsToReduce()).thenReturn(30);
-		when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.000000");
+		when(azureProcessorConfig.getMinsToReduce()).thenReturn(30);	when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any() ,any())).thenReturn(null);
 		when(azureAdapter.getWiqlModel(any(), any(), any(), anyBoolean())).thenReturn(azureWiqlModel);
 		createIssue();
 		WorkItem work = new WorkItem();
@@ -157,23 +167,19 @@ public class KanbanAzureIssueClientImplTest {
 
 		projectConfFieldMapping.setProjectKey("prkey");
 		projectConfFieldMapping.setProjectName("prName");
+		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
 		
 		kanbanIssueClientImpl.processesAzureIssues(projectConfFieldMapping,"TestKey", azureAdapter);
 		kanbanIssueClientImpl.purgeAzureIssues(issues,projectConfFieldMapping);
-		kanbanIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping);
+		kanbanIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping , new HashSet<>());
 	}
 	
 	
 	private void prepareProjectData() {
-		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("5b674d58f47cae8935b1b26f"));
 		projectConfig.setProjectName("TestProject");
-		SubProjectConfig subProjectConfig = new SubProjectConfig();
-		subProjectConfig.setSubProjectIdentification("CustomField");
-		subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
-		List<SubProjectConfig> subProjectList = new ArrayList<>();
-		subProjectList.add(subProjectConfig);
 		projectConfig.setIsKanban(true);
+		projectConfig.setSaveAssigneeDetails(true);
 		kanbanProjectlist.add(projectConfig);
 	}
 	
