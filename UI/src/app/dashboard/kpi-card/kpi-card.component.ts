@@ -49,7 +49,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    changes['dropdownArr']?.currentValue ? true : this.dropdownArr = [];
+    // changes['dropdownArr']?.currentValue ? true : this.dropdownArr = [];
   }
 
   ngOnInit(): void {
