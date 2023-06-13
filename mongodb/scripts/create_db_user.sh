@@ -59,7 +59,7 @@ fi
 
 sleep 10
  
-if [ "${MONGODB_APPLICATION_DATABASE}" != "${MONGODB_ADMIN_USER}" ]; then
+if [ "${MONGODB_APPLICATION_DATABASE}" != "admin" ]; then
     echo "=> Creating an ${MONGODB_APPLICATION_DATABASE} user with a password in MongoDB" >> ${LOG_DIR}/create_user.log 2>&1
     mongo admin -u ${MONGODB_ADMIN_USER} -p ${MONGODB_ADMIN_PASS} << EOF
 use ${MONGODB_APPLICATION_DATABASE}
@@ -76,7 +76,7 @@ fi
 
 sleep 5
 
-if [ "${MONGODB_ARCHIVE_DATABASE}" != "${MONGODB_ADMIN_USER}" ]; then
+if [ "${MONGODB_ARCHIVE_DATABASE}" != "admin" ]; then
     echo "=> Creating an ${MONGODB_ARCHIVE_DATABASE} user with a password in MongoDB" >> ${LOG_DIR}/create_user.log 2>&1
     mongo admin -u ${MONGODB_ADMIN_USER} -p ${MONGODB_ADMIN_PASS} << EOF
 use ${MONGODB_ARCHIVE_DATABASE}
