@@ -224,12 +224,13 @@ public class JiraServiceR {
 	 */
 	private List<String> getReleaseList(TreeAggregatorDetail treeAggregatorDetail) {
 		List<Node> nodes = treeAggregatorDetail.getMapOfListOfLeafNodes().get(Filters.RELEASE.toString().toLowerCase());
-		List<String> releaseList = new ArrayList<>();
+		List<String> processedList = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(nodes)) {
-			nodes.forEach(relaseNode -> releaseList.add(relaseNode.getReleaseFilter().getName().split("_")[0]));
+			nodes.forEach(relaseNode -> processedList.add(relaseNode.getReleaseFilter().getName().split("_")[0]));
 		}
-		return releaseList;
+		return processedList;
 	}
+
 
 	/**
 	 * @param kpiRequest
