@@ -16,19 +16,16 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.azure.adapter.impl.async.factory;
+package com.publicissapient.kpidashboard.azure.adapter.impl.async;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
@@ -47,7 +44,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.publicissapient.kpidashboard.azure.adapter.impl.async.ProcessorAzureRestClient;
 import com.publicissapient.kpidashboard.azure.config.AzureProcessorConfig;
 import com.publicissapient.kpidashboard.azure.model.AzureServer;
 import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
@@ -63,7 +59,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRestClient {
+public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClient {
 
 	private static final String ERROR_GET_WIQL_RESPONSE_API = "Error while parsing getWiqlResponse API ";
 	private static final String ERROR_GET_WORK_ITEM_INFO_API = "Error while parsing getWorkItemInfo API ";
@@ -74,12 +70,10 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 	private final RestOperations restOperations;
 	private final AzureProcessorConfig azureProcessorConfig;
 
-	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd";
-
 	ObjectMapper mapper;
 
 	@Autowired
-	public ProcessorAsynchAzureRestClientFactory(RestOperationsFactory<RestOperations> restOperationsFactory,
+	public ProcessorAsyncAzureRestClientImpl(RestOperationsFactory<RestOperations> restOperationsFactory,
 												 AzureProcessorConfig azureProcessorConfig, ObjectMapper mapper) {
 		this.restOperations = restOperationsFactory.getTypeInstance();
 		this.azureProcessorConfig = azureProcessorConfig;
