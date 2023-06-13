@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.jira.service;
 
 import com.atlassian.httpclient.api.Request;
 import com.atlassian.jira.rest.client.api.AuthenticationHandler;
-import org.apache.commons.codec.binary.Base64;
 
 /**
  * Authentication handler for bearer token
