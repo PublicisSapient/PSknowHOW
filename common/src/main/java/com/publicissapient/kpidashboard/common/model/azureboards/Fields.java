@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 		"Microsoft.VSTS.Common.ResolvedReason", "Microsoft.VSTS.Common.Priority", "Microsoft.VSTS.Common.Severity",
 		"Microsoft.VSTS.Common.ValueArea", "WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column",
 		"WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column.Done", "Microsoft.VSTS.TCM.SystemInfo",
-		"Microsoft.VSTS.TCM.ReproSteps", "System.Tags" })
+		"Microsoft.VSTS.TCM.ReproSteps", "System.Tags" , "Microsoft.VSTS.Common.DueDate" })
 public class Fields {
 
 	@JsonProperty("System.AreaPath")
@@ -91,6 +91,9 @@ public class Fields {
 	private String microsoftVSTSCommonSeverity;
 	@JsonProperty("Microsoft.VSTS.Common.ValueArea")
 	private String microsoftVSTSCommonValueArea;
+
+	@JsonProperty("Microsoft.VSTS.Scheduling.DueDate")
+	private String microsoftVSTSSchedulingDueDate;
 	@JsonProperty("WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column")
 	private String wEFF17611F3F80E45D2AFC8D2A78F930BDEKanbanColumn;
 	@JsonProperty("WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column.Done")
@@ -342,6 +345,14 @@ public class Fields {
 	@JsonProperty("Microsoft.VSTS.Common.ValueArea")
 	public void setMicrosoftVSTSCommonValueArea(String microsoftVSTSCommonValueArea) {
 		this.microsoftVSTSCommonValueArea = microsoftVSTSCommonValueArea;
+	}
+
+	public String getMicrosoftVSTSSchedulingDueDate() {
+		return microsoftVSTSSchedulingDueDate;
+	}
+
+	public void setMicrosoftVSTSSchedulingDueDate(String microsoftVSTSSchedulingDueDate) {
+		this.microsoftVSTSSchedulingDueDate = microsoftVSTSSchedulingDueDate;
 	}
 
 	@JsonProperty("WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column")

@@ -87,7 +87,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedProjectLastSyncDetails: any;
   selectedProjectLastSyncStatus: any;
   processorsTracelogs = [];
-  processorName = 'jira';
+  processorName = ['jira' , 'azure'];
   heirarchyCount: number;
   dateRangeFilter: any;
   selectedDayType = 'Weeks';
@@ -858,7 +858,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     let colorsArr = ['#079FFF','#cdba38', '#00E6C3', '#fc6471', '#bd608c', '#7d5ba6']
     const colorObj = {};
     for (let i = 0; i < this.selectedFilterArray?.length; i++) {
-      colorObj[this.selectedFilterArray[i].nodeId] = { nodeName: this.selectedFilterArray[i].nodeName, color: colorsArr[i] } 
+      colorObj[this.selectedFilterArray[i].nodeId] = { nodeName: this.selectedFilterArray[i].nodeName, color: colorsArr[i] }
     }
     this.service.setColorObj(colorObj);
   }
@@ -1087,7 +1087,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     const selectedField = this.filterForm?.get(formfield)?.value;
       if (selectedField) {
         const obj = this.filteredAddFilters[filteredAddFiltersKey]?.filter((x) => x['nodeId'] == selectedField)[0];
-        
+
         if(obj && (obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
           return dateString;
         }
@@ -1150,7 +1150,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   findTraceLogForTool() {
-    return this.processorsTracelogs.find((ptl) => ptl['processorName'].toLowerCase() == this.processorName);
+    return this.processorsTracelogs.find((ptl) => this.processorName.includes(ptl['processorName'].toLowerCase()));
   }
 
   showExecutionDate() {
