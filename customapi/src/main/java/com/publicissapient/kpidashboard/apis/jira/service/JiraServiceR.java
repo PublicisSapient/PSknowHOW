@@ -31,8 +31,6 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -64,9 +62,11 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
@@ -106,6 +106,7 @@ public class JiraServiceR {
 	private ConfigHelperService configHelperService;
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
+	private List<String> releaseList;
 
 	/**
 	 * This method process scrum JIRA based kpi request, cache data and call
@@ -206,11 +207,13 @@ public class JiraServiceR {
 			fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), sprintIssuesList,
 					CommonConstant.ITERATION);
 			fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
-					sprintIssuesList);
+					sprintIssuesList, CommonConstant.ITERATION);
 		} else if (origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.RELEASE)) {
-			List<String> releaseList = getReleaseList(treeAggregatorDetail);
+			releaseList = getReleaseList(treeAggregatorDetail);
 			fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), releaseList,
 					CommonConstant.RELEASE);
+			fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
+					releaseList, CommonConstant.RELEASE);
 		}
 	}
 
@@ -359,7 +362,7 @@ public class JiraServiceR {
 						processTime);
 			}
 		}
-		
+
 	}
 
 	public void fetchSprintDetails(String[] sprintId) {
@@ -422,9 +425,14 @@ public class JiraServiceR {
 		return jiraIssueList;
 	}
 
-	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, List<String> sprintIssuesList) {
-		jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn
-				(sprintIssuesList, Collections.singletonList(basicProjectConfigId));
+	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, List<String> sprintIssuesList, String board) {
+		if (board.equalsIgnoreCase(CommonConstant.ITERATION)) {
+			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(
+					sprintIssuesList, Collections.singletonList(basicProjectConfigId));
+		} else {
+			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
+					.findByFilterAndFromReleaseMap(Collections.singletonList(basicProjectConfigId), releaseList);
+		}
 	}
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
@@ -507,6 +515,10 @@ public class JiraServiceR {
 					.collect(Collectors.toSet()));
 		}
 		return getCombinationalCompletedSet(typeWiseIssues, statusWiseIssues);
+	}
+
+	public List<String> getReleaseList() {
+		return releaseList;
 	}
 
 }

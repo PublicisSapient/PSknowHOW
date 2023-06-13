@@ -54,17 +54,18 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	@Autowired
 	private MongoOperations operations;
 
-	private static final String STORY_SPRINT_DETAILS = "storySprintDetails";
 	private static final String STATUS_CHANGE_LOG = "statusUpdationLog";
+	private static final String VERSION_CHANGE_LOG = "fixVersionUpdationLog";
 	private static final String UPDATED_ON = "statusUpdationLog.updatedOn";
 	private static final String STORY_ID = "storyID";
 	private static final String STORY_TYPE = "storyType";
 	private static final String TICKET_CREATED_DATE_FIELD = "createdDate";
-	private static final String PROJECT_COMP_ID = "projectComponentId";
 	private static final String STATUS = "statusUpdationLog.changedTo";
 	private static final String START_TIME = "T00:00:00.000Z";
 	private static final String END_TIME = "T23:59:59.000Z";
 	private static final String BASIC_PROJ_CONF_ID = "basicProjectConfigId";
+	private static final String FIXVERSION_CHANGEDTO = "fixVersionUpdationLog.changedTo";
+	private static final String FIXVERSION_CHANGEDFROM = "fixVersionUpdationLog.changedFrom";
 
 	/**
 	 * To iso 8601 utc string.
@@ -209,6 +210,32 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 				.andOperator(projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
+		return operations.find(query, JiraIssueCustomHistory.class);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<JiraIssueCustomHistory> findByFilterAndFromReleaseMap(List<String> basicProjectConfigId,
+																	List<String> releaseList) {
+		Criteria criteria = new Criteria();
+		criteria = criteria.and(BASIC_PROJ_CONF_ID).in(basicProjectConfigId);
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		Criteria projectCriteria1 = new Criteria();
+		Criteria projectCriteria2 = new Criteria();
+		projectCriteria1.and(FIXVERSION_CHANGEDTO).in(releaseList);
+		projectCriteria2.and(FIXVERSION_CHANGEDFROM).in(releaseList);
+		projectCriteriaList.add(projectCriteria1);
+		projectCriteriaList.add(projectCriteria2);
+
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+		Query query = new Query(criteriaProjectLevelAdded);
+		query.fields().include(STORY_ID);
+		query.fields().include(BASIC_PROJ_CONF_ID);
+		query.fields().include(STATUS_CHANGE_LOG);
+		query.fields().include(VERSION_CHANGE_LOG);
 		return operations.find(query, JiraIssueCustomHistory.class);
 
 	}
