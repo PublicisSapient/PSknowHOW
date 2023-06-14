@@ -172,8 +172,6 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			resultListMap = kpiHelperService
 					.fetchSprintVelocityDataFromDb(kpiRequest,projectWiseSprintDetails, result);
 		}
-
-
 		return resultListMap;
 
 	}
