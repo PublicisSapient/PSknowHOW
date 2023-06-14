@@ -344,18 +344,23 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: false
                                  		}, {
-                                 			columnName: 'Closed',
+                                 			columnName: 'Issue Status',
                                  			order: 2,
                                  			isShown: true,
                                  			isDefault: false
                                  		}, {
-                                 			columnName: 'Size(story point/hours)',
+                                 			columnName: 'Initial Commitment',
                                  			order: 3,
                                  			isShown: true,
                                  			isDefault: true
-                                 		}]
+                                 		}, {
+                                 			columnName: 'Size(story point/hours)',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: true
+                                 		}
+                                 		]
                                  	},
-
                                  	{
                                  		basicProjectConfigId: null,
                                  		kpiId: 'kpi14',
