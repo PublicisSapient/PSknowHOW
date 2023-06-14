@@ -1272,7 +1272,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "300",
     "kpiUnit": "SP",
     "isDeleted": "False",
-    "defaultOrder": 5,
+    "defaultOrder": 20,
     "kpiSource": "Jira",
     "groupId": 2,
     "thresholdValue": "",
