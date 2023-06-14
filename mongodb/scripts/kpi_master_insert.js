@@ -1274,12 +1274,12 @@ db.getCollection('kpi_master').insert(
     "isDeleted": "False",
     "defaultOrder": 20,
     "kpiSource": "Jira",
-    "groupId": 1,
+    "groupId": 2,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "line",
+    "chartType": "grouped_column_plus_line",
     "kpiInfo": {
-      "definition": "SPRINT VELOCITY measures the rate at which a team can deliver every Sprint",
+      "definition": "SPRINT VELOCITY measures the rate at which a team can deliver every Sprint.Since a stable velocity helps in forecasting, the KPI also measures the last 5 sprints average velocity and plots it along with the sprint velocity",
       "formula": [
         {
           "lhs": "Sum of story points of all stories completed within a Sprint"
@@ -1290,9 +1290,33 @@ db.getCollection('kpi_master').insert(
     "yAxisLabel": "Count",
     "isPositiveTrend": true,
     "showTrend": false,
-    "aggregationCriteria": "average",
+    "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": true,
-    "calculateMaturity": false
+    "calculateMaturity": false,
+	"lineLegend": "Sprint Velocity",
+    "barLegend": "Last 5 Sprints Average",
+	"chartType":"grouped_column_plus_line",
+	"isTrendCalculative": true,
+    "trendCalculation": [
+      {
+        "type": "Upwards",
+        "lhs": "value",
+        "rhs": "lineValue",
+        "operator": "<"
+      },
+      {
+        "type": "Upwards",
+        "lhs": "value",
+        "rhs": "lineValue",
+        "operator": "="
+      },
+      {
+        "type": "Downwards",
+        "lhs": "value",
+        "rhs": "lineValue",
+        "operator": ">"
+      }
+    ]
   },
   {
     "kpiId": "kpi46",

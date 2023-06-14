@@ -52,26 +52,26 @@ public class SprintVelocityServiceHelperTest {
     public void testCalculateSprintVelocityValue() {
         Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
         Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
-        sprintVelocityServiceHelper.getSprintForProject(storyList, sprintDetails,
+        sprintVelocityServiceHelper.getSprintIssuesForProject(storyList, sprintWiseIssues, sprintDetails,
                 currentSprintLeafVelocityMap);
         Assert.assertTrue(currentSprintLeafVelocityMap.size() > 0);
 
         Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssue = new HashMap<>();
         Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocity = new HashMap<>();
-        sprintVelocityServiceHelper.getSprintForProject(storyList, new ArrayList<SprintDetails>(),
+        sprintVelocityServiceHelper.getSprintIssuesForProject(storyList, sprintWiseIssue, new ArrayList<SprintDetails>(),
                 currentSprintLeafVelocity);
-        Assert.assertTrue(sprintWiseIssue.size() == 0);
+        Assert.assertTrue(sprintWiseIssue.size() > 0);
 
         Pair<String, String> currentNodeIdentifier = Pair.of("6335363749794a18e8a4479b",
                 "40199_Scrum Project_6335363749794a18e8a4479b");
 
         Assert.assertTrue(sprintVelocityServiceHelper.calculateSprintVelocityValue(
-                currentSprintLeafVelocityMap, currentNodeIdentifier, fieldMapping) == 0 );
+                currentSprintLeafVelocityMap, currentNodeIdentifier, sprintWiseIssue, fieldMapping)>0 );
 
         Pair<String, String> currentNodeIdent = Pair.of("6335363749794a18e8a4479b",
                 "38294_Scrum Project_6335363749794a18e8a4479b");
         Assert.assertTrue(sprintVelocityServiceHelper.calculateSprintVelocityValue(
-                currentSprintLeafVelocityMap, currentNodeIdent, fieldMapping)>0 );
+                currentSprintLeafVelocityMap, currentNodeIdent, new HashMap<Pair<String, String>, List<JiraIssue>>(), fieldMapping)>0 );
     }
 
 }
