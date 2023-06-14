@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.azurepipeline.processor;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -62,11 +60,10 @@ import com.publicissapient.kpidashboard.common.repository.application.BuildRepos
 import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-
 
 import lombok.extern.slf4j.Slf4j;
 

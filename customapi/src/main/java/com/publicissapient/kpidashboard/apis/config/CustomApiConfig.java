@@ -157,6 +157,9 @@ public class CustomApiConfig {// NOPMD
 	@Value("${approval.categories.emailSubject}")
 	private String approvalEmailSubject;
 
+	@Value("${issueCount.story.categories}")
+	private List<String> issueCountStoryCategories;
+
 	@Value("${certhostpath}")
 	private String hostPath;
 
@@ -202,6 +205,17 @@ public class CustomApiConfig {// NOPMD
 	@Value(("${backlog.sprint.count}"))
 	private int sprintCountForBackLogStrength;
 
+	@Value("${sprint.velocity.limit}")
+	private int sprintVelocityLimit;
+
+	public int getSprintVelocityLimit() {
+		return sprintVelocityLimit;
+	}
+
+	public void setSprintVelocityLimit(int sprintVelocityLimit) {
+		this.sprintVelocityLimit = sprintVelocityLimit;
+	}
+
 	private int pushDataLimit;//limit of data allowed to push through api
 
 	private int exposeAPITokenExpiryDays; // expose api token expiry after days limit
@@ -224,6 +238,9 @@ public class CustomApiConfig {// NOPMD
 		
 	@Value("${backlogWeekCount}")
 	private int backlogWeekCount;
+
+	@Value("${flowKpiMonthCount}")
+	private int flowKpiMonthCount;
 
 	public int getPushDataLimit() {
 		return pushDataLimit;
@@ -627,6 +644,14 @@ public class CustomApiConfig {// NOPMD
 		return corsFilterValidOrigin;
 	}
 
+	public List<String> getIssueCountStoryCategories() {
+		return issueCountStoryCategories;
+	}
+
+	public void setIssueCountStoryCategories(List<String> issueCountStoryCategories) {
+		this.issueCountStoryCategories = issueCountStoryCategories;
+	}
+
 	/**
 	 * <p>
 	 * Sets the list of values valid as origin
@@ -993,5 +1018,24 @@ public class CustomApiConfig {// NOPMD
 	}
 	public int getSprintCountForBackLogStrength() {
 		return sprintCountForBackLogStrength;
+	}
+
+	// repo x axis count days rangeForCheckInsAndMergeRequests
+	private Integer repoXAxisCountForCheckInsAndMergeRequests;
+
+	public Integer getRepoXAxisCountForCheckInsAndMergeRequests() {
+		return repoXAxisCountForCheckInsAndMergeRequests;
+	}
+
+	public void setRepoXAxisCountForCheckInsAndMergeRequests(Integer repoXAxisCountForCheckInsAndMergeRequests) {
+		this.repoXAxisCountForCheckInsAndMergeRequests = repoXAxisCountForCheckInsAndMergeRequests;
+	}
+
+	public int getFlowKpiMonthCount() {
+		return flowKpiMonthCount;
+	}
+
+	public void setFlowKpiMonthCount(int flowKpiMonthCount) {
+		this.flowKpiMonthCount = flowKpiMonthCount;
 	}
 }

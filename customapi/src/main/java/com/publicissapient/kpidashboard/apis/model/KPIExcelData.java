@@ -43,6 +43,12 @@ public class KPIExcelData {
     @JsonProperty("Sprint Name")
     private String sprintName;
 
+    @JsonProperty("Sprint Rating")
+    private Integer sprintRating;
+
+    @JsonProperty("User Name")
+    private String userName;
+
     @JsonProperty("Original Time Estimate (in hours)")
     private String originalTimeEstimate;
 
@@ -318,5 +324,11 @@ public class KPIExcelData {
 
     @JsonProperty("Created during Iteration")
     private String createdDuringIteration;
+
+    @JsonProperty("Count")
+    private Map<String, Integer> count;
+
+    @JsonProperty("Initial Commitment")
+    private String initialCommited;
 
 }

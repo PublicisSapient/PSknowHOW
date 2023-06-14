@@ -164,7 +164,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		String requestTrackerId = getRequestTrackerId();
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(YYYYMMDD);
 		String endDate = formatter.print(DateTime.now());
-		String startDate = formatter.print(DateTime.now().minusDays(customApiConfig.getRepoXAxisCount() - 1));
+		String startDate = formatter.print(DateTime.now().minusDays(customApiConfig.getRepoXAxisCountForCheckInsAndMergeRequests() - 1));
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
@@ -356,20 +356,6 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		}
 		return dayWiseCommitCount;
 
-	}
-
-	private String formatDate(String startDateTime) {
-		SimpleDateFormat existingFormat = new SimpleDateFormat(YYYYMMDD);
-		SimpleDateFormat updatedFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-		String reformattedStr = "";
-		try {
-
-			reformattedStr = updatedFormat.format(existingFormat.parse(startDateTime));
-		} catch (ParseException e) {
-			log.error("Got exception while formating the Date from yyyymmdd to ddmmyyy: {}", e);
-		}
-		return reformattedStr;
 	}
 
 	@Override

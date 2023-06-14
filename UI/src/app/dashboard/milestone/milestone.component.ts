@@ -193,7 +193,8 @@ export class MilestoneComponent implements OnInit {
       }
       this.kpiSelectedFilterObj[kpi?.kpiId] = event;
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
+      // this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
+      this.kpiSelectedFilterObj[kpi?.kpiId] = {"filter1":[event]};
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
 
@@ -312,11 +313,13 @@ export class MilestoneComponent implements OnInit {
         this.getDropdownArray(data[key]?.kpiId);
       }
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-        this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
+        // this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
+        this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
-          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] };
         }
         else if (formType?.toLowerCase() == 'dropdown') {
           this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
@@ -330,9 +333,12 @@ export class MilestoneComponent implements OnInit {
           }
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
         } else {
-          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
+          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
+          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
         }
         this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+      }else if(!trendValueList || trendValueList?.length == 0) {
+        this.getDropdownArray(data[key]?.kpiId);
       }
       this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1));
     }
@@ -567,6 +573,8 @@ export class MilestoneComponent implements OnInit {
         obj['options'] = dropdownArr;
         this.kpiDropdowns[kpiId] = [];
         this.kpiDropdowns[kpiId].push(obj);
+      }else if(!trendValueList || trendValueList?.length == 0 ){
+        this.kpiDropdowns[kpiId] = [];
       }
     }
   }

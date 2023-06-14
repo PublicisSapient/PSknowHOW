@@ -10,10 +10,6 @@ import static org.mockito.Mockito.*;
 import static org.testng.Assert.assertEquals;
 
 import java.net.UnknownHostException;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -357,7 +353,7 @@ public class ProjectAccessManagerTest {
 		when(projectBasicConfigRepository.findByHierarchyLevelIdAndValues(anyString(), anyList()))
 				.thenReturn(Lists.newArrayList(projectBasicConfigObj()));
 		List<RoleWiseProjects> list = projectAccessManager.getProjectAccessesWithRole(ArgumentMatchers.anyString());
-		assertEquals(1, list.size());
+		assertEquals( list.size(),1);
 	}
 
 	@Test
@@ -503,7 +499,7 @@ public class ProjectAccessManagerTest {
 
 		List<String> list = projectAccessManager.getProjectBasicOnRoleList(userInfo,
 				Lists.newArrayList(Constant.ROLE_PROJECT_ADMIN));
-		assertEquals(0, list.size());
+		assertEquals(list.size(),0);
 	}
 
 	ProjectBasicConfig projectBasicConfigObj() {

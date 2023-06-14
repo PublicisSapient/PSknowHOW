@@ -1266,6 +1266,7 @@ describe('FilterComponent', () => {
         "hierarchyLevelId": "project",
         "hierarchyLevelName": "Project"
     });
+      spyOn(component,'checkIfFilterAlreadySelected');
       component.navigateToDashboard();
       fixture.detectChanges();
       expect(navigateToSelectedTabSpy).toHaveBeenCalled();

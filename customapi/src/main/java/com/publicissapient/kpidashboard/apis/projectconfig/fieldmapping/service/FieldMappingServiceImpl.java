@@ -333,6 +333,10 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES,
 					STORY_FIRST_STATUS);
 
+			Optional<ProjectToolConfig> projectToolConfigOpt = toolConfigRepository
+					.findById(fieldMapping.getProjectToolConfigId());
+			azureSprintReportStatusUpdateBasedOnFieldChange(fieldMapping, existingFieldMapping, projectBasicConfig, projectToolConfigOpt);
+
 			if ((!projectBasicConfig.getIsKanban() && isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
 					|| (projectBasicConfig.getIsKanban()
 							&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping, fieldNameListKanban))) {
@@ -348,11 +352,31 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					processorExecutionTraceLogRepository.save(processorExecutionTraceLog);
 				}
 
-				Optional<ProjectToolConfig> projectToolConfigOpt = toolConfigRepository
-						.findById(fieldMapping.getProjectToolConfigId());
 				saveTemplateCode(projectBasicConfig, projectToolConfigOpt);
 
 			}
+		}
+	}
+
+	/**
+	 * if jiraIterationCompletionStatusCustomField field mapping changes then
+	 * put identifier to change in sprint report issues based on status for azure board
+	 *
+	 * @param fieldMapping
+	 * @param existingFieldMapping
+	 * @param projectBasicConfig
+	 * @param projectToolConfigOpt
+	 */
+	private void azureSprintReportStatusUpdateBasedOnFieldChange(FieldMapping fieldMapping, FieldMapping existingFieldMapping,
+			ProjectBasicConfig projectBasicConfig, Optional<ProjectToolConfig> projectToolConfigOpt) {
+		List<String> azureIterationStatusFieldList = Arrays.asList("jiraIterationCompletionStatusCustomField");
+		if (projectToolConfigOpt.isPresent()
+				&& projectToolConfigOpt.get().getToolName().equals(ProcessorConstants.AZURE)
+				&& !projectBasicConfig.getIsKanban()
+				&& isMappingUpdated(fieldMapping, existingFieldMapping, azureIterationStatusFieldList)) {
+			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
+			projectToolConfig.setAzureIterationStatusFieldUpdate(true);
+			toolConfigRepository.save(projectToolConfig);
 		}
 	}
 

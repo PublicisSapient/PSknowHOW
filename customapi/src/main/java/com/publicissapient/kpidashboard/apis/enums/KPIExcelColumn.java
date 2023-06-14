@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public enum KPIExcelColumn {
 
     CODE_BUILD_TIME("kpi8", Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url", "Weeks")),
-    STORY_COUNT("kpi40", Arrays.asList("Sprint Name", "Story ID", "Issue Description")),
+    ISSUE_COUNT("kpi40", Arrays.asList("Sprint Name", "Story ID", "Issue Description")),
     CODE_COMMIT("kpi11", Arrays.asList("Project Name", "Repository Url", "Branch", "Day", "No. Of Commit", "No. of Merge")),
 
     MEAN_TIME_TO_MERGE("kpi84", Arrays.asList("Project", "Repository Url", "Branch", "Weeks", "Mean Time To Merge (In Hours)")),
@@ -44,7 +44,7 @@ public enum KPIExcelColumn {
     SPRINT_VELOCITY("kpi39", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Size(story point/hours)")),
     SPRINT_PREDICTABILITY("kpi5", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Size(story point/hours)")),
     SPRINT_CAPACITY_UTILIZATION("kpi46", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Original Time Estimate (in hours)", "Total Time Spent (in hours)")),
-    COMMITMENT_RELIABILITY("kpi72", Arrays.asList("Sprint Name", "Story ID", "Closed", "Size(story point/hours)")),
+    COMMITMENT_RELIABILITY("kpi72", Arrays.asList("Sprint Name", "Story ID", "Issue Status", "Initial Commitment","Size(story point/hours)")),
 
 
     DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Linked Defects")),
@@ -86,8 +86,6 @@ public enum KPIExcelColumn {
     TEST_EXECUTION_AND_PASS_PERCENTAGE("kpi70", Arrays.asList("Sprint Name", "Total Test", "Executed Test", "Execution %", "Passed Test", "Passed %")),
 
     COST_OF_DELAY("kpi113", Arrays.asList("Project Name", "Cost of Delay", "Epic ID", "Epic Name", "Epic End Date", "Month")),
-
-    DAILY_CLOSURES("kpi125", Arrays.asList("Issue ID", "Issue Type",  "Issue Description", "Issue Status", "Size(story point/hours)", "Planned Completion Date (Due Date)", "Actual Completion Date", "Remaining Estimate", "Potential Delay(in days)","Predicted Completion Date","Assignee")),
 
     RELEASE_FREQUENCY("kpi73", Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
@@ -213,7 +211,12 @@ public enum KPIExcelColumn {
 
     DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
 
-    RELEASE_PROGRESS("kpi147",Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority","Assignee", "Issue Status"));
+    RELEASE_PROGRESS("kpi147",Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority","Assignee", "Issue Status")),
+    HAPPINESS_INDEX_RATE("kpi149", Arrays.asList("Sprint Name", "User Name", "Sprint Rating")),
+    FLOW_DISTRIBUTION("Kpi146",Arrays.asList("Date")),
+    FLOW_LOAD("kpi148",Arrays.asList("Date")),
+
+    RELEASE_BURNUP("kpi150",Arrays.asList("Issue ID", "Issue Type", "Issue Description","Story Size(In story point)","Priority","Assignee", "Issue Status"));
 
     // @formatter:on
 

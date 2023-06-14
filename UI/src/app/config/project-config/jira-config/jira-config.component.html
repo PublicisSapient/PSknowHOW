@@ -153,7 +153,10 @@
                                         tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
                                         [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
                                         [attr.disabled]="form_elem.disabled ? true : null"
-                                        (blur)="form_elem.onFocusOut ? form_elem.onFocusOut($event, this) : ''">
+                                        (blur)="form_elem.onFocusOut ? form_elem.onFocusOut($event, this) : ''" placeholder="{{form_elem.placeholder}}">
+                                        <div *ngIf="tool[form_elem.id].errors?.pattern">
+                                         {{form_elem.errorMsg}}
+                                        </div>
                                 </ng-container>
                             </div>
                             <div *ngSwitchCase="'autoComplete'" class="p-mb-3 p-autoComplete-custom">

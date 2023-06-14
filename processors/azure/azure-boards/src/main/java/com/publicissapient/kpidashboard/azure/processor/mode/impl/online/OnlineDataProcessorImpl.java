@@ -92,9 +92,6 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	@Autowired
 	AzureRestClientFactory azureRestClientFactory;
 
-	@Autowired
-	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
 	/**
 	 * Validates and collects Azure issues using JIA API for projects with
 	 * onlinemode
@@ -125,7 +122,7 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 				Runnable worker = new AzureOnlineRunnable(latch, azureAdapter, entry.getValue(),
 						entry.getValue().getProjectKey(), azureIssueClientFactory, azureProcessorConfig,
 						boardMetadataRepository, metadataIdentifierRepository, fieldMappingRepository,
-						azureRestClientFactory,processorExecutionTraceLogService);// NOPMD
+						azureRestClientFactory);// NOPMD
 				executor.execute(worker);
 			}
 

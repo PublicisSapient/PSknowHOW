@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
@@ -236,7 +237,17 @@ public class KpiHelperServiceTest {
 				new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-		Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(leafNodeList, kpiRequest);
+
+		Map<ObjectId, List<String>> previousProjectWiseSprintsForFilter = leafNodeList.stream().collect(Collectors.groupingBy(
+				node -> node.getProjectFilter().getBasicProjectConfigId(),
+				Collectors.collectingAndThen(Collectors.toList(),
+						s -> s.stream().map(node -> node.getSprintFilter().getId()).collect(Collectors.toList()))));
+		
+		Map<ObjectId, List<String>> projectWiseSprintsForFilter = leafNodeList.stream().collect(Collectors.groupingBy(
+				node -> node.getProjectFilter().getBasicProjectConfigId(),
+				Collectors.collectingAndThen(Collectors.toList(),
+						s -> s.stream().map(node -> node.getSprintFilter().getId()).collect(Collectors.toList()))));
+		Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(kpiRequest, projectWiseSprintsForFilter,sprintDetailsList);
 		assertEquals(2, resultMap.size());
 	}
 

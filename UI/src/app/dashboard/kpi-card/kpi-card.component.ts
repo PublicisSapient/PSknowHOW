@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy,OnChanges, SimpleChanges } from '@angular/core';
 import { faShareSquare } from '@fortawesome/free-solid-svg-icons';
 import { SharedService } from 'src/app/services/shared.service';
 @Component({
@@ -6,7 +6,7 @@ import { SharedService } from 'src/app/services/shared.service';
   templateUrl: './kpi-card.component.html',
   styleUrls: ['./kpi-card.component.css']
 })
-export class KpiCardComponent implements OnInit, OnDestroy {
+export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   @Input() kpiData: any;
   @Input() trendData: Array<object>;
   @Output() downloadExcel = new EventEmitter<boolean>();
@@ -38,8 +38,8 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   displaySprintDetailsModal : boolean = false;
   columnList = [
     { field: 'duration', header: 'Duration'  },
-    { field: 'value', header: 'Kpi Value (Units)', unit : 'unit' },
-    { field: 'params', header: 'Parameters' },
+    { field: 'value', header: 'KPI Value', unit : 'unit' },
+    { field: 'params', header: 'Calculation Details' },
  ];
  sprintDetailsList : Array<any>;
  colorCssClassArray = ['sprint-hover-project1','sprint-hover-project2','sprint-hover-project3','sprint-hover-project4','sprint-hover-project5','sprint-hover-project6'];
@@ -47,6 +47,11 @@ export class KpiCardComponent implements OnInit, OnDestroy {
 
   constructor(private service: SharedService) {
   }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // changes['dropdownArr']?.currentValue ? true : this.dropdownArr = [];
+  }
+
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
       if (Object.keys(x)?.length > 0) {
@@ -155,7 +160,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
           tempObj['value'] = (Math.round(element['value'] * 100) / 100);
           tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
           if (element['hoverValue'] && Object.keys(element['hoverValue'])?.length > 0) {
-            tempObj['params'] = Object.entries(element['hoverValue']).map(([key, value]) => `${key} : ${value}`).join('<br />');
+            tempObj['params'] = Object.entries(element['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
           }
           hoverObjectListTemp.push(tempObj);
         });

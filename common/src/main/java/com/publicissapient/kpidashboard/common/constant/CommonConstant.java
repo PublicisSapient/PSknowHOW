@@ -136,6 +136,8 @@ public final class CommonConstant {
 
 	public static final String COMPLETED_ISSUES = "completedIssues";
 	public static final String TOTAL_ISSUES = "totalIssues";
+	public static final String ADDED_ISSUES = "addedIssues";
+	public static final String ADDEDINBTWN_ISSUES = "addedIssues";
 	public static final String PUNTED_ISSUES = "puntedIssues";
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
@@ -161,12 +163,17 @@ public final class CommonConstant {
 	public static final String CRON = "cron";
 	public static final String JIRA_WAIT_STATUS = "jiraWaitStatus";
 	public static final String JIRA_BLOCKED_STATUS = "jiraBlockedStatus";
+
+	public static final String IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE="Include Flagged Issue";
+	public static final String REQUIRED_ATTENTION_FLAG = "Requires attention";
+	public static final String BLOCKED_STATUS_WASTAGE="Blocked Status";
 	public static final String JIRA_IN_PROGRESS_STATUS = "jiraStatusForInProgress";
 
 	public static final String STORY_POINT = "Story Point";
 	public static final String ACTUAL_ESTIMATION = "Actual Estimation";
 	public static final String SP = "SP";
 	public static final String HOURS = "Hours";
+	public static final String INITIALHOURS = "InitialHours";
 	public static final String ORIGINAL_ESTIMATE = "Original Estimate";
 	public static final String DUE_DATE = "Due Date";
 
