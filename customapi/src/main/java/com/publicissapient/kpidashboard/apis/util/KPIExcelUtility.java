@@ -680,27 +680,27 @@ public class KPIExcelUtility {
 	 * TO GET Constant.EXCEL_YES/"N" from complete list of defects if defect is
 	 * present in conditional list then Constant.EXCEL_YES else
 	 * Constant.EMPTY_STRING kpi specific
-	 *
-	 * @param sprint
+	 *  @param sprint
 	 * @param totalStoriesMap
-	 * @param conditionStories
+	 * @param initialIssueNumber
 	 * @param kpiExcelData
 	 */
 
 	public static void populateCommittmentReliability(String sprint, Map<String, JiraIssue> totalStoriesMap,
-			List<JiraIssue> conditionStories, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+													  List<JiraIssue> initialIssueNumber, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
 		if (MapUtils.isNotEmpty(totalStoriesMap)) {
-			List<String> conditionalList = conditionStories.stream().map(JiraIssue::getNumber)
-					.collect(Collectors.toList());
+
 			totalStoriesMap.forEach((storyId, jiraIssue) -> {
-				String present = conditionalList.contains(storyId) ? Constant.EXCEL_YES : Constant.EMPTY_STRING;
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setSprintName(sprint);
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
 				Map<String, String> storyDetails = new HashMap<>();
 				storyDetails.put(storyId, checkEmptyURL(jiraIssue));
 				excelData.setStoryId(storyDetails);
-				excelData.setClosedStatus(present);
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				if(initialIssueNumber.contains(jiraIssue)){
+					excelData.setInitialCommited("Y");
+				}
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 					excelData.setStoryPoint(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
