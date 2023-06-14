@@ -22,7 +22,7 @@
 }
 .chart123{
 	display: flex;
-	margin:0 10px 10px 60px;
+	margin:0 10px 10px 0px;
 	align-items: center;
 }
 .min-ht{
@@ -32,7 +32,6 @@
 	top: 0;
 }
 ::ng-deep  .tooltip_{
-	margin:40px;
 	background-color: white;
     padding: 1rem;
     border: 1px solid lightgrey;
