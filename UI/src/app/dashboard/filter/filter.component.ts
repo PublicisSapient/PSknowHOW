@@ -489,7 +489,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   onSelectedTrendValueChange($event) {
     this.additionalFiltersArr.forEach((additionalFilter) => {
-      this.filterForm.patchValue({[additionalFilter['hierarchyLevelId']]: null});
+    this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
     });
     this.applyChanges();
   }
