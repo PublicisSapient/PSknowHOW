@@ -37,9 +37,9 @@ import com.publicissapient.kpidashboard.bamboo.client.BambooClient;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,21 +56,22 @@ public class BambooClientDeployImpl implements BambooClient {
 
 	@Override
 	public Map<Pair<ObjectId, String>, Set<Deployment>> getDeployJobsFromServer(ProcessorToolConnection bambooServer,
-			ProjectBasicConfig proBasicConfig)
-			throws ParseException, MalformedURLException {
+			ProjectBasicConfig proBasicConfig) throws ParseException, MalformedURLException {
 		Map<Pair<ObjectId, String>, Set<Deployment>> deploySetMap = new HashMap<>();
 		String deploymentProjectId = bambooServer.getDeploymentProjectId();
 		String url = BambooClient.appendToURL(bambooServer.getUrl() + DEPLOYMENT_SUFFIX + deploymentProjectId);
 		String environemntUrl = BambooClient.appendToURL(bambooServer.getUrl() + ENVIRONMENT_SUFFIX);
 		HttpEntity<String> httpAuth = generateAuthentication(bambooServer);
 		String deployInformation = connectBamboo(url, bambooServer, httpAuth);
-		Set<Deployment> environments = getEnvironments(deployInformation, environemntUrl, httpAuth, bambooServer, proBasicConfig);
+		Set<Deployment> environments = getEnvironments(deployInformation, environemntUrl, httpAuth, bambooServer,
+				proBasicConfig);
 		deploySetMap.put(Pair.of(bambooServer.getId(), bambooServer.getDeploymentProjectId()), environments);
 		return deploySetMap;
 	}
 
 	private Set<Deployment> getEnvironments(String deployInformation, String environemntUrl,
-			HttpEntity<String> httpAuth, ProcessorToolConnection bambooServer, ProjectBasicConfig proBasicConfig) throws ParseException {
+			HttpEntity<String> httpAuth, ProcessorToolConnection bambooServer, ProjectBasicConfig proBasicConfig)
+			throws ParseException {
 		Set<Deployment> deployments = new HashSet<>();
 		Map<String, String> environments = parseJsonToFetchEnv(deployInformation);
 		for (Map.Entry<String, String> env : environments.entrySet()) {
@@ -97,7 +98,8 @@ public class BambooClientDeployImpl implements BambooClient {
 		return jsonObj == null ? null : jsonObj.toString();
 	}
 
-	private Set<Deployment> getEnvironmentInformation(String environemntInformation, ProjectBasicConfig proBasicConfig) throws ParseException {
+	private Set<Deployment> getEnvironmentInformation(String environemntInformation, ProjectBasicConfig proBasicConfig)
+			throws ParseException {
 		JSONParser respParser = new JSONParser();
 		Set<Deployment> deploymentSet = new HashSet<>();
 		JSONArray results = (JSONArray) ((JSONObject) respParser.parse(environemntInformation)).get("results");
@@ -144,7 +146,8 @@ public class BambooClientDeployImpl implements BambooClient {
 		} catch (DateTimeParseException | NumberFormatException ex) {
 			log.error("Exception while transforming date " + ex);
 			if (StringUtils.isEmpty(deployment.getStartTime())) {
-				deployment.setStartTime(DateUtil.dateTimeFormatter(LocalDateTime.parse(MINIMUM_DATE), DateUtil.TIME_FORMAT));
+				deployment.setStartTime(
+						DateUtil.dateTimeFormatter(LocalDateTime.parse(MINIMUM_DATE), DateUtil.TIME_FORMAT));
 			}
 			deployment.setEndTime(DateUtil.dateTimeFormatter(LocalDateTime.parse(MINIMUM_DATE), DateUtil.TIME_FORMAT));
 			deployment.setDuration(0);
@@ -204,8 +207,7 @@ public class BambooClientDeployImpl implements BambooClient {
 
 	@Override
 	public Map<ObjectId, Set<Build>> getJobsFromServer(ProcessorToolConnection bambooServer,
-			ProjectBasicConfig proBasicConfig)
-			throws ParseException, MalformedURLException {
+			ProjectBasicConfig proBasicConfig) throws ParseException, MalformedURLException {
 		return new HashMap<>();
 	}
 

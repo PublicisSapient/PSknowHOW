@@ -32,11 +32,10 @@ import com.publicissapient.kpidashboard.common.model.application.Build;
 @RunWith(MockitoJUnitRunner.class)
 public class PushDataValidationServiceImplTest {
 
+	List<Build> buildList;
 	@InjectMocks
 	private PushDataValidationServiceImpl pushDataValidationService;
-
 	private Validator validator;
-	List<Build> buildList;
 
 	@Before
 	public void setUp() {

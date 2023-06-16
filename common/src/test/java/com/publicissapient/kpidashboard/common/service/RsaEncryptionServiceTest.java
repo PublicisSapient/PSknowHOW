@@ -34,9 +34,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class RsaEncryptionServiceTest {
 
-	@InjectMocks
-	RsaEncryptionService rsaEncryptionService;
-
 	private static final String PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCV+CXwDNe+mijxGhOUH+UXBORUJsKSfdu"
 			+ "EoDaz8CnGm9QGprvQ1/UDmN4f/cLVun2Q/nK2ZFS6QfHyyTkmG9ztA5gjjt9fC9YI8nKIjmm7mgHQ/Bi8l/V20kMan/iPFmonHcz5bPc"
 			+ "05UCLmLglV2wgGgEwfilYj1msCNp4vhIEJwIDAQAB";
@@ -49,6 +46,8 @@ public class RsaEncryptionServiceTest {
 			+ "96R7zAkBoLFZ7f4zBVwe6gNRWyns95XTb0TOk/VnBpw6tk4f3aSEY9w33pDp99QJJZ/urJWmLbygVQZMwnhpkn3x7JQUlAkAV8S"
 			+ "aMiQikxhl6mwbvbGR8SeXWdwCj5L9FtA1zEdSpXnwzbOg6P9pneFfyL3JoSYvbbaa+1UfdObyFkKIy/YOrAkA7tASXHfve+r3COF"
 			+ "JI8cIAfZtwcK7drOhP8aedKlb/CWvuzuo4qjFnMkjrZ92BZ28se/DeVimvGkP47GDEFpgb";
+	@InjectMocks
+	RsaEncryptionService rsaEncryptionService;
 
 	@Test
 	public void cipherTest() {

@@ -1,37 +1,34 @@
- /*******************************************************************************
- * Copyright 2014 CapitalOne, LLC.
- * Further development Copyright 2022 Sapient Corporation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
+/*******************************************************************************
+* Copyright 2014 CapitalOne, LLC.
+* Further development Copyright 2022 Sapient Corporation.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*
+******************************************************************************/
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -42,21 +39,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculates the DRR and trend analysis of the DRR.
@@ -149,28 +156,31 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
-		leafNodeList.forEach(leaf -> basicProjectConfigObjectIds.add(leaf.getProjectFilter().getBasicProjectConfigId()));
+		leafNodeList
+				.forEach(leaf -> basicProjectConfigObjectIds.add(leaf.getProjectFilter().getBasicProjectConfigId()));
 		List<SprintDetails> totalSprintDetails = sprintRepository
-				.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(basicProjectConfigObjectIds,SprintDetails.SPRINT_STATE_CLOSED);
+				.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(basicProjectConfigObjectIds,
+						SprintDetails.SPRINT_STATE_CLOSED);
 
 		// Group the SprintDetails by basicProjectConfigId
 		Map<ObjectId, List<SprintDetails>> sprintDetailsByProjectId = totalSprintDetails.stream()
 				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
 
-		// Limit the list of SprintDetails for each basicProjectConfigId to customApiConfig.getSprintVelocityLimit()+customApiConfig.getSprintCountForFilters()
+		// Limit the list of SprintDetails for each basicProjectConfigId to
+		// customApiConfig.getSprintVelocityLimit()+customApiConfig.getSprintCountForFilters()
 		List<SprintDetails> result = sprintDetailsByProjectId.values().stream()
-				.flatMap(list -> list.stream().limit((long)customApiConfig.getSprintVelocityLimit()+customApiConfig.getSprintCountForFilters()))
+				.flatMap(list -> list.stream().limit(
+						(long) customApiConfig.getSprintVelocityLimit() + customApiConfig.getSprintCountForFilters()))
 				.collect(Collectors.toList());
 
 		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
 			Map<ObjectId, List<String>> projectWiseSprintDetails = result.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId,
 							Collectors.collectingAndThen(Collectors.toList(),
-									s -> s.stream().map(SprintDetails::getSprintID)
-											.collect(Collectors.toList()))));
+									s -> s.stream().map(SprintDetails::getSprintID).collect(Collectors.toList()))));
 
-			resultListMap = kpiHelperService
-					.fetchSprintVelocityDataFromDb(kpiRequest,projectWiseSprintDetails, result);
+			resultListMap = kpiHelperService.fetchSprintVelocityDataFromDb(kpiRequest, projectWiseSprintDetails,
+					result);
 		}
 		return resultListMap;
 
@@ -239,9 +249,9 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			String currentSprintComponentId = node.getSprintFilter().getId();
 			Pair<String, String> currentNodeIdentifier = Pair.of(projId, currentSprintComponentId);
 
-			double sprintVelocityForCurrentLeaf=0.0;
+			double sprintVelocityForCurrentLeaf = 0.0;
 			if (CollectionUtils.isNotEmpty(sprintDetails)) {
-				sprintVelocityForCurrentLeaf=sprintVelocity.get(currentNodeIdentifier);
+				sprintVelocityForCurrentLeaf = sprintVelocity.get(currentNodeIdentifier);
 			}
 
 			populateExcelDataObject(requestTrackerId, excelData, sprintWiseIssues, currentSprintLeafVelocityMap, node,
@@ -266,7 +276,8 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 				avgVelocityCount.put(projId, 0);
 			}
 
-			double averageVelocity = getAverageVelocity(sprintVelocity, avgVelocityCount.get(projId), projId, currentSprintComponentId);
+			double averageVelocity = getAverageVelocity(sprintVelocity, avgVelocityCount.get(projId), projId,
+					currentSprintComponentId);
 			if (averageVelocity >= 0) {
 				dataCount.setValue(averageVelocity);
 				Map<String, Object> hoverValue = new HashMap<>();
@@ -298,15 +309,15 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			List<SprintDetails> oldSprintDetails) {
 		log.debug("In the velocity map creation");
 		Map<Pair<String, String>, Double> sprintVelocity = new LinkedHashMap<>();
-		if(CollectionUtils.isNotEmpty(oldSprintDetails)) {
-		oldSprintDetails.forEach(sprint -> {
-			FieldMapping fieldMap = configHelperService.getFieldMappingMap().get(sprint.getBasicProjectConfigId());
-			Pair<String, String> currentNodeIdentifier = Pair.of(sprint.getBasicProjectConfigId().toString(),
-					sprint.getSprintID());
-			double sprintVelocityForCurrentLeaf = velocityHelper.calculateSprintVelocityValue(
-					currentSprintLeafVelocityMap, currentNodeIdentifier, sprintWiseIssues, fieldMap);
-			sprintVelocity.put(currentNodeIdentifier, sprintVelocityForCurrentLeaf);
-		});
+		if (CollectionUtils.isNotEmpty(oldSprintDetails)) {
+			oldSprintDetails.forEach(sprint -> {
+				FieldMapping fieldMap = configHelperService.getFieldMappingMap().get(sprint.getBasicProjectConfigId());
+				Pair<String, String> currentNodeIdentifier = Pair.of(sprint.getBasicProjectConfigId().toString(),
+						sprint.getSprintID());
+				double sprintVelocityForCurrentLeaf = velocityHelper.calculateSprintVelocityValue(
+						currentSprintLeafVelocityMap, currentNodeIdentifier, sprintWiseIssues, fieldMap);
+				sprintVelocity.put(currentNodeIdentifier, sprintVelocityForCurrentLeaf);
+			});
 		}
 		log.debug("End of the velocity map creation with the size {}", sprintVelocity.size());
 		return sprintVelocity;
@@ -322,15 +333,16 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	 */
 	private double getAverageVelocity(Map<Pair<String, String>, Double> sprintVelocityMap, int sprintCount,
 			String basicProjId, String currentSprintComponentId) {
-		AtomicDouble sumVelocity =new AtomicDouble();
+		AtomicDouble sumVelocity = new AtomicDouble();
 		AtomicInteger count = new AtomicInteger();
-		int sprintCountForAvgVel=customApiConfig.getSprintVelocityLimit()+1;
+		int sprintCountForAvgVel = customApiConfig.getSprintVelocityLimit() + 1;
 		AtomicInteger validCount = new AtomicInteger();
-		AtomicBoolean flag= new AtomicBoolean(false);
+		AtomicBoolean flag = new AtomicBoolean(false);
 		sprintVelocityMap.entrySet().forEach(velocityMap -> {
 			if (velocityMap.getKey().getKey().equals(basicProjId)) {
 				count.set(count.get() + 1);
-				if ((velocityMap.getKey().getValue().equalsIgnoreCase(currentSprintComponentId) || flag.get()) && validCount.get()<sprintCountForAvgVel) {
+				if ((velocityMap.getKey().getValue().equalsIgnoreCase(currentSprintComponentId) || flag.get())
+						&& validCount.get() < sprintCountForAvgVel) {
 					flag.set(true);
 					validCount.set(validCount.get() + 1);
 					sumVelocity.set(sumVelocity.get() + velocityMap.getValue());
@@ -339,7 +351,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		});
 		log.debug("The average velocity of sprint {} is {}", sprintCount, sumVelocity.get());
 		if (validCount.get() < sprintCountForAvgVel) {
-			return sumVelocity.get()/validCount.get();
+			return sumVelocity.get() / validCount.get();
 		}
 		return sumVelocity.get() / sprintCountForAvgVel;
 	}

@@ -27,11 +27,13 @@ package com.publicissapient.kpidashboard.apis.auth.service;
 public interface CaptchaValidationService {
 
 	/**
-	 * Compares Captcha input string with the actual string in image
-	 * and returns a boolean match
+	 * Compares Captcha input string with the actual string in image and returns a
+	 * boolean match
 	 * 
-	 * @param encryptedString the encrypted string
-	 * @param result the result
+	 * @param encryptedString
+	 *            the encrypted string
+	 * @param result
+	 *            the result
 	 * @return true if captcha input string is matched with captcha.
 	 */
 	boolean validateCaptcha(String encryptedString, String result);

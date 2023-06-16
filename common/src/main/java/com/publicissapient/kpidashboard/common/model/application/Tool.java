@@ -20,16 +20,16 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
+import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import org.bson.types.ObjectId;
-
-import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 
 /**
  * Represents non jira tool.

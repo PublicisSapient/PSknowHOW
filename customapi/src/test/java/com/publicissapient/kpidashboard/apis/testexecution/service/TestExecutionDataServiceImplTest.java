@@ -66,30 +66,22 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 @RunWith(MockitoJUnitRunner.class)
 public class TestExecutionDataServiceImplTest {
 
+	TestExecutionData testExecutionData = new TestExecutionData();
 	private MockMvc mockMvc;
-
 	@InjectMocks
 	private TestExecutionDataServiceImpl testExecutionDataServiceImpl;
-
 	@Mock
 	private TestExecutionRepository testExecutionRepository;
-
 	@Mock
 	private KanbanTestExecutionRepository kanbanTestExecutionRepo;
-
 	@Mock
 	private CacheService cacheService;
-
 	@Mock
 	private ProjectBasicConfigService projectBasicConfigService;
-
 	@Mock
 	private SprintDetailsService sprintDetailsService;
-
 	@Mock
 	private CustomApiConfig customApiConfig;
-
-	TestExecutionData testExecutionData = new TestExecutionData();
 
 	/**
 	 * initialize values to be used in testing
@@ -180,8 +172,7 @@ public class TestExecutionDataServiceImplTest {
 		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		when(projectBasicConfigService.getProjectBasicConfigs(anyString())).thenReturn(project);
 		when(sprintDetailsService.getSprintDetails(anyString())).thenReturn(Arrays.asList(createSprint()));
-		when(testExecutionRepository.findBySprintIdIn(anyList()))
-				.thenReturn(new ArrayList<>());
+		when(testExecutionRepository.findBySprintIdIn(anyList())).thenReturn(new ArrayList<>());
 		List<TestExecutionData> testExecutions = testExecutionDataServiceImpl
 				.getTestExecutions("5fba82843ab187639c1147bd");
 		Assert.assertEquals(1, testExecutions.size());
@@ -205,8 +196,7 @@ public class TestExecutionDataServiceImplTest {
 	public void getTestExecutions_KanbanWithNoDataSaved() {
 		ProjectBasicConfig project = createKanbanProject();
 		when(projectBasicConfigService.getProjectBasicConfigs(anyString())).thenReturn(project);
-		when(kanbanTestExecutionRepo.findByBasicProjectConfigId(anyString()))
-				.thenReturn(new ArrayList<>());
+		when(kanbanTestExecutionRepo.findByBasicProjectConfigId(anyString())).thenReturn(new ArrayList<>());
 		when(customApiConfig.getNumberOfPastDaysForKanbanTestExecution()).thenReturn(2);
 		when(customApiConfig.getNumberOfFutureDaysForKanbanTestExecution()).thenReturn(2);
 		List<TestExecutionData> testExecutions = testExecutionDataServiceImpl

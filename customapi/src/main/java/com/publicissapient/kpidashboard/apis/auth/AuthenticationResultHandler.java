@@ -45,7 +45,6 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 
 	@Autowired
 	private AuthenticationService authenticationService;
-	
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -54,7 +53,6 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 		// sgu106: Google Analytics data population starts
 		String username = authenticationService.getUsername(authentication);
 
-		
 		JSONObject json = customAnalyticsService.addAnalyticsData(response, username);
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();

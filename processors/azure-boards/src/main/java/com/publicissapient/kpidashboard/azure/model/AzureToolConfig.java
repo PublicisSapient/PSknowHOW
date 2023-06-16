@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.azure.model;
 
+import java.util.List;
+
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
@@ -28,8 +30,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Data
 @Builder

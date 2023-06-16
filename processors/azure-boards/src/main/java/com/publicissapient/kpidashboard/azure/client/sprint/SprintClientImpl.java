@@ -94,7 +94,8 @@ public class SprintClientImpl implements SprintClient {
 				// fetched and db sprint is active then issues bucket compare as per
 				if (fetchedSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 						&& dbSprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)) {
-					log.debug("DB Active Sprint State -> {} , dbCompletedIssues -> {} , dbNotCompletedIssues -> {} , dbAddedIssues -> {} , dbPuntedIssues -> {}",
+					log.debug(
+							"DB Active Sprint State -> {} , dbCompletedIssues -> {} , dbNotCompletedIssues -> {} , dbAddedIssues -> {} , dbPuntedIssues -> {}",
 							fetchedSprintDetails.getSprintID(), getIssuesIdList(dbSprintDetails.getCompletedIssues()),
 							getIssuesIdList(dbSprintDetails.getNotCompletedIssues()), dbSprintDetails.getAddedIssues(),
 							getIssuesIdList(dbSprintDetails.getPuntedIssues()));

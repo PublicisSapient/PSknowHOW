@@ -40,7 +40,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.zephyr.rest.ZephyrController;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrService;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrServiceKanban;
 
@@ -153,8 +152,6 @@ public class ZephyrControllerTest {
 				"}";
 		// @formatter:on
 
-
-
 		mockMvc.perform(post("/zypher/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
 				.andExpect(status().isBadRequest());
 
@@ -194,8 +191,7 @@ public class ZephyrControllerTest {
 
 		when(zephyrServiceKanban.process(Mockito.any())).thenReturn(kpiElementList);
 
-		mockMvc.perform(
-				post("/zypherkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/zypherkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
 				.andExpect(status().is2xxSuccessful());
 
 	}
@@ -213,10 +209,7 @@ public class ZephyrControllerTest {
 				"}";
 		// @formatter:on
 
-
-
-		mockMvc.perform(
-				post("/zypherkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/zypherkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
 				.andExpect(status().isBadRequest());
 
 	}

@@ -15,7 +15,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
 import org.apache.commons.collections.MapUtils;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -31,6 +30,7 @@ import org.modelmapper.ModelMapper;
 import com.publicissapient.kpidashboard.apis.data.DeploymentDataFactory;
 import com.publicissapient.kpidashboard.apis.data.PushDataFactory;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
@@ -39,19 +39,15 @@ import com.publicissapient.kpidashboard.common.repository.application.Deployment
 @RunWith(MockitoJUnitRunner.class)
 public class DeployServiceImplTest {
 
+	List<Deployment> deploymentList;
 	@InjectMocks
 	private DeployServiceImpl deployService;
-
 	@Mock
 	private DeploymentRepository deploymentRepository;
-
 	@Mock
 	private PushDataValidationServiceImpl pushDataValidationService;
-
 	private ObjectId projectBasicConfigId;
-
 	private Validator validator;
-	List<Deployment> deploymentList;
 
 	@Before
 	public void setUp() {

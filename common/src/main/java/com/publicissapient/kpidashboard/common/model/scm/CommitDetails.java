@@ -43,14 +43,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "commit_details")
-public class CommitDetails extends BasicModel{
+public class CommitDetails extends BasicModel {
 	private ObjectId processorItemId;
 	private long timestamp;
 	private List<ObjectId> projectConfigId = new ArrayList<>();
 
 	private String date;
 	private Long count;
-	
+
 	private String url;
 	private String branch;
 	private String repoSlug;

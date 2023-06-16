@@ -18,17 +18,18 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueOfflineFileTraceLogs;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueOfflineFileTraceLogs;
 
 @Repository
 public interface IssueOfflineTraceLogsRepository extends MongoRepository<JiraIssueOfflineFileTraceLogs, ObjectId> {
 
-	JiraIssueOfflineFileTraceLogs findByProjectConfigIdAndFileName(String projectConfigId,String fileName);
+	JiraIssueOfflineFileTraceLogs findByProjectConfigIdAndFileName(String projectConfigId, String fileName);
 
 	List<JiraIssueOfflineFileTraceLogs> findByProjectConfigId(String projectConfigId);
 }

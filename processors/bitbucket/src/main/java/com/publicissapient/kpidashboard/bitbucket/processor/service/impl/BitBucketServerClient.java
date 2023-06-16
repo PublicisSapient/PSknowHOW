@@ -41,11 +41,11 @@ import com.publicissapient.kpidashboard.bitbucket.processor.service.BitBucketCli
 import com.publicissapient.kpidashboard.bitbucket.processor.service.impl.common.BasicBitBucketClient;
 import com.publicissapient.kpidashboard.bitbucket.util.BitbucketRestOperations;
 import com.publicissapient.kpidashboard.common.constant.CommitType;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,13 +53,17 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class BitBucketServerClient extends BasicBitBucketClient implements BitBucketClient {
 
-	private String utfValue ="UTF-8";
+	private String utfValue = "UTF-8";
+
 	/**
 	 * Instantiates a new bit bucket server client.
 	 *
-	 * @param config                  the config
-	 * @param bitbucketRestOperations the rest operations supplier
-	 * @param aesEncryptionService    the aesEncryptionService
+	 * @param config
+	 *            the config
+	 * @param bitbucketRestOperations
+	 *            the rest operations supplier
+	 * @param aesEncryptionService
+	 *            the aesEncryptionService
 	 */
 	@Autowired
 	public BitBucketServerClient(BitBucketConfig config, BitbucketRestOperations bitbucketRestOperations,
@@ -70,15 +74,20 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 	/**
 	 * Fetch all commits.
 	 *
-	 * @param repo                the repo
-	 * @param firstRun            the first run
-	 * @param bitBucketServerInfo the bitbucketServerInfo
+	 * @param repo
+	 *            the repo
+	 * @param firstRun
+	 *            the first run
+	 * @param bitBucketServerInfo
+	 *            the bitbucketServerInfo
 	 * @return the list
-	 * @throws FetchingCommitException the exception
+	 * @throws FetchingCommitException
+	 *             the exception
 	 */
 	@Override
 	public List<CommitDetails> fetchAllCommits(BitbucketRepo repo, boolean firstRun,
-			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
+			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig)
+			throws FetchingCommitException {
 
 		String restUri = null;
 		List<CommitDetails> commits = new ArrayList<>();
@@ -142,13 +151,16 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 					parentList.add(getString((JSONObject) parentObj, BitBucketConstants.RESP_ID_KEY));
 				}
 			}
-			commitDetails(commits, scmRevisionNumber, message, author, timestamp, parentList, bitbucketServerInfo, proBasicConfig);
+			commitDetails(commits, scmRevisionNumber, message, author, timestamp, parentList, bitbucketServerInfo,
+					proBasicConfig);
 
 		}
 	}
+
 	@SuppressWarnings("java:S107")
 	private void commitDetails(List<CommitDetails> commits, String scmRevisionNumber, String message, String author,
-			long timestamp, List<String> parentList, ProcessorToolConnection bitbucketServerInfo, ProjectBasicConfig proBasicConfig) {
+			long timestamp, List<String> parentList, ProcessorToolConnection bitbucketServerInfo,
+			ProjectBasicConfig proBasicConfig) {
 		CommitDetails bitBucketCommit = new CommitDetails();
 		bitBucketCommit.setBranch(bitbucketServerInfo.getBranch());
 		bitBucketCommit.setUrl(bitbucketServerInfo.getUrl());
@@ -167,7 +179,8 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 
 	@Override
 	public List<MergeRequests> fetchMergeRequests(BitbucketRepo repo, boolean firstRun,
-			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
+			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig)
+			throws FetchingCommitException {
 
 		List<MergeRequests> mergeRequests = new ArrayList<>();
 		try {
@@ -181,7 +194,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 				JSONObject responseJson = getJSONFromResponse(respPayload.getBody());
 				JSONArray jsonArray = (JSONArray) responseJson.get(BitBucketConstants.RESP_VALUES_KEY);
 				isLastPage = (boolean) responseJson.get(BitBucketConstants.RESP_IS_LASTPAGE);
-				if (!isLastPage){
+				if (!isLastPage) {
 					start = (long) responseJson.get(BitBucketConstants.RESP_NEXTPAGE_START);
 				}
 				initializeMergeRequests(mergeRequests, jsonArray, proBasicConfig);
@@ -194,7 +207,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 		return mergeRequests;
 	}
 
-	private String addPaginationInfo(String url, long start){
+	private String addPaginationInfo(String url, long start) {
 		return url + "&start=" + start;
 	}
 
@@ -202,7 +215,8 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 	 * @param mergeRequests
 	 * @param jsonArray
 	 */
-	private void initializeMergeRequests(List<MergeRequests> mergeRequests, JSONArray jsonArray, ProjectBasicConfig proBasicConfig) {
+	private void initializeMergeRequests(List<MergeRequests> mergeRequests, JSONArray jsonArray,
+			ProjectBasicConfig proBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 			long closedDate = 0;
 			JSONObject mergReqObj = (JSONObject) jsonObj;

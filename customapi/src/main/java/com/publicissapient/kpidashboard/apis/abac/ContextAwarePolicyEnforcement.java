@@ -22,39 +22,38 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.abac.policy.PolicyEnforcement;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 
 @Component
 public class ContextAwarePolicyEnforcement {
-    @Autowired
-    protected PolicyEnforcement policy;
+	@Autowired
+	protected PolicyEnforcement policy;
 
-    @Autowired
-    private UserInfoServiceImpl userInfoService;
+	@Autowired
+	private UserInfoServiceImpl userInfoService;
 
-    @Autowired
-    private ProjectAccessManager projectAccessManager;
+	@Autowired
+	private ProjectAccessManager projectAccessManager;
 
-    @Autowired
-    private AuthenticationService authenticationService;
+	@Autowired
+	private AuthenticationService authenticationService;
 
-    public void checkPermission(Object resource, String permission) {
+	public void checkPermission(Object resource, String permission) {
 
+		Map<String, Object> environment = new HashMap<>();
 
-        Map<String, Object> environment = new HashMap<>();
+		environment.put("time", new Date());
 
-        environment.put("time", new Date());
+		UserInfo user = userInfoService.getUserInfo(authenticationService.getLoggedInUser());
 
-        UserInfo user = userInfoService.getUserInfo(authenticationService.getLoggedInUser());
-
-        if(!policy.check(projectAccessManager, user, resource, permission, environment))
-            throw new AccessDeniedException("Access is denied");
-    }
+		if (!policy.check(projectAccessManager, user, resource, permission, environment))
+			throw new AccessDeniedException("Access is denied");
+	}
 }

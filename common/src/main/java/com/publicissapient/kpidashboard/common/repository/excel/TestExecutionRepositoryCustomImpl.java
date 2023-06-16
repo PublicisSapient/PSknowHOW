@@ -18,7 +18,7 @@ import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution
  * @author narsingh9
  *
  */
-public class TestExecutionRepositoryCustomImpl implements TestExecutionRepositoryCustom{
+public class TestExecutionRepositoryCustomImpl implements TestExecutionRepositoryCustom {
 	private static final String CONF_ID = "basicProjectConfigId";
 
 	@Autowired
@@ -37,9 +37,9 @@ public class TestExecutionRepositoryCustomImpl implements TestExecutionRepositor
 				criteria = criteria.and(entry.getKey()).in(entry.getValue());
 			}
 		}
-		
+
 		Query query = new Query(criteria);
-		
+
 		// Project level filters
 		if (MapUtils.isNotEmpty(uniqueProjectMap)) {
 			List<Criteria> projectCriteriaList = new ArrayList<>();
@@ -49,7 +49,8 @@ public class TestExecutionRepositoryCustomImpl implements TestExecutionRepositor
 				filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
 				projectCriteriaList.add(projectCriteria);
 			});
-			Criteria criteriaAggregatedAtProjectLevel = new Criteria().orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
 
 			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 			query = new Query(criteriaProjectLevelAdded);

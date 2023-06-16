@@ -33,8 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -50,6 +48,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.factory.ProcessorAsynchJiraRestClientFactory;
@@ -63,21 +63,20 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 	private static final String STR_USERNAME = "username";
 	private static final String STR_PASSWORD = "password"; // NOSONAR
+	@Autowired
+	private JiraProcessorConfig jiraProcessorConfig;
+	@Autowired
+	private JiraOAuthClient jiraOAuthClient;
 
 	public JiraRestClientFactory() {
 		ExecutionLogContext.set(ExecutionLogContext.getContext());
 	}
 
-	@Autowired
-	private JiraProcessorConfig jiraProcessorConfig;
-
-	@Autowired
-	private JiraOAuthClient jiraOAuthClient;
-
 	/**
 	 * Decodes JIRA credentials provided by the user
 	 * 
-	 * @param jiraCredentials jiraCredentials
+	 * @param jiraCredentials
+	 *            jiraCredentials
 	 * @return Map of decoded username and password
 	 */
 	public Map<String, String> decodeUserCredentials(String jiraCredentials) {
@@ -166,12 +165,12 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 	/**
 	 * Cleans the cache in th Custom API
+	 * 
 	 * @param cacheEndPoint
-	 *     URL end point where Custom API cache is created
+	 *            URL end point where Custom API cache is created
 	 * @param cacheName
-	 *     Name of the Custom API cache
-	 * @return
-	 *    returns nothing
+	 *            Name of the Custom API cache
+	 * @return returns nothing
 	 */
 	public boolean cacheRestClient(String cacheEndPoint, String cacheName) {
 		boolean cleaned = false;
@@ -234,10 +233,10 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 			InetAddress.getByName(jiraUri.getHost());// NOSONAR
 
-			if(jiraInfo.isBearerToken()){
+			if (jiraInfo.isBearerToken()) {
 				client = new ProcessorAsynchJiraRestClientFactory().createWithBearerTokenAuthentication(jiraUri,
 						password, jiraProcessorConfig);
-			}else {
+			} else {
 				client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
 						password, jiraProcessorConfig);
 			}
@@ -249,7 +248,6 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 		return client;
 	}
-
 
 	public ProcessorJiraRestClient getSpnegoSamlClient(KerberosClient kerberosClient) {
 		ProcessorJiraRestClient client = null;

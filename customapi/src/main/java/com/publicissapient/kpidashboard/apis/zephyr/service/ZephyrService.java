@@ -91,7 +91,8 @@ public class ZephyrService {
 		String[] projectKeyCache = null;
 		try {
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(),kpiRequest.getLabel(), false);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
+					false);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			} else {
@@ -107,8 +108,8 @@ public class ZephyrService {
 					return responseList;
 				}
 
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.ZEPHYR.name(), groupId,
-						kpiRequest.getSprintIncluded());
+				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.ZEPHYR.name(),
+						groupId, kpiRequest.getSprintIncluded());
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 						&& null != cachedData) {
 					log.info("[ZEPHYR][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
@@ -184,7 +185,8 @@ public class ZephyrService {
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] projectKeyCache) {
-		Integer sprintLevel = filterHelperService.getHierarchyIdLevelMap(false).get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
+		Integer sprintLevel = filterHelperService.getHierarchyIdLevelMap(false)
+				.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
 		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& sprintLevel >= kpiRequest.getLevel()) {
 			cacheService.setIntoApplicationCache(projectKeyCache, responseList, KPISource.ZEPHYR.name(), groupId,
@@ -238,8 +240,8 @@ public class ZephyrService {
 		}
 
 		/**
-		 * This method call by multiple thread, take object of specific KPI and
-		 * call method of these KPIs
+		 * This method call by multiple thread, take object of specific KPI and call
+		 * method of these KPIs
 		 *
 		 * @param kpiRequest
 		 *            Zephyr KPI request

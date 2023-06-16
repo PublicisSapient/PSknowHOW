@@ -35,7 +35,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 
 /**
@@ -87,7 +86,7 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 		list.add(Aggregation.unwind(HISTORY_DETAILS));
 
 		// project level status filter
-		if(MapUtils.isNotEmpty(uniqueProjectMap)) {
+		if (MapUtils.isNotEmpty(uniqueProjectMap)) {
 			List<Criteria> projectCriteriaList = new ArrayList<>();
 			uniqueProjectMap.forEach((project, filterMap) -> {
 				Criteria projectCriteria = new Criteria();
@@ -104,23 +103,22 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 
 			});
 
-
 			Criteria criteriaAggregatedAtProjectLevelForStatus = new Criteria()
 					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
 
 			list.add(Aggregation.match(criteriaAggregatedAtProjectLevelForStatus));
 		}
 		list.add(Aggregation.group(STORY_ID, STORY_TYPE, TICKET_PROJECT_ID_FIELD, TICKET_CREATED_DATE_FIELD, PRIORITY,
-				ESTIMATE_TIME,URL).push(HISTORY_DETAILS).as(HISTORY_DETAILS));
+				ESTIMATE_TIME, URL).push(HISTORY_DETAILS).as(HISTORY_DETAILS));
 		list.add(Aggregation.project(HISTORY_DETAILS));
 		TypedAggregation<KanbanIssueCustomHistory> agg = Aggregation.newAggregation(KanbanIssueCustomHistory.class,
 				list);
-		
+
 		List<IssueHistoryMappedData> data = operations
 				.aggregate(agg, KanbanIssueCustomHistory.class, IssueHistoryMappedData.class).getMappedResults();
-		
+
 		List<KanbanIssueCustomHistory> resultList = new ArrayList<>();
-		
+
 		data.stream().forEach(result -> {
 			KanbanIssueCustomHistory history = new KanbanIssueCustomHistory();
 			history.setStoryID(result.getId().getStoryID());

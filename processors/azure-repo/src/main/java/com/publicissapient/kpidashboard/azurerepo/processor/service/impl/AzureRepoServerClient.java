@@ -41,11 +41,12 @@ import com.publicissapient.kpidashboard.azurerepo.model.AzureRepoModel;
 import com.publicissapient.kpidashboard.azurerepo.processor.service.AzureRepoClient;
 import com.publicissapient.kpidashboard.azurerepo.processor.service.impl.common.BasicAzureRepoClient;
 import com.publicissapient.kpidashboard.azurerepo.util.AzureRepoRestOperations;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -58,9 +59,12 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 	/**
 	 * Instantiates a new azure repo server client.
 	 *
-	 * @param config                  the config
-	 * @param azurerepoRestOperations the rest operations supplier
-	 * @param aesEncryptionService    aesencryptionservice
+	 * @param config
+	 *            the config
+	 * @param azurerepoRestOperations
+	 *            the rest operations supplier
+	 * @param aesEncryptionService
+	 *            aesencryptionservice
 	 */
 	@Autowired
 	public AzureRepoServerClient(AzureRepoConfig config, AzureRepoRestOperations azurerepoRestOperations,
@@ -71,16 +75,21 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 	/**
 	 * Fetch all commits.
 	 *
-	 * @param repo                   the repo
-	 * @param firstRun               the first run
-	 * @param azureRepoProcessorInfo azure Processor Info Like branch,pat
+	 * @param repo
+	 *            the repo
+	 * @param firstRun
+	 *            the first run
+	 * @param azureRepoProcessorInfo
+	 *            azure Processor Info Like branch,pat
 	 * @return the list
-	 * @throws FetchingCommitException the exception
+	 * @throws FetchingCommitException
+	 *             the exception
 	 */
 	@Override
 
 	public List<CommitDetails> fetchAllCommits(AzureRepoModel repo, boolean firstRun,
-			ProcessorToolConnection azureRepoProcessorInfo, ProjectBasicConfig projectBasicConfig) throws FetchingCommitException {// NOSONAR
+			ProcessorToolConnection azureRepoProcessorInfo, ProjectBasicConfig projectBasicConfig)
+			throws FetchingCommitException {// NOSONAR
 
 		String restUri = null;
 		List<CommitDetails> commits = new ArrayList<>();
@@ -128,7 +137,8 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 
 	@Override
 	public List<MergeRequests> fetchAllMergeRequest(AzureRepoModel repo, boolean firstRun,
-			ProcessorToolConnection azureRepoProcessorInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
+			ProcessorToolConnection azureRepoProcessorInfo, ProjectBasicConfig proBasicConfig)
+			throws FetchingCommitException {
 		// NOSONAR
 
 		String restUri = null;
@@ -231,11 +241,11 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 		}
 	}
 
-	private void initializeMergeRequestDetails(List<MergeRequests> mergeRequestList,
-			 JSONArray jsonArray, ProjectBasicConfig proBasicConfig) {
+	private void initializeMergeRequestDetails(List<MergeRequests> mergeRequestList, JSONArray jsonArray,
+			ProjectBasicConfig proBasicConfig) {
 		long closedDate = 0;
 		long updatedDate = 0;
-		long createdDate=0;
+		long createdDate = 0;
 		for (Object jsonObj : jsonArray) {
 			JSONObject mergReqObj = (JSONObject) jsonObj;
 			String title = getString(mergReqObj, AzureRepoConstants.RESP_TITLE);
@@ -243,13 +253,13 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 			boolean isOpen = Boolean.parseBoolean(getString(mergReqObj, AzureRepoConstants.RESP_OPEN));
 			boolean isClosed = Boolean.parseBoolean(getString(mergReqObj, AzureRepoConstants.RESP_CLOSED));
 			if (getString(mergReqObj, AzureRepoConstants.RESP_CREATION_DATE) != null) {
-				createdDate =getDateTimeStamp(getString(mergReqObj, AzureRepoConstants.RESP_CREATION_DATE));
+				createdDate = getDateTimeStamp(getString(mergReqObj, AzureRepoConstants.RESP_CREATION_DATE));
 			}
 			if (getString(mergReqObj, AzureRepoConstants.RESP_UPDATED_DATE) != null) {
-				updatedDate =getDateTimeStamp(getString(mergReqObj, AzureRepoConstants.RESP_UPDATED_DATE));
+				updatedDate = getDateTimeStamp(getString(mergReqObj, AzureRepoConstants.RESP_UPDATED_DATE));
 			}
 			if (getString(mergReqObj, AzureRepoConstants.RESP_CLOSED_DATE) != null) {
-				closedDate =getDateTimeStamp(getString(mergReqObj, AzureRepoConstants.RESP_CLOSED_DATE));
+				closedDate = getDateTimeStamp(getString(mergReqObj, AzureRepoConstants.RESP_CLOSED_DATE));
 			}
 
 			String fromBranch = getString(mergReqObj, AzureRepoConstants.RESP_SOURCE_REF_NAME);

@@ -20,11 +20,11 @@ import lombok.NoArgsConstructor;
 public class AutoApproveAccessConfig {
 	@Id
 	private ObjectId id;
-	
+
 	@Field("enableAutoApprove")
 	private String enableAutoApprove;
-	
+
 	@Field("roles")
 	private List<RoleData> roles;
-	
+
 }

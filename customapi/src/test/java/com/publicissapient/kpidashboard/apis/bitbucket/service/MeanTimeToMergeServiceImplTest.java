@@ -57,6 +57,10 @@ import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestReposi
 @RunWith(MockitoJUnitRunner.class)
 public class MeanTimeToMergeServiceImplTest {
 
+	private static Tool tool1;
+	private static Tool tool2;
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	MergeRequestRepository mergeRequestRepository;
 	@Mock
@@ -71,21 +75,14 @@ public class MeanTimeToMergeServiceImplTest {
 	KpiHelperService kpiHelperService;
 	@Mock
 	private CommonService commonService;
-
 	private List<MergeRequests> mergeRequestsList = new ArrayList<>();
 	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
 	private Map<ObjectId, Map<String, List<Tool>>> toolMap1 = new HashMap<>();
 	private Map<String, List<Tool>> toolGroup = new HashMap<>();
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
-	private static Tool tool1;
-	private static Tool tool2;
-
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 

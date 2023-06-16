@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,6 +56,8 @@ import com.publicissapient.kpidashboard.common.repository.application.AccountHie
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author tauakram
  *
@@ -80,15 +80,15 @@ public class FilterHelperService {
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
 
-
 	public List<AccountHierarchyData> getFilteredBuilds(KpiRequest kpiRequest, String groupName) {
 
-		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService.cacheAccountHierarchyData();
+		List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
+				.cacheAccountHierarchyData();
 
 		List<AccountHierarchyData> dataList = getAccountHierarchyDataForRequest(
 				new HashSet<>(kpiRequest.getSprintIncluded()), accountDataListAll);
 		List<AccountHierarchyData> filteredDataSetNew = null;
-		filteredDataSetNew = filter(dataList,groupName,kpiRequest);
+		filteredDataSetNew = filter(dataList, groupName, kpiRequest);
 		if (CollectionUtils.isNotEmpty(kpiRequest.getSelectedMap()
 				.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, new ArrayList<>()))) {
 			filteredDataSetNew = filter(filteredDataSetNew, CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, kpiRequest);
@@ -101,7 +101,8 @@ public class FilterHelperService {
 		return filteredDataSetNew;
 	}
 
-	private List<AccountHierarchyData> filter(List<AccountHierarchyData> dataList, String groupName,KpiRequest kpiRequest){
+	private List<AccountHierarchyData> filter(List<AccountHierarchyData> dataList, String groupName,
+			KpiRequest kpiRequest) {
 		Set<String> str = new HashSet<>(kpiRequest.getSelectedMap().getOrDefault(groupName, new ArrayList<>()));
 		List<AccountHierarchyData> filteredDataSetNew = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(str)) {
@@ -132,24 +133,22 @@ public class FilterHelperService {
 
 		hierarchyDataAll.forEach(data -> {
 			// add all which donot have sprint level
-			if (data.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT) || data.getNode()
-					.stream()
-					.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
-							&& node.getAccountHierarchy().getSprintState() != null
-							&& nsprintStateList.contains(node.getAccountHierarchy().getSprintState().toLowerCase()))
-			|| data.getNode()
-					.stream()
-					.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE))) {
+			if (data.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
+					|| data.getNode().stream()
+							.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+									&& node.getAccountHierarchy().getSprintState() != null
+									&& nsprintStateList
+											.contains(node.getAccountHierarchy().getSprintState().toLowerCase()))
+					|| data.getNode().stream()
+							.anyMatch(node -> node.getGroupName().equals(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE))) {
 				hierarchyData.add(data);
 			}
 		});
 		return hierarchyData;
 	}
 
-
-	
 	@SuppressWarnings("unchecked")
-	public List<AccountHierarchyDataKanban> getFilteredBuildsKanban(KpiRequest kpiRequest,String groupName)// NOPMD
+	public List<AccountHierarchyDataKanban> getFilteredBuildsKanban(KpiRequest kpiRequest, String groupName)// NOPMD
 			throws EntityNotFoundException {// NOPMD
 		// Do not remove NOPMD comment. This is required to ignore nthcomplexity
 		// and
@@ -176,7 +175,8 @@ public class FilterHelperService {
 		return filteredDataSetNew;
 	}
 
-	private List<AccountHierarchyDataKanban> filterKanban(List<AccountHierarchyDataKanban> dataList, String groupName,KpiRequest kpiRequest){
+	private List<AccountHierarchyDataKanban> filterKanban(List<AccountHierarchyDataKanban> dataList, String groupName,
+			KpiRequest kpiRequest) {
 		Set<String> str = new HashSet<>(kpiRequest.getSelectedMap().getOrDefault(groupName, new ArrayList<>()));
 		List<AccountHierarchyDataKanban> filteredDataSetNew = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(str)) {
@@ -486,7 +486,8 @@ public class FilterHelperService {
 
 	private AccountHierarchy getAccountHierarchyProjectLevel(ObjectId projectBasicConfigId) {
 		List<AccountHierarchy> accountHierarchiesProjectLabel = accountHierarchyRepository
-				.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, projectBasicConfigId);
+				.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
+						projectBasicConfigId);
 
 		return CollectionUtils.isNotEmpty(accountHierarchiesProjectLabel) ? accountHierarchiesProjectLabel.get(0)
 				: null;
@@ -524,7 +525,8 @@ public class FilterHelperService {
 
 	private KanbanAccountHierarchy getAccountHierarchyProjectLevelKanban(ObjectId projectBasicConfigId) {
 		List<KanbanAccountHierarchy> accountHierarchiesProjectLabel = kanbanAccountHierarchyRepo
-				.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, projectBasicConfigId);
+				.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
+						projectBasicConfigId);
 
 		return CollectionUtils.isNotEmpty(accountHierarchiesProjectLabel) ? accountHierarchiesProjectLabel.get(0)
 				: null;
@@ -576,7 +578,7 @@ public class FilterHelperService {
 		return toBeDeleted;
 
 	}
-	
+
 	public Map<String, HierarchyLevel> getHierarchyLevelMap(boolean isKanban) {
 		if (isKanban) {
 			return cacheService.getFullKanbanHierarchyLevelMap();
@@ -604,7 +606,7 @@ public class FilterHelperService {
 	}
 
 	public String getFirstHierarachyLevel() {
-		return getHierarachyLevelId(1,"", true);
+		return getHierarachyLevelId(1, "", true);
 	}
 
 	public Map<String, Integer> getHierarchyIdLevelMap(boolean isKanban) {
@@ -612,7 +614,7 @@ public class FilterHelperService {
 		getHierarchyLevelMap(isKanban).forEach((key, value) -> hierarchyLevelMap.put(key, value.getLevel()));
 		return hierarchyLevelMap;
 	}
-	
+
 	public Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel() {
 		return cacheService.getAdditionalFilterHierarchyLevel();
 	}

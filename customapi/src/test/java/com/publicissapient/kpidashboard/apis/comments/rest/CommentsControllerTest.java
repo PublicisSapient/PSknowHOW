@@ -2,7 +2,6 @@ package com.publicissapient.kpidashboard.apis.comments.rest;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -11,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.model.comments.CommentRequestDTO;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,31 +26,29 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.apis.comments.service.CommentsService;
+import com.publicissapient.kpidashboard.common.model.comments.CommentRequestDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommentsControllerTest {
 
+	ObjectMapper mapper = new ObjectMapper();
+	String node;
+	String level;
+	String sprintId;
+	String kpiId;
 	private MockMvc mockMvc;
-
 	@Mock
 	private CommentsService commentsService;
 	@InjectMocks
 	private CommentsController commentsController;
 
-	ObjectMapper mapper = new ObjectMapper();
-
-	String node;
-	String level;
-	String sprintId;
-	String kpiId;
-
 	@Before
 	public void before() {
 		node = "1";
 		level = "2";
-		sprintId ="10";
+		sprintId = "10";
 		kpiId = "kpi12";
 		mockMvc = MockMvcBuilders.standaloneSetup(commentsController).build();
 	}
@@ -101,8 +97,7 @@ public class CommentsControllerTest {
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
 		mappedCollection.put("node", node);
 		when(commentsService.findCommentByKPIId(node, level, sprintId, kpiId)).thenReturn(mappedCollection);
-		mockMvc.perform(post("/comments/getCommentsByKpiId")
-						.content(mapper.writeValueAsString(commentRequestDTO))
+		mockMvc.perform(post("/comments/getCommentsByKpiId").content(mapper.writeValueAsString(commentRequestDTO))
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 
 	}

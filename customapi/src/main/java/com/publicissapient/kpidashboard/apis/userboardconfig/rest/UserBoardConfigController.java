@@ -69,7 +69,8 @@ public class UserBoardConfigController {
 	/**
 	 * Api to save user based config
 	 * 
-	 * @param userBoardConfigDTO userBoardConfigDTO
+	 * @param userBoardConfigDTO
+	 *            userBoardConfigDTO
 	 * @return response
 	 */
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

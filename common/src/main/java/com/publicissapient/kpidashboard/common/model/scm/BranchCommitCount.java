@@ -39,6 +39,5 @@ import lombok.Setter;
 public class BranchCommitCount {
 	private String branchName;
 	private List<CommitCount> datewiseData;
-	
+
 }
-	

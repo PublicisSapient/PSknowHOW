@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -45,6 +44,7 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 @Component
 public class NetOpenTicketCountStatusImpl
@@ -242,7 +242,9 @@ public class NetOpenTicketCountStatusImpl
 				}
 				// Populates data in Excel for validation for tickets created before
 				populateExcelDataObject(requestTrackerId, statusWiseDateData, node, projectWiseStatusList,
-						new HashSet<>((List<KanbanIssueCustomHistory>)  historyDataResultMap.get(JIRA_ISSUE_HISTORY_DATA)), excelData,kpiRequest);
+						new HashSet<>(
+								(List<KanbanIssueCustomHistory>) historyDataResultMap.get(JIRA_ISSUE_HISTORY_DATA)),
+						excelData, kpiRequest);
 				mapTmp.get(node.getId()).setValue(dataCountMap);
 			}
 		});
@@ -338,7 +340,10 @@ public class NetOpenTicketCountStatusImpl
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
-			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
 		} else {
@@ -382,10 +387,11 @@ public class NetOpenTicketCountStatusImpl
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			String projectName = node.getAccountHierarchyKanban().getNodeName();
-			String date = getRange(KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(),
-					kpiRequest.getDuration()), kpiRequest);
+			String date = getRange(
+					KpiDataHelper.getStartAndEndDateForDataFiltering(LocalDate.now(), kpiRequest.getDuration()),
+					kpiRequest);
 			KPIExcelUtility.prepareExcelForKanbanCumulativeDataMap(projectName, projectWiseFeatureList,
-					projectWiseStatusList, kanbanJiraIssues, excelData,date,
+					projectWiseStatusList, kanbanJiraIssues, excelData, date,
 					KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.getKpiId());
 		}
 

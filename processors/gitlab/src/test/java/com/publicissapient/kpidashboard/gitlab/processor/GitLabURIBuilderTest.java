@@ -37,16 +37,14 @@ import com.publicissapient.kpidashboard.gitlab.processor.service.impl.GitLabURIB
 
 @ExtendWith(SpringExtension.class)
 public class GitLabURIBuilderTest {
-	
+
+	ProcessorToolConnection gitLabInfo = new ProcessorToolConnection();
 	@Mock
-	private  GitLabRepo repo;
-	
-    @Mock
-	private  GitLabConfig config;
-    
-    private GitLabURIBuilder uriBuilder;    
-	ProcessorToolConnection gitLabInfo=new ProcessorToolConnection();
-	
+	private GitLabRepo repo;
+	@Mock
+	private GitLabConfig config;
+	private GitLabURIBuilder uriBuilder;
+
 	@BeforeEach
 	public void init() {
 		gitLabInfo.setBranch("release/core-r4.4");
@@ -54,15 +52,15 @@ public class GitLabURIBuilderTest {
 		gitLabInfo.setUrl("http://localhost:9999/scm/testproject/testProject.git");
 		gitLabInfo.setApiEndPoint("/rest/api/1.0/");
 		gitLabInfo.setUsername("User");
-		
+
 		Map<String, Object> options = new HashMap<>();
 		options.put("gitLabApi", "/rest/api/1.0/");
 		when(repo.getGitLabProjectId()).thenReturn("577");
-		uriBuilder = new GitLabURIBuilder(repo, config,gitLabInfo);
+		uriBuilder = new GitLabURIBuilder(repo, config, gitLabInfo);
 	}
-	
+
 	@Test
-	public void testBuild() throws Exception{	
+	public void testBuild() throws Exception {
 		String url = uriBuilder.build();
 		String expected = "http://localhost:9999/api/v4/projects/577/repository/commits?ref_name=release%2Fcore-r4.4&per_page=100";
 		Assert.assertEquals(expected, url);

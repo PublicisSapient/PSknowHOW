@@ -42,7 +42,7 @@ public enum JiraFeature {
 	 * Project id jira feature.
 	 */
 	PROJECT_ID("projectID"),
-	
+
 	/**
 	 * Status jira feature.
 	 */
@@ -128,12 +128,10 @@ public enum JiraFeature {
 	 */
 
 	JIRA_PRODUCTION_DEFECT("productionDefect"),
-	
-	BASIC_PROJECT_CONFIG_ID("basicProjectConfigId"),
-	ADDITIONAL_FILTERS_FILTERID("additionalFilters.filterId"),
-	ADDITIONAL_FILTERS_FILTERVALUES_VALUEID("additionalFilters.filterValues.valueId");
-	
-	
+
+	BASIC_PROJECT_CONFIG_ID("basicProjectConfigId"), ADDITIONAL_FILTERS_FILTERID(
+			"additionalFilters.filterId"), ADDITIONAL_FILTERS_FILTERVALUES_VALUEID(
+					"additionalFilters.filterValues.valueId");
 
 	private String fieldValueInFeature;
 

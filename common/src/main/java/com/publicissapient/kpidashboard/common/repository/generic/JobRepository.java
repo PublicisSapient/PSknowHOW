@@ -45,7 +45,7 @@ public interface JobRepository<T extends JobProcessorItem> extends ProcessorItem
 	 */
 	@Query("{ 'processorId' : ?0, 'toolDetailsMap.instanceUrl' : ?1, 'toolDetailsMap.jobName' : ?2}")
 	T findJob(ObjectId processorId, String instanceUrl, String jobName);
-	
+
 	/**
 	 * Find job t.
 	 *

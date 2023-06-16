@@ -18,13 +18,16 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.util;
 
-import com.atlassian.jira.rest.client.api.ExpandableProperty;
-import com.atlassian.jira.rest.client.api.OptionalIterable;
-import com.atlassian.jira.rest.client.api.RestClientException;
-import com.atlassian.jira.rest.client.api.domain.BasicUser;
-import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
-import com.google.common.collect.Maps;
+
+import javax.annotation.Nullable;
+
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -33,22 +36,21 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import javax.annotation.Nullable;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import com.atlassian.jira.rest.client.api.ExpandableProperty;
+import com.atlassian.jira.rest.client.api.OptionalIterable;
+import com.atlassian.jira.rest.client.api.RestClientException;
+import com.atlassian.jira.rest.client.api.domain.BasicUser;
+import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
+import com.google.common.collect.Maps;
 
 public class JsonParseUtil {
 	public static final String JIRA_DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 	public static final DateTimeFormatter JIRA_DATE_TIME_FORMATTER = DateTimeFormat.forPattern(JIRA_DATE_TIME_PATTERN);
 	public static final DateTimeFormatter JIRA_DATE_FORMATTER = ISODateTimeFormat.date();
 	public static final String SELF_ATTR = "self";
-	
-	private JsonParseUtil(){
-		
+
+	private JsonParseUtil() {
+
 	}
 
 	public static <T> Collection<T> parseJsonArray(final JSONArray jsonArray, final JsonObjectParser<T> jsonParser)
@@ -228,7 +230,8 @@ public class JsonParseUtil {
 	 * Tries to parse date and time and return that. If fails then tries to parse
 	 * date only.
 	 *
-	 * @param str String contains either date and time or date only
+	 * @param str
+	 *            String contains either date and time or date only
 	 * @return date and time or date only
 	 */
 	public static DateTime parseDateTimeOrDate(final String str) {

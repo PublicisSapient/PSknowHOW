@@ -21,9 +21,9 @@ package com.publicissapient.kpidashboard.common.repository.jira;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import org.springframework.stereotype.Repository;
 
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 
 /**
  * Interface FeatureHistoryCustomQueryRepository.
@@ -32,5 +32,5 @@ import org.springframework.stereotype.Repository;
 public interface IssueBacklogCustomHistoryQueryRepository {
 
 	List<IssueBacklogCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
-																 Map<String, Map<String, Object>> uniqueProjectMap);
+			Map<String, Map<String, Object>> uniqueProjectMap);
 }

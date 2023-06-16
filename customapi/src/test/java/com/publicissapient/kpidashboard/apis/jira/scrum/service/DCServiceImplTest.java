@@ -80,52 +80,40 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 @RunWith(MockitoJUnitRunner.class)
 public class DCServiceImplTest {
 
-	private List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
-	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-
-	private Map<String, Object> filterLevelMap;
+	private static final String TOTAL_DEFECT_DATA = "totalBugKey";
+	private static final String SPRINT_WISE_STORY_DATA = "storyData";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<JiraIssue> totalBugList = new ArrayList<>();
-	private KpiRequest kpiRequest;
-	private Map<String, String> kpiWiseAggregation = new HashMap<>();
-
-	private List<DataCount> trendValues = new ArrayList<>();
-	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
 	String P1 = "p1,p1-blocker,blocker, 1, 0, p0";
 	String P2 = "p2, critical, p2-critical, 2";
 	String P3 = "p3, p3-major, major, 3";
 	String P4 = "p4, p4-minor, minor, 4, p5-trivial, 5,trivial";
-
-	private static final String TOTAL_DEFECT_DATA = "totalBugKey";
-	private static final String SPRINT_WISE_STORY_DATA = "storyData";
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
-
 	@Mock
 	CacheService cacheService;
-
 	@Mock
 	ConfigHelperService configHelperService;
-
 	@Mock
 	KpiHelperService kpiHelperService;
-
 	@InjectMocks
 	DCServiceImpl dcServiceImpl;
-
 	@Mock
 	ProjectBasicConfigRepository projectConfigRepository;
-
 	@Mock
 	FieldMappingRepository fieldMappingRepository;
-
-	@Mock
-	private FilterHelperService filterHelperService;
-
 	@Mock
 	CustomApiConfig customApiConfig;
-
+	private List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private Map<String, Object> filterLevelMap;
+	private KpiRequest kpiRequest;
+	private Map<String, String> kpiWiseAggregation = new HashMap<>();
+	private List<DataCount> trendValues = new ArrayList<>();
+	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
+	@Mock
+	private FilterHelperService filterHelperService;
 	@Mock
 	private CommonService commonService;
 
@@ -187,7 +175,6 @@ public class DCServiceImplTest {
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put("defectCountByPriority", Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));
 		maturityRangeMap.put("defectPriorityWeight", Arrays.asList("10", "7", "5", "3"));
-
 
 		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("On");
 

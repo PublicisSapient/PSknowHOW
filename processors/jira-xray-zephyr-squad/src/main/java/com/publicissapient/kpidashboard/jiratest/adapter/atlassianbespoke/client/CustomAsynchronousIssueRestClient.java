@@ -30,21 +30,22 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousIssueRestClient;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
-
 import com.publicissapient.kpidashboard.jiratest.adapter.atlassianbespoke.parser.CustomIssueJsonParser;
+
 import io.atlassian.util.concurrent.Promise;
 
 public class CustomAsynchronousIssueRestClient extends AsynchronousIssueRestClient {
 
-	CustomIssueJsonParser issueJsonParser = new CustomIssueJsonParser();
-	private static final EnumSet<Expandos> DEFAULT_EXPANDS = EnumSet.of(Expandos.NAMES, Expandos.SCHEMA, Expandos.TRANSITIONS);
-	private static final Function<Expandos, String> EXPANDO_TO_PARAM = from -> from.name().toLowerCase(); //NOSONAR
+	private static final EnumSet<Expandos> DEFAULT_EXPANDS = EnumSet.of(Expandos.NAMES, Expandos.SCHEMA,
+			Expandos.TRANSITIONS);
+	private static final Function<Expandos, String> EXPANDO_TO_PARAM = from -> from.name().toLowerCase(); // NOSONAR
 	private final URI baseUri;
+	CustomIssueJsonParser issueJsonParser = new CustomIssueJsonParser();
 
 	public CustomAsynchronousIssueRestClient(URI baseUri, HttpClient client, SessionRestClient sessionRestClient,
 			MetadataRestClient metadataRestClient) {
 		super(baseUri, client, sessionRestClient, metadataRestClient);
-		this.baseUri=baseUri;
+		this.baseUri = baseUri;
 	}
 
 	@Override

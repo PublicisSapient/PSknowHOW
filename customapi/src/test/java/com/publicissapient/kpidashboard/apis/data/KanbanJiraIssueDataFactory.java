@@ -11,8 +11,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 
 import lombok.extern.slf4j.Slf4j;
@@ -67,22 +65,20 @@ public class KanbanJiraIssueDataFactory {
 
 		return mapper;
 	}
+
 	public List<KanbanJiraIssue> getKanbanJiraIssueDataList() {
-        return KanbanJiraIssueDataFactory;
-    }
+		return KanbanJiraIssueDataFactory;
+	}
 
 	public List<KanbanJiraIssue> getKanbanJiraIssueDataListByTypeName(List<String> typeName) {
-		return KanbanJiraIssueDataFactory.stream().filter(f->
-				typeName.contains(f.getTypeName())).collect(Collectors.toList());
+		return KanbanJiraIssueDataFactory.stream().filter(f -> typeName.contains(f.getTypeName()))
+				.collect(Collectors.toList());
 	}
 
-	public List<KanbanJiraIssue> getKanbanJiraIssueDataListByTypeNameandStatus(List<String> typeName,List<String> status) {
-		return KanbanJiraIssueDataFactory.stream().filter(f->
-				(typeName.contains(f.getTypeName()))
-					&& (status.contains(f.getStatus()))
-				).collect(Collectors.toList());
+	public List<KanbanJiraIssue> getKanbanJiraIssueDataListByTypeNameandStatus(List<String> typeName,
+			List<String> status) {
+		return KanbanJiraIssueDataFactory.stream()
+				.filter(f -> (typeName.contains(f.getTypeName())) && (status.contains(f.getStatus())))
+				.collect(Collectors.toList());
 	}
 }
-
-
-

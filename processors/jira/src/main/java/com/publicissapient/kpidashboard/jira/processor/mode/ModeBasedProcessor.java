@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -42,19 +40,19 @@ import com.publicissapient.kpidashboard.common.repository.connection.ConnectionR
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 public abstract class ModeBasedProcessor { // NOSONAR
 
-	public ModeBasedProcessor() {
-	}
-
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
-
 	@Autowired
 	private ConnectionRepository connectionRepository;
-
 	private ExecutionLogContext executionLogContext;
+
+	public ModeBasedProcessor() {
+	}
 
 	public ExecutionLogContext getExecutionLogContext() {
 		return executionLogContext;

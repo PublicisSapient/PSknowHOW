@@ -1,16 +1,18 @@
 package com.publicissapient.kpidashboard.common.service;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -40,17 +42,18 @@ public class HierarchyLevelServiceImpl implements HierarchyLevelService {
 			hierarchyLevels.add(sprintHierarchyLevel);
 		}
 		hierarchyLevels.add(releaseHierarchyLevel);
-		List<AdditionalFilterCategory> additionalFilterCategories = filterCategoryLevelService.getAdditionalFilterCategories();
+		List<AdditionalFilterCategory> additionalFilterCategories = filterCategoryLevelService
+				.getAdditionalFilterCategories();
 		if (CollectionUtils.isNotEmpty(additionalFilterCategories)) {
 
 			for (AdditionalFilterCategory additionalFilterCategory : additionalFilterCategories) {
 				HierarchyLevel bottomHierarchyLevel = new HierarchyLevel();
 				bottomHierarchyLevel.setHierarchyLevelId(additionalFilterCategory.getFilterCategoryId());
 				bottomHierarchyLevel.setHierarchyLevelName(additionalFilterCategory.getFilterCategoryName());
-				if (isKanban){
+				if (isKanban) {
 					bottomHierarchyLevel.setLevel(releaseHierarchyLevel.getLevel() + 1);
 				} else {
-					bottomHierarchyLevel.setLevel(sprintHierarchyLevel.getLevel()  + 1);
+					bottomHierarchyLevel.setLevel(sprintHierarchyLevel.getLevel() + 1);
 				}
 				hierarchyLevels.add(bottomHierarchyLevel);
 			}

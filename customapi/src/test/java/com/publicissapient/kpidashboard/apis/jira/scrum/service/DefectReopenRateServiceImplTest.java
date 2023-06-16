@@ -12,9 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryQueryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
@@ -42,39 +40,34 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryQueryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefectReopenRateServiceImplTest {
 
-	@Mock
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Mock
-	private IssueBacklogCustomHistoryQueryRepository issueBacklogCustomHistoryQueryRepository;
-
-	@Mock
-	private KpiHelperService kpiHelperService;
-
-	@Mock
-	private IssueBacklogRepository issueBacklogRepository;
-
-	@Mock
-	private ConfigHelperService configHelperService;
-
-	@Mock
-	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
-	@InjectMocks
-	DefectReopenRateServiceImpl defectReopenRateService;
-
-	private KpiRequest kpiRequest;
-	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-	List<JiraIssue> totalJiraIssueList = new ArrayList<>();
-	List<JiraIssueCustomHistory> totalJiraIssueHistoryList = new ArrayList<>();
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	@InjectMocks
+	DefectReopenRateServiceImpl defectReopenRateService;
+	List<JiraIssue> totalJiraIssueList = new ArrayList<>();
+	List<JiraIssueCustomHistory> totalJiraIssueHistoryList = new ArrayList<>();
+	@Mock
+	private JiraIssueRepository jiraIssueRepository;
+	@Mock
+	private IssueBacklogCustomHistoryQueryRepository issueBacklogCustomHistoryQueryRepository;
+	@Mock
+	private KpiHelperService kpiHelperService;
+	@Mock
+	private IssueBacklogRepository issueBacklogRepository;
+	@Mock
+	private ConfigHelperService configHelperService;
+	@Mock
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	private KpiRequest kpiRequest;
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -96,8 +89,10 @@ public class DefectReopenRateServiceImplTest {
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
-		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance("/json/default/iteration/jira_issues.json");
-		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance("/json/default/iteration/jira_issue_custom_history.json");
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory
+				.newInstance("/json/default/iteration/jira_issues.json");
+		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
+				.newInstance("/json/default/iteration/jira_issue_custom_history.json");
 		totalJiraIssueList = jiraIssueDataFactory.getJiraIssues();
 		totalJiraIssueHistoryList = jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory();
 	}
@@ -118,8 +113,8 @@ public class DefectReopenRateServiceImplTest {
 			assertNotNull(kpiElement.getTrendValueList());
 			Object value = ((DataCount) kpiElement.getTrendValueList()).getValue();
 			List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) value;
-			IterationKpiValue iterationKpiValue = iterationKpiValues.stream().filter(kpiValue -> "Overall"
-					.equals(kpiValue.getFilter1())).findFirst().get();
+			IterationKpiValue iterationKpiValue = iterationKpiValues.stream()
+					.filter(kpiValue -> "Overall".equals(kpiValue.getFilter1())).findFirst().get();
 			assertNotNull(iterationKpiValue);
 			assertEquals(Optional.of(3.0d).get(), iterationKpiValue.getData().get(0).getValue());
 		} catch (ApplicationException applicationException) {

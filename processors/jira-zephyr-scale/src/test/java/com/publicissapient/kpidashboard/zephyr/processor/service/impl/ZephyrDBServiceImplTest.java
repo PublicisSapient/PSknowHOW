@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -33,7 +34,6 @@ import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetails
 import com.publicissapient.kpidashboard.zephyr.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.zephyr.model.ZephyrProcessor;
 import com.publicissapient.kpidashboard.zephyr.repository.ZephyrProcessorRepository;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 public class ZephyrDBServiceImplTest {

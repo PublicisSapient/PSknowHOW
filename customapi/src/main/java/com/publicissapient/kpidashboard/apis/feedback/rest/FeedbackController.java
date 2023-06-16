@@ -56,8 +56,8 @@ public class FeedbackController {
 		log.info("creating new request");
 		boolean responseStatus = submitFeedbackService.submitFeedback(feedback);
 		if (responseStatus) {
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(responseStatus,
-					"Your request has been submitted", feedback));
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(responseStatus, "Your request has been submitted", feedback));
 		} else {
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(responseStatus,
 					"Email Not Sent ,check emailId and Subject configuration ", feedback));

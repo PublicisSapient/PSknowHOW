@@ -39,26 +39,25 @@ public interface BitBucketClient {
 	 *            the bitbucketRepo
 	 * @param firstTimeRun
 	 *            the first time run
-	 * @param  bitBucketInfo 
-	 *             bitBucketInfo like url,userId         
+	 * @param bitBucketInfo
+	 *            bitBucketInfo like url,userId
 	 * @return the list
 	 * @throws FetchingCommitException
 	 *             the exception
 	 */
 	List<CommitDetails> fetchAllCommits(BitbucketRepo bitbucketRepo, boolean firstTimeRun,
 			ProcessorToolConnection bitBucketInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException;
-	
+
 	/**
 	 * @param bitbucketRepo
-	 *  the bitbucketRepo
+	 *            the bitbucketRepo
 	 * @param firstTimeRun
-	 * the first time run
+	 *            the first time run
 	 * @param bitBucketInfo
-	 *  bitBucketInfo like url,userId
-	 * @return  the list 
-	 * of merge request Detail
+	 *            bitBucketInfo like url,userId
+	 * @return the list of merge request Detail
 	 * @throws FetchingCommitException
-	 * the exception
+	 *             the exception
 	 */
 	List<MergeRequests> fetchMergeRequests(BitbucketRepo bitbucketRepo, boolean firstTimeRun,
 			ProcessorToolConnection bitBucketInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException;

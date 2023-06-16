@@ -15,11 +15,10 @@ public class AutoApproveAccessConfigDTO {
 	private ObjectId id;
 	private String enableAutoApprove;
 	private List<RoleData> roles;
-	
+
 	@Override
 	public String toString() {
 		return "AutoAccessApprovalDTO [isAutoApproved=" + enableAutoApprove + ", roles=" + roles + "]";
 	}
 
-	
 }

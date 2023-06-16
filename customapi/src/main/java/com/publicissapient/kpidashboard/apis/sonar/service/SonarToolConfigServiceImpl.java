@@ -38,27 +38,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SonarToolConfigServiceImpl {
 
-	@Autowired
-	private ConnectionRepository connectionRepository;
-
-	@Autowired
-	private RestTemplate restTemplate;
-
-	@Autowired
-	private AesEncryptionService aesEncryptionService;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
-	private static final String RESOURCE_PROJECT_ENDPOINT = "/api/components/search?qualifiers=TRK&p=%d&ps=%d";
-
-	private static final String RESOURCE_BRANCH_ENDPOINT = "/api/project_branches/list?project=%s";
-	private static final String RESOURCE_CLOUD_PROJECT_ENDPOINT = "/api/components/search?qualifiers=TRK&organization=%s&p=%d&ps=%d";
-
 	public static final String PROJECTS_LIST = "components";
 	public static final String PROJECT_KEY = "key";
 	public static final String BRANCH_LIST = "branches";
 	public static final String BRANCH_NAME = "name";
+	private static final String RESOURCE_PROJECT_ENDPOINT = "/api/components/search?qualifiers=TRK&p=%d&ps=%d";
 
+	private static final String RESOURCE_BRANCH_ENDPOINT = "/api/project_branches/list?project=%s";
+	private static final String RESOURCE_CLOUD_PROJECT_ENDPOINT = "/api/components/search?qualifiers=TRK&organization=%s&p=%d&ps=%d";
 	private static final List<String> SONAR_SERVER_VERSION_BRANCH_NOT_SUPPORTED = Arrays.asList("6.5", "6.4", "6.3",
 			"6.2", "6.1", "6.0");
 	private static final List<String> SONAR_SERVER_VERSION_BRANCH_SUPPORTED = Arrays.asList("9.x", "8.x", "7.x", "6.7",
@@ -66,10 +53,16 @@ public class SonarToolConfigServiceImpl {
 	private static final List<String> SONAR_CLOUD_VERSION_BRANCH_NOT_SUPPORTED = Arrays.asList("7.1", "7.0", "6.x");
 	private static final List<String> SONAR_CLOUD_VERSION_BRANCH_SUPPORTED = Arrays.asList("9.x", "8.x", "7.9", "7.8",
 			"7.7", "7.6", "7.5", "7.4", "7.3", "7.2");
-
 	private static final String SONAR_SERVER = "Sonar Server";
 	private static final String SONAR_CLOUD = "Sonar Cloud";
-
+	@Autowired
+	private ConnectionRepository connectionRepository;
+	@Autowired
+	private RestTemplate restTemplate;
+	@Autowired
+	private AesEncryptionService aesEncryptionService;
+	@Autowired
+	private CustomApiConfig customApiConfig;
 	private ObjectMapper mapper = new ObjectMapper();
 
 	/**
@@ -165,7 +158,8 @@ public class SonarToolConfigServiceImpl {
 
 			int nextPageIndex = paging.getPageIndex();
 			do {
-				SearchProjectsResponse response = getSearchProjectsResponse(connection, organizationKey, paging, nextPageIndex);
+				SearchProjectsResponse response = getSearchProjectsResponse(connection, organizationKey, paging,
+						nextPageIndex);
 
 				if (Objects.nonNull(response)) {
 					projectList.addAll(
@@ -187,6 +181,7 @@ public class SonarToolConfigServiceImpl {
 
 	/**
 	 * based on connection prepare rest api
+	 * 
 	 * @param connection
 	 * @param organizationKey
 	 * @param paging
@@ -297,9 +292,9 @@ public class SonarToolConfigServiceImpl {
 
 		HttpEntity<?> httpEntity;
 		if (connection.isCloudEnv()) {
-			httpEntity = new HttpEntity<>(SonarAPIUtils.getHeaders(accessToken,false));
+			httpEntity = new HttpEntity<>(SonarAPIUtils.getHeaders(accessToken, false));
 		} else if (!connection.isCloudEnv() && connection.isAccessTokenEnabled()) {
-			httpEntity = new HttpEntity<>(SonarAPIUtils.getHeaders(accessToken,true));
+			httpEntity = new HttpEntity<>(SonarAPIUtils.getHeaders(accessToken, true));
 		} else {
 			httpEntity = new HttpEntity<>(SonarAPIUtils.getHeaders(username, password));
 		}

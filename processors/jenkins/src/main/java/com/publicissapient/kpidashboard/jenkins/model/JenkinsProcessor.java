@@ -37,27 +37,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JenkinsProcessor extends Processor {
 
-	/**
-	 * Provides buildProcessor processor.
-	 * 
-	 * 
-	 * @return the processor object with initial values
-	 */
-	public static JenkinsProcessor buildProcessor() {
-
-		return JenkinsProcessor.processorBuilder()
-				.processorName(ProcessorConstants.JENKINS)
-				.processorType(ProcessorType.BUILD)
-				.online(true)
-				.active(true)
-				.lastExecuted(System.currentTimeMillis())
-				.lastJobSuccess(false)
-				.build();
-	}
-
 	@Builder(builderMethodName = "processorBuilder")
 	public JenkinsProcessor(String processorName, ProcessorType processorType, boolean active, boolean online,
 			List<ProcessorError> errors, long lastExecuted, ObjectId objectId, boolean lastJobSuccess) {
 		super(processorName, processorType, active, online, errors, lastExecuted, objectId, lastJobSuccess);
+	}
+
+	/**
+	 * Provides buildProcessor processor.
+	 *
+	 *
+	 * @return the processor object with initial values
+	 */
+	public static JenkinsProcessor buildProcessor() {
+
+		return JenkinsProcessor.processorBuilder().processorName(ProcessorConstants.JENKINS)
+				.processorType(ProcessorType.BUILD).online(true).active(true).lastExecuted(System.currentTimeMillis())
+				.lastJobSuccess(false).build();
 	}
 }

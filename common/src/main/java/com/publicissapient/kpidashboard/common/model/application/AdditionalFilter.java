@@ -1,12 +1,12 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
-import lombok.Data;
-
 import java.util.List;
+
+import lombok.Data;
 
 @Data
 public class AdditionalFilter {
-    private String filterId;
-    private List<AdditionalFilterValue> filterValues;
+	private String filterId;
+	private List<AdditionalFilterValue> filterValues;
 
 }

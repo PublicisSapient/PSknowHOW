@@ -23,8 +23,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @EnableMongoRepositories(basePackages = "com.sapient.customdashboard")
-public class DataAutomationConfig //extends AbstractMongoConfiguration 
+public class DataAutomationConfig // extends AbstractMongoConfiguration
 {
 
-	
 }

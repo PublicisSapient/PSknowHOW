@@ -18,8 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.connection.rest;
 
+import javax.validation.Valid;
+
 import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,19 +33,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import javax.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
-import com.publicissapient.kpidashboard.common.model.connection.ConnectionDTO;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.connection.ConnectionDTO;
 
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 
 /**
  * Rest Controller for all connection requests.
@@ -61,7 +63,8 @@ public class ConnectionController {
 	 *
 	 * @return the connection
 	 * 
-	 * @param type type
+	 * @param type
+	 *            type
 	 */
 
 	@GetMapping
@@ -82,7 +85,8 @@ public class ConnectionController {
 	/**
 	 * save/add Connection details
 	 * 
-	 * @param connectionDTO request object that is created in the database.
+	 * @param connectionDTO
+	 *            request object that is created in the database.
 	 * 
 	 * 
 	 * @return responseEntity with data,message and status
@@ -90,7 +94,7 @@ public class ConnectionController {
 
 	@PostMapping
 	@PreAuthorize("hasPermission(#connectionDTO,'CONNECTION_ACCESS')")
-	public ResponseEntity<ServiceResponse> saveConnectionDetails(@RequestBody 	ConnectionDTO connectionDTO) {
+	public ResponseEntity<ServiceResponse> saveConnectionDetails(@RequestBody ConnectionDTO connectionDTO) {
 
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection conn = modelMapper.map(connectionDTO, Connection.class);
@@ -102,8 +106,8 @@ public class ConnectionController {
 	/**
 	 * Modify/Update a connection by id.
 	 * 
-	 * @param connectionDTO request object that replaces the connection data present
-	 *                      at id.
+	 * @param connectionDTO
+	 *            request object that replaces the connection data present at id.
 	 *
 	 * @return responseEntity with data,message and status
 	 */
@@ -120,7 +124,8 @@ public class ConnectionController {
 	/**
 	 * delete a connection by id.
 	 * 
-	 * @param id deleted the connection data present at id.
+	 * @param id
+	 *            deleted the connection data present at id.
 	 *
 	 * @return responseEntity with data,message and status
 	 */

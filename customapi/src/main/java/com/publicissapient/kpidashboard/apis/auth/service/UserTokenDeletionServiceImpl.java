@@ -38,7 +38,6 @@ public class UserTokenDeletionServiceImpl implements UserTokenDeletionService {
 	@Autowired
 	private UserTokenReopository userTokenReopository;
 
-
 	@Override
 	public void deleteUserDetails(String userToken) {
 

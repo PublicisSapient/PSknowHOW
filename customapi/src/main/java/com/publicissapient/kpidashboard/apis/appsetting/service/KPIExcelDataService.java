@@ -122,13 +122,12 @@ public class KPIExcelDataService {
 
 	/**
 	 * Processes the request for fetching the source wise KPI data. It leverages
-	 * underneath custom API services to fetch data. If an exception occurred in
-	 * any of source, the service returns data for sources it has processed so
-	 * far. Why? Since the sources are independent instead of showing the
-	 * exception, why not to show data of other sources which has been
-	 * processed. How to know exceptions happening? Logs will detail the
-	 * exceptions and if certain source data is not coming in response it may
-	 * points to something happening.
+	 * underneath custom API services to fetch data. If an exception occurred in any
+	 * of source, the service returns data for sources it has processed so far. Why?
+	 * Since the sources are independent instead of showing the exception, why not
+	 * to show data of other sources which has been processed. How to know
+	 * exceptions happening? Logs will detail the exceptions and if certain source
+	 * data is not coming in response it may points to something happening.
 	 * <p>
 	 * The threads are not playing great role here. However, since this services
 	 * fires query on level 1 and level 2 filters, which qualifies in the cached
@@ -324,7 +323,7 @@ public class KPIExcelDataService {
 
 		long processTime = System.currentTimeMillis() - startTime;
 		log.info("[KPI-EXCEL-SERVICE]. Time taken to process Excel kpi data request: {}", processTime);
-		
+
 		if (null != kpiID) {
 			return createKpiExcelValidationDataResponse(totalKpiElementList);
 		} else {
@@ -639,8 +638,8 @@ public class KPIExcelDataService {
 							kpiElement.setKpiSource(KPISource.EXCEL.name() + "-" + source);
 							kpiElement.setKpiCategory(masterList.stream()
 									.filter(kpiMaster -> kpiMaster.getKpiId().equalsIgnoreCase(kpi.getKpiId()))
-									.map(KpiMaster::getKpiCategory)
-									.filter(StringUtils::isNotEmpty).findFirst().orElse(""));
+									.map(KpiMaster::getKpiCategory).filter(StringUtils::isNotEmpty).findFirst()
+									.orElse(""));
 
 							kpiElementList.add(kpiElement);
 						});
@@ -652,10 +651,9 @@ public class KPIExcelDataService {
 				kpiElement.setKpiId(kpi.getKpiId());
 				kpiElement.setKpiName(kpi.name());
 				kpiElement.setKpiSource(KPISource.EXCEL.name() + "-" + source);
-				kpiElement.setKpiCategory(masterList.stream()
-						.filter(kpiMaster -> kpiMaster.getKpiId().equalsIgnoreCase(kpi.getKpiId()))
-						.map(KpiMaster::getKpiCategory)
-						.filter(StringUtils::isNotEmpty).findFirst().orElse(""));
+				kpiElement.setKpiCategory(
+						masterList.stream().filter(kpiMaster -> kpiMaster.getKpiId().equalsIgnoreCase(kpi.getKpiId()))
+								.map(KpiMaster::getKpiCategory).filter(StringUtils::isNotEmpty).findFirst().orElse(""));
 
 				kpiElementList.add(kpiElement);
 

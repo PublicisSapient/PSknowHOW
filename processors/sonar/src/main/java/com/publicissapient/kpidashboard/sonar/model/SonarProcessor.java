@@ -30,40 +30,41 @@ import com.publicissapient.kpidashboard.common.model.generic.Processor;
  */
 public class SonarProcessor extends Processor {
 
-    private List<String> sonarKpiMetrics = new ArrayList<>();
-    
-    /**
-     * Provides instance of Sonar Processor.
-     * @param metrics the list of metrics
-     * @return SonarProcessor
-     */
-    public static SonarProcessor getSonarConfig(List<String> metrics) {
-        SonarProcessor sonarInput = new SonarProcessor();
-        sonarInput.setProcessorName(ProcessorConstants.SONAR);
-        sonarInput.setProcessorType(ProcessorType.SONAR_ANALYSIS);
-        sonarInput.setOnline(true);
-        sonarInput.setActive(true);
-        sonarInput.setLastSuccess(false);
-        sonarInput.getSonarKpiMetrics().addAll(metrics);
-        return sonarInput;
-    }
-    
-    /**
-     * Provides Sonar Metrics.
-     * @return the list of Sonar KPI Metrics
-     */
-    public List<String> getSonarKpiMetrics() {
+	private List<String> sonarKpiMetrics = new ArrayList<>();
+
+	/**
+	 * Provides instance of Sonar Processor.
+	 * 
+	 * @param metrics
+	 *            the list of metrics
+	 * @return SonarProcessor
+	 */
+	public static SonarProcessor getSonarConfig(List<String> metrics) {
+		SonarProcessor sonarInput = new SonarProcessor();
+		sonarInput.setProcessorName(ProcessorConstants.SONAR);
+		sonarInput.setProcessorType(ProcessorType.SONAR_ANALYSIS);
+		sonarInput.setOnline(true);
+		sonarInput.setActive(true);
+		sonarInput.setLastSuccess(false);
+		sonarInput.getSonarKpiMetrics().addAll(metrics);
+		return sonarInput;
+	}
+
+	/**
+	 * Provides Sonar Metrics.
+	 * 
+	 * @return the list of Sonar KPI Metrics
+	 */
+	public List<String> getSonarKpiMetrics() {
 		return sonarKpiMetrics;
 	}
 
 	/**
-	 * @param sonarKpiMetrics new value of {@link #sonarKpiMetrics}.
+	 * @param sonarKpiMetrics
+	 *            new value of {@link #sonarKpiMetrics}.
 	 */
 	public void setSonarKpiMetrics(List<String> sonarKpiMetrics) {
 		this.sonarKpiMetrics = sonarKpiMetrics;
 	}
 
-    
-	
 }
-

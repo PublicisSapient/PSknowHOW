@@ -27,9 +27,19 @@ import lombok.Getter;
  * The type Git branch spec.
  */
 public class GitBranchSpec {
-	
+
 	@Getter
 	private String name;
+
+	/**
+	 * Instantiates a new Git branch spec.
+	 *
+	 * @param name
+	 *            the name
+	 */
+	public GitBranchSpec(String name) {
+		setName(name);
+	}
 
 	private void setName(String name) {
 		if (name == null) {
@@ -41,15 +51,6 @@ public class GitBranchSpec {
 		}
 	}
 
-	/**
-	 * Instantiates a new Git branch spec.
-	 *
-	 * @param name the name
-	 */
-	public GitBranchSpec(String name) {
-		setName(name);
-	}
-
 	@Override
 	public String toString() {
 		return name;
@@ -58,7 +59,8 @@ public class GitBranchSpec {
 	/**
 	 * Matches boolean.
 	 *
-	 * @param item the item
+	 * @param item
+	 *            the item
 	 * @return the boolean
 	 */
 	public boolean matches(String item) {

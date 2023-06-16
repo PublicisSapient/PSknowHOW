@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -42,16 +41,18 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -179,13 +180,13 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 							kpiRequest.getDuration());
 					String projectName = projectNodeId.substring(0,
 							projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
-					Double capacity =filterDataBasedOnStartAndEndDate(dateWiseKanbanCapacity, dateRange, projectName);
+					Double capacity = filterDataBasedOnStartAndEndDate(dateWiseKanbanCapacity, dateRange, projectName);
 					String date = getRange(dateRange, kpiRequest);
 					dataCount.add(getDataCountObject(capacity, projectName, date));
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 					if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-						KPIExcelUtility.populateTeamCapacityKanbanExcelData(capacity, excelData, projectName,
-								dateRange, kpiRequest.getDuration());
+						KPIExcelUtility.populateTeamCapacityKanbanExcelData(capacity, excelData, projectName, dateRange,
+								kpiRequest.getDuration());
 					}
 				}
 				mapTmp.get(node.getId()).setValue(dataCount);
@@ -223,7 +224,7 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 			kanbanCapacityList.addAll(dateWiseKanbanCapacity.getOrDefault(currentDate.toString(), dummyList));
 		}
 		if (CollectionUtils.isNotEmpty(kanbanCapacityList)) {
-			capacity = kanbanCapacityList.stream().mapToDouble(kanbanCapacity->kanbanCapacity.getCapacity()).sum();
+			capacity = kanbanCapacityList.stream().mapToDouble(kanbanCapacity -> kanbanCapacity.getCapacity()).sum();
 		}
 		return capacity;
 	}
@@ -254,7 +255,8 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (CommonConstant.WEEK.equalsIgnoreCase(kpiRequest.getDuration())) {
-			range = DateUtil.localDateTimeConverter(dateRange.getStartDate()) + " to " + DateUtil.localDateTimeConverter(dateRange.getEndDate());
+			range = DateUtil.localDateTimeConverter(dateRange.getStartDate()) + " to "
+					+ DateUtil.localDateTimeConverter(dateRange.getEndDate());
 		} else if (CommonConstant.MONTH.equalsIgnoreCase(kpiRequest.getDuration())) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
 		} else {

@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.auth.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,9 +33,10 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.model.ForgotPasswordToken;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.auth.repository.ForgotPasswordTokenRepository;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
+import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
 
 /**
  * 
@@ -201,7 +201,6 @@ public class ForgotPasswordServiceImplTest {
 		Authentication authentication = new Authentication("abc", "xyz", "abc@xyz.com");
 		Mockito.when(forgotPasswordTokenRepository.findByToken(Mockito.any())).thenReturn(null);
 
-
 		forgotPasswordService.resetPassword(updatedPasswordRequest);
 	}
 
@@ -209,7 +208,7 @@ public class ForgotPasswordServiceImplTest {
 	 * Test with incorrect data
 	 */
 	@Test
-	public void updatePasswordNoRuleFollow(){
+	public void updatePasswordNoRuleFollow() {
 		ResetPasswordRequest updatedPasswordRequest = new ResetPasswordRequest();
 		updatedPasswordRequest.setPassword("xyz");
 		updatedPasswordRequest.setResetToken("abc-xyz");
@@ -222,13 +221,13 @@ public class ForgotPasswordServiceImplTest {
 		authenticateList.add(authentication);
 		Mockito.when(forgotPasswordTokenRepository.findByToken(Mockito.any())).thenReturn(forgotPasswordToken);
 		Mockito.when(authenticationRepository.findByUsername("abc")).thenReturn(authentication);
-		Assert.assertThrows(ApplicationException.class,()->{
+		Assert.assertThrows(ApplicationException.class, () -> {
 			forgotPasswordService.resetPassword(updatedPasswordRequest);
 		});
 	}
 
 	@Test
-	public void updatePasswordSameAsOld(){
+	public void updatePasswordSameAsOld() {
 		ResetPasswordRequest updatedPasswordRequest = new ResetPasswordRequest();
 		updatedPasswordRequest.setPassword("dummyPwd@1");
 		updatedPasswordRequest.setResetToken("abc-xyz");
@@ -241,13 +240,13 @@ public class ForgotPasswordServiceImplTest {
 		authenticateList.add(authentication);
 		Mockito.when(forgotPasswordTokenRepository.findByToken(Mockito.any())).thenReturn(forgotPasswordToken);
 		Mockito.when(authenticationRepository.findByUsername("abc")).thenReturn(authentication);
-		Assert.assertThrows(ApplicationException.class,()->{
+		Assert.assertThrows(ApplicationException.class, () -> {
 			forgotPasswordService.resetPassword(updatedPasswordRequest);
 		});
 	}
 
 	@Test
-	public void updatePasswordContainingUserName(){
+	public void updatePasswordContainingUserName() {
 		ResetPasswordRequest updatedPasswordRequest = new ResetPasswordRequest();
 		updatedPasswordRequest.setPassword("Abc@1234");
 		updatedPasswordRequest.setResetToken("abc-xyz");
@@ -260,10 +259,9 @@ public class ForgotPasswordServiceImplTest {
 		authenticateList.add(authentication);
 		Mockito.when(forgotPasswordTokenRepository.findByToken(Mockito.any())).thenReturn(forgotPasswordToken);
 		Mockito.when(authenticationRepository.findByUsername("abc")).thenReturn(authentication);
-		Assert.assertThrows(ApplicationException.class,()->{
+		Assert.assertThrows(ApplicationException.class, () -> {
 			forgotPasswordService.resetPassword(updatedPasswordRequest);
 		});
 	}
-
 
 }

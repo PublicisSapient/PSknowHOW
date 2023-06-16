@@ -68,15 +68,15 @@ public enum NotificationCustomDataEnum {
 		this.value = value;
 	}
 
+	public static NotificationCustomDataEnum getKPISource(String value) {
+		return Arrays.asList(NotificationCustomDataEnum.values()).stream()
+				.filter(kpi -> kpi.getValue().equalsIgnoreCase(value)).findAny().orElse(INVALID);
+	}
+
 	/**
 	 * @return the value
 	 */
 	public String getValue() {
 		return value;
-	}
-
-	public static NotificationCustomDataEnum getKPISource(String value) {
-		return Arrays.asList(NotificationCustomDataEnum.values()).stream()
-				.filter(kpi -> kpi.getValue().equalsIgnoreCase(value)).findAny().orElse(INVALID);
 	}
 }

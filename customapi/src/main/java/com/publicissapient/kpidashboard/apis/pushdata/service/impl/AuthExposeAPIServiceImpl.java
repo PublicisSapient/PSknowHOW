@@ -24,8 +24,6 @@ import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,24 +43,21 @@ import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogSe
 import com.publicissapient.kpidashboard.common.util.Encryption;
 import com.publicissapient.kpidashboard.common.util.EncryptionException;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Slf4j
 public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
 	private static final String TOKEN_KEY = "Api-Key";
-
+	final ModelMapper modelMapper = new ModelMapper();
 	@Autowired
 	private ExposeApiTokenRepository exposeApiTokenRepository;
-
 	@Autowired
 	private ProjectAccessManager projectAccessManager;
-
 	@Autowired
 	private CustomApiConfig customApiConfig;
-
 	@Autowired
 	private PushDataTraceLogService pushDataTraceLogService;
-
-	final ModelMapper modelMapper = new ModelMapper();
 
 	/**
 	 * user can only one generate token per project and user wise. if same user
@@ -122,10 +117,10 @@ public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
 		instance.setRequestTime(LocalDateTime.now().toString());
 		ExposeApiToken exposeApiToken = exposeApiTokenRepository.findByApiToken(token);
 		if (exposeApiToken == null) {
-			pushDataTraceLogService.setExceptionTraceLog("Generate Token Push Data via KnowHow tool configuration screen",
-					HttpStatus.UNAUTHORIZED);
+			pushDataTraceLogService.setExceptionTraceLog(
+					"Generate Token Push Data via KnowHow tool configuration screen", HttpStatus.UNAUTHORIZED);
 		}
-		checkProjectAccessPermission(exposeApiToken,instance);
+		checkProjectAccessPermission(exposeApiToken, instance);
 		checkExpiryToken(exposeApiToken);
 		exposeApiToken
 				.setExpiryDate(exposeApiToken.getExpiryDate().plusDays(customApiConfig.getExposeAPITokenExpiryDays()));
@@ -145,7 +140,8 @@ public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
 
 	private void checkExpiryToken(ExposeApiToken exposeApiToken) {
 		if (exposeApiToken.getExpiryDate().isBefore(LocalDate.now())) {
-			pushDataTraceLogService.setExceptionTraceLog("Token Expired, Please Generate New Token", HttpStatus.UNAUTHORIZED);
+			pushDataTraceLogService.setExceptionTraceLog("Token Expired, Please Generate New Token",
+					HttpStatus.UNAUTHORIZED);
 		}
 	}
 

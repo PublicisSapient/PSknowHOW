@@ -1,11 +1,11 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * This class is email server details for notification server

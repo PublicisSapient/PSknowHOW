@@ -27,8 +27,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.mockito.junit.MockitoJUnitRunner;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -48,6 +46,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -60,10 +59,10 @@ import com.publicissapient.kpidashboard.bamboo.config.BambooConfig;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BambooClientBuildImplTest {
@@ -125,21 +124,19 @@ public class BambooClientBuildImplTest {
 	public void appendToURLTest1() throws Exception {
 
 		String url = BambooClient.appendToURL(HTTP_BAMBOO_COM, API_JSON_TREE_JOBS_NAME_URL_BUILDS_NUMBER_URL);
-		assertEquals("appendToURL() with one param test",
-				"http://xyz/api/json?tree=jobs[name,url,builds[number,url]]", url);
+		assertEquals("appendToURL() with one param test", "http://xyz/api/json?tree=jobs[name,url,builds[number,url]]",
+				url);
 	}
 
 	@Test
 	public void appendToURLTest2() throws Exception {
-		String u4 = BambooClient.appendToURL("http://xyz/", "test",
-				API_JSON_TREE_JOBS_NAME_URL_BUILDS_NUMBER_URL);
+		String u4 = BambooClient.appendToURL("http://xyz/", "test", API_JSON_TREE_JOBS_NAME_URL_BUILDS_NUMBER_URL);
 		assertEquals("appendToURL() with two params test", HTTP_BAMBOO_BUILDS_NUMBER_URL, u4);
 	}
 
 	@Test
 	public void appendToURLTest3() throws Exception {
-		String u2 = BambooClient.appendToURL("http://xyz/", "/test/",
-				API_JSON_TREE_JOBS_NAME_URL_BUILDS_NUMBER_URL);
+		String u2 = BambooClient.appendToURL("http://xyz/", "/test/", API_JSON_TREE_JOBS_NAME_URL_BUILDS_NUMBER_URL);
 		assertEquals("appendToURL() with extra slash params test", HTTP_BAMBOO_BUILDS_NUMBER_URL, u2);
 	}
 
@@ -154,8 +151,7 @@ public class BambooClientBuildImplTest {
 
 		String u1 = bambooClientBuild.getFinalURL(HTTP_BAMBOO_COM_JOB_JOB1, "https://123456:234567@xyz");
 		assertEquals("getFinalURL() test 1",
-				"https://123456:234567@xyz/job/job1?expand=results.result.artifacts&expand=changes.change.files",
-				u1);
+				"https://123456:234567@xyz/job/job1?expand=results.result.artifacts&expand=changes.change.files", u1);
 	}
 
 	@Test
@@ -163,8 +159,7 @@ public class BambooClientBuildImplTest {
 
 		String u2 = bambooClientBuild.getFinalURL("https://xyz/job/job1", "https://123456:234567@xyz");
 		assertEquals("getFinalURL() test 2",
-				"https://123456:234567@xyz/job/job1?expand=results.result.artifacts&expand=changes.change.files",
-				u2);
+				"https://123456:234567@xyz/job/job1?expand=results.result.artifacts&expand=changes.change.files", u2);
 	}
 
 	@Test
@@ -172,8 +167,7 @@ public class BambooClientBuildImplTest {
 
 		String u3 = bambooClientBuild.getFinalURL(HTTP_BAMBOO_COM_JOB_JOB1, "http://123456:234567@xyz");
 		assertEquals("getFinalURL() test 3",
-				"http://123456:234567@xyz/job/job1?expand=results.result.artifacts&expand=changes.change.files",
-				u3);
+				"http://123456:234567@xyz/job/job1?expand=results.result.artifacts&expand=changes.change.files", u3);
 	}
 
 	@Test
@@ -181,8 +175,7 @@ public class BambooClientBuildImplTest {
 
 		String u4 = bambooClientBuild.getFinalURL(HTTP_BAMBOO_COM_JOB_JOB1, "http://123456:234567@xyz");
 		assertEquals("getFinalURL() test 4",
-				"http://123456:234567@xyz/job/job1?expand=results.result.artifacts&expand=changes.change.files",
-				u4);
+				"http://123456:234567@xyz/job/job1?expand=results.result.artifacts&expand=changes.change.files", u4);
 	}
 
 	@Test
@@ -235,8 +228,9 @@ public class BambooClientBuildImplTest {
 
 	@Test
 	public void instanceJobsEmptyResponseReturnsEmptyMap() throws MalformedURLException, ParseException {
-		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				eq(String.class))).thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
+		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
+						.thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
 		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH, proBasicConfig);
 		assertThat("instanceJobsEmptyResponseReturnsEmptyMap", jobs.size(), is(0));
 	}
@@ -244,8 +238,7 @@ public class BambooClientBuildImplTest {
 	@Test
 	public void instanceJobsTestReturnsMapForBranch() throws Exception {
 		when(restClient.exchange(
-				eq(URI.create(
-						"http://does:matter@xyz/rest/api/latest/plan/HDEP-AST/branch.json?max-result=2000")),
+				eq(URI.create("http://does:matter@xyz/rest/api/latest/plan/HDEP-AST/branch.json?max-result=2000")),
 				eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
 						.thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
 		when(settings.getDockerLocalHostIP()).thenReturn("someIp");
@@ -255,17 +248,19 @@ public class BambooClientBuildImplTest {
 
 	@Test
 	public void buildDetailsEmptyJson() throws Exception {
-		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				eq(String.class))).thenReturn(new ResponseEntity<>("{}", HttpStatus.OK));
-		Build build = bambooClientBuild.getBuildDetailsFromServer(HTTP_SERVER_JOB_JOB2_2,
-				"https://xyz.com/bamboo/", BAMBOO_SAMPLE_SERVER_PLAN);
+		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
+						.thenReturn(new ResponseEntity<>("{}", HttpStatus.OK));
+		Build build = bambooClientBuild.getBuildDetailsFromServer(HTTP_SERVER_JOB_JOB2_2, "https://xyz.com/bamboo/",
+				BAMBOO_SAMPLE_SERVER_PLAN);
 		assertNull("buildDetailsEmptyJson", build);
 	}
 
 	@Test
 	public void buildDetailsFull1() throws Exception {
-		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				eq(String.class))).thenReturn(new ResponseEntity<>(getJson("buildDetails_full.json"), HttpStatus.OK));
+		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
+						.thenReturn(new ResponseEntity<>(getJson("buildDetails_full.json"), HttpStatus.OK));
 		when(settings.isSaveLog()).thenReturn(true);
 		Build build = bambooClientBuild.getBuildDetailsFromServer(HTTP_SERVER_JOB_JOB2_2, "https://xyz.com/bamboo",
 				BAMBOO_SAMPLE_SERVER_PLAN);
@@ -282,8 +277,9 @@ public class BambooClientBuildImplTest {
 
 	@Test
 	public void buildDetailsFull2() throws Exception {
-		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				eq(String.class))).thenReturn(new ResponseEntity<>(getJson("buildDetails_full.json"), HttpStatus.OK));
+		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
+						.thenReturn(new ResponseEntity<>(getJson("buildDetails_full.json"), HttpStatus.OK));
 		when(settings.isSaveLog()).thenReturn(true);
 		Build build = bambooClientBuild.getBuildDetailsFromServer(HTTP_SERVER_JOB_JOB2_2, "https://xyz.com/bamboo",
 				BAMBOO_SAMPLE_SERVER_PLAN);

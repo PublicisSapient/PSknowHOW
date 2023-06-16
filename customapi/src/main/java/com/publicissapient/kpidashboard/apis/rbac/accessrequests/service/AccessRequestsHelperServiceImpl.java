@@ -59,27 +59,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperService {
 
-	@Autowired
-	private AccessRequestsRepository repository;
-
-	@Autowired
-	private UserInfoServiceImpl userInfoServiceImpl;
-
-	@Autowired
-	private AuthenticationRepository authenticationRepository;
-	
-	@Autowired
-	AutoApproveAccessService autoApproveService;
-	
-	@Autowired
-	private ProjectAccessManager accessManager;
-
 	private static final String SUPERADMINROLENAME = "ROLE_SUPERADMIN";
-
 	/**
 	 * Repeated String used in logging info
 	 */
 	private static String infoMandatoryFieldsNotEmpty = "Mandatory fields cannot be empty";
+	@Autowired
+	AutoApproveAccessService autoApproveService;
+	@Autowired
+	private AccessRequestsRepository repository;
+	@Autowired
+	private UserInfoServiceImpl userInfoServiceImpl;
+	@Autowired
+	private AuthenticationRepository authenticationRepository;
+	@Autowired
+	private ProjectAccessManager accessManager;
 
 	/**
 	 * Fetch all access requests data.
@@ -163,8 +157,8 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 	 * @param status
 	 *            status
 	 *
-	 * @return ServiceResponse with data object,message and status flag true if
-	 *         data is found,false if not data found
+	 * @return ServiceResponse with data object,message and status flag true if data
+	 *         is found,false if not data found
 	 */
 	@Override
 	public ServiceResponse getAccessRequestByStatus(String status) {
@@ -172,7 +166,7 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 			log.info("status is empty");
 			return new ServiceResponse(false, infoMandatoryFieldsNotEmpty, null);
 		}
-		
+
 		List<AccessRequest> accessRequest = getAccessRequestBasedonStatusAndRole(status);
 		if (CollectionUtils.isEmpty(accessRequest)) {
 			log.info("No requests with current status {}", status);
@@ -181,7 +175,7 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 		log.info("Successfully found requests with current status {}", status);
 		return new ServiceResponse(true, "Found access_requests for status " + status, accessRequest);
 	}
-	
+
 	/**
 	 * 
 	 * @param status
@@ -201,11 +195,12 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 		}
 		return accessRequest;
 	}
-	
+
 	private List<AccessRequest> fetchAccessRequestBasedOnUserInfoAndRole(UserInfo user, List<String> roleList,
 			String status) {
 		List<String> basicConfigList = accessManager.getProjectBasicOnRoleList(user, roleList);
-		List<AccessRequest> pendingAccessRequest = repository.findByStatusAndAccessLevel(status, CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+		List<AccessRequest> pendingAccessRequest = repository.findByStatusAndAccessLevel(status,
+				CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 		return filterProjectLevelRequest(basicConfigList, pendingAccessRequest);
 	}
 
@@ -251,7 +246,6 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 				accessRequest);
 	}
 
-
 	/**
 	 * Fetches access requests count with current status @param status.
 	 * 
@@ -280,8 +274,8 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 			if (CollectionUtils.isEmpty(accessRequest)) {
 				log.info("No requests under user {} with current status {}", user.getUsername(), status);
 				message = "No Pending Raise Request Found For " + user.getUsername();
-			}else {
-				message =  "Found Pending Raise Request Count for " + user.getUsername();
+			} else {
+				message = "Found Pending Raise Request Count for " + user.getUsername();
 			}
 		}
 		NotificationDataDTO projectAccessNotification = newProjectAccessRequestNotification(accessRequest);
@@ -302,7 +296,8 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 	}
 
 	private NotificationDataDTO newUserApprovalRequestNotification() {
-		List<com.publicissapient.kpidashboard.apis.auth.model.Authentication> nonApprovedUserList = authenticationRepository.findByApproved(false);
+		List<com.publicissapient.kpidashboard.apis.auth.model.Authentication> nonApprovedUserList = authenticationRepository
+				.findByApproved(false);
 		NotificationDataDTO notificationDataDTO = new NotificationDataDTO();
 		notificationDataDTO.setType(NotificationEnum.USER_APPROVAL.getValue());
 		if (CollectionUtils.isEmpty(nonApprovedUserList)) {
@@ -312,7 +307,6 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 		}
 		return notificationDataDTO;
 	}
-
 
 	@Override
 	public List<AccessRequest> getAccessRequestsByProject(String basicProjectConfigId) {

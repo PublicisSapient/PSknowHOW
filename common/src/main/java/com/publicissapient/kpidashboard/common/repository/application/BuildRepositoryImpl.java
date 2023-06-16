@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.repository.application;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,20 +25,15 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
-
-import com.google.common.collect.Lists;
-import com.mongodb.BasicDBObject;
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.MongoCursor;
-import com.publicissapient.kpidashboard.common.model.application.Build;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+
+import com.publicissapient.kpidashboard.common.model.application.Build;
 
 /**
  * An implementation of {@link BuildRepositoryCustom}
@@ -50,7 +44,7 @@ public class BuildRepositoryImpl implements BuildRepositoryCustom {
 	private MongoOperations operations;
 
 	@Override
-	public List<Build> findBuildList(Map<String, List<String>> mapOfFilters , Set<ObjectId>  projectBasicConfigIds ,
+	public List<Build> findBuildList(Map<String, List<String>> mapOfFilters, Set<ObjectId> projectBasicConfigIds,
 			String startDate, String endDate) {
 		Criteria criteria = new Criteria();
 
@@ -73,7 +67,7 @@ public class BuildRepositoryImpl implements BuildRepositoryCustom {
 
 	private Criteria getCommonFiltersCriteria(Map<String, List<String>> mapOfFilters, Criteria criteria) {
 		Criteria theCriteria = criteria;
-		if(MapUtils.isNotEmpty(mapOfFilters)) {
+		if (MapUtils.isNotEmpty(mapOfFilters)) {
 			for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
 				if (CollectionUtils.isNotEmpty(entry.getValue())) {
 					theCriteria = theCriteria.and(entry.getKey()).in(entry.getValue());
@@ -82,6 +76,5 @@ public class BuildRepositoryImpl implements BuildRepositoryCustom {
 		}
 		return theCriteria;
 	}
-
 
 }

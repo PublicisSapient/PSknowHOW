@@ -23,12 +23,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.AllArgsConstructor;
@@ -88,11 +88,10 @@ public class KanbanIssueCustomHistory extends BasicModel {
 	private String url;
 	private String description;
 
-
 	@Override
 	public String toString() {
-		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID +", url=" + url + ",storyType=" + storyType
-				+ ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime="
+		return "FeatureCustomHistory [projectID=" + projectID + ", storyID=" + storyID + ", url=" + url + ",storyType="
+				+ storyType + ", defectStoryID=" + defectStoryID + ", estimate=" + estimate + ", bufferedEstimateTime="
 				+ bufferedEstimateTime + ", devicePlatform=" + devicePlatform + ", projectKey=" + projectKey
 				+ ", projectComponentId=" + projectComponentId + "]";
 	}

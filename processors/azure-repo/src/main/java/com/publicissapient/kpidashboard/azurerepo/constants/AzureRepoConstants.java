@@ -39,28 +39,26 @@ public final class AzureRepoConstants {
 	/** The Constant REPOSITORY_NAME. */
 	public static final String REPOSITORY_NAME = "repositoryName";
 
-
 	/** The Constant RESP_VALUES_KEY. */
 	public static final String RESP_VALUES_KEY = "value";
-
 
 	/** The Constant RESP_AUTHOR_KEY. */
 	public static final String RESP_AUTHOR_KEY = "author";
 
 	/** The Constant RESP_MESSAGE_KEY. */
-	public static final String RESP_MESSAGE_KEY = "comment";  
+	public static final String RESP_MESSAGE_KEY = "comment";
 
 	/** The Constant RESP_ID_KEY. */
 	public static final String RESP_ID_KEY = "id";
-	
-	public static final String COMMIT_ID = "commitId";  
-	
+
+	public static final String COMMIT_ID = "commitId";
+
 	/** The Constant RESP_NAME_KEY. */
 	public static final String RESP_NAME_KEY = "name";
 
 	/** The Constant RESP_AUTHOR_TIMESTAMP_KEY. */
 	public static final String RESP_AUTHOR_COMMITTER = "committer";
-	
+
 	public static final String RESP_AUTHOR_DATE = "date";
 
 	/** The Constant BASIC_AUTH_PREFIX. */
@@ -71,7 +69,7 @@ public final class AzureRepoConstants {
 
 	/** The Constant API_VERSION. */
 	public static final String API_VERSION = "apiVersion";
-	
+
 	/** The Constant count value. */
 	public static final String COUNT = "count";
 
@@ -86,15 +84,14 @@ public final class AzureRepoConstants {
 	public static final String RESP_REVIEWERS = "reviewers";
 	public static final String RESP_SOURCE_REF_NAME = "sourceRefName";
 	public static final String RESP_TARGET_REF_NAME = "targetRefName";
-	public static final String RESP_DISP_NAME = "displayName"; 
+	public static final String RESP_DISP_NAME = "displayName";
 	public static final String RESP_REPO = "repository";
 	public static final String RESP_NAME = "name";
 	public static final String RESP_PROJ = "project";
 	public static final String RESP_CREATED_BY = "createdBy";
-	
-	
+
 	/**
-	 * Instantiates a new bit bucket constants . 
+	 * Instantiates a new bit bucket constants .
 	 */
 	private AzureRepoConstants() {
 	}

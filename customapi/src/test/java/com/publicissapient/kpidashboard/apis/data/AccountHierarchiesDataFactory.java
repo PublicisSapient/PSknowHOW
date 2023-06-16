@@ -82,13 +82,12 @@ public class AccountHierarchiesDataFactory {
 		}
 	}
 
+	public List<AccountHierarchy> getAccountHierarchies() {
+		return accountHierarchies;
+	}
 
-    public List<AccountHierarchy> getAccountHierarchies() {
-        return accountHierarchies;
-    }
-
-    public List<AccountHierarchy> findByBasicProjectConfigId(String basicProjectConfigId){
-        return accountHierarchies.stream().filter(accountHierarchy -> accountHierarchy.getBasicProjectConfigId()
-                .toHexString().equals(basicProjectConfigId)).collect(Collectors.toList());
-    }
+	public List<AccountHierarchy> findByBasicProjectConfigId(String basicProjectConfigId) {
+		return accountHierarchies.stream().filter(accountHierarchy -> accountHierarchy.getBasicProjectConfigId()
+				.toHexString().equals(basicProjectConfigId)).collect(Collectors.toList());
+	}
 }

@@ -43,7 +43,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "test_execution")
-public class TestExecution  extends BasicModel {
+public class TestExecution extends BasicModel {
 	private String sprintId;
 	private String sprintName;
 	private String projectName;

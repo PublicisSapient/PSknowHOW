@@ -19,13 +19,12 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
-import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLink;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLink;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

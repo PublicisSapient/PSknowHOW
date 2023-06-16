@@ -84,7 +84,7 @@ public class AccountHierarchy extends BasicModel implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.nodeId, this.path,this.beginDate,this.endDate,this.releaseState);
+		return Objects.hash(this.nodeId, this.path, this.beginDate, this.endDate, this.releaseState);
 	}
 
 }

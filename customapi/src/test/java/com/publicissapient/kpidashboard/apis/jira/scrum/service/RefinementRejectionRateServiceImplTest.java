@@ -32,13 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.data.IssueBacklogCustomHistoryDataFactory;
-import com.publicissapient.kpidashboard.apis.data.IssueBacklogDataFactory;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import org.bson.types.ObjectId;
 import org.hamcrest.core.StringContains;
 import org.junit.Assert;
@@ -52,7 +45,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.IssueBacklogCustomHistoryDataFactory;
+import com.publicissapient.kpidashboard.apis.data.IssueBacklogDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
@@ -62,9 +59,12 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RefinementRejectionRateServiceImplTest {
@@ -80,32 +80,28 @@ public class RefinementRejectionRateServiceImplTest {
 	ConfigHelperService configHelperService;
 	@Mock
 	CustomApiConfig customApiConfig;
-
-	@Mock
-	private KpiHelperService kpiHelperService;
-
-	@Mock
-	private IssueBacklogRepository issueBacklogRepository;
-
-	@Mock
-	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
-	
 	@InjectMocks
 	RefinementRejectionRateServiceImpl refinementRejectionRateService;
 	@Mock
 	CustomDateRange customDateRange;
+	@Mock
+	private KpiHelperService kpiHelperService;
+	@Mock
+	private IssueBacklogRepository issueBacklogRepository;
+	@Mock
+	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 	private KpiRequest kpiRequest;
-	
+
 	@Before
 	public void setup() throws ApplicationException {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-		
+
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi139");
 		kpiRequest.setLabel("PROJECT");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
-		
+
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
 		leafNodeList = new ArrayList<>();
@@ -121,29 +117,32 @@ public class RefinementRejectionRateServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
 		issueBacklogList = IssueBacklogDataFactory.newInstance().getIssueBacklogs();
-		unassignedJiraHistoryDataList = IssueBacklogCustomHistoryDataFactory.newInstance().getIssueBacklogCustomHistory();
+		unassignedJiraHistoryDataList = IssueBacklogCustomHistoryDataFactory.newInstance()
+				.getIssueBacklogCustomHistory();
 
-		for (FieldMapping fieldMap:FieldMappingDataFactory.newInstance(null).getFieldMappings()) {
-			fieldMappingMap.put(fieldMap.getBasicProjectConfigId(),fieldMap);
+		for (FieldMapping fieldMap : FieldMappingDataFactory.newInstance(null).getFieldMappings()) {
+			fieldMappingMap.put(fieldMap.getBasicProjectConfigId(), fieldMap);
 		}
 
-		unassignedJiraHistoryDataList = IssueBacklogCustomHistoryDataFactory.newInstance().getIssueBacklogCustomHistory();
+		unassignedJiraHistoryDataList = IssueBacklogCustomHistoryDataFactory.newInstance()
+				.getIssueBacklogCustomHistory();
 
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testFetchKPIDataFromDbData() throws ApplicationException {
-		when(issueBacklogRepository.findUnassignedIssues(Mockito.anyString(),Mockito.anyString(),Mockito.anyMap())).thenReturn(issueBacklogList);
-		when(issueBacklogCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.anyList(),Mockito.anyList())).thenReturn(unassignedJiraHistoryDataList);
+		when(issueBacklogRepository.findUnassignedIssues(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap()))
+				.thenReturn(issueBacklogList);
+		when(issueBacklogCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.anyList(),
+				Mockito.anyList())).thenReturn(unassignedJiraHistoryDataList);
 		Map<String, Object> responseRefinementList = refinementRejectionRateService.fetchKPIDataFromDb(leafNodeList,
 				customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString(), kpiRequest);
 		assertNotNull(responseRefinementList);
 		assertNotNull(responseRefinementList.get(UNASSIGNED_JIRA_ISSUE));
 		assertNotNull(responseRefinementList.get(UNASSIGNED_JIRA_ISSUE_HISTORY));
 		assertEquals(issueBacklogList, responseRefinementList.get(UNASSIGNED_JIRA_ISSUE));
-		assertEquals(unassignedJiraHistoryDataList,
-				responseRefinementList.get(UNASSIGNED_JIRA_ISSUE_HISTORY));
+		assertEquals(unassignedJiraHistoryDataList, responseRefinementList.get(UNASSIGNED_JIRA_ISSUE_HISTORY));
 		assertEquals(issueBacklogList.get(0).getNumber(),
 				((List<IssueBacklog>) responseRefinementList.get(UNASSIGNED_JIRA_ISSUE)).get(0).getNumber());
 	}
@@ -159,12 +158,12 @@ public class RefinementRejectionRateServiceImplTest {
 		assertNotNull(responseKpiElement);
 		assertNotNull(responseKpiElement.getTrendValueList());
 		assertEquals(responseKpiElement.getKpiId(), kpiRequest.getKpiList().get(0).getKpiId());
-		assertEquals(Arrays.asList(responseKpiElement.getTrendValueList()).size(),1);
+		assertEquals(Arrays.asList(responseKpiElement.getTrendValueList()).size(), 1);
 
 		List<DataCount> dataCounts = (List<DataCount>) responseKpiElement.getTrendValueList();
-		for (DataCount dataCount:dataCounts) {
-			for(DataCount values:new ArrayList<DataCount>((Collection<? extends DataCount>) dataCount.getValue())){
-				Assert.assertThat(values.getsSprintName(), StringContains.containsString("Week"));				
+		for (DataCount dataCount : dataCounts) {
+			for (DataCount values : new ArrayList<DataCount>((Collection<? extends DataCount>) dataCount.getValue())) {
+				Assert.assertThat(values.getsSprintName(), StringContains.containsString("Week"));
 			}
 
 		}

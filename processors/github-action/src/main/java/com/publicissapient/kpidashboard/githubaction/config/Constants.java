@@ -33,6 +33,7 @@ public class Constants {
 	public static final String CREATED_AT = "created_at";
 	public static final String RESULT = "conclusion";
 	public static final String PATH = "path";
+
 	private Constants() {
 	}
 }

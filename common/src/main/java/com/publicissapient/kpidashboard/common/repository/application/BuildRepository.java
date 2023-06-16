@@ -47,8 +47,9 @@ public interface BuildRepository
 	void deleteByProjectToolConfigId(ObjectId projectToolConfigId);
 
 	Build findByProjectToolConfigIdAndNumber(ObjectId projectToolConfigId, String number);
+
 	List<Build> findByProjectToolConfigIdAndNumberIn(ObjectId projectToolConfigId, Set<String> number);
 
-	Build findByNumberAndBuildJobAndBasicProjectConfigId(String number,String buildJob,ObjectId basicProjectConfigId);
+	Build findByNumberAndBuildJobAndBasicProjectConfigId(String number, String buildJob, ObjectId basicProjectConfigId);
 
 }

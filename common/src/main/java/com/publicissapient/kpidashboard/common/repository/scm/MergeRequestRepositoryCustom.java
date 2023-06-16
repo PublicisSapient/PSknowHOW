@@ -9,6 +9,9 @@ import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 
 public interface MergeRequestRepositoryCustom {
 
-	List<MergeRequests> findMergeList(List<ObjectId> collectorItemIdList, Long startDate, Long endDate,BasicDBList filterList);
-	List<MergeRequests> findMergeRequestList(List<ObjectId> collectorItemIdList, Long startDate, Long endDate,BasicDBList filterList);
+	List<MergeRequests> findMergeList(List<ObjectId> collectorItemIdList, Long startDate, Long endDate,
+			BasicDBList filterList);
+
+	List<MergeRequests> findMergeRequestList(List<ObjectId> collectorItemIdList, Long startDate, Long endDate,
+			BasicDBList filterList);
 }

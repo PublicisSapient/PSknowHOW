@@ -18,20 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.config;
 
-import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
-import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenAuthenticationProvider;
-import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenRequestFilter;
-import com.publicissapient.kpidashboard.apis.auth.ldap.CustomUserDetailsContextMapper;
-import com.publicissapient.kpidashboard.apis.auth.ldap.LdapLoginRequestFilter;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
-import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
-import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
-import com.publicissapient.kpidashboard.apis.errors.CustomAuthenticationEntryPoint;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -51,10 +42,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
+import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
+import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
+import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenAuthenticationProvider;
+import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenRequestFilter;
+import com.publicissapient.kpidashboard.apis.auth.ldap.CustomUserDetailsContextMapper;
+import com.publicissapient.kpidashboard.apis.auth.ldap.LdapLoginRequestFilter;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
+import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
+import com.publicissapient.kpidashboard.apis.errors.CustomAuthenticationEntryPoint;
+import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 
 /**
  * Extension of {@link WebSecurityConfigurerAdapter} to provide configuration
@@ -90,12 +91,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
 	@Autowired
 	private ADServerDetailsService adServerDetailsService;
-	
+
 	@Autowired
 	private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
 	@Autowired
 	private AuthTypesConfigService authTypesConfigService;
+
+	public static Properties getProps() throws IOException {
+		Properties prop = new Properties();
+		try (InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("crowd.properties")) {
+			prop.load(in);
+		}
+		return prop;
+	}
 
 	@Autowired
 	public void setCustomApiConfig(CustomApiConfig customApiConfig) {
@@ -105,7 +114,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	/**
 	 * Added below fixes for security scan: - commented the headers in the response
 	 * - added CorsFilter in filter chain for endpoints mentioned in the method
-	 * 
+	 *
 	 * @param http
 	 *            - reference to HttpSecurity
 	 */
@@ -116,22 +125,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 		http.csrf().disable().authorizeRequests().antMatchers("/appinfo").permitAll().antMatchers("/registerUser")
 				.permitAll().antMatchers("/changePassword").permitAll().antMatchers("/login/captcha").permitAll()
 				.antMatchers("/login/captchavalidate").permitAll().antMatchers("/login**").permitAll()
-				.antMatchers("/error").permitAll()
-				.antMatchers("/authenticationProviders").permitAll()
-				.antMatchers("/auth-types-status").permitAll()
-				.antMatchers("/pushData/*").permitAll()
+				.antMatchers("/error").permitAll().antMatchers("/authenticationProviders").permitAll()
+				.antMatchers("/auth-types-status").permitAll().antMatchers("/pushData/*").permitAll()
 				.antMatchers("/getversionmetadata").permitAll()
 
 				// management metrics
-				.antMatchers("/info").permitAll().antMatchers("/health").permitAll()
-				.antMatchers("/env").permitAll().antMatchers("/metrics").permitAll()
-				.antMatchers("/actuator/togglz").permitAll()
-				.antMatchers("/actuator**").permitAll()
-				.antMatchers("/forgotPassword").permitAll().antMatchers("/validateToken**").permitAll()
-				.antMatchers("/resetPassword").permitAll().antMatchers("/cache/clearAllCache").permitAll()
-				.antMatchers(HttpMethod.GET, "/cache/clearCache/**").permitAll().antMatchers(HttpMethod.OPTIONS, "/**")
-				.permitAll().antMatchers(HttpMethod.GET,"/analytics/switch").permitAll().anyRequest().authenticated()
-				.and().httpBasic().and().csrf().disable().headers().and()
+				.antMatchers("/info").permitAll().antMatchers("/health").permitAll().antMatchers("/env").permitAll()
+				.antMatchers("/metrics").permitAll().antMatchers("/actuator/togglz").permitAll()
+				.antMatchers("/actuator**").permitAll().antMatchers("/forgotPassword").permitAll()
+				.antMatchers("/validateToken**").permitAll().antMatchers("/resetPassword").permitAll()
+				.antMatchers("/cache/clearAllCache").permitAll().antMatchers(HttpMethod.GET, "/cache/clearCache/**")
+				.permitAll().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated().and()
+				.httpBasic().and().csrf().disable().headers().and()
 				.addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(ldapLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -151,8 +157,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 		ADServerDetail adServerDetail = adServerDetailsService.getADServerConfig();
 		if (authenticationProviders.contains(AuthType.LDAP) && adServerDetail != null) {
 			auth.ldapAuthentication().userSearchBase(adServerDetail.getRootDn())
-					.userDnPatterns(adServerDetail.getUserDn()).contextSource()
-					.url(adServerDetail.getHost()).port(adServerDetail.getPort()).managerDn(adServerDetail.getUsername())
+					.userDnPatterns(adServerDetail.getUserDn()).contextSource().url(adServerDetail.getHost())
+					.port(adServerDetail.getPort()).managerDn(adServerDetail.getUsername())
 					.managerPassword(adServerDetail.getPassword()).and().passwordCompare()
 					.passwordAttribute("password");
 			auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider());
@@ -170,8 +176,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	@Bean
 	protected LdapLoginRequestFilter ldapLoginRequestFilter() throws Exception {
 		return new LdapLoginRequestFilter("/ldap", authenticationManager(), authenticationResultHandler,
-				customAuthenticationFailureHandler, customApiConfig, adServerDetailsService,
-				authTypesConfigService);
+				customAuthenticationFailureHandler, customApiConfig, adServerDetailsService, authTypesConfigService);
 	}
 
 	@Bean
@@ -199,32 +204,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	}
 
 	@Bean
-	public CustomAuthenticationEntryPoint customAuthenticationEntryPoint(){
+	public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
 		return new CustomAuthenticationEntryPoint();
 	}
 
-	public static Properties getProps() throws IOException {
-		Properties prop = new Properties();
-		try (InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("crowd.properties")) {
-			prop.load(in);
-		}
-		return prop;
-	}
-	
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/v2/api-docs",
-                               "/configuration/ui",
-                               "/swagger-resources/**",
-                               "/configuration/security",
-                               "/swagger-ui/**",
-                               "/webjars/**");
+		web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**",
+				"/configuration/security", "/swagger-ui/**", "/webjars/**");
 	}
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/");
-        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+		registry.addResourceHandler("/swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/");
+		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
 	}
-	
+
 }

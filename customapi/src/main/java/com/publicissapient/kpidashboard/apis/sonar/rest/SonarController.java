@@ -24,8 +24,6 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.sonar.service.SonarToolConfigServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,8 +42,10 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.sonar.service.SonarServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.sonar.service.SonarServiceR;
+import com.publicissapient.kpidashboard.apis.sonar.service.SonarToolConfigServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,30 +57,27 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SonarController {
 
+	private static final String FETCHED_SUCCESSFULLY = "fetched successfully";
 	@Autowired
 	private CacheService cacheService;
-
 	@Autowired
 	private SonarServiceR sonarService;
-
 	@Autowired
 	private SonarServiceKanbanR sonarServiceKanban;
-
 	@Autowired
 	private SonarToolConfigServiceImpl sonarToolConfigService;
-	
-	private static final String FETCHED_SUCCESSFULLY = "fetched successfully";
 
 	/**
 	 * Gets Sonar Aggregate Metrics for Scrum projects
+	 * 
 	 * @param kpiRequest
 	 * @return {@code ResponseEntity<List<KpiElement>>}
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/sonar/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)//NOSONAR
-	//@PreAuthorize("hasPermission(null,'KPI_FILTER')")
+	@RequestMapping(value = "/sonar/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getSonarAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception { //NOSONAR
+			throws Exception { // NOSONAR
 
 		log.info("[SONAR][{}]. Received Sonar KPI request {}", kpiRequest.getRequestTrackerId(), kpiRequest);
 
@@ -99,15 +96,17 @@ public class SonarController {
 		}
 
 	}
+
 	/**
 	 * Gets Sonar Aggregate Metrics for Kanban projects
+	 * 
 	 * @param kpiRequest
 	 * @return {@code ResponseEntity<List<KpiElement>>}
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/sonarkanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)//NOSONAR
+	@RequestMapping(value = "/sonarkanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<List<KpiElement>> getSonarKanbanAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception { //NOSONAR
+			throws Exception { // NOSONAR
 
 		log.info("[SONAR KANBAN][{}]. Received Sonar KPI request {}", kpiRequest.getRequestTrackerId(), kpiRequest);
 
@@ -148,24 +147,21 @@ public class SonarController {
 	 * @return @{@code ServiceResponse}
 	 */
 	@GetMapping(value = "/sonar/project/{connectionId}/{organizationKey}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> getSonarProjectList(
-			@PathVariable String connectionId,
+	public ResponseEntity<ServiceResponse> getSonarProjectList(@PathVariable String connectionId,
 			@PathVariable String organizationKey) {
 		List<String> projectKeyList = sonarToolConfigService.getSonarProjectKeyList(connectionId, organizationKey);
 		if (CollectionUtils.isEmpty(projectKeyList)) {
-			return ResponseEntity
-					.status(HttpStatus.NOT_FOUND)
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ServiceResponse(false, "No projects found", null));
 		} else {
-			return ResponseEntity
-					.status(HttpStatus.OK)
+			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, FETCHED_SUCCESSFULLY, projectKeyList));
 		}
 	}
 
 	/**
-	 * Provides the list of Sonar Project's Branch
-	 * API call only if version is supported.
+	 * Provides the list of Sonar Project's Branch API call only if version is
+	 * supported.
 	 *
 	 * @param connectionId
 	 *            the Sonar server connection details

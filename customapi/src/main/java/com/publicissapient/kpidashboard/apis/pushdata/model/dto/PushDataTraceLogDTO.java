@@ -20,16 +20,16 @@ package com.publicissapient.kpidashboard.apis.pushdata.model.dto;
 
 import java.util.List;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import org.bson.types.ObjectId;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * PushDataTraceLogDTO

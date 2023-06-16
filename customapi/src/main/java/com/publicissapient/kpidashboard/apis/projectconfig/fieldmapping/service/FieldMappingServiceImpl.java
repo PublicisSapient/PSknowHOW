@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -47,6 +45,8 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author anisingh4
@@ -132,7 +132,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		return mapping;
 	}
 
-    @Override
+	@Override
 	public boolean compareMappingOnSave(String projectToolConfigId, FieldMapping fieldMapping) {
 
 		boolean mappingUpdated = false;
@@ -152,11 +152,13 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 		if (existingFieldMapping != null) {
 			fieldMapping.setId(existingFieldMapping.getId());
-		 mappingUpdated = compareJiraData(existingFieldMapping.getBasicProjectConfigId(), fieldMapping, existingFieldMapping);
+			mappingUpdated = compareJiraData(existingFieldMapping.getBasicProjectConfigId(), fieldMapping,
+					existingFieldMapping);
 		}
 
 		return mappingUpdated;
 	}
+
 	@Override
 	public boolean hasProjectAccess(String projectToolConfigId) {
 		Optional<ProjectBasicConfig> projectBasicConfig;
@@ -200,8 +202,10 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	/**
 	 * Checks if fields are updated.
 	 *
-	 * @param unsaved       object from request
-	 * @param saved         object from database
+	 * @param unsaved
+	 *            object from request
+	 * @param saved
+	 *            object from database
 	 * @param fieldNameList
 	 * @return true or false
 	 */
@@ -237,8 +241,10 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	/**
 	 * Checks if fields are updated.
 	 *
-	 * @param unsaved             object from request
-	 * @param saved               object from database
+	 * @param unsaved
+	 *            object from request
+	 * @param saved
+	 *            object from database
 	 * @param fieldNameListKanban
 	 * @return true or false
 	 */
@@ -330,14 +336,16 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					READY_FOR_DEVELOPMENT_STATUS, "additionalFilterConfig", "jiraDueDateField",
 					"jiraDueDateCustomField");
 
-			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES,
-					STORY_FIRST_STATUS);
+			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE,
+					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS);
 
 			Optional<ProjectToolConfig> projectToolConfigOpt = toolConfigRepository
 					.findById(fieldMapping.getProjectToolConfigId());
-			azureSprintReportStatusUpdateBasedOnFieldChange(fieldMapping, existingFieldMapping, projectBasicConfig, projectToolConfigOpt);
+			azureSprintReportStatusUpdateBasedOnFieldChange(fieldMapping, existingFieldMapping, projectBasicConfig,
+					projectToolConfigOpt);
 
-			if ((!projectBasicConfig.getIsKanban() && isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
+			if ((!projectBasicConfig.getIsKanban()
+					&& isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
 					|| (projectBasicConfig.getIsKanban()
 							&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping, fieldNameListKanban))) {
 				Optional<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
@@ -359,16 +367,17 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	/**
-	 * if jiraIterationCompletionStatusCustomField field mapping changes then
-	 * put identifier to change in sprint report issues based on status for azure board
+	 * if jiraIterationCompletionStatusCustomField field mapping changes then put
+	 * identifier to change in sprint report issues based on status for azure board
 	 *
 	 * @param fieldMapping
 	 * @param existingFieldMapping
 	 * @param projectBasicConfig
 	 * @param projectToolConfigOpt
 	 */
-	private void azureSprintReportStatusUpdateBasedOnFieldChange(FieldMapping fieldMapping, FieldMapping existingFieldMapping,
-			ProjectBasicConfig projectBasicConfig, Optional<ProjectToolConfig> projectToolConfigOpt) {
+	private void azureSprintReportStatusUpdateBasedOnFieldChange(FieldMapping fieldMapping,
+			FieldMapping existingFieldMapping, ProjectBasicConfig projectBasicConfig,
+			Optional<ProjectToolConfig> projectToolConfigOpt) {
 		List<String> azureIterationStatusFieldList = Arrays.asList("jiraIterationCompletionStatusCustomField");
 		if (projectToolConfigOpt.isPresent()
 				&& projectToolConfigOpt.get().getToolName().equals(ProcessorConstants.AZURE)
@@ -380,7 +389,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 	}
 
-	private void saveTemplateCode(ProjectBasicConfig projectBasicConfig, Optional<ProjectToolConfig> projectToolConfigOpt) {
+	private void saveTemplateCode(ProjectBasicConfig projectBasicConfig,
+			Optional<ProjectToolConfig> projectToolConfigOpt) {
 		if (projectToolConfigOpt.isPresent()) {
 			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
 			if (projectBasicConfig.getIsKanban()) {
@@ -416,7 +426,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					EPIC_TIME_CRITICALITY, "jiraLiveStatus", EPIC_JOB_SIZE, "additionalFilterConfig",
 					"jiraDueDateField", "jiraDueDateCustomField", "jiraDefectClosedStatus", "jiraRejectedInRefinement",
 					"jiraAcceptedInRefinement", "jiraReadyForRefinement", "jiraIterationCompletionStatusCustomField",
-					"jiraIterationCompletionTypeCustomField","jiraFtprRejectStatus");
+					"jiraIterationCompletionTypeCustomField", "jiraFtprRejectStatus");
 
 			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE,
 					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus",

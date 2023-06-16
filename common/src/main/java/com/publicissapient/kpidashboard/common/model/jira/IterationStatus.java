@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.common.model.jira;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,13 +14,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @Data
 public class IterationStatus {
-    private String issueId;
-    private String url;
-    private String typeName;
-    private String issueDescription;
-    private String priority;
-    private String issueStatus;
-    private String dueDate;
-    private Integer remainingEstimateMinutes;
-    private String delay;
+	private String issueId;
+	private String url;
+	private String typeName;
+	private String issueDescription;
+	private String priority;
+	private String issueStatus;
+	private String dueDate;
+	private Integer remainingEstimateMinutes;
+	private String delay;
 }

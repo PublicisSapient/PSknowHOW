@@ -296,14 +296,12 @@ public class MetaDataClientImpl implements MetadataClient {
 
 	private void populateKanbanFieldMappingData(FieldMapping fieldMapping, Map<String, List<String>> workflowMap,
 			Map<String, List<String>> issueTypeMap) {
+		fieldMapping.setTicketCountIssueType(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 		fieldMapping
-				.setTicketCountIssueType(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-		fieldMapping.setKanbanRCACountIssueType(
-				issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+				.setKanbanRCACountIssueType(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 		fieldMapping.setJiraTicketVelocityIssueType(
 				issueTypeMap.getOrDefault(CommonConstant.TICKET_VELOCITY_ISSUE_TYPE, new ArrayList<>()));
-		fieldMapping
-				.setTicketDeliverdStatus(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+		fieldMapping.setTicketDeliverdStatus(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 		fieldMapping.setTicketReopenStatus(
 				workflowMap.getOrDefault(CommonConstant.TICKET_REOPEN_STATUS, new ArrayList<>()));
 		fieldMapping.setJiraTicketTriagedStatus(
@@ -314,8 +312,8 @@ public class MetaDataClientImpl implements MetadataClient {
 				workflowMap.getOrDefault(CommonConstant.TICKET_REJECTED_STATUS, new ArrayList<>()));
 		fieldMapping.setJiraTicketResolvedStatus(
 				workflowMap.getOrDefault(CommonConstant.TICKET_RESOLVED_STATUS, new ArrayList<>()));
-		fieldMapping.setJiraTicketWipStatus(
-				workflowMap.getOrDefault(CommonConstant.TICKET_WIP_STATUS, new ArrayList<>()));
+		fieldMapping
+				.setJiraTicketWipStatus(workflowMap.getOrDefault(CommonConstant.TICKET_WIP_STATUS, new ArrayList<>()));
 		fieldMapping.setKanbanCycleTimeIssueType(
 				issueTypeMap.getOrDefault(CommonConstant.KANBAN_CYCLE_TIME_ISSUE_TYPE, new ArrayList<>()));
 		fieldMapping.setKanbanJiraTechDebtIssueType(

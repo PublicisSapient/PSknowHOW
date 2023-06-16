@@ -20,11 +20,11 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -65,7 +65,7 @@ public class ProjectToolConfig extends BasicModel {
 	private boolean queryEnabled;
 	private String boardQuery;
 	private List<BoardDetails> boards;
-	//TestCase Fields For zephyr tool
+	// TestCase Fields For zephyr tool
 	private List<String> regressionAutomationLabels;
 	private String testAutomationStatusLabel;
 	private List<String> automatedTestValue;
@@ -89,18 +89,18 @@ public class ProjectToolConfig extends BasicModel {
 	private List<String> testCaseStatus;
 
 	private String organizationKey;
-	//BambooDeployment
+	// BambooDeployment
 	private String deploymentProjectName;
 	private String deploymentProjectId;
 
 	private String parameterNameForEnvironment;
 
-	//template ID
+	// template ID
 	private String metadataTemplateCode;
-	//workflows ID for github Action processor
+	// workflows ID for github Action processor
 	private String workflowID;
 
-	//Sonar SDM ID use for GS
+	// Sonar SDM ID use for GS
 	private String gitLabSdmID;
 
 	// jiraIterationCompletionStatusCustomField field mapping update identifier

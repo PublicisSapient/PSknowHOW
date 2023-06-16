@@ -38,20 +38,24 @@ import org.powermock.reflect.Whitebox;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.gitlab.config.GitLabConfig;
 import com.publicissapient.kpidashboard.gitlab.customexception.FetchingCommitException;
 import com.publicissapient.kpidashboard.gitlab.model.GitLabProcessor;
@@ -59,30 +63,25 @@ import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 import com.publicissapient.kpidashboard.gitlab.repository.GitLabProcessorRepository;
 import com.publicissapient.kpidashboard.gitlab.repository.GitLabRepoRepository;
 import com.publicissapient.kpidashboard.gitlab.util.GitLabRestOperations;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 @ExtendWith(SpringExtension.class)
 public class GitLabProcessorJobExecutorTest {
 
 	/** The processorid. */
 	private final ObjectId PROCESSORID = new ObjectId("5e2ac020e4b098db0edf5145");
-
+	@Mock
+	MergeRequestRepository mergReqRepo;
+	ProcessorToolConnection gitLabInfo = new ProcessorToolConnection();
 	@Mock
 	private TaskScheduler scheduler;
 	@Mock
 	private GitLabProcessor gitLabProcessor;
 	@Mock
 	private ConnectionRepository connectionsRepository;
-
 	@Mock
 	private ProjectBasicConfigRepository projectConfigRepository;
-
 	@Mock
 	private GitLabConfig gitLabConfig;
-
 	@Mock
 	private ProcessorItemRepository<ProcessorItem> processorItemRepository;
 	@Mock
@@ -102,11 +101,7 @@ public class GitLabProcessorJobExecutorTest {
 	@Mock
 	private ProcessorToolConnectionService processorToolConnectionService;
 	@Mock
-	MergeRequestRepository mergReqRepo;
-
-	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
 	@InjectMocks
 	private GitLabProcessorJobExecutor gitBucketProcessorJobExecutor;
 	@Mock
@@ -128,9 +123,7 @@ public class GitLabProcessorJobExecutorTest {
 		Mockito.when(gitLabConfig.getCron()).thenReturn("0 0 0/12 * * *");
 		assertEquals("0 0 0/12 * * *", gitLabConfig.getCron());
 	}
-	
-	ProcessorToolConnection gitLabInfo=new ProcessorToolConnection();
-	
+
 	@Test
 	public void testExecute() throws FetchingCommitException {
 		GitLabProcessor gitLabProcessor = GitLabProcessor.prototype();
@@ -172,8 +165,8 @@ public class GitLabProcessorJobExecutorTest {
 		List<ProcessorToolConnection> connList = new ArrayList<>();
 		connList.add(connectionDetail);
 
-		Mockito.when(processorToolConnectionService.findByToolAndBasicProjectConfigId(ProcessorConstants.GITLAB, new ObjectId("61f22fbb16e55b7609b0a36b")))
-				.thenReturn(connList);
+		Mockito.when(processorToolConnectionService.findByToolAndBasicProjectConfigId(ProcessorConstants.GITLAB,
+				new ObjectId("61f22fbb16e55b7609b0a36b"))).thenReturn(connList);
 
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.GITHUB);
 		processorExecutionTraceLog.setLastSuccessfulRun("2023-02-06");
@@ -181,9 +174,8 @@ public class GitLabProcessorJobExecutorTest {
 		pl.add(processorExecutionTraceLog);
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 
-		when(processorExecutionTraceLogRepository.
-				findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITLAB, "61f22fbb16e55b7609b0a36b"))
-				.thenReturn(optionalProcessorExecutionTraceLog);
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITLAB,
+				"61f22fbb16e55b7609b0a36b")).thenReturn(optionalProcessorExecutionTraceLog);
 		Assert.assertEquals(1, commitDetailList.size());
 		gitBucketProcessorJobExecutor.execute(gitLabProcessor);
 	}
@@ -204,12 +196,13 @@ public class GitLabProcessorJobExecutorTest {
 		toolConfig.setBranch("Dev_Trunk");
 		toolConfig.setToolName("Bitbucket");
 		toolConfig.setJobName("API_Build");
-		//toolConfig.setUrl("https://test.com/scm.git");
+		// toolConfig.setUrl("https://test.com/scm.git");
 		toolConfigs.add(toolConfig);
 		Assert.assertEquals(1, processorItems.size());
 		Whitebox.invokeMethod(gitBucketProcessorJobExecutor, "addProcessorItems", processor);
 	}
-	private List<ProjectBasicConfig> getProjectConfigList(){
+
+	private List<ProjectBasicConfig> getProjectConfigList() {
 		List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 		ProjectBasicConfig p = new ProjectBasicConfig();
 		p.setId(new ObjectId("61f22fbb16e55b7609b0a36b"));

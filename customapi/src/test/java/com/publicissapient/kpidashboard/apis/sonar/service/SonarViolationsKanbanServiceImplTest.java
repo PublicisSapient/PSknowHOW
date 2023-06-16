@@ -82,32 +82,25 @@ import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepo
 @RunWith(MockitoJUnitRunner.class)
 public class SonarViolationsKanbanServiceImplTest {
 
-	@Mock
-	private ConfigHelperService configHelperService;
-
-	@InjectMocks
-	private SonarViolationsKanbanServiceImpl svServiceImpl;
-
-	@Mock
-	private CustomApiConfig customApiConfig;
-
-	@Mock
-	private SonarHistoryRepository sonarHistoryRepository;
-
-	@Mock
-	private CacheService cacheService;
-
-	@Mock
-	private CommonService commonService;
-
+	private static Tool tool1;
+	private static Tool tool2;
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	@Mock
+	private ConfigHelperService configHelperService;
+	@InjectMocks
+	private SonarViolationsKanbanServiceImpl svServiceImpl;
+	@Mock
+	private CustomApiConfig customApiConfig;
+	@Mock
+	private SonarHistoryRepository sonarHistoryRepository;
+	@Mock
+	private CacheService cacheService;
+	@Mock
+	private CommonService commonService;
 	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
 	private Map<String, List<Tool>> toolGroup = new HashMap<>();
 	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
-
-	private static Tool tool1;
-	private static Tool tool2;
 	private List<DataCount> trendValues = new ArrayList<>();
 	private List<String> filterCategory = new ArrayList<>();
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
@@ -315,8 +308,7 @@ public class SonarViolationsKanbanServiceImplTest {
 
 	@Test
 	public void testCalculateAggregatedValue() {
-		assertNotNull(
-				svServiceImpl.calculateAggregatedValue(null, new HashMap<>(), KPICode.SONAR_VIOLATIONS_KANBAN));
+		assertNotNull(svServiceImpl.calculateAggregatedValue(null, new HashMap<>(), KPICode.SONAR_VIOLATIONS_KANBAN));
 	}
 
 }

@@ -18,16 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.kpivideo.rest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.kpivideo.service.KPIVideoLinkService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -35,7 +37,6 @@ import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLink;
 import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLinkDTO;
 
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 
 /**
  * Rest Controller for all KPI video links requests.
@@ -53,15 +54,15 @@ public class KPIVideoLinkController {
 	/**
 	 * Modify/Update a kpi link by kpiId.
 	 * 
-	 * @param kpiVideoLinkDTO request object that replaces the kpi link data present
-	 *                        at id.
+	 * @param kpiVideoLinkDTO
+	 *            request object that replaces the kpi link data present at id.
 	 *
 	 * @return responseEntity with data,message and status
 	 */
 	@RequestMapping(value = "/{kpiId}/video", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> modifyKpiVideoLinkById(@PathVariable String kpiId,
 			@Valid @RequestBody KPIVideoLinkDTO kpiVideoLinkDTO) {
-		log.info("link@{} updated",kpiId );
+		log.info("link@{} updated", kpiId);
 		final ModelMapper modelMapper = new ModelMapper();
 		final KPIVideoLink kvl = modelMapper.map(kpiVideoLinkDTO, KPIVideoLink.class);
 		return ResponseEntity.status(HttpStatus.OK).body(kpiLinksService.update(kpiId, kvl));

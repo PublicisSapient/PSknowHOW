@@ -25,9 +25,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.sonar.util.SonarUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
@@ -47,11 +44,13 @@ import org.springframework.web.client.RestOperations;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.publicissapient.kpidashboard.common.constant.SonarAnalysisType;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMeasureData;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.sonar.config.SonarConfig;
 import com.publicissapient.kpidashboard.sonar.model.Paging;
@@ -61,6 +60,7 @@ import com.publicissapient.kpidashboard.sonar.model.SonarProcessorItem;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.SonarClient;
 import com.publicissapient.kpidashboard.sonar.util.SonarDashboardUrl;
 import com.publicissapient.kpidashboard.sonar.util.SonarProcessorUtils;
+import com.publicissapient.kpidashboard.sonar.util.SonarUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -76,13 +76,12 @@ import lombok.extern.slf4j.Slf4j;
 public class Sonar8Client implements SonarClient {
 
 	private static final String RESOURCE_ENDPOINT = "/api/components/search?qualifiers=TRK&p=%d&ps=%d";
-	private static final String RESOURCE_ENDPOINT_CLOUD="/api/components/search?qualifier=TRK&organization=%s&p=%d&ps=%d";
+	private static final String RESOURCE_ENDPOINT_CLOUD = "/api/components/search?qualifier=TRK&organization=%s&p=%d&ps=%d";
 	private static final String RESOURCE_DETAILS_ENDPOINT = "/api/measures/component?format=json&component=%s&metricKeys=%s&includealerts=true";
 	private static final String PROJECT_ANALYSES_ENDPOINT = "/api/project_analyses/search?project=%s";
 	private static final String MEASURE_HISTORY_ENDPOINT = "/api/measures/search_history?component=%s&metrics=%s&includealerts=true&from=%s";
 	private static final String BRANCH_ENDPOINT = "&branch=%s";
 	private static final String PAGE = "&p=%s";
-
 
 	private static final String PROJECT_NAME = "name";
 	private static final String PROJECT_KEY = "key";
@@ -98,7 +97,6 @@ public class Sonar8Client implements SonarClient {
 	private final RestOperations restOperations;
 	private final SonarConfig sonarConfig;
 
-
 	private ToolCredentialProvider toolCredentialProvider;
 
 	/**
@@ -110,7 +108,8 @@ public class Sonar8Client implements SonarClient {
 	 *            the sonar settings
 	 */
 	@Autowired
-	public Sonar8Client(RestOperationsFactory<RestOperations> restOperationsFactory, SonarConfig sonarConfig, ToolCredentialProvider toolCredentialProvider) {
+	public Sonar8Client(RestOperationsFactory<RestOperations> restOperationsFactory, SonarConfig sonarConfig,
+			ToolCredentialProvider toolCredentialProvider) {
 		this.restOperations = restOperationsFactory.getTypeInstance();
 		this.sonarConfig = sonarConfig;
 		this.toolCredentialProvider = toolCredentialProvider;
@@ -157,7 +156,7 @@ public class Sonar8Client implements SonarClient {
 	 * @return the list of Sonar Project
 	 */
 	private List<SonarProcessorItem> getProjectsListFromResponse(SearchProjectsResponse response,
-																 ProcessorToolConnection sonarServer) {
+			ProcessorToolConnection sonarServer) {
 		List<SonarProcessorItem> projectList = new ArrayList<>();
 		if (response != null) {
 			List<SonarComponent> sonarComponents = response.getComponents();
@@ -215,8 +214,7 @@ public class Sonar8Client implements SonarClient {
 		return (int) Math.ceil(((double) totalItems / pageSize));
 	}
 
-	private SearchProjectsResponse getProjects(ProcessorToolConnection sonarServer, Paging paging,
-											   int nextPageIndex) {
+	private SearchProjectsResponse getProjects(ProcessorToolConnection sonarServer, Paging paging, int nextPageIndex) {
 
 		ToolCredential toolCredentials = SonarUtils.getToolCredentials(toolCredentialProvider, sonarServer);
 
@@ -237,7 +235,6 @@ public class Sonar8Client implements SonarClient {
 		return response;
 	}
 
-
 	/**
 	 * Rest call to get the projects of one page.
 	 *
@@ -254,7 +251,7 @@ public class Sonar8Client implements SonarClient {
 	 * @return SearchProjectsResponse containing projects and paging info
 	 */
 	private SearchProjectsResponse searchProjects(String baseUrl, String username, String password, int pageIndex,
-												  int pageSize) {
+			int pageSize) {
 
 		String resUrl = String.format(RESOURCE_ENDPOINT, pageIndex, pageSize);
 		String url = baseUrl + resUrl;
@@ -279,12 +276,12 @@ public class Sonar8Client implements SonarClient {
 	 * @return SearchProjectsResponse containing projects and paging info
 	 */
 	private SearchProjectsResponse searchProjectsWithAccessToken(String baseUrl, String password, int pageIndex,
-												  int pageSize) {
+			int pageSize) {
 
 		String resUrl = String.format(RESOURCE_ENDPOINT, pageIndex, pageSize);
 		String url = baseUrl + resUrl;
 
-		HttpEntity<?> httpEntity = new HttpEntity<>(SonarProcessorUtils.getHeaders(password,true));
+		HttpEntity<?> httpEntity = new HttpEntity<>(SonarProcessorUtils.getHeaders(password, true));
 
 		return getSearchProjectsResponse(restOperations.exchange(url, HttpMethod.GET, httpEntity, String.class), url);
 
@@ -327,7 +324,7 @@ public class Sonar8Client implements SonarClient {
 	 */
 
 	private SearchProjectsResponse searchProjectsSonarCloud(String baseUrl, String accessToken, int pageIndex,
-															int pageSize, String organizationKey) {
+			int pageSize, String organizationKey) {
 
 		String resUrl = String.format(new StringBuilder(baseUrl).append(RESOURCE_ENDPOINT_CLOUD).toString(),
 				organizationKey, pageIndex, pageSize);
@@ -352,7 +349,7 @@ public class Sonar8Client implements SonarClient {
 	 */
 	@Override
 	public SonarDetails getLatestSonarDetails(SonarProcessorItem project, HttpEntity<String> httpHeaders,
-											  String metrics) {
+			String metrics) {
 		String url;
 		if (!project.getToolDetailsMap().containsKey(BRANCH)) {
 			url = String.format(
@@ -471,7 +468,7 @@ public class Sonar8Client implements SonarClient {
 	 */
 	@Override
 	public List<SonarHistory> getPastSonarDetails(SonarProcessorItem project, HttpEntity<String> httpHeaders,
-												  String metrics) {
+			String metrics) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
 		String lastUpdated = DEFAULT_DATE;
@@ -487,7 +484,7 @@ public class Sonar8Client implements SonarClient {
 		try {
 			int pageIndex = 1;
 			do {
-				url = createHistoryUrl(project,metrics,lastUpdated,pageIndex);
+				url = createHistoryUrl(project, metrics, lastUpdated, pageIndex);
 				ResponseEntity<String> response = restOperations.exchange(url, HttpMethod.GET, httpHeaders,
 						String.class);
 				JSONParser jsonParser = new JSONParser();
@@ -518,7 +515,7 @@ public class Sonar8Client implements SonarClient {
 						codeList.add(sonarHistory);
 					}
 					pageIndex++;
-				}else {
+				} else {
 					break;
 				}
 			} while (pageIndex < 100);
@@ -530,6 +527,7 @@ public class Sonar8Client implements SonarClient {
 
 		return codeList;
 	}
+
 	private String createHistoryUrl(SonarProcessorItem project, String metrics, String lastUpdated, int pageIndex) {
 		String url = "";
 		if (!project.getToolDetailsMap().containsKey(BRANCH)) {
@@ -555,7 +553,7 @@ public class Sonar8Client implements SonarClient {
 	 *            the sonar history
 	 */
 	private void populateCodeQualityHistory(List<SonarMeasureData> qualityList, int singleHistory,
-											SonarHistory sonarHistory) {
+			SonarHistory sonarHistory) {
 		for (SonarMeasureData sonarMeasureData : qualityList) {
 			SonarMetric metric = new SonarMetric(sonarMeasureData.getMetric());
 			if (!CollectionUtils.isEmpty(sonarMeasureData.getHistory())

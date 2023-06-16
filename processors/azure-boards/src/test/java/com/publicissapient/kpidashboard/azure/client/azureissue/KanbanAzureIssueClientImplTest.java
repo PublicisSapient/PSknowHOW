@@ -14,8 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
@@ -40,7 +38,6 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.SubProjectConfig;
 import com.publicissapient.kpidashboard.common.model.azureboards.AzureBoardsWIModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.Fields;
 import com.publicissapient.kpidashboard.common.model.azureboards.Value;
@@ -49,11 +46,12 @@ import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlM
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.WorkItem;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
-
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
 @ExtendWith(SpringExtension.class)
 public class KanbanAzureIssueClientImplTest {
@@ -63,118 +61,102 @@ public class KanbanAzureIssueClientImplTest {
 	List<FieldMapping> fieldMappingList = new ArrayList<>();
 	List<ProjectConfFieldMapping> projectConfFieldMappingList = new ArrayList<>();
 	List<Value> issues = new ArrayList<>();
-	
+
 	KanbanAccountHierarchy kanbanAccountHierarchy;
-	
-	@Mock
-	private KanbanJiraIssueRepository kanbanJiraRepo;
-
-	@Mock
-	private AzureProcessorRepository azureProcessorRepository;
-	
-	@Mock
-	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
-	
-	@Mock
-	private AzureProcessorConfig azureProcessorConfig;
-
-	@Mock
-	private KanbanJiraIssueHistoryRepository kanbanIssueHistoryRepo;
-	
-	@InjectMocks
-	private KanbanAzureIssueClientImpl kanbanIssueClientImpl;
-	
-	@Mock
-	private AesEncryptionService aesEncryptionService;
-	
-	@Mock
-	private ProcessorAzureRestClient processorAzureRestClient;
-	
-	@Mock
-	private AzureAdapter azureAdapter;
-	
 	@Mock
 	AzureProcessor azureProcessor;
 	@Mock
 	AzureWiqlModel azureWiqlModel;
 	@Mock
 	AzureBoardsWIModel azureBoardsWIModel;
-	
+	AzureUpdatesModel azureUpdatesModel;
+	ProjectBasicConfig projectConfig = new ProjectBasicConfig();
+	Fields field;
+	com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields fields;
+	@Mock
+	private KanbanJiraIssueRepository kanbanJiraRepo;
+	@Mock
+	private AzureProcessorRepository azureProcessorRepository;
+	@Mock
+	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
+	@Mock
+	private AzureProcessorConfig azureProcessorConfig;
+	@Mock
+	private KanbanJiraIssueHistoryRepository kanbanIssueHistoryRepo;
+	@InjectMocks
+	private KanbanAzureIssueClientImpl kanbanIssueClientImpl;
+	@Mock
+	private AesEncryptionService aesEncryptionService;
+	@Mock
+	private ProcessorAzureRestClient processorAzureRestClient;
+	@Mock
+	private AzureAdapter azureAdapter;
 	@Mock
 	private AdditionalFilterHelper additionalFilterHelper;
-
 	@Mock
 	private HierarchyLevelService hierarchyLevelService;
-
 	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
-	AzureUpdatesModel azureUpdatesModel;
-	ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-	
-	Fields field;
-	com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields fields;
-	
 	@BeforeEach
 	public void setUp() throws Exception {
 		prepareProjectData();
 		prepareProjectConfig();
 		prepareFieldMapping();
 		setProjectConfigFieldMap();
-		azureUpdatesModel=new AzureUpdatesModel();
-		List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> valueList=new ArrayList<>();
-		com.publicissapient.kpidashboard.common.model.azureboards.updates.Value value1=new com.publicissapient.kpidashboard.common.model.azureboards.updates.Value();
+		azureUpdatesModel = new AzureUpdatesModel();
+		List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> valueList = new ArrayList<>();
+		com.publicissapient.kpidashboard.common.model.azureboards.updates.Value value1 = new com.publicissapient.kpidashboard.common.model.azureboards.updates.Value();
 		value1.setId(2);
 		value1.setRev(2);
 		valueList.add(value1);
-		fields=new com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields();
+		fields = new com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields();
 		value1.setFields(fields);
 		azureUpdatesModel.setValue(valueList);
 
 	}
-	
-	
+
 	@Test
 	public void testProcessesAzureIssues() throws URISyntaxException, JSONException {
-	
+
 		when(kanbanJiraRepo.saveAll(any())).thenReturn(null);
 		when(kanbanIssueHistoryRepo.saveAll(any())).thenReturn(null);
 		when(kanbanJiraRepo.findTopByBasicProjectConfigId(any())).thenReturn(null);
 		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE)).thenReturn(azureProcessor);
 		when(azureProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));
 		when(azureAdapter.getPageSize()).thenReturn(30);
-		when(azureProcessorConfig.getMinsToReduce()).thenReturn(30);	when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any() ,any())).thenReturn(null);
+		when(azureProcessorConfig.getMinsToReduce()).thenReturn(30);
+		when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any())).thenReturn(null);
 		when(azureAdapter.getWiqlModel(any(), any(), any(), anyBoolean())).thenReturn(azureWiqlModel);
 		createIssue();
 		WorkItem work = new WorkItem();
 		work.setId(1);
 		work.setUrl("https://testDomain.com/jira/");
-		List<WorkItem> workItems =new ArrayList<>();
+		List<WorkItem> workItems = new ArrayList<>();
 		workItems.add(work);
 		Value value = new Value();
 		value.setId(3);
 		value.setFields(field);
 		when(azureWiqlModel.getWorkItems()).thenReturn(workItems);
-		when(azureAdapter.getWorkItemInfoForIssues(anyInt(),any(),any())).thenReturn(azureBoardsWIModel);
-		when(processorAzureRestClient.getUpdatesResponse(any(),any())).thenReturn(azureUpdatesModel);
+		when(azureAdapter.getWorkItemInfoForIssues(anyInt(), any(), any())).thenReturn(azureBoardsWIModel);
+		when(processorAzureRestClient.getUpdatesResponse(any(), any())).thenReturn(azureUpdatesModel);
 		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId("Project",
 				kanbanProjectlist.get(0).getId())).thenReturn(Arrays.asList(kanbanAccountHierarchy));
-		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(any(), any())).thenReturn(Arrays.asList(kanbanAccountHierarchy));
+		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(any(), any()))
+				.thenReturn(Arrays.asList(kanbanAccountHierarchy));
 
 		projectConfFieldMapping.setProjectKey("prkey");
 		projectConfFieldMapping.setProjectName("prName");
 		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
-		
-		kanbanIssueClientImpl.processesAzureIssues(projectConfFieldMapping,"TestKey", azureAdapter);
-		kanbanIssueClientImpl.purgeAzureIssues(issues,projectConfFieldMapping);
-		kanbanIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping , new HashSet<>());
+
+		kanbanIssueClientImpl.processesAzureIssues(projectConfFieldMapping, "TestKey", azureAdapter);
+		kanbanIssueClientImpl.purgeAzureIssues(issues, projectConfFieldMapping);
+		kanbanIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping, new HashSet<>());
 	}
-	
-	
+
 	private void prepareProjectData() {
 		projectConfig.setId(new ObjectId("5b674d58f47cae8935b1b26f"));
 		projectConfig.setProjectName("TestProject");
@@ -182,7 +164,7 @@ public class KanbanAzureIssueClientImplTest {
 		projectConfig.setSaveAssigneeDetails(true);
 		kanbanProjectlist.add(projectConfig);
 	}
-	
+
 	private void prepareProjectConfig() {
 		AzureToolConfig config = new AzureToolConfig();
 		Connection conn = new Connection();
@@ -192,7 +174,7 @@ public class KanbanAzureIssueClientImplTest {
 		config.setConnection(conn);
 		projectConfFieldMapping.setAzure(config);
 	}
-	
+
 	private void prepareFieldMapping() {
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setBasicProjectConfigId(new ObjectId("5b674d58f47cae8935b1b26f"));
@@ -371,16 +353,16 @@ public class KanbanAzureIssueClientImplTest {
 		fieldMappingList.add(fieldMapping);
 
 	}
-	
+
 	private void setProjectConfigFieldMap() throws IllegalAccessException, InvocationTargetException {
 
 		BeanUtils.copyProperties(projectConfFieldMapping, kanbanProjectlist.get(0));
 		projectConfFieldMapping.setBasicProjectConfigId(kanbanProjectlist.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 		projectConfFieldMappingList.add(projectConfFieldMapping);
-	
+
 	}
-	
+
 	private void createIssue() throws URISyntaxException {
 
 		Map<String, String> map = new HashMap<>();
@@ -404,6 +386,5 @@ public class KanbanAzureIssueClientImplTest {
 		issues.add(issue1);
 		issue1.setFields(fields);
 	}
-	
 
 }

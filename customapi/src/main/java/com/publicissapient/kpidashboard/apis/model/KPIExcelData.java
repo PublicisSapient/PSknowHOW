@@ -40,295 +40,295 @@ import lombok.Setter;
 @Setter
 public class KPIExcelData {
 
-    @JsonProperty("Sprint Name")
-    private String sprintName;
+	@JsonProperty("Sprint Name")
+	private String sprintName;
 
-    @JsonProperty("Sprint Rating")
-    private Integer sprintRating;
+	@JsonProperty("Sprint Rating")
+	private Integer sprintRating;
 
-    @JsonProperty("User Name")
-    private String userName;
+	@JsonProperty("User Name")
+	private String userName;
 
-    @JsonProperty("Original Time Estimate (in hours)")
-    private String originalTimeEstimate;
+	@JsonProperty("Original Time Estimate (in hours)")
+	private String originalTimeEstimate;
 
-    @JsonProperty("Total Time Spent (in hours)")
-    private String totalTimeSpent;
+	@JsonProperty("Total Time Spent (in hours)")
+	private String totalTimeSpent;
 
-    @JsonProperty("Closed")
-    private String closedStatus;
+	@JsonProperty("Closed")
+	private String closedStatus;
 
-    @JsonProperty("Project Name")
-    private String projectName;
+	@JsonProperty("Project Name")
+	private String projectName;
 
-    @JsonProperty("Issue Type")
-    private String issueType;
+	@JsonProperty("Issue Type")
+	private String issueType;
 
-    @JsonProperty("Resolution Time(In Days)")
-    private String resolutionTime;
+	@JsonProperty("Resolution Time(In Days)")
+	private String resolutionTime;
 
-    @JsonProperty("Story ID")
-    private Map<String, String> storyId;
+	@JsonProperty("Story ID")
+	private Map<String, String> storyId;
 
-    @JsonProperty("Issue ID")
-    private Map<String, String> issueID;
+	@JsonProperty("Issue ID")
+	private Map<String, String> issueID;
 
-    @JsonProperty("Issue Description")
-    private String issueDesc;
+	@JsonProperty("Issue Description")
+	private String issueDesc;
 
-    @JsonProperty("Story Size(In story point)")
-    private String storyPoints;
+	@JsonProperty("Story Size(In story point)")
+	private String storyPoints;
 
-    @JsonProperty("Intake to DOR(In Days)")
-    private String intakeToDOR;
+	@JsonProperty("Intake to DOR(In Days)")
+	private String intakeToDOR;
 
-    @JsonProperty("DOR to DOD (In Days)")
-    private String dorToDod;
+	@JsonProperty("DOR to DOD (In Days)")
+	private String dorToDod;
 
-    @JsonProperty("DOD TO Live (In Days)")
-    private String dodToLive;
+	@JsonProperty("DOD TO Live (In Days)")
+	private String dodToLive;
 
-    @JsonProperty("Open to Triage(In Days)")
-    private String openToTriage;
+	@JsonProperty("Open to Triage(In Days)")
+	private String openToTriage;
 
-    @JsonProperty("Triage to Complete (In Days)")
-    private String triageToComplete;
+	@JsonProperty("Triage to Complete (In Days)")
+	private String triageToComplete;
 
-    @JsonProperty("Complete TO Live (In Days)")
-    private String completeToLive;
+	@JsonProperty("Complete TO Live (In Days)")
+	private String completeToLive;
 
-    @JsonProperty("Lead Time (In Days)")
-    private String leadTime;
+	@JsonProperty("Lead Time (In Days)")
+	private String leadTime;
 
-    @JsonProperty("Linked Defects")
-    private Map<String, String> linkedDefects;
+	@JsonProperty("Linked Defects")
+	private Map<String, String> linkedDefects;
 
-    @JsonProperty("First Time Pass")
-    private String firstTimePass;
+	@JsonProperty("First Time Pass")
+	private String firstTimePass;
 
-    @JsonProperty("Escaped Defect")
-    private String escapedDefect;
+	@JsonProperty("Escaped Defect")
+	private String escapedDefect;
 
-    @JsonProperty("Defect Removed")
-    private String removedDefect;
+	@JsonProperty("Defect Removed")
+	private String removedDefect;
 
-    @JsonProperty("Defect Rejected")
-    private String rejectedDefect;
+	@JsonProperty("Defect Rejected")
+	private String rejectedDefect;
 
-    @JsonProperty("Priority")
-    private String priority;
+	@JsonProperty("Priority")
+	private String priority;
 
-    @JsonProperty("Root Cause")
-    private List<String> rootCause;
+	@JsonProperty("Root Cause")
+	private List<String> rootCause;
 
-    @JsonProperty("Resolved")
-    private String resolvedTickets;
+	@JsonProperty("Resolved")
+	private String resolvedTickets;
 
-    @JsonProperty("Defect ID")
-    private Map<String, String> defectId;
+	@JsonProperty("Defect ID")
+	private Map<String, String> defectId;
 
-    @JsonProperty("Created Defect ID")
-    private Map<String, String> createdDefectId;
+	@JsonProperty("Created Defect ID")
+	private Map<String, String> createdDefectId;
 
-    @JsonProperty("Test Case ID")
-    private String testCaseId;
+	@JsonProperty("Test Case ID")
+	private String testCaseId;
 
-    @JsonProperty("Automated")
-    private String automated;
+	@JsonProperty("Automated")
+	private String automated;
 
-    @JsonProperty("Project")
-    private String project;
+	@JsonProperty("Project")
+	private String project;
 
-    @JsonProperty("Job Name")
-    private String jobName;
+	@JsonProperty("Job Name")
+	private String jobName;
 
-    @JsonProperty("Unit Coverage")
-    private String unitCoverage;
+	@JsonProperty("Unit Coverage")
+	private String unitCoverage;
 
-    @JsonProperty("Tech Debt (in days)")
-    private String techDebt;
+	@JsonProperty("Tech Debt (in days)")
+	private String techDebt;
 
-    @JsonProperty("Sonar Violations")
-    private String sonarViolation;
+	@JsonProperty("Sonar Violations")
+	private String sonarViolation;
 
-    @JsonProperty("Weeks")
-    private String weeks;
+	@JsonProperty("Weeks")
+	private String weeks;
 
-    @JsonProperty("Linked Story ID")
-    private Map<String, String> linkedStory;
+	@JsonProperty("Linked Story ID")
+	private Map<String, String> linkedStory;
 
-    @JsonProperty("Total Build Count")
-    private String buildCount;
+	@JsonProperty("Total Build Count")
+	private String buildCount;
 
-    @JsonProperty("Total Build Failure Count")
-    private String buildFailureCount;
+	@JsonProperty("Total Build Failure Count")
+	private String buildFailureCount;
 
-    @JsonProperty("Build Failure Percentage")
-    private String buildFailurePercentage;
+	@JsonProperty("Build Failure Percentage")
+	private String buildFailurePercentage;
 
-    @JsonProperty("Total Test")
-    private String totalTest;
+	@JsonProperty("Total Test")
+	private String totalTest;
 
-    @JsonProperty("Executed Test")
-    private String executedTest;
+	@JsonProperty("Executed Test")
+	private String executedTest;
 
-    @JsonProperty("Execution %")
-    private String executionPercentage;
+	@JsonProperty("Execution %")
+	private String executionPercentage;
 
-    @JsonProperty("Passed Test")
-    private String passedTest;
+	@JsonProperty("Passed Test")
+	private String passedTest;
 
-    @JsonProperty("Passed %")
-    private String passedPercentage;
+	@JsonProperty("Passed %")
+	private String passedPercentage;
 
-    @JsonProperty("Epic ID")
-    private Map<String, String> epicID;
+	@JsonProperty("Epic ID")
+	private Map<String, String> epicID;
 
-    @JsonProperty("Cost of Delay")
-    private Double costOfDelay;
+	@JsonProperty("Cost of Delay")
+	private Double costOfDelay;
 
-    @JsonProperty("Epic Name")
-    private String epicName;
+	@JsonProperty("Epic Name")
+	private String epicName;
 
-    @JsonProperty("Epic End Date")
-    private String epicEndDate;
+	@JsonProperty("Epic End Date")
+	private String epicEndDate;
 
-    @JsonProperty("Release Name")
-    private String releaseName;
+	@JsonProperty("Release Name")
+	private String releaseName;
 
-    @JsonProperty("Release Description")
-    private String releaseDesc;
+	@JsonProperty("Release Description")
+	private String releaseDesc;
 
-    @JsonProperty("Release End Date")
-    private String releaseEndDate;
+	@JsonProperty("Release End Date")
+	private String releaseEndDate;
 
-    @JsonProperty("Date")
-    private String date;
+	@JsonProperty("Date")
+	private String date;
 
-    @JsonProperty("Environment")
-    private String deploymentEnvironment;
+	@JsonProperty("Environment")
+	private String deploymentEnvironment;
 
-    @JsonProperty("Month")
-    private String month;
+	@JsonProperty("Month")
+	private String month;
 
-    @JsonProperty("Defects Without Story Link")
-    private Map<String, String> defectWithoutStoryLink;
+	@JsonProperty("Defects Without Story Link")
+	private Map<String, String> defectWithoutStoryLink;
 
-    @JsonProperty("Linked to Story")
-    private String isTestLinkedToStory;
+	@JsonProperty("Linked to Story")
+	private String isTestLinkedToStory;
 
-    @JsonProperty("Status")
-    private String status;
+	@JsonProperty("Status")
+	private String status;
 
-    @JsonProperty("Issue Status")
-    private String issueStatus;
+	@JsonProperty("Issue Status")
+	private String issueStatus;
 
-    @JsonProperty("Execution Date")
-    private String executionDate;
+	@JsonProperty("Execution Date")
+	private String executionDate;
 
-    @JsonProperty("Ticket Issue ID")
-    private Map<String, String> ticketIssue;
+	@JsonProperty("Ticket Issue ID")
+	private Map<String, String> ticketIssue;
 
-    @JsonProperty("Closed Ticket Issue ID")
-    private Map<String, String> closedTicket;
+	@JsonProperty("Closed Ticket Issue ID")
+	private Map<String, String> closedTicket;
 
-    @JsonProperty("Start Time")
-    private String startTime;
+	@JsonProperty("Start Time")
+	private String startTime;
 
-    @JsonProperty("End Time")
-    private String endTime;
+	@JsonProperty("End Time")
+	private String endTime;
 
-    @JsonProperty("Duration")
-    private String duration;
+	@JsonProperty("Duration")
+	private String duration;
 
-    @JsonProperty("Build Status")
-    private String buildStatus;
+	@JsonProperty("Build Status")
+	private String buildStatus;
 
-    @JsonProperty("Started By")
-    private String startedBy;
+	@JsonProperty("Started By")
+	private String startedBy;
 
-    @JsonProperty("Build Url")
-    private Map<String, String> buildUrl;
+	@JsonProperty("Build Url")
+	private Map<String, String> buildUrl;
 
-    @JsonProperty("Repository Url")
-    private Map<String, String> repositoryURL;
+	@JsonProperty("Repository Url")
+	private Map<String, String> repositoryURL;
 
-    @JsonProperty("Branch")
-    private String branch;
+	@JsonProperty("Branch")
+	private String branch;
 
-    @JsonProperty("Mean Time To Merge (In Hours)")
-    private String meanTimetoMerge;
+	@JsonProperty("Mean Time To Merge (In Hours)")
+	private String meanTimetoMerge;
 
-    @JsonProperty("Day")
-    private String days;
+	@JsonProperty("Day")
+	private String days;
 
-    @JsonProperty("No. Of Commit")
-    private String numberOfCommit;
+	@JsonProperty("No. Of Commit")
+	private String numberOfCommit;
 
-    @JsonProperty("No. of Merge")
-    private String numberOfMerge;
+	@JsonProperty("No. of Merge")
+	private String numberOfMerge;
 
-    @JsonProperty("Created Date")
-    private String createdDate;
+	@JsonProperty("Created Date")
+	private String createdDate;
 
-    @JsonProperty("Closed Ticket Issue Type")
-    private String closedTicketIssueType;
+	@JsonProperty("Closed Ticket Issue Type")
+	private String closedTicketIssueType;
 
-    @JsonProperty("Day/Week/Month")
-    private String dayWeekMonth;
+	@JsonProperty("Day/Week/Month")
+	private String dayWeekMonth;
 
-    @JsonProperty("Issue Priority")
-    private String issuePriority;
+	@JsonProperty("Issue Priority")
+	private String issuePriority;
 
-    @JsonProperty("Size (In Story Points)")
-    private String sizeInStoryPoints;
+	@JsonProperty("Size (In Story Points)")
+	private String sizeInStoryPoints;
 
-    @JsonProperty("Start Date")
-    private String startDate;
+	@JsonProperty("Start Date")
+	private String startDate;
 
-    @JsonProperty("End Date")
-    private String endDate;
+	@JsonProperty("End Date")
+	private String endDate;
 
-    @JsonProperty("Estimated Capacity (in hours)")
-    private String estimatedCapacity;
+	@JsonProperty("Estimated Capacity (in hours)")
+	private String estimatedCapacity;
 
-    @JsonProperty("Linked Defects to Story")
-    private Map<String, String> linkedDefectsStory;
+	@JsonProperty("Linked Defects to Story")
+	private Map<String, String> linkedDefectsStory;
 
-    @JsonProperty("Size(story point/hours)")
-        private String storyPoint;
+	@JsonProperty("Size(story point/hours)")
+	private String storyPoint;
 
-    @JsonProperty("Planned Completion Date (Due Date)")
-    private String dueDate;
+	@JsonProperty("Planned Completion Date (Due Date)")
+	private String dueDate;
 
-    @JsonProperty("Remaining Estimate")
-    private String remainingEstimateMinutes;
+	@JsonProperty("Remaining Estimate")
+	private String remainingEstimateMinutes;
 
-    @JsonProperty("Potential Delay(in days)")
-    private String potentialDelay;
+	@JsonProperty("Potential Delay(in days)")
+	private String potentialDelay;
 
-    @JsonProperty("Predicted Completion Date")
-    private String predictedCompletionDate;
+	@JsonProperty("Predicted Completion Date")
+	private String predictedCompletionDate;
 
-    @JsonProperty("Actual Completion Date")
-    private String actualCompletionDate;
+	@JsonProperty("Actual Completion Date")
+	private String actualCompletionDate;
 
-    @JsonProperty("Assignee")
-    private String assignee;
+	@JsonProperty("Assignee")
+	private String assignee;
 
-    @JsonProperty("Defect added after Sprint Start")
-    private String defectAddedAfterSprintStart;
+	@JsonProperty("Defect added after Sprint Start")
+	private String defectAddedAfterSprintStart;
 
 	@JsonProperty("Change Date")
 	private String changeDate;
 
-    @JsonProperty("Created during Iteration")
-    private String createdDuringIteration;
+	@JsonProperty("Created during Iteration")
+	private String createdDuringIteration;
 
-    @JsonProperty("Count")
-    private Map<String, Integer> count;
+	@JsonProperty("Count")
+	private Map<String, Integer> count;
 
-    @JsonProperty("Initial Commitment")
-    private String initialCommited;
+	@JsonProperty("Initial Commitment")
+	private String initialCommited;
 
 }

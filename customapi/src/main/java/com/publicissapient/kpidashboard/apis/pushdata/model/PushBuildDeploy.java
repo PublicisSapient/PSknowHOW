@@ -20,14 +20,14 @@ package com.publicissapient.kpidashboard.apis.pushdata.model;
 
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuild;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuild;
-import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
 
 @Data
 @NoArgsConstructor

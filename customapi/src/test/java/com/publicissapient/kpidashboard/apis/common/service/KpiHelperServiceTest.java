@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -59,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.data.SprintWiseStoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -69,9 +68,9 @@ import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
@@ -149,18 +148,17 @@ public class KpiHelperServiceTest {
 
 	@Before
 	public void setup() {
-		AccountHierarchyFilterDataFactory factory = AccountHierarchyFilterDataFactory
-				.newInstance();
+		AccountHierarchyFilterDataFactory factory = AccountHierarchyFilterDataFactory.newInstance();
 		ahdList = factory.getAccountHierarchyDataList();
 
-		AccountHierarchyKanbanFilterDataFactory kanbanFactory = AccountHierarchyKanbanFilterDataFactory
-				.newInstance();
+		AccountHierarchyKanbanFilterDataFactory kanbanFactory = AccountHierarchyKanbanFilterDataFactory.newInstance();
 		ahdKanbanList = kanbanFactory.getAccountHierarchyKanbanDataList();
 
 		kpiRequestFactory = KpiRequestFactory.newInstance();
 		kanbanKpiRequestFactory = KpiRequestFactory.newInstance();
 
-		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory.newInstance("/json/default/scrum_project_field_mappings.json");
+		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
@@ -238,16 +236,17 @@ public class KpiHelperServiceTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
-		Map<ObjectId, List<String>> previousProjectWiseSprintsForFilter = leafNodeList.stream().collect(Collectors.groupingBy(
-				node -> node.getProjectFilter().getBasicProjectConfigId(),
-				Collectors.collectingAndThen(Collectors.toList(),
+		Map<ObjectId, List<String>> previousProjectWiseSprintsForFilter = leafNodeList.stream().collect(Collectors
+				.groupingBy(node -> node.getProjectFilter().getBasicProjectConfigId(), Collectors.collectingAndThen(
+						Collectors.toList(),
 						s -> s.stream().map(node -> node.getSprintFilter().getId()).collect(Collectors.toList()))));
-		
+
 		Map<ObjectId, List<String>> projectWiseSprintsForFilter = leafNodeList.stream().collect(Collectors.groupingBy(
 				node -> node.getProjectFilter().getBasicProjectConfigId(),
 				Collectors.collectingAndThen(Collectors.toList(),
 						s -> s.stream().map(node -> node.getSprintFilter().getId()).collect(Collectors.toList()))));
-		Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(kpiRequest, projectWiseSprintsForFilter,sprintDetailsList);
+		Map<String, Object> resultMap = kpiHelperService.fetchSprintVelocityDataFromDb(kpiRequest,
+				projectWiseSprintsForFilter, sprintDetailsList);
 		assertEquals(2, resultMap.size());
 	}
 

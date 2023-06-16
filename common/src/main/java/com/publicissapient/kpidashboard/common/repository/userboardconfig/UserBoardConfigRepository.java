@@ -17,9 +17,10 @@
 
 package com.publicissapient.kpidashboard.common.repository.userboardconfig;
 
-import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
 
 /**
  * 
@@ -27,14 +28,14 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  *
  */
 public interface UserBoardConfigRepository extends MongoRepository<UserBoardConfig, ObjectId> {
-	
+
 	/**
 	 * 
 	 * @param userName
 	 * @return UserBoardConfig object
 	 */
 	UserBoardConfig findByUsername(String userName);
-	
+
 	/**
 	 * 
 	 * @return UserBoardConfig object

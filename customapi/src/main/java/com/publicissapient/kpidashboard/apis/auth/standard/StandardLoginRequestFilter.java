@@ -18,12 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.auth.standard;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
-import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,8 +29,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
+import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 
 public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFilter {
 	private CustomApiConfig customApiConfig;
@@ -49,8 +50,8 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 	 */
 	public StandardLoginRequestFilter(String path, AuthenticationManager authManager,
 			AuthenticationResultHandler authenticationResultHandler,
-			CustomAuthenticationFailureHandler authenticationFailureHandler,
-			CustomApiConfig customApiConfig, AuthTypesConfigService authTypesConfigService) {
+			CustomAuthenticationFailureHandler authenticationFailureHandler, CustomApiConfig customApiConfig,
+			AuthTypesConfigService authTypesConfigService) {
 		super();
 		setAuthenticationManager(authManager);
 		setAuthenticationSuccessHandler(authenticationResultHandler);
@@ -74,7 +75,7 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 
 		AuthTypeStatus authTypesStatus = authTypesConfigService.getAuthTypesStatus();
 
-		if (authTypesStatus != null && !authTypesStatus.isStandardLogin()){
+		if (authTypesStatus != null && !authTypesStatus.isStandardLogin()) {
 			throw new AuthenticationServiceException("Standard login is disabled");
 		}
 

@@ -34,10 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
@@ -75,10 +71,13 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.SubProjectConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
@@ -95,43 +94,33 @@ import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
 
 @ExtendWith(SpringExtension.class)
 public class KanbanJiraIssueClientImplTest {
-	
+
 	List<ProjectBasicConfig> kanbanProjectlist = new ArrayList<>();
 
 	ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 	List<FieldMapping> fieldMappingList = new ArrayList<>();
 	List<ProjectConfFieldMapping> projectConfFieldMappingList = new ArrayList<>();
 	List<Issue> issues = new ArrayList<>();
-	
+
 	KanbanAccountHierarchy kanbanAccountHierarchy;
-	
-	@Mock
-	private KanbanJiraIssueRepository kanbanJiraRepo;
-
-	@Mock
-	private KanbanJiraIssueHistoryRepository kanbanIssueHistoryRepo;
-	
-	@Mock
-	private JiraProcessorRepository jiraProcessorRepository;
-	
-	@Mock
-	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
-	
-	@Mock
-	private JiraProcessorConfig jiraProcessorConfig;
-	
-	@InjectMocks
-	private KanbanJiraIssueClientImpl kanbanJiraIssueClientImpl;
-
-	@Mock
-	private TestCaseDetailsRepository testCaseDetailsRepository;
-
-	@Mock
-	private JiraAdapter jiraAdapter;
-	
 	@Mock
 	JiraProcessor jiraProcessor;
-
+	@Mock
+	private KanbanJiraIssueRepository kanbanJiraRepo;
+	@Mock
+	private KanbanJiraIssueHistoryRepository kanbanIssueHistoryRepo;
+	@Mock
+	private JiraProcessorRepository jiraProcessorRepository;
+	@Mock
+	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
+	@Mock
+	private JiraProcessorConfig jiraProcessorConfig;
+	@InjectMocks
+	private KanbanJiraIssueClientImpl kanbanJiraIssueClientImpl;
+	@Mock
+	private TestCaseDetailsRepository testCaseDetailsRepository;
+	@Mock
+	private JiraAdapter jiraAdapter;
 	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
@@ -152,7 +141,7 @@ public class KanbanJiraIssueClientImplTest {
 		setProjectConfigFieldMap();
 
 	}
-	
+
 	@Test
 	public void testProcessesJiraIssues() throws URISyntaxException {
 		when(kanbanJiraRepo.findTopByBasicProjectConfigId(any())).thenReturn(null);
@@ -163,7 +152,8 @@ public class KanbanJiraIssueClientImplTest {
 		when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
 		when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
 		createIssue();
-		//when(jiraAdapter.getIssues(any(), any(), any(), anyInt(), anyBoolean())).thenReturn(issues);
+		// when(jiraAdapter.getIssues(any(), any(), any(), anyInt(),
+		// anyBoolean())).thenReturn(issues);
 		List<TestCaseDetails> testCaseDetailsList = new ArrayList<>();
 		TestCaseDetails testCaseDetails = new TestCaseDetails();
 		testCaseDetailsList.add(testCaseDetails);
@@ -171,14 +161,15 @@ public class KanbanJiraIssueClientImplTest {
 				kanbanProjectlist.get(0).getId())).thenReturn(Arrays.asList(kanbanAccountHierarchy));
 		when(testCaseDetailsRepository.findByNumberAndBasicProjectConfigId(anyString(), anyString()))
 				.thenReturn(testCaseDetailsList);
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(
-				Mockito.anyString(), Mockito.anyString())).thenReturn(null);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(null);
 
 		projectConfFieldMapping.setProjectName("prName");
-		assertEquals(0, kanbanJiraIssueClientImpl.processesJiraIssues(projectConfFieldMapping, jiraAdapter, Boolean.FALSE));
-		kanbanJiraIssueClientImpl.purgeJiraIssues(issues,projectConfFieldMapping);
+		assertEquals(0,
+				kanbanJiraIssueClientImpl.processesJiraIssues(projectConfFieldMapping, jiraAdapter, Boolean.FALSE));
+		kanbanJiraIssueClientImpl.purgeJiraIssues(issues, projectConfFieldMapping);
 	}
-	
+
 	private void prepareProjectData() {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("5b674d58f47cae8935b1b26f"));
@@ -192,7 +183,7 @@ public class KanbanJiraIssueClientImplTest {
 		projectConfig.setIsKanban(true);
 		kanbanProjectlist.add(projectConfig);
 	}
-	
+
 	private void prepareProjectConfig() {
 		JiraToolConfig jiraConfig = new JiraToolConfig();
 		Optional<Connection> conn = Optional.of(new Connection());
@@ -203,7 +194,7 @@ public class KanbanJiraIssueClientImplTest {
 		jiraConfig.setConnection(conn);
 		projectConfFieldMapping.setJira(jiraConfig);
 	}
-	
+
 	private void prepareFieldMapping() {
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setBasicProjectConfigId(new ObjectId("5b674d58f47cae8935b1b26f"));
@@ -382,7 +373,7 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMappingList.add(fieldMapping);
 
 	}
-	
+
 	private void setProjectConfigFieldMap() throws IllegalAccessException, InvocationTargetException {
 
 		BeanUtils.copyProperties(projectConfFieldMapping, kanbanProjectlist.get(0));
@@ -400,9 +391,9 @@ public class KanbanJiraIssueClientImplTest {
 		jiraConfig.setBoards(boardList);
 		projectConfFieldMapping.setProjectToolConfig(jiraConfig);
 		projectConfFieldMappingList.add(projectConfFieldMapping);
-	
+
 	}
-	
+
 	private void createIssue() throws URISyntaxException {
 		BasicProject basicProj = new BasicProject(new URI("self"), "proj1", 1l, "project1");
 		IssueType issueType1 = new IssueType(new URI("self"), 1l, "Story", false, "desc", new URI("iconURI"));
@@ -458,6 +449,5 @@ public class KanbanJiraIssueClientImplTest {
 
 		return issueLinkList;
 	}
-	
-	
+
 }

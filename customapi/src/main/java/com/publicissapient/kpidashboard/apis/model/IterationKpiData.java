@@ -50,7 +50,6 @@ public class IterationKpiData implements Serializable {
 	private List<String> expressions;
 	private List<IterationKpiModalValue> modalValues;
 
-
 	public IterationKpiData(String label, Double value, Double value1, String labelInfo, String unit, String unit1,
 			List<IterationKpiModalValue> modalValues) {
 		this.label = label;
@@ -72,8 +71,8 @@ public class IterationKpiData implements Serializable {
 		this.modalValues = modalValues;
 	}
 
-	public  IterationKpiData(String label, Double value, Double value1, String labelInfo, String unit,
-							 List<IterationKpiModalValue> modalValues,  List<String> expressions) {
+	public IterationKpiData(String label, Double value, Double value1, String labelInfo, String unit,
+			List<IterationKpiModalValue> modalValues, List<String> expressions) {
 		this.label = label;
 		this.value = value;
 		this.value1 = value1;

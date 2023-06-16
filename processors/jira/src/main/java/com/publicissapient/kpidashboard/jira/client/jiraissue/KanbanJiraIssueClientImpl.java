@@ -37,10 +37,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -73,6 +69,7 @@ import com.publicissapient.kpidashboard.common.model.application.AdditionalFilte
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
@@ -95,6 +92,8 @@ import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.AdditionalFilterHelper;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This is an implemented/extended storyDataClient for configured kanban
@@ -132,9 +131,17 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
+	private static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig,
+			Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog,
+			LocalDateTime configuredStartDate, String issueType) {
+		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
+			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
+		}
+	}
+
 	/**
-	 * Explicitly updates queries for the source system, and initiates the
-	 * update to MongoDB from those calls.
+	 * Explicitly updates queries for the source system, and initiates the update to
+	 * MongoDB from those calls.
 	 *
 	 * @param projectConfig
 	 *            Project Configuration Mapping
@@ -155,7 +162,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 
 	}
 
-	private int processesJiraIssuesBoard(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
+	private int processesJiraIssuesBoard(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter,
+			boolean isOffline) {
 		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
 		psLogData.setKanban("true");
@@ -163,8 +171,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		int total = 0;
 		Map<String, LocalDateTime> lastSavedKanbanJiraIssueChangedDateByType = new HashMap<>();
 		setStartDate(jiraProcessorConfig);
-		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-				projectConfig);
+		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(projectConfig);
 		boolean processorFetchingComplete = false;
 		try {
 			boolean dataExist = (kanbanJiraRepo
@@ -173,19 +180,19 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			String queryDate = getDeltaDate(processorExecutionTraceLog.getLastSuccessfulRun());
 			String userTimeZone = jiraAdapter.getUserTimeZone(projectConfig);
 			List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
-			for(BoardDetails board : boardDetailsList) {
+			for (BoardDetails board : boardDetailsList) {
 				psLogData.setBoardId(board.getBoardId());
 				int pageSize = jiraAdapter.getPageSize();
 				boolean hasMore = true;
 				int boardTotal = 0;
 				for (int i = 0; hasMore; i += pageSize) {
 					Instant startIssueProcessing = Instant.now();
-					SearchResult searchResult = jiraAdapter.getIssues(board, projectConfig, queryDate,
-							userTimeZone, i, dataExist);
+					SearchResult searchResult = jiraAdapter.getIssues(board, projectConfig, queryDate, userTimeZone, i,
+							dataExist);
 					List<Issue> issues = getIssuesFromResult(searchResult);
 					if (boardTotal == 0) {
 						boardTotal = getTotal(searchResult);
-						total+= boardTotal;
+						total += boardTotal;
 						psLogData.setTotalFetchedIssues(String.valueOf(total));
 					}
 
@@ -197,7 +204,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 						List<KanbanJiraIssue> kanbanJiraIssues = saveJiraIssueDetails(issues, projectConfig);
 						findLastSavedKanbanJiraIssueByType(kanbanJiraIssues, lastSavedKanbanJiraIssueChangedDateByType);
 						savedIsuesCount += issues.size();
-						savingIssueLogs(savedIsuesCount, kanbanJiraIssues,startIssueProcessing ,false, psLogData);
+						savingIssueLogs(savedIsuesCount, kanbanJiraIssues, startIssueProcessing, false, psLogData);
 					}
 					if (CollectionUtils.isNotEmpty(purgeIssues)) {
 						purgeJiraIssues(purgeIssues, projectConfig);
@@ -207,10 +214,10 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 					}
 				}
 				Instant epicProcessStartTime = Instant.now();
-				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig,board.getBoardId());
-				psLogData.setEpicIssuesFetched((epicIssue==null)?"-1":String.valueOf(epicIssue.size()));
+				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig, board.getBoardId());
+				psLogData.setEpicIssuesFetched((epicIssue == null) ? "-1" : String.valueOf(epicIssue.size()));
 				List<KanbanJiraIssue> kanbanJiraIssueList = saveJiraIssueDetails(epicIssue, projectConfig);
-				savingIssueLogs(kanbanJiraIssueList.size(), kanbanJiraIssueList, epicProcessStartTime,true, psLogData);
+				savingIssueLogs(kanbanJiraIssueList.size(), kanbanJiraIssueList, epicProcessStartTime, true, psLogData);
 			}
 			processorFetchingComplete = true;
 		} catch (JSONException e) {
@@ -240,7 +247,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		return savedIsuesCount;
 	}
 
-	public int processesJiraIssuesJQL(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, boolean isOffline) {
+	public int processesJiraIssuesJQL(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter,
+			boolean isOffline) {
 		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
 		psLogData.setKanban("true");
@@ -248,8 +256,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		int total = 0;
 		Map<String, LocalDateTime> lastSavedKanbanJiraIssueChangedDateByType = new HashMap<>();
 		setStartDate(jiraProcessorConfig);
-		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-				projectConfig);
+		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(projectConfig);
 		boolean processorFetchingComplete = false;
 		try {
 
@@ -287,7 +294,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 					List<KanbanJiraIssue> kanbanJiraIssues = saveJiraIssueDetails(issues, projectConfig);
 					findLastSavedKanbanJiraIssueByType(kanbanJiraIssues, lastSavedKanbanJiraIssueChangedDateByType);
 					savedIsuesCount += issues.size();
-					savingIssueLogs(savedIsuesCount, kanbanJiraIssues,startIssueProcessing ,false, psLogData);
+					savingIssueLogs(savedIsuesCount, kanbanJiraIssues, startIssueProcessing, false, psLogData);
 				}
 				if (CollectionUtils.isNotEmpty(purgeIssues)) {
 					purgeJiraIssues(purgeIssues, projectConfig);
@@ -324,9 +331,11 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		return savedIsuesCount;
 	}
 
-	private void savingIssueLogs(int savedIssuesCount, List<KanbanJiraIssue> kanbanJiraIssues, Instant startProcessingJiraIssues, boolean isEpic, PSLogData psLogData) {
+	private void savingIssueLogs(int savedIssuesCount, List<KanbanJiraIssue> kanbanJiraIssues,
+			Instant startProcessingJiraIssues, boolean isEpic, PSLogData psLogData) {
 		PSLogData saveIssueLog = new PSLogData();
-		saveIssueLog.setIssueAndDesc(kanbanJiraIssues.stream().map(KanbanJiraIssue::getNumber).collect(Collectors.toList()));
+		saveIssueLog.setIssueAndDesc(
+				kanbanJiraIssues.stream().map(KanbanJiraIssue::getNumber).collect(Collectors.toList()));
 		psLogData.setTotalSavedIssues(String.valueOf(savedIssuesCount));
 		psLogData.setTimeTaken(String.valueOf(Duration.between(startProcessingJiraIssues, Instant.now()).toMillis()));
 		psLogData.setSprintListFetched(null);
@@ -367,7 +376,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	}
 
 	private void saveExecutionTraceLog(ProcessorExecutionTraceLog processorExecutionTraceLog,
-			Map<String, LocalDateTime> lastSavedKanbanJiraIssueChangedDateByType, boolean isSuccess ,
+			Map<String, LocalDateTime> lastSavedKanbanJiraIssueChangedDateByType, boolean isSuccess,
 			ProjectBasicConfig projectBasicConfig) {
 
 		if (lastSavedKanbanJiraIssueChangedDateByType.isEmpty()) {
@@ -466,7 +475,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		return capturedDate;
 	}
 
-	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete, PSLogData psLogData) {
+	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete,
+			PSLogData psLogData) {
 		psLogData.setTotalFetchedIssues(String.valueOf(total));
 		psLogData.setTotalSavedIssues(String.valueOf(savedCount));
 		return savedCount > 0 && total == savedCount && processorFetchingComplete;
@@ -503,8 +513,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	}
 
 	/**
-	 * Updates the MongoDB with a JSONArray received from the source system
-	 * back-end with story-based data.
+	 * Updates the MongoDB with a JSONArray received from the source system back-end
+	 * with story-based data.
 	 *
 	 * @param currentPagedJiraRs
 	 *            A list response of Jira issues from the source system
@@ -584,9 +594,9 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 
 				setJiraIssuuefields(issue, jiraIssue, fieldMapping, fields, epic, issueEpics);
 
-				setJiraAssigneeDetails(jiraIssue, assignee , assigneeSetToSave,projectConfig);
+				setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave, projectConfig);
 
-				setDueDates(jiraIssue, issue,fields,fieldMapping);
+				setDueDates(jiraIssue, issue, fields, fieldMapping);
 
 				// setting filter data from Jira issue to
 				// jira_issue_custom_history
@@ -599,7 +609,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 
 			}
 		}
-		
+
 		// Saving back to MongoDB
 		kanbanJiraRepo.saveAll(kanbanIssuesToSave);
 		kanbanIssueHistoryRepo.saveAll(kanbanIssueHistoryToSave);
@@ -619,7 +629,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
 					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
 				IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
-				if (issueField!=null && ObjectUtils.isNotEmpty(issueField.getValue())) {
+				if (issueField != null && ObjectUtils.isNotEmpty(issueField.getValue())) {
 					jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
 							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
 				}
@@ -750,8 +760,10 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				} else {
 					lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 				}
-				// When toggle is On first time it will update lastUpdatedDateByIssueType to start date
-				setLastUpdatedDateToStartDate(projectBasicConfig, lastUpdatedDateByIssueType, projectTraceLog, configuredStartDate, issueType);
+				// When toggle is On first time it will update lastUpdatedDateByIssueType to
+				// start date
+				setLastUpdatedDateToStartDate(projectBasicConfig, lastUpdatedDateByIssueType, projectTraceLog,
+						configuredStartDate, issueType);
 
 			} else {
 				lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
@@ -990,7 +1002,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		HierarchyLevel projectHierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 
-		Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy = JiraIssueClientUtil.getKanbanAccountHierarchy(kanbanAccountHierarchyRepo);
+		Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy = JiraIssueClientUtil
+				.getKanbanAccountHierarchy(kanbanAccountHierarchyRepo);
 		Set<KanbanAccountHierarchy> accHierarchyToSave = new HashSet<>();
 
 		for (KanbanJiraIssue kanbanJiraIssue : jiraIssueList) {
@@ -1059,7 +1072,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			}
 		}
 	}
-
 
 	/**
 	 * set RCA root cause values
@@ -1219,7 +1231,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			jiraIssue.setResolution(JiraProcessorUtil.deodeUTF8String(issue.getResolution().getName()));
 		}
 		setEstimate(jiraIssue, fields, fieldMapping, jiraProcessorConfig);
-		setAggregateTimeEstimates(jiraIssue,fields);
+		setAggregateTimeEstimates(jiraIssue, fields);
 		setEnvironmentImpacted(jiraIssue, fields, fieldMapping);
 
 		jiraIssue.setChangeDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
@@ -1237,10 +1249,10 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	}
 
 	/**
-	 * Sets Issue Tech Story Type after identifying s whether a story is tech
-	 * story or simple Jira issue. There can be possible 3 ways to identify a
-	 * tech story 1. Specific 'label' is maintained 2. 'Issue type' itself is a
-	 * 'Tech Story' 3. A separate 'custom field' is maintained
+	 * Sets Issue Tech Story Type after identifying s whether a story is tech story
+	 * or simple Jira issue. There can be possible 3 ways to identify a tech story
+	 * 1. Specific 'label' is maintained 2. 'Issue type' itself is a 'Tech Story' 3.
+	 * A separate 'custom field' is maintained
 	 *
 	 * @param fieldMapping
 	 *            fieldMapping provided by the User
@@ -1275,16 +1287,18 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 
 	/**
 	 * This method process owner and user details
-	 *  @param jiraIssue
+	 *
+	 * @param jiraIssue
 	 *            JiraIssue Object to set Owner details
 	 * @param user
 	 *            Jira issue User Object
 	 * @param assigneeSetToSave
-	 * 			assignees to save
+	 *            assignees to save
 	 * @param projectConfig
-	 *        projectconfigfieldmapping
+	 *            projectconfigfieldmapping
 	 */
-	public void setJiraAssigneeDetails(KanbanJiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig) {
+	public void setJiraAssigneeDetails(KanbanJiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave,
+			ProjectConfFieldMapping projectConfig) {
 		if (user == null) {
 			jiraIssue.setOwnersUsername(Collections.<String>emptyList());
 			jiraIssue.setOwnersShortName(Collections.<String>emptyList());
@@ -1316,15 +1330,17 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			jiraIssue.setOwnersFullName(assigneeDisplayName);
 			if (StringUtils.isNotEmpty(jiraIssue.getAssigneeId())
 					&& StringUtils.isNotEmpty(jiraIssue.getAssigneeName())) {
-				updateAssigneeDetailsToggleWise(jiraIssue, assigneeSetToSave, projectConfig, assigneeKey, assigneeName, assigneeDisplayName);
+				updateAssigneeDetailsToggleWise(jiraIssue, assigneeSetToSave, projectConfig, assigneeKey, assigneeName,
+						assigneeDisplayName);
 			}
 		}
 	}
 
-	private void updateAssigneeDetailsToggleWise(KanbanJiraIssue jiraIssue, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig, List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
+	private void updateAssigneeDetailsToggleWise(KanbanJiraIssue jiraIssue, Set<Assignee> assigneeSetToSave,
+			ProjectConfFieldMapping projectConfig, List<String> assigneeKey, List<String> assigneeName,
+			List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
-			List<String> ownerName = assigneeName.stream().map(JiraIssueClient::hash)
-					.collect(Collectors.toList());
+			List<String> ownerName = assigneeName.stream().map(JiraIssueClient::hash).collect(Collectors.toList());
 			List<String> ownerId = assigneeKey.stream().map(JiraIssueClient::hash).collect(Collectors.toList());
 			List<String> ownerFullName = assigneeDisplayName.stream().map(JiraIssueClient::hash)
 					.collect(Collectors.toList());
@@ -1486,13 +1502,17 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	 */
 	private void setURL(String ticketNumber, KanbanJiraIssue kanbanJiraIssue, ProjectConfFieldMapping projectConfig) {
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-		Boolean cloudEnv = connectionOptional.isPresent()?connectionOptional.map(Connection::isCloudEnv).get():Boolean.FALSE;
-		String baseUrl = connectionOptional.isPresent()?connectionOptional.map(Connection::getBaseUrl).orElse(""):"";
+		Boolean cloudEnv = connectionOptional.isPresent() ? connectionOptional.map(Connection::isCloudEnv).get()
+				: Boolean.FALSE;
+		String baseUrl = connectionOptional.isPresent() ? connectionOptional.map(Connection::getBaseUrl).orElse("")
+				: "";
 		baseUrl = baseUrl + (baseUrl.endsWith("/") ? "" : "/");
 		if (cloudEnv) {
-			baseUrl = baseUrl.equals("") ? "" : baseUrl + jiraProcessorConfig.getJiraCloudDirectTicketLinkKey() + ticketNumber;
+			baseUrl = baseUrl.equals("") ? ""
+					: baseUrl + jiraProcessorConfig.getJiraCloudDirectTicketLinkKey() + ticketNumber;
 		} else {
-			baseUrl = baseUrl.equals("") ? "" : baseUrl + jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
+			baseUrl = baseUrl.equals("") ? ""
+					: baseUrl + jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
 		}
 		kanbanJiraIssue.setUrl(baseUrl);
 	}
@@ -1518,6 +1538,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 
 		}
 	}
+
 	/**
 	 * save assignee details if exist then update assignee list
 	 *
@@ -1542,12 +1563,5 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			assigneeDetailsRepository.save(assigneeDetails);
 		}
 	}
-
-	private static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig, Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog, LocalDateTime configuredStartDate, String issueType) {
-		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
-			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
-		}
-	}
-
 
 }

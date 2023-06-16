@@ -38,17 +38,14 @@ import org.togglz.core.util.NamedFeature;
 @RunWith(MockitoJUnitRunner.class)
 public class FeatureToggleAspectTest {
 
-	@Mock
-	private FeatureManager featureManager;
-
-	@Mock
-	private ProceedingJoinPoint proceedingJoinPoint;
-
-	@Mock
-	private EnableFeatureToggle enableFeatureToggle;
-
 	@InjectMocks
 	FeatureToggleAspect featureToggleAspect;
+	@Mock
+	private FeatureManager featureManager;
+	@Mock
+	private ProceedingJoinPoint proceedingJoinPoint;
+	@Mock
+	private EnableFeatureToggle enableFeatureToggle;
 
 	@Test
 	public void invoke_FeatureEnabled() throws Throwable {

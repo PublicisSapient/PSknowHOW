@@ -18,22 +18,23 @@
 
 package com.publicissapient.kpidashboard.common.model.azure;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
 import org.bson.types.ObjectId;
-import org.json.simple.JSONObject;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Document(collection = "azure_work_items")
 public class AzureWorkItems {
 
-    private ObjectId processorId;
+	private ObjectId processorId;
 
-    private Integer id;
-    private AzureWorkItemFields fields;
-    //private JSONObject fields;
-    private String url;
+	private Integer id;
+	private AzureWorkItemFields fields;
+	// private JSONObject fields;
+	private String url;
 
 }

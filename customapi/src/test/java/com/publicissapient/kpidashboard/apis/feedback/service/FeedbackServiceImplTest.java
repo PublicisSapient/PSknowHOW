@@ -34,26 +34,21 @@ import com.publicissapient.kpidashboard.common.repository.application.GlobalConf
  */
 @RunWith(MockitoJUnitRunner.class)
 public class FeedbackServiceImplTest {
-	
-	@InjectMocks
-	private FeedbackServiceImpl feedbackServiceImpl;
 
-	@Mock
-	private CustomApiConfig customApiConfig;
-	
-	@Mock
-    private CommonService commonService;
-	
-	@Mock
-	private AuthenticationRepository authenticationRepository;
-
-	@Mock
-	private GlobalConfigRepository globalConfigRepository;
 	/*
 	 * Creating a new test FeedbackSubmitDTO object
 	 */
 	FeedbackSubmitDTO feedbackSubmitDTO = new FeedbackSubmitDTO();
-
+	@InjectMocks
+	private FeedbackServiceImpl feedbackServiceImpl;
+	@Mock
+	private CustomApiConfig customApiConfig;
+	@Mock
+	private CommonService commonService;
+	@Mock
+	private AuthenticationRepository authenticationRepository;
+	@Mock
+	private GlobalConfigRepository globalConfigRepository;
 
 	/**
 	 * method includes preprocesses for test cases
@@ -68,34 +63,33 @@ public class FeedbackServiceImplTest {
 	}
 
 	/**
-	 * to clean up the 
-	 * code
+	 * to clean up the code
 	 */
 	@After
 	public void cleanup() {
 		feedbackSubmitDTO = new FeedbackSubmitDTO();
 	}
+
 	/**
-	 *  Get method to Test
-	 *  for all the categories
-	 *  
+	 * Get method to Test for all the categories
+	 * 
 	 */
 	@Test
 	public void getFeedbackCategoriesTest() {
 		when(customApiConfig.getFeedbackCategories()).thenReturn(new ArrayList<>());
 		List<String> response = feedbackServiceImpl.getFeedBackCategories();
-		//assertThat("status: ", response.getSuccess(), equalTo(true));
+		// assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertThat("Data should exist but empty: ", response, equalTo(new ArrayList<>()));
 	}
-	
+
 	/**
-	 * method to Test
-	 * submit Feedback Request
-	 * @throws UnknownHostException 
+	 * method to Test submit Feedback Request
+	 * 
+	 * @throws UnknownHostException
 	 */
 	@Test
 	public void testSubmitFeedbackRequest() throws UnknownHostException {
-		Authentication authentication=new Authentication();
+		Authentication authentication = new Authentication();
 		List<String> emailAddresses = new ArrayList<>();
 		List<GlobalConfig> globalConfigs = new ArrayList<>();
 		emailAddresses.add("abc@gmail.com");
@@ -104,14 +98,14 @@ public class FeedbackServiceImplTest {
 		emailServerDetail.setFeedbackEmailIds(emailAddresses);
 		globalConfig.setEmailServerDetail(emailServerDetail);
 		globalConfigs.add(globalConfig);
-		Map<String, String> customData =new HashMap<>();
-		customData.put("abc","dfe");
+		Map<String, String> customData = new HashMap<>();
+		customData.put("abc", "dfe");
 		when(customApiConfig.getFeedbackEmailSubject()).thenReturn("TEST_EMAILS");
 		when(commonService.getApiHost()).thenReturn("host");
 		when(authenticationRepository.findByUsername(Mockito.anyString())).thenReturn(authentication);
 		when(globalConfigRepository.findAll()).thenReturn(globalConfigs);
 		boolean response = feedbackServiceImpl.submitFeedback(feedbackSubmitDTO);
 		assertThat("status: ", response, equalTo(true));
-		
+
 	}
 }

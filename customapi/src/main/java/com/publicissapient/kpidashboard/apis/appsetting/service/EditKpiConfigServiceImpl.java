@@ -58,8 +58,8 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 	 *
 	 * @param projectToolConfigid
 	 *            - used for project config id
-	 * @return ServiceResponse with data object,message and status flag true if
-	 *         data is found,false if not data found
+	 * @return ServiceResponse with data object,message and status flag true if data
+	 *         is found,false if not data found
 	 */
 
 	@Override
@@ -69,7 +69,8 @@ public class EditKpiConfigServiceImpl implements EditKpiConfigService {
 		BoardMetadata boardmetadata = boardMetadataRepository
 				.findByProjectToolConfigId(new ObjectId(projectToolConfigid));
 		if (boardmetadata != null && CollectionUtils.isNotEmpty(boardmetadata.getMetadata())) {
-			data=boardmetadata.getMetadata().stream().collect(Collectors.toMap(Metadata::getType, Metadata::getValue));
+			data = boardmetadata.getMetadata().stream()
+					.collect(Collectors.toMap(Metadata::getType, Metadata::getValue));
 		}
 
 		return data;

@@ -27,24 +27,24 @@ import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
  */
 public enum SonarAnalysisType {
 
-    STATIC_ANALYSIS(ProcessorType.SONAR_ANALYSIS), SECURITY_ANALYSIS(ProcessorType.STATIC_SECURITY_SCAN);
+	STATIC_ANALYSIS(ProcessorType.SONAR_ANALYSIS), SECURITY_ANALYSIS(ProcessorType.STATIC_SECURITY_SCAN);
 
-    private final ProcessorType processorType;
+	private final ProcessorType processorType;
 
-    SonarAnalysisType(ProcessorType processorType) {
-        this.processorType = processorType;
-    }
+	SonarAnalysisType(ProcessorType processorType) {
+		this.processorType = processorType;
+	}
 
-    public static SonarAnalysisType fromString(String value) {
-        for (SonarAnalysisType qualityType : values()) {
-            if (qualityType.toString().equalsIgnoreCase(value)) {
-                return qualityType;
-            }
-        }
-        throw new IllegalArgumentException(value + " is not a valid SonarAnalysisType.");
-    }
+	public static SonarAnalysisType fromString(String value) {
+		for (SonarAnalysisType qualityType : values()) {
+			if (qualityType.toString().equalsIgnoreCase(value)) {
+				return qualityType;
+			}
+		}
+		throw new IllegalArgumentException(value + " is not a valid SonarAnalysisType.");
+	}
 
-    public ProcessorType processorType() {
-        return processorType;
-    }
+	public ProcessorType processorType() {
+		return processorType;
+	}
 }

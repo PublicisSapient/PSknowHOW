@@ -3,7 +3,12 @@ package com.publicissapient.kpidashboard.apis.comments.service;
 import static com.publicissapient.kpidashboard.common.util.DateUtil.dateTimeFormatter;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,18 +30,10 @@ import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRe
 @RunWith(MockitoJUnitRunner.class)
 public class CommentsServiceImplTest {
 
-	@InjectMocks
-	private CommentsServiceImpl commentServiceImpl;
-
 	@Mock
 	KpiCommentsRepository kpiCommentsRepository;
-
 	@Mock
 	KpiCommentsHistoryRepository kpiCommentsHistoryRepository;
-
-	@Mock
-	private CustomApiConfig customApiConfig;
-
 	String node;
 	String level;
 	String sprintId;
@@ -45,6 +42,10 @@ public class CommentsServiceImplTest {
 	String comment;
 	String TIME_FORMAT;
 	String date;
+	@InjectMocks
+	private CommentsServiceImpl commentServiceImpl;
+	@Mock
+	private CustomApiConfig customApiConfig;
 
 	@Before
 	public void before() {

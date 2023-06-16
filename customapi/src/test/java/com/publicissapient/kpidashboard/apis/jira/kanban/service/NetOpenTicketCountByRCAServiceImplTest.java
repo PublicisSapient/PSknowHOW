@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.data.KanbanIssueCustomHistoryDataFactory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +30,7 @@ import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.KanbanIssueCustomHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -42,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NetOpenTicketCountByRCAServiceImplTest {
@@ -113,21 +113,21 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 		when(kpiHelperService.computeProjectWiseJiraHistoryByFieldAndDate(anyMap(), anyString(), anyMap(), anyString()))
 				.thenReturn(projectWiseJiraHistoryRCAAndDateWiseIssueMap);
 
-
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(ticketRCAServiceImpl.getKanbanRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory.newInstance().getKanbanIssueCustomHistoryDataList();
+		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory
+				.newInstance().getKanbanIssueCustomHistoryDataList();
 
 		Map<String, List<String>> projectWiseDoneStatus = new HashMap<>();
 		projectWiseDoneStatus.put("6335368249794a18e8a4479f", Arrays.asList("Closed"));
-		Map<String,Object> resultMap= new HashMap<>();
-		resultMap.put("JiraIssueHistoryData",kanbanIssueCustomHistoryDataList);
-		resultMap.put("projectWiseClosedStoryStatus",projectWiseDoneStatus);
-		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(),
-				any(), anyString())).thenReturn(resultMap);
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put("JiraIssueHistoryData", kanbanIssueCustomHistoryDataList);
+		resultMap.put("projectWiseClosedStoryStatus", projectWiseDoneStatus);
+		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(), any(),
+				anyString())).thenReturn(resultMap);
 
 		try {
 			KpiElement kpiElement = ticketRCAServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

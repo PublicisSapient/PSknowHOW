@@ -1,11 +1,11 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
-import lombok.Data;
-
 import java.util.List;
+
+import lombok.Data;
 
 @Data
 public class MaturityLevel {
-    private String level;
-    private List<String> range;
+	private String level;
+	private List<String> range;
 }

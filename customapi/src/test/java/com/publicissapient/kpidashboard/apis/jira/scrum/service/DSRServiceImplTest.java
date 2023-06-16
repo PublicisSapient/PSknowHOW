@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.SprintWiseStoryDataFactory;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -51,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFact
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
+import com.publicissapient.kpidashboard.apis.data.SprintWiseStoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -74,48 +74,37 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 @RunWith(MockitoJUnitRunner.class)
 public class DSRServiceImplTest {
-	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-	private Map<String, Object> filterLevelMap;
-
-	private KpiRequest kpiRequest;
+	private final static String UATBUGKEY = "uatBugData";
+	private final static String TOTALBUGKEY = "totalBugData";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<JiraIssue> uatBugList = new ArrayList<>();
 	List<JiraIssue> totalBugList = new ArrayList<>();
 	List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
-	private final static String UATBUGKEY = "uatBugData";
-	private final static String TOTALBUGKEY = "totalBugData";
-	private Map<String, String> kpiWiseAggregation = new HashMap<>();
-
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
-
 	@Mock
 	CacheService cacheService;
-
 	@Mock
 	ConfigHelperService configHelperService;
-
-	@Mock
-	private KpiHelperService kpiHelperService;
-
 	@InjectMocks
 	DSRServiceImpl dsrServiceImpl;
-
 	@Mock
 	ProjectBasicConfigRepository projectConfigRepository;
-
 	@Mock
 	FieldMappingRepository fieldMappingRepository;
-
-	@Mock
-	private CommonService commonService;
-
-	@Mock
-	private FilterHelperService filterHelperService;
-
 	@Mock
 	CustomApiConfig customApiSetting;
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private Map<String, Object> filterLevelMap;
+	private KpiRequest kpiRequest;
+	private Map<String, String> kpiWiseAggregation = new HashMap<>();
+	@Mock
+	private KpiHelperService kpiHelperService;
+	@Mock
+	private CommonService commonService;
+	@Mock
+	private FilterHelperService filterHelperService;
 
 	@Before
 	public void setup() {
@@ -124,8 +113,7 @@ public class DSRServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 
 		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
-		sprintWiseStoryList= sprintWiseStoryDataFactory.getSprintWiseStories();
-
+		sprintWiseStoryList = sprintWiseStoryDataFactory.getSprintWiseStories();
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();

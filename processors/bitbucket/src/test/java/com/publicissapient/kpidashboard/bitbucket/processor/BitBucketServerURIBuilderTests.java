@@ -37,15 +37,15 @@ import com.publicissapient.kpidashboard.common.model.processortool.ProcessorTool
 
 @ExtendWith(SpringExtension.class)
 public class BitBucketServerURIBuilderTests {
-	
+
 	@Mock
 	private BitbucketRepo bitBucketRepo;
-	
+
 	@Mock
 	private BitBucketConfig config;
-	
+
 	private BitBucketServerURIBuilder uriBuilder;
-	
+
 	@BeforeEach
 	public void init() {
 		Map<String, Object> options = new HashMap<>();
@@ -53,7 +53,7 @@ public class BitBucketServerURIBuilderTests {
 		when(bitBucketRepo.getToolDetailsMap()).thenReturn(options);
 		when(config.getPageSize()).thenReturn(25);
 		when(config.getApi()).thenReturn("/rest/api/1.0");
-		ProcessorToolConnection connectionDetail=new ProcessorToolConnection();
+		ProcessorToolConnection connectionDetail = new ProcessorToolConnection();
 		connectionDetail.setBranch("release/core-r4.4");
 		connectionDetail.setPassword("testPassword");
 		connectionDetail.setUrl("http://localhost:9999/bitbucket/");
@@ -64,9 +64,9 @@ public class BitBucketServerURIBuilderTests {
 
 		uriBuilder = new BitBucketServerURIBuilder(bitBucketRepo, config, connectionDetail);
 	}
-	
+
 	@Test
-	public void testBuild() throws Exception{	
+	public void testBuild() throws Exception {
 		String url = uriBuilder.build();
 		String expected = "http://localhost:9999/rest/api/1.0/projects/testproject/repos/testRepoSlug/commits?limit=25&until=release%2Fcore-r4.4";
 		Assert.assertEquals(expected, url);

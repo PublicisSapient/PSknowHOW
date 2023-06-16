@@ -20,11 +20,11 @@ package com.publicissapient.kpidashboard.common.model.tracelog;
 
 import java.util.List;
 
-import lombok.Data;
-
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Data;
 
 @Data
 @Component

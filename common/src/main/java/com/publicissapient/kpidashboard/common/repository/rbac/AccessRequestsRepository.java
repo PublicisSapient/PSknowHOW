@@ -69,9 +69,9 @@ public interface AccessRequestsRepository extends MongoRepository<AccessRequest,
 	 */
 	@Query("{'status':'Pending', 'accessNode.accessItems.itemId': ?0}")
 	List<AccessRequest> findPendingAccessRequestsByAccessItemId(String itemId);
-	
+
 	/**
-	 * Find pending requests 
+	 * Find pending requests
 	 * 
 	 * @param status
 	 *            status

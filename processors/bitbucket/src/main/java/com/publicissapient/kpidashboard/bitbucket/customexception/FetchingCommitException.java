@@ -23,14 +23,13 @@ package com.publicissapient.kpidashboard.bitbucket.customexception;
  */
 public class FetchingCommitException extends Exception {
 
+	private static final long serialVersionUID = -7003770711199668845L;
 
-    private static final long serialVersionUID = -7003770711199668845L;
+	public FetchingCommitException(String message) {
+		super(message);
+	}
 
-    public FetchingCommitException(String message) {
-        super(message);
-    }
-
-    public FetchingCommitException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	public FetchingCommitException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

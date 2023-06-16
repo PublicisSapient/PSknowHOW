@@ -20,22 +20,21 @@ package com.publicissapient.kpidashboard.teamcity.config;
 
 /**
  * Module constants
+ * 
  * @author anisingh4
  */
 public final class Constants {
 
+	public static final String FORMAT = "application/json";
+	public static final String JOBS_URL_SUFFIX = "/app/rest/projects";
+	public static final String JOB_ID = "/id:";
+	public static final String URL = "href";
+	public static final String BUILD_URL_END_POINT = "/builds";
 
-    public static final String FORMAT = "application/json";
-    public static final String JOBS_URL_SUFFIX = "/app/rest/projects";
-    public static final String JOB_ID = "/id:";
-    public static final String URL = "href";
-    public static final String BUILD_URL_END_POINT = "/builds";
-    
+	public static final int DEFAULT_PAGE_SIZE = 1;
 
-    public static final int DEFAULT_PAGE_SIZE = 1;
-
-    private Constants() {
-        // to prevent object creation
-    }
+	private Constants() {
+		// to prevent object creation
+	}
 
 }

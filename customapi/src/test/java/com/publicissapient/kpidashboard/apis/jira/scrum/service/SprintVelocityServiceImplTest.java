@@ -29,9 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -58,6 +56,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -85,7 +84,7 @@ public class SprintVelocityServiceImplTest {
 	private static final String TOTAL_ISSUE_WITH_STORYPOINTS = "totalIssueWithStoryPoints";
 	private static final String PREVIOUS_SPRINT_WISE_DETAILS = "previousSprintWiseDetails";
 	private static final String PREVIOUS_SPRINT_VELOCITY = "previousSprintvelocity";
-	private static final String PREVIOUS_SPRINT= "previousSprint";
+	private static final String PREVIOUS_SPRINT = "previousSprint";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<JiraIssue> totalIssueList = new ArrayList<>();
@@ -187,10 +186,11 @@ public class SprintVelocityServiceImplTest {
 		resultListMap.put(SUBGROUPCATEGORY, "sprint");
 
 		resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetailsList);
-		resultListMap.put(PREVIOUS_SPRINT_VELOCITY,previousTotalIssueList);
+		resultListMap.put(PREVIOUS_SPRINT_VELOCITY, previousTotalIssueList);
 		resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, new ArrayList<>());
 		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any())).thenReturn(resultListMap);
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(any(),any())).thenReturn(sprintDetailsList);
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(any(), any()))
+				.thenReturn(sprintDetailsList);
 		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		Map<String, Object> velocityListMap = sprintVelocityServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
@@ -211,14 +211,14 @@ public class SprintVelocityServiceImplTest {
 		resultListMap.put(SPRINTVELOCITYKEY, totalIssueList);
 		resultListMap.put(SUBGROUPCATEGORY, "Sprint");
 		resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetailsList);
-		resultListMap.put(PREVIOUS_SPRINT_VELOCITY,previousTotalIssueList);
+		resultListMap.put(PREVIOUS_SPRINT_VELOCITY, previousTotalIssueList);
 		resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, new ArrayList<>());
-		Map<Pair<String,String>, Map<String,Double>> map= new HashMap<>();
-		Map<String,Double> abc=new HashMap<>();
-		abc.put("ABC",1.0);
-		map.put(Pair.of("6335363749794a18e8a4479b","abc"),abc);
+		Map<Pair<String, String>, Map<String, Double>> map = new HashMap<>();
+		Map<String, Double> abc = new HashMap<>();
+		abc.put("ABC", 1.0);
+		map.put(Pair.of("6335363749794a18e8a4479b", "abc"), abc);
 
-		resultListMap.put(TOTAL_ISSUE_WITH_STORYPOINTS,map);
+		resultListMap.put(TOTAL_ISSUE_WITH_STORYPOINTS, map);
 		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any())).thenReturn(resultListMap);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
@@ -226,7 +226,8 @@ public class SprintVelocityServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintVelocityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(any(),any())).thenReturn(sprintDetailsList);
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(any(), any()))
+				.thenReturn(sprintDetailsList);
 		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		try {
 			KpiElement kpiElement = sprintVelocityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -252,7 +253,7 @@ public class SprintVelocityServiceImplTest {
 		resultListMap.put(SPRINTVELOCITYKEY, totalIssueList);
 		resultListMap.put(SUBGROUPCATEGORY, "Sprint");
 		resultListMap.put(SPRINT_WISE_SPRINTDETAILS, new ArrayList<>());
-		resultListMap.put(PREVIOUS_SPRINT_VELOCITY,previousTotalIssueList);
+		resultListMap.put(PREVIOUS_SPRINT_VELOCITY, previousTotalIssueList);
 		resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, new ArrayList<>());
 		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any())).thenReturn(resultListMap);
 
@@ -261,7 +262,8 @@ public class SprintVelocityServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintVelocityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(any(),any())).thenReturn(sprintDetailsList);
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(any(), any()))
+				.thenReturn(sprintDetailsList);
 		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		try {
 			KpiElement kpiElement = sprintVelocityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

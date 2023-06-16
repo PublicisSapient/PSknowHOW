@@ -43,7 +43,7 @@ public class GlobalConfig extends BasicModel {
 	private String env;
 
 	private AuthTypeStatus authTypeStatus;
-	
+
 	private ADServerDetail adServerDetail;
 
 	private EmailServerDetail emailServerDetail;

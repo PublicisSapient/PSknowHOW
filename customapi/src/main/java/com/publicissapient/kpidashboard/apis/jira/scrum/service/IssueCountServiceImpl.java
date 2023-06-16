@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -68,14 +67,14 @@ import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 @Component
 public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
+	public static final String STORY_CATEGORIES = "storyCategories";
+	public static final String PROJECT_WISE_TOTAL_CATEGORIES = "projectWiseTotalCategories";
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueCountServiceImpl.class);
 	private static final String STORY_COUNT = "Story Count";
 	private static final String TOTAL_COUNT = "Total Count";
 	private static final String STORY_LIST = "stories";
 	private static final String SPRINTSDETAILS = "sprints";
 	private static final String DEV = "DeveloperKpi";
-	public static final String STORY_CATEGORIES = "storyCategories";
-	public static final String PROJECT_WISE_TOTAL_CATEGORIES = "projectWiseTotalCategories";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
@@ -87,7 +86,6 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	private SprintRepository sprintRepository;
 	@Autowired
 	private CustomApiConfig customApiConfig;
-
 
 	/**
 	 * Gets Qualifier Type
@@ -130,9 +128,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
 				KPICode.ISSUE_COUNT);
 
-		Map<String, List<DataCount>> sortedMap = trendValuesMap.entrySet().stream()
-				.sorted(Map.Entry.comparingByKey())
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,LinkedHashMap::new));
+		Map<String, List<DataCount>> sortedMap = trendValuesMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
 
 		Map<String, Map<String, List<DataCount>>> countProjectWiseDc = new LinkedHashMap<>();
 		sortedMap.forEach((countType, dataCounts) -> {
@@ -180,8 +177,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		// for storing projectWise Total Count type Categories
 		Map<String, List<String>> projectWiseJiraIdentification = new HashMap<>();
 		// fetching story Type Categories
-		List<String> storyCategories = customApiConfig.getIssueCountStoryCategories().stream()
-				.map(String::toLowerCase)
+		List<String> storyCategories = customApiConfig.getIssueCountStoryCategories().stream().map(String::toLowerCase)
 				.collect(Collectors.toList());
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
@@ -193,14 +189,14 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 			List<String> jiraStoryIdentification = new ArrayList<>();
 			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
-				jiraStoryIdentification = fieldMapping.getJiraStoryIdentification().stream()
-						.map(String::toLowerCase)
+				jiraStoryIdentification = fieldMapping.getJiraStoryIdentification().stream().map(String::toLowerCase)
 						.collect(Collectors.toList());
 			}
 			projectWiseJiraIdentification.put(basicProjectConfigId.toString(), jiraStoryIdentification);
 			List<String> categories = new ArrayList<>(jiraStoryIdentification);
 			categories.addAll(storyCategories);
-			categories = categories.stream().map(String::toLowerCase) // Convert to lowercase for case-insensitive comparison
+			categories = categories.stream().map(String::toLowerCase) // Convert to lowercase for case-insensitive
+																	  // comparison
 					.distinct().collect(Collectors.toList());
 
 			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping, categories,
@@ -209,7 +205,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
-		getModifiedSprintDetailsFromBaseClass(sprintDetails,configHelperService);
+		getModifiedSprintDetailsFromBaseClass(sprintDetails, configHelperService);
 		Set<String> totalIssue = new HashSet<>();
 		sprintDetails.stream().forEach(sprintDetail -> {
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
@@ -260,8 +256,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
-			 KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList, KpiElement kpiElement,
+			KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
 
@@ -288,33 +284,31 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 		Map<Pair<String, String>, List<String>> sprintWiseIssueNumbers = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allJiraIssue)) {
-				sprintDetails.forEach(sd -> {
-					List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
-							CommonConstant.TOTAL_ISSUES);
-					totalIssues.retainAll(
-							allJiraIssue.stream().distinct().map(JiraIssue::getNumber).collect(Collectors.toList()));
-					sprintWiseIssueNumbers.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-							totalIssues);
-					Set<JiraIssue> totalJiraIssues = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd, sd.getTotalIssues(),
-									allJiraIssue);
-					List<String> totalIssueCatOfProj = projectWiseTotalCategories
-							.get(sd.getBasicProjectConfigId().toString());
-					// filtering out issues belong to storyCategories
-					List<JiraIssue> storyCatIssues = totalJiraIssues.stream()
-							.filter(issue -> storyCategories.contains(issue.getTypeName().toLowerCase()))
-							.collect(Collectors.toList());
-					// filtering out issues belong to totalCategories
-					List<JiraIssue> totalCatIssues = totalJiraIssues.stream()
-							.filter(issue -> totalIssueCatOfProj.contains(issue.getTypeName().toLowerCase()))
-							.collect(Collectors.toList());
-					sprintWiseStoryCatIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-							new ArrayList<>(storyCatIssues));
-					sprintWiseTotalCatIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-							new ArrayList<>(totalCatIssues));
-				});
+			sprintDetails.forEach(sd -> {
+				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
+						CommonConstant.TOTAL_ISSUES);
+				totalIssues.retainAll(
+						allJiraIssue.stream().distinct().map(JiraIssue::getNumber).collect(Collectors.toList()));
+				sprintWiseIssueNumbers.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
+						totalIssues);
+				Set<JiraIssue> totalJiraIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
+						sd.getTotalIssues(), allJiraIssue);
+				List<String> totalIssueCatOfProj = projectWiseTotalCategories
+						.get(sd.getBasicProjectConfigId().toString());
+				// filtering out issues belong to storyCategories
+				List<JiraIssue> storyCatIssues = totalJiraIssues.stream()
+						.filter(issue -> storyCategories.contains(issue.getTypeName().toLowerCase()))
+						.collect(Collectors.toList());
+				// filtering out issues belong to totalCategories
+				List<JiraIssue> totalCatIssues = totalJiraIssues.stream()
+						.filter(issue -> totalIssueCatOfProj.contains(issue.getTypeName().toLowerCase()))
+						.collect(Collectors.toList());
+				sprintWiseStoryCatIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
+						new ArrayList<>(storyCatIssues));
+				sprintWiseTotalCatIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
+						new ArrayList<>(totalCatIssues));
+			});
 		}
-
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 

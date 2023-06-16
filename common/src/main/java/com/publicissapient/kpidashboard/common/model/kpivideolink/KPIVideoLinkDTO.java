@@ -8,11 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * id ObjectId in DB
- * videoUrl URL
+ * id ObjectId in DB videoUrl URL
  *
  */
-
 
 @Data
 @Builder
@@ -21,8 +19,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KPIVideoLinkDTO {
-	
+
 	private String id;
-    private String videoUrl;
-	
+	private String videoUrl;
+
 }

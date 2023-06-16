@@ -101,7 +101,6 @@ public class UnitCoverageServiceKanbanImplTest {
 	private Map<String, List<Tool>> toolGroup = new HashMap<>();
 	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 
-
 	private KpiRequest kpiRequest;
 	private List<KanbanIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
 	private List<SonarHistory> sonarHistoryData = new ArrayList<>();
@@ -166,13 +165,14 @@ public class UnitCoverageServiceKanbanImplTest {
 	}
 
 	private Tool createTool(String key, String url, String toolType, String username, String password,
-							List<ProcessorItem> processorItems) {
+			List<ProcessorItem> processorItems) {
 		Tool tool = new Tool();
 		tool.setTool(toolType);
 		tool.setUrl(url);
 		tool.setProcessorItemList(processorItems);
 		return tool;
 	}
+
 	@Test
 	public void testCalculateKPIMetrics() {
 		assertThat(stdServiceImpl.calculateKPIMetrics(null), equalTo(null));
@@ -182,13 +182,15 @@ public class UnitCoverageServiceKanbanImplTest {
 	public void testUnitCoverage() throws Exception {
 		setToolMap();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
+				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
+		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
 		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name())).thenReturn(kpiRequestTrackerId);
-		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong())).thenReturn(sonarHistoryData);
-
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
+				.thenReturn(sonarHistoryData);
 
 		try {
 			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -196,13 +198,13 @@ public class UnitCoverageServiceKanbanImplTest {
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
 				String projectName = data.getFilter();
 				switch (projectName) {
-					case "Overall":
-						assertThat("Coverage:", data.getValue().size(), equalTo(1));
-						break;
+				case "Overall":
+					assertThat("Coverage:", data.getValue().size(), equalTo(1));
+					break;
 
-					case "ENGINEERING.KPIDASHBOARD.PROCESSORS->origin/develop->DA_10304":
-						assertThat("Coverage:", data.getValue().size(), equalTo(1));
-						break;
+				case "ENGINEERING.KPIDASHBOARD.PROCESSORS->origin/develop->DA_10304":
+					assertThat("Coverage:", data.getValue().size(), equalTo(1));
+					break;
 
 				}
 			});
@@ -216,12 +218,15 @@ public class UnitCoverageServiceKanbanImplTest {
 	public void testCoverageEmptyCollectorItem() throws Exception {
 		setToolMap();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
+				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
+		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
 		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name())).thenReturn(kpiRequestTrackerId);
-		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong())).thenReturn(sonarHistoryData);
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
+				.thenReturn(sonarHistoryData);
 
 		try {
 			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -238,12 +243,15 @@ public class UnitCoverageServiceKanbanImplTest {
 	public void testCoverage1() throws Exception {
 		setToolMap();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
+				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
+		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
 		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name())).thenReturn(kpiRequestTrackerId);
-		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong())).thenReturn(sonarHistoryData);
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
+				.thenReturn(sonarHistoryData);
 
 		try {
 			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -265,7 +273,8 @@ public class UnitCoverageServiceKanbanImplTest {
 	public void testCoverageNoData() throws Exception {
 		setToolMap();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
+				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
+		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 		when(configHelperService.getToolItemMap()).thenReturn(null);

@@ -78,15 +78,15 @@ public class Value {
 	public void setFields(Fields fields) {
 		this.fields = fields;
 	}
-	
+
 	@JsonProperty("relations")
 	public List<Relation> getRelations() {
-	return relations;
+		return relations;
 	}
 
 	@JsonProperty("relations")
 	public void setRelations(List<Relation> relations) {
-	this.relations = relations;
+		this.relations = relations;
 	}
 
 	@JsonProperty("url")
@@ -111,8 +111,9 @@ public class Value {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("id", id).append("rev", rev).append("fields", fields).append("relations", relations).append("url", url)
-				.append("additionalProperties", additionalProperties).toString();
+		return new ToStringBuilder(this).append("id", id).append("rev", rev).append("fields", fields)
+				.append("relations", relations).append("url", url).append("additionalProperties", additionalProperties)
+				.toString();
 	}
 
 }

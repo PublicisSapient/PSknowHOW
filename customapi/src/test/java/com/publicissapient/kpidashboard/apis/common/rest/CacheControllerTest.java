@@ -37,24 +37,24 @@ import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 @RunWith(MockitoJUnitRunner.class)
 public class CacheControllerTest {
 
-    @InjectMocks
-    CacheController cacheController;
+	@InjectMocks
+	CacheController cacheController;
 
-    @Mock
-    CacheService cacheService;
+	@Mock
+	CacheService cacheService;
 
-    @Test
-    public void clearCache() {
-        doNothing().when(cacheService).clearCache(Mockito.anyString());
-        cacheController.clearCache("abc");
-        verify(cacheService, times(1)).clearCache(Mockito.anyString());
+	@Test
+	public void clearCache() {
+		doNothing().when(cacheService).clearCache(Mockito.anyString());
+		cacheController.clearCache("abc");
+		verify(cacheService, times(1)).clearCache(Mockito.anyString());
 
-    }
+	}
 
-    @Test
-    public void clearAllCache() {
-        doNothing().when(cacheService).clearAllCache();
-        cacheController.clearAllCache();
-        verify(cacheService, times(1)).clearAllCache();
-    }
+	@Test
+	public void clearAllCache() {
+		doNothing().when(cacheService).clearAllCache();
+		cacheController.clearAllCache();
+		verify(cacheService, times(1)).clearAllCache();
+	}
 }

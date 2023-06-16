@@ -79,6 +79,17 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	@Autowired
 	private SprintRepository sprintRepository;
 
+	private static void setEstimation(FieldMapping fieldMapping, AtomicDouble effectSumDouble, SprintIssue sprintIssue,
+			JiraIssue jiraIssue) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			effectSumDouble.addAndGet(Optional.ofNullable(sprintIssue.getStoryPoints()).orElse(0.0d));
+		} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+			Double totalOriginalEstimateInHours = (double) (jiraIssue.getOriginalEstimateMinutes()) / 60;
+			effectSumDouble.addAndGet(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping());
+		}
+	}
+
 	/**
 	 * Gets Qualifier Type
 	 *
@@ -163,7 +174,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				List<SprintDetails> sprintDetails = sprintDetailsList.stream()
 						.limit(Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT)
 						.collect(Collectors.toList());
-				getModifiedSprintDetailsFromBaseClass(sprintDetails,configHelperService);
+				getModifiedSprintDetailsFromBaseClass(sprintDetails, configHelperService);
 				sprintDetails.stream().forEach(sprintDetail -> {
 					if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 						List<String> sprintWiseIssueIds = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
@@ -278,7 +289,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 						sd.getSprintID());
 				currentSprintLeafPredictabilityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
 			});
-		} 
+		}
 
 		Map<Pair<String, String>, Double> predictability = prepareSprintPredictMap(sprintWisePredictabilityList);
 		List<KPIExcelData> excelData = new ArrayList<>();
@@ -288,7 +299,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
-			populateExcelDataObject(requestTrackerId , excelData, currentSprintLeafPredictabilityMap, node, fieldMapping);
+			populateExcelDataObject(requestTrackerId, excelData, currentSprintLeafPredictabilityMap, node,
+					fieldMapping);
 			log.debug("[SPRINTPREDICTABILITY-SPRINT-WISE][{}]. SPRINTPREDICTABILITY for sprint {}  is {}",
 					requestTrackerId, node.getSprintFilter().getName(), currentNodeIdentifier);
 			if (predictability.get(currentNodeIdentifier) != null) {
@@ -404,7 +416,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	 * @param node
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap, Node node, FieldMapping fieldMapping) {
+			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap, Node node,
+			FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
@@ -415,19 +428,6 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				KPIExcelUtility.populateSprintPredictability(node.getSprintFilter().getName(), issueDetailsSet,
 						excelData, fieldMapping);
 			}
-		}
-	}
-
-	private static void setEstimation(FieldMapping fieldMapping, AtomicDouble effectSumDouble, SprintIssue sprintIssue,
-									  JiraIssue jiraIssue) {
-		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) &&
-				fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			effectSumDouble.addAndGet(Optional.ofNullable(sprintIssue.getStoryPoints())
-					.orElse(0.0d));
-		} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
-			Double totalOriginalEstimateInHours = (double) (jiraIssue.getOriginalEstimateMinutes()) / 60;
-			effectSumDouble
-					.addAndGet(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping());
 		}
 	}
 }

@@ -32,7 +32,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
-
 /**
  * Handles Encryption for the applications.
  */
@@ -49,7 +48,8 @@ public final class Encryption {
 	 * Gets string key.
 	 *
 	 * @return the string key
-	 * @throws EncryptionException the encryption exception
+	 * @throws EncryptionException
+	 *             the encryption exception
 	 */
 	public static String getStringKey() throws EncryptionException {
 		SecretKey key = null;
@@ -58,14 +58,15 @@ public final class Encryption {
 		} catch (NoSuchAlgorithmException e) {
 			throw new EncryptionException("Cannot generate a secret key" + '\n' + e.getMessage(), e);
 		}
-		//return Base64.encodeBase64String(key.getEncoded());
+		// return Base64.encodeBase64String(key.getEncoded());
 		return Base64.getEncoder().encodeToString(key.getEncoded());
 	}
 
 	/**
 	 * Gets aes encryption key.
 	 *
-	 * @param key the key
+	 * @param key
+	 *            the key
 	 * @return the aes encryption key
 	 */
 	private static SecretKey getAesEncryptionKey(String key) {
@@ -83,7 +84,8 @@ public final class Encryption {
 	/**
 	 * To byte array byte [ ].
 	 *
-	 * @param str the str
+	 * @param str
+	 *            the str
 	 * @return the byte [ ]
 	 */
 	private static byte[] toByteArray(String str) {
@@ -93,14 +95,21 @@ public final class Encryption {
 	/**
 	 * Encrypts plainText in AES using the secret key
 	 *
-	 * @param plainText the plain text
-	 * @param key       the key
+	 * @param plainText
+	 *            the plain text
+	 * @param key
+	 *            the key
 	 * @return string
-	 * @throws NoSuchPaddingException    the no such padding exception
-	 * @throws NoSuchAlgorithmException  the no such algorithm exception
-	 * @throws BadPaddingException       the bad padding exception
-	 * @throws IllegalBlockSizeException the illegal block size exception
-	 * @throws InvalidKeyException       the invalid key exception
+	 * @throws NoSuchPaddingException
+	 *             the no such padding exception
+	 * @throws NoSuchAlgorithmException
+	 *             the no such algorithm exception
+	 * @throws BadPaddingException
+	 *             the bad padding exception
+	 * @throws IllegalBlockSizeException
+	 *             the illegal block size exception
+	 * @throws InvalidKeyException
+	 *             the invalid key exception
 	 */
 	public static String aesEncryptString(String plainText, String key) throws NoSuchPaddingException,
 			NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException {
@@ -115,14 +124,21 @@ public final class Encryption {
 	/**
 	 * Aes decrypt string string.
 	 *
-	 * @param byteCipherText the byte cipher text
-	 * @param key            the key
+	 * @param byteCipherText
+	 *            the byte cipher text
+	 * @param key
+	 *            the key
 	 * @return the string
-	 * @throws NoSuchPaddingException    the no such padding exception
-	 * @throws NoSuchAlgorithmException  the no such algorithm exception
-	 * @throws InvalidKeyException       the invalid key exception
-	 * @throws BadPaddingException       the bad padding exception
-	 * @throws IllegalBlockSizeException the illegal block size exception
+	 * @throws NoSuchPaddingException
+	 *             the no such padding exception
+	 * @throws NoSuchAlgorithmException
+	 *             the no such algorithm exception
+	 * @throws InvalidKeyException
+	 *             the invalid key exception
+	 * @throws BadPaddingException
+	 *             the bad padding exception
+	 * @throws IllegalBlockSizeException
+	 *             the illegal block size exception
 	 */
 	public static String aesDecryptString(String byteCipherText, String key) throws GeneralSecurityException {
 		SecretKey secKey = getAesEncryptionKey(key);

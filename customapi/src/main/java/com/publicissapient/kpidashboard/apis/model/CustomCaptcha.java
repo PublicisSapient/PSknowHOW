@@ -31,22 +31,22 @@ public class CustomCaptcha {
 	private boolean captchaRequired;
 
 	/**
+	 * get result
+	 *
+	 * @return the result
+	 */
+	public String getResult() {
+		return result;
+	}
+
+	/**
 	 * set result
-	 * 
+	 *
 	 * @param result
 	 *            the result to set
 	 */
 	public void setResult(String result) {
 		this.result = result;
-	}
-
-	/**
-	 * get result
-	 * 
-	 * @return the result
-	 */
-	public String getResult() {
-		return result;
 	}
 
 	/**
@@ -69,22 +69,22 @@ public class CustomCaptcha {
 	}
 
 	/**
+	 * get captchaRequired
+	 *
+	 * @return captchaRequired
+	 */
+	public boolean isCaptchaRequired() {
+		return captchaRequired;
+	}
+
+	/**
 	 * set captchaRequired
-	 * 
+	 *
 	 * @param captchaRequired
 	 *            the captchaRequired to set
 	 */
 	public void setCaptchaRequired(boolean captchaRequired) {
 		this.captchaRequired = captchaRequired;
-	}
-
-	/**
-	 * get captchaRequired
-	 * 
-	 * @return captchaRequired
-	 */
-	public boolean isCaptchaRequired() {
-		return captchaRequired;
 	}
 
 }

@@ -55,7 +55,9 @@ public class PushDataTraceLogServiceImpl implements PushDataTraceLogService {
 				.findByBasicProjectConfigId(basicProjectConfigId);
 		List<PushDataTraceLogDTO> pushDataTraceLogDTO = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(byBasicProjectConfigId)) {
-			byBasicProjectConfigId=byBasicProjectConfigId.stream().sorted(Comparator.comparing(PushDataTraceLog::getRequestTime).reversed()).collect(Collectors.toList());
+			byBasicProjectConfigId = byBasicProjectConfigId.stream()
+					.sorted(Comparator.comparing(PushDataTraceLog::getRequestTime).reversed())
+					.collect(Collectors.toList());
 			ModelMapper modelMapper = new ModelMapper();
 			byBasicProjectConfigId.stream().forEach(pushDataTraceLog -> pushDataTraceLogDTO
 					.add(modelMapper.map(pushDataTraceLog, PushDataTraceLogDTO.class)));
@@ -82,5 +84,5 @@ public class PushDataTraceLogServiceImpl implements PushDataTraceLogService {
 		}
 
 	}
-	
+
 }

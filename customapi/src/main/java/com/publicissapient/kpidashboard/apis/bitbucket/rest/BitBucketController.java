@@ -67,13 +67,15 @@ public class BitBucketController {
 	/**
 	 * Gets bit bucket aggregated metrics.
 	 *
-	 * @param kpiRequest the kpi request
+	 * @param kpiRequest
+	 *            the kpi request
 	 * @return the bit bucket aggregated metrics
-	 * @throws Exception the exception
+	 * @throws Exception
+	 *             the exception
 	 */
-	@RequestMapping(value = "/bitbucket/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)//NOSONAR
+	@RequestMapping(value = "/bitbucket/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<List<KpiElement>> getBitBucketAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception { //NOSONAR
+			throws Exception { // NOSONAR
 		MDC.put("BitbucketKpiRequest", kpiRequest.getRequestTrackerId());
 		LOGGER.info("Received BitBucket KPI request {}", kpiRequest);
 		long bitbucketRequestStartTime = System.currentTimeMillis();
@@ -100,19 +102,20 @@ public class BitBucketController {
 	/**
 	 * Gets bit bucket kanban aggregated metrics.
 	 *
-	 * @param kpiRequest the kpi request
+	 * @param kpiRequest
+	 *            the kpi request
 	 * @return the bit bucket kanban aggregated metrics
-	 * @throws Exception the exception
+	 * @throws Exception
+	 *             the exception
 	 */
-	@RequestMapping(value = "/bitbucketkanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) //NOSONAR
+	@RequestMapping(value = "/bitbucketkanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<List<KpiElement>> getBitBucketKanbanAggregatedMetrics(
-			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { //NOSONAR
+			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { // NOSONAR
 		MDC.put("BitbucketKpiRequest", kpiRequest.getRequestTrackerId());
 		LOGGER.info(" Received BitBucket KPI request {}", kpiRequest);
 		long bitbucketKanbanRequestStartTime = System.currentTimeMillis();
 		MDC.put("BitbucketKanbanRequestStartTime", String.valueOf(bitbucketKanbanRequestStartTime));
-		cacheService.setIntoApplicationCache(
-				Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKETKANBAN.name(),
+		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKETKANBAN.name(),
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
@@ -120,7 +123,8 @@ public class BitBucketController {
 		}
 
 		List<KpiElement> responseList = bitbucketServiceKanban.process(kpiRequest);
-		MDC.put("TotalBitbucketKanbanRequestTime", String.valueOf(System.currentTimeMillis() - bitbucketKanbanRequestStartTime));
+		MDC.put("TotalBitbucketKanbanRequestTime",
+				String.valueOf(System.currentTimeMillis() - bitbucketKanbanRequestStartTime));
 
 		LOGGER.info("");
 		MDC.clear();

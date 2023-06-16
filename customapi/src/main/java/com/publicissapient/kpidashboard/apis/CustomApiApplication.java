@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis;
 
-
 import javax.validation.Validator;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -70,8 +69,7 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 	 */
 	@SuppressWarnings("PMD.CloseResource")
 	public static void main(String[] args) {
-		SecurityContextHolder
-				.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
 		ConfigurableApplicationContext configurableApplicationContext = new CustomApiApplication()
 				.configure(new SpringApplicationBuilder(CustomApiApplication.class)).run(args);
 		DefaultLogoInsertor imageInsertor = configurableApplicationContext.getBean(DefaultLogoInsertor.class);
@@ -86,12 +84,8 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 	 */
 	@Bean
 	public Docket documentation() {
-		return new Docket(DocumentationType.SWAGGER_2)
-	            .enable(true)
-	            .select()
-	            .apis(RequestHandlerSelectors.any())
-	            .paths(PathSelectors.any())
-	            .build().pathMapping("/").apiInfo(metadata());
+		return new Docket(DocumentationType.SWAGGER_2).enable(true).select().apis(RequestHandlerSelectors.any())
+				.paths(PathSelectors.any()).build().pathMapping("/").apiInfo(metadata());
 	}
 
 	/**
@@ -101,8 +95,7 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 	 * @return An instance of AppInfor class
 	 */
 	private ApiInfo metadata() {
-		return new ApiInfoBuilder().title("KnowHOW API").description("API Documentation for KnowHOW")
-				.version("2.0")
+		return new ApiInfoBuilder().title("KnowHOW API").description("API Documentation for KnowHOW").version("2.0")
 				.build();
 	}
 
@@ -130,7 +123,6 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 		methodValidationPostProcessor.setValidator(validator());
 		return methodValidationPostProcessor;
 	}
-
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)

@@ -78,10 +78,9 @@ public class AccountHierarchyServiceKanbanImplTest {
 
 	@Before
 	public void setUp() {
-		kanbanAccountHierarchyList = AccountHierarchiesKanbanDataFactory.newInstance()
-				.getAccountHierarchies();
+		kanbanAccountHierarchyList = AccountHierarchiesKanbanDataFactory.newInstance().getAccountHierarchies();
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
-		 hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
+		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
 
 	}
 
@@ -108,8 +107,7 @@ public class AccountHierarchyServiceKanbanImplTest {
 	public void testGetFilteredList_ProjectLevelWithFilter() {
 		Set<String> userProjects = new HashSet<>();
 		userProjects.add("6335368249794a18e8a4479f");
-		AccountFilterRequest request = FilterRequestDataFactory.newInstance()
-				.getFilterRequest();
+		AccountFilterRequest request = FilterRequestDataFactory.newInstance().getFilterRequest();
 		when(accountHierarchyRepository.findAll()).thenReturn(kanbanAccountHierarchyList);
 		List<AccountHierarchyDataKanban> accountHierarchies = accountHierarchyServiceImpl.createHierarchyData();
 		when(cacheService.cacheAccountHierarchyKanbanData()).thenReturn(accountHierarchies);
@@ -122,12 +120,12 @@ public class AccountHierarchyServiceKanbanImplTest {
 	public void testGetFilteredList_Project() {
 		Set<String> userProjects = new HashSet<>();
 		userProjects.add("6335368249794a18e8a4479f");
-		AccountFilterRequest request = FilterRequestDataFactory.newInstance()
-				.getFilterRequest();
+		AccountFilterRequest request = FilterRequestDataFactory.newInstance().getFilterRequest();
 		when(accountHierarchyRepository.findAll()).thenReturn(kanbanAccountHierarchyList);
-		Map<String,Integer> map= new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream().collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
-		hierarchyMap.entrySet().stream().forEach(k->map.put(k.getKey(),k.getValue().getLevel()));
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 
 		when(filterHelperService.getHierarchyIdLevelMap(true)).thenReturn(map);
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
@@ -137,6 +135,6 @@ public class AccountHierarchyServiceKanbanImplTest {
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
 		when(tokenAuthenticationService.getUserProjects()).thenReturn(userProjects);
 		Set<AccountFilteredData> filterList = accountHierarchyServiceImpl.getFilteredList(request);
-		Assert.assertEquals(4,filterList.size());
+		Assert.assertEquals(4, filterList.size());
 	}
 }

@@ -37,27 +37,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TeamcityProcessor extends Processor {
 
+	@Builder(builderMethodName = "processorBuilder")
+	public TeamcityProcessor(String processorName, ProcessorType processorType, boolean active, boolean online, // NOPMD
+			List<ProcessorError> errors, long lastExecuted, ObjectId objectId, boolean lastJobSuccess) {
+		super(processorName, processorType, active, online, errors, lastExecuted, objectId, lastJobSuccess);
+	}
+
 	/**
 	 * Provides buildProcessor processor.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return the processor object with initial values
 	 */
 	public static TeamcityProcessor buildProcessor() {
 
-		return TeamcityProcessor.processorBuilder()
-				.processorName(ProcessorConstants.TEAMCITY)
-				.processorType(ProcessorType.BUILD)
-				.online(true)
-				.active(true)
-				.lastExecuted(System.currentTimeMillis())
-				.lastJobSuccess(false)
-				.build();
-	}
-
-	@Builder(builderMethodName = "processorBuilder")
-	public TeamcityProcessor(String processorName, ProcessorType processorType, boolean active, boolean online,//NOPMD
-			List<ProcessorError> errors, long lastExecuted, ObjectId objectId, boolean lastJobSuccess) {
-		super(processorName, processorType, active, online, errors, lastExecuted, objectId, lastJobSuccess);
+		return TeamcityProcessor.processorBuilder().processorName(ProcessorConstants.TEAMCITY)
+				.processorType(ProcessorType.BUILD).online(true).active(true).lastExecuted(System.currentTimeMillis())
+				.lastJobSuccess(false).build();
 	}
 }

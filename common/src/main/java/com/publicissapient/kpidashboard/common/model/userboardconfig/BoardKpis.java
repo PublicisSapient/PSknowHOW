@@ -45,7 +45,8 @@ public class BoardKpis {
 	/**
 	 * setter for isEnabled
 	 * 
-	 * @param isEnabled isEnabled
+	 * @param isEnabled
+	 *            isEnabled
 	 */
 	public void setIsEnabled(boolean isEnabled) {
 		this.isEnabled = isEnabled;

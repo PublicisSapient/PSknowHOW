@@ -28,7 +28,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * Represents the ConnectionDTO data.
@@ -68,7 +67,7 @@ public class ConnectionDTO {
 	private boolean connPrivate;
 	private String updatedBy;
 	private List<String> connectionUsers;
-	private boolean vault;//GS requirement
+	private boolean vault;// GS requirement
 	private boolean bearerToken; // Kurig requirement
 	private String jiraAuthType;
 	private boolean jaasKrbAuth;
@@ -78,18 +77,19 @@ public class ConnectionDTO {
 	private String userPrincipal;
 	private String samlEndPoint;
 
-	public void setIsOAuth(boolean isOAuth) {
-		this.isOAuth = isOAuth;
-	}
-
 	public boolean getIsOAuth() {
 		return this.isOAuth;
+	}
+
+	public void setIsOAuth(boolean isOAuth) {
+		this.isOAuth = isOAuth;
 	}
 
 	/**
 	 * Checks if the parameter object is equal to the class object
 	 *
-	 * @param obj object
+	 * @param obj
+	 *            object
 	 * @return boolean true or false
 	 */
 	@Override

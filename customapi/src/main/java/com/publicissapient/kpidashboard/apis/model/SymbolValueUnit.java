@@ -33,6 +33,7 @@ public class SymbolValueUnit {
 	private String unit;
 
 	private String trend;
+
 	/**
 	 * 
 	 * @return symbol
@@ -40,13 +41,16 @@ public class SymbolValueUnit {
 	public String getSymbol() {
 		return symbol;
 	}
+
 	/**
 	 * Sets symbol
+	 * 
 	 * @param symbol
 	 */
 	public void setSymbol(String symbol) {
 		this.symbol = symbol;
 	}
+
 	/**
 	 * 
 	 * @return value
@@ -54,13 +58,16 @@ public class SymbolValueUnit {
 	public String getValue() {
 		return value;
 	}
+
 	/**
 	 * Sets value
+	 * 
 	 * @param value
 	 */
 	public void setValue(String value) {
 		this.value = value;
 	}
+
 	/**
 	 * 
 	 * @return unit
@@ -68,13 +75,16 @@ public class SymbolValueUnit {
 	public String getUnit() {
 		return unit;
 	}
+
 	/**
 	 * Sets unit
+	 * 
 	 * @param unit
 	 */
 	public void setUnit(String unit) {
 		this.unit = unit;
 	}
+
 	/**
 	 * 
 	 * @return trend
@@ -82,8 +92,10 @@ public class SymbolValueUnit {
 	public String getTrend() {
 		return trend;
 	}
+
 	/**
 	 * Sets trend
+	 * 
 	 * @param trend
 	 */
 	public void setTrend(String trend) {

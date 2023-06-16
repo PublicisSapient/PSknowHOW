@@ -20,10 +20,10 @@ package com.publicissapient.kpidashboard.gitlab.processor.service;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.gitlab.customexception.FetchingCommitException;
 import com.publicissapient.kpidashboard.gitlab.model.GitLabInfo;
 import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
-import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 
 /**
  * GitLabClient for getting all commits from GitLab
@@ -43,7 +43,7 @@ public interface GitLabClient {
 	 * @throws FetchingCommitException
 	 *             the exception
 	 */
-	List<CommitDetails> fetchAllCommits(GitLabRepo gitLabRepo, boolean firstTimeRun,GitLabInfo gitLabInfo)
+	List<CommitDetails> fetchAllCommits(GitLabRepo gitLabRepo, boolean firstTimeRun, GitLabInfo gitLabInfo)
 			throws FetchingCommitException;
 
 }

@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -50,6 +48,8 @@ import com.publicissapient.kpidashboard.common.repository.application.SubProject
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author yasbano
  * @author dilipKr
@@ -59,6 +59,8 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 @Slf4j
 public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
+	private static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+	private static final String SUCCESS_MSG = "Successfully fetched all records for projectToolConfig";
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
 	@Autowired
@@ -72,12 +74,28 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	@Autowired
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
 
-	private static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-	private static final String SUCCESS_MSG = "Successfully fetched all records for projectToolConfig";
+	/**
+	 * make a copy of the list so the original list is not changed, and remove() is
+	 * supported
+	 *
+	 * @param l1
+	 * @param l2
+	 * @return
+	 */
+	private static boolean compareTwoListOfObjects(List<?> l1, List<?> l2) {
+
+		ArrayList<?> cp = new ArrayList<>(l1);
+		for (Object o : l2) {
+			if (!cp.remove(o)) {
+				return false;
+			}
+		}
+		return cp.isEmpty();
+	}
 
 	/**
 	 * Fetch all ProjectToolConfig data.
-	 * 
+	 *
 	 * @return ServiceResponse with data object,message and status flag. Status flag
 	 *         is true, if data is found else false.
 	 */
@@ -95,10 +113,10 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	/**
 	 * Fetch a ProjectToolConfig by toolType. *
-	 * 
+	 *
 	 * @param toolType
 	 *            as toolType
-	 * 
+	 *
 	 * @return ServiceResponse with data object,message and status flag. Status flag
 	 *         is true, if data is found else false.
 	 */
@@ -121,10 +139,10 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	/**
 	 * Create and save a connection in the database.
-	 * 
+	 *
 	 * @param projectToolConfig
 	 *            as project_tool_configs
-	 * 
+	 *
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -250,25 +268,6 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			cacheService.clearCache(CommonConstant.TESTING_KPI_CACHE);
 		}
 		return new ServiceResponse(true, "updated the project_tools Successfully", projectTool);
-	}
-
-	/**
-	 * make a copy of the list so the original list is not changed, and remove() is
-	 * supported
-	 * 
-	 * @param l1
-	 * @param l2
-	 * @return
-	 */
-	private static boolean compareTwoListOfObjects(List<?> l1, List<?> l2) {
-
-		ArrayList<?> cp = new ArrayList<>(l1);
-		for (Object o : l2) {
-			if (!cp.remove(o)) {
-				return false;
-			}
-		}
-		return cp.isEmpty();
 	}
 
 	@Override

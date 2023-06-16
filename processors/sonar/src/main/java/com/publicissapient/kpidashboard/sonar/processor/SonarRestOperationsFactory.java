@@ -33,7 +33,7 @@ import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 public class SonarRestOperationsFactory implements RestOperationsFactory<RestOperations> {
 
 	private static final int TIME_OUT = 30_000;
-	
+
 	/**
 	 * Gets the RestOperations
 	 *

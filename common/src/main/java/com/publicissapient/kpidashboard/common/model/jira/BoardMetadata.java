@@ -31,7 +31,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Builder
 @Getter
 @Setter
@@ -44,6 +43,5 @@ public class BoardMetadata extends BasicModel {
 	private ObjectId projectToolConfigId;
 	private String metadataTemplateCode;
 	private List<Metadata> metadata;
-	
 
 }

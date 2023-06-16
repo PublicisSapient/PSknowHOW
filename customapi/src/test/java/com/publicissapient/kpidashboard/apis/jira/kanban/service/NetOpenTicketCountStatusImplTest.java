@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.data.KanbanIssueCustomHistoryDataFactory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +48,7 @@ import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.KanbanIssueCustomHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -61,6 +60,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -172,15 +172,16 @@ public class NetOpenTicketCountStatusImplTest {
 		Map<String, Map<String, Map<String, Set<String>>>> projectWiseJiraHistoryStatusAndDateWiseIssueMap = prepareProjectWiseJiraHistoryByStatusAndDate();
 		when(kpiHelperService.computeProjectWiseJiraHistoryByStatusAndDate(anyMap(), anyString(), anyMap()))
 				.thenReturn(projectWiseJiraHistoryStatusAndDateWiseIssueMap);
-		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory.newInstance().getKanbanIssueCustomHistoryDataList();
+		List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryDataList = KanbanIssueCustomHistoryDataFactory
+				.newInstance().getKanbanIssueCustomHistoryDataList();
 
 		Map<String, List<String>> projectWiseDoneStatus = new HashMap<>();
-		projectWiseDoneStatus.put("6335368249794a18e8a4479f",Arrays.asList("Closed"));
-		Map<String,Object> resultMap= new HashMap<>();
-		resultMap.put("JiraIssueHistoryData",kanbanIssueCustomHistoryDataList);
-		resultMap.put("projectWiseClosedStoryStatus",projectWiseDoneStatus);
-		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(),
-				any(), anyString())).thenReturn(resultMap);
+		projectWiseDoneStatus.put("6335368249794a18e8a4479f", Arrays.asList("Closed"));
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put("JiraIssueHistoryData", kanbanIssueCustomHistoryDataList);
+		resultMap.put("projectWiseClosedStoryStatus", projectWiseDoneStatus);
+		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(), any(),
+				anyString())).thenReturn(resultMap);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))

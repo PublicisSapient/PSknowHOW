@@ -25,9 +25,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.sonar.util.SonarUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
@@ -47,11 +44,13 @@ import org.springframework.web.client.RestOperations;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.publicissapient.kpidashboard.common.constant.SonarAnalysisType;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMeasureData;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.sonar.config.SonarConfig;
 import com.publicissapient.kpidashboard.sonar.model.Paging;
@@ -61,6 +60,7 @@ import com.publicissapient.kpidashboard.sonar.model.SonarProcessorItem;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.SonarClient;
 import com.publicissapient.kpidashboard.sonar.util.SonarDashboardUrl;
 import com.publicissapient.kpidashboard.sonar.util.SonarProcessorUtils;
+import com.publicissapient.kpidashboard.sonar.util.SonarUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,7 +72,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Sonar6And7Client implements SonarClient {
 
 	private static final String RESOURCE_ENDPOINT = "/api/components/search?qualifiers=TRK&p=%d&ps=%d";
-	private static final String RESOURCE_ENDPOINT_CLOUD="/api/components/search?qualifier=TRK&organization=%s&p=%d&ps=%d";
+	private static final String RESOURCE_ENDPOINT_CLOUD = "/api/components/search?qualifier=TRK&organization=%s&p=%d&ps=%d";
 	private static final String RESOURCE_DETAILS_ENDPOINT = "/api/measures/component?format=json&componentId=%s&metricKeys=%s&includealerts=true";
 	private static final String PROJECT_ANALYSES_ENDPOINT = "/api/project_analyses/search?project=%s";
 	private static final String MEASURE_HISTORY_ENDPOINT = "/api/measures/search_history?component=%s&metrics=%s&includealerts=true&from=%s";
@@ -104,7 +104,8 @@ public class Sonar6And7Client implements SonarClient {
 	 *            the sonar settings
 	 */
 	@Autowired
-	public Sonar6And7Client(RestOperationsFactory<RestOperations> restOperationsFactory, SonarConfig sonarConfig, ToolCredentialProvider toolCredentialProvider) {
+	public Sonar6And7Client(RestOperationsFactory<RestOperations> restOperationsFactory, SonarConfig sonarConfig,
+			ToolCredentialProvider toolCredentialProvider) {
 		this.restOperations = restOperationsFactory.getTypeInstance();
 		this.sonarConfig = sonarConfig;
 		this.toolCredentialProvider = toolCredentialProvider;
@@ -161,8 +162,6 @@ public class Sonar6And7Client implements SonarClient {
 		}
 		return response;
 	}
-
-
 
 	/**
 	 * Provides List of Sonar Project setup properties.
@@ -280,12 +279,12 @@ public class Sonar6And7Client implements SonarClient {
 	 * @return SearchProjectsResponse containing projects and paging info
 	 */
 	private SearchProjectsResponse searchProjectsWithAccessToken(String baseUrl, String password, int pageIndex,
-																 int pageSize) {
+			int pageSize) {
 
 		String resUrl = String.format(RESOURCE_ENDPOINT, pageIndex, pageSize);
 		String url = baseUrl + resUrl;
 
-		HttpEntity<?> httpEntity = new HttpEntity<>(SonarProcessorUtils.getHeaders(password,true));
+		HttpEntity<?> httpEntity = new HttpEntity<>(SonarProcessorUtils.getHeaders(password, true));
 
 		return getSearchProjectsResponse(restOperations.exchange(url, HttpMethod.GET, httpEntity, String.class), url);
 
@@ -458,7 +457,7 @@ public class Sonar6And7Client implements SonarClient {
 			int pageIndex = 1;
 			List<SonarHistory> codeList = new ArrayList<>();
 			do {
-				url = createHistoryUrl(project,metrics,lastUpdated,pageIndex);
+				url = createHistoryUrl(project, metrics, lastUpdated, pageIndex);
 				ResponseEntity<String> response = restOperations.exchange(url, HttpMethod.GET, httpHeaders,
 						String.class);
 				JSONParser jsonParser = new JSONParser();
@@ -484,7 +483,7 @@ public class Sonar6And7Client implements SonarClient {
 						codeList.add(sonarHistory);
 					}
 					pageIndex++;
-				}else {
+				} else {
 					break;
 				}
 			} while (pageIndex < 100);
@@ -510,6 +509,7 @@ public class Sonar6And7Client implements SonarClient {
 		}
 		return url;
 	}
+
 	/**
 	 * Populates sonar history.
 	 * 

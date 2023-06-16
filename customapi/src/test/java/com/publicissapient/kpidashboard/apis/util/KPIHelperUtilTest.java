@@ -35,8 +35,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
@@ -112,7 +110,6 @@ public class KPIHelperUtilTest {
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 
 	}
-
 
 	@Test
 	public void TestGetTreeLeafNodesGroupedByFilter() throws ApplicationException {

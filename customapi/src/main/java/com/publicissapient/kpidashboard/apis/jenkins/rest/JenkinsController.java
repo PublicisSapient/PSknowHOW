@@ -19,15 +19,13 @@
 
 package com.publicissapient.kpidashboard.apis.jenkins.rest;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceKanbanR;
-import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
-import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsToolConfigServiceImpl;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +42,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceKanbanR;
+import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
+import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsToolConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
 /**
  * Controller for all jenkins related api.
@@ -75,12 +77,14 @@ public class JenkinsController {
 	/**
 	 * Gets jenkins aggregated metrics.
 	 *
-	 * @param kpiRequest the kpi request
+	 * @param kpiRequest
+	 *            the kpi request
 	 * @return the jenkins aggregated metrics
-	 * @throws Exception the exception
+	 * @throws Exception
+	 *             the exception
 	 */
 	@RequestMapping(value = "/jenkins/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	//@PreAuthorize("hasPermission(null,'KPI_FILTER')")
+	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getJenkinsAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception { // NOSONAR
 		MDC.put("JenkinsKpiRequest", kpiRequest.getRequestTrackerId());
@@ -110,9 +114,11 @@ public class JenkinsController {
 	/**
 	 * Gets jenkins kanban aggregated metrics.
 	 *
-	 * @param kpiRequest the kpi request
+	 * @param kpiRequest
+	 *            the kpi request
 	 * @return the jenkins kanban aggregated metrics
-	 * @throws Exception the exception
+	 * @throws Exception
+	 *             the exception
 	 */
 	@RequestMapping(value = "/jenkinskanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<List<KpiElement>> getJenkinsKanbanAggregatedMetrics(
@@ -152,7 +158,8 @@ public class JenkinsController {
 	public ResponseEntity<ServiceResponse> getJenkinsJobs(@PathVariable String connectionId) {
 		List<String> jobUrlList = jenkinsToolConfigService.getJenkinsJobNameList(connectionId);
 		if (CollectionUtils.isEmpty(jobUrlList)) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ServiceResponse(false, "No Jobs details found", null));
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new ServiceResponse(false, "No Jobs details found", null));
 		} else {
 			List<String> jobNameList = new ArrayList<>();
 			for (String jobUrl : jobUrlList) {

@@ -2,12 +2,12 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import org.bson.types.ObjectId;
 
 /**
  * @author narsingh9

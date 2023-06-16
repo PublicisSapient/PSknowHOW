@@ -18,9 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.abac.policy;
 
-import com.publicissapient.kpidashboard.common.model.rbac.ActionPolicyRule;
-
 import java.util.List;
+
+import com.publicissapient.kpidashboard.common.model.rbac.ActionPolicyRule;
 
 public interface PolicyDefinition {
 	public List<ActionPolicyRule> getAllPolicyRules();

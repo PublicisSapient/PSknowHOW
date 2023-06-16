@@ -81,9 +81,12 @@ import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestReposi
 @RunWith(MockitoJUnitRunner.class)
 public class CodeCommitServiceImplTest {
 
+	private static final String P1 = "p1,P1 - Blocker, blocker, 1, 0, p0, Urgent";
+	private static final String P2 = "p2, critical, P2 - Critical, 2, High";
+	private static final String P3 = "p3, P3 - Major, major, 3, Medium";
+	private static final String P4 = "p4, P4 - Minor, minor, 4, Low";
 	private static Tool tool1;
 	private static Tool tool2;
-
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	Map<String, List<Tool>> toolGroup = new HashMap<>();
@@ -108,7 +111,6 @@ public class CodeCommitServiceImplTest {
 	CodeCommitServiceImpl codeCommitServiceImpl;
 	List<Tool> toolList1;
 	List<Tool> toolList2;
-
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
@@ -122,21 +124,11 @@ public class CodeCommitServiceImplTest {
 	private KpiRequest kpiRequest;
 	@Mock
 	private TreeAggregatorDetail treeAggregatorDetail;
-
 	private List<MergeRequests> mergeList = new ArrayList<>();
-
 	private KpiElement kpiElement;
-
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-
 	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
-
 	private List<DataCount> trendValues = new ArrayList<>();
-
-	private static final String P1 = "p1,P1 - Blocker, blocker, 1, 0, p0, Urgent";
-	private static final String P2 = "p2, critical, P2 - Critical, 2, High";
-	private static final String P3 = "p3, P3 - Major, major, 3, Medium";
-	private static final String P4 = "p4, P4 - Minor, minor, 4, Low";
 
 	@Before
 	public void setup() {

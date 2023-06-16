@@ -20,8 +20,8 @@ package com.publicissapient.kpidashboard.apis.jenkins.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -40,8 +40,8 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
  * @param <T>
  *            the type parameter
  */
-public abstract class JenkinsKPIService<R, S, T> extends ToolsKPIService<R,S> implements
-		ApplicationKPIService<R, S, T> {
+public abstract class JenkinsKPIService<R, S, T> extends ToolsKPIService<R, S>
+		implements ApplicationKPIService<R, S, T> {
 
 	@Autowired
 	private CacheService cacheService;
@@ -54,8 +54,8 @@ public abstract class JenkinsKPIService<R, S, T> extends ToolsKPIService<R,S> im
 	public abstract String getQualifierType();
 
 	/**
-	 * Returns API Request tracker Id to be used for logging/debugging and using
-	 * it for maintaining any sort of cache.
+	 * Returns API Request tracker Id to be used for logging/debugging and using it
+	 * for maintaining any sort of cache.
 	 *
 	 * @return request tracker id
 	 */
@@ -64,13 +64,14 @@ public abstract class JenkinsKPIService<R, S, T> extends ToolsKPIService<R,S> im
 	}
 
 	/**
-	 * Returns API Request tracker Id to be used for logging/debugging and using
-	 * it for maintaining any sort of cache.
+	 * Returns API Request tracker Id to be used for logging/debugging and using it
+	 * for maintaining any sort of cache.
 	 *
 	 * @return kanban request tracker id
 	 */
 	protected String getKanbanRequestTrackerId() {
-		return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name());
+		return cacheService
+				.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name());
 	}
 
 	/**

@@ -21,6 +21,9 @@
  */
 
 package com.publicissapient.kpidashboard.common.repository.application;
+
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -28,34 +31,33 @@ import org.springframework.data.repository.CrudRepository;
 import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanTestExecutionRepositoryCustom;
 
-import java.util.List;
-
 /**
  * @author sansharm13
  *
  */
 public interface KanbanTestExecutionRepository extends CrudRepository<KanbanTestExecution, ObjectId>,
-QuerydslPredicateExecutor<KanbanTestExecution>,KanbanTestExecutionRepositoryCustom{
-	
+		QuerydslPredicateExecutor<KanbanTestExecution>, KanbanTestExecutionRepositoryCustom {
+
 	/**
 	 * Gets Test Execution by date And projectId.
 	 *
-	 * @param  executionDate
-	 *            the  Execution date 
+	 * @param executionDate
+	 *            the Execution date
 	 * @param projectNodeId
-	 *            projectNodeId  
+	 *            projectNodeId
 	 * @return the TestExecution
 	 */
-	
-	KanbanTestExecution findByExecutionDateAndProjectNodeId(String executionDate,String projectNodeId);
+
+	KanbanTestExecution findByExecutionDateAndProjectNodeId(String executionDate, String projectNodeId);
 
 	/**
 	 * find by project config id
+	 * 
 	 * @param basicProjectConfigId
 	 * @return list of test execution
 	 */
 	List<KanbanTestExecution> findByBasicProjectConfigId(String basicProjectConfigId);
-	
+
 	/**
 	 * delete Testexecution project wise
 	 * 

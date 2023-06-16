@@ -32,31 +32,40 @@ import com.publicissapient.kpidashboard.sonar.model.SonarProcessorItem;
  *
  */
 public interface SonarClient {
-	
+
 	/**
 	 * Provides the list of Sonar Projects.
-	 * @param server the Sonar server connection details
+	 * 
+	 * @param server
+	 *            the Sonar server connection details
 	 * @return the list of Sonar project
 	 */
-    List<SonarProcessorItem> getSonarProjectList(ProcessorToolConnection server);
-    
-    /**
+	List<SonarProcessorItem> getSonarProjectList(ProcessorToolConnection server);
+
+	/**
 	 * Provides latest Sonar Details.
 	 * 
-	 * @param project the Sonar project setup properties
-	 * @param httpHeaders the list of http header
-	 * @param metrics the metrics
+	 * @param project
+	 *            the Sonar project setup properties
+	 * @param httpHeaders
+	 *            the list of http header
+	 * @param metrics
+	 *            the metrics
 	 * @return the current sonar details
 	 */
-    SonarDetails getLatestSonarDetails(SonarProcessorItem project, HttpEntity<String> httpHeaders, String metrics);
-    
-    /**
-     * Provides Past Sonar Details.
-     * @param project the Sonar server connection details
-     * @param httpHeaders the list of http header
-     * @param metrics the metrics
-     * @return the list of Sonar Data history
-     */
-    List<SonarHistory> getPastSonarDetails(SonarProcessorItem project, HttpEntity<String> httpHeaders, String metrics);
+	SonarDetails getLatestSonarDetails(SonarProcessorItem project, HttpEntity<String> httpHeaders, String metrics);
+
+	/**
+	 * Provides Past Sonar Details.
+	 * 
+	 * @param project
+	 *            the Sonar server connection details
+	 * @param httpHeaders
+	 *            the list of http header
+	 * @param metrics
+	 *            the metrics
+	 * @return the list of Sonar Data history
+	 */
+	List<SonarHistory> getPastSonarDetails(SonarProcessorItem project, HttpEntity<String> httpHeaders, String metrics);
 
 }

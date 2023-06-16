@@ -103,7 +103,6 @@
           ]
         },
         {
-          
         },
         {
           "_class": "jenkins.metrics.impl.TimeInQueueAction"
@@ -112,22 +111,18 @@
           "_class": "org.jenkinsci.plugins.workflow.libs.LibrariesAction"
         },
         {
-          
         },
         {
           "_class": "hudson.plugins.git.util.BuildData"
         },
         {
-          
         },
         {
           "_class": "org.jenkinsci.plugins.workflow.cps.EnvActionImpl"
         },
         {
-          
         },
         {
-          
         },
         {
           "_class": "org.jenkinsci.plugins.workflow.support.steps.input.ApproverAction"
@@ -139,19 +134,14 @@
           "_class": "org.jenkinsci.plugins.workflow.cps.view.InterpolatedSecretsAction"
         },
         {
-          
         },
         {
-          
         },
         {
-          
         },
         {
-          
         },
         {
-          
         },
         {
           "_class": "org.jenkinsci.plugins.displayurlapi.actions.RunDisplayAction"
@@ -160,22 +150,17 @@
           "_class": "org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartDeclarativePipelineAction"
         },
         {
-          
         },
         {
           "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphAction"
         },
         {
-          
         },
         {
-          
         },
         {
-          
         },
         {
-          
         }
       ],
       "duration": 386209,

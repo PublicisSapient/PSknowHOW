@@ -18,10 +18,13 @@
 
 package com.publicissapient.kpidashboard.common.model.excel;
 
-import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.AllArgsConstructor;
@@ -30,9 +33,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * The type Kanban capacity.

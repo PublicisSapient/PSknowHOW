@@ -43,7 +43,7 @@ public interface ProcessorItemRepository<T extends ProcessorItem> extends Paging
 	 * @return list of {@link ProcessorItem}s
 	 */
 	List<T> findByProcessorIdIn(Collection<ObjectId> ids);
-	
+
 	/**
 	 * Finds all {@link ProcessorItem}s that match the provided id.
 	 *
@@ -53,18 +53,20 @@ public interface ProcessorItemRepository<T extends ProcessorItem> extends Paging
 	 */
 	List<T> findByProcessorId(ObjectId processorId);
 
-
 	/**
 	 * Find by toolConfigId
-	 * @param toolConfigId tool config id
+	 * 
+	 * @param toolConfigId
+	 *            tool config id
 	 * @return list of items
 	 */
 	List<T> findByToolConfigId(ObjectId toolConfigId);
 
-
 	/**
 	 * Delete by toolConfigId
-	 * @param toolConfigId toolConfigId
+	 * 
+	 * @param toolConfigId
+	 *            toolConfigId
 	 */
 	void deleteByToolConfigId(ObjectId toolConfigId);
 
@@ -75,6 +77,6 @@ public interface ProcessorItemRepository<T extends ProcessorItem> extends Paging
 	 * @param toolConfigId
 	 * @return
 	 */
-	List<T> findByProcessorIdAndToolConfigId(ObjectId processorId , ObjectId toolConfigId);
+	List<T> findByProcessorIdAndToolConfigId(ObjectId processorId, ObjectId toolConfigId);
 
 }

@@ -1,23 +1,31 @@
 package com.publicissapient.kpidashboard.apis.comments.service;
 
-
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
-import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
-import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
-import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
-import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
-import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
 import static com.publicissapient.kpidashboard.common.util.DateUtil.dateTimeFormatter;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import java.util.UUID;
-import java.util.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
+import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
+import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
+import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Mahesh
@@ -27,10 +35,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CommentsServiceImpl implements CommentsService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CommentsServiceImpl.class);
-
 	public static final String TIME_FORMAT = "dd-MMM-YYYY";
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommentsServiceImpl.class);
 	@Autowired
 	private KpiCommentsRepository kpiCommentsRepository;
 
@@ -39,8 +45,11 @@ public class CommentsServiceImpl implements CommentsService {
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
+
 	/**
-	 * This method will find the comment details for selected KpiId by filtering the comments based on the organization level and maximum comments count.
+	 * This method will find the comment details for selected KpiId by filtering the
+	 * comments based on the organization level and maximum comments count.
+	 * 
 	 * @param node
 	 * @param level
 	 * @param sprintId
@@ -67,7 +76,9 @@ public class CommentsServiceImpl implements CommentsService {
 	}
 
 	/**
-	 * This method will filter the comments with selected KpiId on the basis of maximum comments count to be shown on the dashboard.
+	 * This method will filter the comments with selected KpiId on the basis of
+	 * maximum comments count to be shown on the dashboard.
+	 * 
 	 * @param kpiComments
 	 * @return
 	 */
@@ -76,7 +87,7 @@ public class CommentsServiceImpl implements CommentsService {
 		List<CommentsInfo> kpiIdMappedWithCommentsInfo = new ArrayList<>();
 		List<CommentsInfo> commentsInfo = kpiComments.getCommentsInfo();
 
-	int	limitCommentsShownOnKpiDashboardCount=customApiConfig.getLimitCommentsShownOnKpiDashboardCount();
+		int limitCommentsShownOnKpiDashboardCount = customApiConfig.getLimitCommentsShownOnKpiDashboardCount();
 		for (CommentsInfo commentInfo : commentsInfo) {
 			kpiIdMappedWithCommentsInfo.add(commentInfo);
 			if (kpiIdMappedWithCommentsInfo.size() == limitCommentsShownOnKpiDashboardCount) {
@@ -85,8 +96,11 @@ public class CommentsServiceImpl implements CommentsService {
 		}
 		return kpiIdMappedWithCommentsInfo;
 	}
+
 	/**
-	 * This method will save the comments for selected KpiId in both kpi_comments and kpi_comments_history collections.
+	 * This method will save the comments for selected KpiId in both kpi_comments
+	 * and kpi_comments_history collections.
+	 * 
 	 * @param comment
 	 * @return
 	 */
@@ -106,8 +120,7 @@ public class CommentsServiceImpl implements CommentsService {
 			KpiCommentsHistory kpiCommentsHistory = modelMapper.map(comment, KpiCommentsHistory.class);
 
 			return filterCommentsInfo(kpiComments, kpiCommentsHistory);
-		}
-		else {
+		} else {
 			LOGGER.info("No information about commentsInfo");
 			return false;
 
@@ -116,7 +129,9 @@ public class CommentsServiceImpl implements CommentsService {
 	}
 
 	/**
-	 * This method will save the comments in the collections and re-map the comments list on the basis of KPI max comments count to be stored in DB.
+	 * This method will save the comments in the collections and re-map the comments
+	 * list on the basis of KPI max comments count to be stored in DB.
+	 * 
 	 * @param kpiComments
 	 * @param kpiCommentsHistory
 	 * @return
@@ -132,27 +147,32 @@ public class CommentsServiceImpl implements CommentsService {
 
 		try {
 			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId);
-			KpiCommentsHistory matchedKpiCommentsHistory = kpiCommentsHistoryRepository.findByNodeAndLevelAndSprintIdAndKpiId(node, level, sprintId, kpiId);
+			KpiCommentsHistory matchedKpiCommentsHistory = kpiCommentsHistoryRepository
+					.findByNodeAndLevelAndSprintIdAndKpiId(node, level, sprintId, kpiId);
 
 			if (Objects.isNull(matchedKpiComments)) {
 				kpiCommentsRepository.save(kpiComments);
 				kpiCommentsHistoryRepository.save(kpiCommentsHistory);
 			} else {
-					reMappingOfKpiComments(matchedKpiComments, newCommentsInfo);
-				    reMappingOfKpiCommentsHistory(matchedKpiCommentsHistory,newCommentsInfoHistory);
+				reMappingOfKpiComments(matchedKpiComments, newCommentsInfo);
+				reMappingOfKpiCommentsHistory(matchedKpiCommentsHistory, newCommentsInfoHistory);
 			}
-		return true;
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			LOGGER.error("Issue occurred while performing operation on comment.");
 		}
-	return false;
+		return false;
 	}
 
 	/**
-	 * This method will re-map the comments on the basis of KPI max comments count to be stored in DB for the matched KPI comment.
-	 * If commentsInfoSize is greater or equal to the PER_KPI_MAX_COMMENTS_COUNT then oldest comment will be removed from DB from kpi_comments collection.
-	 * Note, kpi_comments_history collection will store all the comments for a selected KPI in DB irrespective of the KPI max comments count.
+	 * This method will re-map the comments on the basis of KPI max comments count
+	 * to be stored in DB for the matched KPI comment. If commentsInfoSize is
+	 * greater or equal to the PER_KPI_MAX_COMMENTS_COUNT then oldest comment will
+	 * be removed from DB from kpi_comments collection. Note, kpi_comments_history
+	 * collection will store all the comments for a selected KPI in DB irrespective
+	 * of the KPI max comments count.
+	 * 
 	 * @param matchedKpiComment
 	 * @param newCommentsInfo
 	 */
@@ -160,7 +180,7 @@ public class CommentsServiceImpl implements CommentsService {
 		List<CommentsInfo> commentsInfo = matchedKpiComment.getCommentsInfo();
 		if (CollectionUtils.isNotEmpty(commentsInfo)) {
 			int commentsInfoSize = commentsInfo.size();
-			int perKpiMaxCommentsStoreCount=customApiConfig.getKpiCommentsMaxStoreCount();
+			int perKpiMaxCommentsStoreCount = customApiConfig.getKpiCommentsMaxStoreCount();
 			if (commentsInfoSize < perKpiMaxCommentsStoreCount) {
 				newCommentsInfo.addAll(commentsInfo);
 				matchedKpiComment.setCommentsInfo(newCommentsInfo);
@@ -181,11 +201,14 @@ public class CommentsServiceImpl implements CommentsService {
 	}
 
 	/**
-	 * This method will re-map the KPI comments for the kpi_comments_history collection.
+	 * This method will re-map the KPI comments for the kpi_comments_history
+	 * collection.
+	 * 
 	 * @param kpiCommentsHistory
 	 * @param newCommentsInfoHistory
 	 */
-	private void reMappingOfKpiCommentsHistory(KpiCommentsHistory kpiCommentsHistory, List<CommentsInfo> newCommentsInfoHistory) {
+	private void reMappingOfKpiCommentsHistory(KpiCommentsHistory kpiCommentsHistory,
+			List<CommentsInfo> newCommentsInfoHistory) {
 
 		List<CommentsInfo> commentsInfoHistory = kpiCommentsHistory.getCommentsInfo();
 		newCommentsInfoHistory.addAll(commentsInfoHistory);

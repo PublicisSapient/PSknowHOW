@@ -34,8 +34,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -127,8 +125,7 @@ public class BambooClientDeployImplTest {
 	public void appendToURLTest1() throws Exception {
 		String url = BambooClient.appendToURL(BASE_URL, ALL_DEPLOYMENT_JOBS);
 		assertEquals("appendToURL() with one param test",
-				"https://xyz.com/bamboo/rest/api/latest/search/deployments.json?max-result=2000",
-				url);
+				"https://xyz.com/bamboo/rest/api/latest/search/deployments.json?max-result=2000", url);
 	}
 
 	@Test
@@ -138,19 +135,18 @@ public class BambooClientDeployImplTest {
 				"https://xyz.com/bamboo/rest/api/latest/deploy/environment/test/results/1234", u4);
 	}
 
-	//@Test
+	// @Test
 	public void checkBambooConnection() {
 		try {
 			HttpEntity<String> headers = generateHeader("test:decryptPassword");
 			when(restClient.exchange(
-					eq(URI.create(
-							"https://xyz.com/bamboo/rest/api/latest/deploy/dashboard/190709761")),
+					eq(URI.create("https://xyz.com/bamboo/rest/api/latest/deploy/dashboard/190709761")),
 					eq(HttpMethod.GET), eq(headers), eq(String.class))).thenReturn(
 							new ResponseEntity<>(getServerResponseFromJson("project_details.json"), HttpStatus.OK));
-			bambooClientDeploy.connectBamboo(
-					"https://xyz.com/bamboo/rest/api/latest/deploy/dashboard/190709761",
+			bambooClientDeploy.connectBamboo("https://xyz.com/bamboo/rest/api/latest/deploy/dashboard/190709761",
 					PROJECT_TOOL_CONNECTION_1, headers);
-			verify(restClient).exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class));
+			verify(restClient).exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers),
+					eq(String.class));
 		} catch (IOException e) {
 			log.error("Exception " + e);
 		}

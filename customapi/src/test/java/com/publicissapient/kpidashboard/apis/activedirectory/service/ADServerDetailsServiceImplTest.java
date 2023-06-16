@@ -17,13 +17,14 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.activedirectory.service;
 
-import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
-import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
-import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,13 +33,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
+import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
+import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
+import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 
 /**
  * @author sansharm13
@@ -46,6 +47,8 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ADServerDetailsServiceImplTest {
+	List<GlobalConfig> globalConfigs = new ArrayList<>();
+	ADServerDetail adUserDetail = new ADServerDetail();
 	@InjectMocks
 	private ADServerDetailsServiceImpl adUserDetailsServiceImpl;
 	@Mock
@@ -56,12 +59,6 @@ public class ADServerDetailsServiceImplTest {
 	private AesEncryptionService aesEncryptionService;
 	@Mock
 	private CustomApiConfig customApiConfig;
-
-
-
-	List<GlobalConfig> globalConfigs=new ArrayList<>();
-	ADServerDetail adUserDetail=new ADServerDetail();
-	
 
 	/**
 	 * method includes preprocesses for test cases
@@ -74,13 +71,13 @@ public class ADServerDetailsServiceImplTest {
 		adUserDetail.setRootDn("rootDn");
 		adUserDetail.setUserDn("userDn");
 		adUserDetail.setUsername("username");
-		GlobalConfig globalConfig=new GlobalConfig();
+		GlobalConfig globalConfig = new GlobalConfig();
 		globalConfig.setAdServerDetail(adUserDetail);
 		globalConfigs.add(globalConfig);
 	}
-	
+
 	/**
-	 * test  addUpdateactive directoryUser
+	 * test addUpdateactive directoryUser
 	 */
 
 	@Test
@@ -93,9 +90,9 @@ public class ADServerDetailsServiceImplTest {
 		ServiceResponse response = adUserDetailsServiceImpl.addUpdateADServerDetails(adUserDetail);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
-	
+
 	/**
-	 * test  get active directoryUser
+	 * test get active directoryUser
 	 */
 	@Test
 	public void getADUserDetails() {
@@ -104,7 +101,7 @@ public class ADServerDetailsServiceImplTest {
 		ServiceResponse response = adUserDetailsServiceImpl.getADServerDetails();
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 	}
-	
+
 	/**
 	 * test NonSuperAdmin
 	 */
@@ -114,14 +111,14 @@ public class ADServerDetailsServiceImplTest {
 		ServiceResponse response = adUserDetailsServiceImpl.getADServerDetails();
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 	}
-	
+
 	@Test
 	public void udateAddADUserNonSuperAdmin() {
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
 		ServiceResponse response = adUserDetailsServiceImpl.getADServerDetails();
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 	}
-	
+
 	@Test
 	public void validateGetADServerDetails_Null() {
 		globalConfigs.get(0).setAdServerDetail(null);
@@ -137,7 +134,7 @@ public class ADServerDetailsServiceImplTest {
 		ADServerDetail result = adUserDetailsServiceImpl.getADServerConfig();
 		assertNotNull(result);
 	}
-	
+
 	@Test
 	public void validateAddUpdateADUser_NotSuperAdmin() {
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);

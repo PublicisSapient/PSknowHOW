@@ -40,7 +40,8 @@ public class CaptchaValidationController {
 	/**
 	 * Instantiates a new Captcha validation controller.
 	 *
-	 * @param captchaValidationService the captcha validation service
+	 * @param captchaValidationService
+	 *            the captcha validation service
 	 */
 	@Autowired
 	public CaptchaValidationController(CaptchaValidationService captchaValidationService) {
@@ -50,10 +51,11 @@ public class CaptchaValidationController {
 	/**
 	 * Validate captcha.
 	 *
-	 * @param captchaValidationData the captcha validation data
+	 * @param captchaValidationData
+	 *            the captcha validation data
 	 * @return true if valid captcha
 	 */
-	@RequestMapping(value = "/login/captchavalidate", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)//NOSONAR
+	@RequestMapping(value = "/login/captchavalidate", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public boolean validateCaptcha(@RequestBody CaptchaValidationData captchaValidationData) {
 
 		return captchaValidationService.validateCaptcha(captchaValidationData.getEncryptedString(),

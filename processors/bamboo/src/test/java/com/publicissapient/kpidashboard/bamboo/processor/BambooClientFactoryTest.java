@@ -7,12 +7,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.bamboo.client.BambooClient;
 import com.publicissapient.kpidashboard.bamboo.client.impl.BambooClientBuildImpl;
 import com.publicissapient.kpidashboard.bamboo.client.impl.BambooClientDeployImpl;
 import com.publicissapient.kpidashboard.bamboo.factory.BambooClientFactory;
-import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BambooClientFactoryTest {

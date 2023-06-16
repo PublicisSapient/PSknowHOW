@@ -38,8 +38,10 @@ public class BitBucketClientFactory {
 	/**
 	 * Instantiate BitBucketClientFactory.
 	 * 
-	 * @param bitBucketCloudClient  Bitbucket cloud client
-	 * @param bitBucketServerClient Bitbucket server client
+	 * @param bitBucketCloudClient
+	 *            Bitbucket cloud client
+	 * @param bitBucketServerClient
+	 *            Bitbucket server client
 	 */
 	@Autowired
 	public BitBucketClientFactory(BitBucketCloudClient bitBucketCloudClient,

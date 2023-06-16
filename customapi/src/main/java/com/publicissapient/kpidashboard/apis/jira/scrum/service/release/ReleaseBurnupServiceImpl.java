@@ -253,9 +253,9 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				LocalDate startLocalDate = StringUtils.isEmpty(startDate)
 						? fullReleaseIssueMap.keySet().stream().filter(Objects::nonNull).min(LocalDate::compareTo)
 								.orElse(null)
-						: LocalDate.parse(startDate.split("T")[0],DATE_TIME_FORMATTER);
+						: LocalDate.parse(startDate.split("T")[0], DATE_TIME_FORMATTER);
 				LocalDate endLocalDate = StringUtils.isEmpty(endDate) ? LocalDate.now()
-						: LocalDate.parse(endDate.split("T")[0],DATE_TIME_FORMATTER);
+						: LocalDate.parse(endDate.split("T")[0], DATE_TIME_FORMATTER);
 
 				Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
 				duration = durationRangeMap.keySet().stream().findFirst().orElse("");
@@ -275,21 +275,24 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 					Map<String, List<JiraIssue>> filterWiseGroupedMap = createFilterWiseGroupedMap(dateRange,
 							addedIssuesMap, removeIssueMap, fullReleaseIssueMap, overallIssues, completedReleaseMap,
 							overallCompletedIssues);
-					overallCompletedIssues=filterWiseGroupedMap.getOrDefault("OVERALL COMPLETED",new ArrayList<>());
+					overallCompletedIssues = filterWiseGroupedMap.getOrDefault("OVERALL COMPLETED", new ArrayList<>());
 					String date = getRange(dateRange, duration);
 					populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, issueSize, date, duration);
 					startLocalDate = getNextRangeDate(duration, startLocalDate);
 					issueCountDataGroup.add(issueCount);
 					issueSizeCountDataGroup.add(issueSize);
 				}
-				createExcelDataAndTrendValueList(kpiElement, requestTrackerId, excelData, releaseIssues, iterationKpiValueList, issueCountDataGroup, issueSizeCountDataGroup);
+				createExcelDataAndTrendValueList(kpiElement, requestTrackerId, excelData, releaseIssues,
+						iterationKpiValueList, issueCountDataGroup, issueSizeCountDataGroup);
 			}
 			kpiElement.setTrendValueList(iterationKpiValueList);
 		}
 	}
 
-	private void createExcelDataAndTrendValueList(KpiElement kpiElement, String requestTrackerId, List<KPIExcelData> excelData, List<JiraIssue> releaseIssues, List<IterationKpiValue> iterationKpiValueList, List<DataCountGroup> issueCountDataGroup, List<DataCountGroup> issueSizeCountDataGroup) {
-		if(CollectionUtils.isNotEmpty(issueCountDataGroup)) {
+	private void createExcelDataAndTrendValueList(KpiElement kpiElement, String requestTrackerId,
+			List<KPIExcelData> excelData, List<JiraIssue> releaseIssues, List<IterationKpiValue> iterationKpiValueList,
+			List<DataCountGroup> issueCountDataGroup, List<DataCountGroup> issueSizeCountDataGroup) {
+		if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
 			populateExcelDataObject(requestTrackerId, excelData, releaseIssues);
 			IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 			kpiValueIssueCount.setDataGroup(issueCountDataGroup);
@@ -353,7 +356,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		List<JiraIssue> issuesAdded = filterWiseGroupedMap.getOrDefault(SCOPE_ADDED, new ArrayList<>());
 		List<JiraIssue> issuesRemoved = filterWiseGroupedMap.getOrDefault(SCOPE_REMOVED, new ArrayList<>());
 		List<JiraIssue> completedIssues = filterWiseGroupedMap.getOrDefault(RELEASE_PROGRESS, new ArrayList<>());
-		//do not change the order, as it will impact the UI coloration
+		// do not change the order, as it will impact the UI coloration
 		createDataCount((long) issuesAdded.size(), BAR_GRAPH_TYPE, SCOPE_ADDED, issueCountDataList, issuesAdded);
 		createDataCount((long) issuesRemoved.size(), BAR_GRAPH_TYPE, SCOPE_REMOVED, issueCountDataList, issuesRemoved);
 		createDataCount((long) overallIssues.size(), LINE_GRAPH_TYPE, RELEASE_SCOPE, issueCountDataList, overallIssues);
@@ -445,10 +448,10 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		overallIssues.removeAll(removedIssues);
 		overallIssues = overallIssues.stream().distinct().collect(Collectors.toList());
 
-
-		//issues which were completed within Release duration, but were out of selected release when completed
+		// issues which were completed within Release duration, but were out of selected
+		// release when completed
 		overallCompletedIssues.addAll(completedIssues);
-		List<JiraIssue> allCompletedIssuesOutOfOverall= new ArrayList<>(overallCompletedIssues);
+		List<JiraIssue> allCompletedIssuesOutOfOverall = new ArrayList<>(overallCompletedIssues);
 		// out of the overallIssues, what all issues were completed
 		allCompletedIssuesOutOfOverall.retainAll(overallIssues);
 		groupedMap.put(RELEASE_SCOPE, overallIssues);

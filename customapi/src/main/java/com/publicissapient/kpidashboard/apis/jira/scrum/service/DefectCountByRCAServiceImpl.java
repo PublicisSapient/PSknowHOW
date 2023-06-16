@@ -2,19 +2,26 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
@@ -28,8 +35,8 @@ import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
@@ -42,19 +49,12 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
 public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByRCAServiceImpl.class);
-
 	public static final String UNCHECKED = "unchecked";
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByRCAServiceImpl.class);
 	private static final String TOTAL_ISSUES = "Total Issues";
 	private static final String CREATED_DURING_ITERATION = "Created during Iteration";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
@@ -66,6 +66,28 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 
 	@Autowired
 	private CommonServiceImpl commonService;
+
+	private static void overallRCACountMap(List<DataCount> dataCountListForAllPriorities,
+			Map<String, Integer> overallRCACountMapAggregate) {
+		for (DataCount dataCount : dataCountListForAllPriorities) {
+			Map<String, Integer> rcaCountMap = (Map<String, Integer>) dataCount.getValue();
+			rcaCountMap.forEach((rcaName, rcaCountValue) -> overallRCACountMapAggregate.merge(rcaName, rcaCountValue,
+					Integer::sum));
+		}
+	}
+
+	private static int getPriorityRCACount(Map<String, Integer> overallRCACountMap,
+			Map<String, List<JiraIssue>> rcaData, int priorityRCACount, Map<String, Integer> rcaCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> rcaEntry : rcaData.entrySet()) {
+			String rcaName = rcaEntry.getKey();
+			List<JiraIssue> issues = rcaEntry.getValue();
+
+			priorityRCACount += issues.size();
+			rcaCountMap.put(rcaName, issues.size());
+			overallRCACountMap.merge(rcaName, issues.size(), Integer::sum);
+		}
+		return priorityRCACount;
+	}
 
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -163,7 +185,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 	 * This method will set trendValueList information to the RCA KPI. It consists
 	 * of logic to show data for P1, P2, P3, P4 and "Overall" Priorities as per the
 	 * accepted JSON structure.
-	 * 
+	 *
 	 * @param sprintLeafNodeList
 	 * @param kpiElement
 	 * @param kpiRequest
@@ -252,10 +274,11 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_PIE_CHART.getColumns());
 					kpiElement.setExcelData(excelData);
 					sortedFilterDataList.add(filterDataList.stream()
-							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(CREATED_DURING_ITERATION))
+							.filter(iterationKpiValue -> iterationKpiValue.getFilter1()
+									.equalsIgnoreCase(CREATED_DURING_ITERATION))
 							.findFirst().orElse(new IterationKpiValue()));
-					filterDataList
-							.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(CREATED_DURING_ITERATION));
+					filterDataList.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1()
+							.equalsIgnoreCase(CREATED_DURING_ITERATION));
 					sortListByKey(filterDataList);
 					sortedFilterDataList.addAll(filterDataList);
 					// filterDataList will consist of iterationKpiValue for all the available
@@ -266,28 +289,6 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 				}
 			}
 		}
-	}
-
-	private static void overallRCACountMap(List<DataCount> dataCountListForAllPriorities,
-			Map<String, Integer> overallRCACountMapAggregate) {
-		for (DataCount dataCount : dataCountListForAllPriorities) {
-			Map<String, Integer> rcaCountMap = (Map<String, Integer>) dataCount.getValue();
-			rcaCountMap.forEach((rcaName, rcaCountValue) -> overallRCACountMapAggregate.merge(rcaName, rcaCountValue,
-					Integer::sum));
-		}
-	}
-
-	private static int getPriorityRCACount(Map<String, Integer> overallRCACountMap,
-			Map<String, List<JiraIssue>> rcaData, int priorityRCACount, Map<String, Integer> rcaCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> rcaEntry : rcaData.entrySet()) {
-			String rcaName = rcaEntry.getKey();
-			List<JiraIssue> issues = rcaEntry.getValue();
-
-			priorityRCACount += issues.size();
-			rcaCountMap.put(rcaName, issues.size());
-			overallRCACountMap.merge(rcaName, issues.size(), Integer::sum);
-		}
-		return priorityRCACount;
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,

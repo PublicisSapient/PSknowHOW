@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.activedirectory.service;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
 
 import java.util.List;
 
@@ -27,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
@@ -40,25 +40,19 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class ADServerDetailsServiceImpl implements ADServerDetailsService {
-	
+
+	private static final String ERROR_MESSAGE_NON_SUPERADMIN = "Super-Admin is authorized to Add/Updated/Get active directory details";
 	@Autowired
 	private GlobalConfigRepository globalConfigRepository;
-
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
-	
 	@Autowired
 	private CustomApiConfig customApiConfig;
-	
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
-
 	private String userIdRegex = "uid={0},";
-
 	private String ldapsConnection = "ldaps://";
-	
-	private static final String ERROR_MESSAGE_NON_SUPERADMIN = "Super-Admin is authorized to Add/Updated/Get active directory details";	
-	
+
 	@Override
 	public ServiceResponse addUpdateADServerDetails(ADServerDetail adUserDetail) {
 
@@ -96,6 +90,7 @@ public class ADServerDetailsServiceImpl implements ADServerDetailsService {
 
 	/**
 	 * Returns AES ecnrypted key to store in DB
+	 * 
 	 * @return
 	 */
 	private String encryptStringForDb(String plainText) {
@@ -103,18 +98,17 @@ public class ADServerDetailsServiceImpl implements ADServerDetailsService {
 		return encryptedString == null ? "" : encryptedString;
 	}
 
-
 	/**
 	 * gets Active Director Server configurations from DB
 	 *
 	 * @return ADserverDetails
 	 */
 	@Override
-	public ADServerDetail getADServerConfig(){
+	public ADServerDetail getADServerConfig() {
 		List<GlobalConfig> globalConfigs = globalConfigRepository.findAll();
 		GlobalConfig globalConfig = CollectionUtils.isEmpty(globalConfigs) ? null : globalConfigs.get(0);
 		ADServerDetail adServerDetail = globalConfig == null ? null : globalConfig.getAdServerDetail();
-		if(adServerDetail != null) {
+		if (adServerDetail != null) {
 			String connectionUrl = ldapsConnection.concat(adServerDetail.getHost());
 			adServerDetail.setHost(connectionUrl);
 			String userPattern = userIdRegex.concat(adServerDetail.getRootDn());
@@ -127,6 +121,7 @@ public class ADServerDetailsServiceImpl implements ADServerDetailsService {
 
 	/**
 	 * Decrypts the password stored in DB
+	 * 
 	 * @param encryptedKey
 	 * @return decryptedText
 	 */
@@ -134,4 +129,3 @@ public class ADServerDetailsServiceImpl implements ADServerDetailsService {
 		return aesEncryptionService.decrypt(encryptedKey, customApiConfig.getAesEncryptionKey());
 	}
 }
-

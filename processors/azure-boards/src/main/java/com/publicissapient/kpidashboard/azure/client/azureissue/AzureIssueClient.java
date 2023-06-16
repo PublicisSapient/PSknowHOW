@@ -57,13 +57,28 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AzureIssueClient {// NOPMD //NOSONAR
 
+	public static String hash(String input) {
+		return String.valueOf(Objects.hash(input));
+	}
+
+	public static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig,
+			Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog,
+			LocalDateTime configuredStartDate, String issueType) {
+		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
+			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
+		}
+	}
+
 	/**
 	 * Explicitly updates queries for the source system, and initiates the update to
 	 * MongoDB from those calls.
 	 *
-	 * @param projectConfig Project Configuration Mapping
-	 * @param projectKey    Project Key
-	 * @param azureAdapter  the azure adapter
+	 * @param projectConfig
+	 *            Project Configuration Mapping
+	 * @param projectKey
+	 *            Project Key
+	 * @param azureAdapter
+	 *            the azure adapter
 	 * @return int Count of Azure stories processed
 	 */
 	public abstract int processesAzureIssues(ProjectConfFieldMapping projectConfig, String projectKey,
@@ -71,19 +86,25 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 
 	/**
 	 * Purges the issues provided
-	 * 
-	 * @param purgeIssuesList List of issues to be purged
-	 * @param projectConfig   Project Configuration Mapping
+	 *
+	 * @param purgeIssuesList
+	 *            List of issues to be purged
+	 * @param projectConfig
+	 *            Project Configuration Mapping
 	 */
 	public abstract void purgeAzureIssues(List<Value> purgeIssuesList, ProjectConfFieldMapping projectConfig);
 
 	/**
 	 * Saves Jira Issue details.
 	 *
-	 * @param currentPagedJiraRs List of Azure issue in current page call
-	 * @param projectConfig      Project Configuration Mapping
-	 * @param sprintDetailsSet  sprint details set
-	 * @throws JSONException Error while JSON parsing
+	 * @param currentPagedJiraRs
+	 *            List of Azure issue in current page call
+	 * @param projectConfig
+	 *            Project Configuration Mapping
+	 * @param sprintDetailsSet
+	 *            sprint details set
+	 * @throws JSONException
+	 *             Error while JSON parsing
 	 */
 	public abstract int saveAzureIssueDetails(List<Value> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
 			Set<SprintDetails> sprintDetailsSet) throws JSONException;
@@ -91,12 +112,17 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	/**
 	 * Sets RCA.
 	 *
-	 * @param fieldMapping fieldMapping provided by the User
-	 * @param issue        Azure Issue
-	 * @param azureIssue   JiraIssue instance
-	 * @param fieldsMap    the fields map
+	 * @param fieldMapping
+	 *            fieldMapping provided by the User
+	 * @param issue
+	 *            Azure Issue
+	 * @param azureIssue
+	 *            JiraIssue instance
+	 * @param fieldsMap
+	 *            the fields map
 	 */
-	public void setRCA(FieldMapping fieldMapping, Value issue, JiraIssue azureIssue, Map<String, Object> fieldsMap , List<String> rcaValuesForCodeIssue) {
+	public void setRCA(FieldMapping fieldMapping, Value issue, JiraIssue azureIssue, Map<String, Object> fieldsMap,
+			List<String> rcaValuesForCodeIssue) {
 		Fields fields = issue.getFields();
 		String rootCauseFieldFromFieldMapping = fieldMapping.getRootCause();
 
@@ -122,9 +148,12 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	/**
 	 * Sets Device Platform.
 	 *
-	 * @param fieldMapping fieldMapping provided by the User
-	 * @param azureIssue   JiraIssue instance
-	 * @param fieldsMap    the fields map
+	 * @param fieldMapping
+	 *            fieldMapping provided by the User
+	 * @param azureIssue
+	 *            JiraIssue instance
+	 * @param fieldsMap
+	 *            the fields map
 	 */
 	public void setDevicePlatform(FieldMapping fieldMapping, JiraIssue azureIssue, Map<String, Object> fieldsMap) {
 		String devicePlatformFromFieldMapping = fieldMapping.getDevicePlatform();
@@ -142,10 +171,14 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	 * story 1. Specific 'label' is maintained 2. 'Issue type' itself is a 'Tech
 	 * Story' 3. A separate 'custom field' is maintained
 	 *
-	 * @param fieldMapping fieldMapping provided by the User
-	 * @param issue        Azure Issue
-	 * @param azureIssue   JiraIssue instance
-	 * @param fieldsMap    the fields map
+	 * @param fieldMapping
+	 *            fieldMapping provided by the User
+	 * @param issue
+	 *            Azure Issue
+	 * @param azureIssue
+	 *            JiraIssue instance
+	 * @param fieldsMap
+	 *            the fields map
 	 */
 
 	public void setIssueTechStoryType(FieldMapping fieldMapping, Value issue, JiraIssue azureIssue,
@@ -180,12 +213,18 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	/**
 	 * Process Feature Data.
 	 *
-	 * @param azureIssue          JiraIssue instance
-	 * @param issue               Azure Issue
-	 * @param fieldsMap           the fields map
-	 * @param fieldMapping        fieldMapping provided by the User
-	 * @param jiraProcessorConfig Jira processor Configuration
-	 * @throws JSONException Error while parsing JSON
+	 * @param azureIssue
+	 *            JiraIssue instance
+	 * @param issue
+	 *            Azure Issue
+	 * @param fieldsMap
+	 *            the fields map
+	 * @param fieldMapping
+	 *            fieldMapping provided by the User
+	 * @param jiraProcessorConfig
+	 *            Jira processor Configuration
+	 * @throws JSONException
+	 *             Error while parsing JSON
 	 */
 	public void processJiraIssueData(JiraIssue azureIssue, Value issue, Map<String, Object> fieldsMap,
 			FieldMapping fieldMapping, AzureProcessorConfig jiraProcessorConfig) throws JSONException {
@@ -244,11 +283,16 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	/**
 	 * Sets Estimate.
 	 *
-	 * @param azureIssue          JiraIssue instance
-	 * @param fieldsMap           the fields map
-	 * @param fieldMapping        fieldMapping provided by the User
-	 * @param jiraProcessorConfig Jira Processor Configuration
-	 * @param fields              Map of Issue Fields
+	 * @param azureIssue
+	 *            JiraIssue instance
+	 * @param fieldsMap
+	 *            the fields map
+	 * @param fieldMapping
+	 *            fieldMapping provided by the User
+	 * @param jiraProcessorConfig
+	 *            Jira Processor Configuration
+	 * @param fields
+	 *            Map of Issue Fields
 	 */
 	public void setEstimate(JiraIssue azureIssue, Map<String, Object> fieldsMap, FieldMapping fieldMapping, // NOSONAR
 			AzureProcessorConfig jiraProcessorConfig, Fields fields) {
@@ -330,11 +374,14 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	/**
 	 * This method process owner and user details
 	 *
-	 * @param azureIssue JiraIssue Object to set Owner details
-	 * @param fields     Jira issue User Object
+	 * @param azureIssue
+	 *            JiraIssue Object to set Owner details
+	 * @param fields
+	 *            Jira issue User Object
 	 */
 	public void setJiraAssigneeDetails(JiraIssue azureIssue,
-			com.publicissapient.kpidashboard.common.model.azureboards.Fields fields , Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfFieldMapping) {
+			com.publicissapient.kpidashboard.common.model.azureboards.Fields fields, Set<Assignee> assigneeSetToSave,
+			ProjectConfFieldMapping projectConfFieldMapping) {
 
 		SystemAssignedTo systemAssignedTo = fields.getSystemAssignedTo();
 		SystemCreatedBy systemCreatedBy = fields.getSystemCreatedBy();
@@ -354,7 +401,7 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 			azureIssue.setOwnersUsername(ownersUsername);
 			azureIssue.setOwnersID(ownersId);
 			azureIssue.setOwnersFullName(ownersFullname);
-			updateOwnerDetailsToggleWise(azureIssue , projectConfFieldMapping , ownersUsername , ownersId , ownersFullname);
+			updateOwnerDetailsToggleWise(azureIssue, projectConfFieldMapping, ownersUsername, ownersId, ownersFullname);
 		}
 
 		if (systemAssignedTo == null) {
@@ -378,7 +425,7 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	}
 
 	private void updateOwnerDetailsToggleWise(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
-			List<String> assigneeName, List<String>  assigneeKey, List<String> assigneeDisplayName) {
+			List<String> assigneeName, List<String> assigneeKey, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 			List<String> ownerName = assigneeName.stream().map(AzureIssueClient::hash).collect(Collectors.toList());
 			List<String> ownerId = assigneeKey.stream().map(AzureIssueClient::hash).collect(Collectors.toList());
@@ -387,18 +434,6 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 			jiraIssue.setOwnersUsername(ownerName);
 			jiraIssue.setOwnersID(ownerId);
 			jiraIssue.setOwnersFullName(ownerFullName);
-		}
-	}
-
-	public static String hash(String input) {
-		return String.valueOf(Objects.hash(input));
-	}
-
-	public static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig,
-			Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog,
-			LocalDateTime configuredStartDate, String issueType) {
-		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
-			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 		}
 	}
 

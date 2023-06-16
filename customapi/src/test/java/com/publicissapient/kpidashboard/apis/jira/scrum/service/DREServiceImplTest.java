@@ -74,45 +74,35 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 @RunWith(MockitoJUnitRunner.class)
 public class DREServiceImplTest {
-	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-	private KpiRequest kpiRequest;
-	private Map<String, Object> filterLevelMap;
+	private final static String CLOSEDBUGKEY = "closedBugKey";
+	private final static String TOTALBUGKEY = "totalBugKey";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<JiraIssue> closedBugList = new ArrayList<>();
 	List<JiraIssue> totalBugList = new ArrayList<>();
-	private final static String CLOSEDBUGKEY = "closedBugKey";
-	private final static String TOTALBUGKEY = "totalBugKey";
-	private Map<String, String> kpiWiseAggregation = new HashMap<>();
-	private List<DataCount> dataCountList = new ArrayList<>();
-
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
-
 	@Mock
 	CacheService cacheService;
-
 	@Mock
 	ConfigHelperService configHelperService;
-
-	@Mock
-	private FilterHelperService filterHelperService;
-
 	@Mock
 	KpiHelperService kpiHelperService;
-
 	@InjectMocks
 	DREServiceImpl dreServiceImpl;
-
 	@Mock
 	ProjectBasicConfigRepository projectConfigRepository;
-
 	@Mock
 	FieldMappingRepository fieldMappingRepository;
-
 	@Mock
 	CustomApiConfig customApiSetting;
-
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private KpiRequest kpiRequest;
+	private Map<String, Object> filterLevelMap;
+	private Map<String, String> kpiWiseAggregation = new HashMap<>();
+	private List<DataCount> dataCountList = new ArrayList<>();
+	@Mock
+	private FilterHelperService filterHelperService;
 	@Mock
 	private CommonService commonService;
 

@@ -39,7 +39,7 @@ public class ChangePasswordRequest {
 
 	@NotNull
 	private String password;
-	
+
 	@NotNull
 	private String user;
 

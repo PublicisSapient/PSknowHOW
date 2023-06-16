@@ -56,7 +56,7 @@ public class ApiTokenServiceTest {
 		assertTrue(result.contains(apiToken));
 		assertTrue(result.size() == 1);
 	}
-	
+
 	@Test
 	public void testGetApiTokenThrowsException() {
 		ApiToken apiToken = new ApiToken("somesys", "dgferdf1drt5dfgdfh4mh+34dfwr3Wdf", 1496030399999L);
@@ -66,13 +66,13 @@ public class ApiTokenServiceTest {
 			apiKey = Encryption.getStringKey();
 			apiToken = new ApiToken("apiUser", apiKey, 1496030399999L);
 			apiTokenRepository.save(apiToken);
-			service.getApiToken("apiUser",1496030399999L);
+			service.getApiToken("apiUser", 1496030399999L);
 		} catch (Exception e) {
-			
+
 		}
-		
+
 	}
-	
+
 	@Test
 	public void testGetApiToken() {
 		ApiToken apiToken = new ApiToken("somesys", "dgferdf1drt5dfgdfh4mh+34dfwr3Wdf", 1496030399999L);
@@ -82,29 +82,29 @@ public class ApiTokenServiceTest {
 			apiKey = Encryption.getStringKey();
 			apiToken = new ApiToken("apiUser", apiKey, 1496030399999L);
 			apiTokenRepository.save(apiToken);
-			service.getApiToken("apiUser",1496030399999L);
+			service.getApiToken("apiUser", 1496030399999L);
 		} catch (Exception e) {
-			
+
 		}
 	}
-	
+
 	@Test
 	public void testAuthenticateThrowsException() {
 		ApiToken apiToken = new ApiToken("somesys", "dgferdf1drt5dfgdfh4mh+34dfwr3Wdf", 1496030399999L);
-		List<ApiToken> apiTokens =new ArrayList<>();
+		List<ApiToken> apiTokens = new ArrayList<>();
 		apiTokens.add(apiToken);
 		when(apiTokenRepository.findByApiUser("somesys")).thenReturn(apiTokens);
 		try {
 			service.authenticate("somesys", "dgferdf1drt5dfgdfh4mh+34dfwr3Wdf");
 		} catch (Exception e) {
-			
+
 		}
 	}
-	
+
 	@Test
 	public void testAuthenticate() {
 		ApiToken apiToken = new ApiToken("somesys", "dgferdf1drt5dfgdfh4mh+34dfwr3Wdf", 1496030399999L);
-		List<ApiToken> apiTokens =new ArrayList<>();
+		List<ApiToken> apiTokens = new ArrayList<>();
 		apiTokens.add(apiToken);
 		when(apiTokenRepository.findByApiUser("somesys")).thenReturn(apiTokens);
 		Collection<String> roles = new ArrayList<>();
@@ -112,9 +112,8 @@ public class ApiTokenServiceTest {
 		try {
 			service.authenticate("somesys", "dgferdf1drt5dfgdfh4mh+34dfwr3Wdf");
 		} catch (Exception e) {
-			
+
 		}
 	}
-	
 
 }

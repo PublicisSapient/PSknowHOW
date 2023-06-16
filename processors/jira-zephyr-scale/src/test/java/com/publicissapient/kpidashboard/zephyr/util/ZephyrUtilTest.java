@@ -16,21 +16,17 @@ import com.publicissapient.kpidashboard.zephyr.config.ZephyrConfig;
 @ExtendWith(SpringExtension.class)
 public class ZephyrUtilTest {
 
-	@InjectMocks
-	private ZephyrUtil zephyrUtil;
-
-	@Mock
-	private ZephyrConfig processorConfiguration;
-
-	@Mock
-	private AesEncryptionService aesEncryptionService;
-
-	@Mock
-	private ZephyrConfig zephyrConfig;
-
 	private static final String KEY = "1231231231231234";
 	private static final String PLAIN_TEXT = "test";
 	private static final String ENCRYPTED_TEXT = "encryptedTest";
+	@InjectMocks
+	private ZephyrUtil zephyrUtil;
+	@Mock
+	private ZephyrConfig processorConfiguration;
+	@Mock
+	private AesEncryptionService aesEncryptionService;
+	@Mock
+	private ZephyrConfig zephyrConfig;
 
 	@Test
 	public void testBuildAuthenticationHeader() {
@@ -50,8 +46,7 @@ public class ZephyrUtilTest {
 
 	@Test
 	public void testZephyrUrl() {
-		assertEquals("test.com/jira",
-				zephyrUtil.getZephyrUrl("https://test.com/jira/"));
+		assertEquals("test.com/jira", zephyrUtil.getZephyrUrl("https://test.com/jira/"));
 	}
 
 	@Test

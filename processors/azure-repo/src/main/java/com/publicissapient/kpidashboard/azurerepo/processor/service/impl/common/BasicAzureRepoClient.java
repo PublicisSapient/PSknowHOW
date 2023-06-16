@@ -22,7 +22,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -39,6 +38,8 @@ import com.publicissapient.kpidashboard.azurerepo.config.AzureRepoConfig;
 import com.publicissapient.kpidashboard.azurerepo.constants.AzureRepoConstants;
 import com.publicissapient.kpidashboard.azurerepo.util.AzureRepoRestOperations;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * BasicAzureRepoClient.
@@ -63,7 +64,8 @@ public class BasicAzureRepoClient {
 	 * @param azurerepoRestOperations
 	 *            the rest operations supplier
 	 * 
-	 * @param aesEncryptionService aesEncryptionService
+	 * @param aesEncryptionService
+	 *            aesEncryptionService
 	 */
 	@Autowired
 	public BasicAzureRepoClient(AzureRepoConfig config, AzureRepoRestOperations azurerepoRestOperations,
@@ -115,7 +117,7 @@ public class BasicAzureRepoClient {
 			return null;
 		}
 	}
-	
+
 	private String decodeUrlUsingUTF8(String encodeUrl) {
 		try {
 			String decode = URLDecoder.decode(encodeUrl, "UTF-8");

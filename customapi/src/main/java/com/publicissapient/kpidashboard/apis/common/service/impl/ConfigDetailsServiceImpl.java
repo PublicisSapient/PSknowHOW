@@ -18,17 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.model.DateRangeFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.ConfigDetailService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ConfigDetails;
+import com.publicissapient.kpidashboard.apis.model.DateRangeFilter;
 
 /**
  * Implementation of {@link ConfigDetailService}
+ * 
  * @author pkum34
  *
  */
@@ -43,7 +44,8 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 	@Override
 	public ConfigDetails getConfigDetails() {
 		ConfigDetails configDetails = new ConfigDetails();
-		DateRangeFilter dateRangeFilter= new DateRangeFilter(customApiConfig.getDateRangeFilterTypes(),customApiConfig.getDateRangeFilterCounts());
+		DateRangeFilter dateRangeFilter = new DateRangeFilter(customApiConfig.getDateRangeFilterTypes(),
+				customApiConfig.getDateRangeFilterCounts());
 		configDetails.setKpiWiseAggregationType(configHelperService.calculateCriteria());
 		configDetails.setPercentile(customApiConfig.getPercentileValue());
 		configDetails.setHierarchySelectionCount(customApiConfig.getHierarchySelectionCount());

@@ -53,16 +53,12 @@ import com.publicissapient.kpidashboard.common.repository.connection.ConnectionR
 public class ProcessorToolConnectionServiceImplTest {
 
 	public MockMvc mockMvc;
-	
-	@Mock
-	private ProjectToolConfigRepository projectToolConfigRepository;
-
-	@Mock
-	private ConnectionRepository connectionRepository;
-
 	@InjectMocks
 	ProcessorToolConnectionServiceImpl processorToolConnectionServiceImpl;
-
+	@Mock
+	private ProjectToolConfigRepository projectToolConfigRepository;
+	@Mock
+	private ConnectionRepository connectionRepository;
 	private List<Connection> connectionList = Lists.newArrayList();
 
 	private List<ProjectToolConfig> projectToolList = Lists.newArrayList();

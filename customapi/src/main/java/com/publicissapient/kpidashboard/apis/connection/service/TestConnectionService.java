@@ -23,6 +23,6 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 
 public interface TestConnectionService {
 
-    ServiceResponse validateConnection(Connection connection,String toolName);
+	ServiceResponse validateConnection(Connection connection, String toolName);
 
 }

@@ -60,11 +60,13 @@ public class SprintDetails extends BasicModel {
 	private Set<SprintIssue> completedIssuesAnotherSprint;
 	private Set<String> addedIssues;
 	private Set<SprintIssue> totalIssues;
-	
+
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		SprintDetails sprintDetails = (SprintDetails) o;
 		return Objects.equals(sprintID, sprintDetails.sprintID);
 	}

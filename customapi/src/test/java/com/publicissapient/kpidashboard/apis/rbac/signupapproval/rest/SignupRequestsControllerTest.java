@@ -23,19 +23,16 @@ import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupM
 @RunWith(MockitoJUnitRunner.class)
 public class SignupRequestsControllerTest {
 
-	private MockMvc mockMvc;
-	private String testId;
-
 	Authentication authentication;
 	ObjectMapper mapper = new ObjectMapper();
-
-	@InjectMocks
-	private SignupRequestsController signupRequestsController;
-
 	@Mock
 	AuthenticationService authenticationService;
 	@Mock
 	SignupManager signupManager;
+	private MockMvc mockMvc;
+	private String testId;
+	@InjectMocks
+	private SignupRequestsController signupRequestsController;
 
 	@Before
 	public void before() {

@@ -50,7 +50,6 @@ import org.powermock.reflect.Whitebox;
 import org.springframework.web.client.RestClientException;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.bamboo.client.BambooClient;
 import com.publicissapient.kpidashboard.bamboo.client.impl.BambooClientBuildImpl;
 import com.publicissapient.kpidashboard.bamboo.client.impl.BambooClientDeployImpl;
@@ -61,19 +60,18 @@ import com.publicissapient.kpidashboard.bamboo.repository.BambooProcessorReposit
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BambooProcessorJobExecuterTests {
@@ -86,7 +84,6 @@ public class BambooProcessorJobExecuterTests {
 	private static final String SERVER1 = "server1";
 	private static final List<ProcessorToolConnection> pt = new ArrayList<>();
 	private static final List<ProcessorExecutionTraceLog> petl = new ArrayList<>();
-	private  Optional<ProcessorExecutionTraceLog> processorExecutionTraceLogs;
 	private static final List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private static final List<Deployment> deploymentList = new ArrayList<>();
 	private static final List<Deployment> queuedDeploymentList = new ArrayList<>();
@@ -99,6 +96,11 @@ public class BambooProcessorJobExecuterTests {
 	// "matter");
 	private static final ProcessorToolConnection BAMBOOSAMPLESERVER1 = new ProcessorToolConnection();// new
 	private static final ProcessorToolConnection BAMBOOSAMPLESERVER2 = new ProcessorToolConnection();// new
+	Deployment deployment3 = new Deployment();
+	Deployment deployment1 = new Deployment();
+	Deployment deployment2 = new Deployment();
+	Deployment deployment = new Deployment();
+	private Optional<ProcessorExecutionTraceLog> processorExecutionTraceLogs;
 	@Mock
 	private BuildRepository buildRepository;
 	@Mock
@@ -129,11 +131,6 @@ public class BambooProcessorJobExecuterTests {
 	private BambooProcessorJobExecuter task;
 	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
 	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-	Deployment deployment3 = new Deployment();
-	Deployment deployment1 = new Deployment();
-	Deployment deployment2 = new Deployment();
-	Deployment deployment = new Deployment();
-
 
 	@Before
 	public void init() {
@@ -189,7 +186,6 @@ public class BambooProcessorJobExecuterTests {
 		basicConfig.setSaveAssigneeDetails(true);
 		projectConfigList.add(basicConfig);
 
-
 		deployment.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		deployment.setProjectToolConfigId(new ObjectId("6296661b307f0239477f1e9e"));
 		deployment.setBasicProjectConfigId(new ObjectId("622b2c7d4c3a0d462b35d83d"));
@@ -201,7 +197,6 @@ public class BambooProcessorJobExecuterTests {
 		deployment.setNumber("189988914");
 		deployment.setJobName("TestDep");
 		deployment.setDeployedBy("user1");
-
 
 		deployment1.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		deployment1.setProjectToolConfigId(new ObjectId("6296661b307f0239477f1e9e"));
@@ -215,7 +210,6 @@ public class BambooProcessorJobExecuterTests {
 		deployment1.setJobName("TestDep");
 		deployment1.setDeployedBy("user2");
 
-
 		deployment2.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		deployment2.setProjectToolConfigId(new ObjectId("6706661b307f0239477f1e9e"));
 		deployment2.setBasicProjectConfigId(new ObjectId("622b2c7d4c3a0d462b35d83d"));
@@ -227,7 +221,6 @@ public class BambooProcessorJobExecuterTests {
 		deployment2.setNumber("189988914");
 		deployment2.setJobName("TestDep");
 		deployment2.setDeployedBy("user3");
-
 
 		deployment3.setProcessorId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		deployment3.setProjectToolConfigId(new ObjectId("6296661b307f0239477f1e9e"));
@@ -292,12 +285,11 @@ public class BambooProcessorJobExecuterTests {
 
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setId(new ObjectId("63d7d2c124f5327fc7f9ac35"));
-		processorExecutionTraceLog.setLastSuccessfulRun( "2023-02-06");
+		processorExecutionTraceLog.setLastSuccessfulRun("2023-02-06");
 		processorExecutionTraceLog.setLastEnableAssigneeToggleState(true);
 		processorExecutionTraceLog.setProcessorName("Bamboo");
 		processorExecutionTraceLog.setBasicProjectConfigId("5f9014743cb73ce896167659");
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
-
 
 	}
 
@@ -339,11 +331,12 @@ public class BambooProcessorJobExecuterTests {
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(pt);
-			when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(any(), any())).thenReturn(processorExecutionTraceLogs);
+			when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(any(), any()))
+					.thenReturn(processorExecutionTraceLogs);
 			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientBuild);
-			when(processorExecutionTraceLogRepository.
-					findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BAMBOO, "5f9014743cb73ce896167659"))
-					.thenReturn(optionalProcessorExecutionTraceLog);
+			when(processorExecutionTraceLogRepository
+					.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BAMBOO, "5f9014743cb73ce896167659"))
+							.thenReturn(optionalProcessorExecutionTraceLog);
 			when(deploymentRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(deployment);
 			task.execute(processorWithOneServer());
 		} catch (RestClientException exception) {

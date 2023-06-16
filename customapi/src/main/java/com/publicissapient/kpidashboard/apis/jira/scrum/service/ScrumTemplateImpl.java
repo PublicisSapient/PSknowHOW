@@ -40,17 +40,16 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * template for DIR (i.e simple line chart kpi)
- * you can reference
- *  DirServiceImpl for line chart Impl
- *  AverageResolutionTimeServiceImpl for line chart with filter Impl
- *  UnitCoverageServiceImpl for week wise data in line chart
- *  SonarViolationServiceImpl for week wise data group column chart with filter Impl.
+ * template for DIR (i.e simple line chart kpi) you can reference DirServiceImpl
+ * for line chart Impl AverageResolutionTimeServiceImpl for line chart with
+ * filter Impl UnitCoverageServiceImpl for week wise data in line chart
+ * SonarViolationServiceImpl for week wise data group column chart with filter
+ * Impl.
  *
  */
 @Component
 @Slf4j
-public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
+public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 	private static final String STORY_DATA = "storyData";
 	private static final String DEFECT_DATA = "defectData";
 	private static final String STORY = "Stories";
@@ -65,7 +64,7 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -89,46 +88,46 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				sprintWiseLeafNodeValueForSimpleLineChart(mapTmp, v, kpiElement, kpiRequest);
-				
-				sprintWiseLeafNodeValueForLineChartWithFilterOrGroupStackChartWithFilter(mapTmp, v, kpiElement, kpiRequest);
+
+				sprintWiseLeafNodeValueForLineChartWithFilterOrGroupStackChartWithFilter(mapTmp, v, kpiElement,
+						kpiRequest);
 			}
 
 		});
 
 		log.debug("[DIR-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
-			//simple line chart aggregation
-			Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-			calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
-			List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
-			kpiElement.setTrendValueList(trendValues);
-			// end of simple line chart aggregation
-			
-			//Use these methods instead of above if kpi is line+filter, groupcolumn, grouped column+filter,column,column + filter
-			calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.AVERAGE_RESOLUTION_TIME);
+		// simple line chart aggregation
+		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
+		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
+		kpiElement.setTrendValueList(trendValues);
+		// end of simple line chart aggregation
 
-			Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
-					KPICode.AVERAGE_RESOLUTION_TIME);
-			Map<String, Map<String, List<DataCount>>> issueTypeProjectWiseDc = new LinkedHashMap<>();
-			trendValuesMap.forEach((issueType, dataCounts) -> {
-				Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
-						.collect(Collectors.groupingBy(DataCount::getData));
-				issueTypeProjectWiseDc.put(issueType, projectWiseDc);
-			});
+		// Use these methods instead of above if kpi is line+filter, groupcolumn,
+		// grouped column+filter,column,column + filter
+		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.AVERAGE_RESOLUTION_TIME);
 
-			List<DataCountGroup> dataCountGroups = new ArrayList<>();
-			issueTypeProjectWiseDc.forEach((issueType, projectWiseDc) -> {
-				DataCountGroup dataCountGroup = new DataCountGroup();
-				List<DataCount> dataList = new ArrayList<>();
-				projectWiseDc.entrySet().stream()
-						.forEach(trend -> dataList
-								.addAll(trend.getValue()));
-				dataCountGroup.setFilter(issueType);
-				dataCountGroup.setValue(dataList);
-				dataCountGroups.add(dataCountGroup);
-			});
-			kpiElement.setTrendValueList(dataCountGroups);
-			//end of map aggregation
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+				KPICode.AVERAGE_RESOLUTION_TIME);
+		Map<String, Map<String, List<DataCount>>> issueTypeProjectWiseDc = new LinkedHashMap<>();
+		trendValuesMap.forEach((issueType, dataCounts) -> {
+			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
+					.collect(Collectors.groupingBy(DataCount::getData));
+			issueTypeProjectWiseDc.put(issueType, projectWiseDc);
+		});
+
+		List<DataCountGroup> dataCountGroups = new ArrayList<>();
+		issueTypeProjectWiseDc.forEach((issueType, projectWiseDc) -> {
+			DataCountGroup dataCountGroup = new DataCountGroup();
+			List<DataCount> dataList = new ArrayList<>();
+			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
+			dataCountGroup.setFilter(issueType);
+			dataCountGroup.setValue(dataList);
+			dataCountGroups.add(dataCountGroup);
+		});
+		kpiElement.setTrendValueList(dataCountGroups);
+		// end of map aggregation
 
 		return kpiElement;
 	}
@@ -168,13 +167,18 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 	 * This method populates KPI value to sprint leaf nodes. It also gives the trend
 	 * analysis at sprint wise.
 	 * 
-	 * @param mapTmp             node is map
-	 * @param sprintLeafNodeList sprint nodes list
-	 * @param kpiElement         KpiElement
-	 * @param kpiRequest         KpiRequest
+	 * @param mapTmp
+	 *            node is map
+	 * @param sprintLeafNodeList
+	 *            sprint nodes list
+	 * @param kpiElement
+	 *            KpiElement
+	 * @param kpiRequest
+	 *            KpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void sprintWiseLeafNodeValueForSimpleLineChart(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void sprintWiseLeafNodeValueForSimpleLineChart(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
+			KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
@@ -186,8 +190,8 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
 				kpiRequest);
 		String subGroupCategory = (String) storyDefectDataListMap.get(SUBGROUPCATEGORY);
-		
-		//  grouping data to ease up operations ahead
+
+		// grouping data to ease up operations ahead
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap.get(STORY_DATA);
 
 		/** Additional Filter **/
@@ -199,8 +203,9 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 		Map<Pair<String, String>, Double> sprintWiseDIRMap = new HashMap<>();
 		Map<String, ValidationData> validationDataMap = new HashMap<>();
 		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
-		
-		// transforming data coming from db and calculating Kpi information for each sprint
+
+		// transforming data coming from db and calculating Kpi information for each
+		// sprint
 		sprintWiseMap.forEach((sprint, subCategoryMap) -> {
 			List<JiraIssue> sprintWiseDefectList = new ArrayList<>();
 			List<Double> addFilterDirList = new ArrayList<>();
@@ -208,7 +213,7 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 			subCategoryMap.forEach((subCategory, storyIdList) -> {
 				List<JiraIssue> additionalFilterDefectList = ((List<JiraIssue>) storyDefectDataListMap.get(DEFECT_DATA))
 						.stream()
-						.filter(f ->sprint.getKey().equals(f.getProjectID())
+						.filter(f -> sprint.getKey().equals(f.getProjectID())
 								&& CollectionUtils.containsAny(f.getDefectStoryID(), storyIdList))
 						.collect(Collectors.toList());
 
@@ -230,14 +235,14 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 			setHowerMap(sprintWiseHowerMap, sprint, totalStoryIdList, sprintWiseDefectList);
 		});
 
-		
 		sprintLeafNodeList.forEach(node -> {
 
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
 			Pair<String, String> currentNodeIdentifier = Pair.of(node.getParentId(), currentSprintComponentId);
-			
-			// set the already calculated data into data count object and set into their aggregation node
+
+			// set the already calculated data into data count object and set into their
+			// aggregation node
 			double defectInjectionRateForCurrentLeaf;
 
 			if (sprintWiseDIRMap.containsKey(currentNodeIdentifier)) {
@@ -254,10 +259,8 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 			dataCount.setSProjectName(trendLineName);
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(
-					new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(
-					new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
 			dataCount.setValue(defectInjectionRateForCurrentLeaf);
 			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
 			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
@@ -265,8 +268,8 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 		});
 	}
 
-	private void sprintWiseLeafNodeValueForLineChartWithFilterOrGroupStackChartWithFilter(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
-				KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void sprintWiseLeafNodeValueForLineChartWithFilterOrGroupStackChartWithFilter(Map<String, Node> mapTmp,
+			List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
@@ -293,8 +296,8 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 		}
 
 		Map<String, Map<String, Double>> sprintIssueTypeWiseTime = new HashMap<>();
-		
-		//transforming data
+
+		// transforming data
 		sprintWiseResolution.forEach((sprint, issueWiseTimeList) -> {
 			Map<String, Double> issueTypeAvgTime = new HashMap<>();
 			// based on kpi
@@ -321,8 +324,7 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 		// this method will set a map of list of data count in aggregation tree
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
-			String basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId()
-					.toString();
+			String basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId().toString();
 			Set<String> issueTypes = new HashSet<>();
 			// based on kpi
 			FieldMapping fieldMapping = fieldMappingMap.get(basicProjectConfigId);
@@ -367,17 +369,18 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 		});
 	}
 
-	
-	
-
 	/**
 	 * This method sets the defect and story count for each leaf node to show data
 	 * on trend line on mouse hover.
 	 * 
-	 * @param sprintWiseHowerMap   map of sprint key and hover value
-	 * @param sprint               key to identify sprint
-	 * @param storyIdList          story id list
-	 * @param sprintWiseDefectList defects linked to story
+	 * @param sprintWiseHowerMap
+	 *            map of sprint key and hover value
+	 * @param sprint
+	 *            key to identify sprint
+	 * @param storyIdList
+	 *            story id list
+	 * @param sprintWiseDefectList
+	 *            defects linked to story
 	 */
 	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
 			Pair<String, String> sprint, List<String> storyIdList, List<JiraIssue> sprintWiseDefectList) {
@@ -399,12 +402,18 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 	 * This method populates KPI Element with Validation data. It will be triggered
 	 * only for request originated to get Excel data.
 	 * 
-	 * @param kpiElement           KpiElement
-	 * @param requestTrackerId     request id
-	 * @param validationDataKey    validation data key
-	 * @param validationDataMap    validation data map
-	 * @param storyIdList          story id list
-	 * @param sprintWiseDefectList sprints defect list
+	 * @param kpiElement
+	 *            KpiElement
+	 * @param requestTrackerId
+	 *            request id
+	 * @param validationDataKey
+	 *            validation data key
+	 * @param validationDataMap
+	 *            validation data map
+	 * @param storyIdList
+	 *            story id list
+	 * @param sprintWiseDefectList
+	 *            sprints defect list
 	 */
 	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, String validationDataKey,
 			Map<String, ValidationData> validationDataMap, List<String> storyIdList,

@@ -69,15 +69,6 @@ public class AuthProperties {// NOPMD
 	private int accountLockedPeriod;
 
 	/**
-	 * Sets expiration time.
-	 *
-	 * @param expirationTime the expiration time
-	 */
-	public void setExpirationTime(Long expirationTime) {
-		this.expirationTime = expirationTime;
-	}
-
-	/**
 	 * Gets expiration time.
 	 *
 	 * @return the expiration time
@@ -87,12 +78,13 @@ public class AuthProperties {// NOPMD
 	}
 
 	/**
-	 * Sets secret.
+	 * Sets expiration time.
 	 *
-	 * @param secret the secret
+	 * @param expirationTime
+	 *            the expiration time
 	 */
-	public void setSecret(String secret) {
-		this.secret = secret;
+	public void setExpirationTime(Long expirationTime) {
+		this.expirationTime = expirationTime;
 	}
 
 	/**
@@ -102,6 +94,16 @@ public class AuthProperties {// NOPMD
 	 */
 	public String getSecret() {
 		return secret;
+	}
+
+	/**
+	 * Sets secret.
+	 *
+	 * @param secret
+	 *            the secret
+	 */
+	public void setSecret(String secret) {
+		this.secret = secret;
 	}
 
 	/**
@@ -116,7 +118,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets ldap user dn pattern.
 	 *
-	 * @param ldapUserDnPattern the ldap user dn pattern
+	 * @param ldapUserDnPattern
+	 *            the ldap user dn pattern
 	 */
 	public void setLdapUserDnPattern(String ldapUserDnPattern) {
 		this.ldapUserDnPattern = ldapUserDnPattern;
@@ -134,7 +137,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets ldap server url.
 	 *
-	 * @param ldapServerUrl the ldap server url
+	 * @param ldapServerUrl
+	 *            the ldap server url
 	 */
 	public void setLdapServerUrl(String ldapServerUrl) {
 		this.ldapServerUrl = ldapServerUrl;
@@ -152,7 +156,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets authentication providers.
 	 *
-	 * @param authenticationProviders the authentication providers
+	 * @param authenticationProviders
+	 *            the authentication providers
 	 */
 	public void setAuthenticationProviders(List<AuthType> authenticationProviders) {
 		this.authenticationProviders = authenticationProviders;
@@ -170,7 +175,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets ad domain.
 	 *
-	 * @param adDomain the ad domain
+	 * @param adDomain
+	 *            the ad domain
 	 */
 	public void setAdDomain(String adDomain) {
 		this.adDomain = adDomain;
@@ -188,7 +194,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets ad root dn.
 	 *
-	 * @param adRootDn the ad root dn
+	 * @param adRootDn
+	 *            the ad root dn
 	 */
 	public void setAdRootDn(String adRootDn) {
 		this.adRootDn = adRootDn;
@@ -206,7 +213,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets ad url.
 	 *
-	 * @param adUrl the ad url
+	 * @param adUrl
+	 *            the ad url
 	 */
 	public void setAdUrl(String adUrl) {
 		this.adUrl = adUrl;
@@ -224,7 +232,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets ldap bind user.
 	 *
-	 * @param ldapBindUser the ldap bind user
+	 * @param ldapBindUser
+	 *            the ldap bind user
 	 */
 	public void setLdapBindUser(String ldapBindUser) {
 		this.ldapBindUser = ldapBindUser;
@@ -242,7 +251,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets ldap bind pass.
 	 *
-	 * @param ldapBindPass the ldap bind pass
+	 * @param ldapBindPass
+	 *            the ldap bind pass
 	 */
 	public void setLdapBindPass(String ldapBindPass) {
 		this.ldapBindPass = ldapBindPass;
@@ -260,7 +270,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets ad lions domain.
 	 *
-	 * @param adLionsDomain the ad lions domain
+	 * @param adLionsDomain
+	 *            the ad lions domain
 	 */
 	public void setAdLionsDomain(String adLionsDomain) {
 		this.adLionsDomain = adLionsDomain;
@@ -278,7 +289,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets ad lions url.
 	 *
-	 * @param adLionsUrl the ad lions url
+	 * @param adLionsUrl
+	 *            the ad lions url
 	 */
 	public void setAdLionsUrl(String adLionsUrl) {
 		this.adLionsUrl = adLionsUrl;
@@ -296,7 +308,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets ad lions root dn.
 	 *
-	 * @param adLionsRootDn the ad lions root dn
+	 * @param adLionsRootDn
+	 *            the ad lions root dn
 	 */
 	public void setAdLionsRootDn(String adLionsRootDn) {
 		this.adLionsRootDn = adLionsRootDn;
@@ -314,7 +327,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets providers.
 	 *
-	 * @param providers the providers
+	 * @param providers
+	 *            the providers
 	 */
 	public void setProviders(String providers) {
 		this.providers = providers;
@@ -332,7 +346,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets account locked threshold.
 	 *
-	 * @param accountLockedThreshold the account locked threshold
+	 * @param accountLockedThreshold
+	 *            the account locked threshold
 	 */
 	public void setAccountLockedThreshold(Integer accountLockedThreshold) {
 		this.accountLockedThreshold = accountLockedThreshold;
@@ -350,7 +365,8 @@ public class AuthProperties {// NOPMD
 	/**
 	 * Sets account locked period.
 	 *
-	 * @param accountLockedPeriod the account locked period
+	 * @param accountLockedPeriod
+	 *            the account locked period
 	 */
 	public void setAccountLockedPeriod(int accountLockedPeriod) {
 		this.accountLockedPeriod = accountLockedPeriod;

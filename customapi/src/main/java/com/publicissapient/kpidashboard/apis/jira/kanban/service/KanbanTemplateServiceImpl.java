@@ -14,7 +14,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
+import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -48,16 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> { 
-
-	@Autowired
-	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
-
-	@Autowired
-	private ConfigHelperService configHelperService;
-	
-	@Autowired
-	private FilterHelperService flterHelperService;
+public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
 
 	private static final String TICKET_LIST = "tickets";
 	private static final String SUBGROUPCATEGORY = "subGroupCategory";
@@ -66,21 +57,51 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 	private static final String DEV = "DeveloperKpi";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	private static final String PROJECT = "PROJECT";
+	@Autowired
+	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
+	@Autowired
+	private ConfigHelperService configHelperService;
+	@Autowired
+	private FilterHelperService flterHelperService;
+
+	public static List<KanbanJiraIssue> filterKanbanDataBasedOnStartAndEndDate(List<KanbanJiraIssue> issueList,
+			LocalDate startDate, LocalDate endDate) {
+		Predicate<KanbanJiraIssue> predicate = issue -> LocalDateTime
+				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER).isAfter(startDate.atTime(0, 0, 0))
+				&& LocalDateTime.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+						.isBefore(endDate.atTime(23, 59, 59));
+		return issueList.stream().filter(predicate).collect(Collectors.toList());
+	}
+
+	public static Map<String, Long> filterKanbanDataBasedOnStartAndEndDateAndIssueType(List<KanbanJiraIssue> issueList,
+			List<String> issueTypeList, LocalDate startDate, LocalDate endDate) {
+		Predicate<KanbanJiraIssue> predicate = issue -> LocalDateTime
+				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER).isAfter(startDate.atTime(0, 0, 0))
+				&& LocalDateTime.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+						.isBefore(endDate.atTime(23, 59, 59));
+		List<KanbanJiraIssue> filteredIssue = issueList.stream().filter(predicate).collect(Collectors.toList());
+		Map<String, Long> projectIssueTypeMap = filteredIssue.stream().map(KanbanJiraIssue::getTypeName)
+				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+		// adding missing issue type for this date
+		issueTypeList.forEach(issueType -> projectIssueTypeMap.computeIfAbsent(issueType, val -> 0L));
+		return projectIssueTypeMap;
+	}
 
 	/**
 	 * Gets Qualifier Type
-	 * 
+	 *
 	 * @return KPICode's <tt>STORY_OPEN_RATE_BY_ISSUE_TYPE</tt> enum
 	 */
 	@Override
 	public String getQualifierType() {
-		//  KPI Name from KPICODE
+		// KPI Name from KPICODE
 		return "KanbanTemplateKPI";
 	}
 
 	/**
 	 * Gets KPI Data
-	 * 
+	 *
 	 * @param kpiRequest
 	 * @param kpiElement
 	 * @param treeAggregatorDetail
@@ -95,25 +116,25 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(PROJECT);
-		
-		//This method will contain the main logic to fetch data from db and set it in aggregation tree
+
+		// This method will contain the main logic to fetch data from db and set it in
+		// aggregation tree
 		dateWiseLeafNodeValue(mapTmp, projectList, kpiElement, kpiRequest);
 
-		//choose one aggregation method from below
+		// choose one aggregation method from below
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		 // for simple chart
+		// for simple chart
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,
+				KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE);
 		kpiElement.setTrendValueList(trendValues);
 		// simple aggregation implementation over
-		
-		
+
 		// for chart with filter,group stack and column chart
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE);
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
 				KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE);
-		
-		
+
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
 		trendValuesMap.forEach((key, datewiseDataCount) -> {
 			DataCountGroup dataCountGroup = new DataCountGroup();
@@ -124,9 +145,7 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 
 		kpiElement.setTrendValueList(dataCountGroups);
 		// map aggregation implementation over
-		
-		
-		
+
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 
 		log.debug(
@@ -137,7 +156,7 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 
 	/**
 	 * Calculates KPI Metrics
-	 * 
+	 *
 	 * @param subCategoryMap
 	 * @return Integer
 	 */
@@ -182,7 +201,7 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 
 		/** additional filter **/
 		String subGroupCategory = KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.KANBAN,
-				DEV,flterHelperService);
+				DEV, flterHelperService);
 		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				projectList.stream().distinct().collect(Collectors.toList()));
 		resultListMap.put(TICKET_LIST, kanbanJiraIssueRepository.findIssuesByDateAndType(mapOfFilters, uniqueProjectMap,
@@ -196,7 +215,7 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 	/**
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint wise.
-	 * 
+	 *
 	 * @param mapTmp
 	 * @param leafNodeList
 	 * @param kpiElement
@@ -204,11 +223,12 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 	 *
 	 */
 	@SuppressWarnings("unchecked")
-	private void dateWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		
-		//this method fetch start and end date to fetch data.
+	private void dateWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement,
+			KpiRequest kpiRequest) {
+
+		// this method fetch start and end date to fetch data.
 		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
-		
+
 		// get start and end date in yyyy-mm-dd format
 		String startDate = dateRange.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		String endDate = dateRange.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -219,22 +239,21 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 		// now that you have all the data
 		// you need to know the chart type of your kpi.
 		// if it contains filter on it then we will create a map of filters per project
-		// and store it on the aggregation tree and if it is a simple kpi then list  will be
+		// and store it on the aggregation tree and if it is a simple kpi then list will
+		// be
 		// in aggregation tree.
 		String subGroupCategory = (String) resultMap.get(SUBGROUPCATEGORY);
-		
-		Map<String, List<KanbanJiraIssue>> projectWiseJiraIssue = KpiDataHelper
-				.createProjectWiseMapKanban((List<KanbanJiraIssue>) resultMap.get(TICKET_LIST), subGroupCategory , flterHelperService);
-		
-		
-		//choose one method from below
+
+		Map<String, List<KanbanJiraIssue>> projectWiseJiraIssue = KpiDataHelper.createProjectWiseMapKanban(
+				(List<KanbanJiraIssue>) resultMap.get(TICKET_LIST), subGroupCategory, flterHelperService);
+
+		// choose one method from below
 		kpiWithoutFilter(projectWiseJiraIssue, mapTmp, leafNodeList, kpiElement, kpiRequest);
-		
+
 		kpiWithFilter(projectWiseJiraIssue, mapTmp, leafNodeList, kpiElement, kpiRequest);
-		
+
 	}
-	
-	
+
 	private void kpiWithoutFilter(Map<String, List<KanbanJiraIssue>> projectWiseJiraIssue, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 		Map<String, ValidationData> validationDataMap = new HashMap<>();
@@ -247,13 +266,13 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 				LocalDate currentDate = LocalDate.now();
 				List<DataCount> dc = new ArrayList<>();
 				for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
-					//fetch date range based on period for which request came
+					// fetch date range based on period for which request came
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
 							kpiRequest.getDuration());
 
 					// filter based on date your scenario this time its start and end date
-					List<KanbanJiraIssue> filteredList = filterKanbanDataBasedOnStartAndEndDate(
-							kanbanIssueList, dateRange.getStartDate(), dateRange.getEndDate());
+					List<KanbanJiraIssue> filteredList = filterKanbanDataBasedOnStartAndEndDate(kanbanIssueList,
+							dateRange.getStartDate(), dateRange.getEndDate());
 					// make it based on month, week and day
 					// This kpi is week wise
 					String date = getRange(dateRange, kpiRequest);
@@ -264,11 +283,12 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 					}
 					DataCount dcObj = getDataCountObject(techDebt, projectName, date, projectNodeId);
 					dc.add(dcObj);
-					// below method is to get excel export functionality 
-					//input and implementation and position of this fuction may vary depending on kpi 
+					// below method is to get excel export functionality
+					// input and implementation and position of this fuction may vary depending on
+					// kpi
 					populateValidationDataObject(kpiElement, requestTrackerId, validationDataMap, filteredList,
 							date + Constant.UNDERSCORE + projectName);
-					
+
 					if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 						currentDate = currentDate.minusWeeks(1);
 					} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
@@ -284,32 +304,35 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 
 	private void kpiWithFilter(Map<String, List<KanbanJiraIssue>> projectWiseJiraIssue, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		//implementing ticket type dropdown filter json
+		// implementing ticket type dropdown filter json
 		Map<String, ValidationData> validationDataMap = new HashMap<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 		leafNodeList.forEach(node -> {
 			List<KanbanJiraIssue> kanbanIssueList = projectWiseJiraIssue.get(node.getId());
 			if (CollectionUtils.isNotEmpty(kanbanIssueList)) {
-				List<String> issueTypeList = kanbanIssueList.stream().map(KanbanJiraIssue::getTypeName).distinct().collect(Collectors.toList());
+				List<String> issueTypeList = kanbanIssueList.stream().map(KanbanJiraIssue::getTypeName).distinct()
+						.collect(Collectors.toList());
 				Map<String, List<DataCount>> projectFilterWiseDataMap = new HashMap<>();
 				String projectNodeId = node.getId();
-				
+
 				LocalDate currentDate = LocalDate.now();
 				for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
-					//fetch date range based on period for which request came
+					// fetch date range based on period for which request came
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
 							kpiRequest.getDuration());
 
-					// create a map based on your kpi in this case story open rate it will be map of story type and count
-					Map<String,Long> issueTypeCountMap = filterKanbanDataBasedOnStartAndEndDateAndIssueType(kanbanIssueList, issueTypeList, dateRange.getStartDate(), dateRange.getEndDate()); 
+					// create a map based on your kpi in this case story open rate it will be map of
+					// story type and count
+					Map<String, Long> issueTypeCountMap = filterKanbanDataBasedOnStartAndEndDateAndIssueType(
+							kanbanIssueList, issueTypeList, dateRange.getStartDate(), dateRange.getEndDate());
 					// make it based on month, week and day
 					// This kpi is week wise
-					
+
 					String date = getRange(dateRange, kpiRequest);
 
-					//create it according to your kpi
-					populateProjectFilterWiseDataMap(issueTypeCountMap,projectFilterWiseDataMap,projectNodeId,date);
-					
+					// create it according to your kpi
+					populateProjectFilterWiseDataMap(issueTypeCountMap, projectFilterWiseDataMap, projectNodeId, date);
+
 					if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 						currentDate = currentDate.minusWeeks(1);
 					} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
@@ -317,18 +340,18 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 					} else {
 						currentDate = currentDate.minusDays(1);
 					}
-					String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
+					String projectName = projectNodeId.substring(0,
+							projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 					populateValidationDataObject(kpiElement, requestTrackerId, validationDataMap, kanbanIssueList,
 							date + Constant.UNDERSCORE + projectName);
 				}
 				// move or create this method based on your kpi
 
-
 				mapTmp.get(node.getId()).setValue(projectFilterWiseDataMap);
 			}
 		});
 	}
-	
+
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
@@ -340,7 +363,7 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 		}
 		return range;
 	}
-	
+
 	private void populateProjectFilterWiseDataMap(Map<String, Long> issueTypeCountMap,
 			Map<String, List<DataCount>> projectFilterWiseDataMap, String projectNodeId, String date) {
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
@@ -355,8 +378,8 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 		projectFilterWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>())
 				.add(getDataCountObject(issueTypeCountMap, projectName, date, projectNodeId));
 	}
-	
-	private DataCount getDataCountObject(Long value,String projectName,String date,String projectNodeId){
+
+	private DataCount getDataCountObject(Long value, String projectName, String date, String projectNodeId) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
@@ -367,8 +390,9 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 		dataCount.setValue(value);
 		return dataCount;
 	}
-	
-	private DataCount getDataCountObject(Map<String, Long> value,String projectName,String date,String projectNodeId){
+
+	private DataCount getDataCountObject(Map<String, Long> value, String projectName, String date,
+			String projectNodeId) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
@@ -380,12 +404,10 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 		return dataCount;
 	}
 
-
-	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, Map<String, ValidationData> validationDataMap,
-											  List<KanbanJiraIssue> projectWiseFeatureMap, String dateProjectKey) {
+	private void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId,
+			Map<String, ValidationData> validationDataMap, List<KanbanJiraIssue> projectWiseFeatureMap,
+			String dateProjectKey) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-
-
 
 			if (CollectionUtils.isNotEmpty(projectWiseFeatureMap)) {
 				ValidationData validationData = new ValidationData();
@@ -398,29 +420,5 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 			}
 			kpiElement.setMapOfSprintAndData(validationDataMap);
 		}
-	}
-	
-	public static List<KanbanJiraIssue> filterKanbanDataBasedOnStartAndEndDate(List<KanbanJiraIssue> issueList,
-			LocalDate startDate, LocalDate endDate) {
-		Predicate<KanbanJiraIssue> predicate = issue -> LocalDateTime
-				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER).isAfter(startDate.atTime(0,0,0))
-				&& LocalDateTime.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
-						.isBefore(endDate.atTime(23, 59, 59));
-		return issueList.stream().filter(predicate).collect(Collectors.toList());
-	}
-	
-	public static Map<String, Long> filterKanbanDataBasedOnStartAndEndDateAndIssueType(List<KanbanJiraIssue> issueList,
-			List<String> issueTypeList, LocalDate startDate, LocalDate endDate) {
-		Predicate<KanbanJiraIssue> predicate = issue -> LocalDateTime
-				.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER).isAfter(startDate.atTime(0, 0, 0))
-				&& LocalDateTime.parse(issue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
-						.isBefore(endDate.atTime(23, 59, 59));
-		List<KanbanJiraIssue> filteredIssue = issueList.stream().filter(predicate).collect(Collectors.toList());
-		Map<String, Long> projectIssueTypeMap = filteredIssue.stream().map(KanbanJiraIssue::getTypeName)
-				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
-		// adding missing issue type for this date
-		issueTypeList.forEach(issueType -> projectIssueTypeMap.computeIfAbsent(issueType, val -> 0L));
-		return projectIssueTypeMap;
 	}
 }

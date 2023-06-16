@@ -19,8 +19,6 @@ package com.publicissapient.kpidashboard.common.activedirectory.modal;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,7 +34,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ADServerDetail  {
+public class ADServerDetail {
 	@NotBlank(message = "username may not be blank")
 	private String username;
 	@NotBlank(message = "password may not be blank")
@@ -50,5 +48,5 @@ public class ADServerDetail  {
 	private String rootDn;
 	@NotBlank(message = "Domain may not be blank")
 	private String domain;
-	
+
 }

@@ -22,7 +22,6 @@ import java.net.URI;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.jiratest.adapter.atlassianbespoke.util.JsonParseUtil;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -33,6 +32,7 @@ import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 import com.atlassian.jira.rest.client.internal.json.UserJsonParser;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.publicissapient.kpidashboard.jiratest.adapter.atlassianbespoke.util.JsonParseUtil;
 
 public class CustomUserJsonParser extends UserJsonParser {
 

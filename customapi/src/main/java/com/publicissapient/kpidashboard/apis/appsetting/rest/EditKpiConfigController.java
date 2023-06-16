@@ -64,7 +64,7 @@ public class EditKpiConfigController {
 	public ResponseEntity<ServiceResponse> fetchTypeValues(@PathVariable String projectBasicConfigId) {
 		projectBasicConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectBasicConfigId);
 		LOGGER.info("Fetching data in KPI edit configuration for :{}", projectBasicConfigId);
-		Map<String, List<MetadataValue>> data=editKpiConfigService.getDataForType(projectBasicConfigId);
+		Map<String, List<MetadataValue>> data = editKpiConfigService.getDataForType(projectBasicConfigId);
 		ServiceResponse serviceResponse = new ServiceResponse(true, "Success", data);
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 	}

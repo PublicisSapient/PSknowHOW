@@ -1,5 +1,29 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -11,9 +35,9 @@ import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
@@ -28,30 +52,6 @@ import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import org.apache.commons.collections.ListUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
  *
@@ -236,7 +236,8 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 
 				Map<String, Map<String, Long>> rangeWisePriorityCountMap = new LinkedHashMap<>();
 				rangeWiseIssueBacklogsMap.forEach((range, issueList) -> {
-					Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrumForBacklog(issueList, customApiConfig);
+					Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrumForBacklog(issueList,
+							customApiConfig);
 					rangeWisePriorityCountMap.put(range, priorityCountMap);
 				});
 
@@ -246,8 +247,9 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 
 				// Populates data in Excel for validation for tickets created
 				// before
-				if(requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateProductionDefectAgingExcelData(projectName, projectWiseIssueBacklogList, excelData);
+				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+					KPIExcelUtility.populateProductionDefectAgingExcelData(projectName, projectWiseIssueBacklogList,
+							excelData);
 				}
 			}
 			mapTmp.get(node.getId()).setValue(trendValueMap);
@@ -258,15 +260,15 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 	}
 
 	/**
-	 * as per x Axis values initialize month wise range map and put issues as
-	 * per months bucket follows
+	 * as per x Axis values initialize month wise range map and put issues as per
+	 * months bucket follows
 	 *
 	 * @param xAxisRange
 	 * @param projectWiseIssueBacklogList
 	 * @param rangeWiseIssueBacklogsMap
 	 */
-	private void filterDataBasedOnXAxisRangeWise(List<String> xAxisRange, List<IssueBacklog> projectWiseIssueBacklogList,
-			Map<String, List<IssueBacklog>> rangeWiseIssueBacklogsMap) {
+	private void filterDataBasedOnXAxisRangeWise(List<String> xAxisRange,
+			List<IssueBacklog> projectWiseIssueBacklogList, Map<String, List<IssueBacklog>> rangeWiseIssueBacklogsMap) {
 		String highestRange = xAxisRange.get(xAxisRange.size() - 1);
 		Map<Integer, String> monthRangeMap = new HashMap<>();
 

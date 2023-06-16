@@ -74,6 +74,13 @@ public class ReleaseDefectCountByAssigneeServiceImpl
 	@Autowired
 	private CommonServiceImpl commonService;
 
+	private static void getAssigneeWiseCount(Map<String, List<JiraIssue>> assigneeData,
+			Map<String, Integer> assigneeCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> assigneeEntry : assigneeData.entrySet()) {
+			assigneeCountMap.put(assigneeEntry.getKey(), assigneeEntry.getValue().size());
+		}
+	}
+
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
 		return null;
@@ -97,7 +104,7 @@ public class ReleaseDefectCountByAssigneeServiceImpl
 					defectType.addAll(fieldMapping.getJiradefecttype());
 				}
 				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
-				mapOfProjectFilters.put(basicProjectConfigId,defectType);
+				mapOfProjectFilters.put(basicProjectConfigId, defectType);
 				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(mapOfProjectFilters);
 				resultListMap.put(TOTAL_DEFECT, releaseDefects);
 			}
@@ -172,13 +179,6 @@ public class ReleaseDefectCountByAssigneeServiceImpl
 				}
 			}
 			kpiElement.setTrendValueList(filterDataList);
-		}
-	}
-
-	private static void getAssigneeWiseCount(Map<String, List<JiraIssue>> assigneeData,
-			Map<String, Integer> assigneeCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> assigneeEntry : assigneeData.entrySet()) {
-			assigneeCountMap.put(assigneeEntry.getKey(), assigneeEntry.getValue().size());
 		}
 	}
 

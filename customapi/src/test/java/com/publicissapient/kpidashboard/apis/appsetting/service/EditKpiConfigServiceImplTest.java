@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -49,26 +48,23 @@ import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepo
 @RunWith(MockitoJUnitRunner.class)
 public class EditKpiConfigServiceImplTest {
 
-	@InjectMocks
-	private EditKpiConfigServiceImpl editKpiConfigServiceImpl;
-
-	@Mock
-	private BoardMetadataRepository boardMetadataRepository;
-
-	/*
-	 * Creating a new test BoardMetadata object
-	 */
-
 	BoardMetadata testBoardMetadata = new BoardMetadata();
-
 	/*
 	 * Creating a new string object to store test projectconfigid
 	 */
 	String testProjectconfigid;
+
+	/*
+	 * Creating a new test BoardMetadata object
+	 */
 	/*
 	 * Creating a new string object to store test type
 	 */
 	String testType;
+	@InjectMocks
+	private EditKpiConfigServiceImpl editKpiConfigServiceImpl;
+	@Mock
+	private BoardMetadataRepository boardMetadataRepository;
 
 	/**
 	 * method includes preprocesses for test cases
@@ -79,18 +75,18 @@ public class EditKpiConfigServiceImplTest {
 		typevalueList.add("Test");
 		testBoardMetadata.setProjectBasicConfigId(new ObjectId("5f7ee917485b2c09bc8bac7a"));
 		testBoardMetadata.setProjectToolConfigId(new ObjectId("5f7ee917485b2c09bc8bac7a"));
-		List<Metadata> metaList=new ArrayList<>();
-		Metadata metadata=new Metadata();
+		List<Metadata> metaList = new ArrayList<>();
+		Metadata metadata = new Metadata();
 		metadata.setType("Issue_Type");
-		List<MetadataValue> metaValueList=new ArrayList<>();
-		MetadataValue metaDataValue=new MetadataValue();
+		List<MetadataValue> metaValueList = new ArrayList<>();
+		MetadataValue metaDataValue = new MetadataValue();
 		metaDataValue.setKey("Story");
 		metaDataValue.setData("Story");
 		metaValueList.add(metaDataValue);
 		metadata.setValue(metaValueList);
 		metaList.add(metadata);
 		testBoardMetadata.setMetadata(metaList);
-		
+
 	}
 
 	@After
@@ -99,8 +95,8 @@ public class EditKpiConfigServiceImplTest {
 	}
 
 	/**
-	 * 1. Input String projectconfigid is valid and data at this id doesnot
-	 * exists in the database.
+	 * 1. Input String projectconfigid is valid and data at this id doesnot exists
+	 * in the database.
 	 *
 	 */
 	@Test
@@ -109,7 +105,8 @@ public class EditKpiConfigServiceImplTest {
 		testProjectconfigid = "5f7ee917485b2c09bc8bac7a";
 		List<BoardMetadata> testListBoardMetadata = new ArrayList<>();
 		testListBoardMetadata.add(testBoardMetadata);
-		when(boardMetadataRepository.findByProjectToolConfigId(new ObjectId(testProjectconfigid))).thenReturn(testBoardMetadata);
+		when(boardMetadataRepository.findByProjectToolConfigId(new ObjectId(testProjectconfigid)))
+				.thenReturn(testBoardMetadata);
 		Map<String, List<MetadataValue>> data = editKpiConfigServiceImpl.getDataForType(testProjectconfigid);
 		assertThat("Count : ", data.size(), equalTo(1));
 

@@ -32,6 +32,19 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.bson.types.ObjectId;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.mail.MailSendException;
+import org.testng.collections.Lists;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
@@ -54,33 +67,18 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
-import org.bson.types.ObjectId;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.mail.MailSendException;
-import org.testng.collections.Lists;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-
-
 @SuppressWarnings("deprecation")
 @RunWith(MockitoJUnitRunner.class)
 public class CommonServiceImplTest {
 
-	@InjectMocks
-	private CommonServiceImpl commonService;
-
-	@Mock
-	private CustomApiConfig customAPISettings;
-	
 	@Mock
 	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
+	@Mock
+	ProjectBasicConfigRepository projectBasicConfigRepository;
+	@InjectMocks
+	private CommonServiceImpl commonService;
+	@Mock
+	private CustomApiConfig customAPISettings;
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
 	@Mock
@@ -93,8 +91,6 @@ public class CommonServiceImplTest {
 	private HttpServletRequest request;
 	@Mock
 	private CustomApiConfig customApiConfig;
-	@Mock
-	ProjectBasicConfigRepository projectBasicConfigRepository;
 	@Mock
 	private GlobalConfigRepository globalConfigRepository;
 	@Mock
@@ -158,10 +154,10 @@ public class CommonServiceImplTest {
 		Assert.assertEquals("4", commonService.getMaturityLevel(list, KPICode.CODE_COMMIT.getKpiId(), "90"));
 
 	}
-	
+
 	@Test
 	public void testGetEmailAddressBasedOnRoles() {
-		
+
 		String username = "SUPERADMIN";
 		AuthType authType = AuthType.STANDARD;
 		UserInfo user = new UserInfo();
@@ -181,21 +177,21 @@ public class CommonServiceImplTest {
 
 		List<String> emailList = new ArrayList<>();
 		emailList.add("abc@xyz.com");
-		
+
 		final String pw = "pass1";
-        Authentication authentication = new Authentication("SUPERADMIN", pw, "abc@xyz.com");
-        List<Authentication> authentications= new ArrayList<>();
-        authentications.add(authentication);
-		
+		Authentication authentication = new Authentication("SUPERADMIN", pw, "abc@xyz.com");
+		List<Authentication> authentications = new ArrayList<>();
+		authentications.add(authentication);
+
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList("ROLE_SUPERADMIN"))).thenReturn(users);
 		when(authenticationRepository.findByUsernameIn(Arrays.asList(username))).thenReturn(authentications);
-	    commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
+		commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
 
 	}
-	
+
 	@Test
 	public void testGetEmailAddressBasedOnRoles1() {
-		
+
 		String username = "";
 		AuthType authType = AuthType.STANDARD;
 		UserInfo user = new UserInfo();
@@ -208,28 +204,29 @@ public class CommonServiceImplTest {
 		List<AccessNode> accessNodes = new ArrayList<>();
 		ProjectsAccess projectsAccess = new ProjectsAccess();
 		projectsAccess.setRole("");
-		projectsAccess.setAccessNodes(accessNodes);;
-		
+		projectsAccess.setAccessNodes(accessNodes);
+		;
+
 		user.setProjectsAccess(Arrays.asList(projectsAccess));
 		List<UserInfo> users = new ArrayList<>();
 		users.add(user);
 
 		List<String> emailList = new ArrayList<>();
 		emailList.add("abc@xyz.com");
-		
+
 		final String pw = "pass1";
-        Authentication authentication = new Authentication("SUPERADMIN", pw, "abc@xyz.com");
-        List<Authentication> authentications= new ArrayList<>();
-        authentications.add(authentication);
-		
+		Authentication authentication = new Authentication("SUPERADMIN", pw, "abc@xyz.com");
+		List<Authentication> authentications = new ArrayList<>();
+		authentications.add(authentication);
+
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList("ROLE_SUPERADMIN"))).thenReturn(null);
-	    commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
+		commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
 
 	}
-	
+
 	@Test
 	public void testGetEmailAddressBasedOnRoles2() {
-		
+
 		String username = "user";
 		AuthType authType = AuthType.STANDARD;
 		UserInfo user = new UserInfo();
@@ -249,19 +246,18 @@ public class CommonServiceImplTest {
 
 		List<String> emailList = new ArrayList<>();
 		emailList.add("abc@xyz.com");
-		
-		
+
 		final String pw = "pass1";
-        Authentication authentication = new Authentication("SUPERADMIN", pw, "abc@xyz.com");
-        List<Authentication> authentications= new ArrayList<>();
-        authentications.add(authentication);
-		
+		Authentication authentication = new Authentication("SUPERADMIN", pw, "abc@xyz.com");
+		List<Authentication> authentications = new ArrayList<>();
+		authentications.add(authentication);
+
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList("ROLE_SUPERADMIN"))).thenReturn(users);
 		when(authenticationRepository.findByUsernameIn(Arrays.asList(username))).thenReturn(null);
-	    commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
+		commonService.getEmailAddressBasedOnRoles(Arrays.asList("ROLE_SUPERADMIN"));
 
 	}
-	
+
 	@Test
 	public void testSendNotificationEvent() {
 		List<String> emailList = new ArrayList<>();
@@ -279,60 +275,60 @@ public class CommonServiceImplTest {
 		commonService.sendNotificationEvent(emailList, customData, notSubject, notKey, topic);
 
 	}
-	
+
 	@Test
 	public void testSendNotificationEventNull() {
 		List<String> emailList = new ArrayList<>();
 		emailList.add("abc@xyz.com");
-		Map<String, String> customData=new HashMap<>();
+		Map<String, String> customData = new HashMap<>();
 		customData.put("abc", "xyz");
-		String notSubject="";
-		String notKey="key";
-		String topic="topic";
+		String notSubject = "";
+		String notKey = "key";
+		String topic = "topic";
 		EmailEvent emailEvent = new EmailEvent(globalConfig.getEmailServerDetail().getFromEmail(), emailList, null,
 				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
 				globalConfig.getEmailServerDetail().getEmailPort());
-		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null,topic);
-        commonService.sendNotificationEvent(emailList, customData, notSubject, notKey, topic);
+		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic);
+		commonService.sendNotificationEvent(emailList, customData, notSubject, notKey, topic);
 
 	}
-	
+
 	@Test
 	public void testGetApiHost() throws UnknownHostException {
 		when(customApiConfig.getUiHost()).thenReturn("localhost");
 		when(customApiConfig.getUiPort()).thenReturn("9999");
 		when(request.getScheme()).thenReturn("http://");
-	    commonService.getApiHost();
+		commonService.getApiHost();
 
-		}
-	
+	}
+
 	@Test
 	public void testGetApiHost1() {
 		when(customApiConfig.getUiHost()).thenReturn("");
-	    try {
+		try {
 			commonService.getApiHost();
 		} catch (UnknownHostException e) {
-		
-		}
 
 		}
-	
+
+	}
+
 	@Test
 	public void testGetApiHost2() {
 		when(customApiConfig.getUiHost()).thenReturn("localhost");
 		when(customApiConfig.getUiPort()).thenReturn("");
 		when(request.getScheme()).thenReturn("http://");
-	    try {
+		try {
 			commonService.getApiHost();
 		} catch (UnknownHostException e) {
-		
-		}
 
 		}
-	
+
+	}
+
 	@Test
 	public void getProjectAdminEmailAddressBasedProjectId() {
-		
+
 		String username = "user";
 		AuthType authType = AuthType.STANDARD;
 		UserInfo user = new UserInfo();
@@ -359,21 +355,20 @@ public class CommonServiceImplTest {
 
 		List<String> emailList = new ArrayList<>();
 		emailList.add("abc@xyz.com");
-		
-		
+
 		final String pw = "pass1";
-        Authentication authentication = new Authentication("SUPERADMIN", pw, "abc@xyz.com");
-        List<Authentication> authentications= new ArrayList<>();
-        authentications.add(authentication);
-		
+		Authentication authentication = new Authentication("SUPERADMIN", pw, "abc@xyz.com");
+		List<Authentication> authentications = new ArrayList<>();
+		authentications.add(authentication);
+
 		when(projectBasicConfigRepository.findById(ArgumentMatchers.any()))
 				.thenReturn(Optional.of(projectBasicConfigObj()));
 
 		when(userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_PROJECT_ADMIN))).thenReturn(users);
-	    commonService.getProjectAdminEmailAddressBasedProjectId("5ddf69f6a592816aa30c4fbe");
+		commonService.getProjectAdminEmailAddressBasedProjectId("5ddf69f6a592816aa30c4fbe");
 
 	}
-	
+
 	ProjectBasicConfig projectBasicConfigObj() {
 		ProjectBasicConfig basicConfig = new ProjectBasicConfig();
 		basicConfig.setId(new ObjectId("61e4f7852747353d4405c765"));
@@ -381,7 +376,6 @@ public class CommonServiceImplTest {
 		basicConfig.setProjectName("project");
 		return basicConfig;
 	}
-
 
 	@Test
 	public void testSendEmailWithoutKafka() {
@@ -398,9 +392,8 @@ public class CommonServiceImplTest {
 				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
 				globalConfig.getEmailServerDetail().getEmailPort());
 		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic);
-		Assert.assertThrows(MailSendException.class,()->
-				commonService.sendEmailWithoutKafka(emailList, customData, notSubject, notKey, topic,"Forgot_Password_Template")
-		);
+		Assert.assertThrows(MailSendException.class, () -> commonService.sendEmailWithoutKafka(emailList, customData,
+				notSubject, notKey, topic, "Forgot_Password_Template"));
 
 	}
 
@@ -419,9 +412,8 @@ public class CommonServiceImplTest {
 				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
 				globalConfig.getEmailServerDetail().getEmailPort());
 		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic);
-		commonService.sendEmailWithoutKafka(emailList, customData, notSubject, notKey, topic,"Forgot_Password_Template");
+		commonService.sendEmailWithoutKafka(emailList, customData, notSubject, notKey, topic,
+				"Forgot_Password_Template");
 	}
-
-
 
 }

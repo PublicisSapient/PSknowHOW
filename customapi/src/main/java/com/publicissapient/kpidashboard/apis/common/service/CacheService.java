@@ -45,8 +45,8 @@ public interface CacheService {
 	void setIntoApplicationCache(String key, String value);
 
 	/**
-	 * Stores the KPI data result. Cache key = key+requestOrigin+kpiSource.
-	 * Given that none of them is empty.
+	 * Stores the KPI data result. Cache key = key+requestOrigin+kpiSource. Given
+	 * that none of them is empty.
 	 * 
 	 * @param key
 	 *            mandatory parameter
@@ -55,9 +55,11 @@ public interface CacheService {
 	 * @param kpiSource
 	 *            taken into account if not empty
 	 * @param groupId
-	 * @param sprintIncluded sprintIncluded
+	 * @param sprintIncluded
+	 *            sprintIncluded
 	 */
-	void setIntoApplicationCache(String[] key, Object value, String kpiSource, Integer groupId, List<String> sprintIncluded);
+	void setIntoApplicationCache(String[] key, Object value, String kpiSource, Integer groupId,
+			List<String> sprintIncluded);
 
 	/**
 	 * Gets data from cache based on key
@@ -74,29 +76,29 @@ public interface CacheService {
 	 * @param keyList
 	 * @param kpiSource
 	 * @param groupId
-	 * @param sprintIncluded sprintIncluded
+	 * @param sprintIncluded
+	 *            sprintIncluded
 	 * @return
 	 */
 	public Object getFromApplicationCache(String[] keyList, String kpiSource, Integer groupId,
 			List<String> sprintIncluded);
-
 
 	Object cacheProjectConfigMapData();
 
 	Object cacheFieldMappingMapData();
 
 	Object cacheToolConfigMapData();
-	
+
 	Object cacheProjectToolConfigMapData();
 
-    List<HierarchyLevel> getFullHierarchyLevel();
-	
-    List<HierarchyLevel> getFullKanbanHierarchyLevel();
-    
-    Map<String, HierarchyLevel> getFullHierarchyLevelMap();
-	
-    Map<String, HierarchyLevel> getFullKanbanHierarchyLevelMap();
-    
-    Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel();
+	List<HierarchyLevel> getFullHierarchyLevel();
+
+	List<HierarchyLevel> getFullKanbanHierarchyLevel();
+
+	Map<String, HierarchyLevel> getFullHierarchyLevelMap();
+
+	Map<String, HierarchyLevel> getFullKanbanHierarchyLevelMap();
+
+	Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel();
 
 }

@@ -18,33 +18,103 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.parser;
 
-import com.atlassian.jira.rest.client.api.domain.*;
-import com.atlassian.jira.rest.client.internal.json.*;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.AFFECTS_VERSIONS_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.ASSIGNEE_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.ATTACHMENT_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.COMMENT_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.COMPONENTS_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.CREATED_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.DESCRIPTION_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.DUE_DATE_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.FIX_VERSIONS_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.ISSUE_TYPE_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.LABELS_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.LINKS_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.PRIORITY_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.PROJECT_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.REPORTER_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.RESOLUTION_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.STATUS_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.SUBTASKS_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.SUMMARY_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.TIMETRACKING_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.UPDATED_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.VOTES_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.WATCHER_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.WORKLOGS_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.WORKLOG_FIELD;
+import static com.atlassian.jira.rest.client.internal.json.JsonParseUtil.getStringKeys;
+import static com.atlassian.jira.rest.client.internal.json.JsonParseUtil.parseOptionalJsonObject;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Nullable;
+import javax.ws.rs.core.UriBuilder;
+
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 
-import javax.annotation.Nullable;
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
-import java.util.*;
-
-import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.*;
-import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.LABELS_FIELD;
-import static com.atlassian.jira.rest.client.internal.json.JsonParseUtil.getStringKeys;
-import static com.atlassian.jira.rest.client.internal.json.JsonParseUtil.parseOptionalJsonObject;
+import com.atlassian.jira.rest.client.api.domain.Attachment;
+import com.atlassian.jira.rest.client.api.domain.BasicComponent;
+import com.atlassian.jira.rest.client.api.domain.BasicIssue;
+import com.atlassian.jira.rest.client.api.domain.BasicPriority;
+import com.atlassian.jira.rest.client.api.domain.BasicProject;
+import com.atlassian.jira.rest.client.api.domain.BasicVotes;
+import com.atlassian.jira.rest.client.api.domain.BasicWatchers;
+import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
+import com.atlassian.jira.rest.client.api.domain.Comment;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.atlassian.jira.rest.client.api.domain.IssueFieldId;
+import com.atlassian.jira.rest.client.api.domain.IssueLink;
+import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.Operations;
+import com.atlassian.jira.rest.client.api.domain.Resolution;
+import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.Subtask;
+import com.atlassian.jira.rest.client.api.domain.TimeTracking;
+import com.atlassian.jira.rest.client.api.domain.User;
+import com.atlassian.jira.rest.client.api.domain.Version;
+import com.atlassian.jira.rest.client.api.domain.Worklog;
+import com.atlassian.jira.rest.client.internal.json.AttachmentJsonParser;
+import com.atlassian.jira.rest.client.internal.json.BasicComponentJsonParser;
+import com.atlassian.jira.rest.client.internal.json.BasicIssueJsonParser;
+import com.atlassian.jira.rest.client.internal.json.BasicPriorityJsonParser;
+import com.atlassian.jira.rest.client.internal.json.BasicProjectJsonParser;
+import com.atlassian.jira.rest.client.internal.json.BasicVotesJsonParser;
+import com.atlassian.jira.rest.client.internal.json.CommentJsonParser;
+import com.atlassian.jira.rest.client.internal.json.IssueLinkJsonParserV5;
+import com.atlassian.jira.rest.client.internal.json.IssueTypeJsonParser;
+import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
+import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
+import com.atlassian.jira.rest.client.internal.json.OperationsJsonParser;
+import com.atlassian.jira.rest.client.internal.json.ResolutionJsonParser;
+import com.atlassian.jira.rest.client.internal.json.StatusJsonParser;
+import com.atlassian.jira.rest.client.internal.json.SubtaskJsonParser;
+import com.atlassian.jira.rest.client.internal.json.TimeTrackingJsonParserV5;
+import com.atlassian.jira.rest.client.internal.json.VersionJsonParser;
+import com.atlassian.jira.rest.client.internal.json.WatchersJsonParserBuilder;
+import com.atlassian.jira.rest.client.internal.json.WorklogJsonParserV5;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 
-	private static Set<String> specialFields = Sets.newHashSet(IssueFieldId.ids());
-
 	public static final String SCHEMA_SECTION = "schema";
 	public static final String NAMES_SECTION = "names";
-
+	private static final String FIELDS = "fields";
+	private static final String VALUE_ATTR = "value";
+	private static Set<String> specialFields = Sets.newHashSet(IssueFieldId.ids());
 	private final BasicIssueJsonParser basicIssueJsonParser = new BasicIssueJsonParser();
 	private final IssueLinkJsonParserV5 issueLinkJsonParserV5 = new IssueLinkJsonParserV5();
 	private final BasicVotesJsonParser votesJsonParser = new BasicVotesJsonParser();
@@ -64,10 +134,6 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 	private final CustomChangelogJsonParser changelogJsonParser = new CustomChangelogJsonParser();
 	private final OperationsJsonParser operationsJsonParser = new OperationsJsonParser();
 	private final JsonWeakParserForString jsonWeakParserForString = new JsonWeakParserForString();
-
-	private static final String FIELDS = "fields";
-	private static final String VALUE_ATTR = "value";
-
 	private final JSONObject providedNames;
 	private final JSONObject providedSchema;
 
@@ -88,7 +154,7 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 
 	private <T> Collection<T> parseArray(final JSONObject jsonObject, final JsonWeakParser<T> jsonParser,
 			final String arrayAttribute) throws JSONException {
-		
+
 		final JSONArray valueObject = jsonObject.optJSONArray(arrayAttribute);
 		if (valueObject == null) {
 			return new ArrayList<>();

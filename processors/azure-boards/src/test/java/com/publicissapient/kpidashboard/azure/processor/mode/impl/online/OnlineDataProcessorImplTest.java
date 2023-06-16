@@ -28,14 +28,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -179,7 +177,8 @@ public class OnlineDataProcessorImplTest {
 		prepareProjectConfig();
 		prepareFieldMapping();
 		setProjectConfigFieldMap();
-		when(aesEncryptionService.decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(PLAIN_TEXT_PASSWORD);
+		when(aesEncryptionService.decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+				.thenReturn(PLAIN_TEXT_PASSWORD);
 
 	}
 
@@ -247,8 +246,8 @@ public class OnlineDataProcessorImplTest {
 		MetadataIdentifier metadataIdentifier = createMetaDataIdentifier();
 		when(metadataIdentifierRepository.findByToolAndIsKanban(any(), any())).thenReturn(metadataIdentifier);
 
-		when(client.getWiqlResponse(any(AzureServer.class), any(Map.class), any(ProjectConfFieldMapping.class), any(Boolean.class)))
-				.thenReturn(createWiqlResponse());
+		when(client.getWiqlResponse(any(AzureServer.class), any(Map.class), any(ProjectConfFieldMapping.class),
+				any(Boolean.class))).thenReturn(createWiqlResponse());
 		when(client.getIterationsResponse(Mockito.any())).thenReturn(createIterationsResponse());
 		when(client.getWorkItemInfo(Mockito.any(), Mockito.any())).thenReturn(createWorkItemInfoResponse());
 		when(client.getUpdatesResponse(Mockito.any(), Mockito.anyString())).thenReturn(createUpdatesResponse());
@@ -470,8 +469,8 @@ public class OnlineDataProcessorImplTest {
 				valuestoidentify3);
 
 		List<Identifier> issuelinkIdentifer = new ArrayList<>();
-		return new MetadataIdentifier(tool, templateName, templateCode, isKanban, false, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
-				issuelinkIdentifer, valuestoidentifyIdentifer);
+		return new MetadataIdentifier(tool, templateName, templateCode, isKanban, false, issuesIdentifier,
+				customfieldIdentifer, workflowIdentifer, issuelinkIdentifer, valuestoidentifyIdentifer);
 
 	}
 

@@ -7,9 +7,9 @@ import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 
 @Service
 public class JiraToolCredentialProvider implements ToolCredentialProvider {
-    @Override
-    public ToolCredential findCredential(String credRef) {
+	@Override
+	public ToolCredential findCredential(String credRef) {
 
-        return null;
-    }
+		return null;
+	}
 }

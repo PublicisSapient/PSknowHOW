@@ -1,6 +1,10 @@
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -8,10 +12,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 
 @Service
 public class IssueBacklogRepositoryImpl implements IssueBacklogRespositoryCustom {
@@ -151,7 +152,7 @@ public class IssueBacklogRepositoryImpl implements IssueBacklogRespositoryCustom
 	@SuppressWarnings(UNCHECKED)
 	@Override
 	public List<IssueBacklog> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters,
-																 Map<String, Map<String, Object>> uniqueProjectMap) {
+			Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
 		// map of common filters Project and Sprint
 		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
@@ -167,7 +168,8 @@ public class IssueBacklogRepositoryImpl implements IssueBacklogRespositoryCustom
 		if (!projectCriteriaList.isEmpty()) {
 			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
 					.andOperator(projectCriteriaList.toArray(new Criteria[0]));
-			Criteria updatedCriteria = new Criteria().andOperator(criteriaProjectLevelAdded, criteriaAggregatedAtProjectLevel);
+			Criteria updatedCriteria = new Criteria().andOperator(criteriaProjectLevelAdded,
+					criteriaAggregatedAtProjectLevel);
 			query = new Query(updatedCriteria);
 		}
 		return operations.find(query, IssueBacklog.class);
@@ -175,7 +177,7 @@ public class IssueBacklogRepositoryImpl implements IssueBacklogRespositoryCustom
 
 	@Override
 	public List<IssueBacklog> findUnassignedIssues(String startDate, String endDate,
-												Map<String, List<String>> mapOfFilters) {
+			Map<String, List<String>> mapOfFilters) {
 		Criteria criteria = new Criteria();
 		Criteria orCriteria = new Criteria();
 		List<Criteria> filter = new ArrayList<>();

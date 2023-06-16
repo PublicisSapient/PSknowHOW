@@ -18,15 +18,16 @@
 
 package com.publicissapient.kpidashboard.common.repository.connection;
 
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 
 /**
  * @author dilip Repository for {@link Connection}.
@@ -45,8 +46,8 @@ public interface ConnectionRepository
 
 	List<Connection> findByType(String type);
 
-	/**s
-	 * Returns connection from persistence store by id
+	/**
+	 * s Returns connection from persistence store by id
 	 *
 	 * @param objectId
 	 *            id
@@ -56,10 +57,10 @@ public interface ConnectionRepository
 
 	Connection findByConnectionName(String connectionName);
 
-	List<Connection> findByTypeAndConnPrivate(String type,Boolean connPrivate);
+	List<Connection> findByTypeAndConnPrivate(String type, Boolean connPrivate);
 
-	/**s
-	 * Returns List Of connection based on connection id's
+	/**
+	 * s Returns List Of connection based on connection id's
 	 *
 	 * @param connectionId
 	 *            id
@@ -73,6 +74,5 @@ public interface ConnectionRepository
 	 */
 	@Query(value = "{}", fields = "{ 'password' : 0,'apiKey':0,'accessToken':0,'privateKey':0,'pat':0,'consumerKey':0,'patOAuthToken':0}")
 	List<Connection> findAllWithoutSecret();
-
 
 }

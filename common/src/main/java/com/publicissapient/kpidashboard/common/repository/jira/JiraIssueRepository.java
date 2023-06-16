@@ -35,24 +35,24 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 public interface JiraIssueRepository
 		extends CrudRepository<JiraIssue, ObjectId>, QuerydslPredicateExecutor<JiraIssue>, JiraIssueRepositoryCustom {
 	/**
-	 * This essentially returns the max change date from the collection, based
-	 * on the last change date (or default delta change date property) available
+	 * This essentially returns the max change date from the collection, based on
+	 * the last change date (or default delta change date property) available
 	 *
 	 * @param processorId
 	 *            Processor ID of source system processor
 	 * @param changeDate
 	 *            Last available change date or delta begin date property
-	 * @return A single Change Date value that is the maximum value of the
-	 *         existing collection
+	 * @return A single Change Date value that is the maximum value of the existing
+	 *         collection
 	 */
 	@Query
 	List<JiraIssue> findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId,
 			String changeDate);
 
 	/**
-	 * This essentially returns the max change date from the collection, based
-	 * on the projectkey and last change date (or default delta change date
-	 * property) available
+	 * This essentially returns the max change date from the collection, based on
+	 * the projectkey and last change date (or default delta change date property)
+	 * available
 	 *
 	 * @param processorId
 	 *            Processor ID of source system processor
@@ -60,8 +60,8 @@ public interface JiraIssueRepository
 	 *            projectKey of the project
 	 * @param changeDate
 	 *            Last available change date or delta begin date property
-	 * @return A single Change Date value that is the maximum value of the
-	 *         existing collection
+	 * @return A single Change Date value that is the maximum value of the existing
+	 *         collection
 	 */
 	@Deprecated
 	@Query
@@ -69,9 +69,9 @@ public interface JiraIssueRepository
 			String projectKey, String changeDate);
 
 	/**
-	 * This essentially returns the max change date from the collection, based
-	 * on the projectkey and last change date (or default delta change date
-	 * property) available
+	 * This essentially returns the max change date from the collection, based on
+	 * the projectkey and last change date (or default delta change date property)
+	 * available
 	 * 
 	 * @param processorId
 	 *            processor id
@@ -79,17 +79,17 @@ public interface JiraIssueRepository
 	 *            config project name
 	 * @param changeDate
 	 *            change date
-	 * @return A single Change Date value that is the maximum value of the
-	 *         existing collection
+	 * @return A single Change Date value that is the maximum value of the existing
+	 *         collection
 	 */
 	@Query
 	List<JiraIssue> findTopByProcessorIdAndBasicProjectConfigIdAndChangeDateGreaterThanOrderByChangeDateDesc(
 			ObjectId processorId, String basicProjectConfigId, String changeDate);
 
 	/**
-	 * This essentially returns the max change date from the collection, based
-	 * on the basicProjectConfigId(projectConfigId from projectConfig) and last
-	 * change date
+	 * This essentially returns the max change date from the collection, based on
+	 * the basicProjectConfigId(projectConfigId from projectConfig) and last change
+	 * date
 	 * 
 	 * @param processorId
 	 *            processorId
@@ -126,7 +126,7 @@ public interface JiraIssueRepository
 	 */
 	@Query(" {'number' : ?0 }")
 	List<JiraIssue> getStoryByNumber(String number);
-	
+
 	List<JiraIssue> findByNumberAndBasicProjectConfigId(String number, String basicProjectConfigId);
 
 	/**
@@ -145,14 +145,14 @@ public interface JiraIssueRepository
 	 *            basicProjectConfigId
 	 */
 	void deleteByBasicProjectConfigId(String basicProjectConfigId);
-	
+
 	/*
 	 * Find documents for given numbers and basicProjectConfigId.
 	 * 
-	 * @param numberIds
-	 *            List of numbers
-	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
+	 * @param numberIds List of numbers
+	 * 
+	 * @param basicProjectConfigId basicProjectConfigId
+	 * 
 	 * @return JiraIssue
 	 */
 	List<JiraIssue> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);

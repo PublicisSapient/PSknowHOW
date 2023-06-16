@@ -49,9 +49,12 @@ public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFact
 	/**
 	 * Creates Client
 	 *
-	 * @param serverUri             Jira server URI
-	 * @param authenticationHandler authentication handler instance
-	 * @param jiraProcessorConfig   Jira processor configuration
+	 * @param serverUri
+	 *            Jira server URI
+	 * @param authenticationHandler
+	 *            authentication handler instance
+	 * @param jiraProcessorConfig
+	 *            Jira processor configuration
 	 * @return DisposableHttpClient
 	 */
 	@SuppressWarnings("unchecked")
@@ -202,7 +205,7 @@ public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFact
 						resourceAsStream.close();
 					} catch (IOException ioe) {
 						// ignore
-					}	
+					}
 				}
 			}
 		}

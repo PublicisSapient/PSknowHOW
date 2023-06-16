@@ -46,6 +46,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
 import com.publicissapient.kpidashboard.common.constant.CommitType;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
@@ -55,7 +56,6 @@ import com.publicissapient.kpidashboard.gitlab.config.GitLabConfig;
 import com.publicissapient.kpidashboard.gitlab.constants.GitLabConstants;
 import com.publicissapient.kpidashboard.gitlab.customexception.FetchingCommitException;
 import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,27 +66,25 @@ import lombok.extern.slf4j.Slf4j;
 @Component()
 public class GitLabClient {
 
+	private static final String PAGE_PARAM = "&page=";
 	/**
 	 * The Git lab config.
 	 */
 	@Autowired
 	GitLabConfig gitLabConfig;
-
-
 	@Autowired
 	AesEncryptionService aesEncryptionService;
-
-	private static final String PAGE_PARAM = "&page=";
-
 	@Autowired
 	RestOperationsFactory<RestOperations> gitLabRestOperations;
-	
+
 	/**
 	 * Decrypt apiToken.
 	 *
-	 * @param apiToken the encrypted apiToken
+	 * @param apiToken
+	 *            the encrypted apiToken
 	 * @return the string
-	 * @throws GeneralSecurityException the GeneralSecurityException
+	 * @throws GeneralSecurityException
+	 *             the GeneralSecurityException
 	 */
 	protected String decryptApiToken(String apiToken) throws GeneralSecurityException {
 		return StringUtils.isNotEmpty(apiToken)
@@ -97,15 +95,19 @@ public class GitLabClient {
 	/**
 	 * Fetch all commits.
 	 *
-	 * @param repo       the repo
-	 * @param proBasicConfig   proBasicConfig
-	 * @param gitLabInfo tool and connections info
+	 * @param repo
+	 *            the repo
+	 * @param proBasicConfig
+	 *            proBasicConfig
+	 * @param gitLabInfo
+	 *            tool and connections info
 	 * @return the list
 	 * 
-	 * @throws FetchingCommitException the exception
+	 * @throws FetchingCommitException
+	 *             the exception
 	 */
-	public List<CommitDetails> fetchAllCommits(GitLabRepo repo, ProcessorToolConnection gitLabInfo, ProjectBasicConfig proBasicConfig)
-			throws FetchingCommitException {
+	public List<CommitDetails> fetchAllCommits(GitLabRepo repo, ProcessorToolConnection gitLabInfo,
+			ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
 
 		String restUri = null;
 		List<CommitDetails> commits = new ArrayList<>();
@@ -162,13 +164,14 @@ public class GitLabClient {
 					parentList.add(parents.get(index).toString());
 				}
 			}
-			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList, proBasicConfig);
+			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList,
+					proBasicConfig);
 
 		}
 	}
 
-	public List<MergeRequests> fetchAllMergeRequest(GitLabRepo repo,
-													ProcessorToolConnection gitLabInfo, ProjectBasicConfig projectBasicConfig) throws FetchingCommitException {
+	public List<MergeRequests> fetchAllMergeRequest(GitLabRepo repo, ProcessorToolConnection gitLabInfo,
+			ProjectBasicConfig projectBasicConfig) throws FetchingCommitException {
 
 		String restUri = null;
 		List<MergeRequests> mergeRequests = new ArrayList<>();
@@ -207,7 +210,8 @@ public class GitLabClient {
 		return mergeRequests;
 	}
 
-	private void initializeMergeRequestDetails(List<MergeRequests> mergeRequestList, JSONArray jsonArray, ProjectBasicConfig projectBasicConfig) {
+	private void initializeMergeRequestDetails(List<MergeRequests> mergeRequestList, JSONArray jsonArray,
+			ProjectBasicConfig projectBasicConfig) {
 		long closedDate = 0;
 		for (Object jsonObj : jsonArray) {
 			JSONObject mergReqObj = (JSONObject) jsonObj;
@@ -220,7 +224,7 @@ public class GitLabClient {
 			if (getString(mergReqObj, GitLabConstants.RESP_CLOSED_AT) != null) {
 				closedDate = getDateTimeStamp(getString(mergReqObj, GitLabConstants.RESP_CLOSED_AT));
 			}
-			
+
 			String fromBranch = getString(mergReqObj, GitLabConstants.RESP_SOURCE_BRANCH);
 			String toBranch = getString(mergReqObj, GitLabConstants.RESP_TARGET_BRANCH);
 			String repoSlug = "NA";
@@ -255,7 +259,7 @@ public class GitLabClient {
 			mergeRequestList.add(mergeReq);
 		}
 	}
-	
+
 	Long getDateTimeStamp(String datestring) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		Date date;
@@ -270,9 +274,11 @@ public class GitLabClient {
 		}
 		return timestamp;
 	}
+
 	@SuppressWarnings("java:S107")
 	private void commitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
-			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList, ProjectBasicConfig proBasicConfig) {
+			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList,
+			ProjectBasicConfig proBasicConfig) {
 		CommitDetails gitLabCommit = new CommitDetails();
 
 		gitLabCommit.setBranch(gitLabInfo.getBranch());
@@ -292,9 +298,12 @@ public class GitLabClient {
 	/**
 	 * Gets the response.
 	 *
-	 * @param userName the user name
-	 * @param apiToken the GitlabAccessToken
-	 * @param url      the url
+	 * @param userName
+	 *            the user name
+	 * @param apiToken
+	 *            the GitlabAccessToken
+	 * @param url
+	 *            the url
 	 * @return the response
 	 */
 	protected ResponseEntity<String> getResponse(String userName, String apiToken, String url) {
@@ -311,8 +320,10 @@ public class GitLabClient {
 	/**
 	 * Gets the string.
 	 *
-	 * @param jsonObject the json object
-	 * @param key        the key
+	 * @param jsonObject
+	 *            the json object
+	 * @param key
+	 *            the key
 	 * @return the string
 	 */
 	protected String getString(JSONObject jsonObject, String key) {
@@ -327,9 +338,11 @@ public class GitLabClient {
 	/**
 	 * Gets the JSON from response.
 	 *
-	 * @param payload the payload
+	 * @param payload
+	 *            the payload
 	 * @return the JSON from response
-	 * @throws ParseException the ParseException
+	 * @throws ParseException
+	 *             the ParseException
 	 */
 	protected JSONArray getJSONFromResponse(String payload) throws ParseException {
 		JSONParser parser = new JSONParser();

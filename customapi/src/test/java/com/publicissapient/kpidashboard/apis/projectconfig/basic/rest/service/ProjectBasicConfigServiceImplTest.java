@@ -39,10 +39,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterService;
-import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
-import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
-import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -53,7 +49,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,10 +62,12 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
+import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterService;
 import com.publicissapient.kpidashboard.apis.cleanup.AgileDataCleanUpService;
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpServiceFactory;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
 import com.publicissapient.kpidashboard.apis.errors.ProjectNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -78,6 +75,7 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.DeleteP
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingService;
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
+import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
@@ -98,6 +96,7 @@ import com.publicissapient.kpidashboard.common.repository.application.HierarchyL
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 /**
@@ -189,13 +188,15 @@ public class ProjectBasicConfigServiceImplTest {
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(projectBasicConfigServiceImpl).build();
 		basicConfigDTO = new ProjectBasicConfigDTO();
-		basicConfig  = ProjectBasicConfigDataFactory.newInstance("/json/basicConfig/project_basic_config_request.json").getProjectBasicConfigs().get(0);
+		basicConfig = ProjectBasicConfigDataFactory.newInstance("/json/basicConfig/project_basic_config_request.json")
+				.getProjectBasicConfigs().get(0);
 		basicConfig.setId(new ObjectId("5f855dec29cf840345f2d111"));
 		basicConfigDTO = modelMapper.map(basicConfig, ProjectBasicConfigDTO.class);
 
 		basicConfigOpt = Optional.of(basicConfig);
 
-		diffbasicConfig = ProjectBasicConfigDataFactory.newInstance("/json/basicConfig/project_basic_config_request.json").getProjectBasicConfigs().get(0);
+		diffbasicConfig = ProjectBasicConfigDataFactory
+				.newInstance("/json/basicConfig/project_basic_config_request.json").getProjectBasicConfigs().get(0);
 		diffbasicConfig.setId(new ObjectId("5f855dec29cf840345f2d222"));
 		diffbasicConfig.setProjectName("project2");
 

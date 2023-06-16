@@ -43,38 +43,29 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 @RunWith(MockitoJUnitRunner.class)
 public class SonarToolConfigServiceImplTest {
 
-	@InjectMocks
-	private SonarToolConfigServiceImpl sonarToolConfigService;
-
-	@Mock
-	private ConnectionRepository connectionRepository;
-
-	@Mock
-	private AesEncryptionService aesEncryptionService;
-
-	@Mock
-	private CustomApiConfig customApiConfig;
-
-	@Mock
-	private RestTemplate restTemplate;
-
-	private String connectionId;
-	private Optional<Connection> testConnectionOpt;
-	private Connection connection;
-	private String versionAbove;
-
 	private static final String RESOURCE_PROJECT_ENDPOINT = "/api/components/search?qualifiers=TRK&p=1&ps=300";
-
 	private static final String RESOURCE_CLOUD_PROJECT_ENDPOINT = "/api/components/search?qualifiers=TRK&organization=racv-ict&p=1&ps=300";
-
 	private static final String RESOURCE_BRANCH_ENDPOINT = "/api/project_branches/list?project=%s";
-
 	private static final String SONAR_URL = "https://abc.com/sonar";
 	private static final String SONAR_CLOUD_URL = "https://abc.com";
 	private static final String EXCEPTION = "rest client exception";
 	private static final String USER_NAME = "test";
 	private static final String PROJECT_KEY = "SURVEY_APP_API";
 	private static final String ORG_KEY = "racv-ict";
+	@InjectMocks
+	private SonarToolConfigServiceImpl sonarToolConfigService;
+	@Mock
+	private ConnectionRepository connectionRepository;
+	@Mock
+	private AesEncryptionService aesEncryptionService;
+	@Mock
+	private CustomApiConfig customApiConfig;
+	@Mock
+	private RestTemplate restTemplate;
+	private String connectionId;
+	private Optional<Connection> testConnectionOpt;
+	private Connection connection;
+	private String versionAbove;
 	private List<String> responseProjectList = new ArrayList<>();
 	private List<String> cloudResponseProjectList = new ArrayList<>();
 	private List<String> responseBranchList = new ArrayList<>();

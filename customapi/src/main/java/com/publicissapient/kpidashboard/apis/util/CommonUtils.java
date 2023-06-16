@@ -32,8 +32,6 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
@@ -46,6 +44,8 @@ import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.SymbolValueUnit;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Provides Common utilities.
@@ -62,7 +62,6 @@ public final class CommonUtils {
 	private static final String POSITIVE_CASE = "PositiveCase";
 	private static final String NEGATIVE_CASE = "NegativeCase";
 
-
 	private CommonUtils() {
 	}
 
@@ -77,7 +76,6 @@ public final class CommonUtils {
 		String[] arr = input.split(Constant.SPLITTER);
 		return Arrays.asList(arr);
 	}
-
 
 	/**
 	 * Gets the symbol value unit.
@@ -97,7 +95,6 @@ public final class CommonUtils {
 		symbolValueUnit.setUnit(unit);
 		return symbolValueUnit;
 	}
-
 
 	/**
 	 * Gets the days between date.
@@ -125,21 +122,23 @@ public final class CommonUtils {
 
 	public static Integer closedStoryAndPotentialDelays(DateTime beginDate, DateTime endDate) {
 		Integer count = 0;
-		LocalDate startLocalDate = new LocalDate(DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
-		LocalDate endLocalDate = new LocalDate(DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
-		if(startLocalDate.compareTo(endLocalDate) > 0) {
-			//positive case
+		LocalDate startLocalDate = new LocalDate(
+				DateUtil.dateTimeConverter(beginDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
+		LocalDate endLocalDate = new LocalDate(
+				DateUtil.dateTimeConverter(endDate.toString(), DateUtil.TIME_FORMAT, DELAY_FORMATTER));
+		if (startLocalDate.compareTo(endLocalDate) > 0) {
+			// positive case
 			while (!endLocalDate.isEqual(startLocalDate)) {
 				if (endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
-					count=count+1;
+					count = count + 1;
 				}
 				endLocalDate = endLocalDate.plusDays(1);
 			}
-		} else if(startLocalDate.compareTo(endLocalDate) < 0) {
-			//negative case
+		} else if (startLocalDate.compareTo(endLocalDate) < 0) {
+			// negative case
 			while (!(endLocalDate.isEqual(startLocalDate))) {
 				if (endLocalDate.getDayOfWeek() <= FIFTH_DAY_OF_WEEK) {
-					count = count-1;
+					count = count - 1;
 				}
 				endLocalDate = endLocalDate.minusDays(1);
 			}
@@ -176,7 +175,6 @@ public final class CommonUtils {
 		return count;
 	}
 
-
 	private static Integer getCounter(boolean isWeekDay, Integer count, Integer count1, String caseDetails) {
 		int counter = 0;
 		if (isWeekDay) {
@@ -191,7 +189,7 @@ public final class CommonUtils {
 
 			}
 		}
-		return (count==null)?count1:count;
+		return (count == null) ? count1 : count;
 	}
 
 	/**
@@ -313,8 +311,7 @@ public final class CommonUtils {
 		List<Pattern> regexList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(stringList)) {
 			for (String value : stringList) {
-				regexList.add(Pattern.compile(Constant.TILDA_SYMBOL+Pattern.quote(value)
-								+Constant.DOLLAR_SYMBOL,
+				regexList.add(Pattern.compile(Constant.TILDA_SYMBOL + Pattern.quote(value) + Constant.DOLLAR_SYMBOL,
 						Pattern.CASE_INSENSITIVE));
 
 			}
@@ -337,7 +334,7 @@ public final class CommonUtils {
 				pattern = pattern.replace(Constant.FORWARD_SLASH, Constant.BACKWARD_FORWARD_SLASH);
 			}
 			regexList.add(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE));
-			if(!value.startsWith(Constant.FORWARD_SLASH)){
+			if (!value.startsWith(Constant.FORWARD_SLASH)) {
 				value = Constant.FORWARD_SLASH.concat(value);
 			}
 			regexList.add(CommonUtils.convertToPatternText(value));
@@ -402,7 +399,7 @@ public final class CommonUtils {
 	public static String handleCrossScriptingTaintedValue(String value) {
 		return null == value ? null : value.replaceAll("[\\n|\\r\\t]", "");
 	}
-	
+
 	/**
 	 * This method used to convert string list to pattern list to support ignore
 	 * case
@@ -414,7 +411,7 @@ public final class CommonUtils {
 		List<Pattern> regexList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(stringList)) {
 			for (String value : stringList) {
-				value=appendbackSlash(value);
+				value = appendbackSlash(value);
 				regexList.add(Pattern.compile(Constant.TILDA_SYMBOL + value + Constant.DOLLAR_SYMBOL,
 						Pattern.CASE_INSENSITIVE));
 			}
@@ -430,8 +427,8 @@ public final class CommonUtils {
 	 * @return return String
 	 */
 	public static String appendbackSlash(String value) {
-		value = value.replaceAll(Constant.ROUND_CLOSE_BRACKET,Constant.BACKWARD_SLASH_CLOSE);
-		return value.replaceAll(Constant.ROUND_OPEN_BRACKET,Constant.BACKWARD_SLASH_OPEN);
+		value = value.replaceAll(Constant.ROUND_CLOSE_BRACKET, Constant.BACKWARD_SLASH_CLOSE);
+		return value.replaceAll(Constant.ROUND_OPEN_BRACKET, Constant.BACKWARD_SLASH_OPEN);
 	}
 
 	public static java.time.LocalDate getWorkingDayAfterAdditionofDays(java.time.LocalDate startDate,

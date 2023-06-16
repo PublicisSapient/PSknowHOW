@@ -33,19 +33,14 @@ import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 
 public abstract class ToolsKPIService<R, S> {
 
-	private Set<String> cumulativeTrend = new HashSet<>(Arrays.asList(
-			KPICode.UNIT_TEST_COVERAGE.name(),
-			KPICode.UNIT_TEST_COVERAGE_KANBAN.name(),
-			KPICode.SONAR_TECH_DEBT_KANBAN.name(),
-			KPICode.SONAR_TECH_DEBT.name(),
-			KPICode.NUMBER_OF_CHECK_INS.name(),
-			KPICode.CODE_BUILD_TIME_KANBAN.name(),
+	private Set<String> cumulativeTrend = new HashSet<>(Arrays.asList(KPICode.UNIT_TEST_COVERAGE.name(),
+			KPICode.UNIT_TEST_COVERAGE_KANBAN.name(), KPICode.SONAR_TECH_DEBT_KANBAN.name(),
+			KPICode.SONAR_TECH_DEBT.name(), KPICode.NUMBER_OF_CHECK_INS.name(), KPICode.CODE_BUILD_TIME_KANBAN.name(),
 			KPICode.TEST_EXECUTION_KANBAN.name()));
 
-	private Set<String> reverseTrendList = new HashSet<>(
-			Arrays.asList(KPICode.CODE_COMMIT.name(), KPICode.MEAN_TIME_TO_MERGE.name(),
-					KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING.name(),
-					KPICode.OPEN_TICKET_AGING_BY_PRIORITY.name()));
+	private Set<String> reverseTrendList = new HashSet<>(Arrays.asList(KPICode.CODE_COMMIT.name(),
+			KPICode.MEAN_TIME_TO_MERGE.name(), KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING.name(),
+			KPICode.OPEN_TICKET_AGING_BY_PRIORITY.name()));
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -61,9 +56,9 @@ public abstract class ToolsKPIService<R, S> {
 
 	/**
 	 * Calculates the aggregated value for the nodes in the bottom-up fashion.
-	 * nodeWiseKPIValue is added explicitly to contain the values of each node
-	 * to serve the excel data API's and other use case where all the node
-	 * details needed.
+	 * nodeWiseKPIValue is added explicitly to contain the values of each node to
+	 * serve the excel data API's and other use case where all the node details
+	 * needed.
 	 *
 	 * @param node
 	 *            node
@@ -74,10 +69,10 @@ public abstract class ToolsKPIService<R, S> {
 	 * @return value of node
 	 */
 	public Object calculateAggregatedValue(Node node, Map<Pair<String, String>, Node> nodeWiseKPIValue,
-										   KPICode kpiCode) {
+			KPICode kpiCode) {
 
-		String kpiName= kpiCode.name();
-		String kpiId= kpiCode.getKpiId();
+		String kpiName = kpiCode.name();
+		String kpiId = kpiCode.getKpiId();
 
 		if (node == null || null == node.getValue()) {
 			DataCount dataCount = new DataCount();
@@ -103,19 +98,18 @@ public abstract class ToolsKPIService<R, S> {
 			}
 		}
 		if (CollectionUtils.isNotEmpty(aggregatedValueList)) {
-			node.setValue(calculateAggregatedValue(kpiName, aggregatedValueList, node,kpiId));
+			node.setValue(calculateAggregatedValue(kpiName, aggregatedValueList, node, kpiId));
 			nodeWiseKPIValue.put(Pair.of(node.getGroupName().toUpperCase(), node.getId()), node);
 		}
 		return node.getValue();
 
 	}
 
-
 	/**
-	 * Calculates the aggregated value for the nodes containing map or has
-	 * filtering functionality in the bottom-up fashion. nodeWiseKPIValue is
-	 * added explicitly to contain the values of each node to serve the excel
-	 * data API's and other use case where all the node details needed.
+	 * Calculates the aggregated value for the nodes containing map or has filtering
+	 * functionality in the bottom-up fashion. nodeWiseKPIValue is added explicitly
+	 * to contain the values of each node to serve the excel data API's and other
+	 * use case where all the node details needed.
 	 *
 	 * @param node
 	 *            node
@@ -127,8 +121,8 @@ public abstract class ToolsKPIService<R, S> {
 	 */
 	public Map<String, List<DataCount>> calculateAggregatedValueMap(Node node,
 			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
-		String kpiName= kpiCode.name();
-		String kpiId= kpiCode.getKpiId();
+		String kpiName = kpiCode.name();
+		String kpiId = kpiCode.getKpiId();
 
 		if (node == null) {
 			return new HashMap<>();
@@ -163,7 +157,7 @@ public abstract class ToolsKPIService<R, S> {
 		}
 		Map<String, List<DataCount>> kpiFilterWiseDc = new HashMap<>();
 		aggMap.forEach((key, value) -> {
-			List<DataCount> aggData = calculateAggregatedValue(kpiName, value, node,kpiId);
+			List<DataCount> aggData = calculateAggregatedValue(kpiName, value, node, kpiId);
 			kpiFilterWiseDc.put(key, aggData);
 		});
 		kpiFilterWiseDc.remove(Constant.DEFAULT);
@@ -217,7 +211,8 @@ public abstract class ToolsKPIService<R, S> {
 	 * @param node
 	 *            node
 	 */
-	public List<DataCount> calculateAggregatedValue(String kpiName, List<DataCount> aggregatedValueList, Node node, String kpiId) {
+	public List<DataCount> calculateAggregatedValue(String kpiName, List<DataCount> aggregatedValueList, Node node,
+			String kpiId) {
 
 		Map<String, List<DataCount>> projectWiseDataCount = aggregatedValueList.stream()
 				.collect(Collectors.groupingBy(DataCount::getSProjectName, Collectors.toList()));
@@ -382,9 +377,9 @@ public abstract class ToolsKPIService<R, S> {
 	 * @return trend values
 	 */
 	public List<DataCount> getTrendValues(KpiRequest kpiRequest, Map<Pair<String, String>, Node> nodeWiseKPIValue,
-										 KPICode kpiCode) {
-		String kpiName=kpiCode.name();
-		String kpiId=kpiCode.getKpiId();
+			KPICode kpiCode) {
+		String kpiName = kpiCode.name();
+		String kpiId = kpiCode.getKpiId();
 		List<DataCount> trendValues = new ArrayList<>();
 
 		Set<String> selectedIds = getSelectedIds(kpiRequest);
@@ -397,7 +392,6 @@ public abstract class ToolsKPIService<R, S> {
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
 
-
 					Pair<String, String> maturityValue = null;
 					if (null != configHelperService.calculateMaturity().get(kpiId)) {
 						maturityValue = collectValuesForMaturity(dataCounts, kpiName, kpiId);
@@ -408,9 +402,9 @@ public abstract class ToolsKPIService<R, S> {
 						aggregateValue = maturityValue.getValue();
 						maturity = maturityValue.getKey();
 					}
-					trendValues.add(new DataCount(node.getName(), maturity, aggregateValue,
-							getList(dataCounts, kpiName)));
-				
+					trendValues
+							.add(new DataCount(node.getName(), maturity, aggregateValue, getList(dataCounts, kpiName)));
+
 				}
 			}
 		}
@@ -428,8 +422,8 @@ public abstract class ToolsKPIService<R, S> {
 	 */
 	public Map<String, List<DataCount>> getTrendValuesMap(KpiRequest kpiRequest,
 			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
-		String kpiName=kpiCode.name();
-		String kpiId=kpiCode.getKpiId();
+		String kpiName = kpiCode.name();
+		String kpiId = kpiCode.getKpiId();
 		Map<String, List<DataCount>> trendMap = new HashMap<>();
 
 		Set<String> selectedIds = getSelectedIds(kpiRequest);
@@ -452,8 +446,7 @@ public abstract class ToolsKPIService<R, S> {
 						}
 						String aggregateValue = null;
 						String maturity = null;
-						if(maturityValue!=null)
-						{
+						if (maturityValue != null) {
 							aggregateValue = maturityValue.getValue();
 							maturity = maturityValue.getKey();
 						}
@@ -498,17 +491,16 @@ public abstract class ToolsKPIService<R, S> {
 		populateKanbanData(kpiRequest);
 		Map<String, AdditionalFilterCategory> addFilterCategory = cacheService.getAdditionalFilterHierarchyLevel();
 		Map<String, AdditionalFilterCategory> addFilterCat = addFilterCategory.entrySet().stream()
-	            .collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
-		
+				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
+
 		if (Constant.SPRINT.equalsIgnoreCase(kpiRequest.getLabel())) {
 			populateSelectedIdInSprintSelection(kpiRequest, selectedIds);
 			kpiRequest.setSelecedHierarchyLabel(Constant.PROJECT.toUpperCase());
-		} else if (MapUtils.isNotEmpty(addFilterCat)
-				&& null != addFilterCat.get(kpiRequest.getLabel().toUpperCase())) {
-			Map<String,List<String>> kpiRequestSelectedMap=new HashMap<>();
-			if(MapUtils.isNotEmpty(kpiRequest.getSelectedMap())) {
+		} else if (MapUtils.isNotEmpty(addFilterCat) && null != addFilterCat.get(kpiRequest.getLabel().toUpperCase())) {
+			Map<String, List<String>> kpiRequestSelectedMap = new HashMap<>();
+			if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())) {
 				kpiRequestSelectedMap = kpiRequest.getSelectedMap().entrySet().stream()
-			            .collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
+						.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
 			}
 			if (CollectionUtils.isNotEmpty(kpiRequestSelectedMap.get(Constant.SPRINT.toUpperCase()))) {
 				populateSelectedIdInSprintSelection(kpiRequest, selectedIds);
@@ -574,7 +566,7 @@ public abstract class ToolsKPIService<R, S> {
 	 *            kpiId
 	 * @return maturity value
 	 */
-	private Pair<String,String> collectValuesForMaturity(List<DataCount> dataCounts, String kpiName, String kpiId) {
+	private Pair<String, String> collectValuesForMaturity(List<DataCount> dataCounts, String kpiName, String kpiId) {
 		List<R> values = null;
 		String maturityValue = null;
 		String aggregateValue = null;
@@ -597,7 +589,7 @@ public abstract class ToolsKPIService<R, S> {
 					String.valueOf(aggValue));
 			aggregateValue = String.valueOf(aggValue);
 		}
-		return Pair.of(maturityValue,aggregateValue);
+		return Pair.of(maturityValue, aggregateValue);
 	}
 
 	/**
@@ -726,8 +718,8 @@ public abstract class ToolsKPIService<R, S> {
 				if (null == customApiConfig.getPercentileValue()) {
 					resultMap.put(key, AggregationUtils.percentilesForLongValues(value, 90.0D));
 				} else {
-					resultMap.put(key, AggregationUtils.percentilesForLongValues(value,
-							customApiConfig.getPercentileValue()));
+					resultMap.put(key,
+							AggregationUtils.percentilesForLongValues(value, customApiConfig.getPercentileValue()));
 				}
 			} else if (Constant.MEDIAN.equalsIgnoreCase(aggregationCriteria)) {
 				resultMap.put(key, AggregationUtils.getMedianForLong(value));
@@ -777,7 +769,8 @@ public abstract class ToolsKPIService<R, S> {
 		});
 
 		resultMap.remove(Constant.DEFAULT);
-		return resultMap.entrySet().stream().sorted((i1, i2) -> ((Integer)i2.getValue()).compareTo((Integer) i1.getValue()))
+		return resultMap.entrySet().stream()
+				.sorted((i1, i2) -> ((Integer) i2.getValue()).compareTo((Integer) i1.getValue()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
 

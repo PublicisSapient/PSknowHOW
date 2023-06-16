@@ -49,16 +49,14 @@ import com.publicissapient.kpidashboard.common.repository.rbac.RolesRepository;
 @RunWith(MockitoJUnitRunner.class)
 public class RolesHelperServiceImplTest {
 
-	@InjectMocks
-	private RolesHelperServiceImpl rolesHelperServiceImpl;
-
-	@Mock
-	private RolesRepository rolesRepository;
-
 	RoleData testRoleData = new RoleData();
 	String testId;
 	String testRolename;
 	String testStatus;
+	@InjectMocks
+	private RolesHelperServiceImpl rolesHelperServiceImpl;
+	@Mock
+	private RolesRepository rolesRepository;
 
 	/**
 	 * method includes preprocesses for test cases
@@ -199,7 +197,7 @@ public class RolesHelperServiceImplTest {
 		testId = "5ca455aa70c53c4f50076e34";
 		List<RoleData> a = new ArrayList<RoleData>();
 		a.add(testRoleData);
-		Optional<RoleData> roleDataOpt=Optional.of(testRoleData);
+		Optional<RoleData> roleDataOpt = Optional.of(testRoleData);
 		when(rolesRepository.findById(new ObjectId(testId))).thenReturn(roleDataOpt);
 		ServiceResponse response = rolesHelperServiceImpl.getRoleById(testId);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
@@ -234,8 +232,7 @@ public class RolesHelperServiceImplTest {
 	}
 
 	/**
-	 * 10. Input String id is valid but input roleData has no permissions
-	 * selected.
+	 * 10. Input String id is valid but input roleData has no permissions selected.
 	 *
 	 */
 	@Test
@@ -244,15 +241,14 @@ public class RolesHelperServiceImplTest {
 		testRoleData.setPermissions(new ArrayList<Permissions>());
 		List<RoleData> a = new ArrayList<RoleData>();
 		a.add(testRoleData);
-		Optional<RoleData> roleDataOpt=Optional.of(testRoleData);
+		Optional<RoleData> roleDataOpt = Optional.of(testRoleData);
 		ServiceResponse response = rolesHelperServiceImpl.modifyRoleById(testId, testRoleData);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 		assertEquals(null, response.getData());
 	}
 
 	/**
-	 * 11. Input String id is valid but input roleData has no permissions
-	 * selected.
+	 * 11. Input String id is valid but input roleData has no permissions selected.
 	 *
 	 */
 	@Test
@@ -267,15 +263,15 @@ public class RolesHelperServiceImplTest {
 		testRoleData.setPermissions(permissions);
 		List<RoleData> a = new ArrayList<RoleData>();
 		a.add(testRoleData);
-		Optional<RoleData> roleDataOpt=Optional.of(testRoleData);
+		Optional<RoleData> roleDataOpt = Optional.of(testRoleData);
 		ServiceResponse response = rolesHelperServiceImpl.modifyRoleById(testId, testRoleData);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 		assertEquals(null, response.getData());
 	}
 
 	/**
-	 * 12. Input String id is valid but input roleData has at least one
-	 * permission selected.
+	 * 12. Input String id is valid but input roleData has at least one permission
+	 * selected.
 	 *
 	 */
 	@Test
@@ -291,7 +287,7 @@ public class RolesHelperServiceImplTest {
 		testRoleData.setPermissions(permissions);
 		List<RoleData> a = new ArrayList<RoleData>();
 		a.add(testRoleData);
-		Optional<RoleData> roleDataOpt=Optional.of(testRoleData);
+		Optional<RoleData> roleDataOpt = Optional.of(testRoleData);
 		ServiceResponse response = rolesHelperServiceImpl.modifyRoleById(testId, testRoleData);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(response.getData(), a);
@@ -307,7 +303,7 @@ public class RolesHelperServiceImplTest {
 		testRoleData.setRoleName(null);
 		List<RoleData> a = new ArrayList<RoleData>();
 		a.add(testRoleData);
-		Optional<RoleData> roleDataOpt=Optional.of(testRoleData);
+		Optional<RoleData> roleDataOpt = Optional.of(testRoleData);
 		ServiceResponse response = rolesHelperServiceImpl.modifyRoleById(testId, testRoleData);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 		assertEquals(null, response.getData());
@@ -323,7 +319,7 @@ public class RolesHelperServiceImplTest {
 		testRoleData.setRoleDescription(null);
 		List<RoleData> a = new ArrayList<RoleData>();
 		a.add(testRoleData);
-		Optional<RoleData> roleDataOpt=Optional.of(testRoleData);
+		Optional<RoleData> roleDataOpt = Optional.of(testRoleData);
 		ServiceResponse response = rolesHelperServiceImpl.modifyRoleById(testId, testRoleData);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 		assertEquals(null, response.getData());
@@ -338,7 +334,7 @@ public class RolesHelperServiceImplTest {
 		testId = "5ca455aa70c53c4f50076e34";
 		List<RoleData> a = new ArrayList<RoleData>();
 		a.add(testRoleData);
-		Optional<RoleData> roleDataOpt=Optional.of(testRoleData);
+		Optional<RoleData> roleDataOpt = Optional.of(testRoleData);
 		ServiceResponse response = rolesHelperServiceImpl.modifyRoleById(testId, testRoleData);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(response.getData(), a);

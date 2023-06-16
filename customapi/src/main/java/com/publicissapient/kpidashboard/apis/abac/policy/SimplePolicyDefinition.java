@@ -33,11 +33,12 @@ public class SimplePolicyDefinition implements PolicyDefinition {
 	@Autowired
 	ActionPolicyRuleRepository actionPolicyRuleRepository;
 	private List<ActionPolicyRule> rules;
-	
+
 	@PostConstruct
-	private void init(){
+	private void init() {
 		rules = actionPolicyRuleRepository.findAll();
 	}
+
 	public List<ActionPolicyRule> getAllPolicyRules() {
 		return rules;
 	}

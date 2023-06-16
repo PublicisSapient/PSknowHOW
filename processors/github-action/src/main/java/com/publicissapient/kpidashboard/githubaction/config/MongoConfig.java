@@ -16,39 +16,38 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 @Configuration
 public class MongoConfig {
 
-    @Value("${spring.data.mongodb.host}")
-    private String host;
+	@Value("${spring.data.mongodb.host}")
+	private String host;
 
-    @Value("${spring.data.mongodb.port}")
-    private int port;
+	@Value("${spring.data.mongodb.port}")
+	private int port;
 
-    @Value("${spring.data.mongodb.database}")
-    private String database;
+	@Value("${spring.data.mongodb.database}")
+	private String database;
 
-    @Value("${spring.data.mongodb.username}")
-    private String user;
+	@Value("${spring.data.mongodb.username}")
+	private String user;
 
-    @Value("${spring.data.mongodb.password}")
-    private String password;
+	@Value("${spring.data.mongodb.password}")
+	private String password;
 
-    /**
-     * This method create mongoClient
-     *
-     * @param aesEncryptionService
-     * 		aesEncryptionService
-     * @param gitHubConfig
-     * 		gitHubConfig
-     * @return mongo client
-     */
-    @Bean
-    public MongoClient mongoClient(AesEncryptionService aesEncryptionService, GitHubActionConfig gitHubConfig) {
-        password = aesEncryptionService.decrypt(password, gitHubConfig.getAesEncryptionKey());
-        MongoCredential credential = MongoCredential.createCredential(user, database, password.toCharArray());
-        MongoClientSettings settings = MongoClientSettings.builder()
-                .applyToClusterSettings(builder ->
-                        builder.hosts(Collections.singletonList(new ServerAddress(host, port))))
-                .credential(credential)
-                .build();
-        return MongoClients.create(settings);
-    }
+	/**
+	 * This method create mongoClient
+	 *
+	 * @param aesEncryptionService
+	 *            aesEncryptionService
+	 * @param gitHubConfig
+	 *            gitHubConfig
+	 * @return mongo client
+	 */
+	@Bean
+	public MongoClient mongoClient(AesEncryptionService aesEncryptionService, GitHubActionConfig gitHubConfig) {
+		password = aesEncryptionService.decrypt(password, gitHubConfig.getAesEncryptionKey());
+		MongoCredential credential = MongoCredential.createCredential(user, database, password.toCharArray());
+		MongoClientSettings settings = MongoClientSettings.builder()
+				.applyToClusterSettings(
+						builder -> builder.hosts(Collections.singletonList(new ServerAddress(host, port))))
+				.credential(credential).build();
+		return MongoClients.create(settings);
+	}
 }

@@ -21,10 +21,9 @@ package com.publicissapient.kpidashboard.apis.enums;
 import java.util.Arrays;
 
 public enum JiraFeatureHistory {
-	STORY_ID("storyID"), DEFECT_STORY_ID(
-			"defectStoryID") , CREATED_DATE(
-					"createdDate"), HISTORY_STATUS("historyDetails.status"), STORY_TYPE("storyType"), PROJECT_ID("projectId"),
-	BASIC_PROJECT_CONFIG_ID("basicProjectConfigId"),INVALID("Invalid");
+	STORY_ID("storyID"), DEFECT_STORY_ID("defectStoryID"), CREATED_DATE("createdDate"), HISTORY_STATUS(
+			"historyDetails.status"), STORY_TYPE("storyType"), PROJECT_ID(
+					"projectId"), BASIC_PROJECT_CONFIG_ID("basicProjectConfigId"), INVALID("Invalid");
 
 	private String fieldValueInFeature;
 

@@ -37,8 +37,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -69,6 +67,8 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Iteration Burnups KPI gives a graphical representation of no. of issues
  * planned to be closed each day of iteration, actual count of issues closed day
@@ -80,8 +80,6 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 @Component
 @Slf4j
 public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>, List<Object>, Map<String, Object>> {
-	private static final String SPRINT = "sprint";
-	private static final String ISSUES = "issues";
 	public static final String UNCHECKED = "unchecked";
 	public static final String DUE_DATE = "dueDate";
 	public static final String UPDATE_DATE = "updateDate";
@@ -96,6 +94,8 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 	public static final String FULL_SPRINT_ISSUES = "Full Sprint Issues";
 	public static final String REMOVED_FROM_CLOSED = "Removed";
 	public static final String DOTTED_LINE = "Gap Between Completed and Predicted";
+	private static final String SPRINT = "sprint";
+	private static final String ISSUES = "issues";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	@Autowired
@@ -412,8 +412,8 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 
 			Map<String, LocalDate> maxCompleteAndMinPCDDate = getMaxCompleteAndMinPCDDate(completedIssueMap,
 					potentialDelay, removedIssuesMap);
-			LocalDate maxCompletionDate = maxCompleteAndMinPCDDate.getOrDefault(MAX_COMPLETION,null);
-			LocalDate minimumpredicateddate = maxCompleteAndMinPCDDate.getOrDefault(MIN_PREDICTED,null);
+			LocalDate maxCompletionDate = maxCompleteAndMinPCDDate.getOrDefault(MAX_COMPLETION, null);
+			LocalDate minimumpredicateddate = maxCompleteAndMinPCDDate.getOrDefault(MIN_PREDICTED, null);
 			LocalDate maximumRemovalDate = maxCompleteAndMinPCDDate.get(MAX_REMOVAL);
 
 			List<DataCountGroup> dataCountGroups = new ArrayList<>();

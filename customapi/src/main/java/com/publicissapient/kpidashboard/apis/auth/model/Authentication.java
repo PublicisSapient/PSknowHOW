@@ -31,7 +31,12 @@ import com.google.common.hash.Hashing;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 import com.publicissapient.kpidashboard.common.model.rbac.UserRoleData;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * This class serves as the model for storing credential used for login and
@@ -87,16 +92,6 @@ public class Authentication extends BasicModel {
 	}
 
 	/**
-	 * Sets password.
-	 *
-	 * @param password
-	 *            the password
-	 */
-	public void setPassword(String password) {
-		this.password = hash(password);
-	}
-
-	/**
 	 * Hash string.
 	 *
 	 * @param password
@@ -108,6 +103,16 @@ public class Authentication extends BasicModel {
 			return HASH_PREFIX + Hashing.sha512().hashString(password, StandardCharsets.UTF_8).toString();
 		}
 		return password;
+	}
+
+	/**
+	 * Sets password.
+	 *
+	 * @param password
+	 *            the password
+	 */
+	public void setPassword(String password) {
+		this.password = hash(password);
 	}
 
 	/**

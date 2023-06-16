@@ -43,6 +43,7 @@ import org.springframework.web.client.RestOperations;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
@@ -50,7 +51,6 @@ import com.publicissapient.kpidashboard.jenkins.config.Constants;
 import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
 import com.publicissapient.kpidashboard.jenkins.util.ProcessorUtils;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,13 +58,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JenkinsDeployClient implements JenkinsClient {
 
-	private final RestOperations restOperations;
 	private static final String DEPLOYMENT_URL = "/job/%s/api/json?tree=builds[number,status,timestamp,id,result,duration,actions[parameters[name,value]]]";
-
 	private static final String ID = "id";
 	private static final String ACTIONS = "actions";
 	private static final String PARAMETERS = "parameters";
 	private static final String VALUE = "value";
+	private final RestOperations restOperations;
 
 	public JenkinsDeployClient(RestOperationsFactory<RestOperations> restOperationsFactory) {
 		this.restOperations = restOperationsFactory.getTypeInstance();

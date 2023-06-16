@@ -76,14 +76,14 @@ public class DataCleanUpServiceFactoryTest {
 	}
 
 	@Test(expected = NotImplementedException.class)
-    public void getService_Jira() {
-        dataCleanUpServiceFactory.getService(ProcessorConstants.JIRA);
-    }
+	public void getService_Jira() {
+		dataCleanUpServiceFactory.getService(ProcessorConstants.JIRA);
+	}
 
-    @Test(expected = IllegalStateException.class)
-    public void getService_UnknownTool() {
-        dataCleanUpServiceFactory.getService("Test");
-    }
+	@Test(expected = IllegalStateException.class)
+	public void getService_UnknownTool() {
+		dataCleanUpServiceFactory.getService("Test");
+	}
 
 	@Test(expected = NotImplementedException.class)
 	public void getService_Azure() {
@@ -116,26 +116,28 @@ public class DataCleanUpServiceFactoryTest {
 
 	@Test
 	public void getService_AzurePipeline() {
-		ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.AZUREPIPELINE);
+		ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory
+				.getService(ProcessorConstants.AZUREPIPELINE);
 		assertTrue(dataCleanUpService instanceof BuildDataCleanUpService);
 	}
 
-    @Test
-    public void getService_BitBucket() {
-        ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.BITBUCKET);
-        assertTrue(dataCleanUpService instanceof ScmDataCleanUpService);
-    }
+	@Test
+	public void getService_BitBucket() {
+		ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.BITBUCKET);
+		assertTrue(dataCleanUpService instanceof ScmDataCleanUpService);
+	}
 
-    @Test
-    public void getService_Gitlab() {
-        ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.GITLAB);
-        assertTrue(dataCleanUpService instanceof ScmDataCleanUpService);
-    }
-    @Test
-    public void getService_AzureRepo() {
-        ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.AZUREREPO);
-        assertTrue(dataCleanUpService instanceof ScmDataCleanUpService);
-    }
+	@Test
+	public void getService_Gitlab() {
+		ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.GITLAB);
+		assertTrue(dataCleanUpService instanceof ScmDataCleanUpService);
+	}
+
+	@Test
+	public void getService_AzureRepo() {
+		ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.AZUREREPO);
+		assertTrue(dataCleanUpService instanceof ScmDataCleanUpService);
+	}
 
 	@Test
 	public void getService_ZEPHYR() {
@@ -148,6 +150,5 @@ public class DataCleanUpServiceFactoryTest {
 		ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(ProcessorConstants.JIRA_TEST);
 		assertTrue(dataCleanUpService instanceof ZephyrDataCleanUpService);
 	}
-
 
 }

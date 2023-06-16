@@ -20,18 +20,18 @@ package com.publicissapient.kpidashboard.zephyr.client;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.zephyr.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.common.model.zephyr.ZephyrTestCaseDTO;
+import com.publicissapient.kpidashboard.zephyr.model.ProjectConfFieldMapping;
 
 /**
- * Client code which fetches the Zephyr related information from the Zephyr server or
- * cloud using the REST services
+ * Client code which fetches the Zephyr related information from the Zephyr
+ * server or cloud using the REST services
  */
 public interface ZephyrClient {
 
 	/**
-	 * Method to fetch list of test cases from Zephyr server/cloud based on
-	 * project key
+	 * Method to fetch list of test cases from Zephyr server/cloud based on project
+	 * key
 	 *
 	 * @param startAt
 	 * @param projectConfig

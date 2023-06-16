@@ -19,9 +19,7 @@
 package com.publicissapient.kpidashboard.common.model.rbac;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;

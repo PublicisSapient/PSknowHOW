@@ -32,19 +32,19 @@ public enum Role {
 		this.setRoleValue(roleValue);
 	}
 
-	private void setRoleValue(String roleValue) {
-		this.roleValue = roleValue;
+	public static Role getRoleByValue(String value) {
+		return Arrays.stream(Role.values()).filter(t -> t.getRoleValue().equalsIgnoreCase(value)).findAny().get();
+	}
+
+	public static Map<String, String> getAllRoles() {
+		return Arrays.stream(Role.values()).collect(Collectors.toMap(Role::name, Role::getRoleValue));
 	}
 
 	public String getRoleValue() {
 		return roleValue;
 	}
 
-	public static Role getRoleByValue(String value) {
-		return Arrays.stream(Role.values()).filter(t -> t.getRoleValue().equalsIgnoreCase(value)).findAny().get();
-	}
-
-	public static Map<String, String> getAllRoles() {
-		return Arrays.stream(Role.values()).collect(Collectors.toMap(Role::name,Role::getRoleValue));
+	private void setRoleValue(String roleValue) {
+		this.roleValue = roleValue;
 	}
 }

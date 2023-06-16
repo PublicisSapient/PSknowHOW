@@ -64,8 +64,8 @@ public class ProcessorItemsDataFactory {
 		}
 	}
 
-    public List<ProcessorItem> getProcessorItemList() {
-        return processorItemsDataFactory;
-    }
+	public List<ProcessorItem> getProcessorItemList() {
+		return processorItemsDataFactory;
+	}
 
 }

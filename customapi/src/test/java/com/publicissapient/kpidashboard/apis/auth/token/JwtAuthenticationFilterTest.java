@@ -42,19 +42,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @RunWith(MockitoJUnitRunner.class)
 public class JwtAuthenticationFilterTest {
 
-	@InjectMocks
-	private JwtAuthenticationFilter filter;
-
-	@Mock
-	private TokenAuthenticationService authService;
-
-	@Mock
-	private CookieUtil cookieUtil;
-
 	@Mock
 	HttpServletRequest request;
 	@Mock
 	HttpServletResponse response;
+	@InjectMocks
+	private JwtAuthenticationFilter filter;
+	@Mock
+	private TokenAuthenticationService authService;
+	@Mock
+	private CookieUtil cookieUtil;
 	@Mock
 	private FilterChain filterChain;
 
@@ -71,7 +68,8 @@ public class JwtAuthenticationFilterTest {
 
 	@Test
 	public void testDoFilter() throws Exception {
-		when(authService.getAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(authentication);
+		when(authService.getAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class)))
+				.thenReturn(authentication);
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(cookie);
 		filter.doFilter(request, response, filterChain);
 		assertNotNull(SecurityContextHolder.getContext().getAuthentication());

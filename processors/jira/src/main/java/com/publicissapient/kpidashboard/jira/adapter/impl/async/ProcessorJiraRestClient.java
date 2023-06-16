@@ -23,13 +23,13 @@ import com.atlassian.jira.rest.client.api.SearchRestClient;
 import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.client.CustomAsynchronousIssueRestClient;
 
 public interface ProcessorJiraRestClient extends JiraRestClient {
-    /**
-     * Gets Processor Search Client
-     *
-     * @return the com.atlassian.jira.rest.client.api handling search (e.g. JQL)
-     */
-    SearchRestClient getProcessorSearchClient();
+	/**
+	 * Gets Processor Search Client
+	 *
+	 * @return the com.atlassian.jira.rest.client.api handling search (e.g. JQL)
+	 */
+	SearchRestClient getProcessorSearchClient();
 
-    CustomAsynchronousIssueRestClient getCustomIssueClient();
+	CustomAsynchronousIssueRestClient getCustomIssueClient();
 
-    }
+}

@@ -18,8 +18,38 @@
 
 package com.publicissapient.kpidashboard.apis.common.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationFixture;
@@ -45,89 +75,45 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserInfoServiceImplTest {
 
-	@Mock
-	private UserInfoRepository userInfoRepository;
-
+	private static final String ROLE_VIEWER = "ROLE_VIEWER";
+	private static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
 	@Mock
 	AuthenticationService authenticationService;
-
 	@Mock
 	UserTokenDeletionService userTokenDeletionService;
-
 	@Mock
 	UserBoardConfigService userBoardConfigService;
-
 	@Mock
 	CacheService cacheService;
-
-	@InjectMocks
-	private UserInfoServiceImpl service;
-
-	@Mock
-	private AuthProperties authProperties;
-
-	@Mock
-	private AuthenticationRepository authenticationRepository;
-
-	@Mock
-	private UserInfoCustomRepository userInfoCustomRepository;
-
-	@Mock
-	private ProjectBasicConfigService projectBasicConfigService;
-	
-	@Mock
-	private ProjectAccessManager projectAccessManager;
-
-	@Mock
-	private HttpServletRequest httpServletRequest;
-
-	@Mock
-	private UserTokenReopository userTokenReopository;
-
-	@Mock
-	private CookieUtil cookieUtil;
-
-	@Mock
-	private Cookie cookie;
-	
 	@Mock
 	TokenAuthenticationService tokenAuthenticationService;
+	@Mock
+	private UserInfoRepository userInfoRepository;
+	@InjectMocks
+	private UserInfoServiceImpl service;
+	@Mock
+	private AuthProperties authProperties;
+	@Mock
+	private AuthenticationRepository authenticationRepository;
+	@Mock
+	private UserInfoCustomRepository userInfoCustomRepository;
+	@Mock
+	private ProjectBasicConfigService projectBasicConfigService;
+	@Mock
+	private ProjectAccessManager projectAccessManager;
+	@Mock
+	private HttpServletRequest httpServletRequest;
+	@Mock
+	private UserTokenReopository userTokenReopository;
+	@Mock
+	private CookieUtil cookieUtil;
+	@Mock
+	private Cookie cookie;
 
-	private static final String ROLE_VIEWER="ROLE_VIEWER";
-	private static final String ROLE_SUPERADMIN="ROLE_SUPERADMIN";
 	@Before
 	public void setUp() {
 	}
@@ -220,8 +206,7 @@ public class UserInfoServiceImplTest {
 	}
 
 	/**
-	 * 1. if username present in the db then update it with new one else return
-	 * null
+	 * 1. if username present in the db then update it with new one else return null
 	 *
 	 */
 
@@ -239,65 +224,64 @@ public class UserInfoServiceImplTest {
 
 	}
 
-
 	@Test
-	public void getUserInfoWithEmailTest(){
+	public void getUserInfoWithEmailTest() {
 		UserInfo user = new UserInfo();
 		user.setUsername("standarduser");
 		user.setAuthType(AuthType.STANDARD);
-		
+
 		Authentication auth = new Authentication();
 		auth.setUsername("username");
 		auth.setEmail("mail@mail.com");
-		
+
 		when(userInfoRepository.findByUsernameAndAuthType(anyString(), any())).thenReturn(user);
 		when(authenticationRepository.findByUsername(anyString())).thenReturn(auth);
-		
-		UserInfo userInfo =  service.getUserInfoWithEmail(anyString(), any());
+
+		UserInfo userInfo = service.getUserInfoWithEmail(anyString(), any());
 		assertNotNull(userInfo);
 		assertNotNull(userInfo.getEmailAddress());
 	}
-	
+
 	@Test
-	public void getUserInfoWithEmailTest_userNotFound(){
+	public void getUserInfoWithEmailTest_userNotFound() {
 		when(userInfoRepository.findByUsernameAndAuthType(anyString(), any())).thenReturn(null);
-		
-		UserInfo userInfo =  service.getUserInfoWithEmail(anyString(), any());
+
+		UserInfo userInfo = service.getUserInfoWithEmail(anyString(), any());
 		assertNull(userInfo);
 	}
-	
+
 	@Test
-	public void getUserInfoWithEmailTest_ldap(){
+	public void getUserInfoWithEmailTest_ldap() {
 		UserInfo user = new UserInfo();
 		user.setUsername("standarduser");
 		user.setAuthType(AuthType.LDAP);
 		user.setEmailAddress("email@email.com");
-		
+
 		Authentication auth = new Authentication();
 		auth.setUsername("username");
 		auth.setEmail("mail@mail.com");
-		
+
 		when(userInfoRepository.findByUsernameAndAuthType(anyString(), any())).thenReturn(user);
-		
-		UserInfo userInfo =  service.getUserInfoWithEmail(anyString(), any());
+
+		UserInfo userInfo = service.getUserInfoWithEmail(anyString(), any());
 		assertNotNull(userInfo);
 		assertNotNull(userInfo.getEmailAddress());
 	}
-	
+
 	@Test
-	public void getUserInfoWithEmailTest_authNotFound(){
+	public void getUserInfoWithEmailTest_authNotFound() {
 		UserInfo user = new UserInfo();
 		user.setUsername("standarduser");
 		user.setAuthType(AuthType.STANDARD);
-		
+
 		when(userInfoRepository.findByUsernameAndAuthType(anyString(), any())).thenReturn(user);
 		when(authenticationRepository.findByUsername(anyString())).thenReturn(null);
-		
-		UserInfo userInfo =  service.getUserInfoWithEmail(anyString(), any());
+
+		UserInfo userInfo = service.getUserInfoWithEmail(anyString(), any());
 		assertNotNull(userInfo);
 		assertNull(userInfo.getEmailAddress());
 	}
-	
+
 	@Test
 	public void getUserInfoFromUserNameAndAuthType() {
 		String username = "user";
@@ -310,13 +294,13 @@ public class UserInfoServiceImplTest {
 		assertEquals(username, result.getUsername());
 		assertEquals(authType, result.getAuthType());
 	}
-	
+
 	@Test
 	public void getAllUserInfoNoData() {
 		ServiceResponse result = service.getAllUserInfo();
-		assertEquals(((ArrayList<UserInfo>)result.getData()).size(),0);
+		assertEquals(((ArrayList<UserInfo>) result.getData()).size(), 0);
 	}
-	
+
 	@Test
 	public void getAllUserInfoWithData() {
 		UserInfo testUser = new UserInfo();
@@ -326,11 +310,9 @@ public class UserInfoServiceImplTest {
 		userInfoList.add(testUser);
 		when(userInfoRepository.findAll()).thenReturn(userInfoList);
 		ServiceResponse result = service.getAllUserInfo();
-		assertEquals(((ArrayList<UserInfo>)result.getData()).size(),1);
+		assertEquals(((ArrayList<UserInfo>) result.getData()).size(), 1);
 	}
 
-
-	
 	@Test
 	public void validateHasRoleSuperadmin() {
 		ProjectsAccess pa = new ProjectsAccess();
@@ -341,59 +323,61 @@ public class UserInfoServiceImplTest {
 		u.setProjectsAccess(paList);
 		assertTrue(service.hasRoleSuperadmin(u));
 	}
-	
+
 	@Test
 	public void validateUpdateUserRole() {
 		ProjectsAccess pa = new ProjectsAccess();
 		pa.setRole(ROLE_SUPERADMIN);
 		pa.setAccessNodes(new ArrayList<>());
-		
+
 		List<ProjectsAccess> paList = new ArrayList<>();
 		paList.add(pa);
-		
+
 		UserInfo testUser = new UserInfo();
 		testUser.setUsername("User");
 		testUser.setProjectsAccess(paList);
-		
+
 		List<String> auth = new ArrayList<>();
 		auth.add(ROLE_SUPERADMIN);
 		auth.add(ROLE_VIEWER);
 		testUser.setAuthorities(auth);
-		
+
 		UserInfo userInfoDTO = new UserInfo();
 		userInfoDTO.setProjectsAccess(paList);
-		
+
 		when(userInfoRepository.findByUsername("User")).thenReturn(testUser);
-		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class))).thenReturn(testUser);
+		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class)))
+				.thenReturn(testUser);
 		ServiceResponse result = service.updateUserRole("User", userInfoDTO);
 		assertTrue(result.getSuccess());
 	}
-	
+
 	@Test
 	public void validateUpdateUserRole_Null_UserInfo() {
 		when(userInfoRepository.findByUsername("User")).thenReturn(null);
 		ServiceResponse result = service.updateUserRole("User", new UserInfo());
 		assertFalse(result.getSuccess());
 	}
-	
+
 	@Test
 	public void validateUpdateUserRole_NotSuperAdmin() {
 		ProjectsAccess pa = new ProjectsAccess();
 		pa.setRole("Role");
 		pa.setAccessNodes(new ArrayList<>());
-		
+
 		List<ProjectsAccess> paList = new ArrayList<>();
 		paList.add(pa);
-		
+
 		UserInfo testUser = new UserInfo();
 		testUser.setUsername("User");
 		testUser.setProjectsAccess(paList);
-		
+
 		UserInfo u = new UserInfo();
 		u.setProjectsAccess(paList);
-		
+
 		when(userInfoRepository.findByUsername("User")).thenReturn(testUser);
-		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class))).thenReturn(testUser);
+		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class)))
+				.thenReturn(testUser);
 		ServiceResponse result = service.updateUserRole("User", u);
 		assertTrue(result.getSuccess());
 	}
@@ -410,7 +394,7 @@ public class UserInfoServiceImplTest {
 	}
 
 	@Test
-	public void getUserInfoByAuthType(){
+	public void getUserInfoByAuthType() {
 		when(userInfoRepository.findByAuthType("STANDARD")).thenReturn(Arrays.asList(new UserInfo()));
 		service.getUserInfoByAuthType("STANDARD");
 		verify(userInfoRepository, times(1)).findByAuthType("STANDARD");
@@ -422,7 +406,7 @@ public class UserInfoServiceImplTest {
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
 				new Cookie("authCookie", AuthenticationFixture.getJwtToken("dummyUser", "dummyData", 100000L)));
 		when(userTokenReopository.findByUserToken(anyString()))
-				.thenReturn(new UserTokenData("dummyUser", "dummyToken",null));
+				.thenReturn(new UserTokenData("dummyUser", "dummyToken", null));
 		when(authenticationRepository.findByUsername(anyString())).thenReturn(new Authentication());
 
 		user.setUsername("dummyUser");

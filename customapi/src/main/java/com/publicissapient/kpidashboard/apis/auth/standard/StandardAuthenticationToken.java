@@ -30,7 +30,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 
 	private final transient Object principal;
 	private transient Object credentials;
-	
+
 	/**
 	 * 
 	 * @param principal
@@ -43,6 +43,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 		this.credentials = credentials;
 		setAuthenticated(false);
 	}
+
 	/**
 	 * 
 	 * @param principal
@@ -57,6 +58,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 		this.credentials = credentials;
 		super.setAuthenticated(true);
 	}
+
 	/**
 	 * @return credentials
 	 */
@@ -64,6 +66,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 	public Object getCredentials() {
 		return this.credentials;
 	}
+
 	/**
 	 * @return principal
 	 */
@@ -71,9 +74,10 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 	public Object getPrincipal() {
 		return this.principal;
 	}
+
 	/**
-	 * Sets authenticated false if isAuthneticated is false,
-	 * Throws IllegalArgumentException if isAuthneticated is true.
+	 * Sets authenticated false if isAuthneticated is false, Throws
+	 * IllegalArgumentException if isAuthneticated is true.
 	 * 
 	 */
 	@Override
@@ -85,6 +89,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 
 		super.setAuthenticated(false);
 	}
+
 	/**
 	 * Erases credentials and sets credentials object to null
 	 */
@@ -93,12 +98,13 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 		super.eraseCredentials();
 		credentials = null;
 	}
+
 	/**
-	 * Overridden method of Object's equal method
-	 * compares principal and credentials object to check 
-	 * StandardAuthenticationToken is equal
-	 * @return true if invoked object's principal and credentials
-	 * are matching, false if they are not matching
+	 * Overridden method of Object's equal method compares principal and credentials
+	 * object to check StandardAuthenticationToken is equal
+	 * 
+	 * @return true if invoked object's principal and credentials are matching,
+	 *         false if they are not matching
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -114,8 +120,10 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 		StandardAuthenticationToken that = (StandardAuthenticationToken) obj;
 		return Objects.equals(principal, that.principal) && Objects.equals(credentials, that.credentials);
 	}
+
 	/**
 	 * Overridden method of Object's hashcode method
+	 * 
 	 * @return hashcode
 	 */
 	@Override

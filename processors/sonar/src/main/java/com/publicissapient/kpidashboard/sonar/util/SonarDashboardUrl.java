@@ -26,32 +26,34 @@ public class SonarDashboardUrl {
 
 	private static final String SLASH = "/";
 	private static final String PATH = "dashboard/index/";
-	
+
 	private final String projectUrl;
 	private final String instanceId;
 
 	/**
 	 * Construct object with project url and instanceId.
-	 * @param projectUrl the project URL
-	 * @param instanceId the instance Id
+	 * 
+	 * @param projectUrl
+	 *            the project URL
+	 * @param instanceId
+	 *            the instance Id
 	 */
 	public SonarDashboardUrl(String projectUrl, String instanceId) {
 		this.projectUrl = projectUrl;
 		this.instanceId = instanceId;
 	}
-	
+
 	/**
 	 * Overridden method of String's toString.
 	 */
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(projectUrl);
-		if(!projectUrl.endsWith(SLASH)) {
+		if (!projectUrl.endsWith(SLASH)) {
 			sb.append(SLASH);
 		}
-		
-		sb.append(PATH)
-		  .append(instanceId);
+
+		sb.append(PATH).append(instanceId);
 		return sb.toString();
 	}
 }

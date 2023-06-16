@@ -18,7 +18,11 @@
 
 package com.publicissapient.kpidashboard.common.repository.excel;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -27,10 +31,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Repository for {@link CapacityKpiData}
@@ -40,48 +41,49 @@ import java.util.regex.Pattern;
 @Slf4j
 public class CapacityKpiDataRepositoryImpl implements CapacityKpiDataCustomRepository {
 
-    @Autowired
-    private MongoOperations operations;
-    private static final String CONFIG_ID = "basicProjectConfigId";
+	private static final String CONFIG_ID = "basicProjectConfigId";
+	@Autowired
+	private MongoOperations operations;
 
-    /*
-     * Find Data by filters
-     *
-     * @see com.publicissapient.kpidashboard.repository.CapacityKpiDataCustomRepository#
-     * findByFilters(java.util.Map)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CapacityKpiData> findByFilters(Map<String, Object> mapofFilters,
-                                               Map<String, Map<String, Object>> uniqueProjectMap) {
-        Criteria criteria = new Criteria();
+	/*
+	 * Find Data by filters
+	 *
+	 * @see
+	 * com.publicissapient.kpidashboard.repository.CapacityKpiDataCustomRepository#
+	 * findByFilters(java.util.Map)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<CapacityKpiData> findByFilters(Map<String, Object> mapofFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap) {
+		Criteria criteria = new Criteria();
 
-        // map of common filters Project, Project and Sprint
-        for (Map.Entry<String, Object> entry : mapofFilters.entrySet()) {
-            if (CollectionUtils.isNotEmpty((List<Pattern>) entry.getValue())) {
-                criteria = criteria.and(entry.getKey()).in((List<Pattern>) entry.getValue());
-            }
-        }
-        // Project level storyType filters
-        List<Criteria> projectCriteriaList = new ArrayList<>();
-        uniqueProjectMap.forEach((project, filterMap) -> {
-            Criteria projectCriteria = new Criteria();
-            projectCriteria.and(CONFIG_ID).is(project);
-            filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
-            projectCriteriaList.add(projectCriteria);
+		// map of common filters Project, Project and Sprint
+		for (Map.Entry<String, Object> entry : mapofFilters.entrySet()) {
+			if (CollectionUtils.isNotEmpty((List<Pattern>) entry.getValue())) {
+				criteria = criteria.and(entry.getKey()).in((List<Pattern>) entry.getValue());
+			}
+		}
+		// Project level storyType filters
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			projectCriteria.and(CONFIG_ID).is(project);
+			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
+			projectCriteriaList.add(projectCriteria);
 
-        });
-        Query query = new Query(criteria);
-        if (CollectionUtils.isNotEmpty(projectCriteriaList)) {
-            Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-                    .orOperator(projectCriteriaList.toArray(new Criteria[0]));
-            Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
-            query = new Query(criteriaProjectLevelAdded);
-        }
-        List<CapacityKpiData> data = operations.find(query, CapacityKpiData.class);
-        if (CollectionUtils.isEmpty(data)) {
-            log.info("No Data found for filters");
-        }
-        return data;
-    }
+		});
+		Query query = new Query(criteria);
+		if (CollectionUtils.isNotEmpty(projectCriteriaList)) {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+			query = new Query(criteriaProjectLevelAdded);
+		}
+		List<CapacityKpiData> data = operations.find(query, CapacityKpiData.class);
+		if (CollectionUtils.isEmpty(data)) {
+			log.info("No Data found for filters");
+		}
+		return data;
+	}
 }

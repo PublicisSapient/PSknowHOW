@@ -2,7 +2,7 @@ package com.publicissapient.kpidashboard.jira.client.sprint;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,23 +35,23 @@ class SprintClientImplTest {
 
 	@Mock
 	private SprintRepository sprintRepository;
-	
+
 	@Mock
 	private JiraProcessorRepository jiraProcessorRepository;
-	
+
 	@Mock
 	private JiraProcessorConfig jiraProcessorConfig;
-		
+
 	@InjectMocks
 	private SprintClientImpl sprintClientImpl;
-	
+
 	@Mock
 	private JiraAdapter jiraAdapter;
-	
+
 	@BeforeEach
 	public void setUp() throws Exception {
 	}
-	
+
 	@Test
 	void validateAndCollectIssuesScrum() throws Exception {
 		JiraToolConfig projectToolConfig = new JiraToolConfig();
@@ -61,7 +61,7 @@ class SprintClientImplTest {
 		conn.get().setBaseUrl("https://abcd.com/jira");
 		conn.get().setUsername("test");
 		conn.get().setPassword("testPassword");
-		
+
 		BoardDetails jiraBoard = new BoardDetails();
 		jiraBoard.setBoardId("11856");
 		jiraBoard.setBoardName("TEST");
@@ -69,18 +69,17 @@ class SprintClientImplTest {
 		jiraBoardList.add(jiraBoard);
 		projectToolConfig.setBoards(jiraBoardList);
 		projectToolConfig.setConnection(conn);
-		
+
 		JiraProcessor processor = new JiraProcessor();
 		processor.setId(new ObjectId("5ba8e182d3735010e7f1fa45"));
-		
-		
+
 		ProjectConfFieldMapping projectConfig = ProjectConfFieldMapping.builder().build();
 		projectConfig.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
 		projectConfig.setJira(projectToolConfig);
 		when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("abxg");
 		when(sprintRepository.findTopByBasicProjectConfigIdAndState(any(), anyString())).thenReturn(null);
 		when(jiraProcessorRepository.findByProcessorName(anyString())).thenReturn(processor);
-		sprintClientImpl.processSprints(projectConfig, getSprintDetails(),jiraAdapter);
+		sprintClientImpl.processSprints(projectConfig, getSprintDetails(), jiraAdapter);
 	}
 
 	@Test
@@ -104,7 +103,6 @@ class SprintClientImplTest {
 		JiraProcessor processor = new JiraProcessor();
 		processor.setId(new ObjectId("5ba8e182d3735010e7f1fa45"));
 
-
 		ProjectConfFieldMapping projectConfig = ProjectConfFieldMapping.builder().build();
 		projectConfig.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
 		projectConfig.setJira(projectToolConfig);
@@ -119,7 +117,7 @@ class SprintClientImplTest {
 		when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("abxg");
 		when(sprintRepository.findBySprintIDIn(any())).thenReturn(Arrays.asList(sprintDetails));
 		when(jiraProcessorRepository.findByProcessorName(anyString())).thenReturn(processor);
-		sprintClientImpl.processSprints(projectConfig, getSprintDetails(),jiraAdapter);
+		sprintClientImpl.processSprints(projectConfig, getSprintDetails(), jiraAdapter);
 	}
 
 	@Test
@@ -143,7 +141,6 @@ class SprintClientImplTest {
 		JiraProcessor processor = new JiraProcessor();
 		processor.setId(new ObjectId("5ba8e182d3735010e7f1fa45"));
 
-
 		ProjectConfFieldMapping projectConfig = ProjectConfFieldMapping.builder().build();
 		projectConfig.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
 		projectConfig.setJira(projectToolConfig);
@@ -158,10 +155,10 @@ class SprintClientImplTest {
 		when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("abxg");
 		when(sprintRepository.findBySprintIDIn(any())).thenReturn(Arrays.asList(sprintDetails));
 		when(jiraProcessorRepository.findByProcessorName(anyString())).thenReturn(processor);
-		sprintClientImpl.processSprints(projectConfig, getSprintDetails(),jiraAdapter);
+		sprintClientImpl.processSprints(projectConfig, getSprintDetails(), jiraAdapter);
 	}
-	
-	private Set<SprintDetails> getSprintDetails(){
+
+	private Set<SprintDetails> getSprintDetails() {
 		Set<SprintDetails> set = new HashSet<>();
 		SprintDetails sprintDetails = new SprintDetails();
 		sprintDetails.setSprintID("asprintid");
@@ -172,5 +169,5 @@ class SprintClientImplTest {
 		set.add(sprintDetails);
 		return set;
 	}
-	
+
 }

@@ -23,9 +23,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 
-
 /**
  * This class provides utility methods for authentication.
+ * 
  * @author anisingh4
  */
 public final class AuthenticationUtil {

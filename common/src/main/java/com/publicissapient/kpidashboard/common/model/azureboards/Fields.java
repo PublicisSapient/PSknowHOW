@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 		"Microsoft.VSTS.Common.ResolvedReason", "Microsoft.VSTS.Common.Priority", "Microsoft.VSTS.Common.Severity",
 		"Microsoft.VSTS.Common.ValueArea", "WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column",
 		"WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column.Done", "Microsoft.VSTS.TCM.SystemInfo",
-		"Microsoft.VSTS.TCM.ReproSteps", "System.Tags" , "Microsoft.VSTS.Common.DueDate" })
+		"Microsoft.VSTS.TCM.ReproSteps", "System.Tags", "Microsoft.VSTS.Common.DueDate" })
 public class Fields {
 
 	@JsonProperty("System.AreaPath")

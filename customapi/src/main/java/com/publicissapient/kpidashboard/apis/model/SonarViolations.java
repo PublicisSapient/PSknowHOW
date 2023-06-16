@@ -30,42 +30,50 @@ import lombok.Setter;
 @Setter
 @Data
 @NoArgsConstructor
-@SuppressWarnings({"squid:S00100", "squid:S00117", "squid:S00116"}) //to avoid sonar for _class
+@SuppressWarnings({ "squid:S00100", "squid:S00117", "squid:S00116" }) // to avoid sonar for _class
 public class SonarViolations {
-    private Long info;
-    private Long minor;
-    private Long major;
-    private Long blocker;
-    private Long critical;
-    private String sprintBeginDate;
-    private String kanbanDate;
-    //This field is used when object is inserting in mongo from json data if the field is Object type.
-    private String _class; //NOPMD
+	private Long info;
+	private Long minor;
+	private Long major;
+	private Long blocker;
+	private Long critical;
+	private String sprintBeginDate;
+	private String kanbanDate;
+	// This field is used when object is inserting in mongo from json data if the
+	// field is Object type.
+	private String _class; // NOPMD
 
-    /**
-     * Instantiates a new Sonar violations.
-     *
-     * @param value the value
-     */
-    public SonarViolations(Long value) {
-        this.info = value;
-        this.minor = value;
-        this.major = value;
-        this.blocker = value;
-        this.critical = value;
-    }
+	/**
+	 * Instantiates a new Sonar violations.
+	 *
+	 * @param value
+	 *            the value
+	 */
+	public SonarViolations(Long value) {
+		this.info = value;
+		this.minor = value;
+		this.major = value;
+		this.blocker = value;
+		this.critical = value;
+	}
 
-    /**
-     * Overridden method of String's toString()
-     *
-     * @return SonarViloations object with <ul><li>info</li>
-     * <li>minor</li><li>major</li><li>blocker</li><li>critical</li></ul>
-     * whenever toString() method is invoked
-     */
-    @Override
-    public String toString() {
-        return "info=" + info + "\nminor=" + minor + "\nmajor=" + major + "\nblocker=" + blocker + "\ncritical="
-                + critical;
-    }
+	/**
+	 * Overridden method of String's toString()
+	 *
+	 * @return SonarViloations object with
+	 *         <ul>
+	 *         <li>info</li>
+	 *         <li>minor</li>
+	 *         <li>major</li>
+	 *         <li>blocker</li>
+	 *         <li>critical</li>
+	 *         </ul>
+	 *         whenever toString() method is invoked
+	 */
+	@Override
+	public String toString() {
+		return "info=" + info + "\nminor=" + minor + "\nmajor=" + major + "\nblocker=" + blocker + "\ncritical="
+				+ critical;
+	}
 
 }

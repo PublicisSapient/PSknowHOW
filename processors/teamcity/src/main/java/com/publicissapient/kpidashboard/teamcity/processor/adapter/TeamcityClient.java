@@ -24,36 +24,37 @@ import java.util.Set;
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.application.Build;
-import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 
 /**
  * Client for fetching job and build information from Teamcity.
  */
 public interface TeamcityClient {
 
-    /**
-     * Finds all of the configured jobs for a given instance and returns the set of
-     * builds for each job. At a minimum, the number and url of each Build will be
-     * populated.
-     *
-     * @param teamcityServer the URL for the Teamcity instance
-     * @return a summary of every build for each job on the instance
-     */
-    Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection teamcityServer);
+	/**
+	 * Finds all of the configured jobs for a given instance and returns the set of
+	 * builds for each job. At a minimum, the number and url of each Build will be
+	 * populated.
+	 *
+	 * @param teamcityServer
+	 *            the URL for the Teamcity instance
+	 * @return a summary of every build for each job on the instance
+	 */
+	Map<ObjectId, Set<Build>> getInstanceJobs(ProcessorToolConnection teamcityServer);
 
-    /**
-     * Fetch full populated build information for a build.
-     *
-     * @param buildUrl
-     * 		the url of the build
-     * @param instanceUrl
-     * 		the url of Teamcity server
-     * @param teamcityServer
-     * 		the teamcity server
-     * @param proBasicConfig
-     * @return a Build instance or null
-     */
-    Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,
-            ProjectBasicConfig proBasicConfig);
+	/**
+	 * Fetch full populated build information for a build.
+	 *
+	 * @param buildUrl
+	 *            the url of the build
+	 * @param instanceUrl
+	 *            the url of Teamcity server
+	 * @param teamcityServer
+	 *            the teamcity server
+	 * @param proBasicConfig
+	 * @return a Build instance or null
+	 */
+	Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,
+			ProjectBasicConfig proBasicConfig);
 }

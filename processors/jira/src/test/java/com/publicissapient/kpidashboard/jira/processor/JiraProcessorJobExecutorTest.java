@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -57,43 +56,32 @@ import com.publicissapient.kpidashboard.jira.util.AlphanumComparator;
 public class JiraProcessorJobExecutorTest {
 
 	private final ObjectId PROCESSORID = new ObjectId("5e16dc92f1aab3fbb1b198f3");
-	@Mock
-	private ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	private JiraProcessorRepository issueProcessorRepository;
-
-	@Mock
-	private JiraProcessorConfig jiraProcessorConfig;
-
-	@Mock
-	private IssueOfflineTraceLogsRepository issueOfflineTraceLogsRepository;
-
-	@Mock
-	private FieldMappingRepository fieldMappingRepository;
-
-	@Mock
-	private JiraRestClientFactory jiraRestClientFactory;
-	@Mock
-	private AlphanumComparator alphanumComparator;
-
-	@Mock
-	private JiraIssueClientFactory jiraIssueClientFactory;
-
-	@Spy
-	private List<ModeBasedProcessor> modeBasedProcessors = new ArrayList<ModeBasedProcessor>();
-
 	List<ModeBasedProcessor> list = new ArrayList<>();
-
 	@InjectMocks
 	JiraProcessorJobExecutor jiraProcessorJobExecutor;
-
 	@InjectMocks
 	OnlineDataProcessorImpl onlineDataProcessor;
 	@InjectMocks
 	OfflineDataProcessorImpl offlineDataProcessor;
-	
 	List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+	@Mock
+	private ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	private JiraProcessorRepository issueProcessorRepository;
+	@Mock
+	private JiraProcessorConfig jiraProcessorConfig;
+	@Mock
+	private IssueOfflineTraceLogsRepository issueOfflineTraceLogsRepository;
+	@Mock
+	private FieldMappingRepository fieldMappingRepository;
+	@Mock
+	private JiraRestClientFactory jiraRestClientFactory;
+	@Mock
+	private AlphanumComparator alphanumComparator;
+	@Mock
+	private JiraIssueClientFactory jiraIssueClientFactory;
+	@Spy
+	private List<ModeBasedProcessor> modeBasedProcessors = new ArrayList<ModeBasedProcessor>();
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -131,7 +119,7 @@ public class JiraProcessorJobExecutorTest {
 		String localDir = currentDirectory + "\\src\\test\\resources\\offlineData";
 		when(jiraProcessorConfig.getJsonFileName()).thenReturn(localDir);
 		jiraProcessorJobExecutor.setProjectsBasicConfigIds(
-				Arrays.asList("604092b52b424d5e90d39342","604092b52b424d5e90d39343", "604092b52b424d5e90d39344"));
+				Arrays.asList("604092b52b424d5e90d39342", "604092b52b424d5e90d39343", "604092b52b424d5e90d39344"));
 		assertEquals(true, jiraProcessorJobExecutor.execute(jiraProcessor));
 		jiraProcessorJobExecutor.setProjectsBasicConfigIds(null);
 	}

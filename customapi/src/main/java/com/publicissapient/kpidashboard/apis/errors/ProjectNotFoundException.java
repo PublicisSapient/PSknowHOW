@@ -21,7 +21,7 @@ package com.publicissapient.kpidashboard.apis.errors;
  * @author anisingh4
  */
 public class ProjectNotFoundException extends RuntimeException {
-    public ProjectNotFoundException(String message) {
-        super(message);
-    }
+	public ProjectNotFoundException(String message) {
+		super(message);
+	}
 }

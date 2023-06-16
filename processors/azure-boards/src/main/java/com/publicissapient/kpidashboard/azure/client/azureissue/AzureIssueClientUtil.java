@@ -52,7 +52,6 @@ public final class AzureIssueClientUtil {
 		super();
 	}
 
-
 	/**
 	 * Builds Filed Map
 	 *

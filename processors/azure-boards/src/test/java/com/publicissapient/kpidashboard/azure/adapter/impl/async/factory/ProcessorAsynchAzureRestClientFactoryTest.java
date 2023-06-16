@@ -38,6 +38,9 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.Base64;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -69,36 +72,27 @@ import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUp
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlModel;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(SpringExtension.class)
 public class ProcessorAsynchAzureRestClientFactoryTest {
 
 	@Mock
 	AzureProcessorConfig azureProcessorConfig;
-	
-	ProcessorAsynchAzureRestClientFactory azureRestClientFactory;
 
+	ProcessorAsynchAzureRestClientFactory azureRestClientFactory;
+	@Mock
+	RestTemplate restTemplate;
+	@Mock
+	ProcessorAzureRestClient restClient;
+	@Mock
+	ObjectMapper mapper;
+	ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 	@Mock
 	private RestOperationsFactory<RestOperations> restOperationsFactory;
 	@Mock
-	RestTemplate restTemplate;
-
-	@Mock
-	ProcessorAzureRestClient restClient;
-
-	@Mock
 	private RestOperations rest;
-
-	@Mock
-	ObjectMapper mapper;
-
 	@Mock
 	private AesEncryptionService aesEncryptionService;
-
-	ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 
 	@BeforeEach
 	public void init() {
@@ -106,7 +100,7 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		azureProcessorConfig = AzureProcessorConfig.builder().build();
 		mapper = new ObjectMapper();
 		restClient = azureRestClientFactory = new ProcessorAsynchAzureRestClientFactory(restOperationsFactory,
-			azureProcessorConfig, mapper);
+				azureProcessorConfig, mapper);
 
 	}
 
@@ -122,15 +116,16 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 
 	@Test
 	public void getUpdatesResponse()
-		throws RestClientException, URISyntaxException, JsonParseException, JsonMappingException, IOException {
+			throws RestClientException, URISyntaxException, JsonParseException, JsonMappingException, IOException {
 		AzureServer azureServer = prepareAzureServer();
 		String userInfo = "username:pat";
 		String authHeader = "Basic " + new String(Base64.encodeBase64(userInfo.getBytes(StandardCharsets.US_ASCII)));
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.AUTHORIZATION, authHeader);
 		ResponseEntity<String> response = new ResponseEntity<>(createUpdateResponse(), HttpStatus.OK);
-		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class)))
-			.thenReturn(response);
+		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET),
+				ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class)))
+				.thenReturn(response);
 		AzureUpdatesModel actualModel = azureRestClientFactory.getUpdatesResponse(azureServer, "92");
 		AzureUpdatesModel expectedModel = new AzureUpdatesModel();
 		expectedModel.setCount(7);
@@ -139,12 +134,12 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 
 	private String createUpdateResponse() throws JsonParseException, JsonMappingException, IOException {
 		String filePath = "src/test/resources/onlinedata/azure/azureupdatesmodel.json";
-		return  new String(Files.readAllBytes(Paths.get(filePath)));
+		return new String(Files.readAllBytes(Paths.get(filePath)));
 	}
 
 	@Test
 	public void getWiqlResponse() throws RestClientException, URISyntaxException, JsonParseException,
-		JsonMappingException, IOException, ParseException, IllegalAccessException, InvocationTargetException {
+			JsonMappingException, IOException, ParseException, IllegalAccessException, InvocationTargetException {
 		prepareProjectConfigFieldMapping();
 		long startTime1 = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
 				.parse("2019-01-07T00:00:00.000000").getTime();
@@ -152,17 +147,18 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		time.put("User Story", startTime1);
 		time.put("Issue", startTime1);
 		long startTime = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-			.parse("2019-01-07T00:00:00.000000").getTime();
+				.parse("2019-01-07T00:00:00.000000").getTime();
 		AzureServer azureServer = prepareAzureServer();
 		ResponseEntity<String> response = new ResponseEntity<>(createWiqlResponse(), HttpStatus.OK);
-		Mockito.when(
-			rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.POST),  Mockito.<HttpEntity<String>> any(), ArgumentMatchers.eq(String.class)))
-			.thenReturn(response);
-		AzureWiqlModel actualModel = azureRestClientFactory.getWiqlResponse(azureServer,time, projectConfFieldMapping,false);
+		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.POST),
+				Mockito.<HttpEntity<String>>any(), ArgumentMatchers.eq(String.class))).thenReturn(response);
+		AzureWiqlModel actualModel = azureRestClientFactory.getWiqlResponse(azureServer, time, projectConfFieldMapping,
+				false);
 		AzureWiqlModel expectedModel = new AzureWiqlModel();
-		expectedModel.setAsOf("2020-07-17T12:01:50.663Z");;
+		expectedModel.setAsOf("2020-07-17T12:01:50.663Z");
+		;
 		assertEquals(expectedModel.getAsOf(), actualModel.getAsOf(), "Checking for values");
-		
+
 	}
 
 	private String createWiqlResponse() throws IOException {
@@ -171,7 +167,7 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 	}
 
 	private void prepareProjectConfigFieldMapping() throws IllegalAccessException, InvocationTargetException,
-		JsonParseException, JsonMappingException, IOException {
+			JsonParseException, JsonMappingException, IOException {
 		String filePath = "src/test/resources/onlinedata/azure/scrumprojectconfig.json";
 		File file = new File(filePath);
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -189,58 +185,60 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		projectConfFieldMapping.setFieldMapping(fieldMapping);
 		AzureToolConfig azureToolConfig = new AzureToolConfig();
 		azureToolConfig.setQueryEnabled(false);
-		projectConfFieldMapping.setAzure(azureToolConfig );
+		projectConfFieldMapping.setAzure(azureToolConfig);
 	}
-	
+
 	@Test
 	public void getWorkItemInfo() throws RestClientException, URISyntaxException, JsonParseException,
-		JsonMappingException, IOException, ParseException, IllegalAccessException, InvocationTargetException {
-		
+			JsonMappingException, IOException, ParseException, IllegalAccessException, InvocationTargetException {
+
 		AzureServer azureServer = prepareAzureServer();
 		String userInfo = "username:pat";
 		String authHeader = "Basic " + new String(Base64.encodeBase64(userInfo.getBytes(StandardCharsets.US_ASCII)));
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.AUTHORIZATION, authHeader);
 		ResponseEntity<String> response = new ResponseEntity<>(createWorkItemResponse(), HttpStatus.OK);
-		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class)))
-			.thenReturn(response);
-		List<Integer> ids = Arrays.asList(1, 2, 3,4,41,92,127,128);
+		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET),
+				ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class)))
+				.thenReturn(response);
+		List<Integer> ids = Arrays.asList(1, 2, 3, 4, 41, 92, 127, 128);
 		AzureBoardsWIModel actualModel = azureRestClientFactory.getWorkItemInfo(azureServer, ids);
 		AzureBoardsWIModel expectedModel = new AzureBoardsWIModel();
 		expectedModel.setCount(8);
 		assertEquals(expectedModel.getCount(), actualModel.getCount(), "Checking for count values");
-	
+
 	}
 
 	private String createWorkItemResponse() throws IOException {
 		String filePath = "src/test/resources/onlinedata/azure/azureworkitemmodel.json";
 		return new String(Files.readAllBytes(Paths.get(filePath)));
 	}
-	
+
 	@Test
 	public void getIterationsResponse() throws RestClientException, URISyntaxException, JsonParseException,
-		JsonMappingException, IOException, ParseException, IllegalAccessException, InvocationTargetException {
-		
+			JsonMappingException, IOException, ParseException, IllegalAccessException, InvocationTargetException {
+
 		AzureServer azureServer = prepareAzureServer();
 		String userInfo = "username:pat";
 		String authHeader = "Basic " + new String(Base64.encodeBase64(userInfo.getBytes(StandardCharsets.US_ASCII)));
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.AUTHORIZATION, authHeader);
 		ResponseEntity<String> response = new ResponseEntity<>(createIterationsResponse(), HttpStatus.OK);
-		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class)))
-			.thenReturn(response);
+		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET),
+				ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class)))
+				.thenReturn(response);
 		AzureIterationsModel actualModel = azureRestClientFactory.getIterationsResponse(azureServer);
 		AzureIterationsModel expectedModel = new AzureIterationsModel();
 		expectedModel.setCount(3);
 		assertEquals(expectedModel.getCount(), actualModel.getCount(), "Checking for count values");
-	
+
 	}
 
 	private String createIterationsResponse() throws IOException {
 		String filePath = "src/test/resources/onlinedata/azure/azureiterationsmodel.json";
 		return new String(Files.readAllBytes(Paths.get(filePath)));
 	}
-	
+
 	/**
 	 * prepare query when data doesn't exist in db
 	 * 
@@ -271,8 +269,8 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 				.parse("2019-01-07T00:00:00.000000").getTime();
 		AzureServer azureServer = prepareAzureServer();
 		ResponseEntity<String> response = new ResponseEntity<>(createWiqlResponse(), HttpStatus.OK);
-		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.POST), Mockito.<HttpEntity<String>>any(),
-				ArgumentMatchers.eq(String.class))).thenReturn(response);
+		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.POST),
+				Mockito.<HttpEntity<String>>any(), ArgumentMatchers.eq(String.class))).thenReturn(response);
 		AzureWiqlModel actualModel = azureRestClientFactory.getWiqlResponse(azureServer, time, projectConfFieldMapping,
 				false);
 		AzureWiqlModel expectedModel = new AzureWiqlModel();
@@ -316,8 +314,8 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 				.parse("2019-01-07T00:00:00.000000").getTime();
 		AzureServer azureServer = prepareAzureServer();
 		ResponseEntity<String> response = new ResponseEntity<>(createWiqlResponse(), HttpStatus.OK);
-		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.POST), Mockito.<HttpEntity<String>>any(),
-				ArgumentMatchers.eq(String.class))).thenReturn(response);
+		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.POST),
+				Mockito.<HttpEntity<String>>any(), ArgumentMatchers.eq(String.class))).thenReturn(response);
 		AzureWiqlModel actualModel = azureRestClientFactory.getWiqlResponse(azureServer, time, projectConfFieldMapping,
 				true);
 		AzureWiqlModel expectedModel = new AzureWiqlModel();

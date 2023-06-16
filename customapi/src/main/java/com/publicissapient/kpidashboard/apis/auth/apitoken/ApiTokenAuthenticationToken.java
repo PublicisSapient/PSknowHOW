@@ -52,6 +52,7 @@ public class ApiTokenAuthenticationToken extends AbstractAuthenticationToken {
 
 	/**
 	 * Gets credentials
+	 * 
 	 * @return credentials
 	 */
 	@Override
@@ -61,6 +62,7 @@ public class ApiTokenAuthenticationToken extends AbstractAuthenticationToken {
 
 	/**
 	 * Gets principal
+	 * 
 	 * @return principal
 	 */
 	@Override
@@ -96,8 +98,7 @@ public class ApiTokenAuthenticationToken extends AbstractAuthenticationToken {
 			return false;
 		}
 		ApiTokenAuthenticationToken that = (ApiTokenAuthenticationToken) obj;
-		return principal.equals(that.principal) &&
-				credentials.equals(that.credentials);
+		return principal.equals(that.principal) && credentials.equals(that.credentials);
 	}
 
 	@Override

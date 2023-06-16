@@ -45,124 +45,121 @@ import org.springframework.security.core.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class ApiTokenRequestFilterTest {
 
-    @Mock
-    private AuthenticationManager manager;
+	@Mock
+	private AuthenticationManager manager;
 
-    @Mock
-    private AuthenticationResultHandler resultHandler;
+	@Mock
+	private AuthenticationResultHandler resultHandler;
 
-    private String path;
+	private String path;
 
-    private ApiTokenRequestFilter filter;
+	private ApiTokenRequestFilter filter;
 
-    @Mock
-    private HttpServletRequest request;
+	@Mock
+	private HttpServletRequest request;
 
-    @Mock
-    private HttpServletResponse response;
+	@Mock
+	private HttpServletResponse response;
 
+	@Before
+	public void setup() {
+		path = "/**";
+		filter = new ApiTokenRequestFilter(path, manager, resultHandler);
+	}
 
-    @Before
-    public void setup() {
-        path = "/**";
-        filter = new ApiTokenRequestFilter(path, manager, resultHandler);
-    }
+	@Test
+	public void shouldCreateFilter() {
+		assertNotNull(filter);
+	}
 
-    @Test
-    public void shouldCreateFilter() {
-        assertNotNull(filter);
-    }
+	@Test
+	public void shouldAuthenticate() {
+		String principal = "somesys";
+		String credentials = "itWuQ7y5zVKX1n+k8trjCNnx99o7AXbO";
+		String authHdr = "Basic UGFzc3dvcmRJc0F1dGhUb2tlbjp7ImFwaUtleSI6Iml0V3VRN3k1elZLWDFuK2s4dHJqQ05ueDk5bzdBWGJPIn0K";
+		when(request.getHeader("apiUser")).thenReturn(principal);
+		when(request.getHeader("Authorization")).thenReturn(authHdr);
+		Authentication auth = new ApiTokenAuthenticationToken(principal, authHdr);
+		ArgumentCaptor<Authentication> argumentCaptor = ArgumentCaptor.forClass(Authentication.class);
+		when(manager.authenticate(argumentCaptor.capture())).thenReturn(auth);
 
-    @Test
-    public void shouldAuthenticate() {
-        String principal = "somesys";
-        String credentials = "itWuQ7y5zVKX1n+k8trjCNnx99o7AXbO";
-        String authHdr = "Basic UGFzc3dvcmRJc0F1dGhUb2tlbjp7ImFwaUtleSI6Iml0V3VRN3k1elZLWDFuK2s4dHJqQ05ueDk5bzdBWGJPIn0K";
-        when(request.getHeader("apiUser")).thenReturn(principal);
-        when(request.getHeader("Authorization")).thenReturn(authHdr);
-        Authentication auth = new ApiTokenAuthenticationToken(principal, authHdr);
-        ArgumentCaptor<Authentication> argumentCaptor = ArgumentCaptor.forClass(Authentication.class);
-        when(manager.authenticate(argumentCaptor.capture())).thenReturn(auth);
+		Authentication result = filter.attemptAuthentication(request, response);
 
-        Authentication result = filter.attemptAuthentication(request, response);
+		assertNotNull(result);
+		Authentication authentication = argumentCaptor.getValue();
+		assertEquals(principal, authentication.getPrincipal());
+		assertEquals(credentials, authentication.getCredentials());
+		assertEquals(AuthType.APIKEY, authentication.getDetails());
+	}
 
-        assertNotNull(result);
-        Authentication authentication = argumentCaptor.getValue();
-        assertEquals(principal, authentication.getPrincipal());
-        assertEquals(credentials, authentication.getCredentials());
-        assertEquals(AuthType.APIKEY, authentication.getDetails());
-    }
+	@Test
+	public void attemptAuthentication_Fail() throws ParseException {
+		String principal = "somesys";
+		String credentials = "itWuQ7y5zVKX1n+k8trjCNnx99o7AXdf--d---d";
+		String authHdr = "Basic UGFzc3dvcmRJc0F1dGhUb2tlbjp7ImFwaUtleSI6Iml0V3VRN3k1elZLWDFuK2s4dHJqQ05ueDk5bzdBWGJPIn0K";
+		when(request.getHeader("apiUser")).thenReturn(principal);
+		when(request.getHeader("Authorization")).thenReturn(authHdr);
+		Authentication auth = new ApiTokenAuthenticationToken(principal, authHdr);
+		ArgumentCaptor<Authentication> argumentCaptor = ArgumentCaptor.forClass(Authentication.class);
+		when(manager.authenticate(argumentCaptor.capture())).thenReturn(auth);
+		Authentication result = filter.attemptAuthentication(request, response);
 
-    @Test
-    public void attemptAuthentication_Fail() throws ParseException {
-        String principal = "somesys";
-        String credentials = "itWuQ7y5zVKX1n+k8trjCNnx99o7AXdf--d---d";
-        String authHdr = "Basic UGFzc3dvcmRJc0F1dGhUb2tlbjp7ImFwaUtleSI6Iml0V3VRN3k1elZLWDFuK2s4dHJqQ05ueDk5bzdBWGJPIn0K";
-        when(request.getHeader("apiUser")).thenReturn(principal);
-        when(request.getHeader("Authorization")).thenReturn(authHdr);
-        Authentication auth = new ApiTokenAuthenticationToken(principal, authHdr);
-        ArgumentCaptor<Authentication> argumentCaptor = ArgumentCaptor.forClass(Authentication.class);
-        when(manager.authenticate(argumentCaptor.capture())).thenReturn(auth);
-        Authentication result = filter.attemptAuthentication(request, response);
+		assertFalse(result.isAuthenticated());
+	}
 
-        assertFalse(result.isAuthenticated());
-    }
+	@Test(expected = AuthenticationServiceException.class)
+	public void attemptAuthentication_Exception() {
+		String principal = "somesys";
+		String credentials = "itWuQ7y5zVKX1n+k8trjCNnx99o7AXdf";
+		String authHdr = "Basic UGFzc3dvcmRJc0F1dGhUb2tlbjp7ImFwaUtleSI6Iml0V3VRN3k1elZLWDFuK2s4dHJqQ05ueDk5bzdBWGJPIn[]{";
+		when(request.getHeader("apiUser")).thenReturn(principal);
+		when(request.getHeader("Authorization")).thenReturn(authHdr);
+		Authentication auth = new ApiTokenAuthenticationToken(principal, authHdr);
+		ArgumentCaptor<Authentication> argumentCaptor = ArgumentCaptor.forClass(Authentication.class);
 
-    @Test(expected = AuthenticationServiceException.class)
-    public void attemptAuthentication_Exception() {
-        String principal = "somesys";
-        String credentials = "itWuQ7y5zVKX1n+k8trjCNnx99o7AXdf";
-        String authHdr = "Basic UGFzc3dvcmRJc0F1dGhUb2tlbjp7ImFwaUtleSI6Iml0V3VRN3k1elZLWDFuK2s4dHJqQ05ueDk5bzdBWGJPIn[]{";
-        when(request.getHeader("apiUser")).thenReturn(principal);
-        when(request.getHeader("Authorization")).thenReturn(authHdr);
-        Authentication auth = new ApiTokenAuthenticationToken(principal, authHdr);
-        ArgumentCaptor<Authentication> argumentCaptor = ArgumentCaptor.forClass(Authentication.class);
+		Authentication result = filter.attemptAuthentication(request, response);
 
-        Authentication result = filter.attemptAuthentication(request, response);
+	}
 
-    }
+	@Test
+	public void testFilter() throws IOException, ServletException {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		FilterChain chain = mock(FilterChain.class);
 
-    @Test
-    public void testFilter() throws IOException, ServletException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        FilterChain chain = mock(FilterChain.class);
+		String principal = "somesys";
+		String credentials = "itWuQ7y5zVKX1n+k8trjCNnx99o7AXbO";
+		String authHdr = "Basic UGFzc3dvcmRJc0F1dGhUb2tlbjp7ImFwaUtleSI6Iml0V3VRN3k1elZLWDFuK2s4dHJqQ05ueDk5bzdBWGJPIn0K";
+		when(request.getHeader("apiUser")).thenReturn(principal);
+		when(request.getHeader("Authorization")).thenReturn(authHdr);
+		Authentication auth = new ApiTokenAuthenticationToken(principal, authHdr);
+		ArgumentCaptor<Authentication> argumentCaptor = ArgumentCaptor.forClass(Authentication.class);
+		when(manager.authenticate(argumentCaptor.capture())).thenReturn(auth);
 
-        String principal = "somesys";
-        String credentials = "itWuQ7y5zVKX1n+k8trjCNnx99o7AXbO";
-        String authHdr = "Basic UGFzc3dvcmRJc0F1dGhUb2tlbjp7ImFwaUtleSI6Iml0V3VRN3k1elZLWDFuK2s4dHJqQ05ueDk5bzdBWGJPIn0K";
-        when(request.getHeader("apiUser")).thenReturn(principal);
-        when(request.getHeader("Authorization")).thenReturn(authHdr);
-        Authentication auth = new ApiTokenAuthenticationToken(principal, authHdr);
-        ArgumentCaptor<Authentication> argumentCaptor = ArgumentCaptor.forClass(Authentication.class);
-        when(manager.authenticate(argumentCaptor.capture())).thenReturn(auth);
+		filter.doFilter(request, response, chain);
+		assertEquals(0, response.getStatus());
 
-        filter.doFilter(request, response, chain);
-        assertEquals(0, response.getStatus());
+	}
 
+	@Test
+	public void testFilter2() throws IOException, ServletException {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		FilterChain chain = mock(FilterChain.class);
 
-    }
+		String principal = "somesys";
+		String credentials = "itWuQ7y5zVKX1n+k8trjCNnx99o7AXbO";
+		String authHdr = "Basic UGFzc3dvcmRJc0F1dGhUb2tlbjp7ImFwaUtleSI6Iml0V3VRN3k1elZLWDFuK2s4dHJqQ05ueDk5bzdBWGJPIn0K";
+		when(request.getHeader("apiUser")).thenReturn(null);
+		when(request.getHeader("Authorization")).thenReturn(null);
+		Authentication auth = new ApiTokenAuthenticationToken(principal, authHdr);
+		ArgumentCaptor<Authentication> argumentCaptor = ArgumentCaptor.forClass(Authentication.class);
 
-    @Test
-    public void testFilter2() throws IOException, ServletException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        FilterChain chain = mock(FilterChain.class);
+		filter.doFilter(request, response, chain);
+		assertEquals(0, response.getStatus());
 
-        String principal = "somesys";
-        String credentials = "itWuQ7y5zVKX1n+k8trjCNnx99o7AXbO";
-        String authHdr = "Basic UGFzc3dvcmRJc0F1dGhUb2tlbjp7ImFwaUtleSI6Iml0V3VRN3k1elZLWDFuK2s4dHJqQ05ueDk5bzdBWGJPIn0K";
-        when(request.getHeader("apiUser")).thenReturn(null);
-        when(request.getHeader("Authorization")).thenReturn(null);
-        Authentication auth = new ApiTokenAuthenticationToken(principal, authHdr);
-        ArgumentCaptor<Authentication> argumentCaptor = ArgumentCaptor.forClass(Authentication.class);
-
-        filter.doFilter(request, response, chain);
-        assertEquals(0, response.getStatus());
-
-    }
+	}
 }

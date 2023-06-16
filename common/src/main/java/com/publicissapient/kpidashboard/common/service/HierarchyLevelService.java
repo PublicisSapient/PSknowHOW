@@ -1,18 +1,18 @@
 package com.publicissapient.kpidashboard.common.service;
 
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-
 import java.util.List;
+
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 
 public interface HierarchyLevelService {
 
-    List<HierarchyLevel> getTopHierarchyLevels();
+	List<HierarchyLevel> getTopHierarchyLevels();
 
-    List<HierarchyLevel> getFullHierarchyLevels(boolean isKanban);
+	List<HierarchyLevel> getFullHierarchyLevels(boolean isKanban);
 
-    HierarchyLevel getProjectHierarchyLevel();
+	HierarchyLevel getProjectHierarchyLevel();
 
-    HierarchyLevel getSprintHierarchyLevel();
+	HierarchyLevel getSprintHierarchyLevel();
 
-    HierarchyLevel getReleaseHierarchyLevel();
+	HierarchyLevel getReleaseHierarchyLevel();
 }

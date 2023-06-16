@@ -37,10 +37,9 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorType;
 @Component
 public class ToolDataCleanUpServiceFactory {
 
+	private final Map<String, ToolDataCleanUpService> servicesCache = new HashMap<>();
 	@Autowired
 	private List<ToolDataCleanUpService> dataCleanUpServices;
-
-	private final Map<String, ToolDataCleanUpService> servicesCache = new HashMap<>();
 
 	@PostConstruct
 	public void initServices() {

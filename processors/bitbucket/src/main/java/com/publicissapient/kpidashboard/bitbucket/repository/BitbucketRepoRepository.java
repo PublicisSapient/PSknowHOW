@@ -34,20 +34,22 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemR
 public interface BitbucketRepoRepository extends ProcessorItemRepository<BitbucketRepo> {
 
 	/**
-	 * Represents a function that accepts one input arguments 
-	 * and returns list of BitbucketRepo.
+	 * Represents a function that accepts one input arguments and returns list of
+	 * BitbucketRepo.
 	 *
-	 * @param processorId the processor id
+	 * @param processorId
+	 *            the processor id
 	 * @return BitbucketRepo list of BitbucketRepo
 	 */
 	@Query("{ 'processorId' : ?0, 'isActive': true}")
 	List<BitbucketRepo> findActiveRepos(ObjectId processorId);
-	
+
 	/**
 	 * 
-	 * @param processorId the processor id
+	 * @param processorId
+	 *            the processor id
 	 * @param toolConfigId
-	 * the toolConfig id
+	 *            the toolConfig id
 	 * @return list of BitbucketRepo
 	 */
 	List<BitbucketRepo> findByProcessorIdAndToolConfigId(ObjectId processorId, ObjectId toolConfigId);

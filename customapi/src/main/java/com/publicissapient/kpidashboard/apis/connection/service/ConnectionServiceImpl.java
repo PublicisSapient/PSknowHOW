@@ -18,6 +18,34 @@
 
 package com.publicissapient.kpidashboard.apis.connection.service;
 
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZURE;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZUREPIPELINE;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZUREREPO;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_BAMBOO;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_BITBUCKET;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_GITHUB;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_GITLAB;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_JENKINS;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_JIRA;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_SONAR;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_TEAMCITY;
+import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_ZEPHYR;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -31,19 +59,8 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectToo
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.publicissapient.kpidashboard.apis.constant.Constant.*;
 
 /**
  * This class provides various methods related to operations on Connections

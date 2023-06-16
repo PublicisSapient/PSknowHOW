@@ -28,8 +28,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.publicissapient.kpidashboard.apis.auth.service.CaptchaServiceImpl;
-import com.publicissapient.kpidashboard.apis.auth.service.CaptchaValidationServiceImpl;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.CustomCaptcha;
 
@@ -37,7 +35,7 @@ import com.publicissapient.kpidashboard.apis.model.CustomCaptcha;
 public class CaptchaServiceTest {
 
 	@Mock
-    CustomApiConfig customApiConfig;
+	CustomApiConfig customApiConfig;
 
 	@InjectMocks
 	private CaptchaServiceImpl captchaService;

@@ -31,21 +31,24 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 /**
- * BitbucketProcessor represents a class which holds bitbucket prototyping and executes the bitbucket data and stores in DB.
+ * BitbucketProcessor represents a class which holds bitbucket prototyping and
+ * executes the bitbucket data and stores in DB.
+ * 
  * @see Processor
  */
 @NoArgsConstructor
 public class BitbucketProcessor extends Processor {
-	
-	public static BitbucketProcessor prototype() {
-		return BitbucketProcessor.processorBuilder().processorName(ProcessorConstants.BITBUCKET).online(true).enabled(true)
-				.processorType(ProcessorType.SCM).lastExecuted(System.currentTimeMillis()).isLastSuccess(false).build();
-	}
 
 	@Builder(builderMethodName = "processorBuilder")
 	public BitbucketProcessor(String processorName, ProcessorType processorType, boolean enabled, boolean online,
 			List<ProcessorError> errors, long lastExecuted, ObjectId objectId, boolean isLastSuccess) {
 		super(processorName, processorType, enabled, online, errors, lastExecuted, objectId, isLastSuccess);
+	}
+
+	public static BitbucketProcessor prototype() {
+		return BitbucketProcessor.processorBuilder().processorName(ProcessorConstants.BITBUCKET).online(true)
+				.enabled(true).processorType(ProcessorType.SCM).lastExecuted(System.currentTimeMillis())
+				.isLastSuccess(false).build();
 	}
 
 }

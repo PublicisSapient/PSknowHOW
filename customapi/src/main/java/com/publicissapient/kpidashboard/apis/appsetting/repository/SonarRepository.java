@@ -24,7 +24,6 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
 
-
 @Repository
 public interface SonarRepository extends MongoRepository<SonarDetails, ObjectId> {
 	/**

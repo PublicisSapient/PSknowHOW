@@ -62,7 +62,6 @@ public class CommonUtilsTest {
 		assertTrue(symbolValueUnit.getSymbol().equals(symbolValueUnitReturn.getSymbol()));
 	}
 
-
 	@Test
 	public void getDaysBetweenDateTest() {
 		DateTime endDate = DateTime.now();
@@ -95,6 +94,7 @@ public class CommonUtilsTest {
 				+ beginDate.getDayOfMonth();
 
 	}
+
 	@Test
 	public void getDaysBetweenDateTestFalse() {
 		DateTime endDate = DateTime.now();
@@ -105,69 +105,71 @@ public class CommonUtilsTest {
 				+ beginDate.getDayOfMonth();
 
 	}
-	
+
 	@Test
 	public void getMedian() {
-		List<Long> numbers=new ArrayList<>();
+		List<Long> numbers = new ArrayList<>();
 		numbers.add(123456L);
 		Collections.sort(numbers);
-	    CommonUtils.median(numbers);
+		CommonUtils.median(numbers);
 
 	}
-	
+
 	@Test
 	public void getMedianEmpty() {
-		List<Long> numbers=new ArrayList<>();
+		List<Long> numbers = new ArrayList<>();
 		Collections.sort(numbers);
-	    CommonUtils.median(numbers);
+		CommonUtils.median(numbers);
 
 	}
-	
+
 	@Test
 	public void buildDateCountMapForXdays() {
-		Integer lastXdays=10;
+		Integer lastXdays = 10;
 		DateTime untilDate = new DateTime(DateTimeZone.UTC).plusDays(Constant.INCREMENTER_DAY);
-		
+
 		List<DateTime> allFixDates = new ArrayList<DateTime>();
 		allFixDates.add(untilDate);
-	    CommonUtils.buildDateCountMapForXdays(lastXdays,allFixDates);
+		CommonUtils.buildDateCountMapForXdays(lastXdays, allFixDates);
 
 	}
+
 	@Test
 	public void convertFromISOFormat() {
-		String source="2021-08-05";
-		String renderFormat="2021-08-01";
-		CommonUtils.convertFromISOFormat(source,renderFormat );
+		String source = "2021-08-05";
+		String renderFormat = "2021-08-01";
+		CommonUtils.convertFromISOFormat(source, renderFormat);
 	}
-	
+
 	@Test
 	public void epochToStrDate() {
 		Long longdate = 120045L;
 		CommonUtils.epochToStrDate(longdate);
 	}
-	
+
 	@Test
 	public void convertToPatternList() {
-		List<String> stringList=new ArrayList<>();
+		List<String> stringList = new ArrayList<>();
 		stringList.add("abc");
 		CommonUtils.convertToPatternList(stringList);
 	}
+
 	@Test
 	public void convertToPatternListFalse() {
-		List<String> stringList=new ArrayList<>();
+		List<String> stringList = new ArrayList<>();
 		CommonUtils.convertToPatternList(stringList);
 	}
-	
+
 	@Test
 	public void convertTestFolderToPatternList() {
-		List<String> stringList=new ArrayList<>();
+		List<String> stringList = new ArrayList<>();
 		stringList.add("abc");
 		CommonUtils.convertTestFolderToPatternList(stringList);
 	}
-	
+
 	@Test
 	public void getCacheName() {
-		String key="jiraKpiCache";
+		String key = "jiraKpiCache";
 		Map<String, String> cacheManagerMap = new HashMap<>();
 		cacheManagerMap.put(KPISource.JIRA.name(), CommonConstant.JIRA_KPI_CACHE);
 		CommonUtils.getCacheName(key);
@@ -175,34 +177,35 @@ public class CommonUtilsTest {
 
 	@Test
 	public void handleCrossScriptingTaintedValue() {
-		String key="jira";
+		String key = "jira";
 		CommonUtils.handleCrossScriptingTaintedValue(key);
 	}
+
 	@Test
 	public void handleCrossScriptingTaintedValueNull() {
-		String key=null;
+		String key = null;
 		CommonUtils.handleCrossScriptingTaintedValue(key);
 	}
-	
+
 	@Test
 	public void convertToPatternListForCapacity() {
-		List<String> stringList=new ArrayList<>();
+		List<String> stringList = new ArrayList<>();
 		stringList.add("abc");
 		CommonUtils.convertToPatternListForCapacity(stringList);
 	}
-	
+
 	@Test
 	public void convertToPatternListForCapacityEmpty() {
-		List<String> stringList=new ArrayList<>();
+		List<String> stringList = new ArrayList<>();
 		CommonUtils.convertToPatternListForCapacity(stringList);
 	}
-	
+
 	@Test
 	public void appendbackSlash() {
-		String key="jira";
+		String key = "jira";
 		CommonUtils.appendbackSlash(key);
 	}
-	
+
 	@Test
 	public void truncateToTest() {
 		Double result = CommonUtils.truncateTo(12.234f, 2);

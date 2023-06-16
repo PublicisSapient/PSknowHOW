@@ -52,6 +52,7 @@ import com.publicissapient.kpidashboard.bitbucket.repository.BitbucketRepoReposi
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
@@ -59,11 +60,10 @@ import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -91,7 +91,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 
 	@Autowired
 	private CommitRepository commitsRepo;
-	
+
 	@Autowired
 	private MergeRequestRepository mergReqRepo;
 
@@ -100,16 +100,14 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 
 	@Autowired
 	private ProjectBasicConfigRepository projectConfigRepository;
-
-	@Autowired
-	protected BitBucketProcessorJobExecutor(TaskScheduler taskScheduler) {
-		super(taskScheduler, ProcessorConstants.BITBUCKET);
-	}
-
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+	@Autowired
+	protected BitBucketProcessorJobExecutor(TaskScheduler taskScheduler) {
+		super(taskScheduler, ProcessorConstants.BITBUCKET);
+	}
 
 	/**
 	 * Gets the cron.
@@ -124,8 +122,10 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	/**
 	 * Creates the processor item.
 	 *
-	 * @param tool        the tool
-	 * @param processorId the processor id
+	 * @param tool
+	 *            the tool
+	 * @param processorId
+	 *            the processor id
 	 * @return the processor item
 	 */
 	private BitbucketRepo createProcessorItem(ProcessorToolConnection tool, ObjectId processorId) {
@@ -144,7 +144,8 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	/**
 	 * Checks if is new commitDetails.
 	 *
-	 * @param bitRepo the bit repo
+	 * @param bitRepo
+	 *            the bit repo
 	 * @return true, if is new commit
 	 */
 	private boolean isNewCommit(BitbucketRepo bitRepo, CommitDetails commitDetails) {
@@ -155,7 +156,9 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 
 	/**
 	 * Checks if is new mergeRequests.
-	 * @param bitRepo the bit repo
+	 * 
+	 * @param bitRepo
+	 *            the bit repo
 	 * @return true, if is new merge Request
 	 */
 	private boolean isNewMergeReq(BitbucketRepo bitRepo, MergeRequests mergeRequests) {
@@ -163,11 +166,12 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 				mergeRequests.getRevisionNumber());
 		return mergReq == null;
 	}
-	
+
 	/**
 	 * Execute.
 	 *
-	 * @param processor the processor
+	 * @param processor
+	 *            the processor
 	 */
 	@Override
 	public boolean execute(BitbucketProcessor processor) {
@@ -203,7 +207,8 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 							"Bitbucket Processor started collecting data for Url: " + tool.getUrl() + ", branch : "
 									+ tool.getBranch() + " and repo : " + tool.getRepoSlug());
 					BitBucketClient bitBucketClient = bitBucketClientFactory.getBitbucketClient(tool.isCloudEnv());
-					List<CommitDetails> commitDetailList = bitBucketClient.fetchAllCommits(bitRepo, firstTimeRun, tool, proBasicConfig);
+					List<CommitDetails> commitDetailList = bitBucketClient.fetchAllCommits(bitRepo, firstTimeRun, tool,
+							proBasicConfig);
 					updateAssigneeForCommit(proBasicConfig, processorExecutionTraceLog, bitRepo, commitDetailList);
 					List<CommitDetails> unsavedCommits = commitDetailList.stream()
 							.filter(commit -> isNewCommit(bitRepo, commit)).collect(Collectors.toList());
@@ -264,9 +269,10 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 		return executionStatus;
 	}
 
-	private void updateAssigneeForCommit(ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog, BitbucketRepo bitRepo, List<CommitDetails> commitDetailList) {
-		if (proBasicConfig.isSaveAssigneeDetails()
-				&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+	private void updateAssigneeForCommit(ProjectBasicConfig proBasicConfig,
+			ProcessorExecutionTraceLog processorExecutionTraceLog, BitbucketRepo bitRepo,
+			List<CommitDetails> commitDetailList) {
+		if (proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 			List<CommitDetails> updateAuthor = new ArrayList<>();
 			commitDetailList.stream().forEach(commitDetails -> {
 				CommitDetails dbCommit = commitsRepo.findByProcessorItemIdAndRevisionNumber(bitRepo.getId(),
@@ -280,9 +286,10 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 		}
 	}
 
-	private void updateAssigneeForMerge(ProjectBasicConfig proBasicConfig, ProcessorExecutionTraceLog processorExecutionTraceLog, BitbucketRepo bitRepo, List<MergeRequests> mergeRequestsList) {
-		if (proBasicConfig.isSaveAssigneeDetails()
-				&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+	private void updateAssigneeForMerge(ProjectBasicConfig proBasicConfig,
+			ProcessorExecutionTraceLog processorExecutionTraceLog, BitbucketRepo bitRepo,
+			List<MergeRequests> mergeRequestsList) {
+		if (proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 			List<MergeRequests> updateAuthor = new ArrayList<>();
 			mergeRequestsList.forEach(mergeRequests -> {
 				MergeRequests dbMerge = mergReqRepo.findByProcessorItemIdAndRevisionNumber(bitRepo.getId(),
@@ -314,10 +321,9 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BITBUCKET, basicProjectConfigId);
-		existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog ->
-				processorExecutionTraceLog.setLastEnableAssigneeToggleState(
-						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState())
-		);
+		existingTraceLogOptional.ifPresent(
+				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
+						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		return processorExecutionTraceLog;
 	}
 
@@ -344,8 +350,10 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	/**
 	 * Cleans the cache in the Custom API
 	 * 
-	 * @param cacheEndPoint the cache endpoint
-	 * @param cacheName     the cache name
+	 * @param cacheEndPoint
+	 *            the cache endpoint
+	 * @param cacheName
+	 *            the cache name
 	 */
 	private void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
@@ -372,7 +380,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 		} else {
 			log.error("[BITBUCKET-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
 		}
-		
+
 		clearToolItemCache(bitBucketConfig.getCustomApiBaseUrl());
 	}
 

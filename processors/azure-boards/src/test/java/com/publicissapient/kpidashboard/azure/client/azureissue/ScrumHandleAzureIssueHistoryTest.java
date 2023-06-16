@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.azure.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -24,7 +24,6 @@ import com.publicissapient.kpidashboard.common.model.azureboards.updates.SystemS
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.Value;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 public class ScrumHandleAzureIssueHistoryTest {

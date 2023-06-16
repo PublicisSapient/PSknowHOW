@@ -122,10 +122,10 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	@Autowired
 	private SprintRepository sprintRepository;
-	
+
 	@Autowired
 	private CapacityMasterService capacityMasterService;
-	
+
 	@Autowired
 	private TestExecutionService testExecutionService;
 
@@ -168,8 +168,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 			} else {
 				response = new ServiceResponse(false,
-						"You do not have admin access to any of selected hierarchy levels",
-						basicConfig);
+						"You do not have admin access to any of selected hierarchy levels", basicConfig);
 
 			}
 		}
@@ -363,7 +362,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		fieldMappingService.deleteByBasicProjectConfigId(projectBasicConfig.getId());
 		boardMetadataRepository.deleteByProjectBasicConfigId(projectBasicConfig.getId());
 	}
-	
+
 	private void deleteUploadData(ProjectBasicConfig projectBasicConfig) {
 		capacityMasterService.deleteCapacityByProject(projectBasicConfig.getIsKanban(), projectBasicConfig.getId());
 		testExecutionService.deleteTestExecutionByProject(projectBasicConfig.getIsKanban(),

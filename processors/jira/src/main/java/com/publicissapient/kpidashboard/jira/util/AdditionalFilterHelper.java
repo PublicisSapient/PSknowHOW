@@ -148,17 +148,17 @@ public class AdditionalFilterHelper {
 		Set<String> values = new HashSet<>();
 		String customField = additionalFilterConfig.getIdentificationField();
 
-		if (null != fields.get(customField) &&
-				StringUtils.isNotEmpty(JiraProcessorUtil.deodeUTF8String(fields.get(customField).getValue()))) {
+		if (null != fields.get(customField)
+				&& StringUtils.isNotEmpty(JiraProcessorUtil.deodeUTF8String(fields.get(customField).getValue()))) {
 			try {
 				if (fields.get(customField).getValue() instanceof JSONObject) {
 					JSONObject jsonObject = (JSONObject) fields.get(customField).getValue();
 					getValueFromField(values, jsonObject);
 				} else if (fields.get(customField).getValue() instanceof JSONArray) {
 					JSONArray fieldArray = (JSONArray) fields.get(customField).getValue();
-					if(fieldArray.length() > 0) {
-						for(int i = 0; i < fieldArray.length(); i++) {
-							getValueFromField(values,(JSONObject) fieldArray.get(i));
+					if (fieldArray.length() > 0) {
+						for (int i = 0; i < fieldArray.length(); i++) {
+							getValueFromField(values, (JSONObject) fieldArray.get(i));
 						}
 					}
 				} else {
@@ -171,10 +171,9 @@ public class AdditionalFilterHelper {
 		return values;
 	}
 
-	private void getValueFromField(Set<String> values, JSONObject jsonObject){
+	private void getValueFromField(Set<String> values, JSONObject jsonObject) {
 		try {
-			if (null != jsonObject && StringUtils.isNotBlank(
-					(String) jsonObject.get(JiraConstants.VALUE))) {
+			if (null != jsonObject && StringUtils.isNotBlank((String) jsonObject.get(JiraConstants.VALUE))) {
 				values.add((String) jsonObject.get(JiraConstants.VALUE));
 			}
 		} catch (JSONException e) {

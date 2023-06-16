@@ -40,8 +40,10 @@ public class ApplicationException extends Exception {
 	/**
 	 * Instantiates a new CustomApiApplication exception.
 	 *
-	 * @param clazz           the clazz
-	 * @param searchParamsMap the search params map
+	 * @param clazz
+	 *            the clazz
+	 * @param searchParamsMap
+	 *            the search params map
 	 */
 	public ApplicationException(Class clazz, String... searchParamsMap) {
 		super(ApplicationException.generateMessage(clazz.getSimpleName(),

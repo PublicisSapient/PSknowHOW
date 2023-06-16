@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.azure.model;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,20 +29,20 @@ import lombok.Setter;
 @Setter
 public class AzureProcessor extends Processor {
 
-    /**
-     * retruns jira processor propotype
-     * @return JiraProcessor
-     */
-    public static AzureProcessor prototype() {
-    	AzureProcessor protoType = new AzureProcessor();
-        protoType.setProcessorName(ProcessorConstants.AZURE);
-        protoType.setOnline(true);
-        protoType.setActive(true);
-        protoType.setLastSuccess(false);
-        protoType.setUpdatedTime(System.currentTimeMillis());
-        protoType.setProcessorType(ProcessorType.AGILE_TOOL);
-        return protoType;
-    }
+	/**
+	 * retruns jira processor propotype
+	 * 
+	 * @return JiraProcessor
+	 */
+	public static AzureProcessor prototype() {
+		AzureProcessor protoType = new AzureProcessor();
+		protoType.setProcessorName(ProcessorConstants.AZURE);
+		protoType.setOnline(true);
+		protoType.setActive(true);
+		protoType.setLastSuccess(false);
+		protoType.setUpdatedTime(System.currentTimeMillis());
+		protoType.setProcessorType(ProcessorType.AGILE_TOOL);
+		return protoType;
+	}
 
 }
-

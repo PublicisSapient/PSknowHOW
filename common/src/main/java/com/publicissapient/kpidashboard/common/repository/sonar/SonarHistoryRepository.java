@@ -54,14 +54,15 @@ public interface SonarHistoryRepository
 	 * @return a {@link SonarHistory}
 	 */
 	SonarHistory findByProcessorItemId(ObjectId processorItemId);
-	
+
 	/**
 	 * delete all documents with matching ids
 	 * 
-	 * @param processorItemIds processor item id
+	 * @param processorItemIds
+	 *            processor item id
 	 */
 	void deleteByProcessorItemIdIn(List<ObjectId> processorItemIds);
-	
+
 	/**
 	 * Finds the {@link SonarHistory} data point for a list of
 	 * {@link ProcessorItem}.
@@ -72,6 +73,7 @@ public interface SonarHistoryRepository
 	 *            timestamp
 	 * @return a {@link SonarHistory}
 	 */
-	List<SonarHistory> findByProcessorItemIdInAndTimestampGreaterThan(List<ObjectId> processorItemIdList,Long timestamp);
+	List<SonarHistory> findByProcessorItemIdInAndTimestampGreaterThan(List<ObjectId> processorItemIdList,
+			Long timestamp);
 
 }

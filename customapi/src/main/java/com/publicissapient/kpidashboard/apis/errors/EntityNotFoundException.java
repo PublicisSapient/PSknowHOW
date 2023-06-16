@@ -31,6 +31,7 @@ public class EntityNotFoundException extends Exception {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final int ONE = 1;
+
 	/**
 	 * 
 	 * @param clazz
@@ -42,7 +43,7 @@ public class EntityNotFoundException extends Exception {
 	}
 
 	/**
-	 * Generates exception message 
+	 * Generates exception message
 	 * 
 	 * @param entity
 	 * @param searchParams
@@ -59,8 +60,8 @@ public class EntityNotFoundException extends Exception {
 	 * @param valueType
 	 * @param entries
 	 * @return sequential ordered {@code IntStream} from {@code startInclusive}
-     * (inclusive) to {@code endExclusive} (exclusive) by an incremental step of
-     * {@code 1}.
+	 *         (inclusive) to {@code endExclusive} (exclusive) by an incremental
+	 *         step of {@code 1}.
 	 */
 	private static <K, V> Map<K, V> toMap(Class<K> keyType, Class<V> valueType, Object... entries) {
 		if (entries.length % 2 == ONE) {

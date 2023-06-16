@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +42,7 @@ import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -125,7 +124,7 @@ public class FTPRServiceImplTest {
 		fieldMapping.setExcludeRCAFromFTPR(Arrays.asList("coding"));
 		fieldMapping.setJiraFTPRStoryIdentification(Arrays.asList("Story"));
 		fieldMapping.setJiraDefectRejectionStatus("");
-		fieldMapping.setResolutionTypeForRejection(Arrays.asList("Invalid","Duplicate","Unrequired"));
+		fieldMapping.setResolutionTypeForRejection(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
 		fieldMapping.setJiraIssueDeliverdStatus(Arrays.asList("Closed"));
 		fieldMapping.setDefectPriority(Arrays.asList("p2", "p1"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);

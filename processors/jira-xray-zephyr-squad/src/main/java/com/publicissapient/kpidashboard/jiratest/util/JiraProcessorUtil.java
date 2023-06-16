@@ -35,101 +35,102 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class JiraProcessorUtil {
 
-    private static final JiraProcessorUtil INSTANCE = new JiraProcessorUtil();
-    private static final String NULL_STR = "null";
+	private static final JiraProcessorUtil INSTANCE = new JiraProcessorUtil();
+	private static final String NULL_STR = "null";
 
-    private JiraProcessorUtil() {
-        // Default
-    }
+	private JiraProcessorUtil() {
+		// Default
+	}
 
-    /**
-     * This method return UTF-8 decoded string response
-     *
-     * @param jiraResponse Object of the Jira Response
-     * @return Decoded String
-     */
-    public static String deodeUTF8String(Object jiraResponse) {
-        if (jiraResponse == null) {
-            return "";
-        }
-        String responseStr = jiraResponse.toString();
-        byte[] responseBytes;
-        try {
-            CharsetDecoder charsetDecoder = StandardCharsets.UTF_8.newDecoder();
-            if (responseStr.isEmpty() || NULL_STR.equalsIgnoreCase(responseStr)) {
-                return StringUtils.EMPTY;
-            }
-            responseBytes = responseStr.getBytes(StandardCharsets.UTF_8);
-            charsetDecoder.decode(ByteBuffer.wrap(responseBytes));
-            return new String(responseBytes, StandardCharsets.UTF_8);
-        } catch (CharacterCodingException e) {
-            log.error("error while decoding String using UTF-8 {}  {}", responseStr, e);
-            return StringUtils.EMPTY;
-        }
-    }
+	/**
+	 * This method return UTF-8 decoded string response
+	 *
+	 * @param jiraResponse
+	 *            Object of the Jira Response
+	 * @return Decoded String
+	 */
+	public static String deodeUTF8String(Object jiraResponse) {
+		if (jiraResponse == null) {
+			return "";
+		}
+		String responseStr = jiraResponse.toString();
+		byte[] responseBytes;
+		try {
+			CharsetDecoder charsetDecoder = StandardCharsets.UTF_8.newDecoder();
+			if (responseStr.isEmpty() || NULL_STR.equalsIgnoreCase(responseStr)) {
+				return StringUtils.EMPTY;
+			}
+			responseBytes = responseStr.getBytes(StandardCharsets.UTF_8);
+			charsetDecoder.decode(ByteBuffer.wrap(responseBytes));
+			return new String(responseBytes, StandardCharsets.UTF_8);
+		} catch (CharacterCodingException e) {
+			log.error("error while decoding String using UTF-8 {}  {}", responseStr, e);
+			return StringUtils.EMPTY;
+		}
+	}
 
-    /**
-     * Formats Input date using ISODateTimeFormatter
-     *
-     * @param date date to be formatted
-     * @return formatted Date String
-     */
-    public static String getFormattedDate(String date) {
-        if (date != null && !date.isEmpty()) {
-            try {
-                DateTime dateTime = ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(date);
-                return ISODateTimeFormat.dateHourMinuteSecondMillis().print(dateTime) + "0000";
-            } catch (IllegalArgumentException e) {
-                log.error("error while parsing date: {} {}", date, e);
-            }
-        }
+	/**
+	 * Formats Input date using ISODateTimeFormatter
+	 *
+	 * @param date
+	 *            date to be formatted
+	 * @return formatted Date String
+	 */
+	public static String getFormattedDate(String date) {
+		if (date != null && !date.isEmpty()) {
+			try {
+				DateTime dateTime = ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(date);
+				return ISODateTimeFormat.dateHourMinuteSecondMillis().print(dateTime) + "0000";
+			} catch (IllegalArgumentException e) {
+				log.error("error while parsing date: {} {}", date, e);
+			}
+		}
 
-        return "";
-    }
+		return "";
+	}
 
-    public static String createJql(String projectKey, Map<String, String> startDateTimeStrByIssueType) {
+	public static String createJql(String projectKey, Map<String, String> startDateTimeStrByIssueType) {
 
-        if (StringUtils.isEmpty(projectKey) || startDateTimeStrByIssueType == null) {
-            return "";
-        }
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("project IN ('");
-        stringBuilder.append(projectKey);
-        stringBuilder.append("') AND (");
+		if (StringUtils.isEmpty(projectKey) || startDateTimeStrByIssueType == null) {
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("project IN ('");
+		stringBuilder.append(projectKey);
+		stringBuilder.append("') AND (");
 
-        int size = startDateTimeStrByIssueType.entrySet().size();
-        int count = 0;
-        for (Map.Entry<String, String> entry : startDateTimeStrByIssueType.entrySet()) {
-            count++;
-            String type = entry.getKey();
-            String dateTime = entry.getValue();
+		int size = startDateTimeStrByIssueType.entrySet().size();
+		int count = 0;
+		for (Map.Entry<String, String> entry : startDateTimeStrByIssueType.entrySet()) {
+			count++;
+			String type = entry.getKey();
+			String dateTime = entry.getValue();
 
-            stringBuilder.append("(issuetype IN ('" + type + "') AND updatedDate>='" + dateTime + "')");
-            if (count < size) {
-                stringBuilder.append(" OR ");
-            }
-        }
+			stringBuilder.append("(issuetype IN ('" + type + "') AND updatedDate>='" + dateTime + "')");
+			if (count < size) {
+				stringBuilder.append(" OR ");
+			}
+		}
 
-        stringBuilder.append(") ORDER BY updated DESC");
+		stringBuilder.append(") ORDER BY updated DESC");
 
-        return stringBuilder.toString();
-    }
+		return stringBuilder.toString();
+	}
 
-    /**
-     * append pre and post query
-     *
-     * @param preQuery
-     * @param postQuery
-     * @return appended query
-     */
-    private static String appendDateQuery(String preQuery, String postQuery) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(preQuery);
-        sb.append(" ");
-        sb.append(postQuery);
-        sb.append(" ORDER BY updated DESC");
-        return sb.toString();
-    }
-
+	/**
+	 * append pre and post query
+	 *
+	 * @param preQuery
+	 * @param postQuery
+	 * @return appended query
+	 */
+	private static String appendDateQuery(String preQuery, String postQuery) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(preQuery);
+		sb.append(" ");
+		sb.append(postQuery);
+		sb.append(" ORDER BY updated DESC");
+		return sb.toString();
+	}
 
 }

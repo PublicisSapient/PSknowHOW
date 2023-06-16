@@ -66,28 +66,22 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefectCountByStatusServiceImplTest {
+	@InjectMocks
+	DefectCountByStatusServiceImpl defectCountByStatusService;
+	@Mock
+	JiraIssueRepository jiraIssueRepository;
+	@Mock
+	CacheService cacheService;
+	@Mock
+	ConfigHelperService configHelperService;
+	@Mock
+	JiraServiceR jiraServiceR;
 	private KpiRequest kpiRequest;
 	private SprintDetails sprintDetails;
 	private List<JiraIssue> storyList = new ArrayList<>();
-
 	private List<JiraIssue> bugList = new ArrayList<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-
-	@InjectMocks
-	DefectCountByStatusServiceImpl defectCountByStatusService;
-
-	@Mock
-	JiraIssueRepository jiraIssueRepository;
-
-	@Mock
-	CacheService cacheService;
-
-	@Mock
-	ConfigHelperService configHelperService;
-
-	@Mock
-	JiraServiceR jiraServiceR;
 
 	@Test
 	public void testGetCalculateKPIMetrics() {

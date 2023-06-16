@@ -22,53 +22,53 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(SpringExtension.class)
 public class AlphanumComparatorTest {
 
-    AlphanumComparator alphanumComparator = new AlphanumComparator();
+	AlphanumComparator alphanumComparator = new AlphanumComparator();
 
-    @Mock
-    File fileOne;
-    @Mock
-    File fileTwo;
+	@Mock
+	File fileOne;
+	@Mock
+	File fileTwo;
 
-    @BeforeEach
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
+	@BeforeEach
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
+	}
 
-    @Test
-    public void compareCaseOne() {
-        Mockito.when(fileOne.getName()).thenReturn("TEST_191029");
-        Mockito.when(fileTwo.getName()).thenReturn("TEST_101029");
-        int result = alphanumComparator.compare(fileOne,fileTwo);
-        assertEquals(9, result);
+	@Test
+	public void compareCaseOne() {
+		Mockito.when(fileOne.getName()).thenReturn("TEST_191029");
+		Mockito.when(fileTwo.getName()).thenReturn("TEST_101029");
+		int result = alphanumComparator.compare(fileOne, fileTwo);
+		assertEquals(9, result);
 
-    }
+	}
 
-    @Test
-    public void compareCaseTwo() {
-        Mockito.when(fileTwo.getName()).thenReturn("TEST_191029_4");
-        Mockito.when(fileOne.getName()).thenReturn("TEST_10102");
-        int result = alphanumComparator.compare(fileOne,fileTwo);
-        assertEquals(-1, result);
+	@Test
+	public void compareCaseTwo() {
+		Mockito.when(fileTwo.getName()).thenReturn("TEST_191029_4");
+		Mockito.when(fileOne.getName()).thenReturn("TEST_10102");
+		int result = alphanumComparator.compare(fileOne, fileTwo);
+		assertEquals(-1, result);
 
-    }
+	}
 
-    @Test
-    public void compareNullFileName() {
-        Mockito.when(fileTwo.getName()).thenReturn(null);
-        Mockito.when(fileOne.getName()).thenReturn("TEST_10102");
-        int result = alphanumComparator.compare(fileOne,fileTwo);
-        assertEquals(0, result);
+	@Test
+	public void compareNullFileName() {
+		Mockito.when(fileTwo.getName()).thenReturn(null);
+		Mockito.when(fileOne.getName()).thenReturn("TEST_10102");
+		int result = alphanumComparator.compare(fileOne, fileTwo);
+		assertEquals(0, result);
 
-    }
+	}
 }

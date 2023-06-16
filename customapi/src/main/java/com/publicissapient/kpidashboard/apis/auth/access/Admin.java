@@ -18,7 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.auth.access;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * An Admin user.
@@ -27,7 +32,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-//@PreAuthorize(Admin.HAS_ROLE_ROLE_ADMIN)
+// @PreAuthorize(Admin.HAS_ROLE_ROLE_ADMIN)
 public @interface Admin {
 
 	String HAS_ROLE_ROLE_ADMIN = "hasRole('ROLE_ADMIN')";

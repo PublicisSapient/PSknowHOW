@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
@@ -84,9 +83,9 @@ import com.publicissapient.kpidashboard.common.model.application.SubProjectConfi
 import com.publicissapient.kpidashboard.common.model.application.Subproject;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.Identifier;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
@@ -104,6 +103,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHi
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jira.adapter.impl.OnlineAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
@@ -243,7 +243,6 @@ public class OnlineDataProcessorImplTest {
 		subproject.setToolConfigId(new ObjectId("5b674d58f47cae8935b1b26f"));
 		subProjectsList.add(subproject);
 
-
 		prepareIssuesData();
 		prepareAccountHierarchy();
 		JiraInfo jiraInfo = JiraInfo.builder()
@@ -335,7 +334,8 @@ public class OnlineDataProcessorImplTest {
 
 		}
 
-		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any())).thenReturn(metadataIdentifier);
+		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
+				.thenReturn(metadataIdentifier);
 
 		when(projectRestClient.getProject("TEST")).thenReturn(projectPromise);
 		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigList);
@@ -487,15 +487,11 @@ public class OnlineDataProcessorImplTest {
 		conn.get().setBearerToken(true);
 		conn.get().setPatOAuthToken("testPassword");
 
-
-
 		List<Subproject> subProjectsList = new ArrayList<>();
 		Subproject subproject = new Subproject();
 		subproject.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
 		subproject.setToolConfigId(new ObjectId("5b674d58f47cae8935b1b26f"));
 		subProjectsList.add(subproject);
-
-
 
 		prepareIssuesData();
 		prepareAccountHierarchy();
@@ -570,7 +566,6 @@ public class OnlineDataProcessorImplTest {
 		subproject.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
 		subproject.setToolConfigId(new ObjectId("5b674d58f47cae8935b1b26f"));
 		subProjectsList.add(subproject);
-
 
 		prepareKanbanIssuesData();
 		JiraInfo jiraInfo = JiraInfo.builder()
@@ -1286,8 +1281,6 @@ public class OnlineDataProcessorImplTest {
 		accountHierarchy.setBasicProjectConfigId(new ObjectId("5cf632361ed7970009226af9"));
 	}
 
-
-
 	private void prepareProjectData() {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		// Online Project Config data
@@ -1365,8 +1358,8 @@ public class OnlineDataProcessorImplTest {
 				valuestoidentify3);
 
 		List<Identifier> issuelinkIdentifer = new ArrayList<>();
-		return new MetadataIdentifier(tool, templateName, templateCode, isKanban, false, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
-				issuelinkIdentifer, valuestoidentifyIdentifer);
+		return new MetadataIdentifier(tool, templateName, templateCode, isKanban, false, issuesIdentifier,
+				customfieldIdentifer, workflowIdentifer, issuelinkIdentifer, valuestoidentifyIdentifer);
 
 	}
 
@@ -1420,8 +1413,8 @@ public class OnlineDataProcessorImplTest {
 				valuestoidentify3);
 
 		List<Identifier> issuelinkIdentifer = new ArrayList<>();
-		return new MetadataIdentifier(tool,templateName, templateCode, isKanban, false, issuesIdentifier, customfieldIdentifer, workflowIdentifer,
-				issuelinkIdentifer, valuestoidentifyIdentifer);
+		return new MetadataIdentifier(tool, templateName, templateCode, isKanban, false, issuesIdentifier,
+				customfieldIdentifer, workflowIdentifer, issuelinkIdentifer, valuestoidentifyIdentifer);
 
 	}
 

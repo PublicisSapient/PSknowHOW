@@ -94,7 +94,8 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
 	 * Gets called on a schedule to gather data from the feature content source
 	 * system and update the repository with retrieved data.
 	 * 
-	 * @param azureProcessor azureProcessor instance
+	 * @param azureProcessor
+	 *            azureProcessor instance
 	 */
 	@Override
 	public boolean execute(AzureProcessor azureProcessor) {

@@ -41,7 +41,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "project_basic_configs")
-public class ProjectBasicConfig extends BasicModel{
+public class ProjectBasicConfig extends BasicModel {
 
 	private String emmUpdatedOn;
 	private String consumerCreatedOn;
@@ -54,19 +54,20 @@ public class ProjectBasicConfig extends BasicModel{
 	private boolean saveAssigneeDetails;
 
 	/**
-	 * set isKanban value
-	 *
-	 * @param isKanban boolean value
-	 */
-	public void setIsKanban(boolean isKanban) {
-		this.kanban = isKanban;
-	}
-
-	/**
 	 * @return isKanban value
 	 */
 	public boolean getIsKanban() {
 		return this.kanban;
+	}
+
+	/**
+	 * set isKanban value
+	 *
+	 * @param isKanban
+	 *            boolean value
+	 */
+	public void setIsKanban(boolean isKanban) {
+		this.kanban = isKanban;
 	}
 
 	@Override

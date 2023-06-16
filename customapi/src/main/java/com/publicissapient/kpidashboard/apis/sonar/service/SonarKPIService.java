@@ -33,8 +33,8 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -60,7 +60,7 @@ import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepo
  *            Bind DB data with type
  * @author prigupta8
  */
-public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R,S> implements ApplicationKPIService<R, S, T> {
+public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> implements ApplicationKPIService<R, S, T> {
 
 	public static final String WEEK_SEPERATOR = " to ";
 	DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -83,8 +83,8 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R,S> impl
 	public abstract String getQualifierType();
 
 	/**
-	 * Returns API Request tracker Id to be used for logging/debugging and using
-	 * it for maintaining any sort of cache.
+	 * Returns API Request tracker Id to be used for logging/debugging and using it
+	 * for maintaining any sort of cache.
 	 *
 	 * @return
 	 */
@@ -106,7 +106,7 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R,S> impl
 	 * @throws ApplicationException
 	 */
 	public abstract KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-										  TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException;
+			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException;
 
 	/**
 	 * @param projectList
@@ -115,11 +115,10 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R,S> impl
 	 * @return
 	 */
 	public abstract Map<String, Object> getSonarJobWiseKpiData(List<Node> projectList, Map<String, Node> tempMap,
-															   KpiElement kpiElement);
+			KpiElement kpiElement);
 
 	/**
-	 * Returns the list of sonar project details related to a project ID in the
-	 * DB
+	 * Returns the list of sonar project details related to a project ID in the DB
 	 *
 	 * @param projectId
 	 * @return
@@ -152,6 +151,7 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R,S> impl
 
 	/**
 	 * fetching data greater than start date from sonar history table
+	 * 
 	 * @param projectId
 	 * @param startDate
 	 * @param kanban
@@ -177,7 +177,7 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R,S> impl
 						job.getProcessorItemList()
 								.forEach(processorItem -> processorItemList.add(processorItem.getId()));
 						List<SonarHistory> sonarHistoryList = sonarHistoryRepository
-								.findByProcessorItemIdInAndTimestampGreaterThan(processorItemList,timestamp);
+								.findByProcessorItemIdInAndTimestampGreaterThan(processorItemList, timestamp);
 						if (CollectionUtils.isNotEmpty(sonarHistoryList)) {
 							projectSonarList.addAll(sonarHistoryList);
 						}
@@ -205,6 +205,7 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R,S> impl
 
 	/**
 	 * fetchng data from history table based on kanban/scrum
+	 * 
 	 * @param projectList
 	 * @param startDate
 	 * @param isKanban
@@ -231,15 +232,14 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R,S> impl
 	}
 
 	/**
-	 * Prepare sonar key name considering multiple project can have same sonar
-	 * key
+	 * Prepare sonar key name considering multiple project can have same sonar key
 	 *
 	 * @param projectNodeId
 	 *            projectNodeId
 	 * @param sonarKeyName
 	 *            sonarKeyName
 	 * @param branchName
-	 * 			 sonar branch name
+	 *            sonar branch name
 	 * @return modified keyname
 	 */
 	public String prepareSonarKeyName(String projectNodeId, String sonarKeyName, String branchName) {
@@ -263,7 +263,7 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R,S> impl
 	 * @return map
 	 */
 	public Map<String, SonarHistory> prepareJobwiseHistoryMap(List<SonarHistory> sonarHistoryList, Long start,
-															  Long end) {
+			Long end) {
 		Map<String, SonarHistory> map = new HashMap<>();
 		for (SonarHistory sonarHistory : sonarHistoryList) {
 			if (sonarHistory.getTimestamp().compareTo(start) > 0 && sonarHistory.getTimestamp().compareTo(end) < 0) {
@@ -283,7 +283,7 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R,S> impl
 	 *            currentDate
 	 * @return array of localdate
 	 */
-	public LocalDate[] getWeeks(LocalDate currentDate){
+	public LocalDate[] getWeeks(LocalDate currentDate) {
 		LocalDate[] week = new LocalDate[2];
 		LocalDate monday = currentDate;
 		while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {

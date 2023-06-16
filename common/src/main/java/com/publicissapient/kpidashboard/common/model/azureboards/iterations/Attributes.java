@@ -21,74 +21,73 @@ package com.publicissapient.kpidashboard.common.model.azureboards.iterations;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "startDate",
-    "finishDate",
-    "timeFrame"
-})
+@JsonPropertyOrder({ "startDate", "finishDate", "timeFrame" })
 public class Attributes {
 
-    @JsonProperty("startDate")
-    private String startDate;
-    @JsonProperty("finishDate")
-    private String finishDate;
-    @JsonProperty("timeFrame")
-    private String timeFrame;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+	@JsonProperty("startDate")
+	private String startDate;
+	@JsonProperty("finishDate")
+	private String finishDate;
+	@JsonProperty("timeFrame")
+	private String timeFrame;
+	@JsonIgnore
+	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("startDate")
-    public String getStartDate() {
-        return startDate;
-    }
+	@JsonProperty("startDate")
+	public String getStartDate() {
+		return startDate;
+	}
 
-    @JsonProperty("startDate")
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
+	@JsonProperty("startDate")
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
 
-    @JsonProperty("finishDate")
-    public String getFinishDate() {
-        return finishDate;
-    }
+	@JsonProperty("finishDate")
+	public String getFinishDate() {
+		return finishDate;
+	}
 
-    @JsonProperty("finishDate")
-    public void setFinishDate(String finishDate) {
-        this.finishDate = finishDate;
-    }
+	@JsonProperty("finishDate")
+	public void setFinishDate(String finishDate) {
+		this.finishDate = finishDate;
+	}
 
-    @JsonProperty("timeFrame")
-    public String getTimeFrame() {
-        return timeFrame;
-    }
+	@JsonProperty("timeFrame")
+	public String getTimeFrame() {
+		return timeFrame;
+	}
 
-    @JsonProperty("timeFrame")
-    public void setTimeFrame(String timeFrame) {
-        this.timeFrame = timeFrame;
-    }
+	@JsonProperty("timeFrame")
+	public void setTimeFrame(String timeFrame) {
+		this.timeFrame = timeFrame;
+	}
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+	@JsonAnyGetter
+	public Map<String, Object> getAdditionalProperties() {
+		return this.additionalProperties;
+	}
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+	@JsonAnySetter
+	public void setAdditionalProperty(String name, Object value) {
+		this.additionalProperties.put(name, value);
+	}
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("startDate", startDate).append("finishDate", finishDate).append("timeFrame", timeFrame).append("additionalProperties", additionalProperties).toString();
-    }
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append("startDate", startDate).append("finishDate", finishDate)
+				.append("timeFrame", timeFrame).append("additionalProperties", additionalProperties).toString();
+	}
 
 }

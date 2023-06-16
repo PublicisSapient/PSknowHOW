@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +43,8 @@ import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This service for managing DeploymentFrequency kpi for scrum.
@@ -281,7 +281,8 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 				} else {
 					deploymentFrequencyInfo.addJobNameList(deployment.getJobName());
 				}
-				deploymentFrequencyInfo.addDeploymentDateList(DateUtil.dateTimeConverter(deployment.getStartTime(), DateUtil.TIME_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				deploymentFrequencyInfo.addDeploymentDateList(DateUtil.dateTimeConverter(deployment.getStartTime(),
+						DateUtil.TIME_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 				LocalDateTime dateTime = LocalDateTime.parse(deployment.getStartTime(), formatter);
 				deploymentFrequencyInfo.addMonthList(dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT)));

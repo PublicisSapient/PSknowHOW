@@ -36,20 +36,18 @@ public enum PlatformCode {
 		this.platformName = platformName;
 	}
 
-	public String getPlatformdId() {
-		return platformdId;
-	}
-
 	public static PlatformCode getDevicePlatform(String platformdId) {
 
 		return Arrays.asList(PlatformCode.values()).stream()
 				.filter(platId -> platId.getPlatformdId().equalsIgnoreCase(platformdId)).findAny().orElse(INVALID);
 	}
 
+	public String getPlatformdId() {
+		return platformdId;
+	}
+
 	public String getPlatformName() {
 		return platformName;
 	}
-
-
 
 }

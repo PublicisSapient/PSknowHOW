@@ -18,6 +18,13 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.parser;
 
+import java.net.URI;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
 import com.atlassian.jira.rest.client.api.ExpandableProperty;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.User;
@@ -26,12 +33,6 @@ import com.atlassian.jira.rest.client.internal.json.UserJsonParser;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.util.JsonParseUtil;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-
-import java.net.URI;
-import java.util.Iterator;
-import java.util.Map;
 
 public class CustomUserJsonParser extends UserJsonParser {
 

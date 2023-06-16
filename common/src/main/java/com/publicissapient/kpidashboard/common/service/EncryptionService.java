@@ -23,7 +23,8 @@ package com.publicissapient.kpidashboard.common.service;
  */
 public interface EncryptionService {
 
-    String encrypt(String text, String key);
-    String decrypt(String encryptedText, String key);
+	String encrypt(String text, String key);
+
+	String decrypt(String encryptedText, String key);
 
 }

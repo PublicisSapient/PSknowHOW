@@ -34,20 +34,22 @@ import com.publicissapient.kpidashboard.github.model.GitHubProcessorItem;
 public interface GitHubProcessorItemRepository extends ProcessorItemRepository<GitHubProcessorItem> {
 
 	/**
-	 * Represents a function that accepts one input arguments 
-	 * and returns list of GitHubProcessorItem.
+	 * Represents a function that accepts one input arguments and returns list of
+	 * GitHubProcessorItem.
 	 *
-	 * @param processorId the processor id
+	 * @param processorId
+	 *            the processor id
 	 * @return GitHubProcessorItem list of GitHubProcessorItem
 	 */
 	@Query("{ 'processorId' : ?0, 'isActive': true}")
 	List<GitHubProcessorItem> findActiveRepos(ObjectId processorId);
-	
+
 	/**
 	 * 
-	 * @param processorId the processor id
+	 * @param processorId
+	 *            the processor id
 	 * @param toolConfigId
-	 * the toolConfig id
+	 *            the toolConfig id
 	 * @return list of GitHubProcessorItem
 	 */
 	List<GitHubProcessorItem> findByProcessorIdAndToolConfigId(ObjectId processorId, ObjectId toolConfigId);

@@ -6,7 +6,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
 import java.net.UnknownHostException;
@@ -16,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,7 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.autoapprove.service.AutoApproveAccessService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -349,7 +351,7 @@ public class ProjectAccessManagerTest {
 		when(projectBasicConfigRepository.findByHierarchyLevelIdAndValues(anyString(), anyList()))
 				.thenReturn(Lists.newArrayList(projectBasicConfigObj()));
 		List<RoleWiseProjects> list = projectAccessManager.getProjectAccessesWithRole(ArgumentMatchers.anyString());
-		assertEquals( list.size(),1);
+		assertEquals(list.size(), 1);
 	}
 
 	@Test
@@ -495,7 +497,7 @@ public class ProjectAccessManagerTest {
 
 		List<String> list = projectAccessManager.getProjectBasicOnRoleList(userInfo,
 				Lists.newArrayList(Constant.ROLE_PROJECT_ADMIN));
-		assertEquals(list.size(),0);
+		assertEquals(list.size(), 0);
 	}
 
 	ProjectBasicConfig projectBasicConfigObj() {

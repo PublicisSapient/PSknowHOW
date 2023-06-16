@@ -18,20 +18,21 @@
 
 package com.publicissapient.kpidashboard.common.model.jira;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 @Document(collection = "jira_issue_offline_tracelogs")
 public class JiraIssueOfflineFileTraceLogs {
-    @Id
-    private String id;
-    private String fileName;
-    private DateTime date;
-    private String status;
-    private String projectConfigId;
+	@Id
+	private String id;
+	private String fileName;
+	private DateTime date;
+	private String status;
+	private String projectConfigId;
 }

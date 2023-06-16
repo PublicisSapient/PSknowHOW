@@ -27,81 +27,85 @@ import java.util.Map;
  */
 public class Mail {
 
-    private String from;
-    private String to;
-    private String subject;
-    private Map<String, Object> model;
+	private String from;
+	private String to;
+	private String subject;
+	private Map<String, Object> model;
 
-    /**
-     * Gets from.
-     *
-     * @return the from
-     */
-    public String getFrom() {
-        return from;
-    }
+	/**
+	 * Gets from.
+	 *
+	 * @return the from
+	 */
+	public String getFrom() {
+		return from;
+	}
 
-    /**
-     * Sets from.
-     *
-     * @param from the from to set
-     */
-    public void setFrom(String from) {
-        this.from = from;
-    }
+	/**
+	 * Sets from.
+	 *
+	 * @param from
+	 *            the from to set
+	 */
+	public void setFrom(String from) {
+		this.from = from;
+	}
 
-    /**
-     * Gets to.
-     *
-     * @return the to
-     */
-    public String getTo() {
-        return to;
-    }
+	/**
+	 * Gets to.
+	 *
+	 * @return the to
+	 */
+	public String getTo() {
+		return to;
+	}
 
-    /**
-     * Sets to.
-     *
-     * @param to the to to set
-     */
-    public void setTo(String to) {
-        this.to = to;
-    }
+	/**
+	 * Sets to.
+	 *
+	 * @param to
+	 *            the to to set
+	 */
+	public void setTo(String to) {
+		this.to = to;
+	}
 
-    /**
-     * Gets subject.
-     *
-     * @return the subject
-     */
-    public String getSubject() {
-        return subject;
-    }
+	/**
+	 * Gets subject.
+	 *
+	 * @return the subject
+	 */
+	public String getSubject() {
+		return subject;
+	}
 
-    /**
-     * Sets subject.
-     *
-     * @param subject the subject to set
-     */
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
+	/**
+	 * Sets subject.
+	 *
+	 * @param subject
+	 *            the subject to set
+	 */
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
 
-    /**
-     * Gets model.
-     *
-     * @return the model
-     */
-    public Map<String, Object> getModel() {
-        return model;
-    }
+	/**
+	 * Gets model.
+	 *
+	 * @return the model
+	 */
+	public Map<String, Object> getModel() {
+		return model;
+	}
 
-    /**
-     * Sets model.
-     *
-     * @param model the model to set
-     */
-    public void setModel(Map<String, Object> model) {
-        this.model = model;
-    }
+	/**
+	 * Sets model.
+	 *
+	 * @param model
+	 *            the model to set
+	 */
+	public void setModel(Map<String, Object> model) {
+		this.model = model;
+	}
 
 }
