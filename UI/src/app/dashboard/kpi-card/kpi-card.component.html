@@ -3,10 +3,10 @@
         <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader>
             <div class="kpi-card-title-container">
                 <h3 *ngIf="kpiData">{{kpiData?.kpiName}}
-                    <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+                    <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="fa fa-info-circle kpi-info-icon" aria-hidden="true" [style]="{'position': 'relative'}"
                         (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)">
                         <app-tooltip *ngIf="isTooltip" [data]="kpiData?.kpiDetail?.kpiInfo"
-                            (mouseleave)="showTooltip(false)" [showChartView]="showChartView"></app-tooltip>
+                            (mouseleave)="showTooltip(false)" [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" ></app-tooltip>
                     </span>
                     <img src="../../../assets/img/database-svg.svg" *ngIf="sprintsOverlayVisible"  (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event,kpiHeader) : '' ;" alt="Sprint Details" class="cursor-pointer p-ml-1 sprint-hover-icon"   pTooltip='<div class="inner-content">
                         Please click on icon for all sprint details.
