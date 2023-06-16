@@ -31,13 +31,15 @@ db.user_board_config.find({}).forEach(function(use_board) {
  boardScrum.forEach(function(scrum){
      if(scrum.boardName == "Iteration"){
            scrum.kpis.forEach(function(kpi){
-                if (isIterationReviewKpi(kpi.kpiId) && kpi.subCategoryBoard == undefined)
+                if (isIterationReviewKpi(kpi.kpiId) && kpi.subCategoryBoard == undefined){}
                         print("kpi_id Iteration Review" + kpi.kpiId);
                         kpi.subCategoryBoard = "Iteration Review";
+                        }
 
-                if (isIterationProgressKpi(kpi.kpiId) && kpi.subCategoryBoard == undefined)
+                if (isIterationProgressKpi(kpi.kpiId) && kpi.subCategoryBoard == undefined){
                     print("kpi_id Iteration Progress" + kpi.kpiId);
                     kpi.subCategoryBoard = "Iteration Progress";
+                    }
             });
      }
  });
