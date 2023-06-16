@@ -1,0 +1,172 @@
+{
+  "message": "Found all users info",
+  "success": true,
+  "data": [
+    {
+      "id": "5f748f9aa50d7baba8300a88",
+      "username": "testUser1",
+      "authorities": [
+        "ROLE_VIEWER"
+      ],
+      "authType": "STANDARD",
+      "emailAddress": "rishabh.shukla.abcdefghijklmnopqrstuvwxyz@publicissapient.com",
+      "projectsAccess": [
+        {
+          "role": "ROLE_PROJECT_ADMIN",
+          "projects": [
+            {
+              "projectName": "Goodyear Project Green",
+              "projectId": "5ea7cfa9a7b11b0001d27969"
+            }
+          ]
+        },
+        {
+          "role": "ROLE_PROJECT_VIEWER",
+          "projects": [
+            {
+              "projectName": "DTI",
+              "projectId": "5d31ab1530c49e0009bd8b2c"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5f748ff5a50d7baba8300a8a",
+      "username": "SUPERADMIN",
+      "authorities": [
+        "ROLE_SUPERADMIN"
+      ],
+      "authType": "STANDARD",
+      "projectsAccess": [
+        {
+          "role": "ROLE_SUPERADMIN",
+          "projects": []
+        }
+      ]
+    },
+    {
+      "id": "5f748f59a50d7baba8300a87",
+      "username": "testUser2",
+      "authorities": [
+        "ROLE_VIEWER"
+      ],
+      "authType": "STANDARD",
+      "emailAddress": "narender@nn.com",
+      "projectsAccess": [
+        {
+          "role": "ROLE_PROJECT_ADMIN",
+          "projects": [
+            {
+              "projectName": "Goodyear Project Green",
+              "projectId": "5ea7cfa9a7b11b0001d27969"
+            }
+          ]
+        },
+        {
+          "role": "ROLE_PROJECT_VIEWER",
+          "projects": [
+            {
+              "projectName": "DTI",
+              "projectId": "5d31ab1530c49e0009bd8b2c"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5f748fc9a50d7baba8300a89",
+      "username": "testUser3",
+      "authorities": [
+        "ROLE_VIEWER"
+      ],
+      "authType": "STANDARD",
+      "emailAddress": "pankaj@nn.com",
+      "projectsAccess": [
+        {
+          "role": "ROLE_PROJECT_ADMIN",
+          "projects": [
+            {
+              "projectName": "Goodyear Project Green",
+              "projectId": "5ea7cfa9a7b11b0001d27969"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5f34748fc9a50d7baba8300a89",
+      "username": "testUser4",
+      "authorities": [
+        "ROLE_VIEWER"
+      ],
+      "authType": "STANDARD",
+      "emailAddress": "pankajsharma@nn.com",
+      "projectsAccess": [
+        {
+          "role": "ROLE_PROJECT_ADMIN",
+          "projects": [
+            {
+              "projectName": "Goodyear Project Green",
+              "projectId": "5ea7cfa9a7b11b0001d27969"
+            }
+          ]
+        },
+        {
+          "role": "ROLE_PROJECT_VIEWER",
+          "projects": [
+            {
+              "projectName": "Goodyear Project Green",
+              "projectId": "5ea7cfa9a7b11b0001d27969"
+            },
+            {
+              "projectName": "FCA",
+              "projectId": "e2dcc41b-6cca-4c6c-bdb0-0370312befa1"
+            },
+            {
+              "projectName": "Cooper Tires Maintenance",
+              "projectId": "cf4e0515-ca86-453a-8eb1-1c30c9a6e7bc"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5f34748fc9a50d7baba8300a89",
+      "username": "testUser5",
+      "authorities": [
+        "ROLE_VIEWER"
+      ],
+      "authType": "STANDARD",
+      "emailAddress": "dilip@nn.com",
+      "projectsAccess": [
+        {
+          "role": "ROLE_PROJECT_ADMIN",
+          "projects": [
+            {
+              "projectName": "Goodyear Project Green",
+              "projectId": "5ea7cfa9a7b11b0001d27969"
+            }
+          ]
+        },
+        {
+          "role": "ROLE_PROJECT_VIEWER",
+          "projects": [
+            {
+              "projectName": "Goodyear Project Green",
+              "projectId": "5ea7cfa9a7b11b0001d27969"
+            },
+            {
+              "projectName": "FCA",
+              "projectId": "e2dcc41b-6cca-4c6c-bdb0-0370312befa1"
+            },
+            {
+              "projectName": "Cooper Tires Maintenance",
+              "projectId": "cf4e0515-ca86-453a-8eb1-1c30c9a6e7bc"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

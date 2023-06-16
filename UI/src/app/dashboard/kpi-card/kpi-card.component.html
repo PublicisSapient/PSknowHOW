@@ -1,0 +1,149 @@
+<div class="kpi-card-container">
+    <div class="kpi-card-header">
+        <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader>
+            <div class="kpi-card-title-container">
+                <h3 *ngIf="kpiData">{{kpiData?.kpiName}}
+                    <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+                        (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)">
+                        <app-tooltip *ngIf="isTooltip" [data]="kpiData?.kpiDetail?.kpiInfo"
+                            (mouseleave)="showTooltip(false)" [showChartView]="showChartView"></app-tooltip>
+                    </span>
+                    <img src="../../../assets/img/database-svg.svg" *ngIf="sprintsOverlayVisible"  (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event,kpiHeader) : '' ;" alt="Sprint Details" class="cursor-pointer p-ml-1 sprint-hover-icon"   pTooltip='<div class="inner-content">
+                        Please click on icon for all sprint details.
+                    </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper" />
+                    <app-comments *ngIf="showCommentIcon" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName" [selectedTab]="selectedTab" (closeSpringOverlay)="op.hide($event);"></app-comments>
+                </h3>
+            </div>
+        </div>
+        <!-- kpiFilter -->
+        <div *ngIf="isShow">
+            <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" class="kpi-filter">
+                <ng-container *ngSwitchCase="'dropdown'">
+                    <ng-select [(ngModel)]="filterOption" [dropdownPosition]="'bottom'"
+                        (change)="handleChange('single')" *ngIf="dropdownArr?.length && dropdownArr[0]?.options?.length"
+                        [placeholder]="dropdownArr[0]?.filterType" [clearable]="false" class="p-pb-0 kpi-dropdown">
+                        <ng-option *ngFor="let item of dropdownArr[0]?.options" [value]="item">
+                            <span [attr.title]="item">{{item}}</span>
+                        </ng-option>
+                    </ng-select>
+                </ng-container>
+                <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-justify-between">
+                    <ng-container *ngFor="let filter of dropdownArr;let k = index">
+                        <ng-select *ngIf="filter?.options?.length" [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'"
+                            (change)="handleChange('multi')" [placeholder]="filter?.filterType"
+                            (clear)="handleClearAll('filter'+(k+1))" class="p-pb-0 kpi-dropdown"
+                            [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}"
+                            [multiple]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'multiselectdropdown'"
+                            [closeOnSelect]="false">
+                            <ng-container *ngFor="let item of filter?.options; index as i">
+                                <ng-option [value]="item">
+                                    {{item}}
+                                </ng-option>
+                            </ng-container>
+                            <ng-template ng-multi-label-tmp let-items="filter?.options" let-clear="clear"
+                                *ngIf="kpiData?.kpiDetail?.kpiFilter?.toLowerCase() === 'multiselectdropdown'">
+                                <div class="ng-value border-0"
+                                    *ngIf="filterOptions['filter'+(k+1)]?.length > 0 && !filterOptions['filter'+(k+1)].includes('Overall')">
+                                    <span class="ng-value-label pointer"
+                                        (mouseover)="showFilterTooltip(true, 'filter'+(k+1))"
+                                        (mouseleave)="showFilterTooltip(false)">Filters:
+                                        {{filterOptions['filter'+(k+1)]?.length}} Selected</span>
+                                    <app-tooltip *ngIf="filterMultiSelectOptionsData?.hasOwnProperty('details') 
+                                    && filterMultiSelectOptionsData['details']['filter'+(k+1)]?.length"
+                                        [data]="filterMultiSelectOptionsData" [filterNo]="'filter'+(k+1)"
+                                        (mouseleave)="showFilterTooltip(false)">
+                                    </app-tooltip>
+                                </div>
+                            </ng-template>
+                        </ng-select>
+                    </ng-container>
+                </div>
+                <ng-container *ngSwitchCase="'radiobutton'">
+                    <ng-container *ngIf="dropdownArr?.length>0">
+                        <span *ngFor="let option of dropdownArr[0]?.options; let i = index" class="filter-radioButton">
+                            <p-radioButton [inputId]="option + '-' + kpiData?.kpiId" [name]="kpiData?.kpiId" [value]="option" [(ngModel)]="radioOption"
+                                (onClick)="handleChange('radio', option)">
+                            </p-radioButton>
+                            <label [for]="option + '-' + kpiData?.kpiId">{{ option }}</label>
+                        </span>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="kpi-card-body" 
+    [ngStyle]="{'height': showChartView ? '400px' : '150px', 
+    'min-height': showChartView ? '330px' : '100px'}">
+        <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="isShow && trendData?.length > 0 && showTrendIndicator"
+            >
+            <div *ngFor="let item of trendData; let i = index;" class="trend-box">
+                <app-trend-indicator
+                    [dataTrend]="item" [color]="trendBoxColorObj[item?.hierarchyName]?.color" [kpiData]="kpiData"
+                    [noOfBox]="trendData?.length">
+                </app-trend-indicator>
+            </div>
+        </div>
+        <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="!showChartView && (kpiData?.kpiId == 'kpi3' || kpiData?.kpiId == 'kpi53') && !(kpiData?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected)">
+            <div class="trend-box" *ngFor="let item of trendData; let i = index;">
+                <app-trend-indicator
+                    [dataTrend]="item" [cols]="cols" [color]="trendBoxColorObj[item?.hierarchyName]?.color" 
+                    [kpiData]="kpiData" [noOfBox]="trendData?.length">
+                </app-trend-indicator>
+            </div>
+        </div>
+        <!--place for chart to be rendered-->
+        <ng-content></ng-content>
+    </div>
+    <div class="kpi-card-footer d-flex justify-content-between">
+        <div class="p-d-flex p-align-center">
+            <!-- <object class="kpi-card-type-icon" data="../../../assets/img/Jira.svg"></object> -->
+        </div>
+        <div class="kpi-card-icons" *ngIf="showExport">
+            <img src="../../../assets/img/download.svg" alt="Download" class="ico-active p-mr-1 kpi-download-icon" (click)="exportToExcel()" pTooltip="Explore" tooltipPosition="top" tooltipEvent="hover" [escape]="false"/>
+            <!-- <i class="fas fa-expand mr-10"></i> -->
+        </div>
+    </div>
+</div>
+
+<p-overlayPanel #op [showCloseIcon]="true" styleClass="sprint-details-overlay">
+    <div class="p-mb-3 overlay-heading">
+            {{kpiData?.kpiName}}
+    </div>
+    <div class="dialog-body p-mb-4">
+        <p-tabView [(activeIndex)]="selectedTabIndex">
+
+            <ng-container *ngFor="let project of projectList;  let i = index;">
+                <p-tabPanel header="{{project.length > 15 ? project.substring(0,15)+'..' : project}}" [headerStyleClass]="getColorCssClasses(selectedTabIndex)">
+                    <p-table *ngIf="(sprintDetailsList[selectedTabIndex] && sprintDetailsList[selectedTabIndex]['hoverList'].length >0 ) ; else showNoDataMessage" [columns]="columnList" [value]="sprintDetailsList[selectedTabIndex]['hoverList']" 
+                        styleClass="p-datatable-gridlines kpi-table" [scrollable]="true" scrollHeight="250px">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <ng-container *ngFor="let col of columns">
+                                <th *ngIf="hasData(col.field)" [pSortableColumn]="col.field" [ngClass]="{'kpi-value-center': col.field ==='value'}">
+                                    {{ col.header }}
+                                    <p-sortIcon *ngIf="col.field === 'value'" [field]="col.field"></p-sortIcon>
+                                </th>
+                               </ng-container>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                            <tr>
+                                <ng-container *ngFor="let col of columns">
+                                    <td *ngIf="hasData(col.field)" [innerHTML]="col.field == 'value' ? rowData[col.field]+rowData['unit'] : rowData[col.field]" class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}">
+                                    </td>
+                               </ng-container>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+
+
+                </p-tabPanel>
+            </ng-container>
+            <ng-template #showNoDataMessage>
+                <h2 class="p-text-center">No Data Available</h2>
+              </ng-template>
+        </p-tabView>
+
+       
+    </div>
+ </p-overlayPanel>

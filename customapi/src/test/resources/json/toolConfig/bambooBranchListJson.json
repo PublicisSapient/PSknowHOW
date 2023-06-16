@@ -1,0 +1,3195 @@
+{
+  "expand": "branches",
+  "link": {
+    "href": "/bamboo/rest/api/latest/plan/COOP-CC/branch",
+    "rel": "self"
+  },
+  "branches": {
+    "size": 212,
+    "expand": "branch",
+    "start-index": 0,
+    "max-result": 212,
+    "branch": [
+      {
+        "description": "",
+        "shortName": "feature-ACTR-8087-navigate-education-topics-using-sidebar",
+        "shortKey": "CC232",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC232",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC232",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-8087-navigate-education-topics-using-sidebar"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-7886-display-c009-hero-small-banner-on-education-page",
+        "shortKey": "CC231",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC231",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC231",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-7886-display-c009-hero-small-banner-on-education-page"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-4300-create-no-promotions-found-page",
+        "shortKey": "CC227",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC227",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC227",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-4300-create-no-promotions-found-page"
+      },
+      {
+        "description": "",
+        "shortName": "hotfix-ACTR-9367-creative-issue-for-offer-page",
+        "shortKey": "CC230",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC230",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC230",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-ACTR-9367-creative-issue-for-offer-page"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-6405-display-tire-alternatives-if-no-vehicle-info",
+        "shortKey": "CC229",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC229",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC229",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6405-display-tire-alternatives-if-no-vehicle-info"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-6692-create-promotion-expired-page",
+        "shortKey": "CC228",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC228",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC228",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6692-create-promotion-expired-page"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-6699-spill-over-narrow-down-promotion-cards-by-vehicle-information",
+        "shortKey": "CC226",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC226",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC226",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6699-spill-over-narrow-down-promotion-cards-by-vehicle-information"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-4233-create-brand-topic-page",
+        "shortKey": "CC225",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC225",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC225",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-4233-create-brand-topic-page"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-4112-t016-find-promotions-page",
+        "shortKey": "CC224",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC224",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC224",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-4112-t016-find-promotions-page"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-6687-display-active-national-promotions",
+        "shortKey": "CC223",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC223",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC223",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6687-display-active-national-promotions"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-6389-display-product-overview-on-promotion-offer-details-page",
+        "shortKey": "CC222",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC222",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC222",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6389-display-product-overview-on-promotion-offer-details-page"
+      },
+      {
+        "description": "Display Detailed Warranty Information",
+        "shortName": "feature-ACTR-3778",
+        "shortKey": "CC214",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC214",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC214",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3778"
+      },
+      {
+        "description": "Display Product Features Scale Table",
+        "shortName": "feature-ACTR-3530-display-product-features-scale-table",
+        "shortKey": "CC171",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC171",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC171",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3530-display-product-features-scale-table"
+      },
+      {
+        "description": "",
+        "shortName": "ACTR-4555-c050-hmc-vehicle-or-tire-size",
+        "shortKey": "CC68",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC68",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC68",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-4555-c050-hmc-vehicle-or-tire-size"
+      },
+      {
+        "description": "I can see the Find Tires page",
+        "shortName": "feature-ACTR-7354-i-can-see-the-find-tires-page",
+        "shortKey": "CC220",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC220",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC220",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-7354-i-can-see-the-find-tires-page"
+      },
+      {
+        "description": "I can see 3 education content highlighted",
+        "shortName": "feature-ACTR-7353-i-can-see-3-education-content-highlighted",
+        "shortKey": "CC219",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC219",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC219",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-7353-i-can-see-3-education-content-highlighted"
+      },
+      {
+        "description": "Page Template Issue In Product Overview Component",
+        "shortName": "ACTR-7339-page-template-issue-in-product-overview-component",
+        "shortKey": "CC218",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC218",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC218",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7339-page-template-issue-in-product-overview-component"
+      },
+      {
+        "description": "",
+        "shortName": "feature-hmc 1",
+        "shortKey": "CC217",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC217",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC217",
+        "name": "CooperTire - CooperTireGSRSonar - feature-hmc 1"
+      },
+      {
+        "description": "On Edit Vehicle link, getting 500 error",
+        "shortName": "hotfix-ACTR-7680-on-edit-vehicle-link-getting-500-error",
+        "shortKey": "CC216",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC216",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC216",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-ACTR-7680-on-edit-vehicle-link-getting-500-error"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-6671-image-reference-issue",
+        "shortKey": "CC215",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC215",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC215",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-6671-image-reference-issue"
+      },
+      {
+        "description": "",
+        "shortName": "routing-issue-fix-cms-utility-folder",
+        "shortKey": "CC213",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC213",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC213",
+        "name": "CooperTire - CooperTireGSRSonar - routing-issue-fix-cms-utility-folder"
+      },
+      {
+        "description": "",
+        "shortName": "analytics-tag-7611",
+        "shortKey": "CC212",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC212",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC212",
+        "name": "CooperTire - CooperTireGSRSonar - analytics-tag-7611"
+      },
+      {
+        "description": "",
+        "shortName": "hotfix-ACTR-7672-updated",
+        "shortKey": "CC211",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC211",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC211",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-ACTR-7672-updated"
+      },
+      {
+        "description": "",
+        "shortName": "hotfix-ACTR-7672",
+        "shortKey": "CC210",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC210",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC210",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-ACTR-7672"
+      },
+      {
+        "description": "Tire Selector Error page is not open for invalid vehicle type value",
+        "shortName": "ACTR-7666-tire-selector-error-page-is-not-open-for-invalid-vehicle-type-value",
+        "shortKey": "CC208",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC208",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC208",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7666-tire-selector-error-page-is-not-open-for-invalid-vehicle-type-value"
+      },
+      {
+        "description": "",
+        "shortName": "bug-7336-6531-fixes",
+        "shortKey": "CC207",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC207",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC207",
+        "name": "CooperTire - CooperTireGSRSonar - bug-7336-6531-fixes"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-ACTR-7364-ACTR-5759-Comparison-Page-Issues",
+        "shortKey": "CC206",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC206",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC206",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-7364-ACTR-5759-Comparison-Page-Issues"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-ACTR-7325-ACTR-5759-Comparison-Image-for-winter-season-not-appearing",
+        "shortKey": "CC205",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC205",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC205",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-7325-ACTR-5759-Comparison-Image-for-winter-season-not-appearing"
+      },
+      {
+        "description": "Covering Text - Component",
+        "shortName": "feature-ACTR-7612-Covering-Text-Component-for-Recommendation-on-HMC",
+        "shortKey": "CC204",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC204",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC204",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-7612-Covering-Text-Component-for-Recommendation-on-HMC"
+      },
+      {
+        "description": "Display C014 Full Bleed Banner: Large on PDP",
+        "shortName": "feature-ACTR-6482-display-c014-full-bleed-banner-large-on-pdp",
+        "shortKey": "CC202",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC202",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC202",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6482-display-c014-full-bleed-banner-large-on-pdp"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-6461",
+        "shortKey": "CC201",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC201",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC201",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6461"
+      },
+      {
+        "description": "URL to be handled in CMS",
+        "shortName": "ACTR-7613-url-to-be-handled-in-cms",
+        "shortKey": "CC200",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC200",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC200",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7613-url-to-be-handled-in-cms"
+      },
+      {
+        "description": "0 reward value is displaying on comparison page.",
+        "shortName": "ACTR-7610-0-reward-value-is-displaying-on-comparison-page",
+        "shortKey": "CC199",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC199",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC199",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7610-0-reward-value-is-displaying-on-comparison-page"
+      },
+      {
+        "description": "Images of tire are coming from production URL.",
+        "shortName": "ACTR-7347-New-images-of-tire-are-coming-from-production-url",
+        "shortKey": "CC198",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC198",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC198",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7347-New-images-of-tire-are-coming-from-production-url"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-6485",
+        "shortKey": "CC197",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC197",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC197",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6485"
+      },
+      {
+        "description": "Handle Null check for Instagram feed",
+        "shortName": "ACTR-7614-handle-null-check-for-instagram-feed",
+        "shortKey": "CC196",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC196",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC196",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7614-handle-null-check-for-instagram-feed"
+      },
+      {
+        "description": "Covering Text - Component",
+        "shortName": "feature-ACTR-7612-covering-text-component",
+        "shortKey": "CC195",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC195",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC195",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-7612-covering-text-component"
+      },
+      {
+        "description": "C016 - Full Bleed Banner: Small | I want to explore other Cooper Tires on HMC",
+        "shortName": "feature-ACTR-3828-c016-full-bleed-banner-small-i-want-to-explore-other-cooper-tires-on-hmc",
+        "shortKey": "CC165",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC165",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC165",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3828-c016-full-bleed-banner-small-i-want-to-explore-other-cooper-tires-on-hmc"
+      },
+      {
+        "description": "Garbage value is displaying on Error page.",
+        "shortName": "bugfix-ACTR-6437",
+        "shortKey": "CC194",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC194",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC194",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6437"
+      },
+      {
+        "description": "",
+        "shortName": "drop-down-box-issues-7348",
+        "shortKey": "CC193",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC193",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC193",
+        "name": "CooperTire - CooperTireGSRSonar - drop-down-box-issues-7348"
+      },
+      {
+        "description": "Dec 15 QA build issue | PLP | Creative ",
+        "shortName": "ACTR-7271-dec-15-qa-build-issue-plp-creative",
+        "shortKey": "CC191",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC191",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC191",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7271-dec-15-qa-build-issue-plp-creative"
+      },
+      {
+        "description": "",
+        "shortName": "tire-selector-disappearance-issue",
+        "shortKey": "CC190",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC190",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC190",
+        "name": "CooperTire - CooperTireGSRSonar - tire-selector-disappearance-issue"
+      },
+      {
+        "description": "Javascript Test cases using Jasmine",
+        "shortName": "feature-ACTR-7366-js-test-cases-plp",
+        "shortKey": "CC189",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC189",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC189",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-7366-js-test-cases-plp"
+      },
+      {
+        "description": "",
+        "shortName": "feature-sticky-bar",
+        "shortKey": "CC188",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC188",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC188",
+        "name": "CooperTire - CooperTireGSRSonar - feature-sticky-bar"
+      },
+      {
+        "description": "On Homepage, more than one H1 tag is available.",
+        "shortName": "ACTR-7355-on-homepage-more-than-one-h1-tag-is-available",
+        "shortKey": "CC187",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC187",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC187",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7355-on-homepage-more-than-one-h1-tag-is-available"
+      },
+      {
+        "description": "",
+        "shortName": "7336-html-tag-issue-in-string",
+        "shortKey": "CC186",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC186",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC186",
+        "name": "CooperTire - CooperTireGSRSonar - 7336-html-tag-issue-in-string"
+      },
+      {
+        "description": "",
+        "shortName": "ACTR-7347-images-of-tire-are-coming-from-production-url",
+        "shortKey": "CC185",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC185",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC185",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7347-images-of-tire-are-coming-from-production-url"
+      },
+      {
+        "description": "",
+        "shortName": "ACTR-5814-pagination-bar-and-see-the-selected-post-for-instagram-feed-with-variations",
+        "shortKey": "CC184",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC184",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC184",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-5814-pagination-bar-and-see-the-selected-post-for-instagram-feed-with-variations"
+      },
+      {
+        "description": "",
+        "shortName": "Dev-InPrograss-Task",
+        "shortKey": "CC183",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC183",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC183",
+        "name": "CooperTire - CooperTireGSRSonar - Dev-InPrograss-Task"
+      },
+      {
+        "description": "Tire Selector Dropdowns are not working properly",
+        "shortName": "ACTR-7348-tire-selector-dropdowns-are-not-working-properly",
+        "shortKey": "CC182",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC182",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC182",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7348-tire-selector-dropdowns-are-not-working-properly"
+      },
+      {
+        "description": "Tire selector disappears in case user clicks on back button of browser after comparing tires.",
+        "shortName": "ACTR-7344-tire-selector-disappears-in-case-user-clicks-on-back-button-of-browser-after-comparing",
+        "shortKey": "CC181",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC181",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC181",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7344-tire-selector-disappears-in-case-user-clicks-on-back-button-of-browser-after-comparing"
+      },
+      {
+        "description": "ACTR - 5759 | Expand all features not changing to collapse all features on click",
+        "shortName": "ACTR-7326-actr-5759-expand-all-features-not-changing-to-collapse-all-features-on-click",
+        "shortKey": "CC180",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC180",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC180",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7326-actr-5759-expand-all-features-not-changing-to-collapse-all-features-on-click"
+      },
+      {
+        "description": "I can see side by side comparison of my selected tires",
+        "shortName": "feature-ACTR-5759-i-can-see-side-by-side-comparison-of-selected-tires",
+        "shortKey": "CC159",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC159",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC159",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5759-i-can-see-side-by-side-comparison-of-selected-tires"
+      },
+      {
+        "description": "",
+        "shortName": "test-branch-page-template",
+        "shortKey": "CC179",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC179",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC179",
+        "name": "CooperTire - CooperTireGSRSonar - test-branch-page-template"
+      },
+      {
+        "description": "ACTR-3603 | Issues with breadcrumb on the Comparison page",
+        "shortName": "ACTR-7323-actr-3603-issues-with-breadcrumb-on-the-comparison-page",
+        "shortKey": "CC178",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC178",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC178",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7323-actr-3603-issues-with-breadcrumb-on-the-comparison-page"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-5856-remove-tire-from-the-comparison-bar",
+        "shortKey": "CC177",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC177",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC177",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5856-remove-tire-from-the-comparison-bar"
+      },
+      {
+        "description": "Tire Selector Issues",
+        "shortName": "ACTR-7261-tire-selector-issues",
+        "shortKey": "CC176",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC176",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC176",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7261-tire-selector-issues"
+      },
+      {
+        "description": "ACTR-5759 | Creative issues for Comparison Table",
+        "shortName": "ACTR-7337-actr-5759-creative-issues-for-comparison-table",
+        "shortKey": "CC175",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC175",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC175",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7337-actr-5759-creative-issues-for-comparison-table"
+      },
+      {
+        "description": "Display Product Design in a carousel",
+        "shortName": "feature-ACTR-3531-display-product-design-in-a-carousel-dev",
+        "shortKey": "CC174",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC174",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC174",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3531-display-product-design-in-a-carousel-dev"
+      },
+      {
+        "description": "Main Navigation Behaviour",
+        "shortName": "feature-ACTR-6676",
+        "shortKey": "CC173",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC173",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC173",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6676"
+      },
+      {
+        "description": "ACTR - 5754 | Comparison Sticky Bar | Warning text appearing when it should not on the Sticky bar",
+        "shortName": "bugfix-ACTR-7310",
+        "shortKey": "CC172",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC172",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC172",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-7310"
+      },
+      {
+        "description": "",
+        "shortName": "feature-front-end-component-creation-poc",
+        "shortKey": "CC170",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC170",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC170",
+        "name": "CooperTire - CooperTireGSRSonar - feature-front-end-component-creation-poc"
+      },
+      {
+        "description": "PLP Outstanding Issues",
+        "shortName": "hotfix-ACTR-7280",
+        "shortKey": "CC169",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC169",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC169",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-ACTR-7280"
+      },
+      {
+        "description": "Dec 15 QA build issues in tire selector | Creative",
+        "shortName": "ACTR-7268-dec-15-qa-build-issues-in-tire-selector-creative",
+        "shortKey": "CC168",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC168",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC168",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7268-dec-15-qa-build-issues-in-tire-selector-creative"
+      },
+      {
+        "description": "Dec 15 QA build issue | Homepage | Creative ",
+        "shortName": "bugfix-ACTR-7270-dec-15-qa-build-issue-homepage-creative",
+        "shortKey": "CC167",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC167",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC167",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-7270-dec-15-qa-build-issue-homepage-creative"
+      },
+      {
+        "description": "ACTR - 3603 |  Find-Tires appearing in the bread crumb",
+        "shortName": "ACTR-7266-actr-3603-find-tires-appearing-in-the-bread-crumb",
+        "shortKey": "CC166",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC166",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC166",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7266-actr-3603-find-tires-appearing-in-the-bread-crumb"
+      },
+      {
+        "description": "SEO Review | Home Page & Tire selector",
+        "shortName": "ACTR-7259-seo-review-home-page-tire-selector",
+        "shortKey": "CC164",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC164",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC164",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-7259-seo-review-home-page-tire-selector"
+      },
+      {
+        "description": "Tech Dept | Use templete for each type of page",
+        "shortName": "feature-ACTR-6407-New-tech-dept-use-templete-for-each-type-of-page",
+        "shortKey": "CC163",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC163",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC163",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6407-New-tech-dept-use-templete-for-each-type-of-page"
+      },
+      {
+        "description": "IHS | Vin & License API not accessible from Level",
+        "shortName": "feature-ACTR-5621-ihs-vin-license-api-not-accessible-from-level",
+        "shortKey": "CC162",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC162",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC162",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5621-ihs-vin-license-api-not-accessible-from-level"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-Sprint-7-Feedbacks-Issues",
+        "shortKey": "CC161",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC161",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC161",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-Sprint-7-Feedbacks-Issues"
+      },
+      {
+        "description": "See breadcrumb on page",
+        "shortName": "feature-ACTR-3603-see-breadcrumb-on-page",
+        "shortKey": "CC70",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC70",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC70",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3603-see-breadcrumb-on-page"
+      },
+      {
+        "description": "Display Product Design in a carousel",
+        "shortName": "feature-ACTR-3531",
+        "shortKey": "CC160",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC160",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC160",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3531"
+      },
+      {
+        "description": "",
+        "shortName": "tire-size-different-labels",
+        "shortKey": "CC158",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC158",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC158",
+        "name": "CooperTire - CooperTireGSRSonar - tire-size-different-labels"
+      },
+      {
+        "description": "State Dropdown | Tire Selector",
+        "shortName": "ACTR-6695-state-dropdown-tire-selector",
+        "shortKey": "CC157",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC157",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC157",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-6695-state-dropdown-tire-selector"
+      },
+      {
+        "description": "ACTR-5754 | Warning text in sticky bar is not correct",
+        "shortName": "ACTR-6693-actr-5754-warning-text-in-sticky-bar-is-not-correct",
+        "shortKey": "CC156",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC156",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC156",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-6693-actr-5754-warning-text-in-sticky-bar-is-not-correct"
+      },
+      {
+        "description": "",
+        "shortName": "hotfix-tire-selector-trim-text-overlapping-issue",
+        "shortKey": "CC155",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC155",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC155",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-tire-selector-trim-text-overlapping-issue"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-ACTR-6672",
+        "shortKey": "CC154",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC154",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC154",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6672"
+      },
+      {
+        "description": "Tech Dept | Use templete for each type of page",
+        "shortName": "feature-ACTR-6407-tech-dept-use-templete-for-each-type-of-page",
+        "shortKey": "CC153",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC153",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC153",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6407-tech-dept-use-templete-for-each-type-of-page"
+      },
+      {
+        "description": "Tire Selector form validation",
+        "shortName": "bugfix-ACTR-6452",
+        "shortKey": "CC152",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC152",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC152",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6452"
+      },
+      {
+        "description": "Tire Selector | License Plate Component ",
+        "shortName": "ACTR-6486-tire-selector-license-plate-component",
+        "shortKey": "CC151",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC151",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC151",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-6486-tire-selector-license-plate-component"
+      },
+      {
+        "description": "Defects in preparation of Dec 10 client demo",
+        "shortName": "ACTR-6680-defects-in-preparation-of-dec-10-client-demo",
+        "shortKey": "CC150",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC150",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC150",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-6680-defects-in-preparation-of-dec-10-client-demo"
+      },
+      {
+        "description": "Display product overview component",
+        "shortName": "feature-ACTR-3526-display-product-overview-component",
+        "shortKey": "CC149",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC149",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC149",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3526-display-product-overview-component"
+      },
+      {
+        "description": "I can email myself this page I am currently viewing",
+        "shortName": "feature-ACTR-3504-i-can-email-myself-this-page-i-am-currently-viewing-bronto",
+        "shortKey": "CC148",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC148",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC148",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3504-i-can-email-myself-this-page-i-am-currently-viewing-bronto"
+      },
+      {
+        "description": "",
+        "shortName": "framework-changes",
+        "shortKey": "CC147",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC147",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC147",
+        "name": "CooperTire - CooperTireGSRSonar - framework-changes"
+      },
+      {
+        "description": "",
+        "shortName": "hotfix-tire-selector-overview-issues",
+        "shortKey": "CC146",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC146",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC146",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-tire-selector-overview-issues"
+      },
+      {
+        "description": "In mobile Image orientation is not proper  for Uncle Cooper banner: Large on HMC\t",
+        "shortName": "bugfix-ACTR-6654",
+        "shortKey": "CC145",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC145",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC145",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6654"
+      },
+      {
+        "description": "",
+        "shortName": "hotfix-tire-overview-title-order",
+        "shortKey": "CC143",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC143",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC143",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-tire-overview-title-order"
+      },
+      {
+        "description": "Product Card | Add to compare CTA button text incorrect when clicked",
+        "shortName": "bugfix-ACTR-6649-product-card-add-to-compare-cta-button-text-incorrect-when-clicked",
+        "shortKey": "CC142",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC142",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC142",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6649-product-card-add-to-compare-cta-button-text-incorrect-when-clicked"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-ACTR-6652",
+        "shortKey": "CC141",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC141",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC141",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6652"
+      },
+      {
+        "description": "Error Handling | VIN Search",
+        "shortName": "feature-ACTR-6479",
+        "shortKey": "CC140",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC140",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC140",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6479"
+      },
+      {
+        "description": "",
+        "shortName": "hotfix-tire-selector-new-issues",
+        "shortKey": "CC139",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC139",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC139",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-tire-selector-new-issues"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-ACTR-6466",
+        "shortKey": "CC138",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC138",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC138",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6466"
+      },
+      {
+        "description": "DropDown Box doesn't work on first click",
+        "shortName": "hotfix-ACTR-6480-dropdown-box-doesn-t-work-on-first-click",
+        "shortKey": "CC137",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC137",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC137",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-ACTR-6480-dropdown-box-doesn-t-work-on-first-click"
+      },
+      {
+        "description": "",
+        "shortName": "hotfix-no-record-found-page",
+        "shortKey": "CC136",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC136",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC136",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-no-record-found-page"
+      },
+      {
+        "description": "Short Description on Tire Product card is not in bullet points.",
+        "shortName": "hotfix-ACTR-6432-short-description-on-tire-product-card-is-not-in-bullet-points",
+        "shortKey": "CC135",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC135",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC135",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-ACTR-6432-short-description-on-tire-product-card-is-not-in-bullet-points"
+      },
+      {
+        "description": "Recommend tires by Vehicle Information (Year, Make, Model & Trim)",
+        "shortName": "feature-ACTR-3055-VinServiceIntegration",
+        "shortKey": "CC134",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC134",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC134",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3055-VinServiceIntegration"
+      },
+      {
+        "description": "",
+        "shortName": "hotfix-plp-issues",
+        "shortKey": "CC133",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC133",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC133",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-plp-issues"
+      },
+      {
+        "description": "C034 - Product OVERVIEW",
+        "shortName": "feature-ACTR-6470",
+        "shortKey": "CC132",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC132",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC132",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6470"
+      },
+      {
+        "description": "Errors and Contrast Errors For Home page, Tire Selector component and PLP ",
+        "shortName": "ACTR-6453-errors-and-contrast-errors-for-home-page-tire-selector-component-and-plp",
+        "shortKey": "CC131",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC131",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC131",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-6453-errors-and-contrast-errors-for-home-page-tire-selector-component-and-plp"
+      },
+      {
+        "description": "",
+        "shortName": "hotfix-state-api-bind",
+        "shortKey": "CC130",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC130",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC130",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-state-api-bind"
+      },
+      {
+        "description": "",
+        "shortName": "hotfix-get-started-issue",
+        "shortKey": "CC129",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC129",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC129",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-get-started-issue"
+      },
+      {
+        "description": "PLP Tire Selector: Error Page copy deck",
+        "shortName": "ACTR-6456-plp-tire-selector-error-page-copy-deck",
+        "shortKey": "CC128",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC128",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC128",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-6456-plp-tire-selector-error-page-copy-deck"
+      },
+      {
+        "description": "",
+        "shortName": "ACTR-6441-in-case-there-is-no-promotion-active-and-from-cms-show-awards-check-box-is-not-checked",
+        "shortKey": "CC127",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC127",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC127",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-6441-in-case-there-is-no-promotion-active-and-from-cms-show-awards-check-box-is-not-checked"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-ACTR-6463",
+        "shortKey": "CC126",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC126",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC126",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6463"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-hide-msrp",
+        "shortKey": "CC125",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC125",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC125",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-hide-msrp"
+      },
+      {
+        "description": "Display Tire size dropdown label based on selected values",
+        "shortName": "feature-ACTR-6450-display-tire-size-dropdown-label-based-on-selected-values",
+        "shortKey": "CC124",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC124",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC124",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6450-display-tire-size-dropdown-label-based-on-selected-values"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-drop-down-box-height-issue",
+        "shortKey": "CC122",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC122",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC122",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-drop-down-box-height-issue"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-PLP-UI-issue",
+        "shortKey": "CC123",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC123",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC123",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-PLP-UI-issue"
+      },
+      {
+        "description": "",
+        "shortName": "b-master-defects",
+        "shortKey": "CC121",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC121",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC121",
+        "name": "CooperTire - CooperTireGSRSonar - b-master-defects"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-6428-need-h1-copy-for-plp",
+        "shortKey": "CC120",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC120",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC120",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6428-need-h1-copy-for-plp"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-ACTR-6408",
+        "shortKey": "CC119",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC119",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC119",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6408"
+      },
+      {
+        "description": "",
+        "shortName": "tire-by-size-api-response-value-bind",
+        "shortKey": "CC118",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC118",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC118",
+        "name": "CooperTire - CooperTireGSRSonar - tire-by-size-api-response-value-bind"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-mobile-filters",
+        "shortKey": "CC117",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC117",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC117",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-mobile-filters"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-5615-dynamically-hide-filters-valid",
+        "shortKey": "CC116",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC116",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC116",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5615-dynamically-hide-filters-valid"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-5615-dynamically-hide-filters",
+        "shortKey": "CC115",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC115",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC115",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5615-dynamically-hide-filters"
+      },
+      {
+        "description": "Creative defects for Sort Tire Results",
+        "shortName": "bugfix-ACTR-6416_ACTR-6420_ACTR-6421_ACTR-6424_Creative_defects",
+        "shortKey": "CC114",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC114",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC114",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6416_ACTR-6420_ACTR-6421_ACTR-6424_Creative_defects"
+      },
+      {
+        "description": "In Mobile View Uncle cooper Image orientation is not proper for Create No Tires Found Error Page",
+        "shortName": "bugfix-ACTR-6422_In_Mobile_View_Uncle_cooper_Image_orientation_is_not_proper_for_Create_No_Tires_Found_Error_Page",
+        "shortKey": "CC113",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC113",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC113",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6422_In_Mobile_View_Uncle_cooper_Image_orientation_is_not_proper_for_Create_No_Tires_Found_Error_Page"
+      },
+      {
+        "description": "Sort Tire Results",
+        "shortName": "feature-ACTR-3176-sort-tire-results",
+        "shortKey": "CC112",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC112",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC112",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3176-sort-tire-results"
+      },
+      {
+        "description": "",
+        "shortName": "tirebysize-width-ratio-compare",
+        "shortKey": "CC111",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC111",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC111",
+        "name": "CooperTire - CooperTireGSRSonar - tirebysize-width-ratio-compare"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-ACTR-6409",
+        "shortKey": "CC110",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC110",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC110",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6409"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-ACTR-6411",
+        "shortKey": "CC109",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC109",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC109",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6411"
+      },
+      {
+        "description": "ACTR-3070 | Product Filter | Tool Tips are missing from the filter heads",
+        "shortName": "bugfix-ACTR-6410_ACTR-3070_Product_Filter_Tooltips_are_missing_from_the_filter_heads",
+        "shortKey": "CC108",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC108",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC108",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6410_ACTR-3070_Product_Filter_Tooltips_are_missing_from_the_filter_heads"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-uncle_cooper_banner_large_on_plp",
+        "shortKey": "CC107",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC107",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC107",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-uncle_cooper_banner_large_on_plp"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-creative-homepage-feedback",
+        "shortKey": "CC106",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC106",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC106",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-creative-homepage-feedback"
+      },
+      {
+        "description": "See breadcrumb on page",
+        "shortName": "feature-ACTR-3603-see-breadcrumb-on-page-new",
+        "shortKey": "CC105",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC105",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC105",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3603-see-breadcrumb-on-page-new"
+      },
+      {
+        "description": "",
+        "shortName": "Tire-selector-creative-defects",
+        "shortKey": "CC104",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC104",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC104",
+        "name": "CooperTire - CooperTireGSRSonar - Tire-selector-creative-defects"
+      },
+      {
+        "description": "",
+        "shortName": "TireBizeAPi-Fix-JS",
+        "shortKey": "CC103",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC103",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC103",
+        "name": "CooperTire - CooperTireGSRSonar - TireBizeAPi-Fix-JS"
+      },
+      {
+        "description": "",
+        "shortName": "Add-Vehicle-info-in-Tire-Selector-API",
+        "shortKey": "CC102",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC102",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC102",
+        "name": "CooperTire - CooperTireGSRSonar - Add-Vehicle-info-in-Tire-Selector-API"
+      },
+      {
+        "description": "",
+        "shortName": "TireAPi-Fixes",
+        "shortKey": "CC101",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC101",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC101",
+        "name": "CooperTire - CooperTireGSRSonar - TireAPi-Fixes"
+      },
+      {
+        "description": "",
+        "shortName": "TempBranchByKanchan",
+        "shortKey": "CC100",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC100",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC100",
+        "name": "CooperTire - CooperTireGSRSonar - TempBranchByKanchan"
+      },
+      {
+        "description": "",
+        "shortName": "ACTR-5596-broken-aria-reference-and-empty-button-errors-in-accessibility-improvements",
+        "shortKey": "CC99",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC99",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC99",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-5596-broken-aria-reference-and-empty-button-errors-in-accessibility-improvements"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-working-plp-for-master",
+        "shortKey": "CC98",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC98",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC98",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-working-plp-for-master"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-fix-for-merge-conflict",
+        "shortKey": "CC97",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC97",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC97",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-fix-for-merge-conflict"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-issues-with-plp-merge-conflict",
+        "shortKey": "CC96",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC96",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC96",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-issues-with-plp-merge-conflict"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-3070-filter-tire-products",
+        "shortKey": "CC59",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC59",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC59",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3070-filter-tire-products"
+      },
+      {
+        "description": "Sprint7 feedback -Creative(Homepage)",
+        "shortName": "bugfix-ACTR-6364-sprint7-feedback-creative-homepage",
+        "shortKey": "CC95",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC95",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC95",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6364-sprint7-feedback-creative-homepage"
+      },
+      {
+        "description": "Display C020A: Uncle Cooper banner: Large on PLP",
+        "shortName": "feature-ACTR-5572",
+        "shortKey": "CC94",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC94",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC94",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5572"
+      },
+      {
+        "description": "",
+        "shortName": "create_stateApi",
+        "shortKey": "CC93",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC93",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC93",
+        "name": "CooperTire - CooperTireGSRSonar - create_stateApi"
+      },
+      {
+        "description": "Sticky bar | I want to compare 3 tires",
+        "shortName": "feature-ACTR-5754-sticky-bar-i-want-to-compare-3-tires",
+        "shortKey": "CC92",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC92",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC92",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5754-sticky-bar-i-want-to-compare-3-tires"
+      },
+      {
+        "description": "",
+        "shortName": "feature-video-test",
+        "shortKey": "CC91",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC91",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC91",
+        "name": "CooperTire - CooperTireGSRSonar - feature-video-test"
+      },
+      {
+        "description": "",
+        "shortName": "feature-sonar-quality-fixes",
+        "shortKey": "CC90",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC90",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC90",
+        "name": "CooperTire - CooperTireGSRSonar - feature-sonar-quality-fixes"
+      },
+      {
+        "description": "AntiForgery Token implementation to validate to restrict the misuse of API from outside of domain",
+        "shortName": "feature-ACTR-6373-antiforgery-token-implementation-to-validate-to-restrict-the-misuse-of-api-from",
+        "shortKey": "CC89",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC89",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC89",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-6373-antiforgery-token-implementation-to-validate-to-restrict-the-misuse-of-api-from"
+      },
+      {
+        "description": "Tire Selector Creative Feedback",
+        "shortName": "bugfix-ACTR-6378-tire-selector-creative-feedback",
+        "shortKey": "CC88",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC88",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC88",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-6378-tire-selector-creative-feedback"
+      },
+      {
+        "description": "Retain User Selections in tire selector",
+        "shortName": "feature-ACTR-3068",
+        "shortKey": "CC87",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC87",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC87",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3068"
+      },
+      {
+        "description": "Sprint 6 | Creative QA Feedback (Home Page)",
+        "shortName": "bugfix-ACTR-5606-sprint-6-creative-qa-feedback-home-page",
+        "shortKey": "CC86",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC86",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC86",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-5606-sprint-6-creative-qa-feedback-home-page"
+      },
+      {
+        "description": "I can email myself this page I am currently viewing",
+        "shortName": "feature-ACTR-3504-i-can-email-myself-this-page-i-am-currently-viewing",
+        "shortKey": "CC85",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC85",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC85",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3504-i-can-email-myself-this-page-i-am-currently-viewing"
+      },
+      {
+        "description": "",
+        "shortName": "hotfix-fix-broken-sass-build",
+        "shortKey": "CC84",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC84",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC84",
+        "name": "CooperTire - CooperTireGSRSonar - hotfix-fix-broken-sass-build"
+      },
+      {
+        "description": "",
+        "shortName": "tire-selector-pr-comments",
+        "shortKey": "CC83",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC83",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC83",
+        "name": "CooperTire - CooperTireGSRSonar - tire-selector-pr-comments"
+      },
+      {
+        "description": "Create No Tires Found Error Page",
+        "shortName": "feature-ACTR-4264",
+        "shortKey": "CC81",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC81",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC81",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-4264"
+      },
+      {
+        "description": "",
+        "shortName": "5608-Intagram-Api-Code-refactor",
+        "shortKey": "CC80",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC80",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC80",
+        "name": "CooperTire - CooperTireGSRSonar - 5608-Intagram-Api-Code-refactor"
+      },
+      {
+        "description": "",
+        "shortName": "Get-API-Response-Refactor",
+        "shortKey": "CC79",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC79",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC79",
+        "name": "CooperTire - CooperTireGSRSonar - Get-API-Response-Refactor"
+      },
+      {
+        "description": "Tire Selector button Description Text should be 14px",
+        "shortName": "bugfix-ACTR-5874-tire-selector-button-description-text-should-be-14px",
+        "shortKey": "CC78",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC78",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC78",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-ACTR-5874-tire-selector-button-description-text-should-be-14px"
+      },
+      {
+        "description": "",
+        "shortName": "unit-test-code-refactor",
+        "shortKey": "CC77",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC77",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC77",
+        "name": "CooperTire - CooperTireGSRSonar - unit-test-code-refactor"
+      },
+      {
+        "description": "On Edge browser the orientation of VIN, License Plate , year make model and shop by tire size is not proper",
+        "shortName": "ACTR-6353-on-edge-browser-the-orientation-of-vin-license-plate-year-make-model-and-shop-by-tire-size",
+        "shortKey": "CC76",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC76",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC76",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-6353-on-edge-browser-the-orientation-of-vin-license-plate-year-make-model-and-shop-by-tire-size"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-edge-alignment-issue",
+        "shortKey": "CC74",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC74",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC74",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-edge-alignment-issue"
+      },
+      {
+        "description": "",
+        "shortName": "swagger-implementation",
+        "shortKey": "CC73",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC73",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC73",
+        "name": "CooperTire - CooperTireGSRSonar - swagger-implementation"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-audio-description",
+        "shortKey": "CC72",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC72",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC72",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-audio-description"
+      },
+      {
+        "description": "",
+        "shortName": "feature-naresh-BDD-Test-NV20",
+        "shortKey": "CC71",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC71",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC71",
+        "name": "CooperTire - CooperTireGSRSonar - feature-naresh-BDD-Test-NV20"
+      },
+      {
+        "description": "",
+        "shortName": "feature-hmc",
+        "shortKey": "CC69",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC69",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC69",
+        "name": "CooperTire - CooperTireGSRSonar - feature-hmc"
+      },
+      {
+        "description": "",
+        "shortName": "feature-tire-selector-ui",
+        "shortKey": "CC67",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC67",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC67",
+        "name": "CooperTire - CooperTireGSRSonar - feature-tire-selector-ui"
+      },
+      {
+        "description": "",
+        "shortName": "code-conventions",
+        "shortKey": "CC65",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC65",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC65",
+        "name": "CooperTire - CooperTireGSRSonar - code-conventions"
+      },
+      {
+        "description": "Changing desktop to mobile breakpoint causes issues with the global header",
+        "shortName": "ACTR-5662-changing-desktop-to-mobile-breakpoint-causes-issues-with-the-global-header",
+        "shortKey": "CC64",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC64",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC64",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-5662-changing-desktop-to-mobile-breakpoint-causes-issues-with-the-global-header"
+      },
+      {
+        "description": "",
+        "shortName": "feature-nrsh-specflow-bdd-test",
+        "shortKey": "CC63",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC63",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC63",
+        "name": "CooperTire - CooperTireGSRSonar - feature-nrsh-specflow-bdd-test"
+      },
+      {
+        "description": "For Split banner Video On full screen mode the player icons tool bar are not visible(For Chrome in Windows))",
+        "shortName": "bugfix-bugfix-ACTR-5820-for-split-banner-video-on-full-scre",
+        "shortKey": "CC62",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC62",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC62",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-bugfix-ACTR-5820-for-split-banner-video-on-full-scre"
+      },
+      {
+        "description": "I can see side by side comparison of my selected tires",
+        "shortName": "feature-ACTR-5759-i-can-see-side-by-side-comparison-of-my-selected-tires",
+        "shortKey": "CC61",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC61",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC61",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5759-i-can-see-side-by-side-comparison-of-my-selected-tires"
+      },
+      {
+        "description": "Display C020: Uncle Cooper banner: Large on PLP",
+        "shortName": "feature-ACTR-5572-display-c020-uncle-cooper-banner-large-on-plp",
+        "shortKey": "CC60",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC60",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC60",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5572-display-c020-uncle-cooper-banner-large-on-plp"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-test-api-error-resolve",
+        "shortKey": "CC58",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC58",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC58",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-test-api-error-resolve"
+      },
+      {
+        "description": "",
+        "shortName": "feature-sonar-code-smells-fix",
+        "shortKey": "CC57",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC57",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC57",
+        "name": "CooperTire - CooperTireGSRSonar - feature-sonar-code-smells-fix"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-video-fullscreen",
+        "shortKey": "CC56",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC56",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC56",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-video-fullscreen"
+      },
+      {
+        "description": "",
+        "shortName": "CodeCoverageTemp",
+        "shortKey": "CC55",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC55",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC55",
+        "name": "CooperTire - CooperTireGSRSonar - CodeCoverageTemp"
+      },
+      {
+        "description": "",
+        "shortName": "feature-inputbox-textarea-atoms",
+        "shortKey": "CC54",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC54",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC54",
+        "name": "CooperTire - CooperTireGSRSonar - feature-inputbox-textarea-atoms"
+      },
+      {
+        "description": "Recommend tires by Tire Size",
+        "shortName": "feature-ACTR-3056-recommend-tires-by-tire-size",
+        "shortKey": "CC53",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC53",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC53",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3056-recommend-tires-by-tire-size"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-transcript-location",
+        "shortKey": "CC52",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC52",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC52",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-transcript-location"
+      },
+      {
+        "description": "",
+        "shortName": "tire-selector",
+        "shortKey": "CC51",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC51",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC51",
+        "name": "CooperTire - CooperTireGSRSonar - tire-selector"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-homepage-creativeqa",
+        "shortKey": "CC50",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC50",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC50",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-homepage-creativeqa"
+      },
+      {
+        "description": "The alignment of Button copy is not proper",
+        "shortName": "feature-ACTR-5549",
+        "shortKey": "CC49",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC49",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC49",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5549"
+      },
+      {
+        "description": "Hover State Missing On Social Icons",
+        "shortName": "feature-ACTR-5510-hover-state-missing-on-social-icons",
+        "shortKey": "CC48",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC48",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC48",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5510-hover-state-missing-on-social-icons"
+      },
+      {
+        "description": "Update all components with background option",
+        "shortName": "ACTR-5311-update-all-components-with-background-option",
+        "shortKey": "CC47",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC47",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC47",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-5311-update-all-components-with-background-option"
+      },
+      {
+        "description": "Recommend tires by Vehicle Information (Year, Make, Model & Trim)",
+        "shortName": "feature-ACTR-3055-recommend-tires-by-vehicle-information-year-make-model-trim",
+        "shortKey": "CC46",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC46",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC46",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3055-recommend-tires-by-vehicle-information-year-make-model-trim"
+      },
+      {
+        "description": "Primary button missing on hero home banner",
+        "shortName": "feature-ACTR-5512-primary-button-missing-on-hero-home-banner",
+        "shortKey": "CC45",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC45",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC45",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5512-primary-button-missing-on-hero-home-banner"
+      },
+      {
+        "description": "XT | Split banner design review changes",
+        "shortName": "feature-ACTR-5508-xt-split-banner-design-review-changes",
+        "shortKey": "CC44",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC44",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC44",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5508-xt-split-banner-design-review-changes"
+      },
+      {
+        "description": "",
+        "shortName": "ACTR-5472-broken-aria-reference-and-language-missing-errors-in-accessibility-improvements-new",
+        "shortKey": "CC43",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC43",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC43",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-5472-broken-aria-reference-and-language-missing-errors-in-accessibility-improvements-new"
+      },
+      {
+        "description": "Page Creation | Tire Listing page",
+        "shortName": "ACTR-5492-page-creation-tire-listing-page",
+        "shortKey": "CC42",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC42",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC42",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-5492-page-creation-tire-listing-page"
+      },
+      {
+        "description": "",
+        "shortName": "feature-Galen-Creative-Testing",
+        "shortKey": "CC41",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC41",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC41",
+        "name": "CooperTire - CooperTireGSRSonar - feature-Galen-Creative-Testing"
+      },
+      {
+        "description": "",
+        "shortName": "feature-Galen-CreativeAutomation",
+        "shortKey": "CC40",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC40",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC40",
+        "name": "CooperTire - CooperTireGSRSonar - feature-Galen-CreativeAutomation"
+      },
+      {
+        "description": "",
+        "shortName": "feature-API-BDD-TestAutomation",
+        "shortKey": "CC39",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC39",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC39",
+        "name": "CooperTire - CooperTireGSRSonar - feature-API-BDD-TestAutomation"
+      },
+      {
+        "description": "",
+        "shortName": "feature-Specflow-BDD-TestAutomation",
+        "shortKey": "CC38",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC38",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC38",
+        "name": "CooperTire - CooperTireGSRSonar - feature-Specflow-BDD-TestAutomation"
+      },
+      {
+        "description": "Broken aria reference and Language missing errors in Accessibility Improvements",
+        "shortName": "ACTR-5472-broken-aria-reference-and-language-missing-errors-in-accessibility-improvements",
+        "shortKey": "CC37",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC37",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC37",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-5472-broken-aria-reference-and-language-missing-errors-in-accessibility-improvements"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-Code-Coverage-File",
+        "shortKey": "CC35",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC35",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC35",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-Code-Coverage-File"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-Creative-Issue",
+        "shortKey": "CC36",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC36",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC36",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-Creative-Issue"
+      },
+      {
+        "description": "",
+        "shortName": "feature-Verify-code-coverage",
+        "shortKey": "CC29",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC29",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC29",
+        "name": "CooperTire - CooperTireGSRSonar - feature-Verify-code-coverage"
+      },
+      {
+        "description": "Updated background of C024 Full Image Cards",
+        "shortName": "feature-ACTR-5448-updated-background-of-c024-full-image-cards",
+        "shortKey": "CC34",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC34",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC34",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5448-updated-background-of-c024-full-image-cards"
+      },
+      {
+        "description": "In CMS- for four card images when i am editing and writing some description it is not appearing on the publisher",
+        "shortName": "ACTR-5154-in-cms-for-four-card-images-when-i-am-editing-and-writing-some-description-it-is-not",
+        "shortKey": "CC32",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC32",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC32",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-5154-in-cms-for-four-card-images-when-i-am-editing-and-writing-some-description-it-is-not"
+      },
+      {
+        "description": "Inconsistent view on QA Env for Home Page",
+        "shortName": "ACTR-5376-inconsistent-view-on-qa-env-for-home-page",
+        "shortKey": "CC26",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC26",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC26",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-5376-inconsistent-view-on-qa-env-for-home-page"
+      },
+      {
+        "description": "Update background of C032 icons large sub heading",
+        "shortName": "feature-ACTR-5409-update-background-of-c032-icons-large-sub-heading",
+        "shortKey": "CC31",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC31",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC31",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5409-update-background-of-c032-icons-large-sub-heading"
+      },
+      {
+        "description": "",
+        "shortName": "master-temp",
+        "shortKey": "CC30",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC30",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC30",
+        "name": "CooperTire - CooperTireGSRSonar - master-temp"
+      },
+      {
+        "description": "Atomic structure Implementation ",
+        "shortName": "ACTR-5464-atomic-structure-implementation",
+        "shortKey": "CC28",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC28",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC28",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-5464-atomic-structure-implementation"
+      },
+      {
+        "description": "Display static education highlight content on Homepage",
+        "shortName": "feature-ACTR-4940-display-static-education-highlight-content-on-homepage",
+        "shortKey": "CC23",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC23",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC23",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-4940-display-static-education-highlight-content-on-homepage"
+      },
+      {
+        "description": "Showcase highlights around Cooper as a company on Homepage",
+        "shortName": "feature-ACTR-4952-showcase-highlights-around-cooper-as-a-company-on-homepage",
+        "shortKey": "CC17",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC17",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC17",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-4952-showcase-highlights-around-cooper-as-a-company-on-homepage"
+      },
+      {
+        "description": "Display static education highlight content on Homepage",
+        "shortName": "feature-ACTR-4940",
+        "shortKey": "CC9",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC9",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC9",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-4940"
+      },
+      {
+        "description": "",
+        "shortName": "ACTR-4823-rest-sharp-framework-setup-for-automating-the-apis",
+        "shortKey": "CC27",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC27",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC27",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-4823-rest-sharp-framework-setup-for-automating-the-apis"
+      },
+      {
+        "description": "Caching framework setup in code",
+        "shortName": "ACTR-4731-caching-framework-setup-in-code",
+        "shortKey": "CC24",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC24",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC24",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-4731-caching-framework-setup-in-code"
+      },
+      {
+        "description": "",
+        "shortName": "feature-PR-Sonar-Analysis",
+        "shortKey": "CC19",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC19",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC19",
+        "name": "CooperTire - CooperTireGSRSonar - feature-PR-Sonar-Analysis"
+      },
+      {
+        "description": "",
+        "shortName": "code-refactoring-Menu",
+        "shortKey": "CC22",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC22",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC22",
+        "name": "CooperTire - CooperTireGSRSonar - code-refactoring-Menu"
+      },
+      {
+        "description": "C030 - Display Instagram Feed : Small",
+        "shortName": "feature-ACTR-3990-c030-display-instagram-feed-small",
+        "shortKey": "CC21",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC21",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC21",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-3990-c030-display-instagram-feed-small"
+      },
+      {
+        "description": "C031 - Instagram Feed Modal | I want to see the details of the instagram post",
+        "shortName": "feature-ACTR-4130-c031-instagram-feed-modal-i-want-to-see-the-details-of-the-instagram-post",
+        "shortKey": "CC20",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC20",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC20",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-4130-c031-instagram-feed-modal-i-want-to-see-the-details-of-the-instagram-post"
+      },
+      {
+        "description": "",
+        "shortName": "bugfix-TestApi-Project-IssueResolved",
+        "shortKey": "CC18",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC18",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC18",
+        "name": "CooperTire - CooperTireGSRSonar - bugfix-TestApi-Project-IssueResolved"
+      },
+      {
+        "description": "",
+        "shortName": "master",
+        "shortKey": "CC10",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC10",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC10",
+        "name": "CooperTire - CooperTireGSRSonar - master"
+      },
+      {
+        "description": "",
+        "shortName": "ACTR-5146-page-template-configuration",
+        "shortKey": "CC16",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC16",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC16",
+        "name": "CooperTire - CooperTireGSRSonar - ACTR-5146-page-template-configuration"
+      },
+      {
+        "description": "Atomic design implementation",
+        "shortName": "feature-ACTR-5170",
+        "shortKey": "CC15",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC15",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC15",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-5170"
+      },
+      {
+        "description": "",
+        "shortName": "feature-project-testapi-reference-issue-solution",
+        "shortKey": "CC14",
+        "enabled": true,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC14",
+          "rel": "self"
+        },
+        "workflowType": "branches",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC14",
+        "name": "CooperTire - CooperTireGSRSonar - feature-project-testapi-reference-issue-solution"
+      },
+      {
+        "description": "",
+        "shortName": "feature-ACTR-4992",
+        "shortKey": "CC25",
+        "enabled": false,
+        "link": {
+          "href": "/bamboo/rest/api/latest/plan/COOP-CC25",
+          "rel": "self"
+        },
+        "workflowType": "manual",
+        "divergent": false,
+        "awaitingSpecsExecution": false,
+        "key": "COOP-CC25",
+        "name": "CooperTire - CooperTireGSRSonar - feature-ACTR-4992"
+      }
+    ]
+  }
+}

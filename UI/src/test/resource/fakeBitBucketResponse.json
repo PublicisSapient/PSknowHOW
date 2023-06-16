@@ -1,0 +1,115 @@
+[
+    {
+        "kpiId": "kpi84",
+        "kpiName": "Mean Time To Merge",
+        "unit": "Hours",
+        "maxValue": "10",
+        "chartType": "",
+        "kpiInfo": {
+            "definition": "MEAN TIME TO MERGE measures the efficiency of the code review process in a team",
+            "details": [
+                {
+                    "type": "paragraph",
+                    "value": "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "A progress indicator shows trend of Mean time to merge in last 2 weeks. A downward trend is considered positive"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "Maturity of the KPI is calculated based on the average of the last 5 weeks"
+                }
+            ],
+            "maturityLevels": [
+                {
+                    "level": "M5",
+                    "bgColor": "#6cab61",
+                    "range": "<4 Hours"
+                },
+                {
+                    "level": "M4",
+                    "bgColor": "#AEDB76",
+                    "range": "4-8 Hours"
+                },
+                {
+                    "level": "M3",
+                    "bgColor": "#eff173",
+                    "range": "8-16 Hours"
+                },
+                {
+                    "level": "M2",
+                    "bgColor": "#ffc35b",
+                    "range": "16-48 Hours"
+                },
+                {
+                    "level": "M1",
+                    "bgColor": "#F06667",
+                    "range": ">48 Hours"
+                }
+            ]
+        },
+        "id": "63355d7c41a0342c3790fb98",
+        "isDeleted": "False",
+        "kpiUnit": "Hours",
+        "kanban": false,
+        "kpiSource": "BitBucket",
+        "thresholdValue": 55,
+        "trendValueList": [
+            {
+                "filter": "Overall",
+                "value": [
+                    {
+                        "data": "bittest",
+                        "value": [
+                            {
+                                "data": "0",
+                                "value": 0,
+                                "hoverValue": {},
+                                "date": "2022-08-29 to 2022-09-04",
+                                "sprojectName": "BITBUCKET_DEMO"
+                            },
+                            {
+                                "data": "0",
+                                "value": 0,
+                                "hoverValue": {},
+                                "date": "2022-09-05 to 2022-09-11",
+                                "sprojectName": "BITBUCKET_DEMO"
+                            },
+                            {
+                                "data": "0",
+                                "value": 0,
+                                "hoverValue": {},
+                                "date": "2022-09-12 to 2022-09-18",
+                                "sprojectName": "BITBUCKET_DEMO"
+                            },
+                            {
+                                "data": "0",
+                                "value": 0,
+                                "hoverValue": {},
+                                "date": "2022-09-19 to 2022-09-25",
+                                "sprojectName": "BITBUCKET_DEMO"
+                            },
+                            {
+                                "data": "0",
+                                "value": 0,
+                                "hoverValue": {},
+                                "date": "2022-09-26 to 2022-10-02",
+                                "sprojectName": "BITBUCKET_DEMO"
+                            }
+                        ],
+                        "maturity": "5"
+                    }
+                ]
+            }
+        ],
+        "maturityRange": [
+            "-16",
+            "16-8",
+            "8-4",
+            "4-2",
+            "2-"
+        ],
+        "groupId": 1
+    }
+]

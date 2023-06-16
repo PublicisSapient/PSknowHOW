@@ -1,0 +1,297 @@
+[
+    {
+      "kpiId": "kpi17",
+      "kpiName": "Unit Tests Coverage",
+      "unit": "%",
+      "maxValue": "100",
+      "chartType": "",
+      "kpiInfo": {
+        "definition": "UNIT TESTS COVERAGE is a measurement of the amount of code that is run by unit tests - either lines, branches, or methods.",
+        "formula": [
+          {
+            "lhs": "The calculation is done directly in Sonarqube"
+          }
+        ],
+        "details": [
+          {
+            "type": "paragraph",
+            "value": "It is calculated in ‘Percentage’. Higher the percentage, better is the ‘Quality’"
+          },
+          {
+            "type": "paragraph",
+            "value": "A progress indicator shows trend of Unit test coverage between last 2 weeks. An upward trend is considered positive"
+          },
+          {
+            "type": "paragraph",
+            "value": "Maturity of the KPI is calculated based on the average of the last 5 weeks."
+          },
+          {
+            "type": "paragraph",
+            "value": "Maturity :"
+          }
+        ],
+        "maturityLevels": [
+          {
+            "level": "M5",
+            "bgColor": "#6cab61",
+            "range": ">80%"
+          },
+          {
+            "level": "M4",
+            "bgColor": "#AEDB76",
+            "range": "60-80%"
+          },
+          {
+            "level": "M3",
+            "bgColor": "#eff173",
+            "range": "40-60%"
+          },
+          {
+            "level": "M2",
+            "bgColor": "#ffc35b",
+            "range": "20-40%"
+          },
+          {
+            "level": "M1",
+            "bgColor": "#F06667",
+            "range": "<20%"
+          }
+        ]
+      },
+      "id": "6281f02a2c71fb81e720c3be",
+      "isDeleted": "False",
+      "kpiCategory": "Quality",
+      "kpiUnit": "%",
+      "kanban": false,
+      "kpiSource": "Sonar",
+      "thresholdValue": 55.0,
+      "trendValueList": [
+        {
+          "filter": "ENGINEERING.KPIDASHBOARD.CUSTOMAPI->Test1",
+          "value": [
+            {
+              "data": "M&T",
+
+              "value": [
+                {
+                  "data": "75.5",
+                  "sSprintID": "2022-04-25 to 2022-05-01",
+                  "sSprintName": "2022-04-25 to 2022-05-01",
+                  "value": 75.5,
+                  "date": "2022-04-25 to 2022-05-01",
+                  "sprintIds": [
+                    "Test1_622b2c7d4c3a0d462b35d83d"
+                  ],
+                  "sprintNames": [
+                    "Test1"
+                  ],
+                  "sprojectName": "Test1"
+                },
+                {
+                  "data": "75.5",
+                  "sSprintID": "2022-05-02 to 2022-05-08",
+                  "sSprintName": "2022-05-02 to 2022-05-08",
+                  "value": 75.5,
+                  "date": "2022-05-02 to 2022-05-08",
+                  "sprintIds": [
+                    "Test1_622b2c7d4c3a0d462b35d83d"
+                  ],
+                  "sprintNames": [
+                    "Test1"
+                  ],
+                  "sprojectName": "Test1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "filter": "ENGINEERING.KPIDASHBOARD.UI->Test1",
+          "value": [
+            {
+              "data": "M&T",
+              "value": [
+                {
+                  "data": "53.1",
+                  "sSprintID": "2022-04-18 to 2022-04-24",
+                  "sSprintName": "2022-04-18 to 2022-04-24",
+                  "value": 53.1,
+                  "date": "2022-04-18 to 2022-04-24",
+                  "sprintIds": [
+                    "Test1_622b2c7d4c3a0d462b35d83d"
+                  ],
+                  "sprintNames": [
+                    "Test1"
+                  ],
+                  "sprojectName": "Test1"
+                },
+                {
+                  "data": "53.5",
+                  "sSprintID": "2022-04-25 to 2022-05-01",
+                  "sSprintName": "2022-04-25 to 2022-05-01",
+                  "value": 53.5,
+                  "date": "2022-04-25 to 2022-05-01",
+                  "sprintIds": [
+                    "Test1_622b2c7d4c3a0d462b35d83d"
+                  ],
+                  "sprintNames": [
+                    "Test1"
+                  ],
+                  "sprojectName": "Test1"
+                },
+                {
+                  "data": "53.2",
+                  "sSprintID": "2022-05-02 to 2022-05-08",
+                  "sSprintName": "2022-05-02 to 2022-05-08",
+                  "value": 53.2,
+                  "date": "2022-05-02 to 2022-05-08",
+                  "sprintIds": [
+                    "Test1_622b2c7d4c3a0d462b35d83d"
+                  ],
+                  "sprintNames": [
+                    "Test1"
+                  ],
+                  "sprojectName": "Test1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "filter": "Overall",
+          "value": [
+            {
+              "data": "M&T",
+              "value": [
+                {
+                  "data": "53.1",
+                  "sSprintID": "2022-04-18 to 2022-04-24",
+                  "sSprintName": "2022-04-18 to 2022-04-24",
+                  "value": 53.1,
+                  "howerValue": {
+                    
+                  },
+                  "date": "2022-04-18 to 2022-04-24",
+                  "sprintIds": [
+                    "2022-04-18 to 2022-04-24"
+                  ],
+                  "sprintNames": [
+                    "2022-04-18 to 2022-04-24"
+                  ],
+                  "projectNames": [
+                    "Test1"
+                  ],
+                  "subfilterValues": {
+                    
+                  },
+                  "sprojectName": "Test1"
+                },
+                {
+                  "data": "64.5",
+                  "sSprintID": "2022-04-25 to 2022-05-01",
+                  "sSprintName": "2022-04-25 to 2022-05-01",
+                  "value": 64.5,
+                  "howerValue": {
+                    
+                  },
+                  "date": "2022-04-25 to 2022-05-01",
+                  "sprintIds": [
+                    "2022-04-25 to 2022-05-01"
+                  ],
+                  "sprintNames": [
+                    "2022-04-25 to 2022-05-01"
+                  ],
+                  "projectNames": [
+                    "Test1"
+                  ],
+                  "subfilterValues": {
+                    
+                  },
+                  "sprojectName": "Test1"
+                },
+                {
+                  "data": "64.35",
+                  "sSprintID": "2022-05-02 to 2022-05-08",
+                  "sSprintName": "2022-05-02 to 2022-05-08",
+                  "value": 64.35,
+                  "howerValue": {
+                    
+                  },
+                  "date": "2022-05-02 to 2022-05-08",
+                  "sprintIds": [
+                    "2022-05-02 to 2022-05-08"
+                  ],
+                  "sprintNames": [
+                    "2022-05-02 to 2022-05-08"
+                  ],
+                  "projectNames": [
+                    "Test1"
+                  ],
+                  "subfilterValues": {
+                    
+                  },
+                  "sprojectName": "Test1"
+                },
+                {
+                  "data": "53.5",
+                  "sSprintID": "2022-04-18 to 2022-04-24",
+                  "sSprintName": "2022-04-18 to 2022-04-24",
+                  "value": 53.1,
+                  "howerValue": {
+                    
+                  },
+                  "date": "2022-04-18 to 2022-04-24",
+                  "sprintIds": [
+                    "2022-04-18 to 2022-04-24"
+                  ],
+                  "sprintNames": [
+                    "2022-04-18 to 2022-04-24"
+                  ],
+                  "projectNames": [
+                    "Test1"
+                  ],
+                  "subfilterValues": {
+                    
+                  },
+                  "sprojectName": "Test1"
+                },
+                {
+                  "data": "33.1",
+                  "sSprintID": "2022-04-18 to 2022-04-24",
+                  "sSprintName": "2022-04-18 to 2022-04-24",
+                  "value": 53.1,
+                  "howerValue": {
+                    
+                  },
+                  "date": "2022-04-18 to 2022-04-24",
+                  "sprintIds": [
+                    "2022-04-18 to 2022-04-24"
+                  ],
+                  "sprintNames": [
+                    "2022-04-18 to 2022-04-24"
+                  ],
+                  "projectNames": [
+                    "Test1"
+                  ],
+                  "subfilterValues": {
+                    
+                  },
+                  "sprojectName": "Test1"
+                }
+              ],
+              "maturity": "4",
+              "maturityValue": 64.35
+            }
+          ]
+        }
+      ],
+      "maturityRange": [
+        "-20",
+        "20-40",
+        "40-60",
+        "60-80",
+        "80-"
+      ],
+      "groupId": 1
+    }
+  ]

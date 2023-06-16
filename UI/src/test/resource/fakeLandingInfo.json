@@ -1,0 +1,24 @@
+{
+    "message": "Fetched landing page HTML data successfully",
+    "success": true,
+    "data": [
+        {
+            "name": "Documentation",
+            "order": 1,
+            "content": "<div><p class='p-mb-0'>KnowHOW has an extensive documentation that is regularly updated on Confluence. The important links are:</p><ul class='p-pl-3'><li>Installation & Setup - <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/1966195/KnowHOW+-+Installation+Setup' target='_blank'>Click here</a></li><li>Project &amp; Tool Configuration - <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/1966202/KnowHOW+-+Project+Configuration' target='_blank'>Click here</a></li><li>KPI definitions - <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2064430/KnowHOW+KPI+Guide' target='_blank'>Click here</a></li></ul></div>"
+        },
+        {
+            "name": "Releases",
+            "order": 2,
+            "content": "<div><ul class='p-pl-3'><li>Last release (v6.0.0) was shipped on 05-Dec-2022</li><li>Upcoming release (v6.1.0) is planned for 31-Jan-23</li><li>For detailed release notes, <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/12746760/Release+v6.0.0' target='_blank'>Click here</a></li></ul></div>"
+        },
+        {
+            "name": "Roadmap",
+            "order": 3,
+            "content": "<div><p class='p-mb-0'>Every 3 months, we build new features to enhance capabilities and improve experience for our users.</p><ul class='p-pl-3'><li>The planned features for Jan to Mar 20223  can be seen <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/12746753/Features+Jan-Mar+2023' target='_blank'>here</a></li><li>Next 6 months roadmap is available <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/3309626/PSknowHOW+-+Roadmap' target='_blank'>here</a></li></ul></div>"
+        }
+        
+
+
+    ]
+}

@@ -1,0 +1,161 @@
+{
+  "count": 1,
+  "value": [
+    {
+      "id": 24,
+      "release": {
+        "id": 12,
+        "name": "Release-12",
+        "url": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12",
+        "artifacts": [],
+        "webAccessUri": "https://test.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_release?releaseId=12&_a=release-summary",
+        "_links": {
+          "self": {
+            "href": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12"
+          },
+          "web": {
+            "href": "https://test.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_release?releaseId=12&_a=release-summary"
+          }
+        }
+      },
+      "releaseDefinition": {
+        "id": 1,
+        "name": "knowhow-release",
+        "path": "\\",
+        "projectReference": {
+          "id": "904c71a2-02fa-4971-bf6b-6380138ad788",
+          "name": null
+        },
+        "url": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/definitions/1",
+        "_links": {
+          "self": {
+            "href": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/definitions/1"
+          },
+          "web": {
+            "href": "https://test.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_release?definitionId=1"
+          }
+        }
+      },
+      "releaseEnvironment": {
+        "id": 21,
+        "name": "QA server release",
+        "url": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12/environments/21",
+        "_links": {
+          "self": {
+            "href": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12/environments/21"
+          },
+          "web": {
+            "href": "https://test.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_release?releaseId=12&_a=release-logs&environmentId=21&releaseEnvironmentId=21"
+          }
+        }
+      },
+      "projectReference": null,
+      "definitionEnvironmentId": 6,
+      "attempt": 1,
+      "reason": "automated",
+      "deploymentStatus": "failed",
+      "operationStatus": "PhaseFailed",
+      "requestedBy": {
+        "displayName": "ABC",
+        "url": "https://spsprodsin2.vssps.visualstudio.com/Abb618ce6-246b-4ea1-8519-7ce9ad761300/_apis/Identities/cbcfb869-68ce-64fe-8369-c9442152bbf2",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy"
+          }
+        },
+        "id": "cbcfb869-68ce-64fe-8369-c9442152bbf2",
+        "uniqueName": "abc",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy",
+        "descriptor": "aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy"
+      },
+      "requestedFor": {
+        "displayName": "ABC",
+        "url": "https://spsprodsin2.vssps.visualstudio.com/Abb618ce6-246b-4ea1-8519-7ce9ad761300/_apis/Identities/cbcfb869-68ce-64fe-8369-c9442152bbf2",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy"
+          }
+        },
+        "id": "cbcfb869-68ce-64fe-8369-c9442152bbf2",
+        "uniqueName": "abc",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy",
+        "descriptor": "aad.Y2JjZmI4NjktNjhjZS03NGZlLTgzNjktYzk0NDIxNTJiYmYy"
+      },
+      "queuedOn": "2022-06-01T10:35:42.64Z",
+      "startedOn": "2022-06-01T10:35:58.163Z",
+      "completedOn": "2022-06-01T10:36:25.067Z",
+      "lastModifiedOn": "2022-06-01T10:36:25.067Z",
+      "lastModifiedBy": {
+        "displayName": "Microsoft.VisualStudio.Services.ReleaseManagement",
+        "id": "0000000d-0000-8888-8000-000000000000",
+        "uniqueName": "testUser1",
+        "descriptor": "s2s.MDAwMDAwMGQtMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+      },
+      "conditions": [
+        {
+          "result": true,
+          "name": "ReleaseStarted",
+          "conditionType": "event",
+          "value": ""
+        }
+      ],
+      "preDeployApprovals": [
+        {
+          "id": 56,
+          "revision": 1,
+          "approvalType": "preDeploy",
+          "createdOn": "2022-06-01T10:35:42.9Z",
+          "modifiedOn": "2022-06-01T10:35:42.907Z",
+          "status": "approved",
+          "comments": "",
+          "isAutomated": true,
+          "isNotificationOn": false,
+          "trialNumber": 1,
+          "attempt": 1,
+          "rank": 1,
+          "release": {
+            "id": 12,
+            "name": "Release-12",
+            "url": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12",
+            "_links": {
+              "web": {
+                "href": "https://test.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_release?releaseId=12&_a=release-summary"
+              },
+              "self": {
+                "href": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12"
+              }
+            }
+          },
+          "releaseDefinition": {
+            "id": 0,
+            "name": "knowhow-release",
+            "path": "\\",
+            "projectReference": null,
+            "url": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/definitions/0",
+            "_links": {
+              "web": {
+                "href": "https://test.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_release?definitionId=0"
+              },
+              "self": {
+                "href": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/definitions/0"
+              }
+            }
+          },
+          "releaseEnvironment": {
+            "id": 21,
+            "name": "QA server release",
+            "url": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12/environments/21",
+            "_links": {
+              "self": {
+                "href": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/releases/12/environments/0"
+              }
+            }
+          },
+          "url": "https://abc.com/testProject/904c71a2-02fa-4971-bf6b-6380138ad788/_apis/Release/approvals/56"
+        }
+      ],
+      "postDeployApprovals": [],
+      "_links": {}
+    }
+  ]
+}

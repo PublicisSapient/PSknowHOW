@@ -1,0 +1,39 @@
+[
+  {
+    "level" : 6,
+    "hierarchyLevelId" : "sprint",
+    "hierarchyLevelName" : "Sprint"
+  },
+  {
+    "level" : 5,
+    "hierarchyLevelId" : "project",
+    "hierarchyLevelName" : "Project"
+  },
+{
+  "_id" : "63244d35d1d9f4caf85056fa",
+  "level" : 4,
+  "hierarchyLevelId" : "subaccount",
+  "hierarchyLevelName" : "Subaccount"
+},
+
+{
+"_id" : "63244d35d1d9f4caf85056f9",
+"level" : 3,
+"hierarchyLevelId" : "account",
+"hierarchyLevelName" : "Account Name"
+},
+
+{
+"_id" : "63244d35d1d9f4caf85056f8",
+"level" : 2,
+"hierarchyLevelId" : "business",
+"hierarchyLevelName" : "Business Name"
+},
+
+{
+"_id" : "63244d35d1d9f4caf85056f7",
+"level" : 1,
+"hierarchyLevelId" : "corporate",
+"hierarchyLevelName" : "Corporate Name"
+}
+]

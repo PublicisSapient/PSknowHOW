@@ -1,0 +1,97 @@
+{
+    "kpiList": [
+      {
+        "id": "63355d7c41a0342c3790fb8c",
+        "kpiId": "kpi42",
+        "kpiName": "Regression Automation Coverage",
+        "isDeleted": "False",
+        "defaultOrder": 10,
+        "kpiUnit": "%",
+        "chartType": "",
+        "showTrend": true,
+        "isPositiveTrend": true,
+        "calculateMaturity": true,
+        "kpiSource": "Zypher",
+        "maxValue": "100",
+        "kanban": false,
+        "groupId": 1,
+        "kpiInfo": {
+          "definition": "REGRESSION AUTOMATION COVERAGE measures progress of automation of regression test cases",
+          "formula": [
+            {
+              "lhs": "Regression Automation Coverage ",
+              "operator": "division",
+              "operands": [
+                "No. of regression test cases automated",
+                "Total no. of regression test cases"
+              ]
+            }
+          ],
+          "details": [
+            {
+              "type": "paragraph",
+              "value": "It is calculated as a ‘Percentage’. Higher the percentage, better is the ‘Quality’"
+            },
+            {
+              "type": "paragraph",
+              "value": "A progress indicator shows trend of regression automation coverage between last 2 sprints. An upward trend is considered positive"
+            },
+            {
+              "type": "paragraph",
+              "value": "Maturity of the KPI is calculated based on the latest value"
+            }
+          ],
+          "maturityLevels": [
+            {
+              "level": "M5",
+              "bgColor": "#6cab61",
+              "range": ">= 80%"
+            },
+            {
+              "level": "M4",
+              "bgColor": "#AEDB76",
+              "range": "60-80%"
+            },
+            {
+              "level": "M3",
+              "bgColor": "#eff173",
+              "range": "40-60%"
+            },
+            {
+              "level": "M2",
+              "bgColor": "#ffc35b",
+              "range": "20-40%"
+            },
+            {
+              "level": "M1",
+              "bgColor": "#F06667",
+              "range": "< 20%"
+            }
+          ]
+        },
+        "aggregationCriteria": "average",
+        "xaxisLabel": "Sprints",
+        "yaxisLabel": "Percentage",
+        "trendCalculative": false,
+        "additionalFilterSupport": false
+      }
+    ],
+    "ids": [
+      "bittest_corporate"
+    ],
+    "level": 1,
+    "selectedMap": {
+      "corporate": [
+        "bittest_corporate"
+      ],
+      "business": [],
+      "account": [],
+      "subaccount": [],
+      "project": [],
+      "sprint": [],
+      "sqd": []
+    },
+    "sprintIncluded": [
+      "CLOSED"
+    ]
+  }

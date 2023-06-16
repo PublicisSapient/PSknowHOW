@@ -1,0 +1,331 @@
+[
+    {
+        "id": "606c5752b3cb1f0001b81029",
+        "username": "testUser1",
+        "authorities": [
+            "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "ashish.abrol@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_PROJECT_ADMIN",
+                "accessNodes": [
+                    {
+                        "accessLevel": "project",
+                        "accessItems": [
+                            {
+                                "itemId": "6360fefc3fa9e175755f0728",
+                                "itemName": "KnowHOW"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "638cad41d8d156488fc66c76",
+        "username": "testUser2",
+        "authorities": [
+            "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "demo@sapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_PROJECT_ADMIN",
+                "accessNodes": [
+                    {
+                        "accessLevel": "project",
+                        "accessItems": [
+                            {
+                                "itemId": "6360fefc3fa9e175755f0728",
+                                "itemName": "KnowHOW"
+                            },
+                            {
+                                "itemId": "638cb141d8d156488fc66cd5",
+                                "itemName": "KnowHOW-Kanban"
+                            },
+                            {
+                                "itemId": "638cbb01d8d156488fc66cf0",
+                                "itemName": "Demo Project"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "6396f2c9cba6ac1b865dcf5b",
+        "username": "testUser3",
+        "authorities": [
+            "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "LDAP",
+        "emailAddress": "gaurav.goyal@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_PROJECT_ADMIN",
+                "accessNodes": [
+                    {
+                        "accessLevel": "project",
+                        "accessItems": [
+                            {
+                                "itemId": "6360fefc3fa9e175755f0728",
+                                "itemName": "KnowHOW"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "6284b709cafa2952886e1b86",
+        "username": "testUser4",
+        "authorities": [
+            "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "hirenkumar.babariya@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_PROJECT_ADMIN",
+                "accessNodes": [
+                    {
+                        "accessLevel": "project",
+                        "accessItems": [
+                            {
+                                "itemId": "6360fefc3fa9e175755f0728",
+                                "itemName": "KnowHOW"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "6399a308bbc09e116d744c7e",
+        "username": "testUser5",
+        "authorities": [
+            "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "kapil.vats@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_PROJECT_ADMIN",
+                "accessNodes": [
+                    {
+                        "accessLevel": "project",
+                        "accessItems": [
+                            {
+                                "itemId": "6360fefc3fa9e175755f0728",
+                                "itemName": "KnowHOW"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "6387863981a0013c977551d1",
+        "username": "testUser6",
+        "authorities": [
+            "ROLE_VIEWER",
+            "ROLE_PROJECT_VIEWER"
+        ],
+        "authType": "LDAP",
+        "emailAddress": "katherine.copeland@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_PROJECT_VIEWER",
+                "accessNodes": [
+                    {
+                        "accessLevel": "project",
+                        "accessItems": [
+                            {
+                                "itemId": "6360fefc3fa9e175755f0728",
+                                "itemName": "KnowHOW"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "62ad18a7685e443a0b6923ab",
+        "username": "testUser7",
+        "authorities": [
+            "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "LDAP",
+        "emailAddress": "manish.moorjani@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_PROJECT_ADMIN",
+                "accessNodes": [
+                    {
+                        "accessLevel": "project",
+                        "accessItems": [
+                            {
+                                "itemId": "6360fefc3fa9e175755f0728",
+                                "itemName": "KnowHOW"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "6396eba3cba6ac1b865dcf14",
+        "username": "testUser8",
+        "authorities": [
+            "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "LDAP",
+        "emailAddress": "rajesh.singh@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_PROJECT_ADMIN",
+                "accessNodes": [
+                    {
+                        "accessLevel": "project",
+                        "accessItems": [
+                            {
+                                "itemId": "6360fefc3fa9e175755f0728",
+                                "itemName": "KnowHOW"
+                            },
+                            {
+                                "itemId": "638cbb01d8d156488fc66cf0",
+                                "itemName": "Demo Project"
+                            },
+                            {
+                                "itemId": "63621fdbf6f1c850816cee4c",
+                                "itemName": "Kanban KnowHow"
+                            },
+                            {
+                                "itemId": "638cb141d8d156488fc66cd5",
+                                "itemName": "KnowHOW-Kanban"
+                            },
+                            {
+                                "itemId": "6397128acba6ac1b865dcf95",
+                                "itemName": "Symphony"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "636117f73fa9e175755f0745",
+        "username": "testUser9",
+        "authorities": [
+            "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "LDAP",
+        "emailAddress": "richa.mehta@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_PROJECT_ADMIN",
+                "accessNodes": [
+                    {
+                        "accessLevel": "project",
+                        "accessItems": [
+                            {
+                                "itemId": "636110c63fa9e175755f0736",
+                                "itemName": "Technology Enablement"
+                            },
+                            {
+                                "itemId": "6360fefc3fa9e175755f0728",
+                                "itemName": "KnowHOW"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "6396f182cba6ac1b865dcf49",
+        "username": "testUser10",
+        "authorities": [
+            "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "LDAP",
+        "emailAddress": "vikas.sindhu@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_PROJECT_ADMIN",
+                "accessNodes": [
+                    {
+                        "accessLevel": "project",
+                        "accessItems": [
+                            {
+                                "itemId": "6360fefc3fa9e175755f0728",
+                                "itemName": "KnowHOW"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "6347eec783f1d7799afa7f70",
+        "username": "testUser11",
+        "authorities": [
+            "ROLE_PROJECT_VIEWER"
+        ],
+        "authType": "LDAP",
+        "emailAddress": "vishesh.pratik@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_PROJECT_VIEWER",
+                "accessNodes": [
+                    {
+                        "accessLevel": "project",
+                        "accessItems": [
+                            {
+                                "itemId": "6360fefc3fa9e175755f0728",
+                                "itemName": "KnowHOW"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "6396f074cba6ac1b865dcf35",
+        "username": "testUser12",
+        "authorities": [
+            "ROLE_PROJECT_ADMIN"
+        ],
+        "authType": "LDAP",
+        "emailAddress": "yatin.duggal@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_PROJECT_ADMIN",
+                "accessNodes": [
+                    {
+                        "accessLevel": "project",
+                        "accessItems": [
+                            {
+                                "itemId": "6360fefc3fa9e175755f0728",
+                                "itemName": "KnowHOW"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

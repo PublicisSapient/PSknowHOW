@@ -1,0 +1,315 @@
+{
+	"message": "Data found for the key",
+	"success": true,
+	"data": [{
+		"kpiId": "kpi74",
+		"kpiName": "Release Frequency",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi73",
+		"kpiName": "Release Frequency",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi115",
+		"kpiName": "Missing Worklogs",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi114",
+		"kpiName": "Cost of Delay",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi113",
+		"kpiName": "Cost of Delay",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi70",
+		"kpiName": "Test Execution percentage",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi71",
+		"kpiName": "Test Execution percentage",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi63",
+		"kpiName": "Regression Automation Coverage",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi997",
+		"kpiName": "Total Ticket Aging",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi62",
+		"kpiName": "Unit Testing",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi61",
+		"kpiName": "Code Quality",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi64",
+		"kpiName": "Sonar Violation",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi67",
+		"kpiName": "Sonar Tech Debt",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi60",
+		"kpiName": "Jira Tech Debt",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi66",
+		"kpiName": "Jenkins Code Build Time",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi65",
+		"kpiName": "Number of check-ins per day in master",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi989",
+		"kpiName": "Kpi Maturity",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi988",
+		"kpiName": "Engg Maturity",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi3",
+		"kpiName": "DoR To DoD",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi5",
+		"kpiName": "Sprint Predictability",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi8",
+		"kpiName": "Code Build Time",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi11",
+		"kpiName": "Number of check-ins per day in master",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi14",
+		"kpiName": "Defects Injection Rate",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi15",
+		"kpiName": "Code Quality",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi16",
+		"kpiName": "In-Sprint Automation Coverage",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi17",
+		"kpiName": "Unit Testing",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi26",
+		"kpiName": "Jira Tech Debt",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi27",
+		"kpiName": "Sonar Tech Debt",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi28",
+		"kpiName": "Defect Count By Priority (tagged to Story)",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi34",
+		"kpiName": "Defect Removal Efficiency",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi35",
+		"kpiName": "Defect Seepage Rate",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi36",
+		"kpiName": "Defect Count By RCA (tagged to Story)",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi37",
+		"kpiName": "Defect Rejection Rate",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi38",
+		"kpiName": "Sonar Violations",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi39",
+		"kpiName": "Sprint Velocity",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi40",
+		"kpiName": "Story Count",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi42",
+		"kpiName": "Regression Automation Coverage",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi46",
+		"kpiName": "Sprint Capacity",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi47",
+		"kpiName": "Throughput",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi48",
+		"kpiName": "Total Ticket Count",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi49",
+		"kpiName": "Ticket Velocity",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi50",
+		"kpiName": "Ticket Count by Priority",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi51",
+		"kpiName": "Ticket Count By RCA",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi53",
+		"kpiName": "Cycle Time",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi54",
+		"kpiName": "Ticket Open rate by Priority",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi55",
+		"kpiName": "Ticket Re-open rate by Priority",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi56",
+		"kpiName": "Work in Progress vs Closed",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi57",
+		"kpiName": "Ticket Throughput",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi58",
+		"kpiName": "Team Capacity",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi68",
+		"kpiName": "Sprint Productivity",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi69",
+		"kpiName": "Average Time Spent in Waste State",
+		"isEnabled": true,
+		"kanban": true
+	}, {
+		"kpiId": "kpi72",
+		"kpiName": "Sprint Commitment Reliability",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi75",
+		"kpiName": "Estimate vs Actual",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi76",
+		"kpiName": "Story Completion Percentage",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi77",
+		"kpiName": "Sprint Velocity (LOE Based)",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi78",
+		"kpiName": "Actual vs Remaining",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi79",
+		"kpiName": "Test Case Without Story Link",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi80",
+		"kpiName": "Defect Count Without Story Link",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi81",
+		"kpiName": "Stories without estimate",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi82",
+		"kpiName": "First Time Pass Rate",
+		"isEnabled": true,
+		"kanban": false
+	}, {
+		"kpiId": "kpi83",
+		"kpiName": "Average Resolution Time",
+		"isEnabled": true,
+		"kanban": false
+	},{
+		"kpiId": "kpi84",
+		"kpiName": "Mean Time To Merge",
+		"isEnabled": true,
+		"kanban": false
+	}]
+}

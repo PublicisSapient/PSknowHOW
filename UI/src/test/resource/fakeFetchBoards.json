@@ -1,0 +1,106 @@
+{
+    "message": "Successfully fetched board details list",
+    "success": true,
+    "data": [
+        {
+            "boardId": 18070,
+            "boardName": "DTS | Consulting | Scrum Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 11862,
+            "boardName": "DTS | DMC | Scrum Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 14857,
+            "boardName": "DTS | DOJO Support | Scrum Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 24735,
+            "boardName": "DTS | KnowHOW Contribution | Scrum Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 24736,
+            "boardName": "DTS | KnowHOW Roadmap | Scrum Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 11856,
+            "boardName": "DTS | KnowHOW | Scrum Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 21254,
+            "boardName": "DTS | MAP | Scrum Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 17903,
+            "boardName": "DTS | Panthers | Scrum Board Issues",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 14856,
+            "boardName": "DTS | PS HOW  | Scrum Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 17553,
+            "boardName": "DTS | Scrum Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 15442,
+            "boardName": "DTS | Talent | Scrum Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 17904,
+            "boardName": "DTS | Transformers | Scrum Board Issues",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 24130,
+            "boardName": "DTS | Vox  | Scrum Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 18540,
+            "boardName": "DTS|Speedy Intern Project|Scrum Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 21256,
+            "boardName": "Epics_Board",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 22043,
+            "boardName": "LLP_Test",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 19490,
+            "boardName": "M&T | Roadmap",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 19727,
+            "boardName": "ReleaseBoard",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 19728,
+            "boardName": "releaseboard2",
+            "projectKey": "DTS"
+        },
+        {
+            "boardId": 19729,
+            "boardName": "releaseboard3",
+            "projectKey": "DTS"
+        }
+    ]
+}

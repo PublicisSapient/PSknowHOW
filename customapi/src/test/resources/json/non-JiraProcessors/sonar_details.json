@@ -1,0 +1,87 @@
+[
+  {
+    "_id" : "6335535fbb571b720a93c222",
+    "name" : "ENGINEERING.KPIDASHBOARD.PROCESSORS",
+    "type" : "STATIC_ANALYSIS",
+    "version" : "4.6.0-SNAPSHOT",
+    "processorItemId" : "6335535dbb571b720a93c221",
+    "timestamp" : "1664493277000",
+    "branch" : "origin/develop",
+    "metrics" : [
+      {
+        "metricName" : "coverage",
+        "metricValue" : "36.3",
+        "formattedValue" : "36.3%"
+      },
+      {
+        "metricName" : "minor_violations",
+        "metricValue" : "40",
+        "formattedValue" : "40"
+      },
+      {
+        "metricName" : "new_vulnerabilities"
+      },
+      {
+        "metricName" : "violations",
+        "metricValue" : "50",
+        "formattedValue" : "50"
+      },
+      {
+        "metricName" : "quality_gate_details",
+        "metricValue" : "{\"level\":\"OK\",\"conditions\":[],\"ignoredConditions\":false}",
+        "formattedValue" : "{\"level\":\"OK\",\"conditions\":[],\"ignoredConditions\":false}"
+      },
+      {
+        "metricName" : "sqale_index",
+        "metricValue" : "281",
+        "formattedValue" : "4h 41min"
+      },
+      {
+        "metricName" : "sqale_rating",
+        "metricValue" : "1.0",
+        "formattedValue" : "1.0%"
+      },
+      {
+        "metricName" : "critical_violations",
+        "metricValue" : "0",
+        "formattedValue" : "0"
+      },
+      {
+        "metricName" : "blocker_violations",
+        "metricValue" : "0",
+        "formattedValue" : "0"
+      },
+      {
+        "metricName" : "info_violations",
+        "metricValue" : "1",
+        "formattedValue" : "1"
+      },
+      {
+        "metricName" : "alert_status",
+        "metricValue" : "OK",
+        "formattedValue" : "OK"
+      },
+      {
+        "metricName" : "major_violations",
+        "metricValue" : "9",
+        "formattedValue" : "9"
+      },
+      {
+        "metricName" : "ncloc",
+        "metricValue" : "19064",
+        "formattedValue" : "19,064"
+      },
+      {
+        "metricName" : "line_coverage",
+        "metricValue" : "40.7",
+        "formattedValue" : "40.7%"
+      },
+      {
+        "metricName" : "lines",
+        "metricValue" : "31552",
+        "formattedValue" : "31,552"
+      }
+    ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.sonar.SonarDetails"
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "expand": "plans",
+  "plans": {
+    "size": 222,
+    "expand": "plan",
+    "start-index": 0,
+    "max-result": 222,
+    "plan": [
+      {
+        "shortName": "DOJO Transformation Internal",
+        "shortKey": "DTI",
+        "type": "chain",
+        "enabled": true,
+        "link": {
+          "href": "/1",
+          "rel": "self"
+        },
+        "key": "CFDP-DTI",
+        "name": "20th Century Fox Digital Platform - DOJO Transformation Internal",
+        "planKey": {
+          "key": "CFDP-DTI"
+        }
+      },
+      {
+        "shortName": "Test Plan by Paridhi",
+        "shortKey": "TPBP",
+        "type": "chain",
+        "enabled": false,
+        "link": {
+          "href": "/2",
+          "rel": "self"
+        },
+        "key": "CFDP-TPBP",
+        "name": "20th Century Fox Digital Platform - Test Plan by Paridhi",
+        "planKey": {
+          "key": "CFDP-TPBP"
+        }
+      }
+    ]
+  }
+}

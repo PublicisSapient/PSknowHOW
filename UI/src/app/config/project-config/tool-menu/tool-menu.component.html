@@ -1,0 +1,151 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+  <p-toast [style]="{marginTop: '80px'}"></p-toast>
+<div class="main">
+    <div class="p-p-3 p-mb-4 p-grid bg-cyan" *ngIf="selectedProject">
+        <ng-container *ngFor="let project of selectedProject | keyvalue : originalOrder">
+            <div class="p-md-2 long-text float-left pad-r-0 pad-l-0 inline-div" *ngIf="project?.key?.toLowerCase() !== 'id' && project?.key != 'saveAssigneeDetails' ">
+                <p class="form_title p-text-capitalize">{{project?.key}}</p>
+                <strong class="sub-text p-text-capitalize">{{project?.value}}</strong>
+            </div>
+        </ng-container>
+    </div>
+    <p-dataView #dv [value]="tools" [loading]="dataLoading" [paginator]="true" [rows]="16" filterBy="toolName"
+        layout="grid">
+        <ng-template pTemplate="header">
+            <div class="p-d-flex p-flex-column p-flex-md-row p-jc-md-between">
+                <div class="p-d-flex">
+                    <a routerLink="/dashboard/Config/ProjectList" pButton pRipple type="button" icon="pi pi-arrow-left"
+                        class="p-button-raised p-button-secondary back-button p-mr-5"></a>
+                    <span class="p-input-icon-left p-mb-2 p-mb-md-0">
+                        <i class="pi pi-search"></i>
+                        <input type="search" pInputText placeholder="Search by Name"
+                            (input)="dv.filter($event.target.value)">
+                    </span>
+                </div>
+                <p-selectButton optionValue="value" [options]="projectTypeOptions" optionLabel="name"
+                    [(ngModel)]="selectedType" (onChange)="projectTypeChange($event, true)" [disabled]="disableSwitch">
+                </p-selectButton>
+                <div class="p-d-flex" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
+                <button pButton type="button" label="Generate Token" iconPos="right" (click)="generateTokenConfirmation()"
+                [loading]="generateTokenLoader" class="p-mt-0 p-mr-3" [disabled]="getAuthorizationService.checkIfViewer(selectedProject)" [style]="{'height':'2.5rem'}" pTooltip="You can generate the token to submit tools data via knowHOW POST APIs." tooltipPosition="top"></button>
+                </div>
+                <div class="p-d-flex">
+                    <div class="mar-t-10" *ngIf="isSuperAdmin === true || isProjectAdmin === true">
+                        <p-inputSwitch name="assigneeSwitch" id="assigneeSwitch" [(ngModel)]="isAssigneeSwitchChecked"
+                            [disabled]="isAssigneeSwitchDisabled" (onChange)="onAssigneeSwitchChange($event)">
+                        </p-inputSwitch>
+                        <label for="assigneeSwitch" class="p-mr-5" style="font-family: 'FuturaNext_Medium', sans-serif;">
+                            &nbsp;&nbsp;Individual KPIs
+                            <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+                                pTooltip='<div class="inner-content">
+                                    {{assigneeSwitchInfo}}
+                                </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper"></span>
+                        </label>
+                    </div>
+                    <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+                </div>
+
+            </div>
+        </ng-template>
+        <ng-template let-tool pTemplate="listItem">
+            <div class="p-sm-12">
+                <div class="tool-list-item p-card" [ngClass]="{'bg-grey': !isProjectConfigured(tool.toolName)}">
+                    <figure class="card__media bg--0">
+                        <em class="{{ tool.icon.length ? tool.icon : 'fas fa-tools' }}"></em>
+                    </figure>
+                    <div class="card__media__body">
+                        <div class="card__primary__title">
+                            <h3 class="card__primary__title__text">{{ tool.toolName }}</h3>
+                            <small class="card__primary__title__subtext">{{ tool.description }}</small>
+                        </div>
+                    </div>
+                    <div class="card__actions">
+                        <button pButton type="button" routerLink="{{ tool.routerLink }}"
+                            [queryParams]="{toolName : tool.queryParams1}"
+                            label="{{isProjectConfigured(tool.toolName) ? 'Edit Configuration' : buttonText}}"
+                            icon="far fa-plus-square"
+                            class="p-button-success p-button-raised p-button p-component p-mt-1"></button>
+                        <button pButton type="button" routerLink="{{ tool.routerLink2 }}" label="Mappings"
+                            icon="far fa-plus-square" *ngIf="tool.routerLink2 && tool.routerLink2.length"
+                            class="p-button-success p-button-raised p-button p-component p-mt-1"
+                            [disabled]="!disableSwitch"></button>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template let-tool let-i="index" pTemplate="gridItem">
+            <div class="p-sm-12 p-md-3">
+                <div class="tool-grid-item p-card p-m-3 p-d-flex p-flex-wrap" [ngClass]="{'bg-grey': !isProjectConfigured(tool.toolName)}">
+                    <div class="card__media__body">
+                        <div class="card__primary__title">
+                            <h3 class="card__primary__title__text">{{ tool.toolName }}</h3>
+                            <small class="card__primary__title__subtext">{{ tool.description }}</small>
+                        </div>
+                    </div>
+                    <figure class="card__media bg--0 figure">
+                        <em class="{{ tool.icon.length ? tool.icon : 'fas fa-tools' }}"></em>
+                    </figure>
+                    <div class="card__actions">
+                        <button pButton type="button" routerLink="{{ tool.routerLink }}"
+                            [queryParams]="{toolName : tool.queryParams1}"
+                            label="{{ isProjectConfigured(tool.toolName) ? 'Edit Configuration' : buttonText }}"
+                            icon="far fa-plus-square"
+                            class="p-button-success p-button-raised p-button p-component mr-1 p-mt-1"></button>
+                        <button pButton type="button" routerLink="{{ tool.routerLink2 }}" label="Mappings"
+                            icon="far fa-plus-square" *ngIf="tool.routerLink2 && tool.routerLink2.length"
+                            class="p-button-success p-button-raised p-button p-component mr-0 p-mt-1"
+                            [disabled]="!disableSwitch"></button>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </p-dataView>
+
+</div>
+
+<p-confirmDialog #cd [transitionOptions]="'0ms'">
+    <p-footer>
+        <button type="button" (click)="cd.reject()" pButton label="Cancel" class="p-button-secondary" [style]="{'line-height': 'unset'}"></button>
+        <button type="button" (click)="cd.accept()" pButton label="Continue"></button>
+    </p-footer>
+  </p-confirmDialog>
+
+
+<p-dialog header="Token Generated" [(visible)]="displayGeneratedToken" [responsive]="true" showEffect="fade" [modal]="true"
+[style]="{width: '80vw'}" styleClass="p-fluid">
+    <p>Token has been generated successfully!</p>
+
+    <div class="p-inputgroup p-mb-2">
+        <input type="text" pInputText [(ngModel)]="generatedToken" readonly #inputGeneratedToken>
+        <span class="p-inputgroup-addon p-p-1" (click)="copyToken()"
+         tooltipPosition="top" tooltipEvent="focus">
+            <i class="pi pi-copy p-p-1" style="font-size: 1.5rem" [ngClass]="{'pi-check': tokenCopied,'color-green':tokenCopied }"></i></span>
+    </div>
+    <i>Please copy the token to submit the data, you will not be able to view the token once the screen is closed.</i>
+    <ng-template pTemplate="footer">
+        <button pButton type="button" label="Ok" (click)="displayGeneratedToken=false" ></button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog #confirmToEnableDialog key="confirmToEnableDialog" [style]="{width: '50vw'}">
+    <p-footer>
+        <button type="button" (click)="confirmToEnableDialog.reject()" pButton label="Cancel" class="enable-dialog-btn"></button>
+        <button type="button" (click)="confirmToEnableDialog.accept()" pButton label="Enable"></button>
+    </p-footer>
+</p-confirmDialog>

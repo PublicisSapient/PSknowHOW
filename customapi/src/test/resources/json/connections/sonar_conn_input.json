@@ -1,0 +1,8 @@
+[
+  {
+    "type": "Sonar",
+    "connectionName": "Sonar Test Connection",
+    "connPrivate": false,
+    "cloudEnv": true
+  }
+]

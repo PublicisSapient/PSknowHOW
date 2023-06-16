@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "633a9be99a86a10a43ae4849",
+    "sprintID": "38295_Scrum Project_6335363749794a18e8a4479b",
+    "projectName": "Scrum Project",
+    "projectId": "Scrum Project_6335363749794a18e8a4479b",
+    "capacityPerSprint": "20",
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "_class": "com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData"
+  },
+  {
+    "_id": "633a9be39a86a10a43ae4848",
+    "sprintID": "38296_Scrum Project_6335363749794a18e8a4479b",
+    "projectName": "Scrum Project",
+    "projectId": "Scrum Project_6335363749794a18e8a4479b",
+    "capacityPerSprint": "40",
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "_class": "com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData"
+  },
+  {
+    "_id": "633a9bdf9a86a10a43ae4847",
+    "sprintID": "40345_Scrum Project_6335363749794a18e8a4479b",
+    "projectName": "Scrum Project",
+    "projectId": "Scrum Project_6335363749794a18e8a4479b",
+    "capacityPerSprint": "50",
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "_class": "com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData"
+  },
+  {
+    "_id": "6336da179a86a10a43ae4834",
+    "sprintID": "40198_Scrum Project_6335363749794a18e8a4479b",
+    "projectName": "Scrum Project",
+    "projectId": "Scrum Project_6335363749794a18e8a4479b",
+    "capacityPerSprint": "8",
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "_class": "com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData"
+  }
+]

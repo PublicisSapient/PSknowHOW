@@ -1,0 +1,32 @@
+[
+
+  {
+    "_id" : "6335694e9a86a10a43ae4813",
+    "projectName" : "Kanban Project",
+    "projectId" : "Kanban Project_6335368249794a18e8a4479f",
+    "capacity" : "8",
+    "startDate" : "2022-09-12",
+    "endDate" : "2022-09-18",
+    "basicProjectConfigId" : "6335368249794a18e8a4479f"
+  },
+
+  {
+    "_id" : "633569239a86a10a43ae4811",
+    "projectName" : "Kanban Project",
+    "projectId" : "Kanban Project_6335368249794a18e8a4479f",
+    "capacity" : "6",
+    "startDate" : "2022-09-19",
+    "endDate" : "2022-09-25",
+    "basicProjectConfigId" : "6335368249794a18e8a4479f"
+  },
+
+  {
+    "_id" : "633569189a86a10a43ae4810",
+    "projectName" : "Kanban Project",
+    "projectId" : "Kanban Project_6335368249794a18e8a4479f",
+    "capacity" : "8",
+    "startDate" : "2022-09-26",
+    "endDate" : "2022-10-02",
+    "basicProjectConfigId" : "6335368249794a18e8a4479f"
+  }
+]

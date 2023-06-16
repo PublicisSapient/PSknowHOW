@@ -1,0 +1,186 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
+
+/* .content{
+    width: 80%;
+    margin: 0 auto;
+} */
+
+.form-title-container {
+    padding: 15px;
+}
+
+.content .form_title {
+    text-align: left;
+    margin: 0;
+}
+
+
+.action-container {
+    padding: 0;
+}
+
+.action-link {
+    display: inline-block;
+    margin-bottom: 10px;
+    text-decoration: none;
+}
+
+.action-link.disabled {
+    pointer-events: none;
+    cursor: default;
+}
+
+.action-link.disabled .action-box {
+    cursor: default;
+    background-color: #B4B4B4;
+}
+
+.action-box {
+    height: 65px;
+    width: 100%;
+    margin-right: 20px;
+    /* margin-bottom: 20px; */
+    cursor: pointer;
+    padding: 20px;
+    color: var(--color-white);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    /* border-bottom-left-radius: 0;
+    border-top-right-radius: 0; */
+}
+
+.action-icon {
+    font-size: 20px;
+    margin: 0 1rem 0 0;
+    display: inline-block;
+}
+
+.action-text {
+    display: inline-block;
+    font-size: 20px;
+}
+
+.sub-text {
+    color: #585858;
+    display: inline-block;
+    margin: 5px  0 0;
+    vertical-align: bottom;
+}
+
+/* .action-box:first-child {
+    margin-left: 5px;
+} */
+
+/* .action-box:last-child {
+    margin-right: 0;
+} */
+
+.bg-role {
+    background-color: #5E5E5E;
+}
+
+.bg-raise {
+    background-color: #FFE63B;
+}
+
+.bg-view {
+    background-color:  #00E6C3;
+}
+
+.bg-status {
+    background-color: #4ddbff;
+}
+
+.bg-password {
+    background-color:  #079FFF;
+}
+
+.info-block {
+    font-size: 13px;
+}
+
+.invalid-text {
+    width: 100%;
+    font-size: 16px;
+    color: var(--color-red);
+    margin: 5px 0;
+  }
+
+  .loader {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 888;
+    background-color: rgba(0,0,0,0.2);
+    top: 0;
+    left: 0;
+}
+
+.options-list {
+    text-align: left;
+    color: #dc3545;
+    line-height: 24px;
+    margin-top: 10px;
+}
+
+.options-div {
+    display: table;
+    margin: 0 auto;
+}
+
+.inline-div {
+    display: inline-block;
+}
+
+th#role {
+    width: 200px;
+    font-weight: bold;
+}
+
+td.med-td {
+    width: 160px;
+    word-break: break-all;
+    padding: 0;
+    border: none;
+    border-left: 1px solid #e4e4e4;
+    border-bottom: 1px solid #e4e4e4;
+}
+
+::ng-deep #project-access-table .p-datatable .p-datatable-tbody > tr > td.custom-table-cell {
+    padding: 0;
+    border-width: 1px 1px 1px 1px;
+}
+
+::ng-deep table.special-bordered {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+}
+
+::ng-deep tr.border-bottom {
+    border-bottom: 1px solid #e4e4e4;
+}
+
+
+
+
+

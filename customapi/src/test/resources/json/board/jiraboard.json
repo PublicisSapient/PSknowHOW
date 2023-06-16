@@ -1,0 +1,28 @@
+{
+    "maxResults": 50,
+    "startAt": 0,
+    "total": 4,
+    "isLast": true,
+    "values": [
+        {
+            "id": 1,
+           "name": " NEW Program Kanban Board",
+            "type": "kanban"
+        },
+        {
+            "id": 2,
+            "name": "Program Kanban Board",
+            "type": "kanban"
+        },
+        {
+            "id": 8,
+            "name": "Kanban Board",
+            "type": "kanban"
+        },
+        {
+            "id": 18,
+            "name": "Scrum Board",
+            "type": "scrum"
+        }
+    ]
+}

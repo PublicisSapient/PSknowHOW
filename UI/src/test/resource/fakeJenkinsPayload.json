@@ -1,0 +1,103 @@
+{
+    "kpiList": [
+      {
+        "id": "63355d7c41a0342c3790fb91",
+        "kpiId": "kpi116",
+        "kpiName": "Change Failure Rate",
+        "isDeleted": "False",
+        "defaultOrder": 15,
+        "kpiUnit": "%",
+        "chartType": "",
+        "showTrend": true,
+        "isPositiveTrend": false,
+        "calculateMaturity": true,
+        "kpiSource": "Jenkins",
+        "maxValue": "100",
+        "thresholdValue": 0,
+        "kanban": false,
+        "groupId": 1,
+        "kpiInfo": {
+          "definition": "CHANGE FAILURE RATE measures the proportion of builds that have failed for whatever reason over a given period of time",
+          "formula": [
+            {
+              "lhs": "CHANGE FAILURE RATE",
+              "operator": "division",
+              "operands": [
+                "Total number of failed Builds",
+                "Total number of Builds"
+              ]
+            }
+          ],
+          "details": [
+            {
+              "type": "paragraph",
+              "value": "It is calculated as a ‘Percentage’. Lower the percentage, better is the ‘Quality’"
+            },
+            {
+              "type": "paragraph",
+              "value": "A progress indicator shows trend of Change Failure Rate between last 2 weeks. A downward trend is considered positive"
+            },
+            {
+              "type": "paragraph",
+              "value": "Maturity of the KPI is calculated based on the average of the last 5 weeks"
+            },
+            {
+              "type": "paragraph",
+              "value": "*If the KPI data is not available for last 5 weeks, the Maturity level will not be shown"
+            }
+          ],
+          "maturityLevels": [
+            {
+              "level": "M5",
+              "bgColor": "#6cab61",
+              "range": "<10%"
+            },
+            {
+              "level": "M4",
+              "bgColor": "#AEDB76",
+              "range": ">=10-20%,"
+            },
+            {
+              "level": "M3",
+              "bgColor": "#eff173",
+              "range": ">=20-30%"
+            },
+            {
+              "level": "M2",
+              "bgColor": "#ffc35b",
+              "range": ">=30-50%"
+            },
+            {
+              "level": "M1",
+              "bgColor": "#F06667",
+              "range": ">50%"
+            }
+          ]
+        },
+        "kpiFilter": "dropDown",
+        "aggregationCriteria": "average",
+        "xaxisLabel": "Weeks",
+        "yaxisLabel": "Percentage",
+        "trendCalculative": false,
+        "additionalFilterSupport": false
+      }
+    ],
+    "ids": [
+      "bittest_corporate"
+    ],
+    "level": 1,
+    "selectedMap": {
+      "corporate": [
+        "bittest_corporate"
+      ],
+      "business": [],
+      "account": [],
+      "subaccount": [],
+      "project": [],
+      "sprint": [],
+      "sqd": []
+    },
+    "sprintIncluded": [
+      "CLOSED"
+    ]
+  }

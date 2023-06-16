@@ -1,0 +1,6 @@
+Collection_name,Field_to_Check,Unique_identifier,Foreign_collection,Foreign_field,foreign_field_to_check,Date_field_type,Order
+builds,startTime,_id,,,,timestamp,1
+code_quality,timestamp,_id,,,,timestamp,2
+code_quality_history,date,_id,,,,timestamp,3
+commits,scmCommitTimestamp,_id,,,,timestamp,4
+account_hierarchy,,componentId,feature,sSprintID,sSprintBeginDate,date,5
