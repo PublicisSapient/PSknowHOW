@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.common.model.userboardconfig;
 
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+
 import lombok.Data;
 
 /**
@@ -48,7 +49,8 @@ public class BoardKpisDTO {
 	/**
 	 * setter for isEnabled
 	 * 
-	 * @param isEnabled isEnabled
+	 * @param isEnabled
+	 *            isEnabled
 	 */
 	public void setIsEnabled(boolean isEnabled) {
 		this.isEnabled = isEnabled;

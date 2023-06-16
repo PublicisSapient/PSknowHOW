@@ -65,10 +65,10 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
-	
+
 	@Autowired
 	private FilterHelperService filterHelperService;
-	
+
 	@Override
 	public String getQualifierType() {
 		return "Kanban";
@@ -90,17 +90,16 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 	private Set<AccountFilteredData> processAccountFilteredResponse(
 			List<AccountHierarchyDataKanban> accountHierarchyDataList) {
 		Set<AccountFilteredData> result = new HashSet<>();
-		accountHierarchyDataList.forEach(accountHierarchyData -> accountHierarchyData.getNode()
-				.forEach(node -> result.add(getAccountFilteredResponse(node.getAccountHierarchyKanban(), node.getLevel()))));
+		accountHierarchyDataList.forEach(accountHierarchyData -> accountHierarchyData.getNode().forEach(
+				node -> result.add(getAccountFilteredResponse(node.getAccountHierarchyKanban(), node.getLevel()))));
 		return result;
 	}
 
-	private AccountFilteredData getAccountFilteredResponse(KanbanAccountHierarchy acc,int level) {
+	private AccountFilteredData getAccountFilteredResponse(KanbanAccountHierarchy acc, int level) {
 		AccountFilteredData data = null;
 		if (null != acc) {
 			data = AccountFilteredData.builder().nodeId(acc.getNodeId()).nodeName(acc.getNodeName())
-					.labelName(acc.getLabelName()).parentId(acc.getParentId()).path(acc.getPath())
-					.level(level).build();
+					.labelName(acc.getLabelName()).parentId(acc.getParentId()).path(acc.getPath()).level(level).build();
 
 			if (acc.getLabelName().equalsIgnoreCase(CommonConstant.PROJECT)) {
 				data.setBasicProjectConfigId(acc.getBasicProjectConfigId());
@@ -123,14 +122,15 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 		// Java 8 merge function is used to handle duplicates in the map
 		String firstLevel = filterHelperService.getFirstHierarachyLevel();
 
-		Map<String,Integer> hierarchyLevelIdMap = filterHelperService.getHierarchyIdLevelMap(true);
+		Map<String, Integer> hierarchyLevelIdMap = filterHelperService.getHierarchyIdLevelMap(true);
 
 		List<AccountHierarchyDataKanban> listHierarchyData = new ArrayList<>();
 		if (firstLevel != null) {
 			filterDataList.stream().filter(fd -> fd.getLabelName().equalsIgnoreCase(firstLevel)).forEach(rootData -> {
 				AccountHierarchyDataKanban accountHierarchyData = new AccountHierarchyDataKanban();
 				createHierarchyData(rootData, accountHierarchyData, hierarchyLevelIdMap);
-				traverseRootToLeaf(rootData, parentWiseMap, listHierarchyData, accountHierarchyData, hierarchyLevelIdMap);
+				traverseRootToLeaf(rootData, parentWiseMap, listHierarchyData, accountHierarchyData,
+						hierarchyLevelIdMap);
 			});
 		}
 		return listHierarchyData;
@@ -148,15 +148,16 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 	 */
 	private void traverseRootToLeaf(KanbanAccountHierarchy hierarchy,
 			Map<String, List<KanbanAccountHierarchy>> parentWiseMap, List<AccountHierarchyDataKanban> listHierarchyData,
-			AccountHierarchyDataKanban accountHierarchyData,Map<String,Integer> hierarchyLevelIdMap) {
+			AccountHierarchyDataKanban accountHierarchyData, Map<String, Integer> hierarchyLevelIdMap) {
 		// Check if the current node has child nodes
 		if (parentWiseMap.containsKey(hierarchy.getNodeId())) {
-			parentWiseMap.get(hierarchy.getNodeId()).stream()
-					.filter(child -> isCurrentNodeChild(hierarchy, child)).forEach(child -> {
+			parentWiseMap.get(hierarchy.getNodeId()).stream().filter(child -> isCurrentNodeChild(hierarchy, child))
+					.forEach(child -> {
 						AccountHierarchyDataKanban accountHierarchyDataClone = (AccountHierarchyDataKanban) SerializationUtils
 								.clone(accountHierarchyData);
 						createHierarchyData(child, accountHierarchyDataClone, hierarchyLevelIdMap);
-						traverseRootToLeaf(child, parentWiseMap, listHierarchyData, accountHierarchyDataClone, hierarchyLevelIdMap);
+						traverseRootToLeaf(child, parentWiseMap, listHierarchyData, accountHierarchyDataClone,
+								hierarchyLevelIdMap);
 					});
 		} else {
 			accountHierarchyData.setBasicProjectConfigId(hierarchy.getBasicProjectConfigId());
@@ -172,7 +173,8 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 	 * @param childAccountHierarchy
 	 * @return
 	 */
-	private boolean isCurrentNodeChild(KanbanAccountHierarchy accountHierarchy, KanbanAccountHierarchy childAccountHierarchy) {
+	private boolean isCurrentNodeChild(KanbanAccountHierarchy accountHierarchy,
+			KanbanAccountHierarchy childAccountHierarchy) {
 		if (childAccountHierarchy.getLabelName() == null) {
 			return false;
 		}
@@ -186,18 +188,18 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 	 * @param hierarchy
 	 * @param accountHierarchyData
 	 */
-	private void createHierarchyData(KanbanAccountHierarchy hierarchy,
-			AccountHierarchyDataKanban accountHierarchyData, Map<String,Integer> hierarchyLevelIdMap) {
-		Node node = new Node(0, hierarchy.getNodeId(), hierarchy.getNodeName(),
-				hierarchy.getParentId(), hierarchy.getLabelName(), hierarchy);
+	private void createHierarchyData(KanbanAccountHierarchy hierarchy, AccountHierarchyDataKanban accountHierarchyData,
+			Map<String, Integer> hierarchyLevelIdMap) {
+		Node node = new Node(0, hierarchy.getNodeId(), hierarchy.getNodeName(), hierarchy.getParentId(),
+				hierarchy.getLabelName(), hierarchy);
 		node.setLevel(hierarchyLevelIdMap.get(hierarchy.getLabelName()));
 		accountHierarchyData.setLabelName(hierarchy.getLabelName());
 		accountHierarchyData.setLeafNodeId(hierarchy.getNodeId());
-		if(CollectionUtils.isEmpty(accountHierarchyData.getNode())){
+		if (CollectionUtils.isEmpty(accountHierarchyData.getNode())) {
 			List<Node> dnode = new ArrayList<>();
 			dnode.add(node);
 			accountHierarchyData.setNode(dnode);
-		}else {
+		} else {
 			accountHierarchyData.getNode().add(node);
 		}
 

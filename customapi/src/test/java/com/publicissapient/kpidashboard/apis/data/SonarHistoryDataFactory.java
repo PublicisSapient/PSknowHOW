@@ -14,7 +14,6 @@ import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 
 import lombok.extern.slf4j.Slf4j;
 
-
 /**
  * @author sansharm13
  *
@@ -65,8 +64,8 @@ public class SonarHistoryDataFactory {
 		}
 	}
 
-    public List<SonarHistory> getSonarHistoryList() {
-        return sonarHistoryDataFactory;
-    }
+	public List<SonarHistory> getSonarHistoryList() {
+		return sonarHistoryDataFactory;
+	}
 
 }

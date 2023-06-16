@@ -18,6 +18,11 @@
 
 package com.publicissapient.kpidashboard.common.model.generic;
 
+import java.util.List;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
 
@@ -25,11 +30,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
-
 
 /**
  * Provides Processor
@@ -40,25 +40,25 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class Processor extends BasicModel {
-    protected String processorName;
-    protected ProcessorType processorType;
-    protected boolean isActive;
-    protected boolean isOnline;
-    protected List<ProcessorError> errors = Lists.newArrayList();
-    protected long updatedTime;
-    protected boolean isLastSuccess;
+	protected String processorName;
+	protected ProcessorType processorType;
+	protected boolean isActive;
+	protected boolean isOnline;
+	protected List<ProcessorError> errors = Lists.newArrayList();
+	protected long updatedTime;
+	protected boolean isLastSuccess;
 
-    @Builder
-    public Processor(String processorName, ProcessorType processorType, boolean isActive, boolean isOnline,
-            List<ProcessorError> errors, long updatedTime, ObjectId objectId, boolean isLastSuccess) {
-        super(objectId);
-        this.processorName = processorName;
-        this.processorType = processorType;
-        this.isActive = isActive;
-        this.isOnline = isOnline;
-        this.errors = errors;
-        this.updatedTime = updatedTime;
-        this.isLastSuccess = isLastSuccess;
-    }
+	@Builder
+	public Processor(String processorName, ProcessorType processorType, boolean isActive, boolean isOnline,
+			List<ProcessorError> errors, long updatedTime, ObjectId objectId, boolean isLastSuccess) {
+		super(objectId);
+		this.processorName = processorName;
+		this.processorType = processorType;
+		this.isActive = isActive;
+		this.isOnline = isOnline;
+		this.errors = errors;
+		this.updatedTime = updatedTime;
+		this.isLastSuccess = isLastSuccess;
+	}
 
 }

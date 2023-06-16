@@ -47,9 +47,9 @@ import com.publicissapient.kpidashboard.azurepipeline.util.AzurePipelineUtils;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,9 +62,6 @@ import lombok.extern.slf4j.Slf4j;
 @Primary
 public class DefaultAzurePipelineClient implements AzurePipelineClient {
 
-	@Autowired
-	private AzurePipelineConfig azurePipelineConfig;
-
 	/**
 	 * Instantiate DefaultAzurePipelineClient.
 	 *
@@ -75,14 +72,17 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 */
 	@Autowired
 	RestOperationsFactory<RestOperations> restOperationsFactory;
+	@Autowired
+	private AzurePipelineConfig azurePipelineConfig;
 
 	/**
 	 * Provides Instance Jobs.
 	 *
 	 * @param azurePipelineServer
-	 * 		the connection properties for AzurePipeline server
+	 *            the connection properties for AzurePipeline server
 	 * @param lastStartTimeOfBuilds
-	 * 		the last updated time of the processor which is used for delta import
+	 *            the last updated time of the processor which is used for delta
+	 *            import
 	 * @param proBasicConfig
 	 * @return the map of azurePipeline jobs and set of builds
 	 */
@@ -117,19 +117,21 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	}
 
 	/**
-	 * Processes response of the api call. In response we get array of builds. We iterate over each build object and
-	 * create a azurepipeline job and check whether the job is present in the result map. If the job is present we add
-	 * the build to the build set of that job else we create a new job and then add the build to its build set. Current
-	 * implementation covers the case of having more than one azurepipeline job but ideally we would have 1 job only.
-	 * This was done if in future we change the implementation to include more than 1 job only the rest api call would
-	 * change.
+	 * Processes response of the api call. In response we get array of builds. We
+	 * iterate over each build object and create a azurepipeline job and check
+	 * whether the job is present in the result map. If the job is present we add
+	 * the build to the build set of that job else we create a new job and then add
+	 * the build to its build set. Current implementation covers the case of having
+	 * more than one azurepipeline job but ideally we would have 1 job only. This
+	 * was done if in future we change the implementation to include more than 1 job
+	 * only the rest api call would change.
 	 *
 	 * @param azurePipelineServer
-	 * 		the connection properties for AzurePipeline server
+	 *            the connection properties for AzurePipeline server
 	 * @param result
-	 * 		the map of azurePipeline jobs and set of builds
+	 *            the map of azurePipeline jobs and set of builds
 	 * @param resJSON
-	 * 		response body of rest api call
+	 *            response body of rest api call
 	 * @param proBasicConfig
 	 */
 	private void processResponse(ProcessorToolConnection azurePipelineServer, Map<ObjectId, Set<Build>> result,
@@ -156,7 +158,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * Creates Build Object
 	 *
 	 * @param buildJson
-	 * 		the build as JSON object
+	 *            the build as JSON object
 	 * @param proBasicConfig
 	 * @return the build object
 	 */

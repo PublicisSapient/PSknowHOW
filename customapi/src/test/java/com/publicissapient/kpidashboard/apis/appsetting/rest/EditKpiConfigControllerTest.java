@@ -48,36 +48,31 @@ import com.publicissapient.kpidashboard.apis.util.TestUtil;
 @RunWith(MockitoJUnitRunner.class)
 public class EditKpiConfigControllerTest {
 
-
-	@Mock
-	private EditKpiConfigService editKpiConfigService;
-
 	@InjectMocks
 	EditKpiConfigController editKpiConfigController;
+	@Mock
+	private EditKpiConfigService editKpiConfigService;
+	private MockMvc mockMvc;
 
 	@Before
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(editKpiConfigController).build();
 	}
 
-	private MockMvc mockMvc;
-
 	@After
 	public void after() {
 		mockMvc = null;
 	}
 
-
 	@Before
 	public void setUp() {
 
-		List<String> editKpiConfigType= Arrays.asList("fields");
+		List<String> editKpiConfigType = Arrays.asList("fields");
 		List<String> typeList = new ArrayList<>();
 		typeList.addAll(editKpiConfigType);
 
 		List<String> projectconfigidList = new ArrayList<>();
 		projectconfigidList.add("5f7ee917485b2c09bc8bac7a");
-
 
 	}
 
@@ -85,9 +80,8 @@ public class EditKpiConfigControllerTest {
 	public void getTestDataForType() throws NullPointerException {
 
 		try {
-			mockMvc.perform(
-					MockMvcRequestBuilders.get("/editConfig/jira/editKpi/5f7ee917485b2c09bc8bac7a").contentType(TestUtil.APPLICATION_JSON_UTF8))
-					.andExpect(status().isOk());
+			mockMvc.perform(MockMvcRequestBuilders.get("/editConfig/jira/editKpi/5f7ee917485b2c09bc8bac7a")
+					.contentType(TestUtil.APPLICATION_JSON_UTF8)).andExpect(status().isOk());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

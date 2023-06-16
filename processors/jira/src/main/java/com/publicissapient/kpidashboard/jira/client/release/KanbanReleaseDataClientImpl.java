@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +50,9 @@ import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactor
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientUtil;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The type Release data client. Store Release data for the projects in
@@ -98,7 +98,6 @@ public class KanbanReleaseDataClientImpl implements ReleaseDataClient {
 		}
 
 	}
-
 
 	/**
 	 * @param confFieldMapping
@@ -146,8 +145,7 @@ public class KanbanReleaseDataClientImpl implements ReleaseDataClient {
 						if (null == exHiery) {
 							hierarchy.setCreatedDate(LocalDateTime.now());
 							setToSave.add(hierarchy);
-						}
-						else if(!exHiery.equals(hierarchy)){
+						} else if (!exHiery.equals(hierarchy)) {
 							exHiery.setBeginDate(hierarchy.getBeginDate());
 							exHiery.setEndDate(hierarchy.getEndDate());
 							exHiery.setReleaseState(hierarchy.getReleaseState());
@@ -161,9 +159,10 @@ public class KanbanReleaseDataClientImpl implements ReleaseDataClient {
 			kanbanAccountHierarchyRepo.saveAll(setToSave);
 		}
 	}
-	
+
 	/**
 	 * create hierarchies for kanban
+	 * 
 	 * @param projectRelease
 	 * @param projectBasicConfig
 	 * @param projectHierarchy

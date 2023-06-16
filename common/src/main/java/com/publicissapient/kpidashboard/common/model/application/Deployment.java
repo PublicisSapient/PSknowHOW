@@ -1,16 +1,18 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
+import java.util.Objects;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.Objects;
 
 @Data
 @Getter
@@ -40,8 +42,10 @@ public class Deployment extends BasicModel {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		Deployment that = (Deployment) o;
 		return projectToolConfigId.equals(that.projectToolConfigId) && number.equals(that.number);
 	}
@@ -51,25 +55,13 @@ public class Deployment extends BasicModel {
 		return Objects.hash(projectToolConfigId, number);
 	}
 
-    @Override
-    public String toString() {
-        return "Deployment{" +
-                "processorId=" + processorId +
-                ", basicProjectConfigId=" + basicProjectConfigId +
-                ", projectToolConfigId=" + projectToolConfigId +
-                ", envId='" + envId + '\'' +
-                ", envName='" + envName + '\'' +
-                ", envUrl='" + envUrl + '\'' +
-                ", startTime='" + startTime + '\'' +
-                ", endTime='" + endTime + '\'' +
-                ", duration=" + duration +
-                ", deploymentStatus=" + deploymentStatus +
-                ", jobId='" + jobId + '\'' +
-                ", jobName='" + jobName + '\'' +
-                ", jobFolderName='" + jobFolderName + '\'' +
-                ", deployedBy='" + deployedBy + '\'' +
-                ", number='" + number + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Deployment{" + "processorId=" + processorId + ", basicProjectConfigId=" + basicProjectConfigId
+				+ ", projectToolConfigId=" + projectToolConfigId + ", envId='" + envId + '\'' + ", envName='" + envName
+				+ '\'' + ", envUrl='" + envUrl + '\'' + ", startTime='" + startTime + '\'' + ", endTime='" + endTime
+				+ '\'' + ", duration=" + duration + ", deploymentStatus=" + deploymentStatus + ", jobId='" + jobId
+				+ '\'' + ", jobName='" + jobName + '\'' + ", jobFolderName='" + jobFolderName + '\'' + ", deployedBy='"
+				+ deployedBy + '\'' + ", number='" + number + '\'' + ", createdAt='" + createdAt + '\'' + '}';
+	}
 }

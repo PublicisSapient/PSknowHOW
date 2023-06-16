@@ -42,10 +42,12 @@ public class PushDataValidationServiceImpl {
 
 	/**
 	 * create Build and Deploy Error Map based on the required types
+	 * 
 	 * @param validations
 	 * @return
 	 */
-	public Map<String, String> createBuildDeployErrorMap(Map<Pair<String, String>, List<PushValidationType>> validations) {
+	public Map<String, String> createBuildDeployErrorMap(
+			Map<Pair<String, String>, List<PushValidationType>> validations) {
 		Map<String, String> errors = new HashMap<>();
 		if (MapUtils.isNotEmpty(validations)) {
 			AtomicBoolean timeCheck = new AtomicBoolean(false);

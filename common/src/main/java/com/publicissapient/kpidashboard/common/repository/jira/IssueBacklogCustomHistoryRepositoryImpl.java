@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -31,7 +30,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 
 /**
  * The Class FeatureCustomHistoryRepositoryImpl.
@@ -39,16 +38,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class IssueBacklogCustomHistoryRepositoryImpl implements IssueBacklogCustomHistoryQueryRepository {
 
+	private static final String STATUS = "statusUpdationLog.changedTo";
 	/** The operations. */
 	@Autowired
 	private MongoOperations operations;
 
-	private static final String STATUS = "statusUpdationLog.changedTo";
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<IssueBacklogCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
-																		Map<String, Map<String, Object>> uniqueProjectMap) {
+			Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
 		// map of common filters Project and Sprint
 		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {

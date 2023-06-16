@@ -34,18 +34,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.*;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.cleanup.SonarDataCleanUpService;
@@ -54,8 +49,13 @@ import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.errors.ToolNotFoundException;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
+import com.publicissapient.kpidashboard.common.model.application.Subproject;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.SubProjectRepository;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 
 /***
  * @author yasbano
@@ -65,22 +65,20 @@ import com.publicissapient.kpidashboard.common.repository.application.SubProject
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectToolConfigServiceImplTest {
-	@InjectMocks
-	private ProjectToolConfigServiceImpl projectToolServiceImpl;
-
 	ProjectToolConfig listProjectTool = new ProjectToolConfig();
 	ProjectToolConfig listProjectTool1 = new ProjectToolConfig();
 	ProjectToolConfig listProjectTool2 = new ProjectToolConfig();
-
+	String testId;
+	String toolName;
+	String toolType;
+	@InjectMocks
+	private ProjectToolConfigServiceImpl projectToolServiceImpl;
 	@Mock
 	private ProjectToolConfigRepository toolRepositroy;
-
 	@Mock
 	private SubProjectRepository subProjectRepository;
-
 	@Mock
 	private ToolDataCleanUpServiceFactory dataCleanUpServiceFactory;
-
 	@Mock
 	private SonarDataCleanUpService sonarDataCleanUpService;
 	@Mock
@@ -89,10 +87,6 @@ public class ProjectToolConfigServiceImplTest {
 	private ConnectionRepository connectionRepository;
 	@Mock
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
-
-	String testId;
-	String toolName;
-	String toolType;
 
 	/**
 	 * method includes preprocesses for test cases

@@ -54,14 +54,14 @@ public class JiraProcessorUtilTest {
 		Map<String, String> startDateTimeStrByIssueType = new LinkedHashMap<>();
 		startDateTimeStrByIssueType.put("Story", "2020-08-24");
 		startDateTimeStrByIssueType.put("Defect", "2020-08-23");
-		String actual = JiraProcessorUtil.createJql("TEST", startDateTimeStrByIssueType);//TODO resolve
+		String actual = JiraProcessorUtil.createJql("TEST", startDateTimeStrByIssueType);// TODO resolve
 		Assert.assertEquals(result, actual);
 
 	}
 
 	@Test
 	public void createJql_Null() {
-		String actual = JiraProcessorUtil.createJql(null, null);//TODO resolve
+		String actual = JiraProcessorUtil.createJql(null, null);// TODO resolve
 		Assert.assertEquals("", actual);
 
 	}
@@ -77,10 +77,10 @@ public class JiraProcessorUtilTest {
 		Map<String, String> startDateTimeStrByIssueType = new LinkedHashMap<>();
 		startDateTimeStrByIssueType.put("Story", "2020-08-24");
 		startDateTimeStrByIssueType.put("Defect", "2020-08-23");
-		String actual = JiraProcessorUtil.processJql(query, startDateTimeStrByIssueType, false);//TODO resolve
+		String actual = JiraProcessorUtil.processJql(query, startDateTimeStrByIssueType, false);// TODO resolve
 		assertEquals(expected, actual);
 	}
-	
+
 	@Test
 	public void deodeUTF8String() throws URISyntaxException {
 		BasicUser basicUser = new BasicUser(new URI("self"), "basicuser", "basicuser", "accountId");
@@ -88,109 +88,109 @@ public class JiraProcessorUtilTest {
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
 
 	}
-	
+
 	@Test
 	public void deodeUTF8StringNull() {
 		Object jiraResponse = null;
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
 
 	}
-	
+
 	@Test
 	public void deodeUTF8StringEmpty() throws URISyntaxException {
-		FieldMapping fieldMapping= new FieldMapping(); 
+		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setJiraDor("");
 		Object jiraResponse = fieldMapping.getJiraDor();
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
 
 	}
-	
+
 	@Test
 	public void deodeUTF8StringEmptyNull() throws URISyntaxException {
-		FieldMapping fieldMapping= new FieldMapping(); 
+		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setJiraDor(null);
 		Object jiraResponse = fieldMapping.getJiraDor();
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
 
 	}
-	
+
 	@Test
 	public void getFormattedDate() {
 		String date = "07-09-2021";
 		assertNotNull(JiraProcessorUtil.getFormattedDate(date));
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void processSprintDetail() throws ParseException, JSONException {
-	      List<String> list = new ArrayList<String>();
-	      list.add("User1");
-	      list.add("User2");
-	      list.add("User3");
-	      JSONArray array = new JSONArray();
-	      for(int i = 0; i < list.size(); i++) {
-	    	  JSONObject d = new JSONObject();
-	    	  d.put(i, list.get(i));
-	         array.add(d);
-	      }
+		List<String> list = new ArrayList<String>();
+		list.add("User1");
+		list.add("User2");
+		list.add("User3");
+		JSONArray array = new JSONArray();
+		for (int i = 0; i < list.size(); i++) {
+			JSONObject d = new JSONObject();
+			d.put(i, list.get(i));
+			array.add(d);
+		}
 		Object data = array;
 
 		assertNotNull(JiraProcessorUtil.processSprintDetail(data));
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void processSprintDetailNull() throws ParseException, JSONException {
-	      List<String> list = new ArrayList<String>();
-	      list.add("User1");
-	      list.add("User2");
-	      list.add(null);
-	      JSONArray array = new JSONArray();
-	      for(int i = 0; i < list.size(); i++) {
-	    	  JSONObject d = new JSONObject();
-	    	  d.put(i, list.get(i));
-	         array.add(d);
-	      }
+		List<String> list = new ArrayList<String>();
+		list.add("User1");
+		list.add("User2");
+		list.add(null);
+		JSONArray array = new JSONArray();
+		for (int i = 0; i < list.size(); i++) {
+			JSONObject d = new JSONObject();
+			d.put(i, list.get(i));
+			array.add(d);
+		}
 		Object data = array;
 
 		assertNotNull(JiraProcessorUtil.processSprintDetail(data));
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void processSprintDetail1() throws ParseException, JSONException {
-	      List<String> list = new ArrayList<String>();
-	      list.add("User1");
-	      list.add("User2");
-	      list.add("User3");
-	      org.codehaus.jettison.json.JSONArray array = new org.codehaus.jettison.json.JSONArray();
-	      for(int i = 0; i < list.size(); i++) {
-	    	  JSONObject d = new JSONObject();
-	    	  d.put(i, list.get(i));
-	         array.put(d);
-	      }
+		List<String> list = new ArrayList<String>();
+		list.add("User1");
+		list.add("User2");
+		list.add("User3");
+		org.codehaus.jettison.json.JSONArray array = new org.codehaus.jettison.json.JSONArray();
+		for (int i = 0; i < list.size(); i++) {
+			JSONObject d = new JSONObject();
+			d.put(i, list.get(i));
+			array.put(d);
+		}
 		Object data = array;
 
 		assertNotNull(JiraProcessorUtil.processSprintDetail(data));
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void processSprintDetail1Null() throws ParseException, JSONException {
-	      List<String> list = new ArrayList<String>();
-	      list.add("User1");
-	      list.add("User2");
-	      list.add(null);
-	      org.codehaus.jettison.json.JSONArray array = new org.codehaus.jettison.json.JSONArray();
-	      for(int i = 0; i < list.size(); i++) {
-	    	  JSONObject d = new JSONObject();
-	    	  d.put(i, list.get(i));
-	         array.put(d);
-	      }
+		List<String> list = new ArrayList<String>();
+		list.add("User1");
+		list.add("User2");
+		list.add(null);
+		org.codehaus.jettison.json.JSONArray array = new org.codehaus.jettison.json.JSONArray();
+		for (int i = 0; i < list.size(); i++) {
+			JSONObject d = new JSONObject();
+			d.put(i, list.get(i));
+			array.put(d);
+		}
 		Object data = array;
 
 		assertNotNull(JiraProcessorUtil.processSprintDetail(data));
@@ -203,7 +203,7 @@ public class JiraProcessorUtilTest {
 		assertNotNull(JiraProcessorUtil.getFormattedDateTime(date));
 
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@Test
 	public void getFormattedDateString() {
@@ -212,16 +212,15 @@ public class JiraProcessorUtilTest {
 		assertNotNull(JiraProcessorUtil.getFormattedDateString(date));
 
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@Test
 	public void getTimeAdjustedDate() {
 		Date date = new Date();
 		date.getDate();
-		int minutes=30;
-		assertNotNull(JiraProcessorUtil.getTimeAdjustedDate(date,minutes));
+		int minutes = 30;
+		assertNotNull(JiraProcessorUtil.getTimeAdjustedDate(date, minutes));
 
 	}
-	
-	
+
 }

@@ -18,13 +18,13 @@
 
 package com.publicissapient.kpidashboard.common.repository.excel;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
-
-import java.util.List;
 
 /**
  * The interface Kanban capacity repository.

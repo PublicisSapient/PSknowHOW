@@ -15,53 +15,52 @@ import com.publicissapient.kpidashboard.common.repository.application.HierarchyL
 @Service
 public class HierarchyLevelSuggestionsServiceImpl implements HierarchyLevelSuggestionsService {
 
-    @Autowired
-    private HierarchyLevelSuggestionRepository  hierarchyLevelSuggestionRepository;
-    @Override
-    public List<HierarchyLevelSuggestion> getSuggestions() {
-        return hierarchyLevelSuggestionRepository.findAll();
-    }
+	@Autowired
+	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
 
-   /* @Autowired
-    private ConfigHelperService configHelperService;
+	@Override
+	public List<HierarchyLevelSuggestion> getSuggestions() {
+		return hierarchyLevelSuggestionRepository.findAll();
+	}
 
-    @Autowired
-    private CacheService cacheService;
+	/*
+	 * @Autowired private ConfigHelperService configHelperService;
+	 * 
+	 * @Autowired private CacheService cacheService;
+	 * 
+	 * @Override public List<HierarchyLevelSuggestion> getSuggestions() { return
+	 * configHelperService.loadHierarchyLevelSuggestion(); }
+	 */
 
-    @Override
-    public List<HierarchyLevelSuggestion> getSuggestions() {
-        return configHelperService.loadHierarchyLevelSuggestion();
-    } */
+	@Override
+	public HierarchyLevelSuggestion addIfNotPresent(String hierarchyLevelId, String hierarchyValue) {
 
-   @Override
-   public HierarchyLevelSuggestion addIfNotPresent(String hierarchyLevelId, String hierarchyValue) {
+		HierarchyLevelSuggestion addedHierarchyLevel = null;
+		TreeSet<String> suggestions = new TreeSet<>();
 
-	   HierarchyLevelSuggestion addedHierarchyLevel = null;
-	   TreeSet<String> suggestions = new TreeSet<>();
+		HierarchyLevelSuggestion existingHierarchyLevel = hierarchyLevelSuggestionRepository
+				.findByHierarchyLevelId(hierarchyLevelId);
+		String normalizeHierarchyValue = StringUtils.normalizeSpace(hierarchyValue);
+		if (existingHierarchyLevel == null) {
+			HierarchyLevelSuggestion hierarchyLevelSuggestion = new HierarchyLevelSuggestion();
+			hierarchyLevelSuggestion.setHierarchyLevelId(hierarchyLevelId);
+			suggestions.add(normalizeHierarchyValue);
+			hierarchyLevelSuggestion.setValues(suggestions);
+			addedHierarchyLevel = hierarchyLevelSuggestionRepository.save(hierarchyLevelSuggestion);
+			// cacheService.clearCache(CommonConstant.CACHE_HIERARCHY_LEVEL_VALUE);
+		}
 
-	   HierarchyLevelSuggestion existingHierarchyLevel = hierarchyLevelSuggestionRepository
-			   .findByHierarchyLevelId(hierarchyLevelId);
-	   String normalizeHierarchyValue = StringUtils.normalizeSpace(hierarchyValue);
-	   if (existingHierarchyLevel == null) {
-		   HierarchyLevelSuggestion hierarchyLevelSuggestion = new HierarchyLevelSuggestion();
-		   hierarchyLevelSuggestion.setHierarchyLevelId(hierarchyLevelId);
-		   suggestions.add(normalizeHierarchyValue);
-		   hierarchyLevelSuggestion.setValues(suggestions);
-		   addedHierarchyLevel = hierarchyLevelSuggestionRepository.save(hierarchyLevelSuggestion);
-		   // cacheService.clearCache(CommonConstant.CACHE_HIERARCHY_LEVEL_VALUE);
-	   }
+		if (Objects.nonNull(existingHierarchyLevel) && CollectionUtils.isNotEmpty(existingHierarchyLevel.getValues())) {
+			TreeSet<String> existingSuggestions = existingHierarchyLevel.getValues();
+			if (existingSuggestions.stream().noneMatch(normalizeHierarchyValue::equalsIgnoreCase)) {
+				suggestions.add(normalizeHierarchyValue);
+			}
+			suggestions.addAll(existingSuggestions);
+			existingHierarchyLevel.setValues(suggestions);
+			addedHierarchyLevel = hierarchyLevelSuggestionRepository.save(existingHierarchyLevel);
+			// cacheService.clearCache(CommonConstant.CACHE_HIERARCHY_LEVEL_VALUE);
+		}
 
-	   if (Objects.nonNull(existingHierarchyLevel) && CollectionUtils.isNotEmpty(existingHierarchyLevel.getValues())) {
-		   TreeSet<String> existingSuggestions = existingHierarchyLevel.getValues();
-		   if (existingSuggestions.stream().noneMatch(normalizeHierarchyValue::equalsIgnoreCase)) {
-			   suggestions.add(normalizeHierarchyValue);
-		   }
-		   suggestions.addAll(existingSuggestions);
-		   existingHierarchyLevel.setValues(suggestions);
-		   addedHierarchyLevel = hierarchyLevelSuggestionRepository.save(existingHierarchyLevel);
-		   // cacheService.clearCache(CommonConstant.CACHE_HIERARCHY_LEVEL_VALUE);
-	   }
-
-	   return addedHierarchyLevel;
-   }
+		return addedHierarchyLevel;
+	}
 }

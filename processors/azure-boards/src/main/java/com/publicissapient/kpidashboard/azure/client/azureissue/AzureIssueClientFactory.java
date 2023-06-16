@@ -26,23 +26,24 @@ import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
 @Component
 public class AzureIssueClientFactory {
 
-    @Autowired
-    private KanbanAzureIssueClientImpl kanbanAzureIssueClient;
+	@Autowired
+	private KanbanAzureIssueClientImpl kanbanAzureIssueClient;
 
-    @Autowired
-    private ScrumAzureIssueClientImpl scrumAzureIssueClient;
+	@Autowired
+	private ScrumAzureIssueClientImpl scrumAzureIssueClient;
 
-    /**
-     * Gets AzureIssue Client based on the Project type (Kanban or Scrum)
-     *
-     * @param projectConfig user provided project Configuration mapping
-     * @return KanbanAzureIssueClient if isKanban true else ScrumAzureIssueClient
-     */
-    public AzureIssueClient getAzureIssueDataClient(ProjectConfFieldMapping projectConfig) {
-        if (projectConfig.isKanban()) {
-            return kanbanAzureIssueClient;
-        } else {
-           return scrumAzureIssueClient;
-        }
-    }
+	/**
+	 * Gets AzureIssue Client based on the Project type (Kanban or Scrum)
+	 *
+	 * @param projectConfig
+	 *            user provided project Configuration mapping
+	 * @return KanbanAzureIssueClient if isKanban true else ScrumAzureIssueClient
+	 */
+	public AzureIssueClient getAzureIssueDataClient(ProjectConfFieldMapping projectConfig) {
+		if (projectConfig.isKanban()) {
+			return kanbanAzureIssueClient;
+		} else {
+			return scrumAzureIssueClient;
+		}
+	}
 }

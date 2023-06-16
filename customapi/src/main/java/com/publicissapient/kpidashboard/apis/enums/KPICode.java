@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.enums;
 
-
 import java.util.Arrays;
 
 /**
@@ -254,7 +253,8 @@ public enum KPICode {
 	MISSING_WORK_LOGS("kpi115", KPISource.JIRA.name()),
 
 	/**
-	 * ACTUAL vs Remaining - add hygiene kpiId in HYGIENE_KPI_LIST variable defined in Constant.java class
+	 * ACTUAL vs Remaining - add hygiene kpiId in HYGIENE_KPI_LIST variable defined
+	 * in Constant.java class
 	 */
 	ACTUAL_VS_REMAINING("kpi78", KPISource.JIRA.name()),
 
@@ -294,15 +294,14 @@ public enum KPICode {
 
 	ITERATION_STATUS("kpi130", KPISource.JIRA.name()),
 
-	DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", KPISource.JIRA.name()),
-	DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136", KPISource.JIRA.name()),
+	DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", KPISource.JIRA.name()), DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136",
+			KPISource.JIRA.name()),
 
-	DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140", KPISource.JIRA.name()),
-	DEFECT_COUNT_BY_STATUS_RELEASE("kpi141", KPISource.JIRA.name()),
-	DEFECT_COUNT_BY_RCA_RELEASE("kpi142", KPISource.JIRA.name()),
-	DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143", KPISource.JIRA.name()),
-	DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144", KPISource.JIRA.name()),
-	RELEASE_PROGRESS("kpi147", KPISource.JIRA.name()),
+	DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140", KPISource.JIRA.name()), DEFECT_COUNT_BY_STATUS_RELEASE("kpi141",
+			KPISource.JIRA.name()), DEFECT_COUNT_BY_RCA_RELEASE("kpi142",
+					KPISource.JIRA.name()), DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143",
+							KPISource.JIRA.name()), DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",
+									KPISource.JIRA.name()), RELEASE_PROGRESS("kpi147", KPISource.JIRA.name()),
 	/**
 	 * Scope Change
 	 */
@@ -327,9 +326,8 @@ public enum KPICode {
 	 */
 	PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING("kpi127", KPISource.JIRA.name()),
 	/**
-
-	/**
-	 * Estimation Hygiene
+	 * 
+	 * /** Estimation Hygiene
 	 */
 	ESTIMATION_HYGIENE("kpi124", KPISource.JIRA.name()),
 
@@ -371,8 +369,8 @@ public enum KPICode {
 	/**
 	 * Issues Without Story Link
 	 */
-	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name()),
-	BACKLOG_READINESS_EFFICIENCY("kpi138", KPISource.JIRA.name()),
+	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name()), BACKLOG_READINESS_EFFICIENCY("kpi138",
+			KPISource.JIRA.name()),
 
 	/**
 	 * Wastage
@@ -389,7 +387,6 @@ public enum KPICode {
 	 */
 	DEFECT_REOPEN_RATE("kpi137", KPISource.JIRA.name()),
 
-
 	/**
 	 * Refinement Rejection Rate
 	 */
@@ -398,20 +395,19 @@ public enum KPICode {
 	/**
 	 * Flow Distribution
 	 */
-	FLOW_DISTRIBUTION("kpi146",KPISource.JIRA.name()),
+	FLOW_DISTRIBUTION("kpi146", KPISource.JIRA.name()),
 	/**
 	 * Happiness index Rate
 	 */
 	HAPPINESS_INDEX_RATE("kpi149", KPISource.JIRA.name()),
 	/*
-	* Flow Load
-	* */
-	FLOW_LOAD("kpi148",KPISource.JIRA.name()),
+	 * Flow Load
+	 */
+	FLOW_LOAD("kpi148", KPISource.JIRA.name()),
 
 	RELEASE_BURNUP("kpi150", KPISource.JIRA.name());
 
 	// @formatter:on
-
 
 	private String kpiId;
 
@@ -420,15 +416,6 @@ public enum KPICode {
 	KPICode(String kpiID, String source) {
 		this.kpiId = kpiID;
 		this.setSource(source);
-	}
-
-	/**
-	 * Gets kpi id.
-	 *
-	 * @return the kpi id
-	 */
-	public String getKpiId() {
-		return kpiId;
 	}
 
 	/**
@@ -442,6 +429,15 @@ public enum KPICode {
 
 		return Arrays.asList(KPICode.values()).stream().filter(kpi -> kpi.getKpiId().equalsIgnoreCase(kpiID)).findAny()
 				.orElse(INVALID);
+	}
+
+	/**
+	 * Gets kpi id.
+	 *
+	 * @return the kpi id
+	 */
+	public String getKpiId() {
+		return kpiId;
 	}
 
 	/**

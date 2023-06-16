@@ -38,12 +38,12 @@ public final class CommonConstant {
 	public static final String CACHE_FIELD_MAPPING_MAP = "fieldMappingMap";
 	public static final String CACHE_PROJECT_CONFIG_MAP = "projectConfigMap";
 	public static final String CACHE_PROJECT_TOOL_CONFIG_MAP = "projectToolConfigMap";
-	
+
 	public static final String CACHE_CLEAR_ENDPOINT = "api/cache/clearCache";
 	public static final String CLEAR_ALL_CACHE_ENDPOINT = "api/cache/clearAllCache";
 	public static final String REPROCESS = "Reprocess";
 	public static final String FILE_STATUS_UPLOADED = "Uploaded";
-	
+
 	public static final String SPRINT = "sprint";
 	public static final String BUG = "bug";
 	public static final String ISSUE_TYPE = "issuetype";
@@ -65,7 +65,7 @@ public final class CommonConstant {
 	public static final String REJECTION_RESOLUTION = "rejectionResolution";
 	public static final String QA_ROOT_CAUSE = "qaRootCause";
 	public static final String UAT_DEFECT = "uatdefect";
-	
+
 	public static final String TICKET_CLOSED_STATUS = "ticketClosedStatus";
 	public static final String TICKET_LIVE_STATUS = "ticketLiveStatus";
 	public static final String JIRA_LIVE_STATUS = "jiraLiveStatus";
@@ -81,7 +81,7 @@ public final class CommonConstant {
 	public static final String TICKET_REOPEN_ISSUE_TYPE = "ticketReopenIssue";
 	public static final String KANBAN_CYCLE_TIME_ISSUE_TYPE = "kanbanCycleTimeIssue";
 	public static final String KANBAN_TECH_DEBT_ISSUE_TYPE = "kanbanTechDebtIssueType";
-	
+
 	public static final String META_ISSUE_TYPE = "Issue_Type";
 	public static final String META_WORKFLOW = "workflow";
 	public static final String META_FIELD = "fields";
@@ -89,35 +89,34 @@ public final class CommonConstant {
 	public static final String ACCOUNT = "Account";
 	public static final String PROJECT = "Project";
 	public static final String UNDERSCORE = "_";
-	public static final String COST_OF_DELAY ="costOfDelay";
-	public static final String USER_BUSINESS_VALUE ="businessValue";
-	public static final String RISK_REDUCTION ="riskReduction";
-	public static final String JOB_SIZE ="jobSize";
-	public static final String WSJF ="wsjf";
-	public static final String TIME_CRITICALITY ="timeCriticality";
+	public static final String COST_OF_DELAY = "costOfDelay";
+	public static final String USER_BUSINESS_VALUE = "businessValue";
+	public static final String RISK_REDUCTION = "riskReduction";
+	public static final String JOB_SIZE = "jobSize";
+	public static final String WSJF = "wsjf";
+	public static final String TIME_CRITICALITY = "timeCriticality";
 	public static final String EPIC = "epic";
-	
+
 	public static final String ENG_MATURITY = "ENG_MATURITY";
 	public static final String ENG_MATURITY_MASTER = "ENG_MATURITY_MASTER";
-	
+
 	public static final String ARROW = "->";
 	public static final String NEWLINE = "\n";
-	public static final String ACC_HIERARCHY_PATH_SPLITTER="###";
+	public static final String ACC_HIERARCHY_PATH_SPLITTER = "###";
 	public static final String BLANK = "";
 	public static final String COMMA = ",";
 	public static final String CACHE_KPI_MASTER = "cache_kpi_master";
 	public static final String CACHE_HIERARCHY_LEVEL_VALUE = "cache_hierarchy_level_value";
-	public static final String CACHE_PROJECT_BASIC_TREE="cache_project_basic_tree";
-	public static final String CACHE_USER_BOARD_CONFIG="cache_user_board_config";
+	public static final String CACHE_PROJECT_BASIC_TREE = "cache_project_basic_tree";
+	public static final String CACHE_USER_BOARD_CONFIG = "cache_user_board_config";
 
 	public static final String OVERALL = "Overall";
-	
+
 	public static final String WEEK = "WEEKS";
 	public static final String MONTH = "MONTHS";
 	public static final String DAYS = "DAYS";
 	public static final String DAY = "day";
 	public static final String date = "date";
-
 
 	public static final String HIERARCHY_LEVEL_ID_PROJECT = "project";
 	public static final String HIERARCHY_LEVEL_NAME_PROJECT = "Project";
@@ -164,9 +163,9 @@ public final class CommonConstant {
 	public static final String JIRA_WAIT_STATUS = "jiraWaitStatus";
 	public static final String JIRA_BLOCKED_STATUS = "jiraBlockedStatus";
 
-	public static final String IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE="Include Flagged Issue";
+	public static final String IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE = "Include Flagged Issue";
 	public static final String REQUIRED_ATTENTION_FLAG = "Requires attention";
-	public static final String BLOCKED_STATUS_WASTAGE="Blocked Status";
+	public static final String BLOCKED_STATUS_WASTAGE = "Blocked Status";
 	public static final String JIRA_IN_PROGRESS_STATUS = "jiraStatusForInProgress";
 
 	public static final String STORY_POINT = "Story Point";
@@ -181,16 +180,10 @@ public final class CommonConstant {
 	public static final String ITERATION = "Iteration";
 	public static final String RELEASE = "Release";
 
-	public static final String RELEASED="Released";
-	public static final String UNRELEASED="Unreleased";
-
-
-
-
-
-
+	public static final String RELEASED = "Released";
+	public static final String UNRELEASED = "Unreleased";
 
 	private CommonConstant() {
-		
+
 	}
 }

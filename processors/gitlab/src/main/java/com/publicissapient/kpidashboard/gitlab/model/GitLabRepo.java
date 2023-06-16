@@ -18,11 +18,9 @@
 
 package com.publicissapient.kpidashboard.gitlab.model;
 
-
 import java.util.Date;
 
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
-
 
 /**
  * BitbucketRepo represents a class which contains BitbucketRepo information
@@ -33,25 +31,25 @@ public class GitLabRepo extends ProcessorItem {
 
 	/** The Constant USERID. */
 	private static final String USERID = "userID";
-	
+
 	/** The Constant PASSWORD. */
 	private static final String PASSWORD = "password";
-	
+
 	/** The Constant URL. */
 	private static final String URL = "url";
-	
+
 	/** The Constant REPO_BRANCH. */
 	private static final String REPO_BRANCH = "branch";
-	
+
 	/** The Constant LAST_UPDATE_COMMIT. */
 	private static final String LAST_UPDATED_COMMIT = "lastUpdatedCommit";
-	
+
 	/** The Constant LAST_UPDATE_TIME. */
 	private static final String LAST_UPDATED_TIME = "lastUpdatedTime";
 
 	/** The Constant GitLabAccessToken */
 	private static final String GIT_LAB_ACCESS_TOKEN = "GitLabAccessToken";
-	
+
 	private static final String GIT_LAB_PROJECT_ID = "gitLabProjectId";
 
 	private static final String GITLAB_LAST_COMMIT_TIMESTAMP = "commitTimestamp";
@@ -68,13 +66,12 @@ public class GitLabRepo extends ProcessorItem {
 	/**
 	 * Sets userId.
 	 *
-	 * @param userId the new user id
+	 * @param userId
+	 *            the new user id
 	 */
 	public void setUserId(String userId) {
 		getToolDetailsMap().put(USERID, userId);
 	}
-
-	
 
 	/**
 	 * Gets the repo url.
@@ -88,12 +85,13 @@ public class GitLabRepo extends ProcessorItem {
 	/**
 	 * Sets repoUrl.
 	 *
-	 * @param instanceUrl the new repo url
+	 * @param instanceUrl
+	 *            the new repo url
 	 */
 	public void setRepoUrl(String instanceUrl) {
 		getToolDetailsMap().put(URL, instanceUrl);
 	}
-	
+
 	/**
 	 * Gets the password.
 	 *
@@ -106,7 +104,8 @@ public class GitLabRepo extends ProcessorItem {
 	/**
 	 * Sets password.
 	 *
-	 * @param password the new password
+	 * @param password
+	 *            the new password
 	 */
 	public void setPassword(String password) {
 		getToolDetailsMap().put(PASSWORD, password);
@@ -124,7 +123,8 @@ public class GitLabRepo extends ProcessorItem {
 	/**
 	 * Sets branch.
 	 *
-	 * @param branch the new branch
+	 * @param branch
+	 *            the new branch
 	 */
 	public void setBranch(String branch) {
 		getToolDetailsMap().put(REPO_BRANCH, branch);
@@ -143,7 +143,8 @@ public class GitLabRepo extends ProcessorItem {
 	/**
 	 * Sets lastUpdateTime.
 	 *
-	 * @param date the new last update time
+	 * @param date
+	 *            the new last update time
 	 */
 	public void setLastUpdatedTime(Date date) {
 		getToolDetailsMap().put(LAST_UPDATED_TIME, date);
@@ -161,7 +162,8 @@ public class GitLabRepo extends ProcessorItem {
 	/**
 	 * Sets lastUpdateCommit.
 	 *
-	 * @param sha the new last update commit
+	 * @param sha
+	 *            the new last update commit
 	 */
 	public void setLastUpdatedCommit(String sha) {
 		getToolDetailsMap().put(LAST_UPDATED_COMMIT, sha);
@@ -179,28 +181,27 @@ public class GitLabRepo extends ProcessorItem {
 	/**
 	 * Sets GitLabAccessToken.
 	 *
-	 * @param gitLabAccessToken the new last update commit
+	 * @param gitLabAccessToken
+	 *            the new last update commit
 	 */
 	public void setGitLabAccessToken(String gitLabAccessToken) {
 		getToolDetailsMap().put(GIT_LAB_ACCESS_TOKEN, gitLabAccessToken);
 	}
-	
-	public  String getGitLabProjectId() {
+
+	public String getGitLabProjectId() {
 		return (String) getToolDetailsMap().get(GIT_LAB_PROJECT_ID);
 	}
-	
 
-	public  void setGitLabProjectId(String gitLabProjectId) {
+	public void setGitLabProjectId(String gitLabProjectId) {
 		getToolDetailsMap().put(GIT_LAB_PROJECT_ID, gitLabProjectId);
 	}
 
-	public String getLastCommitTimestamp(){
-		return (String)getToolDetailsMap().get(GITLAB_LAST_COMMIT_TIMESTAMP);
+	public String getLastCommitTimestamp() {
+		return (String) getToolDetailsMap().get(GITLAB_LAST_COMMIT_TIMESTAMP);
 	}
 
-	public void setLastCommitTimestamp(String lastCommitTimestamp){
-		 getToolDetailsMap().put(GITLAB_LAST_COMMIT_TIMESTAMP, lastCommitTimestamp);
+	public void setLastCommitTimestamp(String lastCommitTimestamp) {
+		getToolDetailsMap().put(GITLAB_LAST_COMMIT_TIMESTAMP, lastCommitTimestamp);
 	}
-
 
 }

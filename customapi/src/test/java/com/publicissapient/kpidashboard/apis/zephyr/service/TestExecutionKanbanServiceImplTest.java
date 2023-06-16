@@ -69,6 +69,8 @@ import com.publicissapient.kpidashboard.common.repository.application.KanbanTest
 public class TestExecutionKanbanServiceImplTest {
 
 	private static final String TEST_EXECUTION_DETAIL = "testExecutionDetail";
+	private final static String TESTCASEKEY = "testCaseData";
+	private final static String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
 	@InjectMocks
 	TestExecutionKanbanServiceImpl testExecutionKanbanService;
 	@Mock
@@ -79,18 +81,14 @@ public class TestExecutionKanbanServiceImplTest {
 	CacheService cacheService;
 	@Mock
 	KanbanTestExecutionRepository kanbanTestExecutionRepository;
+	@Mock
+	FilterHelperService flterHelperService;
 	private List<KanbanTestExecution> testExecutionList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyDataKanban> accountHierarchyDataList = new ArrayList<>();
-	private final static String TESTCASEKEY = "testCaseData";
-	private final static String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
-
 	@Mock
 	private CommonService commonService;
-
-	@Mock
-	FilterHelperService flterHelperService;
 
 	@Before
 	public void setup() {
@@ -103,7 +101,6 @@ public class TestExecutionKanbanServiceImplTest {
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyKanbanDataList();
 		testExecutionList = KanbanTestExecutionDataFactory.newInstance().getKanbanTestExecutionList();
 	}
-
 
 	@Test
 	public void getQualifierType() {
@@ -160,7 +157,7 @@ public class TestExecutionKanbanServiceImplTest {
 		List<Node> leafNodeList = new ArrayList<>();
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				 new ArrayList<>(), accountHierarchyDataList, "hierarchyLevelOne", 5);
+				new ArrayList<>(), accountHierarchyDataList, "hierarchyLevelOne", 5);
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 				leafNodeList.addAll(v);
@@ -176,7 +173,7 @@ public class TestExecutionKanbanServiceImplTest {
 
 	@Test
 	public void calculateKpiValueTest() {
-		Double kpiValue = testExecutionKanbanService.calculateKpiValue(Arrays.asList(1.0,2.0), "kpi70");
+		Double kpiValue = testExecutionKanbanService.calculateKpiValue(Arrays.asList(1.0, 2.0), "kpi70");
 		assertThat("Kpi value  :", kpiValue, equalTo(0.0));
 	}
 

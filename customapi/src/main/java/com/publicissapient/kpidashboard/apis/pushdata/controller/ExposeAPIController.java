@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.apis.pushdata.controller;
 
 import javax.validation.Valid;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,6 +35,8 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.ExposeAPITokenRequestDTO;
 import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Validated
 @RestController
 @RequestMapping("/exposeAPI")
@@ -47,8 +47,9 @@ public class ExposeAPIController {
 	private AuthExposeAPIService authExposeAPIService;
 
 	/**
-	 * API to generate token for push data based and
-	 * generate token has permission only superadmin and project admin of particular project
+	 * API to generate token for push data based and generate token has permission
+	 * only superadmin and project admin of particular project
+	 * 
 	 * @param exposeAPITokenRequestDTO
 	 * @return
 	 */

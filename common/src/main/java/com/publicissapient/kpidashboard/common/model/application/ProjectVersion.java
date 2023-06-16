@@ -65,7 +65,7 @@ public class ProjectVersion {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(id, name, description, isArchived, isReleased, releaseDate,startDate);
+		return Objects.hashCode(id, name, description, isArchived, isReleased, releaseDate, startDate);
 	}
 
 }

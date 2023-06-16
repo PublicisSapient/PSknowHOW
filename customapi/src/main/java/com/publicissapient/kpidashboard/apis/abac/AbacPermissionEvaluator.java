@@ -48,7 +48,7 @@ public class AbacPermissionEvaluator implements PermissionEvaluator {
 	ProjectAccessManager projectAccessManager;
 
 	@Override
-	public boolean hasPermission(Authentication authentication , Object targetDomainObject, Object permission) {
+	public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
 		String userName = (String) authentication.getPrincipal();
 		UserInfo user = userInfoService.getUserInfo(userName);
 
@@ -61,7 +61,8 @@ public class AbacPermissionEvaluator implements PermissionEvaluator {
 	}
 
 	@Override
-	public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) {
+	public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType,
+			Object permission) {
 		return false;
 	}
 

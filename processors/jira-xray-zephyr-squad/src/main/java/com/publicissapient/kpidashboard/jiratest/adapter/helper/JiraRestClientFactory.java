@@ -33,11 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import com.publicissapient.kpidashboard.jiratest.adapter.impl.async.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jiratest.adapter.impl.async.factory.ProcessorAsynchJiraRestClientFactory;
-import com.publicissapient.kpidashboard.jiratest.config.JiraTestProcessorConfig;
-import com.publicissapient.kpidashboard.jiratest.model.JiraInfo;
-import com.publicissapient.kpidashboard.jiratest.oauth.JiraOAuthClient;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -54,6 +49,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
+import com.publicissapient.kpidashboard.jiratest.adapter.impl.async.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jiratest.adapter.impl.async.factory.ProcessorAsynchJiraRestClientFactory;
+import com.publicissapient.kpidashboard.jiratest.config.JiraTestProcessorConfig;
+import com.publicissapient.kpidashboard.jiratest.model.JiraInfo;
+import com.publicissapient.kpidashboard.jiratest.oauth.JiraOAuthClient;
 
 @Component
 public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClient> {
@@ -71,7 +71,8 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 	/**
 	 * Decodes JIRA credentials provided by the user
 	 * 
-	 * @param jiraCredentials jiraCredentials
+	 * @param jiraCredentials
+	 *            jiraCredentials
 	 * @return Map of decoded username and password
 	 */
 	public Map<String, String> decodeUserCredentials(String jiraCredentials) {
@@ -171,7 +172,8 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jiraTestProcessorConfig.getCustomApiBaseUrl());
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder
+				.fromHttpUrl(jiraTestProcessorConfig.getCustomApiBaseUrl());
 		uriBuilder.path("/");
 		uriBuilder.path(cacheEndPoint);
 		uriBuilder.path("/");
@@ -269,7 +271,8 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 			}
 
 			InetAddress.getByName(jiraUri.getHost());// NOSONAR
-			client = new ProcessorAsynchJiraRestClientFactory().create(jiraUri, jiraOAuthClient, jiraTestProcessorConfig);
+			client = new ProcessorAsynchJiraRestClientFactory().create(jiraUri, jiraOAuthClient,
+					jiraTestProcessorConfig);
 
 		} catch (UnknownHostException | URISyntaxException e) {
 			LOGGER.error("The Jira host name is invalid. Further jira collection cannot proceed.");

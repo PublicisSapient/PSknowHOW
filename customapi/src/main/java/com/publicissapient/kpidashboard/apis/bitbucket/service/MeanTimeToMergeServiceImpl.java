@@ -54,6 +54,7 @@ import com.publicissapient.kpidashboard.common.model.scm.MergeReqCount;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -142,7 +143,6 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		Map<ObjectId, List<MergeRequests>> mergeRequestsListItemId = mergeRequestsList.stream()
 				.collect(Collectors.groupingBy(MergeRequests::getProcessorItemId));
 
-
 		List<KPIExcelData> excelData = new ArrayList<>();
 		projectLeafNodeList.stream().forEach(node -> {
 			String projectName = node.getProjectFilter().getName();
@@ -215,7 +215,9 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 					durationList.add(duration);
 				}
 			}
-			String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT) + WEEK_SEPERATOR + DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+			String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + WEEK_SEPERATOR
+					+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
 			Double valueForCurrentLeaf = ObjectUtils.defaultIfNull(AggregationUtils.average(durationList), 0.0d);
 			if (null != valueForCurrentLeaf) {
 				valueForCurrentLeafList.add(valueForCurrentLeaf);

@@ -42,8 +42,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @ConfigurationProperties(prefix = "azure")
 public class AzureProcessorConfig {
-	//NOPMD
-	//Do not remove pmd this is for ignoring TooManyFields violation
+	// NOPMD
+	// Do not remove pmd this is for ignoring TooManyFields violation
 	// it is required
 
 	private String cron;
@@ -63,13 +63,12 @@ public class AzureProcessorConfig {
 	private String apiFieldsEndPoint;
 	private String apiStatusEndPoint;
 	private String apiEndpointWorkItemRelationTypes;
-	
+
 	private String wiqlSelectQuery;
 	private String wiqlSortQuery;
 	private boolean fetchMetadata;
 	private List<String> excludeLinks;
 	private List<String> rcaValuesForCodeIssue;
 	private String azureDirectTicketLinkKey;
-
 
 }

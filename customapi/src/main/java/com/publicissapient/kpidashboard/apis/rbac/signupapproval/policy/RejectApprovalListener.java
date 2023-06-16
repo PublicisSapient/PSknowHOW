@@ -23,6 +23,7 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
  * @author shi6
  */
 public interface RejectApprovalListener {
-    void onSuccess(Authentication authentication);
-    void onFailure(Authentication authentication, String message);
+	void onSuccess(Authentication authentication);
+
+	void onFailure(Authentication authentication, String message);
 }

@@ -30,13 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.data.SprintWiseStoryDataFactory;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -53,9 +46,16 @@ import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
+import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
+import com.publicissapient.kpidashboard.apis.data.SprintWiseStoryDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -76,48 +76,37 @@ public class DRRServiceImplTest {
 
 	private static final String REJECTED_DEFECT_PRTA = "rejectedBugKey";
 	private static final String TOTAL_DEFECT_PRTA = "totalBugKey";
-	private Map<String, Object> filterLevelMap;
-	private List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
-	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-	private KpiRequest kpiRequest;
-
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<JiraIssue> canceledBugList = new ArrayList<>();
 	List<JiraIssue> totalBugList = new ArrayList<>();
-	private Map<String, String> kpiWiseAggregation = new HashMap<>();
-	private List<DataCount> dataCountList = new ArrayList<>();
-
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
-
 	@Mock
-    CacheService cacheService;
-
+	CacheService cacheService;
 	@Mock
-    ConfigHelperService configHelperService;
-	
-	@Mock
-    private KpiHelperService kpiHelperService;
-
+	ConfigHelperService configHelperService;
 	@InjectMocks
 	DRRServiceImpl dRRServiceImpl;
-
 	@Mock
 	ProjectBasicConfigRepository projectConfigRepository;
-
 	@Mock
 	FieldMappingRepository fieldMappingRepository;
-
 	@Mock
-    CustomApiConfig customApiSetting;
-
+	CustomApiConfig customApiSetting;
+	private Map<String, Object> filterLevelMap;
+	private List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private KpiRequest kpiRequest;
+	private Map<String, String> kpiWiseAggregation = new HashMap<>();
+	private List<DataCount> dataCountList = new ArrayList<>();
+	@Mock
+	private KpiHelperService kpiHelperService;
 	@Mock
 	private CommonService commonService;
 
 	@Mock
 	private FilterHelperService filterHelperService;
-
 
 	@Before
 	public void setup() {
@@ -141,7 +130,7 @@ public class DRRServiceImplTest {
 		canceledBugList = totalBugList.stream().filter(bug -> bug.getStatus().equals("Closed"))
 				.collect(Collectors.toList());
 		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
-		sprintWiseStoryList= sprintWiseStoryDataFactory.getSprintWiseStories();
+		sprintWiseStoryList = sprintWiseStoryDataFactory.getSprintWiseStories();
 
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
@@ -200,7 +189,7 @@ public class DRRServiceImplTest {
 	}
 
 	@Test
-	public void testGetDRR()  throws ApplicationException {
+	public void testGetDRR() throws ApplicationException {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);

@@ -55,7 +55,7 @@ public class FieldMappingController {
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> addFieldMapping(@PathVariable String projectToolConfigId,
 			@RequestBody FieldMappingDTO fieldMappingDTO) {
-		
+
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
 
 		ProjectBasicConfig projectBasicConfig = fieldMappingService
@@ -81,7 +81,7 @@ public class FieldMappingController {
 
 	@RequestMapping(value = "/tools/{projectToolConfigId}/saveMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> saveFieldMapping(@PathVariable String projectToolConfigId,
-														   @RequestBody FieldMappingDTO fieldMappingDTO) {
+			@RequestBody FieldMappingDTO fieldMappingDTO) {
 
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
 
@@ -103,7 +103,6 @@ public class FieldMappingController {
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-
 
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getFieldMapping(@PathVariable String projectToolConfigId) {

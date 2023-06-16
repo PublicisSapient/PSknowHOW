@@ -18,6 +18,15 @@
 
 package com.publicissapient.kpidashboard.common.repository;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,26 +39,15 @@ import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessorTaskTests {
 
+	private static final String COLLECTOR_NAME = "Test Processor";
 	@Mock
 	private TaskScheduler taskScheduler;
 	@Mock
 	private ProcessorRepository<Processor> processorRepository;
-
 	private ProcessorJobExecutor<Processor> task;
-
-	private static final String COLLECTOR_NAME = "Test Processor";
 
 	@Before
 	public void init() {

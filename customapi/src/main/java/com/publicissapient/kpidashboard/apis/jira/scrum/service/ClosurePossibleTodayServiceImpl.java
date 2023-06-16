@@ -18,13 +18,21 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
+
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,22 +56,21 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-
-import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
 
 @Component
 public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ClosurePossibleTodayServiceImpl.class);
-
-	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	public static final String UNCHECKED = "unchecked";
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClosurePossibleTodayServiceImpl.class);
+	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String ISSUES = "issues";
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String OVERALL = "Overall";
@@ -149,14 +156,15 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("Closure Possible Today -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
-			//Creating map of modal Objects
+			// Creating map of modal Objects
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
 					.collect(Collectors.groupingBy(JiraIssue::getTypeName));
 			List<IterationPotentialDelay> iterationPotentialDelayList = calculatePotentialDelay(sprintDetails,
 					allIssues, fieldMapping);
 			Map<String, IterationPotentialDelay> issueWiseDelay = iterationPotentialDelayList.stream()
-					.collect(Collectors.toMap(IterationPotentialDelay::getIssueId, Function.identity(),(e1,e2)->e2,LinkedHashMap::new));
+					.collect(Collectors.toMap(IterationPotentialDelay::getIssueId, Function.identity(), (e1, e2) -> e2,
+							LinkedHashMap::new));
 			Set<String> issueTypes = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 			List<Integer> overAllIssueCount = Arrays.asList(0);
@@ -172,7 +180,8 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				for (JiraIssue jiraIssue : issues) {
 					if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && issueWiseDelay.get(jiraIssue.getNumber())
 							.getPredictedCompletedDate().equals(LocalDate.now().toString())) {
-						KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
+						KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue, fieldMapping,
+								modalObjectMap);
 						issueCount = issueCount + 1;
 						overAllIssueCount.set(0, overAllIssueCount.get(0) + 1);
 						if (null != jiraIssue.getStoryPoints()) {
@@ -195,8 +204,8 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 					storyPoints = new IterationKpiData(CommonConstant.STORY_POINT, roundingOff(storyPoint), null, null,
 							CommonConstant.SP, null);
 				} else {
-					storyPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, roundingOff(originalEstimate), null, null,
-							CommonConstant.HOURS, null);
+					storyPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, roundingOff(originalEstimate),
+							null, null, CommonConstant.HOURS, null);
 				}
 				data.add(issueCounts);
 				data.add(storyPoints);
@@ -209,11 +218,11 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 			IterationKpiData overAllStPoints;
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				overAllStPoints = new IterationKpiData(CommonConstant.STORY_POINT, roundingOff(overAllStoryPoints.get(0)), null,
-						null, CommonConstant.SP, null);
+				overAllStPoints = new IterationKpiData(CommonConstant.STORY_POINT,
+						roundingOff(overAllStoryPoints.get(0)), null, null, CommonConstant.SP, null);
 			} else {
-				overAllStPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE, roundingOff(overAllOriginalEstimate.get(0)),
-						null, null, CommonConstant.HOURS, null);
+				overAllStPoints = new IterationKpiData(CommonConstant.ORIGINAL_ESTIMATE,
+						roundingOff(overAllOriginalEstimate.get(0)), null, null, CommonConstant.HOURS, null);
 			}
 			data.add(overAllCount);
 			data.add(overAllStPoints);

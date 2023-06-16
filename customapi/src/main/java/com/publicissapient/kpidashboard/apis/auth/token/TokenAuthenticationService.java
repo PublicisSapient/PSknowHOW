@@ -24,12 +24,12 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 
 /**
  * A Contract to add and get authentication.
@@ -77,7 +77,9 @@ public interface TokenAuthenticationService {
 
 	/**
 	 * Invalidate(Remove) auth tokens for provided users
-	 * @param users list of users (usernames)
+	 * 
+	 * @param users
+	 *            list of users (usernames)
 	 */
 	void invalidateAuthToken(List<String> users);
 

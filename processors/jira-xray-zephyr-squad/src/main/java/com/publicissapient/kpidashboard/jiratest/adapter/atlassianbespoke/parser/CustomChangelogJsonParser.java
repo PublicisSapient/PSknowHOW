@@ -35,10 +35,12 @@ public class CustomChangelogJsonParser extends ChangelogJsonParser {
 
 	private final ChangelogItemJsonParser changelogItemJsonParser = new ChangelogItemJsonParser();
 
-	@Override public ChangelogGroup parse(JSONObject json) throws JSONException {
+	@Override
+	public ChangelogGroup parse(JSONObject json) throws JSONException {
 		final DateTime created = JsonParseUtil.parseDateTime(json, "created");
 		final BasicUser author = json.has("author") ? JsonParseUtil.parseBasicUser(json.getJSONObject("author")) : null;
-		final Collection<ChangelogItem> items = JsonParseUtil.parseJsonArray(json.getJSONArray("items"), changelogItemJsonParser);
+		final Collection<ChangelogItem> items = JsonParseUtil.parseJsonArray(json.getJSONArray("items"),
+				changelogItemJsonParser);
 		return new ChangelogGroup(author, created, items);
 	}
 }

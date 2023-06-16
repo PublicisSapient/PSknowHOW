@@ -24,11 +24,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
-import com.publicissapient.kpidashboard.apis.auth.exceptions.InvalidAuthTypeConfigException;
-import com.publicissapient.kpidashboard.apis.errors.ProjectNotFoundException;
-import com.publicissapient.kpidashboard.apis.errors.ToolNotFoundException;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,9 +41,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.DeleteLastAdminException;
+import com.publicissapient.kpidashboard.apis.auth.exceptions.InvalidAuthTypeConfigException;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.UserNotFoundException;
+import com.publicissapient.kpidashboard.apis.errors.ProjectNotFoundException;
+import com.publicissapient.kpidashboard.apis.errors.ToolNotFoundException;
 import com.publicissapient.kpidashboard.apis.model.ErrorResponse;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
 import com.publicissapient.kpidashboard.common.util.UnsafeDeleteException;
 
@@ -255,6 +255,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 	}
+
 	@ExceptionHandler(IllegalStateException.class)
 	public ResponseEntity<Object> handleBadRequestException(IllegalStateException exception) {
 		ErrorResponse errorResponse = createErrorResponse(HttpStatus.BAD_REQUEST.value(),
@@ -279,7 +280,6 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 	}
 
-
 	@ExceptionHandler(ProjectNotFoundException.class)
 	public ResponseEntity<Object> handleProjectNotFound(ProjectNotFoundException exception) {
 		ErrorResponse errorResponse = createErrorResponse(HttpStatus.NOT_FOUND.value(),
@@ -297,7 +297,8 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(InvalidAuthTypeConfigException.class)
-	public ResponseEntity<Object> handleInvalidAuthTypeConfigException(InvalidAuthTypeConfigException invalidAuthTypeConfigException) {
+	public ResponseEntity<Object> handleInvalidAuthTypeConfigException(
+			InvalidAuthTypeConfigException invalidAuthTypeConfigException) {
 
 		ErrorResponse errorResponse = createErrorResponse(HttpStatus.BAD_REQUEST.value(),
 				HttpStatus.BAD_REQUEST.getReasonPhrase(), invalidAuthTypeConfigException.getMessage());
@@ -307,17 +308,18 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(PushDataException.class)
 	protected ResponseEntity<Object> handlePushDataExceptions(PushDataException ex) {
 		log.error(ex.getMessage());
-		if(ex.getPushBuildDeployResponse()!=null){
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ServiceResponse(false, ex.getMessage(), ex.getPushBuildDeployResponse()));
+		if (ex.getPushBuildDeployResponse() != null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ServiceResponse(false, ex.getMessage(), ex.getPushBuildDeployResponse()));
 		}
-		if(ex.getCode()!=null){
-			return ResponseEntity.status(ex.getCode()).body(new ServiceResponse(false, ex.getMessage(), ex.getPushBuildDeployResponse()));
+		if (ex.getCode() != null) {
+			return ResponseEntity.status(ex.getCode())
+					.body(new ServiceResponse(false, ex.getMessage(), ex.getPushBuildDeployResponse()));
 		}
 		Map<String, String> errorResponse = new HashMap<>();
 		errorResponse.put("error", ex.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 	}
-
 
 	private ErrorResponse createErrorResponse(int code, String error, String message) {
 		ErrorResponse errorResponse = new ErrorResponse();

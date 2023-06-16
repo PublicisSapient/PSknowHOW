@@ -48,9 +48,9 @@ import org.springframework.web.client.RestOperations;
 
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,15 +58,14 @@ import lombok.extern.slf4j.Slf4j;
 @RunWith(MockitoJUnitRunner.class)
 class AzurePipelineDeploymentClientTest {
 
-	@Mock
-	private RestOperationsFactory<RestOperations> restOperationsFactory;
-
-	@InjectMocks
-	private AzurePipelineDeploymentClient azurePipelineDeploymentClient;
-
 	private static final ProcessorToolConnection azurePipelineServer = new ProcessorToolConnection();
 	private static final ProjectBasicConfig proBasicConfig = new ProjectBasicConfig();
+	@Mock
+	private RestOperationsFactory<RestOperations> restOperationsFactory;
+	@InjectMocks
+	private AzurePipelineDeploymentClient azurePipelineDeploymentClient;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+
 	@BeforeEach
 	public void init() {
 		azurePipelineServer.setUrl("https://test.com/testUser/testProject");
@@ -77,7 +76,6 @@ class AzurePipelineDeploymentClientTest {
 		azurePipelineServer.setId(new ObjectId("629f47946000f87b2c5050b3"));
 		azurePipelineServer.setId(new ObjectId("629f47946000f87b2c5050b4"));
 		azurePipelineServer.setApiVersion("6.0");
-
 
 		proBasicConfig.setId(new ObjectId("629f47946000f87b2c5050b5"));
 		proBasicConfig.setSaveAssigneeDetails(true);
@@ -90,8 +88,9 @@ class AzurePipelineDeploymentClientTest {
 		try {
 			HttpHeaders header = new HttpHeaders();
 			header.add("Authorization", "base64str");
-            when(restOperationsFactory.getTypeInstance().exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-                    eq(String.class))).thenReturn(new ResponseEntity<>(getServerResponseFromJson("deployments.json"), HttpStatus.OK));
+			when(restOperationsFactory.getTypeInstance().exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
+					ArgumentMatchers.any(HttpEntity.class), eq(String.class))).thenReturn(
+							new ResponseEntity<>(getServerResponseFromJson("deployments.json"), HttpStatus.OK));
 			Map<Deployment, Set<Deployment>> response = azurePipelineDeploymentClient
 					.getDeploymentJobs(azurePipelineServer, 0, proBasicConfig);
 			assertEquals(1, response.size());

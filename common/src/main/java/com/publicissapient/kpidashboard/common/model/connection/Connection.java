@@ -41,7 +41,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "connections")
-public class Connection extends BasicModel{
+public class Connection extends BasicModel {
 
 	private String type;
 	private String connectionName;
@@ -70,7 +70,7 @@ public class Connection extends BasicModel{
 	private boolean connPrivate;
 	private String updatedBy;
 	private List<String> connectionUsers;
-	private boolean vault;//GS requirement
+	private boolean vault;// GS requirement
 	private boolean bearerToken;
 	private boolean jaasKrbAuth;
 	private String jaasConfigFilePath;
@@ -81,18 +81,19 @@ public class Connection extends BasicModel{
 	private String repoOwnerName;
 	private String repositoryName;
 
+	public boolean getIsOAuth() {
+		return this.isOAuth;
+	}
+
 	public void setIsOAuth(boolean isOAuth) {
 		this.isOAuth = isOAuth;
 	}
 
-	public boolean getIsOAuth() {
-		return this.isOAuth;
-	}
-	
 	/**
 	 * Checks if the parameter object is equal to the class object
 	 *
-	 * @param obj object
+	 * @param obj
+	 *            object
 	 * @return boolean true or false
 	 */
 	@Override

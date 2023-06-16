@@ -111,9 +111,9 @@ public class SprintClientImpl implements SprintClient {
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
 					.collect(Collectors.toList());
-			log.info("sprintDetailsSet came for saving:{}"+sprintDetailsSet);
+			log.info("sprintDetailsSet came for saving:{}" + sprintDetailsSet);
 			List<SprintDetails> dbSprints = sprintRepository.findBySprintIDIn(sprintIds);
-			log.info("sprintDetails fetched from db :{}"+dbSprints);
+			log.info("sprintDetails fetched from db :{}" + dbSprints);
 			Map<String, SprintDetails> dbSprintDetailMap = dbSprints.stream()
 					.collect(Collectors.toMap(SprintDetails::getSprintID, Function.identity()));
 			List<SprintDetails> sprintToSave = new ArrayList<>();
@@ -121,17 +121,17 @@ public class SprintClientImpl implements SprintClient {
 			sprintDetailsSet.forEach(sprint -> {
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
-				log.info("processing sprint with sprintId: {}, state: {} and boardId: {} "
-						+sprint.getSprintID(),sprint.getState(), boardId);
+				log.info("processing sprint with sprintId: {}, state: {} and boardId: {} " + sprint.getSprintID(),
+						sprint.getState(), boardId);
 				sprint.setProcessorId(jiraProcessorId);
 				sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 				if (null != dbSprintDetailMap.get(sprint.getSprintID())) {
 
-					log.info("sprint id {} found in db."+sprint.getSprintID());
-					SprintDetails dbSprintDetails =  dbSprintDetailMap.get(sprint.getSprintID());
+					log.info("sprint id {} found in db." + sprint.getSprintID());
+					SprintDetails dbSprintDetails = dbSprintDetailMap.get(sprint.getSprintID());
 					sprint.setId(dbSprintDetails.getId());
-					log.info("mongo Id of existing sprint details: {}"+dbSprintDetails.getId());
-					//case 1 : same sprint different board id
+					log.info("mongo Id of existing sprint details: {}" + dbSprintDetails.getId());
+					// case 1 : same sprint different board id
 
 					if (!dbSprintDetails.getOriginBoardId().containsAll(sprint.getOriginBoardId())) {
 						sprint.getOriginBoardId().addAll(dbSprintDetails.getOriginBoardId());
@@ -148,7 +148,7 @@ public class SprintClientImpl implements SprintClient {
 						fetchReport = false;
 					}
 				} else {
-					log.info("sprint id {} not found in db."+sprint.getSprintID());
+					log.info("sprint id {} not found in db." + sprint.getSprintID());
 					fetchReport = true;
 				}
 
@@ -167,8 +167,8 @@ public class SprintClientImpl implements SprintClient {
 			log.info("sprints going for save or update operation: {}", sprintToSave);
 			try {
 				sprintRepository.saveAll(sprintToSave);
-			}catch (DuplicateKeyException e){
-				log.info("duplicate sprint found."+e.getMessage());
+			} catch (DuplicateKeyException e) {
+				log.info("duplicate sprint found." + e.getMessage());
 			}
 			log.info("{} sprints found", sprintDetailsSet.size());
 		}
@@ -185,7 +185,7 @@ public class SprintClientImpl implements SprintClient {
 			throws InterruptedException {
 		List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
 		for (BoardDetails boardDetails : boardDetailsList) {
-			List<SprintDetails> sprintDetailsList = getSprints(projectConfig,boardDetails.getBoardId(), jiraAdapter);
+			List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), jiraAdapter);
 			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 				Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
 				processSprints(projectConfig, sprintDetailSet, jiraAdapter);
@@ -204,7 +204,8 @@ public class SprintClientImpl implements SprintClient {
 		return sd;
 	}
 
-	public List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId, JiraAdapter jiraAdapter) {
+	public List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId,
+			JiraAdapter jiraAdapter) {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		psLogData.setBoardId(boardId);
 		psLogData.setAction(CommonConstant.SPRINT_DATA);

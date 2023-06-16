@@ -38,7 +38,8 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 	/**
 	 * Returns ProjectBasicConfig from persistence store by id
 	 *
-	 * @param id id
+	 * @param id
+	 *            id
 	 * @return {@link ProjectBasicConfig} object if exist
 	 */
 	Optional<ProjectBasicConfig> findById(ObjectId id);
@@ -46,7 +47,8 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 	/**
 	 * Returns ProjectBasicConfig from persistence store by project name
 	 *
-	 * @param projectName ProjectName
+	 * @param projectName
+	 *            ProjectName
 	 * @return {@link ProjectBasicConfig} object if exist
 	 */
 	ProjectBasicConfig findByProjectName(String projectName);
@@ -55,7 +57,8 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 	 * Returns ProjectBasicConfig from persistence store by project name with
 	 * different id than provided
 	 *
-	 * @param projectName ProjectName
+	 * @param projectName
+	 *            ProjectName
 	 * @return {@link ProjectBasicConfig} object if exist
 	 */
 	ProjectBasicConfig findByProjectNameAndIdNot(String projectName, ObjectId id);
@@ -67,7 +70,6 @@ public interface ProjectBasicConfigRepository extends MongoRepository<ProjectBas
 	 * @return {@link ProjectBasicConfig} {@code List<ProjectBasicConfig>}
 	 */
 	List<ProjectBasicConfig> findByIdIn(Set<ObjectId> projectBasicConfigIds);
-
 
 	@Query("{ 'hierarchy' : { $elemMatch: { 'hierarchyLevel.hierarchyLevelId' : ?0 }} , 'hierarchy.value' : { $in : ?1 } }")
 	List<ProjectBasicConfig> findByHierarchyLevelIdAndValues(String accessLevel, List<String> hierarchyLevelValues);

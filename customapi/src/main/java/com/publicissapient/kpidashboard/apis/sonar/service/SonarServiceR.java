@@ -86,34 +86,36 @@ public class SonarServiceR {
 		String[] projectKeyCache = null;
 		try {
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(),kpiRequest.getLabel(),false);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
+					false);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			} else {
 				log.error("label name for selected hierarchy not found");
 			}
-			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest, groupName);
+			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
+					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
 				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
-				
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.SONAR.name(), groupId,
-						kpiRequest.getSprintIncluded());
-				getDataFromCache(cachedData,kpiRequest);
+
+				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.SONAR.name(),
+						groupId, kpiRequest.getSprintIncluded());
+				getDataFromCache(cachedData, kpiRequest);
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-						filteredAccountDataList, null,filterHelperService.getFirstHierarachyLevel(), filterHelperService.getHierarchyIdLevelMap(false)
-						.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,0));
+						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
+						filterHelperService.getHierarchyIdLevelMap(false)
+								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
 
+				calculateKPIAggregatedMetrics(kpiRequest, responseList, treeAggregatorDetail);
 
-				calculateKPIAggregatedMetrics(kpiRequest,responseList,treeAggregatorDetail);
-				 
 				List<KpiElement> missingKpis = filterKips(origRequestedKpis, responseList);
 				responseList.addAll(missingKpis);
 				setIntoKnowHowCache(kpiRequest, responseList, groupId, projectKeyCache);
-			}else {
+			} else {
 				responseList.addAll(origRequestedKpis);
 			}
 		} catch (ApplicationException enfe) {
@@ -164,15 +166,15 @@ public class SonarServiceR {
 	 */
 	private void setIntoKnowHowCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] projectKeyCache) {
-		Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(false).get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+		Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(false)
+				.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& projectLevel >= kpiRequest.getLevel()) {
 			cacheService.setIntoApplicationCache(projectKeyCache, responseList, KPISource.SONAR.name(), groupId,
 					kpiRequest.getSprintIncluded());
 		}
 	}
-	
-	
+
 	private Object getDataFromCache(Object cachedData, KpiRequest kpiRequest) {
 		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& null != cachedData)
@@ -180,8 +182,9 @@ public class SonarServiceR {
 					kpiRequest.getIds());
 		return cachedData;
 	}
-	
-	private void calculateKPIAggregatedMetrics( KpiRequest kpiRequest,List<KpiElement> responseList,TreeAggregatorDetail treeAggregatorDetail) {
+
+	private void calculateKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
+			TreeAggregatorDetail treeAggregatorDetail) {
 		for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 			try {
 				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
@@ -191,14 +194,14 @@ public class SonarServiceR {
 			}
 		}
 	}
-	
+
 	private List<KpiElement> filterKips(List<KpiElement> origRequestedKpis, List<KpiElement> responseList) {
 		return origRequestedKpis.stream()
 				.filter(reqKpi -> responseList.stream()
 						.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
 				.collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * @param kpiRequest
 	 * @param filteredAccountDataList
@@ -212,7 +215,7 @@ public class SonarServiceR {
 		}
 		return projectKeyCache;
 	}
-	
+
 	/**
 	 * @param kpiRequest
 	 * @param filteredAccountDataList

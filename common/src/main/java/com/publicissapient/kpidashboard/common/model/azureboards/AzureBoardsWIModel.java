@@ -33,52 +33,50 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "count",
-    "value"
-})
+@JsonPropertyOrder({ "count", "value" })
 public class AzureBoardsWIModel {
 
-    @JsonProperty("count")
-    private Integer count;
-    @JsonProperty("value")
-    private List<Value> value = null;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+	@JsonProperty("count")
+	private Integer count;
+	@JsonProperty("value")
+	private List<Value> value = null;
+	@JsonIgnore
+	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("count")
-    public Integer getCount() {
-        return count;
-    }
+	@JsonProperty("count")
+	public Integer getCount() {
+		return count;
+	}
 
-    @JsonProperty("count")
-    public void setCount(Integer count) {
-        this.count = count;
-    }
+	@JsonProperty("count")
+	public void setCount(Integer count) {
+		this.count = count;
+	}
 
-    @JsonProperty("value")
-    public List<Value> getValue() {
-        return value;
-    }
+	@JsonProperty("value")
+	public List<Value> getValue() {
+		return value;
+	}
 
-    @JsonProperty("value")
-    public void setValue(List<Value> value) {
-        this.value = value;
-    }
+	@JsonProperty("value")
+	public void setValue(List<Value> value) {
+		this.value = value;
+	}
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+	@JsonAnyGetter
+	public Map<String, Object> getAdditionalProperties() {
+		return this.additionalProperties;
+	}
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+	@JsonAnySetter
+	public void setAdditionalProperty(String name, Object value) {
+		this.additionalProperties.put(name, value);
+	}
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("count", count).append("value", value).append("additionalProperties", additionalProperties).toString();
-    }
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append("count", count).append("value", value)
+				.append("additionalProperties", additionalProperties).toString();
+	}
 
 }

@@ -43,46 +43,17 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 @ExtendWith(SpringExtension.class)
 public class JiraKPIServiceTest {
 
-
-    @InjectMocks
-    JiraKpiServiceTestImpl jiraKPIService;
+	@InjectMocks
+	JiraKpiServiceTestImpl jiraKPIService;
 
 	@Mock
 	private CustomApiConfig customApiConfig;
 
 	private Map<String, String> aggregationCriteriaMap;
 
-
-
-	public static class JiraKpiServiceTestImpl extends JiraKPIService{
-
-        @Override
-        public String getQualifierType() {
-            return null;
-        }
-
-        @Override
-        public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-            return null;
-        }
-
-        @Override
-        public Object calculateKPIMetrics(Object o) {
-            return null;
-        }
-
-        @Override
-        public Object fetchKPIDataFromDb(List leafNodeList, String startDate, String endDate, KpiRequest kpiRequest) {
-            return null;
-        }
-        
-    }
-
-
-
 	@Before
 	public void init() {
-        MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.initMocks(this);
 
 		aggregationCriteriaMap = new HashMap<>();
 		aggregationCriteriaMap.put("kpi1", Constant.PERCENTILE);
@@ -91,27 +62,52 @@ public class JiraKPIServiceTest {
 		aggregationCriteriaMap.put("kpi4", Constant.SUM);
 	}
 
-	private List<Map<String, Long>> createAggregationInputData1(){
-        List<Map<String, Long>> aggregatedValueList = new ArrayList<>();
-        Map<String, Long> aggregatedValuesMap1 = new HashMap<>();
-        aggregatedValuesMap1.put("Bug", 1L);
-        Map<String, Long> aggregatedValuesMap2 = new HashMap<>();
-        aggregatedValuesMap2.put("Bug", 4L);
-        Map<String, Long> aggregatedValuesMap3 = new HashMap<>();
-        aggregatedValuesMap3.put("Bug", 3L);
-        Map<String, Long> aggregatedValuesMap4 = new HashMap<>();
-        aggregatedValuesMap4.put("Bug", 0L);
-        Map<String, Long> aggregatedValuesMap5 = new HashMap<>();
-        aggregatedValuesMap5.put("Bug", 2L);
-        Map<String, Long> aggregatedValuesMap6 = new HashMap<>();
-        aggregatedValuesMap5.put("Bug", 6L);
+	private List<Map<String, Long>> createAggregationInputData1() {
+		List<Map<String, Long>> aggregatedValueList = new ArrayList<>();
+		Map<String, Long> aggregatedValuesMap1 = new HashMap<>();
+		aggregatedValuesMap1.put("Bug", 1L);
+		Map<String, Long> aggregatedValuesMap2 = new HashMap<>();
+		aggregatedValuesMap2.put("Bug", 4L);
+		Map<String, Long> aggregatedValuesMap3 = new HashMap<>();
+		aggregatedValuesMap3.put("Bug", 3L);
+		Map<String, Long> aggregatedValuesMap4 = new HashMap<>();
+		aggregatedValuesMap4.put("Bug", 0L);
+		Map<String, Long> aggregatedValuesMap5 = new HashMap<>();
+		aggregatedValuesMap5.put("Bug", 2L);
+		Map<String, Long> aggregatedValuesMap6 = new HashMap<>();
+		aggregatedValuesMap5.put("Bug", 6L);
 
-        aggregatedValueList.add(aggregatedValuesMap1);
-        aggregatedValueList.add(aggregatedValuesMap2);
-        aggregatedValueList.add(aggregatedValuesMap3);
-        aggregatedValueList.add(aggregatedValuesMap4);
-        aggregatedValueList.add(aggregatedValuesMap5);
-        aggregatedValueList.add(aggregatedValuesMap6);
-        return aggregatedValueList;
-    }
+		aggregatedValueList.add(aggregatedValuesMap1);
+		aggregatedValueList.add(aggregatedValuesMap2);
+		aggregatedValueList.add(aggregatedValuesMap3);
+		aggregatedValueList.add(aggregatedValuesMap4);
+		aggregatedValueList.add(aggregatedValuesMap5);
+		aggregatedValueList.add(aggregatedValuesMap6);
+		return aggregatedValueList;
+	}
+
+	public static class JiraKpiServiceTestImpl extends JiraKPIService {
+
+		@Override
+		public String getQualifierType() {
+			return null;
+		}
+
+		@Override
+		public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+				TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+			return null;
+		}
+
+		@Override
+		public Object calculateKPIMetrics(Object o) {
+			return null;
+		}
+
+		@Override
+		public Object fetchKPIDataFromDb(List leafNodeList, String startDate, String endDate, KpiRequest kpiRequest) {
+			return null;
+		}
+
+	}
 }

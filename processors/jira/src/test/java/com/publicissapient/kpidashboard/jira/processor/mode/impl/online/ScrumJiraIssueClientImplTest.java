@@ -35,11 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
-import com.publicissapient.kpidashboard.jira.client.jiraissue.HandleJiraHistory;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
@@ -80,7 +75,11 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.SubProjectConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
@@ -88,6 +87,7 @@ import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.client.jiraissue.HandleJiraHistory;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.ScrumJiraIssueClientImpl;
 import com.publicissapient.kpidashboard.jira.client.sprint.SprintClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -111,49 +111,33 @@ public class ScrumJiraIssueClientImplTest {
 	List<ProjectConfFieldMapping> projectConfFieldMappingList = new ArrayList<>();
 	List<Issue> issues = new ArrayList<>();
 
-
-
 	SearchResult searchResult;
-
-	@Mock
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Mock
-	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
-	@Mock
-	private JiraProcessorRepository jiraProcessorRepository;
-
-	@Mock
-	private AccountHierarchyRepository accountHierarchyRepository;
-
-	@Mock
-	private JiraProcessorConfig jiraProcessorConfig;
-
-	@InjectMocks
-	private ScrumJiraIssueClientImpl scrumJiraIssueClientImpl;
-
-	@Mock
-	private TestCaseDetailsRepository testCaseDetailsRepository;
-
-	@Mock
-	private JiraAdapter jiraAdapter;
-
 	@Mock
 	JiraProcessor jiraProcessor;
-
 	@Mock
 	ProcessorJiraRestClient client;
-
 	@Mock
 	SearchRestClient searchRestClient;
-
 	@Mock
 	Promise<SearchResult> promisedRs;
-	
 	@Mock
 	SprintClient sprintClient;
-
+	@Mock
+	private JiraIssueRepository jiraIssueRepository;
+	@Mock
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Mock
+	private JiraProcessorRepository jiraProcessorRepository;
+	@Mock
+	private AccountHierarchyRepository accountHierarchyRepository;
+	@Mock
+	private JiraProcessorConfig jiraProcessorConfig;
+	@InjectMocks
+	private ScrumJiraIssueClientImpl scrumJiraIssueClientImpl;
+	@Mock
+	private TestCaseDetailsRepository testCaseDetailsRepository;
+	@Mock
+	private JiraAdapter jiraAdapter;
 	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
@@ -175,7 +159,6 @@ public class ScrumJiraIssueClientImplTest {
 	@Mock
 	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 
-
 	@BeforeEach
 	public void setUp() throws Exception {
 		prepareProjectData();
@@ -195,9 +178,10 @@ public class ScrumJiraIssueClientImplTest {
 		when(jiraProcessorConfig.getMinsToReduce()).thenReturn(30L);
 		when(jiraProcessorConfig.getStartDate()).thenReturn("2019-01-07 00:00");
 		createIssue();
-		when(jiraAdapter.getIssues(any(),any(), any(), any(), anyInt(), anyBoolean())).thenReturn(searchResult);
+		when(jiraAdapter.getIssues(any(), any(), any(), any(), anyInt(), anyBoolean())).thenReturn(searchResult);
 		projectConfFieldMapping.setProjectName("prName");
-		assertEquals(2, scrumJiraIssueClientImpl.processesJiraIssues(projectConfFieldMapping, jiraAdapter, Boolean.FALSE));
+		assertEquals(2,
+				scrumJiraIssueClientImpl.processesJiraIssues(projectConfFieldMapping, jiraAdapter, Boolean.FALSE));
 	}
 
 	private void prepareProjectData() {

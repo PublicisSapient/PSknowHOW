@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 public final class JiraConstants {
 
-	public static final Set<String> ISSUE_FIELD_SET = new HashSet<>(); //NO SONAR
+	public static final Set<String> ISSUE_FIELD_SET = new HashSet<>(); // NO SONAR
 	public static final String LABELS = "Labels";
 	public static final String CUSTOM_FIELD = "CustomField";
 	public static final String TEST_AUTOMATED = "Automated";

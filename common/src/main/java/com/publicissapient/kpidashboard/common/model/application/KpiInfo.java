@@ -29,9 +29,9 @@ import lombok.Data;
 @Data
 public class KpiInfo {
 
-    private String definition;
-    private List<KpiFormula> formula;
-    private List<KpiDetail> details;
-    private List<KpiMaturityLevel> maturityLevels;
+	private String definition;
+	private List<KpiFormula> formula;
+	private List<KpiDetail> details;
+	private List<KpiMaturityLevel> maturityLevels;
 
 }

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -44,6 +43,7 @@ import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 
 /**
  * @author narsingh9
@@ -52,43 +52,32 @@ import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRe
 @RunWith(MockitoJUnitRunner.class)
 public class CapacityMasterServiceImplTest {
 
-	private MockMvc mockMvc;
-
-	@InjectMocks
-	private CapacityMasterServiceImpl capacityMasterServiceImpl;
-
-	@Mock
-	private CapacityKpiDataRepository capacityKpiDataRepository;
-
-	@Mock
-	private KanbanCapacityRepository kanbanCapacityRepository;
-
-	@Mock
-	private CacheService cacheService;
-
-	@Mock
-	private CustomApiConfig customApiConfig;
-
-	@Mock
-	private ProjectBasicConfigService projectBasicConfigService;
-
-	@Mock
-	private SprintDetailsService sprintDetailsService;
-
-	@Mock
-	private HappinessKpiDataRepository happinessKpiDataRepository;
-
 	CapacityMaster scrumCapacityMaster;
 	CapacityMaster scrumCapacityAssigneeMaster;
-
 	CapacityMaster kanbanCapacity;
 	CapacityMaster kanbanCapacityAssignee;
-
 	KanbanCapacity kanbanDbData;
 	List<KanbanCapacity> kanbanCapacityList;
 	List<KanbanCapacity> kanbanCapacityAsigneeList;
 	List<CapacityKpiData> capacityKpiDataList;
 	List<CapacityKpiData> capacityAssigneeKpiDataList;
+	private MockMvc mockMvc;
+	@InjectMocks
+	private CapacityMasterServiceImpl capacityMasterServiceImpl;
+	@Mock
+	private CapacityKpiDataRepository capacityKpiDataRepository;
+	@Mock
+	private KanbanCapacityRepository kanbanCapacityRepository;
+	@Mock
+	private CacheService cacheService;
+	@Mock
+	private CustomApiConfig customApiConfig;
+	@Mock
+	private ProjectBasicConfigService projectBasicConfigService;
+	@Mock
+	private SprintDetailsService sprintDetailsService;
+	@Mock
+	private HappinessKpiDataRepository happinessKpiDataRepository;
 	private List<SprintDetails> sprintDetailsList;
 
 	/**

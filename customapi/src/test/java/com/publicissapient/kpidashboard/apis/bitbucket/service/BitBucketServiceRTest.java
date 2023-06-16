@@ -66,52 +66,39 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 
 @RunWith(MockitoJUnitRunner.class)
 public class BitBucketServiceRTest {
+	private static String GROUP_PROJECT = "PROJECT";
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	ConfigHelperService configHelperService;
-
 	@Mock
 	KpiHelperService kpiHelperService;
-
 	@Mock
 	FilterHelperService filterHelperService;
-
 	@InjectMocks
 	private BitBucketServiceR bitbucketServiceR;
-
 	@Mock
 	private CustomApiConfig customApiConfig;
-
 	@Mock
 	private CacheService cacheService;
-
 	@Mock
 	private CodeCommitServiceImpl codeCommitServiceImpl;
-
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<BitBucketKPIService> services;
-
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private String[] projectKey;
 	private Set<String> projects;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-
 	private KpiElement commitKpiElement;
 	private KpiRequest kpiRequest;
-
 	private Map<String, BitBucketKPIService<?, ?, ?>> bitbucketServiceCache = new HashMap<>();
-
 	@Mock
 	private BitBucketKPIServiceFactory bitbucketKPIServiceFactory;
-
-	private static String GROUP_PROJECT = "PROJECT";
 
 	@Before
 	public void setup() {
@@ -140,7 +127,7 @@ public class BitBucketServiceRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
-		when(filterHelperService.getHierarachyLevelId(5,"project", false)).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(5, "project", false)).thenReturn("project");
 
 		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
 

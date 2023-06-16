@@ -67,6 +67,7 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -231,7 +232,7 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 		resultListMap.put(SUBGROUPCATEGORY, subGroupCategory);
 		resultListMap.put(PROJECT_WISE_ISSUETYPES, projectWiseIssueTypeMap);
 		resultListMap.put(PROJECT_WISE_CLOSED_STORY_STATUS, projectWiseClosedStatusMap);
-		
+
 		return resultListMap;
 	}
 
@@ -317,8 +318,7 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 						currentDate = currentDate.minusDays(1);
 					}
 					populateExcelDataObject(requestTrackerId, dateWiseIssueTypeList, dateWiseIssueClosedStatusList,
-							date, node.getProjectFilter().getName(),
-							excelData);
+							date, node.getProjectFilter().getName(), excelData);
 				}
 				mapTmp.get(node.getId()).setValue(projectFilterWiseDataMap);
 			}
@@ -330,7 +330,10 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
-			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString();
 		} else {
@@ -374,13 +377,13 @@ public class TicketOpenVsClosedByTypeServiceImpl extends JiraKPIService<Long, Li
 		return dataCount;
 	}
 
-
-
-
 	private void populateExcelDataObject(String requestTrackerId, List<KanbanJiraIssue> dateWiseIssueTypeList,
-			List<KanbanIssueCustomHistory> dateWiseIssueClosedStatusList, String dateProjectKey, String projectName, List<KPIExcelData> excelData) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) && CollectionUtils.isNotEmpty(dateWiseIssueTypeList)) {
-				KPIExcelUtility.populateOpenVsClosedExcelData(dateProjectKey,projectName,dateWiseIssueTypeList,dateWiseIssueClosedStatusList,excelData,KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.getKpiId());
+			List<KanbanIssueCustomHistory> dateWiseIssueClosedStatusList, String dateProjectKey, String projectName,
+			List<KPIExcelData> excelData) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& CollectionUtils.isNotEmpty(dateWiseIssueTypeList)) {
+			KPIExcelUtility.populateOpenVsClosedExcelData(dateProjectKey, projectName, dateWiseIssueTypeList,
+					dateWiseIssueClosedStatusList, excelData, KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE.getKpiId());
 		}
 	}
 

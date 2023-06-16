@@ -18,6 +18,26 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.basic.rest;
 
+import java.util.List;
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
@@ -33,25 +53,8 @@ import com.publicissapient.kpidashboard.common.model.application.dto.HierarchyVa
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelSuggestionsService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller for CRUD operation for project basic details.
@@ -67,19 +70,14 @@ public class ProjectBasicConfigController {
 	public static final String ADDING_PROJECT_CONFIGURATIONS = "Adding project configurations: {}";
 	public static final String UPDATING_PROJECT_CONFIGURATIONS = "Updating project configurations: {}";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
-
-	@Autowired
-	private ProjectBasicConfigService projectBasicConfigService;
-
-	@Autowired
-	private ContextAwarePolicyEnforcement policy;
-
 	@Autowired
 	HttpServletRequest contextreq;
-
 	@Autowired
 	UserInfoService userInfoService;
-
+	@Autowired
+	private ProjectBasicConfigService projectBasicConfigService;
+	@Autowired
+	private ContextAwarePolicyEnforcement policy;
 	@Autowired
 	private ProjectAccessManager projectAccessManager;
 
@@ -216,7 +214,7 @@ public class ProjectBasicConfigController {
 	@DeleteMapping(value = "/{basicProjectConfigId}")
 	public ResponseEntity<ServiceResponse> deleteProject(@PathVariable String basicProjectConfigId) {
 		ProjectBasicConfig projectBasicConfig = projectBasicConfigService.deleteProject(basicProjectConfigId);
-		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, projectBasicConfig.getProjectName() + " deleted successfully",
-				projectBasicConfig));
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true,
+				projectBasicConfig.getProjectName() + " deleted successfully", projectBasicConfig));
 	}
 }

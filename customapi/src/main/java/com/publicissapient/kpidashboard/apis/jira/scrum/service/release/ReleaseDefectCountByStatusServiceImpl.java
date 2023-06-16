@@ -58,8 +58,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
 @Component
-public class ReleaseDefectCountByStatusServiceImpl
-		extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ReleaseDefectCountByStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseDefectCountByStatusServiceImpl.class);
 	private static final String TOTAL_DEFECT = "totalDefects";
@@ -69,6 +68,13 @@ public class ReleaseDefectCountByStatusServiceImpl
 
 	@Autowired
 	private CommonServiceImpl commonService;
+
+	private static void getStatusWiseCount(Map<String, List<JiraIssue>> statusData,
+			Map<String, Integer> statusCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> statusEntry : statusData.entrySet()) {
+			statusCountMap.put(statusEntry.getKey(), statusEntry.getValue().size());
+		}
+	}
 
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -167,13 +173,6 @@ public class ReleaseDefectCountByStatusServiceImpl
 				}
 			}
 			kpiElement.setTrendValueList(filterDataList);
-		}
-	}
-
-	private static void getStatusWiseCount(Map<String, List<JiraIssue>> statusData,
-			Map<String, Integer> statusCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> statusEntry : statusData.entrySet()) {
-			statusCountMap.put(statusEntry.getKey(), statusEntry.getValue().size());
 		}
 	}
 

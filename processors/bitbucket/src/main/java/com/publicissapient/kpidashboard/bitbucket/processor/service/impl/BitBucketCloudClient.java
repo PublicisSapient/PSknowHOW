@@ -19,14 +19,9 @@
 package com.publicissapient.kpidashboard.bitbucket.processor.service.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -35,7 +30,6 @@ import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -49,11 +43,11 @@ import com.publicissapient.kpidashboard.bitbucket.processor.service.BitBucketCli
 import com.publicissapient.kpidashboard.bitbucket.processor.service.impl.common.BasicBitBucketClient;
 import com.publicissapient.kpidashboard.bitbucket.util.BitbucketRestOperations;
 import com.publicissapient.kpidashboard.common.constant.CommitType;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,14 +61,17 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class BitBucketCloudClient extends BasicBitBucketClient implements BitBucketClient {
 
-	private String utf ="UTF-8";
+	private String utf = "UTF-8";
 
 	/**
 	 * Instantiates a new bit bucket cloud client.
 	 *
-	 * @param settings                the settings
-	 * @param bitbucketRestOperations the rest operations supplier
-	 * @param aesEncryptionService    the aesEncryptionService
+	 * @param settings
+	 *            the settings
+	 * @param bitbucketRestOperations
+	 *            the rest operations supplier
+	 * @param aesEncryptionService
+	 *            the aesEncryptionService
 	 */
 	@Autowired
 	public BitBucketCloudClient(BitBucketConfig settings, BitbucketRestOperations bitbucketRestOperations,
@@ -82,18 +79,29 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 		super(settings, bitbucketRestOperations, aesEncryptionService);
 	}
 
+	private static void setAuthor(ProjectBasicConfig proBasicConfig, String author, MergeRequests mergeReq) {
+		if (proBasicConfig.isSaveAssigneeDetails()) {
+			mergeReq.setAuthor(author);
+		}
+	}
+
 	/**
 	 * Fetch all commits.
 	 *
-	 * @param bitbucketRepo        the bitbucketRepo
-	 * @param initialRunOccurrence the initialRunOccurrence
-	 * @param bitBucketServerInfo  the connection details
+	 * @param bitbucketRepo
+	 *            the bitbucketRepo
+	 * @param initialRunOccurrence
+	 *            the initialRunOccurrence
+	 * @param bitBucketServerInfo
+	 *            the connection details
 	 * @return the list
-	 * @throws FetchingCommitException the exception
+	 * @throws FetchingCommitException
+	 *             the exception
 	 */
 	@Override
 	public List<CommitDetails> fetchAllCommits(BitbucketRepo bitbucketRepo, boolean initialRunOccurrence,
-			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
+			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig)
+			throws FetchingCommitException {
 		List<CommitDetails> commits = new ArrayList<>();
 		try {
 			String restUrl = new BitBucketCloudURIBuilder(bitbucketRepo, config, bitBucketServerInfo).build();
@@ -115,7 +123,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 					last = isLastPage(jsonNextObject, commitTimePageWise, sinceTime);
 					log.info("commit data collected for page : ", page);
 					cloneUrl = URLDecoder.decode(restUrl.concat("&page=" + (++page)), utf);
-					
+
 				} else {
 					last = true;
 				}
@@ -145,7 +153,8 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			commitDetails(commits, hash, message, author, timestamp, parentList, bitBucketServerInfo, proBasicConfig);
 		}
 	}
-@SuppressWarnings("java:S107")
+
+	@SuppressWarnings("java:S107")
 	private void commitDetails(List<CommitDetails> commits, String hash, String message, String author, long timestamp,
 			List<String> parentList, ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig) {
 		CommitDetails bitbucketCommit = new CommitDetails();
@@ -153,9 +162,9 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 		bitbucketCommit.setUrl(bitBucketServerInfo.getUrl());
 		bitbucketCommit.setTimestamp(System.currentTimeMillis());
 		bitbucketCommit.setCommitLog(message);
-	if (proBasicConfig.isSaveAssigneeDetails()) {
-		bitbucketCommit.setAuthor(author);
-	}
+		if (proBasicConfig.isSaveAssigneeDetails()) {
+			bitbucketCommit.setAuthor(author);
+		}
 		bitbucketCommit.setRevisionNumber(hash);
 		bitbucketCommit.setParentRevisionNumbers(parentList);
 		bitbucketCommit.setCommitTimestamp(timestamp);
@@ -180,7 +189,8 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 
 	@Override
 	public List<MergeRequests> fetchMergeRequests(BitbucketRepo repo, boolean firstRun,
-			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
+			ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig)
+			throws FetchingCommitException {
 		String restUri = null;
 		List<MergeRequests> mergeRequests = new ArrayList<>();
 		try {
@@ -211,7 +221,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 		return mergeRequests;
 	}
 
-	private String addPaginationInfo(String url, int page){
+	private String addPaginationInfo(String url, int page) {
 		return url + "&page=" + page;
 	}
 
@@ -219,7 +229,8 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 	 * @param mergeRequests
 	 * @param jsonArray
 	 */
-	private void initializeMergeRequests(List<MergeRequests> mergeRequests, JSONArray jsonArray, ProjectBasicConfig proBasicConfig) {
+	private void initializeMergeRequests(List<MergeRequests> mergeRequests, JSONArray jsonArray,
+			ProjectBasicConfig proBasicConfig) {
 		for (Object jsonObj : jsonArray) {
 			long closedDate = 0;
 			JSONObject mergReqObj = (JSONObject) jsonObj;
@@ -269,12 +280,5 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 			mergeRequests.add(mergeReq);
 		}
 	}
-
-	private static void setAuthor(ProjectBasicConfig proBasicConfig, String author, MergeRequests mergeReq) {
-		if (proBasicConfig.isSaveAssigneeDetails()) {
-			mergeReq.setAuthor(author);
-		}
-	}
-
 
 }

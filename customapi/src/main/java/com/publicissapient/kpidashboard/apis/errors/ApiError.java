@@ -54,7 +54,7 @@ public class ApiError {
 	 * user-friendly message about the error
 	 */
 	private String message;
-	
+
 	/**
 	 * Detail description of error message
 	 */
@@ -92,7 +92,7 @@ public class ApiError {
 		this.message = message;
 		this.debugMessage = ex.getLocalizedMessage();
 	}
-	
+
 	public ApiError(HttpStatus status, String message, Object details, Throwable ex) {
 		this();
 		this.status = status;
@@ -133,38 +133,30 @@ public class ApiError {
 		globalErrors.forEach(this::addValidationError);
 	}
 
-	public void setStatus(HttpStatus status) {
-		this.status = status;
-	}
-
-	public void setTimestamp(String timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public void setDebugMessage(String debugMessage) {
-		this.debugMessage = debugMessage;
-	}
-
-	public void setSubErrors(List<ApiSubError> subErrors) {
-		this.subErrors = subErrors;
-	}
-
 	public HttpStatus getStatus() {
 		return status;
+	}
+
+	public void setStatus(HttpStatus status) {
+		this.status = status;
 	}
 
 	public String getTimestamp() {
 		return timestamp;
 	}
 
+	public void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
+	}
+
 	public String getMessage() {
 		return message;
 	}
-	
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
 	public Object getDetails() {
 		return details;
 	}
@@ -177,8 +169,16 @@ public class ApiError {
 		return debugMessage;
 	}
 
+	public void setDebugMessage(String debugMessage) {
+		this.debugMessage = debugMessage;
+	}
+
 	public List<ApiSubError> getSubErrors() {
 		return subErrors;
+	}
+
+	public void setSubErrors(List<ApiSubError> subErrors) {
+		this.subErrors = subErrors;
 	}
 
 }

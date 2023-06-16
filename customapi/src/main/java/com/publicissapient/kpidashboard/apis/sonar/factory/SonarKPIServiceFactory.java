@@ -33,32 +33,34 @@ import com.publicissapient.kpidashboard.apis.sonar.service.SonarKPIService;
 @Service
 public class SonarKPIServiceFactory {
 
-    @Autowired
-    private List<SonarKPIService<?, ?, ?>> services;
+	private static final Map<String, SonarKPIService<?, ?, ?>> SONAR_SERVICE_CACHE = new HashMap<>();
+	@Autowired
+	private List<SonarKPIService<?, ?, ?>> services;
 
-    private static final Map<String, SonarKPIService<?, ?, ?>> SONAR_SERVICE_CACHE = new HashMap<>();
-    /**
-     * Initializes SonarKPIService
-     */
-    @PostConstruct
-    public void initMyServiceCache() {
-        for (SonarKPIService<?, ?, ?> service : services) {
-            SONAR_SERVICE_CACHE.put(service.getQualifierType(), service);
-        }
-    }
-    /**
-     * Gets sonar KPI service
-     * @param type
-     * @return SonarKPIService
-     * @throws ApplicationException
-     */
-    @SuppressWarnings("rawtypes")
-    public static SonarKPIService getSonarKPIService(String type) throws ApplicationException {
-        SonarKPIService<?, ?, ?> service = SONAR_SERVICE_CACHE.get(type);
-        if (service == null) {
-            throw new ApplicationException(SonarKPIServiceFactory.class, "Sonar KPI Service Factory not initalized");
-        }
-        return service;
-    }
+	/**
+	 * Gets sonar KPI service
+	 *
+	 * @param type
+	 * @return SonarKPIService
+	 * @throws ApplicationException
+	 */
+	@SuppressWarnings("rawtypes")
+	public static SonarKPIService getSonarKPIService(String type) throws ApplicationException {
+		SonarKPIService<?, ?, ?> service = SONAR_SERVICE_CACHE.get(type);
+		if (service == null) {
+			throw new ApplicationException(SonarKPIServiceFactory.class, "Sonar KPI Service Factory not initalized");
+		}
+		return service;
+	}
+
+	/**
+	 * Initializes SonarKPIService
+	 */
+	@PostConstruct
+	public void initMyServiceCache() {
+		for (SonarKPIService<?, ?, ?> service : services) {
+			SONAR_SERVICE_CACHE.put(service.getQualifierType(), service);
+		}
+	}
 
 }

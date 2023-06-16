@@ -11,8 +11,8 @@
             "name": "origin/master"
           },
           {
-            "SHA1" : "385bbf9dd7bc367b9980f58a6c4489ba95cbb9a9",
-            "name" : "origin/test"
+            "SHA1": "385bbf9dd7bc367b9980f58a6c4489ba95cbb9a9",
+            "name": "origin/test"
           }
         ]
       },

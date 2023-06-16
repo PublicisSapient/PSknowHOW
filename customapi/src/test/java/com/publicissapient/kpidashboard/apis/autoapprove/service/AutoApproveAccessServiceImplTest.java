@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.common.model.rbac.AutoApproveAccessConfig;
 import com.publicissapient.kpidashboard.common.model.rbac.AutoApproveAccessConfigDTO;
@@ -34,27 +36,21 @@ import com.publicissapient.kpidashboard.common.repository.rbac.RolesRepository;
 @RunWith(MockitoJUnitRunner.class)
 public class AutoApproveAccessServiceImplTest {
 
-	private AutoApproveAccessConfigDTO autoApproveAccessConfigDTO;
 	AutoApproveAccessConfig autoApproveAccessConfig;
 	List<RoleData> roles = new ArrayList<>();
-
+	ObjectMapper mapper = new ObjectMapper();
+	List<AutoApproveAccessConfig> listAutoApproveAccessConfig = new ArrayList<>();
+	Optional<AutoApproveAccessConfig> oAutoApproveAccessConfig;
+	private AutoApproveAccessConfigDTO autoApproveAccessConfigDTO;
 	@InjectMocks
 	private AutoApproveAccessServiceImpl autoApproveAccessServiceImpl;
-
 	@Mock
 	private AutoApproveAccessService autoApproveAccessService;
 	@Mock
 	private AutoApproveAccessConfigRepository autoAccessRepository;
-	
 	@Mock
 	private RolesRepository rolesRepository;
-	
-	ObjectMapper mapper = new ObjectMapper();
 	private String testId;
-	List<AutoApproveAccessConfig> listAutoApproveAccessConfig = new ArrayList<>();
-	Optional<AutoApproveAccessConfig> oAutoApproveAccessConfig;
-
-
 
 	@Before
 	public void before() {
@@ -112,9 +108,8 @@ public class AutoApproveAccessServiceImplTest {
 
 	}
 
-
 	@Test
-	public void isAutoApproveEnabled_True(){
+	public void isAutoApproveEnabled_True() {
 
 		when(autoAccessRepository.findAll()).thenReturn(Arrays.asList(autoApproveAccessConfig));
 
@@ -125,7 +120,7 @@ public class AutoApproveAccessServiceImplTest {
 	}
 
 	@Test
-	public void isAutoApproveEnabled_False(){
+	public void isAutoApproveEnabled_False() {
 
 		when(autoAccessRepository.findAll()).thenReturn(Arrays.asList(autoApproveAccessConfig));
 
@@ -134,8 +129,9 @@ public class AutoApproveAccessServiceImplTest {
 		assertFalse(isEnabled);
 
 	}
+
 	@Test
-	public void isAutoApproveEnabled_Null(){
+	public void isAutoApproveEnabled_Null() {
 
 		when(autoAccessRepository.findAll()).thenReturn(null);
 
@@ -144,6 +140,5 @@ public class AutoApproveAccessServiceImplTest {
 		assertFalse(isEnabled);
 
 	}
-
 
 }

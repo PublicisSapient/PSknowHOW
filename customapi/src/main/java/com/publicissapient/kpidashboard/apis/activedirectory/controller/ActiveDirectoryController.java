@@ -41,8 +41,7 @@ public class ActiveDirectoryController {
 
 	@Autowired
 	private ADServerDetailsService adServerDetailsService;
-	
-	
+
 	/**
 	 * This api saves active directory User Details.
 	 * 
@@ -53,10 +52,10 @@ public class ActiveDirectoryController {
 	@PostMapping
 	@PreAuthorize("hasPermission(null,'SAVE_AD_SETTING')")
 	public ResponseEntity<ServiceResponse> addADDetails(@RequestBody ADServerDetail adServerDetails) {
-		return ResponseEntity.status(HttpStatus.OK).body(adServerDetailsService.addUpdateADServerDetails(adServerDetails));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(adServerDetailsService.addUpdateADServerDetails(adServerDetails));
 
 	}
-
 
 	/**
 	 * This api gives active directory User Details.

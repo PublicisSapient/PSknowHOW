@@ -153,8 +153,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 
 	/**
-	 * Iterates over the fetched build jobs and check it this build is already exist or not.
-	 * adds only new builds to the build collections.
+	 * Iterates over the fetched build jobs and check it this build is already exist
+	 * or not. adds only new builds to the build collections.
 	 *
 	 * @param buildsByJobMap
 	 *            maps a {@link ObjectId} to a set of {@link Build}s.
@@ -200,8 +200,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 
 	/**
-	 * Checks if its a new build not present in repo projectToolConfigId and BuildNumber.
-	 * projectToolConfigId refer only one job for tool.
+	 * Checks if its a new build not present in repo projectToolConfigId and
+	 * BuildNumber. projectToolConfigId refer only one job for tool.
 	 *
 	 * @param jobId
 	 *            Bamboo jobId
@@ -325,12 +325,12 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	private void processDeployJob(BambooClient bambooClient,
 			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, ProcessorToolConnection bambooJobConfig,
 			ProcessorExecutionTraceLog processorExecutionTraceLog, List<Deployment> activeJobs, ObjectId processorId,
-			ProjectBasicConfig proBasicConfig)
-			throws MalformedURLException, ParseException {
+			ProjectBasicConfig proBasicConfig) throws MalformedURLException, ParseException {
 		Map<Pair<ObjectId, String>, Set<Deployment>> deployJobsFromBamboo = bambooClient
 				.getDeployJobsFromServer(bambooJobConfig, proBasicConfig);
 
-		Set<Deployment> deployments = addNewBambooDeploysJobsToDb(deployJobsFromBamboo, existingDeployJobs, proBasicConfig);
+		Set<Deployment> deployments = addNewBambooDeploysJobsToDb(deployJobsFromBamboo, existingDeployJobs,
+				proBasicConfig);
 		Set<Deployment> saveDeployments = new HashSet<>();
 		deployments.stream().forEach(deployment -> {
 			if (checkDeploymentConditionsNotNull(deployment)) {
@@ -375,7 +375,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		deployJobsFromBamboo.forEach((key, value) -> {
 
 			if (existingDeployJobs.containsKey(key)) {
-				finalDataToSave.addAll(checkForExistingEnvironmentRelease(key, value, existingDeployJobs, proBasicConfig));
+				finalDataToSave
+						.addAll(checkForExistingEnvironmentRelease(key, value, existingDeployJobs, proBasicConfig));
 			} else {
 				// directly push all the values
 				finalDataToSave.addAll(value);
@@ -387,7 +388,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 	}
 
 	private Set<Deployment> checkForExistingEnvironmentRelease(Pair<ObjectId, String> key, Set<Deployment> value,
-															   Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, ProjectBasicConfig proBasicConfig) {
+			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, ProjectBasicConfig proBasicConfig) {
 		Set<Deployment> deploy = new HashSet<>();
 		value.forEach(deployment -> {
 			List<Deployment> existingdeployments = existingDeployJobs.get(key);
@@ -401,7 +402,8 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				deploy.add(deployment);
 			}
 			existingdeployments.forEach(deployments -> {
-				if (proBasicConfig.isSaveAssigneeDetails() && deployments.getDeployedBy() == null && deployment.getDeployedBy() != null) {
+				if (proBasicConfig.isSaveAssigneeDetails() && deployments.getDeployedBy() == null
+						&& deployment.getDeployedBy() != null) {
 					deployments.setDeployedBy(deployment.getDeployedBy());
 					deploy.add(deployments);
 				}
@@ -552,9 +554,9 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
 		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
 				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BAMBOO, basicProjectConfigId);
-			existingTraceLogOptional.ifPresent(existingProcessorExecutionTraceLog ->
-				processorExecutionTraceLog.setLastEnableAssigneeToggleState(existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState())
-			);
+		existingTraceLogOptional.ifPresent(
+				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
+						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 
 		return processorExecutionTraceLog;
 	}

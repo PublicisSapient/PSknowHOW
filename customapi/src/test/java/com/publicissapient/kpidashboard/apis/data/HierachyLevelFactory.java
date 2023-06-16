@@ -18,11 +18,8 @@
 package com.publicissapient.kpidashboard.apis.data;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -30,6 +27,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -88,27 +86,30 @@ public class HierachyLevelFactory {
 		return hierarchyLevels;
 	}
 
-	/*public List<String> getHierarchyOrderedByLevel() {
-
-		//return filterCategories.stream().filter(filterCategory -> filterCategory.getIsDeleted().equals("False"))
-				.sorted(Comparator.comparingInt(FilterCategory::getLevel)).map(FilterCategory::getCategoryName)
-				.collect(Collectors.toList());
-	}
-
-	public List<FilterCategory> getHierarchyOrderByLevelAndEnabled() {
-
-		return filterCategories.stream()
-				.filter(filterCategory -> filterCategory.getIsDeleted().equals("False") && filterCategory.isEnabled())
-				.sorted(Comparator.comparingInt(FilterCategory::getLevel)).collect(Collectors.toList());
-
-	}
-
-	public String getFirstLevel() {
-
-		FilterCategory resultFilterCategory = filterCategories.stream().filter(
-				filterCategory -> filterCategory.getIsDeleted().equals("False") && filterCategory.getLevel() == 1)
-				.findFirst().orElse(null);
-		return resultFilterCategory == null ? null : resultFilterCategory.getCategoryName();
-	}*/
+	/*
+	 * public List<String> getHierarchyOrderedByLevel() {
+	 * 
+	 * //return filterCategories.stream().filter(filterCategory ->
+	 * filterCategory.getIsDeleted().equals("False"))
+	 * .sorted(Comparator.comparingInt(FilterCategory::getLevel)).map(FilterCategory
+	 * ::getCategoryName) .collect(Collectors.toList()); }
+	 * 
+	 * public List<FilterCategory> getHierarchyOrderByLevelAndEnabled() {
+	 * 
+	 * return filterCategories.stream() .filter(filterCategory ->
+	 * filterCategory.getIsDeleted().equals("False") && filterCategory.isEnabled())
+	 * .sorted(Comparator.comparingInt(FilterCategory::getLevel)).collect(Collectors
+	 * .toList());
+	 * 
+	 * }
+	 * 
+	 * public String getFirstLevel() {
+	 * 
+	 * FilterCategory resultFilterCategory = filterCategories.stream().filter(
+	 * filterCategory -> filterCategory.getIsDeleted().equals("False") &&
+	 * filterCategory.getLevel() == 1) .findFirst().orElse(null); return
+	 * resultFilterCategory == null ? null : resultFilterCategory.getCategoryName();
+	 * }
+	 */
 
 }

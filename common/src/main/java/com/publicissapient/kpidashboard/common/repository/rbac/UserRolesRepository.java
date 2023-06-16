@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.repository.rbac;
 
-
-
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -29,6 +27,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserRoleData;
 /**
  * Interface for user_roles collection
  */
-public interface UserRolesRepository extends MongoRepository<UserRoleData, ObjectId>, QuerydslPredicateExecutor<UserRoleData> {
+public interface UserRolesRepository
+		extends MongoRepository<UserRoleData, ObjectId>, QuerydslPredicateExecutor<UserRoleData> {
 
 }

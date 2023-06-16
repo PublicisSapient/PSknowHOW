@@ -1,13 +1,9 @@
 package com.publicissapient.kpidashboard.apis.capacity.rest;
 
-import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
-import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterService;
-import com.publicissapient.kpidashboard.apis.capacity.service.HappinessKpiCapacityImpl;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.constant.Role;
-import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
-import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiDTO;
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.List;
+import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
+import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterService;
+import com.publicissapient.kpidashboard.apis.capacity.service.HappinessKpiCapacityImpl;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.Role;
+import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiDTO;
 
 /**
  * @author narsingh9
@@ -33,19 +35,21 @@ import java.util.List;
 @RestController
 @RequestMapping("/capacity")
 public class CapacityMasterController {
-	
+
 	@Autowired
 	CapacityMasterService capacityMasterService;
-	
+
 	@Autowired
 	private ContextAwarePolicyEnforcement policy;
 
 	@Autowired
 	private HappinessKpiCapacityImpl happinessKpiService;
-	
+
 	/**
 	 * This api saves capacity data.
-	 * @param capacityMaster data to be saved
+	 * 
+	 * @param capacityMaster
+	 *            data to be saved
 	 * @return service response entity
 	 */
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -81,8 +85,7 @@ public class CapacityMasterController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-
-	@RequestMapping(value="/assignee", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/assignee", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> saveOrUpdateAssignee(@Valid @RequestBody CapacityMaster capacityMaster) {
 		policy.checkPermission(capacityMaster, "SAVE_UPDATE_CAPACITY");
 		ServiceResponse response = new ServiceResponse(false, "Failed to add Capacity Data", null);
@@ -103,10 +106,8 @@ public class CapacityMasterController {
 	}
 
 	@PostMapping(value = "/jira/happiness", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> saveHappinessKPIData(
-			@Valid @RequestBody HappinessKpiDTO happinessKpiDTO) {
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(happinessKpiService.saveHappinessKpiData(happinessKpiDTO));
+	public ResponseEntity<ServiceResponse> saveHappinessKPIData(@Valid @RequestBody HappinessKpiDTO happinessKpiDTO) {
+		return ResponseEntity.status(HttpStatus.OK).body(happinessKpiService.saveHappinessKpiData(happinessKpiDTO));
 	}
 
 }

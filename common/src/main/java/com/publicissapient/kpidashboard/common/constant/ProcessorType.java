@@ -20,26 +20,19 @@ package com.publicissapient.kpidashboard.common.constant;
 
 public enum ProcessorType {
 
-    BUILD("Build"),
-    @Deprecated
-    FEATURE("Feature"),
-    SONAR_ANALYSIS("SonarDetails"),
-    EXCEL("Excel"),
-    APP_PERFORMANCE("AppPerformance"),
-    AGILE_TOOL("AgileTool"),
-    STATIC_SECURITY_SCAN("StaticSecurityScan"),
-    NEW_RELIC("NewRelic"),
-    SCM("Scm"),
-    TESTING_TOOLS("TestingTools");
+	BUILD("Build"), @Deprecated
+	FEATURE("Feature"), SONAR_ANALYSIS("SonarDetails"), EXCEL("Excel"), APP_PERFORMANCE("AppPerformance"), AGILE_TOOL(
+			"AgileTool"), STATIC_SECURITY_SCAN(
+					"StaticSecurityScan"), NEW_RELIC("NewRelic"), SCM("Scm"), TESTING_TOOLS("TestingTools");
 
-    private String value;
+	private String value;
 
-    ProcessorType(String value) {
-        this.value = value;
-    }
+	ProcessorType(String value) {
+		this.value = value;
+	}
 
-    @Override
-    public String toString() {
-        return value;
-    }
+	@Override
+	public String toString() {
+		return value;
+	}
 }

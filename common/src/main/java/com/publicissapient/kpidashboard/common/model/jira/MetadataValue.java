@@ -21,12 +21,11 @@ package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 public class MetadataValue {
 
 	private String key;
 	private String data;
-	
+
 }

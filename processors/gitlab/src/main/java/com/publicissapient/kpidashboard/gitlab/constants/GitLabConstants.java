@@ -19,41 +19,41 @@
 package com.publicissapient.kpidashboard.gitlab.constants;
 
 /**
- * GitLabConstants represents a class which holds GitLabConfiuration related fields
+ * GitLabConstants represents a class which holds GitLabConfiuration related
+ * fields
  */
 public final class GitLabConstants {
 
 	/** The Constant SCM. */
 	public static final String SCM = "scm";
-	
+
 	/** The Constant URL. */
 	public static final String URL = "url";
-	
+
 	/** The Constant TOOL_BITBUCKET. */
 	public static final String TOOL_GITLAB = "GitLab";
-	
+
 	/** The Constant TOOL_BRANCH. */
 	public static final String TOOL_BRANCH = "branch";
 
-	
 	/** The Constant RESP_AUTHOR_KEY. */
 	public static final String RESP_AUTHOR_KEY = "author";
-	
+
 	/** The Constant RESP_MESSAGE_KEY. */
 	public static final String RESP_MESSAGE_KEY = "message";
-	
+
 	/** The Constant RESP_PARENTS_KEY. */
 	public static final String RESP_PARENTS_KEY = "parent_ids";
-	
+
 	/** The Constant RESP_ID_KEY. */
 	public static final String RESP_ID_KEY = "id";
-	
+
 	/** The Constant RESP_NAME_KEY. */
 	public static final String RESP_NAME_KEY = "author_name";
-	
+
 	/** The Constant RESP_AUTHOR_TIMESTAMP_KEY. */
 	public static final String RESP_AUTHOR_TIMESTAMP_KEY = "authored_date";
-	
+
 	/** The Constant HTTP_AUTHORIZATION_HEADER. */
 	public static final String HTTP_AUTHORIZATION_HEADER = "Authorization";
 
@@ -64,17 +64,17 @@ public final class GitLabConstants {
 	public static final String PRIVATE_TOKEN = "PRIVATE-TOKEN";
 
 	public static final String GITLAB_API = "/api/v4/projects";
-	
-	public static final String GIT_LAB_PROJECT_ID = "gitLabProjectId";
-	
-    public static final String GITLAB_URL_API_REPO = "/repository";
-    
-    public static final String GITLAB_URL_API_MERGEREQUEST = "/merge_requests";
-    
-	public static final String GITLAB_URL_API_COMMIT= "/commits";
 
-	public static final String PER_PAGE_SIZE="100";
-	
+	public static final String GIT_LAB_PROJECT_ID = "gitLabProjectId";
+
+	public static final String GITLAB_URL_API_REPO = "/repository";
+
+	public static final String GITLAB_URL_API_MERGEREQUEST = "/merge_requests";
+
+	public static final String GITLAB_URL_API_COMMIT = "/commits";
+
+	public static final String PER_PAGE_SIZE = "100";
+
 	/** MergeRequests Constants */
 	public static final String RESP_TITLE = "title";
 	public static final String RESP_STATE = "state";
@@ -88,7 +88,7 @@ public final class GitLabConstants {
 	public static final String RESP_SOURCE_BRANCH = "source_branch";
 	public static final String RESP_TARGET_BRANCH = "target_branch";
 	public static final String RESP_PROJECT_ID = "project_id";
-	
+
 	/**
 	 * Instantiates a new bit bucket constants.
 	 */

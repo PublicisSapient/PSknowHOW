@@ -66,37 +66,30 @@ import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetails
 @RunWith(MockitoJUnitRunner.class)
 public class RegressionPercentageKanbanServiceImplTest {
 
-	private List<FieldMapping> fieldMappingList = new ArrayList<>();
+	private final static String TESTCASEKEY = "testCaseData";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<KanbanJiraIssue> totalTestCaseList = new ArrayList<>();
-	private final static String TESTCASEKEY = "testCaseData";
 	List<TestCaseDetails> testCaseDetailsList = new ArrayList<>();
+	@Mock
+	KanbanJiraIssueRepository kanbanFeatureRepository;
+	@Mock
+	CacheService cacheService;
+	@Mock
+	ConfigHelperService configHelperService;
+	@Mock
+	KpiHelperService kpiHelperService;
+	@InjectMocks
+	RegressionPercentageKanbanServiceImpl regressionPercentageKanbanServiceImpl;
+	@Mock
+	TestCaseDetailsRepository testCaseDetailsRepository;
+	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-
-	@Mock
-	KanbanJiraIssueRepository kanbanFeatureRepository;
-
-	@Mock
-    CacheService cacheService;
-
-	@Mock
-    ConfigHelperService configHelperService;
-	
-	@Mock
-    KpiHelperService kpiHelperService;
-
-	@InjectMocks
-	RegressionPercentageKanbanServiceImpl regressionPercentageKanbanServiceImpl;
-
 	@Mock
 	private CommonService commonService;
-	
-	@Mock
-	TestCaseDetailsRepository testCaseDetailsRepository;
 
 	@Before
 	public void setup() {
@@ -111,7 +104,6 @@ public class RegressionPercentageKanbanServiceImplTest {
 		kpiElement = kpiRequest.getKpiList().get(0);
 		kpiWiseAggregation.put("defectInjectionRate", "average");
 	}
-
 
 	@Test
 	public void testCalculateKPIMetrics() {
@@ -136,13 +128,13 @@ public class RegressionPercentageKanbanServiceImplTest {
 		when(testCaseDetailsRepository.findTestDetails(any(), any(), any())).thenReturn(testCaseDetailsList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		String kpiRequestTrackerId = "Excel-Zephyr-5be544de025de212549176a9";
-		when(cacheService
-				.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYRKANBAN.name()))
-						.thenReturn(kpiRequestTrackerId);
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYRKANBAN.name()))
+				.thenReturn(kpiRequestTrackerId);
 		try {
 			KpiElement kpiElement = regressionPercentageKanbanServiceImpl.getKpiData(kpiRequest,
 					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
-			assertThat("Regression Percentage Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
+			assertThat("Regression Percentage Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(),
+					equalTo(1));
 		} catch (ApplicationException enfe) {
 
 		}
@@ -166,16 +158,15 @@ public class RegressionPercentageKanbanServiceImplTest {
 			}
 		});
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(testCaseDetailsRepository.findTestDetails(any(),any(), any())).thenReturn(testCaseDetailsList);
+		when(testCaseDetailsRepository.findTestDetails(any(), any(), any())).thenReturn(testCaseDetailsList);
 		Map<String, Object> defectDataListMap = regressionPercentageKanbanServiceImpl.fetchKPIDataFromDb(leafNodeList,
 				null, null, kpiRequest);
-		assertThat("Total Test Case value :",  (Arrays.asList(defectDataListMap.get(TESTCASEKEY)).size()),
-				equalTo(1));
+		assertThat("Total Test Case value :", (Arrays.asList(defectDataListMap.get(TESTCASEKEY)).size()), equalTo(1));
 	}
 
 	@Test
 	public void calculateKpiValue() {
-		Double kpiValue = regressionPercentageKanbanServiceImpl.calculateKpiValue(Arrays.asList(1.0,2.0), "kpi14");
+		Double kpiValue = regressionPercentageKanbanServiceImpl.calculateKpiValue(Arrays.asList(1.0, 2.0), "kpi14");
 		assertThat("Kpi value  :", kpiValue, equalTo(0.0));
 	}
 }

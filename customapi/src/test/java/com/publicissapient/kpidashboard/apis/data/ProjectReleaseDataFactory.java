@@ -19,24 +19,17 @@ package com.publicissapient.kpidashboard.apis.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
-import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
-import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,18 +62,20 @@ public class ProjectReleaseDataFactory {
 	}
 
 	public static ProjectReleaseDataFactory newInstance() {
-		return newInstance(null,null);
+		return newInstance(null, null);
 	}
 
 	private void init(String filePath) {
 		try {
 			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_KPI_REQUEST : filePath;
 
-			projectRelease=mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
+			projectRelease = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
 					new TypeReference<List<ProjectRelease>>() {
 					});
 
-			//projectRelease = mapper.readValue(TypeReference.class.getResourceAsStream(filePath), ProjectRelease.class);
+			// projectRelease =
+			// mapper.readValue(TypeReference.class.getResourceAsStream(filePath),
+			// ProjectRelease.class);
 		} catch (IOException e) {
 			log.error("Error in reading kpi request from file = " + filePath, e);
 		}
@@ -110,16 +105,15 @@ public class ProjectReleaseDataFactory {
 	public List<ProjectRelease> findByBasicProjectConfigId(String projectConfigId) {
 
 		ProjectRelease projectRelease = this.projectRelease.stream().filter(
-				projectRelease1 -> projectRelease1.getConfigId().toHexString().equalsIgnoreCase(projectConfigId)
-		).findFirst().orElse(null);
-		if(projectRelease!=null){
+				projectRelease1 -> projectRelease1.getConfigId().toHexString().equalsIgnoreCase(projectConfigId))
+				.findFirst().orElse(null);
+		if (projectRelease != null) {
 			projectRelease.setListProjectVersion(projectVersion);
 		}
-		List<ProjectRelease> list= new ArrayList<>();
+		List<ProjectRelease> list = new ArrayList<>();
 		list.add(projectRelease);
 
 		return list;
 	}
-
 
 }

@@ -17,10 +17,8 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.client.sprint;
 
-import java.util.List;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
@@ -45,6 +43,7 @@ public interface SprintClient {
 
 	/**
 	 * This method fetch sprint report
+	 * 
 	 * @param projectConfig
 	 * @param jiraAdapter
 	 */

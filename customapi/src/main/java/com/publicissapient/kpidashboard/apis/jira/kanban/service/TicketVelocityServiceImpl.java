@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -42,19 +40,22 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -183,7 +184,8 @@ public class TicketVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 					dataCount.add(getDataCountObject(capacity, projectName, date));
 					currentDate = getNextRangeDate(kpiRequest, currentDate);
 					if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-						KPIExcelUtility.populateTicketVelocityExcelData(kanbanIssueCustomHistories, projectName, date, excelData);
+						KPIExcelUtility.populateTicketVelocityExcelData(kanbanIssueCustomHistories, projectName, date,
+								excelData);
 					}
 				}
 				mapTmp.get(node.getId()).setValue(dataCount);
@@ -195,17 +197,17 @@ public class TicketVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	}
 
 	private Map<String, Map<String, List<KanbanIssueCustomHistory>>> createDateWiseKanbanHistMap(
-			List<KanbanIssueCustomHistory> kanbanIssueCustomHistories, String subGroupCategory
-			, FilterHelperService flterHelperService) {
+			List<KanbanIssueCustomHistory> kanbanIssueCustomHistories, String subGroupCategory,
+			FilterHelperService flterHelperService) {
 		Map<String, AdditionalFilterCategory> addFilterCat = flterHelperService.getAdditionalFilterHierarchyLevel();
 		List<String> addFilterCategoryList = new ArrayList(addFilterCat.keySet());
 		Map<String, Map<String, List<KanbanIssueCustomHistory>>> projectAndDateWiseTicketMap = new HashMap<>();
 		if (Constant.DATE.equals(subGroupCategory) || addFilterCategoryList.contains(subGroupCategory)) {
-				projectAndDateWiseTicketMap = kanbanIssueCustomHistories.stream().collect(Collectors.groupingBy(
-						KanbanIssueCustomHistory::getBasicProjectConfigId,
-						Collectors.groupingBy(
-								f -> LocalDate.parse(f.getHistoryDetails().get(0).getActivityDate().split("\\.")[0],
-										DATE_TIME_FORMATTER).toString())));
+			projectAndDateWiseTicketMap = kanbanIssueCustomHistories.stream().collect(Collectors.groupingBy(
+					KanbanIssueCustomHistory::getBasicProjectConfigId,
+					Collectors.groupingBy(f -> LocalDate
+							.parse(f.getHistoryDetails().get(0).getActivityDate().split("\\.")[0], DATE_TIME_FORMATTER)
+							.toString())));
 		}
 		return projectAndDateWiseTicketMap;
 	}
@@ -251,7 +253,10 @@ public class TicketVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (CommonConstant.WEEK.equalsIgnoreCase(kpiRequest.getDuration())) {
-			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (CommonConstant.MONTH.equalsIgnoreCase(kpiRequest.getDuration())) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
 		} else {

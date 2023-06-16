@@ -29,7 +29,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 /**
  * 
  * GitLabConfig represents a class which holds GitLabConfig details.
@@ -44,10 +43,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GitLabConfig {
-    private String cron;
-    @Value("${aesEncryptionKey}")
-    private String aesEncryptionKey;
-    private int initialRunOccurrenceInDays;
-    private String api;
-    private String customApiBaseUrl;
+	private String cron;
+	@Value("${aesEncryptionKey}")
+	private String aesEncryptionKey;
+	private int initialRunOccurrenceInDays;
+	private String api;
+	private String customApiBaseUrl;
 }

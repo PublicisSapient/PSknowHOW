@@ -24,13 +24,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
@@ -45,7 +45,6 @@ public class JiraIssueHistoryDataFactory {
 	private static final String FILE_PATH_JIRA_ISSUES = "/json/default/jira_issue_custom_history.json";
 	private List<JiraIssueCustomHistory> jiraHistoryIssues = new ArrayList<>();
 	private ObjectMapper mapper = null;
-
 
 	private JiraIssueHistoryDataFactory() {
 	}

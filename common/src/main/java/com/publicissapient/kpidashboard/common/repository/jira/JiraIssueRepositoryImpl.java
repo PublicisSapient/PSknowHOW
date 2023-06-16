@@ -19,13 +19,13 @@
 package com.publicissapient.kpidashboard.common.repository.jira;//NOPMD
 
 //Do not remove NOPMD comment. This is for ignoring ExcessivePublicCount violation
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +40,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
@@ -94,8 +95,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	@SuppressWarnings(UNCHECKED)
 	@Override
 	public List<SprintWiseStory> findIssuesGroupBySprint(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend,
-			String individualDevOrQa) {
+			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa) {
 
 		Criteria criteria = new Criteria();
 
@@ -115,8 +115,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		MatchOperation matchStage = Aggregation.match(criteriaProjectLevelAdded);
 
-		GroupOperation groupBySprint = Aggregation.group(SPRINT_ID).last(SPRINT_ID).as(SPRINT).last(SPRINT_NAME).as(SPRINT_NAME)
-				.last(CONFIG_ID).as(CONFIG_ID).addToSet(NUMBER).as(STORY_LIST);
+		GroupOperation groupBySprint = Aggregation.group(SPRINT_ID).last(SPRINT_ID).as(SPRINT).last(SPRINT_NAME)
+				.as(SPRINT_NAME).last(CONFIG_ID).as(CONFIG_ID).addToSet(NUMBER).as(STORY_LIST);
 
 		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupBySprint);
 		return operations.aggregate(aggregation, JiraIssue.class, SprintWiseStory.class).getMappedResults();
@@ -307,8 +307,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	@Override
 	public List<SprintWiseStory> findStoriesByType(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend,
-			String individualDevOrQa) {
+			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa) {
 
 		Criteria criteria = new Criteria();
 
@@ -637,8 +636,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	@Override
 	public List<SprintWiseStory> findIssuesAndTestDetailsGroupBySprint(Map<String, List<String>> mapOfFilters,
-														 Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend,
-														 String individualDevOrQa,Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
+			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa,
+			Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
 
 		Criteria criteria = new Criteria();
 
@@ -666,8 +665,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		MatchOperation matchStage = Aggregation.match(criteriaProjectLevelAdded);
 
-		GroupOperation groupBySprint = Aggregation.group(SPRINT_ID).last(SPRINT_ID).as(SPRINT).last(SPRINT_NAME).as(SPRINT_NAME)
-				.last(CONFIG_ID).as(CONFIG_ID).addToSet(NUMBER).as(STORY_LIST);
+		GroupOperation groupBySprint = Aggregation.group(SPRINT_ID).last(SPRINT_ID).as(SPRINT).last(SPRINT_NAME)
+				.as(SPRINT_NAME).last(CONFIG_ID).as(CONFIG_ID).addToSet(NUMBER).as(STORY_LIST);
 
 		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupBySprint);
 		return operations.aggregate(aggregation, JiraIssue.class, SprintWiseStory.class).getMappedResults();
@@ -687,8 +686,10 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		return new ArrayList<>(operations.find(query, JiraIssue.class));
 
 	}
+
 	/**
 	 * find linked defects of given stories and filters
+	 * 
 	 * @param mapOfFilters
 	 * @param defectsStoryIds
 	 * @param uniqueProjectMap
@@ -728,8 +729,10 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	/**
 	 * Find issues filtered by map of filters, type name and defectStoryIds
 	 *
-	 * @param mapOfFilters     filters
-	 * @param uniqueProjectMap project map filters
+	 * @param mapOfFilters
+	 *            filters
+	 * @param uniqueProjectMap
+	 *            project map filters
 	 * @return list of jira issues
 	 */
 	@SuppressWarnings(UNCHECKED)
@@ -751,7 +754,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		if (!projectCriteriaList.isEmpty()) {
 			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
 					.andOperator(projectCriteriaList.toArray(new Criteria[0]));
-			Criteria updatedCriteria = new Criteria().andOperator(criteriaProjectLevelAdded, criteriaAggregatedAtProjectLevel);
+			Criteria updatedCriteria = new Criteria().andOperator(criteriaProjectLevelAdded,
+					criteriaAggregatedAtProjectLevel);
 			query = new Query(updatedCriteria);
 		}
 		return operations.find(query, JiraIssue.class);
@@ -787,6 +791,5 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		return operations.find(query, JiraIssue.class);
 
 	}
-
 
 }

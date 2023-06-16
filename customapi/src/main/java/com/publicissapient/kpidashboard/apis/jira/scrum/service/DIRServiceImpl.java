@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +48,8 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculates the DIR and trend analysis of the DIR.
@@ -167,7 +167,8 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				kpiRequest);
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap.get(STORY_DATA);
 		List<JiraIssue> jiraIssueList = (List<JiraIssue>) storyDefectDataListMap.get(ISSUE_DATA);
-		Map<String, Set<JiraIssue>> projectWiseStories = jiraIssueList.stream().collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.toSet()));
+		Map<String, Set<JiraIssue>> projectWiseStories = jiraIssueList.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.toSet()));
 
 		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
 				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
@@ -184,13 +185,13 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			List<String> totalStoryIdList = new ArrayList<>();
 			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
 					.forEach(totalStoryIdList::addAll);
-			sprintWiseTotalStoryIdList.put(sprint,totalStoryIdList);
+			sprintWiseTotalStoryIdList.put(sprint, totalStoryIdList);
 
 			List<JiraIssue> defectList = ((List<JiraIssue>) storyDefectDataListMap.get(DEFECT_DATA)).stream()
 					.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
 							&& CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
 					.collect(Collectors.toList());
-			sprintWiseDefectListMap.put(sprint,defectList);
+			sprintWiseDefectListMap.put(sprint, defectList);
 
 			double dirForCurrentLeaf = 0.0d;
 			if (CollectionUtils.isNotEmpty(defectList) && CollectionUtils.isNotEmpty(sprintWiseStories)) {
@@ -215,11 +216,12 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 					List<String> totalStoryIdList = sprintWiseTotalStoryIdList.get(currentNodeIdentifier);
 					List<JiraIssue> defectList = sprintWiseDefectListMap.get(currentNodeIdentifier);
-					Set<JiraIssue> jiraIssues = projectWiseStories.get(node.getProjectFilter().getBasicProjectConfigId().toString());
+					Set<JiraIssue> jiraIssues = projectWiseStories
+							.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 					Map<String, JiraIssue> issueMapping = new HashMap<>();
 					jiraIssues.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
-					KPIExcelUtility.populateDirExcelData(node.getSprintFilter().getName(), totalStoryIdList, defectList, excelData,
-							issueMapping);
+					KPIExcelUtility.populateDirExcelData(node.getSprintFilter().getName(), totalStoryIdList, defectList,
+							excelData, issueMapping);
 				}
 			} else {
 				defectInjectionRateForCurrentLeaf = 0.0d;

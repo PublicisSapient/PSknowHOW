@@ -18,16 +18,18 @@
 
 package com.publicissapient.kpidashboard.apis.common.service;
 
+import java.util.Collection;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.security.core.GrantedAuthority;
+
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
-import org.springframework.security.core.GrantedAuthority;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * An Interface to gets users and authorities.
@@ -96,6 +98,7 @@ public interface UserInfoService {
 
 	/**
 	 * update user info if already present
+	 * 
 	 * @param userInfo
 	 * @return updated {@link UserInfo} object or null
 	 */
@@ -128,7 +131,8 @@ public interface UserInfoService {
 	/**
 	 * This method is for deleting the users
 	 *
-	 * @param username username
+	 * @param username
+	 *            username
 	 */
 	ServiceResponse deleteUser(String username);
 
@@ -136,6 +140,7 @@ public interface UserInfoService {
 
 	/**
 	 * get user details for profile screen and response will be same as login api
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -143,6 +148,7 @@ public interface UserInfoService {
 
 	/**
 	 * This method return user info dto object comparing username,authtype and email
+	 * 
 	 * @param username
 	 * @param authType
 	 * @param email
@@ -151,7 +157,9 @@ public interface UserInfoService {
 	UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email);
 
 	/**
-	 * This method return user info object by comparing username, auth type and authorities
+	 * This method return user info object by comparing username, auth type and
+	 * authorities
+	 * 
 	 * @param userName
 	 * @param authType
 	 * @param authorities

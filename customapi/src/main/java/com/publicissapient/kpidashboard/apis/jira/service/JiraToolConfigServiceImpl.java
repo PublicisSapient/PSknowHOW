@@ -18,25 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
-import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
-import com.publicissapient.kpidashboard.apis.jira.model.JiraBoardListResponse;
-import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.model.application.AssigneeDetailsDTO;
-import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +35,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.jira.model.BoardDetailsDTO;
+import com.publicissapient.kpidashboard.apis.jira.model.BoardRequestDTO;
+import com.publicissapient.kpidashboard.apis.jira.model.JiraBoardListResponse;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeDetailsDTO;
+import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * class for jira tool config fetch data api
@@ -90,7 +91,7 @@ public class JiraToolConfigServiceImpl {
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
-	
+
 	public List<BoardDetailsDTO> getJiraBoardDetailsList(BoardRequestDTO boardRequestDTO) {
 
 		List<BoardDetailsDTO> responseList = new ArrayList<>();
@@ -104,7 +105,7 @@ public class JiraToolConfigServiceImpl {
 				fetchBoardDetailsRestAPICall(boardRequestDTO, responseList, baseUrl, httpEntity);
 				return responseList;
 			}
-		}catch (RestClientException exception){
+		} catch (RestClientException exception) {
 			log.error("exception occured while trying to hit api.");
 		}
 		return responseList;
@@ -157,28 +158,28 @@ public class JiraToolConfigServiceImpl {
 		String username = "";
 		String password = "";
 		HttpHeaders headers = new HttpHeaders();
-		if(connection.isJaasKrbAuth()){
+		if (connection.isJaasKrbAuth()) {
 			KerberosClient client = new KerberosClient(connection.getJaasConfigFilePath(),
 					connection.getKrb5ConfigFilePath(), connection.getJaasUser(), connection.getSamlEndPoint(),
 					connection.getBaseUrl());
 			client.login(customApiConfig.getSamlTokenStartString(), customApiConfig.getSamlTokenEndString(),
 					customApiConfig.getSamlUrlStartString(), customApiConfig.getSamlUrlEndString());
 			password = client.getCookies();
-			headers = restAPIUtils.addHeaders(headers, "Cookie" , password);
-		} else if (connection.isVault()){
-			ToolCredential credential = toolCredentialProvider.findCredential(connection.getUsername() == null ? null : connection.getUsername().trim());
-			if (credential != null){
+			headers = restAPIUtils.addHeaders(headers, "Cookie", password);
+		} else if (connection.isVault()) {
+			ToolCredential credential = toolCredentialProvider
+					.findCredential(connection.getUsername() == null ? null : connection.getUsername().trim());
+			if (credential != null) {
 				username = credential.getUsername();
 				password = credential.getPassword();
 			}
 			headers = restAPIUtils.getHeaders(username, password);
-		} else if(connection.isBearerToken()){
+		} else if (connection.isBearerToken()) {
 			String patOAuthToken = restAPIUtils.decryptPassword(connection.getPatOAuthToken());
 			headers = restAPIUtils.getHeadersForPAT(patOAuthToken);
 		} else {
 			username = connection.getUsername() == null ? null : connection.getUsername().trim();
-			password = connection.getPassword() == null ? null
-					: restAPIUtils.decryptPassword(connection.getPassword());
+			password = connection.getPassword() == null ? null : restAPIUtils.decryptPassword(connection.getPassword());
 			headers = restAPIUtils.getHeaders(username, password);
 		}
 		return new HttpEntity<>(headers);

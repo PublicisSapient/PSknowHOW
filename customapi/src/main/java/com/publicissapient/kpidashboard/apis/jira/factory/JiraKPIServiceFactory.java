@@ -42,25 +42,13 @@ import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 @Service
 public class JiraKPIServiceFactory {
 
+	private static final Map<String, JiraKPIService<?, ?, ?>> JIRA_SERVICE_CACHE = new HashMap<>();
 	@Autowired
 	private List<JiraKPIService<?, ?, ?>> services;
 
-	private static final Map<String, JiraKPIService<?, ?, ?>> JIRA_SERVICE_CACHE = new HashMap<>();
-
-	/**
-	 * This method put all available Jira services to Map where key is the KPI
-	 * id and value is the service object.
-	 */
-	@PostConstruct
-	public void initMyServiceCache() {
-		for (JiraKPIService<?, ?, ?> service : services) {
-			JIRA_SERVICE_CACHE.put(service.getQualifierType(), service);
-		}
-	}
-
 	/**
 	 * This method return KPI service object on the basis of KPI Id.
-	 * 
+	 *
 	 * @param type
 	 *            KPI id
 	 * @return Jira Service object
@@ -73,6 +61,17 @@ public class JiraKPIServiceFactory {
 			throw new ApplicationException(JiraKPIServiceFactory.class, "Jira KPI Service Factory not initalized");
 		}
 		return service;
+	}
+
+	/**
+	 * This method put all available Jira services to Map where key is the KPI id
+	 * and value is the service object.
+	 */
+	@PostConstruct
+	public void initMyServiceCache() {
+		for (JiraKPIService<?, ?, ?> service : services) {
+			JIRA_SERVICE_CACHE.put(service.getQualifierType(), service);
+		}
 	}
 
 }

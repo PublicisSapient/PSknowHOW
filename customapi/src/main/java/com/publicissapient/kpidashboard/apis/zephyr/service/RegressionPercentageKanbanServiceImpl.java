@@ -32,9 +32,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -45,13 +42,22 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -115,7 +121,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 
-		calculateAggregatedValue(root, nodeWiseKPIValue,  KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE);
+		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE);
 		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,
 				KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE);
 
@@ -154,7 +160,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 
 	private void kpiWithoutFilter(Map<String, Object> projectWiseJiraIssue, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		List<KPIExcelData> excelData=  new ArrayList<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 		Map<String, List<TestCaseDetails>> total = (Map<String, List<TestCaseDetails>>) projectWiseJiraIssue
 				.get(TESTCASEKEY);
@@ -194,8 +200,8 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 					DataCount dcObj = getDataCountObject(automation, projectName, date, projectNodeId, hoverMap);
 					dc.add(dcObj);
 
-					populateExcelDataObject(requestTrackerId, excelData, totalTestList,
-							automatedTestList, projectName,date);
+					populateExcelDataObject(requestTrackerId, excelData, totalTestList, automatedTestList, projectName,
+							date);
 
 					if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 						currentDate = currentDate.minusWeeks(1);
@@ -230,7 +236,10 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
-			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString();
 		} else {
@@ -292,9 +301,8 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 	 * @param automatedTest
 	 * @param dateProjectKey
 	 */
-	private void populateExcelDataObject(String requestTrackerId,
-			List<KPIExcelData> excelData, List<TestCaseDetails> totalTest,
-			List<TestCaseDetails> automatedTest, String dateProjectKey, String date) {
+	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
+			List<TestCaseDetails> totalTest, List<TestCaseDetails> automatedTest, String dateProjectKey, String date) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
@@ -304,7 +312,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 			}
 
 			KPIExcelUtility.populateRegressionAutomationExcelData(dateProjectKey, totalTestCaseMap, automatedTest,
-					excelData,KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE.getKpiId(),date);
+					excelData, KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE.getKpiId(), date);
 
 		}
 	}

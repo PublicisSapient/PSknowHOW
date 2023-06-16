@@ -32,8 +32,10 @@ public class UserNotFoundException extends RuntimeException {
 	/**
 	 * Instantiates a new User not found exception.
 	 *
-	 * @param username the username
-	 * @param authType the auth type
+	 * @param username
+	 *            the username
+	 * @param authType
+	 *            the auth type
 	 */
 	public UserNotFoundException(String username, AuthType authType) {
 		super(String.format(MESSAGE, username, authType.name()));

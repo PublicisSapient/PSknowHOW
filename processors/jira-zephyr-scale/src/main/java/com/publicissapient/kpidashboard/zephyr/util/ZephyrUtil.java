@@ -18,8 +18,8 @@
 
 package com.publicissapient.kpidashboard.zephyr.util;
 
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.zephyr.config.ZephyrConfig;
+import java.util.Base64;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -27,7 +27,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Base64;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.zephyr.config.ZephyrConfig;
 
 /**
  * The type Zephyr util.
@@ -35,28 +36,25 @@ import java.util.Base64;
 @Component
 public class ZephyrUtil {
 
-	@Autowired
-	private ZephyrConfig processorConfiguration;
-
-	@Autowired
-	private ZephyrConfig zephyrConfig;
-
-	@Autowired
-	private AesEncryptionService aesEncryptionService;
-
-
 	private static final String PROTOCOL = "https";
 	private static final String HOST = "www.test.com";
 	private static final String API_PATH = "rest/atm/1.0";
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String AUTH_PREFIX = "Basic ";
 	private static final String URL_SEPARATOR = "//";
+	@Autowired
+	private ZephyrConfig processorConfiguration;
+	@Autowired
+	private ZephyrConfig zephyrConfig;
+	@Autowired
+	private AesEncryptionService aesEncryptionService;
 
 	/**
 	 * Build the Auth header with the auth credentials as given in the app
 	 * properties
 	 *
-	 * @param credentials the credentials
+	 * @param credentials
+	 *            the credentials
 	 * @return Auth Header {@link HttpEntity}
 	 */
 	public HttpEntity<String> buildAuthenticationHeader(String credentials) {
@@ -68,8 +66,10 @@ public class ZephyrUtil {
 	/**
 	 * Build the API url as per the configurations given in the app properties
 	 *
-	 * @param url the url
-	 * @param api the api
+	 * @param url
+	 *            the url
+	 * @param api
+	 *            the api
 	 * @return {@link UriComponentsBuilder}
 	 */
 	public UriComponentsBuilder buildAPIUrl(String url, String api) {
@@ -92,13 +92,13 @@ public class ZephyrUtil {
 
 	public HttpEntity<String> buildAuthHeaderUsingToken(String accessToken) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.set(AUTHORIZATION ,accessToken);
+		headers.set(AUTHORIZATION, accessToken);
 		return new HttpEntity<>(headers);
 	}
 
 	/**
-	 * check that zephyr url contains slash at last character or not if contains then
-	 * remove the last slash from the url
+	 * check that zephyr url contains slash at last character or not if contains
+	 * then remove the last slash from the url
 	 *
 	 * @param toolUrl
 	 *            tool url

@@ -20,10 +20,6 @@ package com.publicissapient.kpidashboard.apis.cleanup;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +36,8 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
@@ -47,6 +45,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author anisingh4
@@ -102,6 +102,18 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 
 	@Autowired
 	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
+
+	private static void getLevelIds(boolean flag, List<String> levelList, List<HierarchyLevel> accountHierarchyList) {
+		for (HierarchyLevel hierarchyLevel : accountHierarchyList) {
+			if (flag) {
+				levelList.add(hierarchyLevel.getHierarchyLevelId());
+			}
+			if (StringUtils.isNotEmpty(hierarchyLevel.getHierarchyLevelId()) && hierarchyLevel.getHierarchyLevelId()
+					.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
+				flag = true;
+			}
+		}
+	}
 
 	@Override
 	public String getToolCategory() {
@@ -163,18 +175,6 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 
 	private void clearCache() {
 		cacheService.clearAllCache();
-	}
-
-	private static void getLevelIds(boolean flag, List<String> levelList, List<HierarchyLevel> accountHierarchyList) {
-		for (HierarchyLevel hierarchyLevel : accountHierarchyList) {
-			if (flag) {
-				levelList.add(hierarchyLevel.getHierarchyLevelId());
-			}
-			if (StringUtils.isNotEmpty(hierarchyLevel.getHierarchyLevelId()) && hierarchyLevel.getHierarchyLevelId()
-					.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
-				flag = true;
-			}
-		}
 	}
 
 	private void deleteSprintDetailsData(ProjectToolConfig projectToolConfig) {

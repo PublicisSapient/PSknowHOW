@@ -44,9 +44,10 @@ import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 @RestController
 public class UserTokenDeletionControllerApplication {
 
-	private final UserTokenDeletionService userTokenDeletionService;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserTokenDeletionControllerApplication.class);
+	private final UserTokenDeletionService userTokenDeletionService;
+	@Autowired
+	private CookieUtil cookieUtil;
 
 	/**
 	 * Instantiates a new User token deletion controller.
@@ -58,9 +59,6 @@ public class UserTokenDeletionControllerApplication {
 	public UserTokenDeletionControllerApplication(UserTokenDeletionService userTokenDeletionService) {
 		this.userTokenDeletionService = userTokenDeletionService;
 	}
-
-	@Autowired
-	private CookieUtil cookieUtil;
 
 	/**
 	 * Logout user.

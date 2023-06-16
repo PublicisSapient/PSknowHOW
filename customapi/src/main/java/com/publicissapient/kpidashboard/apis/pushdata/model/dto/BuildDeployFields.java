@@ -17,18 +17,18 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.pushdata.model.dto;
 
+import java.util.Objects;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -60,8 +60,10 @@ public class BuildDeployFields {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		BuildDeployFields that = (BuildDeployFields) o;
 		return jobName.equals(that.jobName) && number.equals(that.number);
 	}

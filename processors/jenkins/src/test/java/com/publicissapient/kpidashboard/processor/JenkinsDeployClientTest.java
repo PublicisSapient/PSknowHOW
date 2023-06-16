@@ -52,14 +52,13 @@ import com.publicissapient.kpidashboard.jenkins.processor.adapter.impl.JenkinsDe
 @ExtendWith(SpringExtension.class)
 public class JenkinsDeployClientTest {
 
+	private static final ProcessorToolConnection JENKINS_SERVER = new ProcessorToolConnection();
+	private static final JenkinsProcessor Jenkins_Processor = new JenkinsProcessor();
 	@Mock
 	private RestOperationsFactory<RestOperations> restOperationsFactory;
 	@Mock
 	private RestOperations restOperations;
 	private JenkinsDeployClient jenkinsDeployClient;
-
-	private static final ProcessorToolConnection JENKINS_SERVER = new ProcessorToolConnection();
-	private static final JenkinsProcessor Jenkins_Processor = new JenkinsProcessor();
 
 	@BeforeEach
 	public void init() {
@@ -77,8 +76,9 @@ public class JenkinsDeployClientTest {
 
 	@Test
 	void testGetDeployJobsFromServer() throws Exception {
-		when(restOperations.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
-				eq(String.class))).thenReturn(new ResponseEntity<>(getJson("deployments.json"), HttpStatus.OK));
+		when(restOperations.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
+						.thenReturn(new ResponseEntity<>(getJson("deployments.json"), HttpStatus.OK));
 		Map<String, Set<Deployment>> response = jenkinsDeployClient.getDeployJobsFromServer(JENKINS_SERVER,
 				Jenkins_Processor);
 		assertEquals(1, response.size());

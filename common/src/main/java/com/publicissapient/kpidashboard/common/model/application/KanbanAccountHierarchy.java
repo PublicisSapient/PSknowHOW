@@ -44,7 +44,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "kanban_account_hierarchy")
-public class KanbanAccountHierarchy extends BasicModel implements Serializable{
+public class KanbanAccountHierarchy extends BasicModel implements Serializable {
 	/**
 	 * 
 	 */
@@ -61,7 +61,6 @@ public class KanbanAccountHierarchy extends BasicModel implements Serializable{
 	private String path;
 	private String releaseState;
 	private LocalDateTime createdDate;
-	
 
 	@Override
 	public boolean equals(Object obj) {
@@ -83,6 +82,6 @@ public class KanbanAccountHierarchy extends BasicModel implements Serializable{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.nodeId, this.path,this.beginDate,this.endDate,this.releaseState);
+		return Objects.hash(this.nodeId, this.path, this.beginDate, this.endDate, this.releaseState);
 	}
 }

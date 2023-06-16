@@ -1,9 +1,9 @@
 package com.publicissapient.kpidashboard.azure.adapter;
 
+import java.util.List;
+
 import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-
-import java.util.List;
 
 /**
  * @author Hiren Babariya

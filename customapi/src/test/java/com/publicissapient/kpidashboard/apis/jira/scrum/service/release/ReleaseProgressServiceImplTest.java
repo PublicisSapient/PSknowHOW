@@ -1,5 +1,25 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -13,55 +33,31 @@ import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
-import org.apache.commons.lang.StringUtils;
-import org.bson.types.ObjectId;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReleaseProgressServiceImplTest {
-    @InjectMocks
-    private ReleaseProgressServiceImpl releaseProgressService;
-    @Mock
-    CacheService cacheService;
-    @Mock
-    ConfigHelperService configHelperService;
-    @Mock
-    JiraServiceR jiraService;
+	@Mock
+	CacheService cacheService;
+	@Mock
+	ConfigHelperService configHelperService;
+	@Mock
+	JiraServiceR jiraService;
+	@InjectMocks
+	private ReleaseProgressServiceImpl releaseProgressService;
+	private KpiRequest kpiRequest;
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private List<JiraIssue> bugList = new ArrayList<>();
+	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	private List<JiraIssueReleaseStatus> jiraIssueReleaseStatusList;
 
-    private KpiRequest kpiRequest;
-    private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-    private List<JiraIssue> bugList = new ArrayList<>();
-    private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-    private List<JiraIssueReleaseStatus> jiraIssueReleaseStatusList;
-
-    @Before
+	@Before
 	public void setUp() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance("");
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi145");
@@ -80,36 +76,36 @@ public class ReleaseProgressServiceImplTest {
 		jiraIssueReleaseStatusList = jiraIssueReleaseStatusDataFactory.getJiraIssueReleaseStatusList();
 	}
 
-    @Test
-    public void getQualifierType() {
-        assertThat(releaseProgressService.getQualifierType(),
-                equalTo(KPICode.RELEASE_PROGRESS.name()));
-    }
+	@Test
+	public void getQualifierType() {
+		assertThat(releaseProgressService.getQualifierType(), equalTo(KPICode.RELEASE_PROGRESS.name()));
+	}
 
-    @Test
-    public void getKpiData() throws ApplicationException {
-        TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-                accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-        String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
-        when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-                .thenReturn(kpiRequestTrackerId);
-        when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-        when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(bugList);
-        when(jiraService.getJiraIssueReleaseForProject("6335363749794a18e8a4479b")).thenReturn(jiraIssueReleaseStatusList.get(0));
-        KpiElement kpiElement = releaseProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-                treeAggregatorDetail);
-        assertNotNull(kpiElement.getTrendValueList());
-    }
+	@Test
+	public void getKpiData() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(bugList);
+		when(jiraService.getJiraIssueReleaseForProject("6335363749794a18e8a4479b"))
+				.thenReturn(jiraIssueReleaseStatusList.get(0));
+		KpiElement kpiElement = releaseProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail);
+		assertNotNull(kpiElement.getTrendValueList());
+	}
 
-    private Map<String, Integer> expectedResult(List<JiraIssue> bugList) {
-        Map<String, Integer> finalMap = new HashMap<>();
-        Map<String, List<JiraIssue>> collect = bugList.stream().filter(jiraIssue -> {
-            if (StringUtils.isEmpty(jiraIssue.getAssigneeName())) {
-                jiraIssue.setAssigneeName("-");
-            }
-            return true;
-        }).collect(Collectors.groupingBy(JiraIssue::getAssigneeName));
-        collect.forEach((k, v) -> finalMap.put(k, v.size()));
-        return finalMap;
-    }
+	private Map<String, Integer> expectedResult(List<JiraIssue> bugList) {
+		Map<String, Integer> finalMap = new HashMap<>();
+		Map<String, List<JiraIssue>> collect = bugList.stream().filter(jiraIssue -> {
+			if (StringUtils.isEmpty(jiraIssue.getAssigneeName())) {
+				jiraIssue.setAssigneeName("-");
+			}
+			return true;
+		}).collect(Collectors.groupingBy(JiraIssue::getAssigneeName));
+		collect.forEach((k, v) -> finalMap.put(k, v.size()));
+		return finalMap;
+	}
 }

@@ -59,45 +59,33 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 
 @RunWith(MockitoJUnitRunner.class)
 public class BitBucketServiceKanbanRTest {
+	private static String GROUP_PROJECT = "PROJECT";
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	FilterHelperService filterHelperService;
-
 	@Mock
 	KpiHelperService kpiHelperService;
-
 	@InjectMocks
 	private BitBucketServiceKanbanR bitbucketServiceKanbanR;
-
 	@Mock
 	private CustomApiConfig customApiConfig;
-
 	@Mock
 	private CacheService cacheService;
-
 	@Mock
 	private CodeCommitKanbanServiceImpl codeCommitKanbanServiceImpl;
-
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<BitBucketKPIService> services;
-
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private String[] projectKey;
 	private Set<String> projects;
-
 	private KpiElement commitKpiElement;
-
 	private Map<String, BitBucketKPIService<?, ?, ?>> bitbucketServiceCache = new HashMap<>();
-
 	@Mock
 	private BitBucketKPIServiceFactory bitbucketKPIServiceFactory;
-
-	private static String GROUP_PROJECT = "PROJECT";
 
 	@Before
 	public void setup() throws EntityNotFoundException {
@@ -221,8 +209,8 @@ public class BitBucketServiceKanbanRTest {
 
 		KpiRequest kpiRequest = createKpiRequest(2, "Bitbucket");
 
-		when(cacheService.getFromApplicationCache(Mockito.any(), Mockito.any(), Mockito.any(), ArgumentMatchers.anyList()))
-				.thenReturn(new ArrayList<>());
+		when(cacheService.getFromApplicationCache(Mockito.any(), Mockito.any(), Mockito.any(),
+				ArgumentMatchers.anyList())).thenReturn(new ArrayList<>());
 
 		List<KpiElement> resultList = bitbucketServiceKanbanR.process(kpiRequest);
 		assertThat("Kpi list :", resultList.size(), equalTo(0));
@@ -233,8 +221,8 @@ public class BitBucketServiceKanbanRTest {
 		KpiRequest kpiRequest = new KpiRequest();
 		List<KpiElement> kpiList = new ArrayList<>();
 
-		addKpiElement(kpiList, KPICode.NUMBER_OF_CHECK_INS.getKpiId(), KPICode.NUMBER_OF_CHECK_INS.name(), "Productivity",
-				"", source);
+		addKpiElement(kpiList, KPICode.NUMBER_OF_CHECK_INS.getKpiId(), KPICode.NUMBER_OF_CHECK_INS.name(),
+				"Productivity", "", source);
 		kpiRequest.setLevel(level);
 		kpiRequest.setIds(new String[] { "Kanban Project_6335368249794a18e8a4479f" });
 		kpiRequest.setKpiList(kpiList);

@@ -77,56 +77,6 @@ import com.publicissapient.kpidashboard.sonar.repository.SonarProcessorRepositor
 @ExtendWith(SpringExtension.class)
 public class SonarProcessorJobExecutorTest {
 
-	@InjectMocks
-	private SonarProcessorJobExecutor jobExecutor;
-
-	@Mock
-	private SonarProcessorItemRepository sonarProjectRepository;
-
-	@Mock
-	private SonarProcessorRepository sonarProcessorRepository;
-
-	@Mock
-	private SonarDetailsRepository sonarDetailsRepository;
-
-	@Mock
-	private SonarConfig sonarConfig;
-	@Mock
-	private SonarClientFactory sonarClientSelector;
-
-	@Mock
-	private Sonar6And7Client sonar6And7Client;
-
-	@Mock
-	private Sonar6And7Client sonar8Client;
-
-	@Mock
-	private SonarHistoryRepository sonarHistoryRepository;
-
-	@Mock
-	private ProjectToolConfigRepository projectToolConfigRepository;
-
-	@Mock
-	private ConnectionRepository connectionRepository;
-
-	@Mock
-	private RestTemplate restTemplate;
-
-	@Mock
-	private AesEncryptionService aesEncryptionService;
-
-	@Mock
-	private RestOperations rest;
-
-	@Mock
-	private ProcessorToolConnectionService processorToolConnectionService;
-
-	@Mock
-	private ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
 	private static final String SONAR_URL = "http://sonar.com";
 	private static final String METRICS = "lines,ncloc,violations,new_vulnerabilities,critical_violations,major_violations,blocker_violations,minor_violations,info_violations,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,alert_status,quality_gate_details,sqale_rating";
 	private static final String CUSTOM_API_BASE_URL = "http://localhost:9090/";
@@ -140,11 +90,44 @@ public class SonarProcessorJobExecutorTest {
 	private static final String PROJECT_ID_2 = "AVu3b-MAphY78UZXuYHp";
 	private static final String EXCEPTION = "rest client exception";
 	private static final String PLAIN_TEXT_PASSWORD = "Test@123";
-	private List<ProcessorToolConnection> connList = new ArrayList<>();
-
 	@Mock
 	SonarClient sonarClient;
-	 
+	@InjectMocks
+	private SonarProcessorJobExecutor jobExecutor;
+	@Mock
+	private SonarProcessorItemRepository sonarProjectRepository;
+	@Mock
+	private SonarProcessorRepository sonarProcessorRepository;
+	@Mock
+	private SonarDetailsRepository sonarDetailsRepository;
+	@Mock
+	private SonarConfig sonarConfig;
+	@Mock
+	private SonarClientFactory sonarClientSelector;
+	@Mock
+	private Sonar6And7Client sonar6And7Client;
+	@Mock
+	private Sonar6And7Client sonar8Client;
+	@Mock
+	private SonarHistoryRepository sonarHistoryRepository;
+	@Mock
+	private ProjectToolConfigRepository projectToolConfigRepository;
+	@Mock
+	private ConnectionRepository connectionRepository;
+	@Mock
+	private RestTemplate restTemplate;
+	@Mock
+	private AesEncryptionService aesEncryptionService;
+	@Mock
+	private RestOperations rest;
+	@Mock
+	private ProcessorToolConnectionService processorToolConnectionService;
+	@Mock
+	private ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	private List<ProcessorToolConnection> connList = new ArrayList<>();
+
 	@BeforeEach
 	public void init() {
 		MockitoAnnotations.initMocks(this);
@@ -172,10 +155,12 @@ public class SonarProcessorJobExecutorTest {
 
 		Mockito.when(sonarProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(sonarProcessor);
 		Mockito.when(sonarProcessorRepository.save(sonarProcessor)).thenReturn(sonarProcessor);
-		when(aesEncryptionService.decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(PLAIN_TEXT_PASSWORD);
+		when(aesEncryptionService.decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+				.thenReturn(PLAIN_TEXT_PASSWORD);
 		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
-		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(Mockito.any(), Mockito.any())).thenReturn(connList);
-		//SonarClient client2 = mock(SonarClient.class);
+		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(Mockito.any(), Mockito.any()))
+				.thenReturn(connList);
+		// SonarClient client2 = mock(SonarClient.class);
 		when(sonarClient.getSonarProjectList(Mockito.any())).thenReturn(getExistingProjects());
 
 	}
@@ -331,28 +316,29 @@ public class SonarProcessorJobExecutorTest {
 				METRICS, DEFAULT_DATE);
 
 		doReturn(new ResponseEntity<>(historyJson, HttpStatus.OK)).when(rest).exchange(ArgumentMatchers.eq(historyUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
+				ArgumentMatchers.eq(String.class));
 
 		when(sonarClientSelector.getSonarClient(Mockito.anyString())).thenReturn(sonar6And7Client);
-		when(sonarProjectRepository.findByProcessorIdIn(Mockito.any()))
-				.thenReturn(getExistingProjects());
+		when(sonarProjectRepository.findByProcessorIdIn(Mockito.any())).thenReturn(getExistingProjects());
 		when(sonarConfig.getMetrics()).thenReturn(Arrays.asList(METRICS));
 		when(sonarConfig.getCustomApiBaseUrl()).thenReturn(CUSTOM_API_BASE_URL);
 
-		when(sonarProjectRepository.findEnabledProjectsForTool(Mockito.any(), Mockito.any(), ArgumentMatchers.eq(SONAR_URL)))
-				.thenReturn(getProjects());
+		when(sonarProjectRepository.findEnabledProjectsForTool(Mockito.any(), Mockito.any(),
+				ArgumentMatchers.eq(SONAR_URL))).thenReturn(getProjects());
 
 		String cacheUrl = CUSTOM_API_BASE_URL + SONAR_CACHE_END_POINT;
 		String reponseBody = "{}";
-		doReturn(new ResponseEntity<>(reponseBody, HttpStatus.OK)).when(restTemplate).exchange(ArgumentMatchers.eq(cacheUrl),
-				ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+		doReturn(new ResponseEntity<>(reponseBody, HttpStatus.OK)).when(restTemplate).exchange(
+				ArgumentMatchers.eq(cacheUrl), ArgumentMatchers.eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
 		try {
 			SonarDetails sonarDetails = new SonarDetails();
 			sonarDetails.setName("testSonarDetails");
 			sonarDetails.setTimestamp(1_570_019_204L);
 			sonarDetails.setType(SonarAnalysisType.STATIC_ANALYSIS);
-			when(sonar6And7Client.getLatestSonarDetails(Mockito.any(), Mockito.any(),
-					Mockito.anyString())).thenReturn(sonarDetails);
+			when(sonar6And7Client.getLatestSonarDetails(Mockito.any(), Mockito.any(), Mockito.anyString()))
+					.thenReturn(sonarDetails);
 
 			SonarHistory sonarHistory = createSonarHistory();
 			List<SonarHistory> sonarHistoryList = new ArrayList<>();

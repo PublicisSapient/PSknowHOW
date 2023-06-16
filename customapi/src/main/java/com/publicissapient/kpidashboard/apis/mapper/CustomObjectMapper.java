@@ -18,9 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.mapper;
 
+import org.bson.types.ObjectId;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.bson.types.ObjectId;
 
 /**
  * Custom object mapper that knows how to serialize Mongo ObjectIds.

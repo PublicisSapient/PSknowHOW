@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -45,6 +42,8 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
@@ -62,47 +61,35 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 @RunWith(MockitoJUnitRunner.class)
 public class ZephyrServiceTest {
 
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	ConfigHelperService configHelperService;
-
 	@Mock
 	FilterHelperService filterHelperService;
-
 	@Mock
 	KpiHelperService kpiHelperService;
-
 	@InjectMocks
 	private ZephyrService zephyrService;
-
 	@Mock
 	private CustomApiConfig customApiConfig;
-
 	@Mock
 	private CacheService cacheService;
-
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-
 	@Mock
 	private ZephyrKPIService<?, ?, ?> zephyrAutomationService;
-
 	@Mock
 	private ZephyrKPIService<?, ?, ?> zephyrRegressionService;
-
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<ZephyrKPIService> services;
-
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
-
 	private KpiRequest kpiRequest;
-
 	private KpiRequest kpiRequestForReg;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private String[] projectKey;
 	private Set<String> projects;
 
@@ -128,20 +115,26 @@ public class ZephyrServiceTest {
 
 	@Test
 	public void TestProcess() throws Exception {
-		when(filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(),kpiRequest.getLabel(), false)).thenReturn("project");
-/*
-		when(filterHelperService.getFilteredBuilds(kpiRequest, "Regression")).thenReturn(accountHierarchyDataList);
-		when(cacheService.getFromApplicationCache(projectKey, KPISource.ZEPHYR.name(),
-				kpiRequest.getKpiList().get(0).getGroupId(), kpiRequest.getSprintIncluded())).thenReturn(null);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.getProjectNodesForRequest(accountHierarchyDataList)).thenReturn(projects);
-		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
-*/
+		when(filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(), false))
+				.thenReturn("project");
+		/*
+		 * when(filterHelperService.getFilteredBuilds(kpiRequest,
+		 * "Regression")).thenReturn(accountHierarchyDataList);
+		 * when(cacheService.getFromApplicationCache(projectKey,
+		 * KPISource.ZEPHYR.name(), kpiRequest.getKpiList().get(0).getGroupId(),
+		 * kpiRequest.getSprintIncluded())).thenReturn(null);
+		 * when(authorizedProjectsService.getProjectKey(accountHierarchyDataList,
+		 * kpiRequest)).thenReturn(projectKey);
+		 * when(authorizedProjectsService.getProjectNodesForRequest(
+		 * accountHierarchyDataList)).thenReturn(projects);
+		 * when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).
+		 * thenReturn(accountHierarchyDataList);
+		 */
 		List<KpiElement> resultList = zephyrService.process(kpiRequest);
 		resultList.forEach(k -> {
 			KPICode kpi = KPICode.getKPI(k.getKpiId());
 			switch (kpi) {
-				case INSPRINT_AUTOMATION_COVERAGE:
+			case INSPRINT_AUTOMATION_COVERAGE:
 				assertThat("Kpi Name :", k.getKpiName(), equalTo("In-Sprint Automation Coverage"));
 				break;
 			case REGRESSION_AUTOMATION_COVERAGE:

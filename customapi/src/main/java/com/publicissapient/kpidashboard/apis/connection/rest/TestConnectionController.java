@@ -58,7 +58,8 @@ public class TestConnectionController {
 		log.info("validating JIRA connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
-		return ResponseEntity.status(HttpStatus.OK).body(testConnectionService.validateConnection(connection, Constant.TOOL_JIRA));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(testConnectionService.validateConnection(connection, Constant.TOOL_JIRA));
 
 	}
 
@@ -73,7 +74,8 @@ public class TestConnectionController {
 		log.info("validating Sonar connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
-		return ResponseEntity.status(HttpStatus.OK).body(testConnectionService.validateConnection(connection, Constant.TOOL_SONAR));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(testConnectionService.validateConnection(connection, Constant.TOOL_SONAR));
 
 	}
 
@@ -95,8 +97,7 @@ public class TestConnectionController {
 	}
 
 	@RequestMapping(path = "/zephyr", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> validateZephyrConnection(
-			@NotNull @RequestBody ConnectionDTO connectionDTO) {
+	public ResponseEntity<ServiceResponse> validateZephyrConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating Zephyr connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
@@ -137,7 +138,7 @@ public class TestConnectionController {
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_JENKINS));
 
 	}
-	
+
 	@PostMapping("/gitlab")
 	public ResponseEntity<ServiceResponse> validateGitlabConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating Gitlab connections credentials");
@@ -203,7 +204,8 @@ public class TestConnectionController {
 		log.info("validating Sonar connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
-		return ResponseEntity.status(HttpStatus.OK).body(testConnectionService.validateConnection(connection, Constant.TOOL_GITHUB));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(testConnectionService.validateConnection(connection, Constant.TOOL_GITHUB));
 
 	}
 

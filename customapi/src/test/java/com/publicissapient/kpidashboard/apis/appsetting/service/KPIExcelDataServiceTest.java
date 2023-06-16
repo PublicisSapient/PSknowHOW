@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Assert;
@@ -181,7 +180,8 @@ public class KPIExcelDataServiceTest {
 		KpiElement kpiElement3 = setKpiElement(KPICode.CODE_BUILD_TIME.getKpiId(), KPICode.CODE_BUILD_TIME.name(), 27d,
 				nodeWiseKPIValue1);
 
-		KpiElement kpiElement4 = setKpiElement(KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId(), KPICode.DEFECT_COUNT_BY_PRIORITY.name(), 27d, null);
+		KpiElement kpiElement4 = setKpiElement(KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId(),
+				KPICode.DEFECT_COUNT_BY_PRIORITY.name(), 27d, null);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue2 = new HashMap<>();
 		Node node3 = setNode("id", 12d, "hierarchyLevelOne");

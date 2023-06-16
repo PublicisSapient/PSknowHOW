@@ -70,47 +70,37 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 @PrepareForTest({ SonarKPIServiceFactory.class })
 public class SonarServiceKanbanRTest {
 
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	ConfigHelperService configHelperService;
-
 	@Mock
 	FilterHelperService filterHelperService;
-
 	@Mock
 	KpiHelperService kpiHelperService;
-
 	@InjectMocks
 	private SonarServiceKanbanR sonarService;
-
 	@Mock
 	private CustomApiConfig customApiSetting;
-
 	@Mock
 	private CacheService cacheService;
-
 	@Mock
 	private CommonService commonService;
 	@Mock
 	private SonarViolationsKanbanServiceImpl sonarViolationsService;
-
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<SonarKPIService> services;
-
 	private KpiElement cqKpiElement;
 	private KpiElement svKpiElement;
 	private KpiElement tdKpiElement;
 	private KpiElement tcKpiElement;
-
 	private List<AccountHierarchyDataKanban> ahdList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private String[] projectKey;
 	private Set<String> projects;
 
@@ -196,7 +186,8 @@ public class SonarServiceKanbanRTest {
 			utilities.when(
 					(Verification) SonarKPIServiceFactory.getSonarKPIService(KPICode.SONAR_TECH_DEBT_KANBAN.name()))
 					.thenReturn(mockAbstract);
-			utilities.when((Verification) SonarKPIServiceFactory.getSonarKPIService(KPICode.UNIT_TEST_COVERAGE_KANBAN.name()))
+			utilities.when(
+					(Verification) SonarKPIServiceFactory.getSonarKPIService(KPICode.UNIT_TEST_COVERAGE_KANBAN.name()))
 					.thenReturn(mockAbstract);
 			utilities.when(
 					(Verification) SonarKPIServiceFactory.getSonarKPIService(KPICode.SONAR_VIOLATIONS_KANBAN.name()))
@@ -204,7 +195,8 @@ public class SonarServiceKanbanRTest {
 		}
 
 		String[] exampleStringList = { "exampleElement", "exampleElement" };
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(),Mockito.anyBoolean())).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+				.thenReturn("project");
 		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyKanbanDataList);
 		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyKanbanDataList, kpiRequest))
@@ -244,8 +236,8 @@ public class SonarServiceKanbanRTest {
 				"Code Quality", "", source);
 		addKpiElement(kpiList, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId(), KPICode.SONAR_TECH_DEBT_KANBAN.name(),
 				"TechDebt", "", source);
-		addKpiElement(kpiList, KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId(), KPICode.UNIT_TEST_COVERAGE_KANBAN.name(), "TestCoverage", "",
-				source);
+		addKpiElement(kpiList, KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId(), KPICode.UNIT_TEST_COVERAGE_KANBAN.name(),
+				"TestCoverage", "", source);
 		addKpiElement(kpiList, KPICode.SONAR_VIOLATIONS_KANBAN.getKpiId(), KPICode.SONAR_VIOLATIONS_KANBAN.name(),
 				"Sonar Violations", "", source);
 		kpiRequest.setLevel(level);

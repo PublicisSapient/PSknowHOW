@@ -33,7 +33,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
  */
 
 @Repository
-public interface SprintRepository extends MongoRepository<SprintDetails, ObjectId>{
+public interface SprintRepository extends MongoRepository<SprintDetails, ObjectId> {
 
 	/**
 	 * @param basicProjectConfigId
@@ -56,11 +56,13 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 
 	/**
 	 * Find all which matches provided ids
-	 * @param sprintIDs sprint ids
+	 * 
+	 * @param sprintIDs
+	 *            sprint ids
 	 * @return list of sprint details
 	 */
 	List<SprintDetails> findBySprintIDIn(List<String> sprintIDs);
-	
+
 	/**
 	 * delete using projectbasic config id
 	 * 
@@ -71,6 +73,7 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 
 	/**
 	 * find all the sprints of the project
+	 * 
 	 * @param basicProjectConfigId
 	 * @return list of sprints
 	 */
@@ -78,6 +81,7 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 
 	/**
 	 * find all sprints of projects and based on status of sprint
+	 * 
 	 * @param basicProjectConfigIds
 	 * @param state
 	 * @return
@@ -86,14 +90,16 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 			String state);
 
 	@Query(value = "{ 'basicProjectConfigId' : { $in: ?0 }, 'state' : ?1 }", fields = "{ 'sprintID' : 1, 'basicProjectConfigId' : 1, 'completedIssues' : 1, 'sprintName' : 1, 'startDate' : 1}", sort = "{ 'startDate' : -1 }")
-	List<SprintDetails> findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(Set<ObjectId> basicProjectConfigIds,
-																				 String state);
-	
+	List<SprintDetails> findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(
+			Set<ObjectId> basicProjectConfigIds, String state);
+
 	/**
 	 * Find all which matches provided ids
-	 * @param sprintIDs sprint ids
+	 * 
+	 * @param sprintIDs
+	 *            sprint ids
 	 * @return list of sprint details
 	 */
-	 @Query(value = "{ 'sprintID' : { $in: ?0 } }", fields = "{ 'sprintID' : 1, 'state' : 1 }")
+	@Query(value = "{ 'sprintID' : { $in: ?0 } }", fields = "{ 'sprintID' : 1, 'state' : 1 }")
 	List<SprintDetails> findBySprintIDInGetStatus(List<String> sprintIDs);
- }
+}

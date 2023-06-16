@@ -31,7 +31,7 @@ import lombok.Setter;
 
 /**
  * 
- * AzureRepoConfig represents a class which holds AzureRepoConfig details . 
+ * AzureRepoConfig represents a class which holds AzureRepoConfig details .
  * 
  */
 @Component

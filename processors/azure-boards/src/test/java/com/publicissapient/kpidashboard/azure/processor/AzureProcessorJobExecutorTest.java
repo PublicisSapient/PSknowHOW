@@ -62,67 +62,51 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
 @ExtendWith(SpringExtension.class)
 public class AzureProcessorJobExecutorTest {
-	
+
 	private static final String PLAIN_TEXT_PASSWORD = "TestUser@123";
 
 	private final ObjectId processorId = new ObjectId("5f0c1e1c204347d129590ef8");
-	@Mock
-	private ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	private AzureProcessorRepository issueProcessorRepository;
-
-	@Mock
-	private AzureProcessorConfig azureProcessorConfig;
-
-	@Mock
-	private FieldMappingRepository fieldMappingRepository;
-
-	@Mock
-	private AzureRestClientFactory azureRestClientFactory;
-	
-	@Mock
-	private AlphanumComparator alphanumComparator;
-
-	@Mock
-	private AzureIssueClientFactory azureIssueClientFactory;
-
-	@Mock
-	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
-	@Spy
-	private List<ModeBasedProcessor> modeBasedProcessors = new ArrayList<ModeBasedProcessor>();
-
 	List<ModeBasedProcessor> list = new ArrayList<>();
-
 	@InjectMocks
 	AzureProcessorJobExecutor azureProcessorJobExecutor;
-
 	@InjectMocks
 	OnlineDataProcessorImpl onlineDataProcessor;
-
 	@Mock
 	AesEncryptionService aesEncryptionService;
-
+	@Mock
+	AzureIssueClient scrumJiraIssueClient;
+	List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+	List<ProjectToolConfig> projectToolConfigList;
+	@Mock
+	private ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	private AzureProcessorRepository issueProcessorRepository;
+	@Mock
+	private AzureProcessorConfig azureProcessorConfig;
+	@Mock
+	private FieldMappingRepository fieldMappingRepository;
+	@Mock
+	private AzureRestClientFactory azureRestClientFactory;
+	@Mock
+	private AlphanumComparator alphanumComparator;
+	@Mock
+	private AzureIssueClientFactory azureIssueClientFactory;
+	@Mock
+	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	@Spy
+	private List<ModeBasedProcessor> modeBasedProcessors = new ArrayList<ModeBasedProcessor>();
 	@Mock
 	private ProjectToolConfigRepository toolRepository;
 	@Mock
 	private ConnectionRepository connectionRepository;
 	@Mock
-	AzureIssueClient scrumJiraIssueClient;
-
-	@Mock
 	private SprintClientImpl sprintClient;
-
-	List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
-
-	List<ProjectToolConfig> projectToolConfigList;
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -175,15 +159,15 @@ public class AzureProcessorJobExecutorTest {
 		projectConfigList.add(projectConfig);
 
 	}
-	
-	private void prepareToolConfig(){
+
+	private void prepareToolConfig() {
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setId(new ObjectId("5fb35501f8a7eb04100e7ec7"));
 		projectToolConfig.setConnectionId(new ObjectId("5fb35501f8a7eb04100e7ec7"));
 		projectToolConfig.setBasicProjectConfigId(new ObjectId());
 		projectToolConfigList.add(projectToolConfig);
 	}
-	
+
 	private List<ProjectToolConfig> prepareProjectToolConfig() {
 		ProjectToolConfig tool = new ProjectToolConfig();
 		tool.setToolName(ProcessorConstants.AZUREBOARDS);
@@ -194,7 +178,7 @@ public class AzureProcessorJobExecutorTest {
 		projectToolConfigList.add(tool);
 		return projectToolConfigList;
 	}
-	
+
 	private Optional<Connection> returnConnectionObject() {
 		Connection connection = new Connection();
 		connection.setOffline(false);
@@ -204,7 +188,7 @@ public class AzureProcessorJobExecutorTest {
 		connection.setOffline(true);
 		return Optional.of(connection);
 	}
-	
+
 	private AzureServer prepareAzureServer() {
 		AzureServer azureServer = new AzureServer();
 		azureServer.setPat("TestUser@123");

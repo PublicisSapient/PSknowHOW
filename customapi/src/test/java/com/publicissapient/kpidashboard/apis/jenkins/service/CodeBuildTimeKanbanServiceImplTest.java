@@ -72,43 +72,31 @@ public class CodeBuildTimeKanbanServiceImplTest {
 
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
 	Map<String, List<Tool>> toolGroup = new HashMap<>();
-	private List<Build> buildList = new ArrayList<>();
-
-	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
-
-	private List<DataCount> trendValues = new ArrayList<>();
-
 	@Mock
 	BuildRepository buildRepository;
-
 	@Mock
 	CacheService cacheService;
-
 	@Mock
 	ConfigHelperService configHelperService;
-
 	@Mock
 	FilterHelperService filterHelperService;
-
 	@Mock
 	ProjectBasicConfigRepository projectConfigRepository;
-
 	@Mock
 	FieldMappingRepository fieldMappingRepository;
-
 	@Mock
 	CustomApiConfig customApiConfig;
-
 	@Mock
 	CommonService commonService;
-
-	@Mock
-	private KpiHelperService kpiHelperService;
 	@InjectMocks
 	CodeBuildTimeKanbanServiceImpl codeBuildTimeKanbanServiceImpl;
-
+	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
+	private List<Build> buildList = new ArrayList<>();
+	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
+	private List<DataCount> trendValues = new ArrayList<>();
+	@Mock
+	private KpiHelperService kpiHelperService;
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyDataKanban> accountHierarchyKanbanDataList = new ArrayList<>();
 

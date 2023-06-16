@@ -63,46 +63,34 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 @RunWith(MockitoJUnitRunner.class)
 public class JenkinsServiceRTest {
 
+	private static String GROUP_PROJECT = "PROJECT";
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	KpiHelperService kpiHelperService;
-
 	@Mock
 	FilterHelperService filterHelperService;
-
 	@InjectMocks
 	private JenkinsServiceR jenkinsServiceR;
-
 	@Mock
 	private CustomApiConfig customApiConfig;
-
 	@Mock
 	private CacheService cacheService;
-
 	@Mock
 	private CodeBuildTimeServiceImpl codeBuildTimeServiceImpl;
-
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JenkinsKPIService> services;
-
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private String[] projectKey;
 	private Set<String> projects;
-
 	private KpiElement buildKpiElement;
-
 	private Map<String, JenkinsKPIService<?, ?, ?>> jenkinsServiceCache = new HashMap<>();
-
 	@Mock
 	private JenkinsKPIServiceFactory jenkinsKPIServiceFactory;
-
-	private static String GROUP_PROJECT = "PROJECT";
 
 	@Before
 	public void setup() {
@@ -129,7 +117,7 @@ public class JenkinsServiceRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
-		when(filterHelperService.getHierarachyLevelId(5,"project",false)).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(5, "project", false)).thenReturn("project");
 
 		buildKpiElement = setKpiElement(KPICode.CODE_BUILD_TIME.getKpiId(), "CODE_BUILD_TIME");
 	}

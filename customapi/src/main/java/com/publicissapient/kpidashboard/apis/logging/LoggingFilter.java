@@ -203,14 +203,16 @@ public class LoggingFilter implements Filter {
 	private static final class BufferedRequestWrapper extends HttpServletRequestWrapper {
 
 		private final ByteArrayOutputStream baos;
-		private BufferedServletInputStream bsis;
 		private final byte[] buffer;
+		private BufferedServletInputStream bsis;
 
 		/**
 		 * Instantiates a new Buffered request wrapper.
 		 *
-		 * @param req the req
-		 * @throws IOException the io exception
+		 * @param req
+		 *            the req
+		 * @throws IOException
+		 *             the io exception
 		 */
 		public BufferedRequestWrapper(HttpServletRequest req) throws IOException {
 			super(req);
@@ -238,7 +240,8 @@ public class LoggingFilter implements Filter {
 		 * Gets request body.
 		 *
 		 * @return the request body
-		 * @throws IOException the io exception
+		 * @throws IOException
+		 *             the io exception
 		 */
 		/* package */ String getRequestBody() throws IOException {
 			String line;
@@ -263,7 +266,8 @@ public class LoggingFilter implements Filter {
 		/**
 		 * Instantiates a new Buffered servlet input stream.
 		 *
-		 * @param bais the bais
+		 * @param bais
+		 *            the bais
 		 */
 		public BufferedServletInputStream(ByteArrayInputStream bais) {
 			super();
@@ -313,8 +317,10 @@ public class LoggingFilter implements Filter {
 		/**
 		 * Instantiates a new Tee servlet output stream.
 		 *
-		 * @param one the one
-		 * @param two the two
+		 * @param one
+		 *            the one
+		 * @param two
+		 *            the two
 		 */
 		public TeeServletOutputStream(OutputStream one, OutputStream two) {
 			super();
@@ -364,7 +370,8 @@ public class LoggingFilter implements Filter {
 		/**
 		 * Instantiates a new Buffered response wrapper.
 		 *
-		 * @param response the response
+		 * @param response
+		 *            the response
 		 */
 		public BufferedResponseWrapper(HttpServletResponse response) {
 			original = response;
@@ -406,13 +413,18 @@ public class LoggingFilter implements Filter {
 		}
 
 		@Override
+		public void setCharacterEncoding(String charset) {
+			original.setCharacterEncoding(charset);
+		}
+
+		@Override
 		public String getContentType() {
 			return original.getContentType();
 		}
 
 		@Override
-		public void setCharacterEncoding(String charset) {
-			original.setCharacterEncoding(charset);
+		public void setContentType(String type) {
+			original.setContentType(type);
 		}
 
 		@Override
@@ -427,18 +439,13 @@ public class LoggingFilter implements Filter {
 		}
 
 		@Override
-		public void setContentType(String type) {
-			original.setContentType(type);
+		public int getBufferSize() {
+			return original.getBufferSize();
 		}
 
 		@Override
 		public void setBufferSize(int size) {
 			original.setBufferSize(size);
-		}
-
-		@Override
-		public int getBufferSize() {
-			return original.getBufferSize();
 		}
 
 		@Override
@@ -467,13 +474,13 @@ public class LoggingFilter implements Filter {
 		}
 
 		@Override
-		public void setLocale(Locale loc) {
-			original.setLocale(loc);
+		public Locale getLocale() {
+			return original.getLocale();
 		}
 
 		@Override
-		public Locale getLocale() {
-			return original.getLocale();
+		public void setLocale(Locale loc) {
+			original.setLocale(loc);
 		}
 
 		@Override
@@ -553,11 +560,6 @@ public class LoggingFilter implements Filter {
 			original.addIntHeader(name, value);
 		}
 
-		@Override
-		public void setStatus(int sc) {
-			original.setStatus(sc);
-		}
-
 		@SuppressWarnings("deprecation")
 		@Override
 		public void setStatus(int sc, String sm) {
@@ -567,6 +569,11 @@ public class LoggingFilter implements Filter {
 		@Override
 		public int getStatus() {
 			return original.getStatus();
+		}
+
+		@Override
+		public void setStatus(int sc) {
+			original.setStatus(sc);
 		}
 
 		@Override

@@ -38,15 +38,12 @@ import com.publicissapient.kpidashboard.apis.model.VersionDetails;
 @RunWith(MockitoJUnitRunner.class)
 public class VersionMetadataServiceTest {
 
-	@InjectMocks
-	private VersionMetadataServiceImpl versionMetadataServiceImpl;
-
-	@Mock
-	private CustomApiConfig customApiConfig;
-
 	@Mock
 	RestTemplate restTemplate;
-
+	@InjectMocks
+	private VersionMetadataServiceImpl versionMetadataServiceImpl;
+	@Mock
+	private CustomApiConfig customApiConfig;
 	private File resourcePath;
 
 	@Before

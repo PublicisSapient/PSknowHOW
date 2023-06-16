@@ -72,18 +72,18 @@ public class CustomApiConfig {// NOPMD
 	// forgot password email subject
 	@Value("${forgotPassword.emailSubject}")
 	private String emailSubject;
-	//  forgot password server host only for server where nginex is not
+	// forgot password server host only for server where nginex is not
 	// setup
 	@Value("${forgotPassword.serverPort}")
 	private String serverPort;
-	//  forgot password server host only for server where nginex is not
+	// forgot password server host only for server where nginex is not
 	// setup
 	@Value("${forgotPassword.uiHost}")
 	private String uiHost;
-	//  forgot password UI port only for server where nginex is not setup
+	// forgot password UI port only for server where nginex is not setup
 	@Value("${forgotPassword.uiPort}")
 	private String uiPort;
-	//  detailed logger property toggle
+	// detailed logger property toggle
 	private String applicationDetailedLogger;
 	// white list of origin values to be allowed under CORS
 	private List<String> corsFilterValidOrigin;
@@ -197,7 +197,7 @@ public class CustomApiConfig {// NOPMD
 
 	private boolean ssoLogin;
 
-	private Map<String,String> mailTemplate;
+	private Map<String, String> mailTemplate;
 
 	@Value("${flag.mailWithoutKafka}")
 	private boolean mailWithoutKafka;
@@ -207,6 +207,18 @@ public class CustomApiConfig {// NOPMD
 
 	@Value("${sprint.velocity.limit}")
 	private int sprintVelocityLimit;
+	private int pushDataLimit;// limit of data allowed to push through api
+	private int exposeAPITokenExpiryDays; // expose api token expiry after days limit
+	@Value("${backlogWeekCount}")
+	private int backlogWeekCount;
+	@Value("${flowKpiMonthCount}")
+	private int flowKpiMonthCount;
+	private String samlTokenStartString;
+	private String samlTokenEndString;
+	private String samlUrlStartString;
+	private String samlUrlEndString;
+	// repo x axis count days rangeForCheckInsAndMergeRequests
+	private Integer repoXAxisCountForCheckInsAndMergeRequests;
 
 	public int getSprintVelocityLimit() {
 		return sprintVelocityLimit;
@@ -215,10 +227,6 @@ public class CustomApiConfig {// NOPMD
 	public void setSprintVelocityLimit(int sprintVelocityLimit) {
 		this.sprintVelocityLimit = sprintVelocityLimit;
 	}
-
-	private int pushDataLimit;//limit of data allowed to push through api
-
-	private int exposeAPITokenExpiryDays; // expose api token expiry after days limit
 
 	public int getLimitCommentsShownOnKpiDashboardCount() {
 		return limitCommentsShownOnKpiDashboardCount;
@@ -235,12 +243,6 @@ public class CustomApiConfig {// NOPMD
 	public void setKpiCommentsMaxStoreCount(int kpiCommentsMaxStoreCount) {
 		this.kpiCommentsMaxStoreCount = kpiCommentsMaxStoreCount;
 	}
-		
-	@Value("${backlogWeekCount}")
-	private int backlogWeekCount;
-
-	@Value("${flowKpiMonthCount}")
-	private int flowKpiMonthCount;
 
 	public int getPushDataLimit() {
 		return pushDataLimit;
@@ -254,18 +256,13 @@ public class CustomApiConfig {// NOPMD
 		return exposeAPITokenExpiryDays;
 	}
 
-	public int getBacklogWeekCount() {
-		return this.backlogWeekCount;
-	}
-
 	public void setExposeAPITokenExpiryDays(int exposeAPITokenExpiryDays) {
 		this.exposeAPITokenExpiryDays = exposeAPITokenExpiryDays;
 	}
 
-	private String samlTokenStartString;
-	private String samlTokenEndString;
-	private String samlUrlStartString;
-	private String samlUrlEndString;
+	public int getBacklogWeekCount() {
+		return this.backlogWeekCount;
+	}
 
 	public int getJiraXaxisMonthCount() {
 		return jiraXaxisMonthCount;
@@ -441,7 +438,6 @@ public class CustomApiConfig {// NOPMD
 	public void setTotalDefectCountAgingXAxisRange(List<String> totalDefectCountAgingXAxisRange) {
 		this.totalDefectCountAgingXAxisRange = totalDefectCountAgingXAxisRange;
 	}
-
 
 	/**
 	 * get percentileValue
@@ -644,14 +640,6 @@ public class CustomApiConfig {// NOPMD
 		return corsFilterValidOrigin;
 	}
 
-	public List<String> getIssueCountStoryCategories() {
-		return issueCountStoryCategories;
-	}
-
-	public void setIssueCountStoryCategories(List<String> issueCountStoryCategories) {
-		this.issueCountStoryCategories = issueCountStoryCategories;
-	}
-
 	/**
 	 * <p>
 	 * Sets the list of values valid as origin
@@ -662,6 +650,14 @@ public class CustomApiConfig {// NOPMD
 	 */
 	public void setCorsFilterValidOrigin(List<String> corsFilterValidOrigin) {
 		this.corsFilterValidOrigin = corsFilterValidOrigin;
+	}
+
+	public List<String> getIssueCountStoryCategories() {
+		return issueCountStoryCategories;
+	}
+
+	public void setIssueCountStoryCategories(List<String> issueCountStoryCategories) {
+		this.issueCountStoryCategories = issueCountStoryCategories;
 	}
 
 	/**
@@ -743,7 +739,7 @@ public class CustomApiConfig {// NOPMD
 
 	/**
 	 * P4 priority
-	 * 
+	 *
 	 * @return
 	 */
 	public String getpriorityP4() {
@@ -752,7 +748,7 @@ public class CustomApiConfig {// NOPMD
 
 	/**
 	 * P3 priority
-	 * 
+	 *
 	 * @return
 	 */
 	public String getpriorityP3() {
@@ -761,7 +757,7 @@ public class CustomApiConfig {// NOPMD
 
 	/**
 	 * P2 priority
-	 * 
+	 *
 	 * @return
 	 */
 	public String getpriorityP2() {
@@ -770,7 +766,7 @@ public class CustomApiConfig {// NOPMD
 
 	/**
 	 * P1 priority
-	 * 
+	 *
 	 * @return
 	 */
 	public String getpriorityP1() {
@@ -795,7 +791,7 @@ public class CustomApiConfig {// NOPMD
 	}
 
 	/**
-	 * 
+	 *
 	 * @param kafkaMailTopic
 	 */
 	public void setKafkaMailTopic(String kafkaMailTopic) {
@@ -975,7 +971,8 @@ public class CustomApiConfig {// NOPMD
 
 	public void setMailWithoutKafka(boolean mailWithoutKafka) {
 		this.mailWithoutKafka = mailWithoutKafka;
-  }
+	}
+
 	public String getHostPath() {
 		return hostPath;
 	}
@@ -985,43 +982,41 @@ public class CustomApiConfig {// NOPMD
 
 	}
 
-	public void setSamlTokenStartString(String samlTokenStartString) {
-		this.samlTokenStartString = samlTokenStartString;
-	}
-
-	public void setSamlTokenEndString(String samlTokenEndString) {
-		this.samlTokenEndString = samlTokenEndString;
-	}
-
-	public void setSamlUrlStartString(String samlUrlStartString) {
-		this.samlUrlStartString = samlUrlStartString;
-	}
-
-	public void setSamlUrlEndString(String samlUrlEndString) {
-		this.samlUrlEndString = samlUrlEndString;
-	}
-
 	public String getSamlTokenStartString() {
 		return samlTokenStartString;
+	}
+
+	public void setSamlTokenStartString(String samlTokenStartString) {
+		this.samlTokenStartString = samlTokenStartString;
 	}
 
 	public String getSamlTokenEndString() {
 		return samlTokenEndString;
 	}
 
+	public void setSamlTokenEndString(String samlTokenEndString) {
+		this.samlTokenEndString = samlTokenEndString;
+	}
+
 	public String getSamlUrlStartString() {
 		return samlUrlStartString;
+	}
+
+	public void setSamlUrlStartString(String samlUrlStartString) {
+		this.samlUrlStartString = samlUrlStartString;
 	}
 
 	public String getSamlUrlEndString() {
 		return samlUrlEndString;
 	}
+
+	public void setSamlUrlEndString(String samlUrlEndString) {
+		this.samlUrlEndString = samlUrlEndString;
+	}
+
 	public int getSprintCountForBackLogStrength() {
 		return sprintCountForBackLogStrength;
 	}
-
-	// repo x axis count days rangeForCheckInsAndMergeRequests
-	private Integer repoXAxisCountForCheckInsAndMergeRequests;
 
 	public Integer getRepoXAxisCountForCheckInsAndMergeRequests() {
 		return repoXAxisCountForCheckInsAndMergeRequests;

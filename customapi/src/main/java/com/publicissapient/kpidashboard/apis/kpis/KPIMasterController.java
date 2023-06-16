@@ -36,25 +36,26 @@ import com.publicissapient.kpidashboard.apis.model.MasterResponse;
 @RequestMapping("/masterData")
 public class KPIMasterController {
 
-    private final KpiHelperService kPIHelperService;
+	private final KpiHelperService kPIHelperService;
 
-    /**
-     * Instantiates a new Kpi master controller.
-     *
-     * @param kPIHelperService the k pi helper service
-     */
-    @Autowired
-    public KPIMasterController(KpiHelperService kPIHelperService) {
-        this.kPIHelperService = kPIHelperService;
-    }
+	/**
+	 * Instantiates a new Kpi master controller.
+	 *
+	 * @param kPIHelperService
+	 *            the k pi helper service
+	 */
+	@Autowired
+	public KPIMasterController(KpiHelperService kPIHelperService) {
+		this.kPIHelperService = kPIHelperService;
+	}
 
-    /**
-     * Fetch master data master response.
-     *
-     * @return the master response
-     */
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)//NOSONAR
-    public MasterResponse fetchMasterData() {
-        return kPIHelperService.fetchKpiMasterList();
-    }
+	/**
+	 * Fetch master data master response.
+	 *
+	 * @return the master response
+	 */
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	public MasterResponse fetchMasterData() {
+		return kPIHelperService.fetchKpiMasterList();
+	}
 }

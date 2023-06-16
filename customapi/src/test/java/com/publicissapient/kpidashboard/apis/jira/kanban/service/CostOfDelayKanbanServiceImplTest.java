@@ -103,7 +103,8 @@ public class CostOfDelayKanbanServiceImplTest {
 		accountHierarchyKanbanDataList = accountHierarchyKanbanFilterDataFactory.getAccountHierarchyKanbanDataList();
 
 		KanbanJiraIssueDataFactory kanbanJiraIssueDataFactory = KanbanJiraIssueDataFactory.newInstance();
-		kanbanJiraIssueDataList = kanbanJiraIssueDataFactory.getKanbanJiraIssueDataListByTypeName(Arrays.asList("Story"));
+		kanbanJiraIssueDataList = kanbanJiraIssueDataFactory
+				.getKanbanJiraIssueDataListByTypeName(Arrays.asList("Story"));
 		kanbanJiraIssueDataList.stream().forEach(f -> f.setChangeDate(LocalDateTime.now().minusDays(2).toString()));
 		jiraKanbanIssueRepository.saveAll(kanbanJiraIssueDataList);
 		kpiWiseAggregation.put("cost_Of_Delay", "sum");

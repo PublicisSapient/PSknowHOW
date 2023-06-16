@@ -1,6 +1,9 @@
 package com.publicissapient.kpidashboard.apis.sonar.utiils;
 
-import lombok.extern.slf4j.Slf4j;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.codec.binary.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -8,9 +11,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpHeaders;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Provides utility methods for Sonar.
@@ -46,12 +47,12 @@ public class SonarAPIUtils {
 	public static HttpHeaders getHeaders(String accessToken, boolean usingBasicAuth) {
 		HttpHeaders headers = new HttpHeaders();
 		if (accessToken != null && !accessToken.isEmpty()) {
-			if(usingBasicAuth){
+			if (usingBasicAuth) {
 				String authentication = accessToken + ":";
 				byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
 				String authenticationHeader = "Basic " + new String(encodedAuth);
 				headers.set("Authorization", authenticationHeader);
-			}else{
+			} else {
 				headers.add("Authorization", "Bearer " + accessToken);
 			}
 		}

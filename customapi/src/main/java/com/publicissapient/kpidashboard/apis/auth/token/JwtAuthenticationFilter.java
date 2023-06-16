@@ -28,12 +28,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
+
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 
 @Component
 public class JwtAuthenticationFilter extends GenericFilterBean {
@@ -52,16 +53,17 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 			throws IOException, ServletException {
 
 		if (request != null) {
-			Cookie authCookie=cookieUtil.getAuthCookie((HttpServletRequest) request);
+			Cookie authCookie = cookieUtil.getAuthCookie((HttpServletRequest) request);
 
-			if (authCookie == null){
+			if (authCookie == null) {
 				filterChain.doFilter(request, response);
 				return;
 			}
 
 		}
 
-		Authentication authentication = tokenAuthenticationService.getAuthentication((HttpServletRequest) request, (HttpServletResponse) response);
+		Authentication authentication = tokenAuthenticationService.getAuthentication((HttpServletRequest) request,
+				(HttpServletResponse) response);
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		filterChain.doFilter(request, response);

@@ -18,10 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.kpivideo.service;
 
+import java.util.List;
+
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLink;
-
-import java.util.List;
 
 public interface KPIVideoLinkService {
 
@@ -29,14 +29,15 @@ public interface KPIVideoLinkService {
 	 * Modifies a video URL for a kpi id by @param id and replaces it with @param
 	 * kvl
 	 * 
-	 * @param kvl kpi video link.
-	 * @param kpiId  kpi id.
+	 * @param kvl
+	 *            kpi video link.
+	 * @param kpiId
+	 *            kpi id.
 	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
 	ServiceResponse update(String kpiId, KPIVideoLink kvl);
-
 
 	List<KPIVideoLink> getAllVideoLinks();
 

@@ -48,9 +48,12 @@ public class BitBucketServerURIBuilder {
 	/**
 	 * Instantiates a new bit bucket server URI builder.
 	 *
-	 * @param repo                the repo
-	 * @param config              the config
-	 * @param bitBucketServerInfo the bitBucketServerInfo
+	 * @param repo
+	 *            the repo
+	 * @param config
+	 *            the config
+	 * @param bitBucketServerInfo
+	 *            the bitBucketServerInfo
 	 */
 	public BitBucketServerURIBuilder(BitbucketRepo repo, BitBucketConfig config,
 			ProcessorToolConnection bitBucketServerInfo) {
@@ -63,8 +66,10 @@ public class BitBucketServerURIBuilder {
 	 * Builds the.
 	 *
 	 * @return the string
-	 * @throws URISyntaxException uri syntax exception
-	 * @throws URISyntaxException the URISyntaxException
+	 * @throws URISyntaxException
+	 *             uri syntax exception
+	 * @throws URISyntaxException
+	 *             the URISyntaxException
 	 */
 	public String build() throws URISyntaxException {
 		final URIBuilder builder = new URIBuilder();
@@ -80,10 +85,11 @@ public class BitBucketServerURIBuilder {
 
 		return builder.build().toString();
 	}
-	
+
 	/**
 	 * @return URL
-	 * @throws URISyntaxException the URISyntaxException
+	 * @throws URISyntaxException
+	 *             the URISyntaxException
 	 */
 	public String buildMergeReqURL() throws URISyntaxException {
 		final URIBuilder builder = new URIBuilder();
@@ -135,7 +141,7 @@ public class BitBucketServerURIBuilder {
 				.append(bitBucketServerInfo.getRepoSlug()).append("/commits");
 		return sb.toString();
 	}
-	
+
 	/**
 	 * @return path
 	 */

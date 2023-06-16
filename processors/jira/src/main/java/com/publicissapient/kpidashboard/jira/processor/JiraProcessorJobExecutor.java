@@ -26,8 +26,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +49,8 @@ import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
 import com.publicissapient.kpidashboard.jira.processor.mode.ModeBasedProcessor;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Collects {@link JiraProcessor} data from feature content source system.
@@ -101,7 +101,8 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	 * Gets called on a schedule to gather data from the feature content source
 	 * system and update the repository with retrieved data.
 	 * 
-	 * @param jiraProcessor jiraProcessor instance
+	 * @param jiraProcessor
+	 *            jiraProcessor instance
 	 */
 	@Override
 	public boolean execute(JiraProcessor jiraProcessor) {
@@ -147,7 +148,8 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	 * @param executionLogContext
 	 * @return
 	 */
-	private boolean fetchIssueDetail(boolean executionStatus, List<ProjectBasicConfig> projectConfigList, ExecutionLogContext executionLogContext) {
+	private boolean fetchIssueDetail(boolean executionStatus, List<ProjectBasicConfig> projectConfigList,
+			ExecutionLogContext executionLogContext) {
 		AtomicReference<Integer> scrumIssueCount = new AtomicReference<>(0);
 		AtomicReference<Integer> kanbanIssueCount = new AtomicReference<>(0);
 

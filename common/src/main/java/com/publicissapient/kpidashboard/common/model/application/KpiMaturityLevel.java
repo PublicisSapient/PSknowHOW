@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
 import lombok.Data;
+
 /**
  *
  * @author yasbano
@@ -26,8 +27,8 @@ import lombok.Data;
 @Data
 public class KpiMaturityLevel {
 
-    private String level;
-    private String bgColor;
-    private String range;
+	private String level;
+	private String bgColor;
+	private String range;
 
 }

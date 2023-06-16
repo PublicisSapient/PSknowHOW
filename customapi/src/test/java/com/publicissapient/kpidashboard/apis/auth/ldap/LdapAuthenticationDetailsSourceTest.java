@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.publicissapient.kpidashboard.apis.auth.ldap.LdapAuthenticationDetailsSource;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 
 public class LdapAuthenticationDetailsSourceTest {

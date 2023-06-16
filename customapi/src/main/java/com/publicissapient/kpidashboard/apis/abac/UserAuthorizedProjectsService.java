@@ -62,17 +62,13 @@ import lombok.extern.slf4j.Slf4j;
 public class UserAuthorizedProjectsService {
 
 	@Autowired
+	TokenAuthenticationService tokenAuthenticationService;
+	@Autowired
 	private UserInfoServiceImpl userInfoService;
-
 	@Autowired
 	private AccountHierarchyRepository accountHierarchyRepo;
-
 	@Autowired
 	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepository;
-
-	@Autowired
-	TokenAuthenticationService tokenAuthenticationService;
-
 	@Autowired
 	private AuthenticationService authenticationService;
 

@@ -48,11 +48,10 @@ public class BambooConfig {
 	@Getter
 	@Setter
 	private String apiKey;
-	
+
 	@Getter
 	@Setter
 	private String customApiBaseUrl;
-
 
 	@Getter
 	@Setter

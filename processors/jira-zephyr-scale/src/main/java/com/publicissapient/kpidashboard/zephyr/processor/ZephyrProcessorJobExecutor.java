@@ -28,13 +28,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.zephyr.ZephyrTestCaseDTO;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
-import com.publicissapient.kpidashboard.zephyr.client.ZephyrClient;
-import com.publicissapient.kpidashboard.zephyr.config.ZephyrConfig;
-import com.publicissapient.kpidashboard.zephyr.factory.ZephyrClientFactory;
-import com.publicissapient.kpidashboard.zephyr.model.ZephyrProcessor;
-import com.publicissapient.kpidashboard.zephyr.processor.service.ZephyrDBService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
@@ -50,19 +43,26 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.publicissapient.kpidashboard.zephyr.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.zephyr.repository.ZephyrProcessorRepository;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.model.zephyr.ZephyrTestCaseDTO;
 import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.zephyr.client.ZephyrClient;
+import com.publicissapient.kpidashboard.zephyr.config.ZephyrConfig;
+import com.publicissapient.kpidashboard.zephyr.factory.ZephyrClientFactory;
+import com.publicissapient.kpidashboard.zephyr.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.zephyr.model.ZephyrProcessor;
+import com.publicissapient.kpidashboard.zephyr.processor.service.ZephyrDBService;
+import com.publicissapient.kpidashboard.zephyr.repository.ZephyrProcessorRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -100,6 +100,8 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 	private ProjectBasicConfigRepository projectConfigRepository;
 
 	private boolean executionStatus = true;
+	@Autowired
+	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
 	/**
 	 * Instantiates a new ZEPHYR processor job executor.
@@ -112,8 +114,37 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 		super(taskScheduler, ProcessorConstants.ZEPHYR);
 	}
 
-	@Autowired
-	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	private static List<ZephyrTestCaseDTO> filterTestCasesBsdOnFldrPth(String folderPath,
+			List<ZephyrTestCaseDTO> totalTestCasesList, boolean cloud) {
+		List<ZephyrTestCaseDTO> filteredTestCasesList = new ArrayList<>();
+		totalTestCasesList.stream().forEach(testCases -> {
+			Optional<String> folderName = Optional.ofNullable(testCases.getFolder());
+			Optional<String> createdOnDate = Optional.ofNullable(testCases.getCreatedOn());
+			Optional<String> updatedOnDate = Optional.ofNullable(testCases.getUpdatedOn());
+			LocalDateTime instant = LocalDateTime.now();
+			LocalDateTime currentDateMinus15Months = instant.minusMonths(15);
+			if (cloud) {
+				if ((folderName.isPresent() && folderName.get().contains(folderPath)) && ((updatedOnDate.isPresent()
+						&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
+								.isAfter(currentDateMinus15Months))
+						|| (createdOnDate.isPresent() && DateUtil
+								.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
+								.isAfter(currentDateMinus15Months)))) {
+					filteredTestCasesList.add(testCases);
+				}
+			} else {
+				if ((folderName.isPresent() && folderName.get().contains(folderPath)) && ((updatedOnDate.isPresent()
+						&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
+								.isAfter(currentDateMinus15Months))
+						|| (createdOnDate.isPresent()
+								&& DateUtil.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
+										.isAfter(currentDateMinus15Months)))) {
+					filteredTestCasesList.add(testCases);
+				}
+			}
+		});
+		return filteredTestCasesList;
+	}
 
 	@Override
 	public ZephyrProcessor getProcessor() {
@@ -231,18 +262,19 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 		return testCaseCountTotal.get();
 	}
 
-
 	private void getTestCaseAndProcess(ProjectConfFieldMapping projectConfigMap, AtomicReference<Integer> testCaseCount,
 			ProcessorToolConnection processorToolConnection, ZephyrClient zephyrClient, String folderPath) {
 		boolean isTestCaseEmpty = false;
 		do {
 			final List<ZephyrTestCaseDTO> testCase = zephyrClient.getTestCase(testCaseCount.get(), projectConfigMap);
 			if (CollectionUtils.isNotEmpty(testCase)) {
-				List<ZephyrTestCaseDTO> filteredTestCasesList = filterTestCasesBsdOnFldrPth(folderPath, testCase , processorToolConnection.isCloudEnv());
-				zephyrDBService.processTestCaseInfoToDB(filteredTestCasesList, processorToolConnection, projectConfigMap.isKanban(),
+				List<ZephyrTestCaseDTO> filteredTestCasesList = filterTestCasesBsdOnFldrPth(folderPath, testCase,
 						processorToolConnection.isCloudEnv());
+				zephyrDBService.processTestCaseInfoToDB(filteredTestCasesList, processorToolConnection,
+						projectConfigMap.isKanban(), processorToolConnection.isCloudEnv());
 				testCaseCount.updateAndGet(test -> test + testCase.size());
-				log.info("{} test cases are fetched and {} are matching with the folderPath:{}",testCase.size(), filteredTestCasesList.size(), folderPath);
+				log.info("{} test cases are fetched and {} are matching with the folderPath:{}", testCase.size(),
+						filteredTestCasesList.size(), folderPath);
 			} else {
 				isTestCaseEmpty = true;
 			}
@@ -306,7 +338,7 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 
 	/**
 	 * Cleans the cache in the Custom API
-	 * 
+	 *
 	 * @param cacheEndPoint
 	 *            the cache endpoint
 	 * @param cacheName
@@ -344,7 +376,7 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 	/**
 	 * Return List of selected ProjectBasicConfig id if null then return all
 	 * ProjectBasicConfig ids
-	 * 
+	 *
 	 * @return List of ProjectBasicConfig
 	 */
 	private List<ProjectBasicConfig> getSelectedProjects() {
@@ -362,36 +394,5 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 
 	private void clearSelectedBasicProjectConfigIds() {
 		setProjectsBasicConfigIds(null);
-	}
-
-	private static List<ZephyrTestCaseDTO> filterTestCasesBsdOnFldrPth(String folderPath, List<ZephyrTestCaseDTO> totalTestCasesList , boolean cloud) {
-		List<ZephyrTestCaseDTO> filteredTestCasesList = new ArrayList<>();
-		totalTestCasesList.stream().forEach(testCases->{
-			Optional<String> folderName = Optional.ofNullable(testCases.getFolder());
-			Optional<String> createdOnDate = Optional.ofNullable(testCases.getCreatedOn());
-			Optional<String> updatedOnDate = Optional.ofNullable(testCases.getUpdatedOn());
-			LocalDateTime instant = LocalDateTime.now();
-			LocalDateTime currentDateMinus15Months = instant.minusMonths(15);
-			if (cloud) {
-				if ((folderName.isPresent() && folderName.get().contains(folderPath)) && ((updatedOnDate.isPresent()
-						&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
-								.isAfter(currentDateMinus15Months))
-						|| (createdOnDate.isPresent() && DateUtil
-								.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
-								.isAfter(currentDateMinus15Months)))) {
-					filteredTestCasesList.add(testCases);
-				}
-			} else {
-				if ((folderName.isPresent() && folderName.get().contains(folderPath)) && ((updatedOnDate.isPresent()
-						&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
-								.isAfter(currentDateMinus15Months))
-						|| (createdOnDate.isPresent()
-								&& DateUtil.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
-										.isAfter(currentDateMinus15Months)))) {
-					filteredTestCasesList.add(testCases);
-				}
-			}
-		});
-		return filteredTestCasesList;
 	}
 }

@@ -31,14 +31,14 @@ import com.fasterxml.jackson.databind.SerializerProvider;
  */
 public class ObjectIdSerializer extends JsonSerializer<ObjectId> {
 	/**
-	 * Serializes @param value to String 
+	 * Serializes @param value to String
+	 * 
 	 * @param value
 	 * @param gen
 	 * @param serializers
 	 */
 	@Override
-	public void serialize(ObjectId value, JsonGenerator gen, SerializerProvider serializers)
-			throws IOException {
+	public void serialize(ObjectId value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
 		gen.writeString(value.toString());
 	}
 }

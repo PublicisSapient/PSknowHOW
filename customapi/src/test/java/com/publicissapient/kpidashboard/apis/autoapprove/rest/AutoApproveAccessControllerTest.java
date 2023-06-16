@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.apis.autoapprove.service.AutoApproveAccessService;
 import com.publicissapient.kpidashboard.common.model.rbac.AutoApproveAccessConfig;
@@ -31,19 +32,15 @@ import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 @RunWith(MockitoJUnitRunner.class)
 public class AutoApproveAccessControllerTest {
 
-	private MockMvc mockMvc;
-
-	private AutoApproveAccessConfigDTO autoApproveAccessConfigDTO;
 	AutoApproveAccessConfig autoApproveAccessConfig;
 	List<RoleData> roles = new ArrayList<>();
-
+	ObjectMapper mapper = new ObjectMapper();
+	private MockMvc mockMvc;
+	private AutoApproveAccessConfigDTO autoApproveAccessConfigDTO;
 	@InjectMocks
 	private AutoApproveAccessController autoApproveController;
-
 	@Mock
 	private AutoApproveAccessService autoApproveAccessService;
-
-	ObjectMapper mapper = new ObjectMapper();
 	private String testId;
 
 	@Before

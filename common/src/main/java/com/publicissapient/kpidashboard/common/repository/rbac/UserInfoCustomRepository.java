@@ -17,15 +17,14 @@
 
 package com.publicissapient.kpidashboard.common.repository.rbac;
 
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-
 import java.util.List;
+
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 
 /**
  * @author anisingh4
  */
 public interface UserInfoCustomRepository {
 
-
-    List<UserInfo> findByProjectAccess(String basicProjectConfigId);
+	List<UserInfo> findByProjectAccess(String basicProjectConfigId);
 }

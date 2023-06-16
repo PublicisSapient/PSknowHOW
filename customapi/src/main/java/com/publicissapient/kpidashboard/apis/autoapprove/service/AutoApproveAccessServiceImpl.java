@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AutoApproveAccessServiceImpl implements AutoApproveAccessService {
 	@Autowired
 	private AutoApproveAccessConfigRepository autoAccessRepository;
-	
+
 	@Autowired
 	private RolesRepository rolesRepository;
 
@@ -58,12 +58,13 @@ public class AutoApproveAccessServiceImpl implements AutoApproveAccessService {
 	public boolean isAutoApproveEnabled(String roleName) {
 
 		AutoApproveAccessConfig autoApproveConfig = getAutoApproveConfig();
-		if (autoApproveConfig == null){
+		if (autoApproveConfig == null) {
 			return false;
 		}
 
 		boolean isEnabled = autoApproveConfig.getEnableAutoApprove().equalsIgnoreCase("true");
-		List<String> roles = autoApproveConfig.getRoles().stream().map(RoleData::getRoleName).collect(Collectors.toList());
+		List<String> roles = autoApproveConfig.getRoles().stream().map(RoleData::getRoleName)
+				.collect(Collectors.toList());
 		return isEnabled && roles.contains(roleName);
 	}
 

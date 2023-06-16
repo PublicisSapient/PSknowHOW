@@ -24,10 +24,10 @@ import lombok.Data;
 
 @Data
 public class PushDataResponse {
+	List<PushErrorData> builds;
+	List<PushErrorData> deploy;
 	private int totalRecords;
 	private int totalSavedRecords;
 	private int totalFailedRecords;
-	List<PushErrorData> builds;
-	List<PushErrorData> deploy;
 
 }

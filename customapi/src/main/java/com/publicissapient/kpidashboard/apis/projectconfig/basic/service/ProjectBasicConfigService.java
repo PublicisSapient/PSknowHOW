@@ -48,7 +48,8 @@ public interface ProjectBasicConfigService {
 	 * project_basic_config collection
 	 * 
 	 * @param basicConfigId
-	 * @param projectBasicConfigDTO detail to be updated.
+	 * @param projectBasicConfigDTO
+	 *            detail to be updated.
 	 * @return {@link ServiceResponse} object.
 	 */
 	ServiceResponse updateBasicConfig(String basicConfigId, ProjectBasicConfigDTO projectBasicConfigDTO);
@@ -57,7 +58,8 @@ public interface ProjectBasicConfigService {
 	 * Service to fetch the list of project basic configuration in the
 	 * project_basic_config collection
 	 * 
-	 * @param basicProjectConfigIds : if null or empty, return null
+	 * @param basicProjectConfigIds
+	 *            : if null or empty, return null
 	 * @return {@link ProjectBasicConfig }
 	 */
 	ProjectBasicConfig getProjectBasicConfigs(String basicProjectConfigIds);
@@ -80,23 +82,23 @@ public interface ProjectBasicConfigService {
 
 	/**
 	 * Delete basic project congig
+	 * 
 	 * @param basicProjectConfigId
 	 * @return deleted ProjectBasicConfig
 	 */
 	ProjectBasicConfig deleteProject(String basicProjectConfigId);
 
 	/**
-	 * Service to fetch the list of all project basic configuration including
-	 * all hierarchy levels property
+	 * Service to fetch the list of all project basic configuration including all
+	 * hierarchy levels property
 	 * 
 	 * @return {@code List<ProjectBasicConfigDTO>} : empty list incase no data found
 	 */
 	List<ProjectBasicConfigDTO> getAllProjectsBasicConfigsDTOWithoutPermission();
 
-
 	/**
-	 * Service to fetch the map of all project basic configuration including
-	 * all hierarchy levels
+	 * Service to fetch the map of all project basic configuration including all
+	 * hierarchy levels
 	 *
 	 * @return {@code Map<String, ProjectBasicConfigDTO> }: empty map incase no data
 	 *         found
@@ -105,13 +107,13 @@ public interface ProjectBasicConfigService {
 
 	/**
 	 * 
-	 * @return {@code ProjectBasicConfigNode }: empty object incase no data
-	 *         found
+	 * @return {@code ProjectBasicConfigNode }: empty object incase no data found
 	 */
 	ProjectBasicConfigNode getBasicConfigTree();
 
 	/**
 	 * Method to find out the node from a project basic config tree
+	 * 
 	 * @param node
 	 * @param searchValue
 	 * @param groupName
@@ -121,23 +123,26 @@ public interface ProjectBasicConfigService {
 
 	/**
 	 * Method to find out all the child nodes of a tree
+	 * 
 	 * @param node
 	 */
 	void findChildren(ProjectBasicConfigNode node, List<ProjectBasicConfigNode> children);
 
 	/**
 	 * Method to find out all the parent nodes of a tree
+	 * 
 	 * @param nodes
 	 * @param parents
 	 */
-	void findParents(List<ProjectBasicConfigNode> nodes,List<ProjectBasicConfigNode> parents);
+	void findParents(List<ProjectBasicConfigNode> nodes, List<ProjectBasicConfigNode> parents);
 
 	/**
-	 *  Method to find out all the projects nodes of a tree
+	 * Method to find out all the projects nodes of a tree
+	 * 
 	 * @param node
 	 * @param leafNodes
 	 */
-	void findLeaf(ProjectBasicConfigNode node,List<ProjectBasicConfigNode> leafNodes);
+	void findLeaf(ProjectBasicConfigNode node, List<ProjectBasicConfigNode> leafNodes);
 
 	/**
 	 * sort based on Hierarchy Level

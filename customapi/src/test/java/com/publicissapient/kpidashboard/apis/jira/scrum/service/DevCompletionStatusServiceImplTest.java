@@ -127,7 +127,7 @@ public class DevCompletionStatusServiceImplTest {
 		try {
 			KpiElement kpiElement = devCompletionStatusService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			 assertNotNull((DataCount) kpiElement.getTrendValueList());
+			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {
 

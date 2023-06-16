@@ -31,12 +31,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 
-import lombok.extern.slf4j.Slf4j;
-
-import com.publicissapient.kpidashboard.common.model.application.Week;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
+
+import com.publicissapient.kpidashboard.common.model.application.Week;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author narsingh9
@@ -116,8 +117,7 @@ public class DateUtil {
 		SimpleDateFormat formatter = new SimpleDateFormat(format);
 		return formatter.format(dateTime);
 	}
-	
-	
+
 	/**
 	 * 
 	 * @param dateTime
@@ -137,8 +137,7 @@ public class DateUtil {
 		return strDate;
 	}
 
-
-	public static LocalDateTime stringToLocalDateTime(String time, String format){
+	public static LocalDateTime stringToLocalDateTime(String time, String format) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
 		return LocalDateTime.parse(time, formatter);
 	}
@@ -158,7 +157,7 @@ public class DateUtil {
 		return week;
 	}
 
-	public static boolean isWithinDateRange(LocalDate targetDate, LocalDate startDate, LocalDate endDate){
+	public static boolean isWithinDateRange(LocalDate targetDate, LocalDate startDate, LocalDate endDate) {
 		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
 	}
 
@@ -171,34 +170,34 @@ public class DateUtil {
 	}
 
 	public static DateTime stringToDateTime(String date, String formater) {
-		 return DateTimeFormat.forPattern(formater)
-				  .parseDateTime(date);
+		return DateTimeFormat.forPattern(formater).parseDateTime(date);
 	}
 
-	public static LocalDate stringToLocalDate(String time, String format){
+	public static LocalDate stringToLocalDate(String time, String format) {
 		LocalDate formattedDate;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-		try{
-			formattedDate=LocalDate.parse(time, formatter);
-		}
-		catch (DateTimeParseException dateTimeParseException){
-			formattedDate= OffsetDateTime.parse(time).toLocalDate();
+		try {
+			formattedDate = LocalDate.parse(time, formatter);
+		} catch (DateTimeParseException dateTimeParseException) {
+			formattedDate = OffsetDateTime.parse(time).toLocalDate();
 		}
 		return formattedDate;
 	}
 
 	public static long convertStringToLong(String date) {
-		return ZonedDateTime.of(stringToLocalDateTime(date, TIME_FORMAT), ZoneId.systemDefault()).toInstant().toEpochMilli();
+		return ZonedDateTime.of(stringToLocalDateTime(date, TIME_FORMAT), ZoneId.systemDefault()).toInstant()
+				.toEpochMilli();
 	}
 
-	public static LocalDateTime convertingStringToLocalDateTime(String time, String format){
+	public static LocalDateTime convertingStringToLocalDateTime(String time, String format) {
 		Instant timestamp = Instant.parse(time);
-		return  timestamp.atZone(ZoneId.systemDefault()).toLocalDateTime();
+		return timestamp.atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
 
 	public static String getFormattedDate(DateTime dateTime1) {
 		String date = "";
-		if(dateTime1!=null) date = dateTime1.toString();
+		if (dateTime1 != null)
+			date = dateTime1.toString();
 		if (date != null && !date.isEmpty()) {
 			try {
 				DateTime dateTime = ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(date);

@@ -31,8 +31,6 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import com.publicissapient.kpidashboard.apis.logging.KeyValueLoggingCondition;
-
 @RunWith(MockitoJUnitRunner.class)
 public class KeyValueLoggingConditionTest {
 

@@ -31,8 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -53,6 +51,7 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperServic
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -64,6 +63,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 /**
@@ -75,53 +75,40 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class JiraServiceRTest {
 
+	private static String GROUP_PROJECT = "project";
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	KpiHelperService kpiHelperService;
-
 	@Mock
 	FilterHelperService filterHelperService;
-
+	List<KpiElement> mockKpiElementList = new ArrayList<>();
 	@InjectMocks
 	@Spy
 	private JiraServiceR jiraServiceR;
-
 	@Mock
 	private CustomApiConfig customApiConfig;
-
 	@Mock
 	private CacheService cacheService;
-
 	@Mock
 	private RCAServiceImpl rcaServiceImpl;
-
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JiraKPIService> services;
-
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private String[] projectKey;
 	private Set<String> projects;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private List<DataCount> dataCountRCAList = new ArrayList<>();
 	private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
-
-	List<KpiElement> mockKpiElementList = new ArrayList<>();
-
 	private KpiElement rcaKpiElement;
-
 	private Map<String, JiraKPIService<?, ?, ?>> jiraServiceCache = new HashMap<>();
-
 	@Mock
 	private JiraKPIServiceFactory jiraKPIServiceFactory;
-
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-
-	private static String GROUP_PROJECT = "project";
 
 	@Before
 	public void setup() {
@@ -152,7 +139,7 @@ public class JiraServiceRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
-		when(filterHelperService.getHierarachyLevelId(4,"project" ,false)).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(4, "project", false)).thenReturn("project");
 
 		setRcaKpiElement();
 
@@ -253,7 +240,8 @@ public class JiraServiceRTest {
 					.thenReturn(mcokAbstract);
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_REJECTION_RATE.name()))
 					.thenReturn(mcokAbstract);
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_COUNT_BY_PRIORITY.name()))
+			utilities.when(
+					(Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_COUNT_BY_PRIORITY.name()))
 					.thenReturn(mcokAbstract);
 			utilities.when(
 					(Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_REMOVAL_EFFICIENCY.name()))
@@ -369,7 +357,8 @@ public class JiraServiceRTest {
 					.thenReturn(mcokAbstract);
 			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_REJECTION_RATE.name()))
 					.thenReturn(mcokAbstract);
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_COUNT_BY_PRIORITY.name()))
+			utilities.when(
+					(Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_COUNT_BY_PRIORITY.name()))
 					.thenReturn(mcokAbstract);
 			utilities.when(
 					(Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_REMOVAL_EFFICIENCY.name()))
@@ -453,10 +442,12 @@ public class JiraServiceRTest {
 		KpiRequest kpiRequest = new KpiRequest();
 		List<KpiElement> kpiList = new ArrayList<>();
 
-		addKpiElement(kpiList, KPICode.DEFECT_COUNT_BY_RCA.getKpiId(), KPICode.DEFECT_COUNT_BY_RCA.name(), "Category One", "");
+		addKpiElement(kpiList, KPICode.DEFECT_COUNT_BY_RCA.getKpiId(), KPICode.DEFECT_COUNT_BY_RCA.name(),
+				"Category One", "");
 		addKpiElement(kpiList, KPICode.DEFECT_INJECTION_RATE.getKpiId(), KPICode.DEFECT_INJECTION_RATE.name(),
 				"Category One", "%");
-		addKpiElement(kpiList, KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId(), KPICode.DEFECT_COUNT_BY_PRIORITY.name(), "Category One", "");
+		addKpiElement(kpiList, KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId(), KPICode.DEFECT_COUNT_BY_PRIORITY.name(),
+				"Category One", "");
 		addKpiElement(kpiList, KPICode.DEFECT_REJECTION_RATE.getKpiId(), KPICode.DEFECT_REJECTION_RATE.name(),
 				"Category One", "%");
 		addKpiElement(kpiList, KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId(), KPICode.DEFECT_REMOVAL_EFFICIENCY.name(),

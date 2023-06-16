@@ -20,9 +20,9 @@ package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
@@ -170,7 +170,7 @@ public class FieldMappingDTO extends BasicModel {
 
 	// issue status to exclude missing worklogs
 	private List<String> issueStatusToBeExcludedFromMissingWorklogs;
-	//field for FTPR
+	// field for FTPR
 	private List<String> jiraFTPRStoryIdentification;
 
 	@Builder.Default
@@ -191,21 +191,21 @@ public class FieldMappingDTO extends BasicModel {
 	// issue On Hold status to exclude Closure possible
 	private List<String> jiraOnHoldStatus;
 
-	//field for Wasting - wait status
+	// field for Wasting - wait status
 	private List<String> jiraWaitStatus;
 
-	//field for Wasting - block status
+	// field for Wasting - block status
 	private List<String> jiraBlockedStatus;
 
-	//field for Wasting - Include Blocked Status
+	// field for Wasting - Include Blocked Status
 	private String jiraIncludeBlockedStatus;
 
-	//field for In Progress status
+	// field for In Progress status
 	private List<String> jiraStatusForInProgress;
 
-	//for for JiraDueDate
+	// for for JiraDueDate
 	@Builder.Default
-	private String jiraDueDateField= CommonConstant.DUE_DATE;
+	private String jiraDueDateField = CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
 	private String jiraDevDueDateCustomField;
 	private List<String> jiraDevDoneStatus;

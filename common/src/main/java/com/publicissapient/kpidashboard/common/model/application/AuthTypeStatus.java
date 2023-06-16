@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class AuthTypeStatus {
-    private boolean standardLogin;
-    private boolean adLogin;
+	private boolean standardLogin;
+	private boolean adLogin;
 }

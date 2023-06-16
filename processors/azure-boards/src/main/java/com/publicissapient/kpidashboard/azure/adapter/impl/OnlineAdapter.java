@@ -69,8 +69,10 @@ public class OnlineAdapter implements AzureAdapter {
 	}
 
 	/**
-	 * @param azureProcessorConfig azure processor configuration
-	 * @param client               ProcessorAzureRestClient instance
+	 * @param azureProcessorConfig
+	 *            azure processor configuration
+	 * @param client
+	 *            ProcessorAzureRestClient instance
 	 */
 	public OnlineAdapter(AzureProcessorConfig azureProcessorConfig, ProcessorAzureRestClient client) {
 		this.azureProcessorConfig = azureProcessorConfig;
@@ -115,9 +117,12 @@ public class OnlineAdapter implements AzureAdapter {
 	/**
 	 * Gets list of Azure issues.
 	 *
-	 * @param pageStart   Index where to start the search query at
-	 * @param azureServer the azure server
-	 * @param workItemIds the work item ids
+	 * @param pageStart
+	 *            Index where to start the search query at
+	 * @param azureServer
+	 *            the azure server
+	 * @param workItemIds
+	 *            the work item ids
 	 * @return List of issues
 	 */
 	@Override

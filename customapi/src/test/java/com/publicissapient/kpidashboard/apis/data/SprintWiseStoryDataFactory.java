@@ -17,69 +17,69 @@
 
 package com.publicissapient.kpidashboard.apis.data;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author anisingh4
  */
 @Slf4j
 public class SprintWiseStoryDataFactory {
-    private static final String FILE_PATH = "/json/default/sprint_wise_data.json";
-    private List<SprintWiseStory> sprintWiseStories;
-    private ObjectMapper mapper;
+	private static final String FILE_PATH = "/json/default/sprint_wise_data.json";
+	private List<SprintWiseStory> sprintWiseStories;
+	private ObjectMapper mapper;
 
-    private SprintWiseStoryDataFactory() {
-    }
+	private SprintWiseStoryDataFactory() {
+	}
 
-    public static SprintWiseStoryDataFactory newInstance(String filePath) {
+	public static SprintWiseStoryDataFactory newInstance(String filePath) {
 
+		SprintWiseStoryDataFactory factory = new SprintWiseStoryDataFactory();
+		factory.createObjectMapper();
+		factory.init(filePath);
+		return factory;
+	}
 
-        SprintWiseStoryDataFactory factory = new SprintWiseStoryDataFactory();
-        factory.createObjectMapper();
-        factory.init(filePath);
-        return factory;
-    }
+	public static SprintWiseStoryDataFactory newInstance() {
 
-    public static SprintWiseStoryDataFactory newInstance() {
+		return newInstance(null);
+	}
 
-        return newInstance(null);
-    }
+	private void init(String filePath) {
+		try {
 
-    private void init(String filePath) {
-        try {
+			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH : filePath;
 
-            String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH : filePath;
+			sprintWiseStories = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
+					new TypeReference<List<SprintWiseStory>>() {
+					});
+		} catch (IOException e) {
+			log.error("Error in reading sprint wise data from file = " + filePath, e);
+		}
+	}
 
-            sprintWiseStories = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
-                    new TypeReference<List<SprintWiseStory>>() {
-                    });
-        } catch (IOException e) {
-            log.error("Error in reading sprint wise data from file = " + filePath, e);
-        }
-    }
+	private void createObjectMapper() {
 
-    private void createObjectMapper() {
+		if (mapper == null) {
+			mapper = new ObjectMapper();
+			mapper.registerModule(new JavaTimeModule());
+			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		}
+	}
 
-        if (mapper == null) {
-            mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        }
-    }
-
-    public List<SprintWiseStory> getSprintWiseStories() {
-        return sprintWiseStories;
-    }
+	public List<SprintWiseStory> getSprintWiseStories() {
+		return sprintWiseStories;
+	}
 }

@@ -56,22 +56,18 @@ import lombok.extern.slf4j.Slf4j;
 public class CacheServiceImpl implements CacheService {
 
 	@Autowired
+	HierarchyLevelService hierarchyLevelService;
+	@Autowired
 	private AccountHierarchyServiceImpl accountHierarchyService;
-
 	@Autowired
 	private AccountHierarchyServiceKanbanImpl accountHierarchyServiceKanban;
-
 	@Autowired
 	@Qualifier("cacheManager")
 	private CacheManager cacheManager;
-
 	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
-	
-	@Autowired
-	HierarchyLevelService hierarchyLevelService;
 
 	@Override
 	public void clearCache(String cacheName) {
@@ -220,7 +216,7 @@ public class CacheServiceImpl implements CacheService {
 		}
 		return "";
 	}
-	
+
 	@Cacheable(Constant.CACHE_HIERARCHY_LEVEL)
 	@Override
 	public List<HierarchyLevel> getFullHierarchyLevel() {
@@ -234,7 +230,7 @@ public class CacheServiceImpl implements CacheService {
 		log.info("Caching Kanban Hierarchy level");
 		return hierarchyLevelService.getFullHierarchyLevels(true);
 	}
-	
+
 	@Cacheable(Constant.CACHE_HIERARCHY_LEVEL_MAP)
 	@Override
 	public Map<String, HierarchyLevel> getFullHierarchyLevelMap() {
@@ -247,16 +243,18 @@ public class CacheServiceImpl implements CacheService {
 	@Override
 	public Map<String, HierarchyLevel> getFullKanbanHierarchyLevelMap() {
 		log.info("Caching Hierarchy level kanban Map");
-		return getFullKanbanHierarchyLevel().stream().collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		return getFullKanbanHierarchyLevel().stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 
 	}
-	
+
 	@Cacheable(Constant.CACHE_ADDITIONAL_FILTER_HIERARCHY_LEVEL)
 	@Override
 	public Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel() {
 		log.info("Caching Additional Filter Category Map");
 		List<AdditionalFilterCategory> hierarchyLevels = additionalFilterCategoryRepository.findAll();
-		return hierarchyLevels.stream().collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
+		return hierarchyLevels.stream()
+				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
 
 	}
 }

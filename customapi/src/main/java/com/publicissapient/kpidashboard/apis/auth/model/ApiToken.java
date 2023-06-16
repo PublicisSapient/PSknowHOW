@@ -25,7 +25,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.google.common.hash.Hashing;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * The type Api token.

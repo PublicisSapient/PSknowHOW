@@ -18,13 +18,13 @@
 
 package com.publicissapient.kpidashboard.common.repository.application;
 
-import com.mongodb.BasicDBObject;
-import com.publicissapient.kpidashboard.common.model.application.Build;
-import org.bson.types.ObjectId;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.bson.types.ObjectId;
+
+import com.publicissapient.kpidashboard.common.model.application.Build;
 
 /**
  * The interface Build repository custom.
@@ -32,14 +32,15 @@ import java.util.Set;
  * @author anisingh4
  */
 public interface BuildRepositoryCustom {
-    /**
-     * Find build list using date wise and projectBasicConfigIds
-     *
-     * @param mapOfFilters
-     * @param projectBasicConfigIds
-     * @param startDate
-     * @param endDate
-     * @return the list of Build
-     */
-    List<Build> findBuildList(Map<String, List<String>> mapOfFilters , Set<ObjectId> projectBasicConfigIds , String startDate , String endDate);
+	/**
+	 * Find build list using date wise and projectBasicConfigIds
+	 *
+	 * @param mapOfFilters
+	 * @param projectBasicConfigIds
+	 * @param startDate
+	 * @param endDate
+	 * @return the list of Build
+	 */
+	List<Build> findBuildList(Map<String, List<String>> mapOfFilters, Set<ObjectId> projectBasicConfigIds,
+			String startDate, String endDate);
 }

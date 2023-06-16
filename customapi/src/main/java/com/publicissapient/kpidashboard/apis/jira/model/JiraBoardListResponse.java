@@ -1,8 +1,8 @@
 package com.publicissapient.kpidashboard.apis.jira.model;
 
-import lombok.Data;
-
 import java.util.List;
+
+import lombok.Data;
 
 /**
  * Search in board list response data.

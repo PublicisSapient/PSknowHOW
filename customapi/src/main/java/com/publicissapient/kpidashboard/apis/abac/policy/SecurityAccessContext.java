@@ -25,7 +25,8 @@ public class SecurityAccessContext {
 	private Object action;
 	private Object environment;
 
-	public SecurityAccessContext(Object projectAccessManager, Object subject, Object resource, Object action, Object environment) {
+	public SecurityAccessContext(Object projectAccessManager, Object subject, Object resource, Object action,
+			Object environment) {
 		super();
 		this.projectAccessManager = projectAccessManager;
 		this.subject = subject;
@@ -45,24 +46,31 @@ public class SecurityAccessContext {
 	public Object getSubject() {
 		return subject;
 	}
+
 	public void setSubject(Object subject) {
 		this.subject = subject;
 	}
+
 	public Object getResource() {
 		return resource;
 	}
+
 	public void setResource(Object resource) {
 		this.resource = resource;
 	}
+
 	public Object getAction() {
 		return action;
 	}
+
 	public void setAction(Object action) {
 		this.action = action;
 	}
+
 	public Object getEnvironment() {
 		return environment;
 	}
+
 	public void setEnvironment(Object environment) {
 		this.environment = environment;
 	}

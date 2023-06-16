@@ -18,23 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
-import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
-import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
-import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
-import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
-import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
-import com.publicissapient.kpidashboard.common.model.application.Deployment;
-import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -45,6 +28,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.publicissapient.kpidashboard.apis.enums.PushValidationType;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataDetail;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushErrorData;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
+import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -63,10 +65,11 @@ public class DeployServiceImpl {
 	 * @param deploymentList
 	 * @param deployErrorList
 	 * @param pushDataDetails
-     * @return
+	 * @return
 	 */
 	public int checkandCreateDeployment(ObjectId basicProjectConfigId, Set<PushDeploy> deployList,
-										List<Deployment> deploymentList, List<PushErrorData> deployErrorList, List<PushDataDetail> pushDataDetails) {
+			List<Deployment> deploymentList, List<PushErrorData> deployErrorList,
+			List<PushDataDetail> pushDataDetails) {
 		AtomicInteger failedRecords = new AtomicInteger();
 		if (CollectionUtils.isNotEmpty(deployList)) {
 			deployList.forEach(pushDeploy -> {
@@ -93,11 +96,11 @@ public class DeployServiceImpl {
 	}
 
 	private PushDataDetail createTraceLog(PushErrorData pushErrorData) {
-		PushDataDetail pushDataDetail=new PushDataDetail();
+		PushDataDetail pushDataDetail = new PushDataDetail();
 		pushDataDetail.setTool("deploy");
 		pushDataDetail.setJobName(pushErrorData.getJobName());
 		pushDataDetail.setJobNumber(pushErrorData.getNumber());
-		List<String> errors=new ArrayList<>();
+		List<String> errors = new ArrayList<>();
 		if (MapUtils.isNotEmpty(pushErrorData.getErrors())) {
 			pushErrorData.getErrors().forEach((k, v) -> errors.add(k + ":" + v));
 		}
@@ -106,7 +109,8 @@ public class DeployServiceImpl {
 	}
 
 	/**
-	 *create Deployment Object based on the existence in collection
+	 * create Deployment Object based on the existence in collection
+	 * 
 	 * @param basicProjectConfigId
 	 * @param pushDeploy
 	 * @param checkExisitingDeployment

@@ -18,12 +18,8 @@
 package com.publicissapient.kpidashboard.apis.data;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -86,7 +82,7 @@ public class AccountHierarchyFilterDataFactory {
 		}
 	}
 
-    public List<AccountHierarchyData> getAccountHierarchyDataList() {
-        return accountHierarchyDataList;
-    }
+	public List<AccountHierarchyData> getAccountHierarchyDataList() {
+		return accountHierarchyDataList;
+	}
 }

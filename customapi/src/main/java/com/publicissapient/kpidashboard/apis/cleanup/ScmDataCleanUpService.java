@@ -23,7 +23,6 @@ import static com.publicissapient.kpidashboard.common.constant.CommonConstant.CA
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectToo
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 /**
  * @author anisingh4
@@ -91,8 +91,8 @@ public class ScmDataCleanUpService implements ToolDataCleanUpService {
 			processorItemRepository.deleteByToolConfigId(tool.getId());
 
 			// delete processors trace logs
-			processorExecutionTraceLogRepository.deleteByBasicProjectConfigIdAndProcessorName(tool.getBasicProjectConfigId().toHexString(),
-					tool.getToolName());
+			processorExecutionTraceLogRepository.deleteByBasicProjectConfigIdAndProcessorName(
+					tool.getBasicProjectConfigId().toHexString(), tool.getToolName());
 
 			cleanCache(tool);
 

@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.abac;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
 
 public interface AccessRequestListener {
-    void onSuccess(AccessRequest accessRequest);
-    void onFailure(String message);
+	void onSuccess(AccessRequest accessRequest);
+
+	void onFailure(String message);
 }

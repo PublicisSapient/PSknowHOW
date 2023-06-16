@@ -41,7 +41,6 @@ public class BambooProcessorApplication {
 		SpringApplication.run(BambooProcessorApplication.class, args);
 	}
 
-
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public RestTemplate restTemplate() {

@@ -86,7 +86,7 @@ public class JiraController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/jira/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	//@PreAuthorize("hasPermission(null,'KPI_FILTER')")
+	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getJiraAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception {// NOSONAR
 
@@ -122,7 +122,7 @@ public class JiraController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/jirakanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	//@PreAuthorize("hasPermission(null,'KPI_FILTER')")
+	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getJiraKanbanAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception { // NOSONAR
 		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
@@ -156,7 +156,8 @@ public class JiraController {
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
 					"Not found any configure board details with provided connection details", null));
 		} else {
-			return ResponseEntity.ok().body(new ServiceResponse(true, "Successfully fetched board details list", boardDetailsList));
+			return ResponseEntity.ok()
+					.body(new ServiceResponse(true, "Successfully fetched board details list", boardDetailsList));
 		}
 	}
 

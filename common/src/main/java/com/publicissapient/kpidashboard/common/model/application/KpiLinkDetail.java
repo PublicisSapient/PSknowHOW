@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class KpiLinkDetail {
-    private String text;
-    private String link;
+	private String text;
+	private String link;
 }

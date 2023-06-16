@@ -34,7 +34,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -54,6 +53,7 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -118,7 +118,8 @@ public class QualityStatusServiceImplTest {
 		storyList = jiraIssueDataFactory.findIssueByNumberList(jiraIssueList);
 
 		bugList = jiraIssueDataFactory.getBugs();
-		List<String> linked = bugList.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream).collect(Collectors.toList());
+		List<String> linked = bugList.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
+				.collect(Collectors.toList());
 		linkedStories = jiraIssueDataFactory.findIssueByNumberList(linked);
 	}
 
@@ -134,7 +135,7 @@ public class QualityStatusServiceImplTest {
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMapping.setJiraDefectRejectionStatus("");
-		fieldMapping.setResolutionTypeForRejection(Arrays.asList("Invalid","Duplicate","Unrequired"));
+		fieldMapping.setResolutionTypeForRejection(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}
@@ -148,7 +149,7 @@ public class QualityStatusServiceImplTest {
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(linkedStories);
-		when(jiraIssueRepository.findLinkedDefects(anyMap() , any() , anyMap())).thenReturn(bugList);
+		when(jiraIssueRepository.findLinkedDefects(anyMap(), any(), anyMap())).thenReturn(bugList);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9 ";
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);

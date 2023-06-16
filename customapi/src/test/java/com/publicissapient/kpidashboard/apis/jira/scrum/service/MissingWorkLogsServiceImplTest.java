@@ -29,13 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
-import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -49,8 +42,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
+import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
+import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -60,6 +59,7 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -73,14 +73,11 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 public class MissingWorkLogsServiceImplTest {
 
 	@Mock
+	CacheService cacheService;
+	@Mock
 	private JiraIssueRepository jiraIssueRepository;
-
 	@Mock
 	private ConfigHelperService configHelperService;
-
-	@Mock
-	CacheService cacheService;
-
 	@Mock
 	private ProjectBasicConfigRepository projectConfigRepository;
 
@@ -111,23 +108,27 @@ public class MissingWorkLogsServiceImplTest {
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
-		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance("/json/filters/extra_jira_issues.json");
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory
+				.newInstance("/json/filters/extra_jira_issues.json");
 		totalStoryList = jiraIssueDataFactory.findIssueInTypeNames(Arrays.asList("Story"));
 
-		storyList=totalStoryList.stream().filter(filter->
-				!Arrays.asList("Open","Dropped").contains(filter.getStatus())).collect(Collectors.toList());
+		storyList = totalStoryList.stream()
+				.filter(filter -> !Arrays.asList("Open", "Dropped").contains(filter.getStatus()))
+				.collect(Collectors.toList());
 
 		setMockProjectConfig();
 		setMockFieldMapping();
 		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(0);
 
 	}
+
 	private void setMockProjectConfig() {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
 		projectConfig.setProjectName("Scrum Project");
 		projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 	}
+
 	private void setMockFieldMapping() {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
@@ -143,7 +144,8 @@ public class MissingWorkLogsServiceImplTest {
 	public void testGetKpiDataProject() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(storyList);
+		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(storyList);
 		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any())).thenReturn(totalStoryList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
@@ -153,7 +155,7 @@ public class MissingWorkLogsServiceImplTest {
 		try {
 			KpiElement kpiElement = missingWorkLogsServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Project Count : ", ((List<DataCount>)kpiElement.getTrendValueList()).size(), equalTo(1));
+			assertThat("Project Count : ", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
 		} catch (ApplicationException enfe) {
 
 		}

@@ -30,16 +30,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
@@ -54,9 +51,12 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -189,7 +189,8 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		iterationKpiModalVal.setPriority(iterationStatus.getPriority());
 		iterationKpiModalVal.setDescription(iterationStatus.getIssueDescription());
 		iterationKpiModalVal.setIssueStatus(iterationStatus.getIssueStatus());
-		iterationKpiModalVal.setDueDate(DateUtil.dateTimeConverter(iterationStatus.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT));
+		iterationKpiModalVal.setDueDate(DateUtil.dateTimeConverter(iterationStatus.getDueDate(),
+				DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT));
 		if (iterationStatus.getRemainingEstimateMinutes() != null)
 			iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes());
 		else
@@ -208,7 +209,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public void populateIterationDataForDefectWithoutStory(List<IterationKpiModalValue> overAllModalValues,
-														   IssueBacklog issueBacklog) {
+			IssueBacklog issueBacklog) {
 
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueId(issueBacklog.getNumber());
@@ -222,8 +223,8 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
 		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDevDoneStatus())) {
 			devCompleteDate = filterStatusUpdationLog.stream()
-					.filter(jiraHistoryChangeLog -> fieldMapping.getJiraDevDoneStatus()
-							.contains(jiraHistoryChangeLog.getChangedTo()) && jiraHistoryChangeLog.getUpdatedOn() != null)
+					.filter(jiraHistoryChangeLog -> fieldMapping.getJiraDevDoneStatus().contains(
+							jiraHistoryChangeLog.getChangedTo()) && jiraHistoryChangeLog.getUpdatedOn() != null)
 					.findFirst()
 					.map(jiraHistoryChangeLog -> LocalDate
 							.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
@@ -308,11 +309,13 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return jiraService.getJiraIssueReleaseForProject(basicProjectConfigId);
 	}
 
-	public void getModifiedSprintDetailsFromBaseClass(List<SprintDetails> sprintDetails, ConfigHelperService configHelperService) {
+	public void getModifiedSprintDetailsFromBaseClass(List<SprintDetails> sprintDetails,
+			ConfigHelperService configHelperService) {
 		jiraService.processSprintBasedOnFieldMapping(sprintDetails, configHelperService);
 	}
+
 	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
-									List<IterationKpiModalValue> modalValues, IssueBacklog issueBacklog) {
+			List<IterationKpiModalValue> modalValues, IssueBacklog issueBacklog) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 		iterationKpiModalValue.setIssueType(issueBacklog.getTypeName());
 		iterationKpiModalValue.setIssueURL(issueBacklog.getUrl());

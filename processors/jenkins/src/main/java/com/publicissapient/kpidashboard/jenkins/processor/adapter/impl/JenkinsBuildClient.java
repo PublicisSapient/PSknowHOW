@@ -42,6 +42,7 @@ import org.springframework.web.client.RestOperations;
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.jenkins.config.Constants;
@@ -49,7 +50,6 @@ import com.publicissapient.kpidashboard.jenkins.config.JenkinsConfig;
 import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
 import com.publicissapient.kpidashboard.jenkins.util.ProcessorUtils;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -214,7 +214,8 @@ public class JenkinsBuildClient implements JenkinsClient {
 
 			log.debug("Process jobName {}  jobURL {} ", jobName, jobURL);
 
-			processJobDetailsRecursively(jsonJob, jobName, jobURL, jenkinsServer.getUrl(), result, jenkinsServer, proBasicConfig);
+			processJobDetailsRecursively(jsonJob, jobName, jobURL, jenkinsServer.getUrl(), result, jenkinsServer,
+					proBasicConfig);
 		} catch (ParseException e) {
 			log.error(String.format("Parsing jobs details on instance: %s", jenkinsServer.getUrl()), e);
 		}
@@ -224,19 +225,20 @@ public class JenkinsBuildClient implements JenkinsClient {
 	 * Provides Job details recursively.
 	 *
 	 * @param jsonJob
-	 * 		the job detail in json
+	 *            the job detail in json
 	 * @param jobName
-	 * 		the job name
+	 *            the job name
 	 * @param jobURL
-	 * 		the job URL
+	 *            the job URL
 	 * @param instanceUrl
-	 * 		the jenkins instance URL
+	 *            the jenkins instance URL
 	 * @param result
-	 * 		the list of build
+	 *            the list of build
 	 * @param proBasicConfig
 	 */
 	private void processJobDetailsRecursively(JSONObject jsonJob, String jobName, String jobURL, String instanceUrl,
-			Map<ObjectId, Set<Build>> result, ProcessorToolConnection jenkinsServer, ProjectBasicConfig proBasicConfig) {
+			Map<ObjectId, Set<Build>> result, ProcessorToolConnection jenkinsServer,
+			ProjectBasicConfig proBasicConfig) {
 		log.debug("recursiveGetJobDetails: jobName {} jobURL: {}", jobName, jobURL);
 
 		JSONArray jsonBuilds = ProcessorUtils.getJsonArray(jsonJob, Constants.BUILDS);

@@ -40,7 +40,8 @@ public class UserInfoCustomRepositoryImpl implements UserInfoCustomRepository {
 	@Override
 	public List<UserInfo> findByProjectAccess(String basicProjectConfigId) {
 		Query query = new Query();
-		query.addCriteria(Criteria.where("projectsAccess.accessNodes.accessLevel").is(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT));
+		query.addCriteria(
+				Criteria.where("projectsAccess.accessNodes.accessLevel").is(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT));
 		query.addCriteria(Criteria.where("projectsAccess.accessNodes.accessItems.itemId").is(basicProjectConfigId));
 		return mongoOperations.find(query, UserInfo.class);
 	}

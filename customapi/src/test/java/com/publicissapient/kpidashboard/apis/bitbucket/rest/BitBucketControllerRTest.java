@@ -38,7 +38,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.publicissapient.kpidashboard.apis.bitbucket.rest.BitBucketController;
 import com.publicissapient.kpidashboard.apis.bitbucket.service.BitBucketServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.bitbucket.service.BitBucketServiceR;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -76,9 +75,8 @@ public class BitBucketControllerRTest {
 				+ "      \"kpiId\": \"kpi11\",\n" + "      \"kpiName\": \"BitBucketCheck-ins\",\n"
 				+ "      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Productivity\",\n"
 				+ "      \"kpiUnit\": \"Number\",\n" + "      \"kpiSource\": \"BitBucket\",\n"
-				+ "      \"maxValue\": \"\",\n"
-				+ "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n" + "  \"ids\": [\n"
-				+ "    \"GMA_GMA\"\n" + "  ],\n" + "  \"level\": 1\n" + "}";
+				+ "      \"maxValue\": \"\",\n" + "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n"
+				+ "  \"ids\": [\n" + "    \"GMA_GMA\"\n" + "  ],\n" + "  \"level\": 1\n" + "}";
 
 		List<KpiElement> kpiElementList = new ArrayList<>();
 		KpiElement kpiElement = new KpiElement();
@@ -98,8 +96,6 @@ public class BitBucketControllerRTest {
 		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
 				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 
-
-
 		mockMvc.perform(post("/bitbucket/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
 
@@ -111,9 +107,8 @@ public class BitBucketControllerRTest {
 				+ "      \"kpiId\": \"kpi11\",\n" + "      \"kpiName\": \"BitBucketCheck-ins\",\n"
 				+ "      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Productivity\",\n"
 				+ "      \"kpiUnit\": \"Number\",\n" + "      \"kpiSource\": \"BitBucket\",\n"
-				+ "      \"maxValue\": \"\",\n"
-				+ "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n" + "  \"ids\": [\n"
-				+ "    \"GMA_GMA\"\n" + "  ],\n" + "  \"level\": 1\n" + "}";
+				+ "      \"maxValue\": \"\",\n" + "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n"
+				+ "  \"ids\": [\n" + "    \"GMA_GMA\"\n" + "  ],\n" + "  \"level\": 1\n" + "}";
 
 		List<KpiElement> kpiElementList = new ArrayList<>();
 		KpiElement kpiElement = new KpiElement();
@@ -123,8 +118,7 @@ public class BitBucketControllerRTest {
 		kpiElementList.add(kpiElement);
 
 		when(bitbucketServiceKanban.process(Mockito.any())).thenReturn(kpiElementList);
-		mockMvc.perform(
-				post("/bitbucketkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/bitbucketkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
 				.andExpect(status().is2xxSuccessful());
 
 	}
@@ -135,10 +129,7 @@ public class BitBucketControllerRTest {
 		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
 				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 
-
-
-		mockMvc.perform(
-				post("/bitbucketkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/bitbucketkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}

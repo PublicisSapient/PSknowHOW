@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.apis.autoapprove.rest;
 
 import java.util.Arrays;
+
 import javax.validation.Valid;
 
 import org.bson.types.ObjectId;
@@ -19,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.autoapprove.service.AutoApproveAccessService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.rbac.AutoApproveAccessConfigDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.AutoApproveAccessConfig;
+import com.publicissapient.kpidashboard.common.model.rbac.AutoApproveAccessConfigDTO;
 
 import lombok.extern.slf4j.Slf4j;
 

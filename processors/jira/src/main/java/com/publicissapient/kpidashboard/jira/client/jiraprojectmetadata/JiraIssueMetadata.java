@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JiraIssueMetadata {
-    private Map<String,String> statusMap;
-    private Map<String,String> priorityMap;
-    private Map<String,String> issueTypeMap;
+	private Map<String, String> statusMap;
+	private Map<String, String> priorityMap;
+	private Map<String, String> issueTypeMap;
 }

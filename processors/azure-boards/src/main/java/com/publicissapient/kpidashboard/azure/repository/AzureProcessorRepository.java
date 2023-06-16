@@ -24,6 +24,5 @@ import com.publicissapient.kpidashboard.azure.model.AzureProcessor;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
 @Repository
-public interface AzureProcessorRepository extends
-        ProcessorRepository<AzureProcessor> {
+public interface AzureProcessorRepository extends ProcessorRepository<AzureProcessor> {
 }

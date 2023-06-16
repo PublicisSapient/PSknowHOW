@@ -30,19 +30,17 @@ import com.publicissapient.kpidashboard.common.model.application.Subproject;
  *
  */
 public interface SubProjectRepository extends MongoRepository<Subproject, ObjectId> {
-	
+
 	/**
 	 * @param toolConfiragrationIds
 	 * @return List of SubProjects
 	 */
 	List<Subproject> findBytoolConfigIdIn(List<ObjectId> toolConfiragrationIds);
-	
+
 	/**
 	 * @param projectConfiragrationIds
 	 * @return List of SubProjects
 	 */
 	List<Subproject> findBybasicProjectConfigIdIn(List<ObjectId> projectConfiragrationIds);
-
-	
 
 }

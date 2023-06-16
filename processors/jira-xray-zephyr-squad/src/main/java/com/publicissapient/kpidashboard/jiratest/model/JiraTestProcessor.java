@@ -24,8 +24,7 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorType;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 
 /**
- * @author HirenKumar Babariya
- * The type Jira Test processor.
+ * @author HirenKumar Babariya The type Jira Test processor.
  */
 public class JiraTestProcessor extends Processor {
 

@@ -25,16 +25,6 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
-import net.oauth.OAuth;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
-import net.oauth.OAuthException;
-import net.oauth.OAuthMessage;
-import net.oauth.OAuthServiceProvider;
-import net.oauth.client.OAuthClient;
-import net.oauth.client.httpclient4.HttpClient4;
-import net.oauth.signature.RSA_SHA1;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,6 +38,15 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.google.common.collect.ImmutableList;
 
 import lombok.extern.slf4j.Slf4j;
+import net.oauth.OAuth;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthConsumer;
+import net.oauth.OAuthException;
+import net.oauth.OAuthMessage;
+import net.oauth.OAuthServiceProvider;
+import net.oauth.client.OAuthClient;
+import net.oauth.client.httpclient4.HttpClient4;
+import net.oauth.signature.RSA_SHA1;
 
 /**
  * Provides Azure OAuth client authentication services
@@ -95,7 +94,7 @@ public class AzureOAuthClient {
 			tokenSecretVerifier.verifier = message.getParameter(OAUTH_VERIFIER);
 			return tokenSecretVerifier;
 		} catch (IOException | OAuthException | URISyntaxException e) {
-			throw new RuntimeException("Failed to obtain request token", e); //NOSONAR
+			throw new RuntimeException("Failed to obtain request token", e); // NOSONAR
 		}
 	}
 
@@ -120,7 +119,7 @@ public class AzureOAuthClient {
 					ImmutableList.of(new OAuth.Parameter(OAuth.OAUTH_VERIFIER, oauthVerifier)));
 			return message.getToken();
 		} catch (IOException | OAuthException | URISyntaxException e) {
-			throw new RuntimeException("Failed to get Token from Access Token", e); //NOSONAR
+			throw new RuntimeException("Failed to get Token from Access Token", e); // NOSONAR
 		}
 
 	}
@@ -163,15 +162,9 @@ public class AzureOAuthClient {
 		return azureOAuthProperties.getAzureBaseURL() + "/token/";
 	}
 
-	final class TokenSecretVerifierHolder {
-		private String token;
-		private String verifier; //NOSONAR
-		private String secret;  //NOSONAR
-	}
-
 	/**
 	 * Provides oauthVerifier
-	 * 
+	 *
 	 * @param authorizationUrl
 	 *            authorizationUrl
 	 * @param username
@@ -256,6 +249,12 @@ public class AzureOAuthClient {
 		return azureOauthClient.swapRequestTokenForAccessToken(requestToken.token,
 				azureOAuthProperties.getConsumerKey(), oauthVerifier);
 
+	}
+
+	final class TokenSecretVerifierHolder {
+		private String token;
+		private String verifier; // NOSONAR
+		private String secret; // NOSONAR
 	}
 
 }

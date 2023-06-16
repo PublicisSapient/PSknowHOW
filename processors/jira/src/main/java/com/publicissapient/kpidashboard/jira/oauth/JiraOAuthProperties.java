@@ -38,4 +38,3 @@ public class JiraOAuthProperties {
 	private String accessToken;
 
 }
-

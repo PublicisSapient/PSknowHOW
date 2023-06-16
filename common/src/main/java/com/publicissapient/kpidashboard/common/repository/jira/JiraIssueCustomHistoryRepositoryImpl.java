@@ -50,10 +50,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 @Service
 public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCustomQueryRepository {
 
-	/** The operations. */
-	@Autowired
-	private MongoOperations operations;
-
 	private static final String STATUS_CHANGE_LOG = "statusUpdationLog";
 	private static final String VERSION_CHANGE_LOG = "fixVersionUpdationLog";
 	private static final String UPDATED_ON = "statusUpdationLog.updatedOn";
@@ -66,6 +62,9 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	private static final String BASIC_PROJ_CONF_ID = "basicProjectConfigId";
 	private static final String FIXVERSION_CHANGEDTO = "fixVersionUpdationLog.changedTo";
 	private static final String FIXVERSION_CHANGEDFROM = "fixVersionUpdationLog.changedFrom";
+	/** The operations. */
+	@Autowired
+	private MongoOperations operations;
 
 	/**
 	 * To iso 8601 utc string.
@@ -186,7 +185,6 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
 
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<JiraIssueCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
@@ -217,7 +215,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<JiraIssueCustomHistory> findByFilterAndFromReleaseMap(List<String> basicProjectConfigId,
-																	List<String> releaseList) {
+			List<String> releaseList) {
 		Criteria criteria = new Criteria();
 		criteria = criteria.and(BASIC_PROJ_CONF_ID).in(basicProjectConfigId);
 		List<Criteria> projectCriteriaList = new ArrayList<>();
@@ -239,6 +237,5 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		return operations.find(query, JiraIssueCustomHistory.class);
 
 	}
-
 
 }

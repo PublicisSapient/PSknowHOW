@@ -40,18 +40,8 @@ import lombok.NoArgsConstructor;
 public class GitHubProcessor extends Processor {
 
 	/**
-	 * This method return githubprocessor object
-	 * 
-	 * @return GitHubProcessor
-	 */
-	public static GitHubProcessor prototype() {
-		return GitHubProcessor.processorBuilder().processorName(ProcessorConstants.GITHUB).online(true).enabled(true)
-				.processorType(ProcessorType.SCM).lastExecuted(System.currentTimeMillis()).isLastSuccess(false).build();
-	}
-
-	/**
 	 * The constructor.
-	 * 
+	 *
 	 * @param processorName
 	 *            processorName
 	 * @param processorType
@@ -73,6 +63,16 @@ public class GitHubProcessor extends Processor {
 	public GitHubProcessor(String processorName, ProcessorType processorType, boolean enabled, boolean online,
 			List<ProcessorError> errors, long lastExecuted, ObjectId objectId, boolean isLastSuccess) {
 		super(processorName, processorType, enabled, online, errors, lastExecuted, objectId, isLastSuccess);
+	}
+
+	/**
+	 * This method return githubprocessor object
+	 *
+	 * @return GitHubProcessor
+	 */
+	public static GitHubProcessor prototype() {
+		return GitHubProcessor.processorBuilder().processorName(ProcessorConstants.GITHUB).online(true).enabled(true)
+				.processorType(ProcessorType.SCM).lastExecuted(System.currentTimeMillis()).isLastSuccess(false).build();
 	}
 
 }

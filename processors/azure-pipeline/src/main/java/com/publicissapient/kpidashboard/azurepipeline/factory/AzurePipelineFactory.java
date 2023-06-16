@@ -18,12 +18,14 @@
 
 package com.publicissapient.kpidashboard.azurepipeline.factory;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.publicissapient.kpidashboard.azurepipeline.processor.adapter.AzurePipelineClient;
 import com.publicissapient.kpidashboard.azurepipeline.processor.adapter.impl.AzurePipelineDeploymentClient;
 import com.publicissapient.kpidashboard.azurepipeline.processor.adapter.impl.DefaultAzurePipelineClient;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
@@ -48,7 +50,6 @@ public class AzurePipelineFactory {
 		this.azurePipelineBuildClient = azurePipelineBuildClient;
 		this.azurePipelineDeploymentClient = azurePipelineDeploymentClient;
 	}
-
 
 	/**
 	 *

@@ -22,10 +22,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -119,7 +117,6 @@ public final class AzureProcessorUtil {
 		return formattedDate;
 	}
 
-
 	/**
 	 * Adds parameter to the given url
 	 *
@@ -164,9 +161,9 @@ public final class AzureProcessorUtil {
 		return result.toString();
 	}
 
-	public static String encodeSpaceInUrl(String url){
+	public static String encodeSpaceInUrl(String url) {
 		String resultUrl = null;
-		if (StringUtils.isNotEmpty(url)){
+		if (StringUtils.isNotEmpty(url)) {
 			resultUrl = url.trim().replace(" ", ENCODED_SPACE);
 		}
 

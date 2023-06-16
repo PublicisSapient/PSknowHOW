@@ -95,14 +95,12 @@ public class ProjectBasicConfigDataFactory {
 				.orElse(null);
 	}
 
-
 	public List<ProjectBasicConfig> findScrumProjects() {
 		return projectBasicConfigs.stream().filter(projectBasicConfig -> !projectBasicConfig.getIsKanban())
 				.collect(Collectors.toList());
 	}
 
 	public List<ProjectBasicConfig> findKanbanProjects() {
-		return projectBasicConfigs.stream().filter(ProjectBasicConfig::getIsKanban)
-				.collect(Collectors.toList());
+		return projectBasicConfigs.stream().filter(ProjectBasicConfig::getIsKanban).collect(Collectors.toList());
 	}
 }

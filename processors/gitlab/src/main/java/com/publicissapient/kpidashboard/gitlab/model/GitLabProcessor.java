@@ -31,21 +31,23 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 /**
- * GitLabProcessor represents a class which holds gitlab prototyping and executes the gitlab data and stores in DB.
+ * GitLabProcessor represents a class which holds gitlab prototyping and
+ * executes the gitlab data and stores in DB.
+ * 
  * @see Processor
  */
 @NoArgsConstructor
 public class GitLabProcessor extends Processor {
-	
-	public static GitLabProcessor prototype() {
-		return GitLabProcessor.processorBuilder().processorName(ProcessorConstants.GITLAB).online(true).enabled(true)
-				.processorType(ProcessorType.SCM).lastExecuted(System.currentTimeMillis()).isLastSuccess(false).build();
-	}
 
 	@Builder(builderMethodName = "processorBuilder")
 	public GitLabProcessor(String processorName, ProcessorType processorType, boolean enabled, boolean online,
 			List<ProcessorError> errors, long lastExecuted, ObjectId objectId, boolean isLastSuccess) {
 		super(processorName, processorType, enabled, online, errors, lastExecuted, objectId, isLastSuccess);
+	}
+
+	public static GitLabProcessor prototype() {
+		return GitLabProcessor.processorBuilder().processorName(ProcessorConstants.GITLAB).online(true).enabled(true)
+				.processorType(ProcessorType.SCM).lastExecuted(System.currentTimeMillis()).isLastSuccess(false).build();
 	}
 
 }

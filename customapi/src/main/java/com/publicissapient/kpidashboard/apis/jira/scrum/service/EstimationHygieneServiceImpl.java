@@ -28,8 +28,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +37,7 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
@@ -50,6 +49,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -142,7 +142,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("Estimation Hygiene -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
-			//Creating map of modal Objects
+			// Creating map of modal Objects
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
 					.collect(Collectors.groupingBy(JiraIssue::getTypeName));
@@ -174,7 +174,8 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						issueWithoutEstimate++;
 						overAllWithoutEstimate.set(0, overAllWithoutEstimate.get(0) + 1);
 						// set modal values
-						KPIExcelUtility.populateIterationKPI(withoutEstmodalValues,overAllWithoutEstmodalValues,jiraIssue,fieldMapping,modalObjectMap);
+						KPIExcelUtility.populateIterationKPI(withoutEstmodalValues, overAllWithoutEstmodalValues,
+								jiraIssue, fieldMapping, modalObjectMap);
 					}
 
 					if ((jiraIssue.getTimeSpentInMinutes() == null || jiraIssue.getTimeSpentInMinutes() == 0)
@@ -182,7 +183,8 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						issueMissingLog++;
 						overAllMissingLog.set(0, overAllMissingLog.get(0) + 1);
 						// set modal values
-						KPIExcelUtility.populateIterationKPI(missingmodalValues,overAllMissingModalValues,jiraIssue,fieldMapping,modalObjectMap);
+						KPIExcelUtility.populateIterationKPI(missingmodalValues, overAllMissingModalValues, jiraIssue,
+								fieldMapping, modalObjectMap);
 					}
 
 				}
@@ -233,4 +235,3 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 	}
 
 }
-

@@ -33,9 +33,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	/**
 	 * Added for security
-	 * @param web - reference to WebSecurity
+	 * 
+	 * @param web
+	 *            - reference to WebSecurity
 	 */
-	
+
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/**");

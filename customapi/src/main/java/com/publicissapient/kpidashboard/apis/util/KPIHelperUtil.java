@@ -84,8 +84,7 @@ public final class KPIHelperUtil {
 			aggregationTreeNodeList
 					.add(new Node(0, rootId, rootId, null, Filters.ROOT.name(), new KanbanAccountHierarchy()));
 		} else {
-			aggregationTreeNodeList
-					.add(new Node(0, rootId, rootId, null, Filters.ROOT.name(), new AccountHierarchy()));
+			aggregationTreeNodeList.add(new Node(0, rootId, rootId, null, Filters.ROOT.name(), new AccountHierarchy()));
 		}
 
 		aggregationTreeNodeList.stream().filter(node -> node.getGroupName().equalsIgnoreCase(firstLevel))
@@ -149,8 +148,7 @@ public final class KPIHelperUtil {
 					node.getAccountHierarchy().getBasicProjectConfigId()));
 			node.setSprintFilter(new SprintFilter(node.getId(), node.getName(),
 					node.getAccountHierarchy().getBeginDate(), node.getAccountHierarchy().getEndDate()));
-		}
-		else if (node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)) {
+		} else if (node.getGroupName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE)) {
 			node.setProjectFilter(new ProjectFilter(node.getParent().getId(), node.getParent().getName(),
 					node.getAccountHierarchy().getBasicProjectConfigId()));
 			node.setReleaseFilter(new ReleaseFilter(node.getId(), node.getName(),
@@ -389,7 +387,7 @@ public final class KPIHelperUtil {
 	}
 
 	public static Map<String, Long> setpriorityScrumForBacklog(List<IssueBacklog> sprintWiseDefectDataList,
-													 CustomApiConfig customApiConfig) {
+			CustomApiConfig customApiConfig) {
 		Map<String, Long> priorityCountMap = new HashMap<>();
 		Long p1Count = 0L;
 		Long p2Count = 0L;

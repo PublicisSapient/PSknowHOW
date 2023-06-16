@@ -39,7 +39,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -50,12 +49,17 @@ import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.exceptions.TemplateInputException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.kafka.producer.NotificationEventProducer;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -71,10 +75,6 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.exceptions.TemplateInputException;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 /**
  * Implementation of {@link CommonService} to get maturity level
@@ -92,19 +92,19 @@ public class CommonServiceImpl implements CommonService {
 
 	@Autowired
 	private UserInfoRepository userInfoRepository;
-	
+
 	@Autowired
 	private AuthenticationRepository authenticationRepository;
-	
+
 	@Autowired
 	private NotificationEventProducer notificationEventProducer;
-	
+
 	@Autowired
 	private CustomApiConfig customApiConfig;
-	
+
 	@Autowired
 	private HttpServletRequest request;
-	
+
 	@Autowired
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
 
@@ -223,7 +223,8 @@ public class CommonServiceImpl implements CommonService {
 	 * @return
 	 */
 	private boolean hasSingleValueList(String type) {
-		return KPICode.CODE_QUALITY.getKpiId().equalsIgnoreCase(type) || KPICode.CODE_QUALITY_KANBAN.getKpiId().equalsIgnoreCase(type);
+		return KPICode.CODE_QUALITY.getKpiId().equalsIgnoreCase(type)
+				|| KPICode.CODE_QUALITY_KANBAN.getKpiId().equalsIgnoreCase(type);
 	}
 
 	/**
@@ -239,6 +240,7 @@ public class CommonServiceImpl implements CommonService {
 
 	/**
 	 * This method is to search the email addresses based on roles
+	 * 
 	 * @param roles
 	 * @return list of email addresses
 	 */
@@ -260,7 +262,7 @@ public class CommonServiceImpl implements CommonService {
 		}
 		return emailAddresses.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * This method get list of project admin email address
 	 * 
@@ -298,17 +300,18 @@ public class CommonServiceImpl implements CommonService {
 		}
 		return emailAddresses.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * This method createaproject map
 	 * 
-	 * @param projectConfigId projectConfigId
+	 * @param projectConfigId
+	 *            projectConfigId
 	 * @return map
 	 */
-	private Map<String,String> getHierarchyMap(String projectConfigId){
-		Map<String,String> map = new HashMap<>();
+	private Map<String, String> getHierarchyMap(String projectConfigId) {
+		Map<String, String> map = new HashMap<>();
 		Optional<ProjectBasicConfig> basicConfig = projectBasicConfigRepository.findById(new ObjectId(projectConfigId));
-		if(basicConfig.isPresent()) {
+		if (basicConfig.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = basicConfig.get();
 			CollectionUtils.emptyIfNull(projectBasicConfig.getHierarchy()).stream()
 					.sorted(Comparator.comparing(
@@ -317,10 +320,10 @@ public class CommonServiceImpl implements CommonService {
 							hierarchyValue.getValue()));
 			map.put(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, projectBasicConfig.getId().toHexString());
 		}
-		
+
 		return map;
 	}
-	
+
 	/**
 	 * This method create EmailEvent object and send async message to kafka broker
 	 */
@@ -342,13 +345,12 @@ public class CommonServiceImpl implements CommonService {
 						notSubject);
 			}
 		} else {
-			String templateKey = customApiConfig.getMailTemplate().getOrDefault(notKey,"");
+			String templateKey = customApiConfig.getMailTemplate().getOrDefault(notKey, "");
 			sendEmailWithoutKafka(emailAddresses, customData, notSubject, notKey, topic, templateKey);
 		}
 
 	}
-	
-	
+
 	/**
 	 * 
 	 * Gets api host
@@ -357,7 +359,8 @@ public class CommonServiceImpl implements CommonService {
 
 		StringBuilder urlPath = new StringBuilder();
 		if (StringUtils.isNotEmpty(customApiConfig.getUiHost())) {
-			urlPath.append(request.getScheme()).append(':').append(File.separator + File.separator).append(customApiConfig.getUiHost().trim());
+			urlPath.append(request.getScheme()).append(':').append(File.separator + File.separator)
+					.append(customApiConfig.getUiHost().trim());
 			// append port if local setup
 			if (StringUtils.isNotEmpty(customApiConfig.getUiPort())) {
 				urlPath.append(':').append(customApiConfig.getUiPort());
@@ -368,7 +371,7 @@ public class CommonServiceImpl implements CommonService {
 
 		return urlPath.toString();
 	}
-	
+
 	/**
 	 * Sort trend value map.
 	 */
@@ -387,24 +390,28 @@ public class CommonServiceImpl implements CommonService {
 	}
 
 	@Override
-	public void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData, String notSubject, String notKey, String topic, String templateKey) {
+	public void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData,
+			String notSubject, String notKey, String topic, String templateKey) {
 		EmailServerDetail emailServerDetail = getEmailServerDetail();
-		if (StringUtils.isNotBlank(notSubject) && emailServerDetail!=null) {
-			EmailEvent emailEvent = new EmailEvent(emailServerDetail.getFromEmail(), emailAddresses, null, null, notSubject, null, additionalData, emailServerDetail.getEmailHost(), emailServerDetail.getEmailPort());
+		if (StringUtils.isNotBlank(notSubject) && emailServerDetail != null) {
+			EmailEvent emailEvent = new EmailEvent(emailServerDetail.getFromEmail(), emailAddresses, null, null,
+					notSubject, null, additionalData, emailServerDetail.getEmailHost(),
+					emailServerDetail.getEmailPort());
 			JavaMailSenderImpl javaMailSender = getJavaMailSender(emailEvent);
 			MimeMessage message = javaMailSender.createMimeMessage();
 			try {
-				MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+				MimeMessageHelper helper = new MimeMessageHelper(message,
+						MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
 				Context context = new Context();
 				Map<String, String> customData = emailEvent.getCustomData();
 				if (MapUtils.isNotEmpty(customData)) {
 					customData.forEach((k, value) -> {
 						BiConsumer<String, Object> setVariable = context::setVariable;
-						setVariable.accept(k,value);
+						setVariable.accept(k, value);
 					});
 				}
 				String html = templateEngine.process(templateKey, context);
-				if(StringUtils.isNotEmpty(html)) {
+				if (StringUtils.isNotEmpty(html)) {
 					helper.setTo(emailEvent.getTo().stream().toArray(String[]::new));
 					helper.setText(html, true);
 					helper.setSubject(emailEvent.getSubject());
@@ -441,6 +448,5 @@ public class CommonServiceImpl implements CommonService {
 		props.put("mail.debug", "true");
 		return mailSender;
 	}
-	
 
 }

@@ -33,19 +33,18 @@ import lombok.Data;
  */
 
 @Data
-public class AccountHierarchyData implements Serializable { 
+public class AccountHierarchyData implements Serializable {
 	// Do not remove NOPMD comment. It ignores TooManyFields violation.
 	// This is required for account heirarchy
 
 	private static final long serialVersionUID = 1L;
-	
-	private String labelName;
-	
-	private String leafNodeId;
-	
-	private ObjectId basicProjectConfigId;
-	
-	private List<Node> node;
 
+	private String labelName;
+
+	private String leafNodeId;
+
+	private ObjectId basicProjectConfigId;
+
+	private List<Node> node;
 
 }

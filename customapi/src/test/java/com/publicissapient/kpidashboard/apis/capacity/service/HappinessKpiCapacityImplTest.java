@@ -16,15 +16,15 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.apis.capacity.service;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiDTO;
-import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
-import com.publicissapient.kpidashboard.common.model.jira.UserRatingDTO;
-import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
-import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
+import static org.testng.Assert.assertEquals;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,80 +33,81 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.testng.Assert.assertEquals;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiDTO;
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
+import com.publicissapient.kpidashboard.common.model.jira.UserRatingDTO;
+import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
+import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HappinessKpiCapacityImplTest {
-    @InjectMocks
-    HappinessKpiCapacityImpl happinessKpiService;
+	@InjectMocks
+	HappinessKpiCapacityImpl happinessKpiService;
 
-    @Mock
-    HappinessKpiDataRepository happinessKpiDataRepository;
+	@Mock
+	HappinessKpiDataRepository happinessKpiDataRepository;
 
-    @Test
-    public void saveHappinessKpiDataSuccessUpdateTest(){
-        Mockito.when(happinessKpiDataRepository.findExistingByBasicProjectConfigIdAndSprintIDAndDateOfSubmission(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(createHappinessData());
-        ServiceResponse serviceResponse = happinessKpiService.saveHappinessKpiData(createHappinessDto());
-        assertEquals(serviceResponse.getSuccess(), Boolean.TRUE);
-    }
+	@Test
+	public void saveHappinessKpiDataSuccessUpdateTest() {
+		Mockito.when(happinessKpiDataRepository.findExistingByBasicProjectConfigIdAndSprintIDAndDateOfSubmission(
+				Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(createHappinessData());
+		ServiceResponse serviceResponse = happinessKpiService.saveHappinessKpiData(createHappinessDto());
+		assertEquals(serviceResponse.getSuccess(), Boolean.TRUE);
+	}
 
-    @Test
-    public void saveHappinessKpiDataSuccessSaveTest(){
-        ServiceResponse serviceResponse = happinessKpiService.saveHappinessKpiData(createHappinessDto());
-        assertEquals(serviceResponse.getSuccess(), Boolean.TRUE);
-    }
+	@Test
+	public void saveHappinessKpiDataSuccessSaveTest() {
+		ServiceResponse serviceResponse = happinessKpiService.saveHappinessKpiData(createHappinessDto());
+		assertEquals(serviceResponse.getSuccess(), Boolean.TRUE);
+	}
 
-    @Test
-    public void saveHappinessKpiDataFailureTest(){
-        ServiceResponse serviceResponse = happinessKpiService.saveHappinessKpiData(null);
-        assertEquals(serviceResponse.getSuccess(), Boolean.FALSE);
-    }
+	@Test
+	public void saveHappinessKpiDataFailureTest() {
+		ServiceResponse serviceResponse = happinessKpiService.saveHappinessKpiData(null);
+		assertEquals(serviceResponse.getSuccess(), Boolean.FALSE);
+	}
 
-    @Test
-    public void saveHappinessKpiDataValidationFailureTest(){
-        HappinessKpiDTO happinessKpiDTO = createHappinessDto();
-        happinessKpiDTO.setSprintID(null);
-        ServiceResponse serviceResponse = happinessKpiService.saveHappinessKpiData(happinessKpiDTO);
-        assertEquals(serviceResponse.getSuccess(), Boolean.FALSE);
-    }
+	@Test
+	public void saveHappinessKpiDataValidationFailureTest() {
+		HappinessKpiDTO happinessKpiDTO = createHappinessDto();
+		happinessKpiDTO.setSprintID(null);
+		ServiceResponse serviceResponse = happinessKpiService.saveHappinessKpiData(happinessKpiDTO);
+		assertEquals(serviceResponse.getSuccess(), Boolean.FALSE);
+	}
 
-    private HappinessKpiData createHappinessData() {
+	private HappinessKpiData createHappinessData() {
 
-        HappinessKpiData happinessKpiData = new HappinessKpiData();
-        happinessKpiData.setBasicProjectConfigId(new ObjectId("64198a3c2a718307f32fb094"));
-        happinessKpiData.setSprintID("41412_Elxi corp_64198a3c2a718307f32fb094");
-        LocalDate localDate = LocalDate.now();
-        DateTimeFormatter formatterLocalDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String result = formatterLocalDate.format(localDate);
-        happinessKpiData.setDateOfSubmission(result);
-        List<UserRatingData> userRatingData = new ArrayList<>();
-        userRatingData.add(new UserRatingData(3,"Adina-Alexandra Ursache","adiursac"));
-        userRatingData.add(new UserRatingData(5,"Akshat Shrivastav","aksshriv1"));
-        userRatingData.add(new UserRatingData(2,"Anil Kumar Singh","anisingh4"));
-        happinessKpiData.setUserRatingList(userRatingData);
-        return happinessKpiData;
-    }
+		HappinessKpiData happinessKpiData = new HappinessKpiData();
+		happinessKpiData.setBasicProjectConfigId(new ObjectId("64198a3c2a718307f32fb094"));
+		happinessKpiData.setSprintID("41412_Elxi corp_64198a3c2a718307f32fb094");
+		LocalDate localDate = LocalDate.now();
+		DateTimeFormatter formatterLocalDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String result = formatterLocalDate.format(localDate);
+		happinessKpiData.setDateOfSubmission(result);
+		List<UserRatingData> userRatingData = new ArrayList<>();
+		userRatingData.add(new UserRatingData(3, "Adina-Alexandra Ursache", "adiursac"));
+		userRatingData.add(new UserRatingData(5, "Akshat Shrivastav", "aksshriv1"));
+		userRatingData.add(new UserRatingData(2, "Anil Kumar Singh", "anisingh4"));
+		happinessKpiData.setUserRatingList(userRatingData);
+		return happinessKpiData;
+	}
 
-    private HappinessKpiDTO createHappinessDto() {
+	private HappinessKpiDTO createHappinessDto() {
 
-        HappinessKpiDTO happinessKpiDTO = new HappinessKpiDTO();
-        happinessKpiDTO.setBasicProjectConfigId("64198a3c2a718307f32fb094");
-        happinessKpiDTO.setSprintID("41412_Elxi corp_64198a3c2a718307f32fb094");
-        LocalDate localDate = LocalDate.now();
-        DateTimeFormatter formatterLocalDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String result = formatterLocalDate.format(localDate);
-        happinessKpiDTO.setDateOfSubmission(result);
-        List<UserRatingDTO> userRatingDTO = new ArrayList<>();
-        userRatingDTO.add(new UserRatingDTO(3,"Adina-Alexandra Ursache","adiursac"));
-        userRatingDTO.add(new UserRatingDTO(5,"Akshat Shrivastav","aksshriv1"));
-        userRatingDTO.add(new UserRatingDTO(2,"Anil Kumar Singh","anisingh4"));
-        happinessKpiDTO.setUserRatingList(userRatingDTO);
-        return happinessKpiDTO;
-    }
+		HappinessKpiDTO happinessKpiDTO = new HappinessKpiDTO();
+		happinessKpiDTO.setBasicProjectConfigId("64198a3c2a718307f32fb094");
+		happinessKpiDTO.setSprintID("41412_Elxi corp_64198a3c2a718307f32fb094");
+		LocalDate localDate = LocalDate.now();
+		DateTimeFormatter formatterLocalDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String result = formatterLocalDate.format(localDate);
+		happinessKpiDTO.setDateOfSubmission(result);
+		List<UserRatingDTO> userRatingDTO = new ArrayList<>();
+		userRatingDTO.add(new UserRatingDTO(3, "Adina-Alexandra Ursache", "adiursac"));
+		userRatingDTO.add(new UserRatingDTO(5, "Akshat Shrivastav", "aksshriv1"));
+		userRatingDTO.add(new UserRatingDTO(2, "Anil Kumar Singh", "anisingh4"));
+		happinessKpiDTO.setUserRatingList(userRatingDTO);
+		return happinessKpiDTO;
+	}
 
 }

@@ -37,6 +37,7 @@ public class ResetPasswordRequest {
 
 	/**
 	 * Sets password
+	 * 
 	 * @param password
 	 */
 	public void setPassword(String password) {
@@ -52,6 +53,7 @@ public class ResetPasswordRequest {
 
 	/**
 	 * Sets resetToken
+	 * 
 	 * @param resetToken
 	 */
 	public void setResetToken(String resetToken) {

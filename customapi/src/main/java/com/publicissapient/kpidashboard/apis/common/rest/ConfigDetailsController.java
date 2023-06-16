@@ -40,9 +40,8 @@ import com.publicissapient.kpidashboard.apis.model.ConfigDetails;
 @RestController
 public class ConfigDetailsController {
 
-	private final ConfigDetailService configDetailService;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigDetailsController.class);
+	private final ConfigDetailService configDetailService;
 
 	@Autowired
 	public ConfigDetailsController(ConfigDetailService configDetailService) {
@@ -51,16 +50,16 @@ public class ConfigDetailsController {
 
 	/**
 	 * Returns required properties from application.prop
+	 * 
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/configDetails", method = GET, produces = APPLICATION_JSON_VALUE)//NOSONAR
+	@RequestMapping(value = "/configDetails", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ConfigDetails> getConfigDetails(HttpServletRequest request) {
 		LOGGER.info("ConfigDetailsController::getConfigDetails start");
 		ConfigDetails configDetails = configDetailService.getConfigDetails();
 		LOGGER.info("ConfigDetailsController::getConfigDetails end");
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(configDetails);
+		return ResponseEntity.status(HttpStatus.OK).body(configDetails);
 	}
 
 }

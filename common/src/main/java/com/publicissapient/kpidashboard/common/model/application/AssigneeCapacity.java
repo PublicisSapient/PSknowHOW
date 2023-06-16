@@ -1,5 +1,8 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
+import com.google.common.base.Objects;
+import com.publicissapient.kpidashboard.common.constant.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,9 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import com.google.common.base.Objects;
-import com.publicissapient.kpidashboard.common.constant.Role;
 
 @Data
 @Builder
@@ -27,7 +27,6 @@ public class AssigneeCapacity {
 	private Double leaves;
 	private Double availableCapacity;
 	private Integer happinessRating;
-
 
 	@Override
 	public boolean equals(Object obj) {

@@ -18,15 +18,13 @@
 
 package com.publicissapient.kpidashboard.apis.auth.ldap;
 
-import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
-import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
-import com.publicissapient.kpidashboard.apis.auth.standard.StandardAuthenticationToken;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,48 +36,40 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
+import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
+import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.auth.standard.StandardAuthenticationToken;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LdapLoginRequestFilterTest {
 
+	ADServerDetail adUserDetail = null;
 	@Mock
 	private AuthenticationManager manager;
-
 	@Mock
 	private AuthenticationResultHandler authenticationResultHandler;
-
 	@Mock
 	private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
-
 	@Mock
 	private AuthenticationResultHandler resultHandler;
-
 	private String path;
-
 	private LdapLoginRequestFilter filter;
-
 	@Mock
 	private HttpServletRequest request;
-
 	@Mock
 	private HttpServletResponse response;
-
 	@Mock
 	private CustomApiConfig customApiConfig;
-	
 	@Mock
 	private ADServerDetailsService adServerDetailsService;
-
 	@Mock
 	private AuthTypesConfigService authTypesConfigService;
-	
-	ADServerDetail adUserDetail = null;
 
 	@Before
 	public void setup() {
@@ -145,9 +135,9 @@ public class LdapLoginRequestFilterTest {
 		assertEquals("", authentication.getCredentials());
 		assertEquals(AuthType.LDAP, authentication.getDetails());
 	}
-	
+
 	@Test(expected = ProviderNotFoundException.class)
-	public void authenticateWithoutProvider(){
+	public void authenticateWithoutProvider() {
 		when(request.getMethod()).thenReturn("POST");
 		String principal = null;
 		String credentials = null;
@@ -158,6 +148,7 @@ public class LdapLoginRequestFilterTest {
 
 		filter.attemptAuthentication(request, response);
 	}
+
 	@Test(expected = AuthenticationServiceException.class)
 	public void shouldThrowExceptionIfDisabled() {
 		AuthTypeStatus authTypeStatus = new AuthTypeStatus();

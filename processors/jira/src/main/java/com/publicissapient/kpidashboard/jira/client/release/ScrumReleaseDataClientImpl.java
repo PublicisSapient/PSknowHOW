@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +50,9 @@ import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactor
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientUtil;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The type Release data client. Store Release data for the projects in
@@ -83,14 +83,14 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 		psLogData.setKanban(String.valueOf(isKanban));
 		log.info("Start Fetching Release Data", kv(CommonConstant.PSLOGDATA, psLogData));
 		try {
-			 List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository
-						.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
-								projectConfig.getBasicProjectConfigId());
-				AccountHierarchy accountHierarchy = CollectionUtils.isNotEmpty(accountHierarchyList)
-						? accountHierarchyList.get(0)
-						: null;
+			List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository
+					.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
+							projectConfig.getBasicProjectConfigId());
+			AccountHierarchy accountHierarchy = CollectionUtils.isNotEmpty(accountHierarchyList)
+					? accountHierarchyList.get(0)
+					: null;
 
-				saveProjectRelease(projectConfig, accountHierarchy, psLogData);
+			saveProjectRelease(projectConfig, accountHierarchy, psLogData);
 
 		} catch (Exception ex) {
 			log.error("No hierarchy data found not processing for Version data",
@@ -98,7 +98,6 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 		}
 
 	}
-
 
 	/**
 	 * @param confFieldMapping
@@ -152,17 +151,16 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 	 * @param existingHierarchy
 	 */
 	private void setToSaveAccountHierarchy(Set<AccountHierarchy> setToSave, List<AccountHierarchy> accountHierarchy,
-										   Map<Pair<String, String>, AccountHierarchy> existingHierarchy) {
-		if(CollectionUtils.isNotEmpty(accountHierarchy)){
-			accountHierarchy.forEach(hierarchy->{
+			Map<Pair<String, String>, AccountHierarchy> existingHierarchy) {
+		if (CollectionUtils.isNotEmpty(accountHierarchy)) {
+			accountHierarchy.forEach(hierarchy -> {
 				if (StringUtils.isNotBlank(hierarchy.getParentId())) {
 					AccountHierarchy exHiery = existingHierarchy
 							.get(Pair.of(hierarchy.getNodeId(), hierarchy.getPath()));
 					if (null == exHiery) {
 						hierarchy.setCreatedDate(LocalDateTime.now());
 						setToSave.add(hierarchy);
-					}
-					else if(!exHiery.equals(hierarchy)){
+					} else if (!exHiery.equals(hierarchy)) {
 						exHiery.setBeginDate(hierarchy.getBeginDate());
 						exHiery.setEndDate(hierarchy.getEndDate());
 						exHiery.setReleaseState(hierarchy.getReleaseState());
@@ -174,12 +172,13 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 	}
 
 	/**
-     * create hierarchy for scrum
+	 * create hierarchy for scrum
+	 * 
 	 * @param projectRelease
-     * @param projectBasicConfig
-     * @param projectHierarchy
-     * @return
-     */
+	 * @param projectBasicConfig
+	 * @param projectHierarchy
+	 * @return
+	 */
 	private List<AccountHierarchy> createScrumHierarchyForRelease(ProjectRelease projectRelease,
 			ProjectBasicConfig projectBasicConfig, AccountHierarchy projectHierarchy) {
 		log.info("Create Account Hierarchy");

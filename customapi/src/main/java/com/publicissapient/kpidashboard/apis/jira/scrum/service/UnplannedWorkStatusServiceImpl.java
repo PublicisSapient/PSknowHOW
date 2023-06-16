@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -51,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -60,15 +60,14 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 @Component
 public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+	public static final String UNCHECKED = "unchecked";
+	public static final String OVERALL_UNPLANNED = "Overall Unplanned";
+	public static final String COMPLETED = "Completed";
 	private static final Logger LOGGER = LoggerFactory.getLogger(UnplannedWorkStatusServiceImpl.class);
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
-	public static final String UNCHECKED = "unchecked";
 	private static final String ISSUES = "issues";
 	private static final String OVERALL = "Overall";
-	public static final String OVERALL_UNPLANNED = "Overall Unplanned";
-	public static final String COMPLETED = "Completed";
-
 	@Autowired
 	private ConfigHelperService configHelperService;
 
@@ -157,7 +156,7 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 		if (CollectionUtils.isNotEmpty(allIssuesWithoutDueDate)) {
 			LOGGER.info("Unplanned Work Status -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssuesWithoutDueDate.size());
-			//Creating map of modal Objects
+			// Creating map of modal Objects
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Map<String, Map<String, List<JiraIssue>>> typeAndPriorityWiseIssues = allIssuesWithoutDueDate.stream()
 					.collect(Collectors.groupingBy(JiraIssue::getTypeName,
@@ -188,26 +187,28 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 							issueCountUnplanned = issueCountUnplanned + 1;
 							overAllIssueCountUnplanned.set(0, overAllIssueCountUnplanned.get(0) + 1);
 
-							storyPointUnplanned = KpiDataHelper.getStoryPoint(overAllStoryPointsUnplanned, storyPointUnplanned, jiraIssue);
-							originalEstimateUnplanned = KpiDataHelper.getOriginalEstimate(overAllOriginalEstimateUnplanned,
-									originalEstimateUnplanned, jiraIssue);
+							storyPointUnplanned = KpiDataHelper.getStoryPoint(overAllStoryPointsUnplanned,
+									storyPointUnplanned, jiraIssue);
+							originalEstimateUnplanned = KpiDataHelper.getOriginalEstimate(
+									overAllOriginalEstimateUnplanned, originalEstimateUnplanned, jiraIssue);
 							// For unplanned completed issues
 							if (allCompletedIssuesList.contains(jiraIssue.getNumber())) {
 								issueCountCompleted = issueCountCompleted + 1;
 								overAllIssueCountCompleted.set(0, overAllIssueCountCompleted.get(0) + 1);
 
-								storyPointCompleted = KpiDataHelper.getStoryPoint(overAllStoryPointsCompleted, storyPointCompleted,
-										jiraIssue);
-								originalEstimateCompleted = KpiDataHelper.getOriginalEstimate(overAllOriginalEstimateCompleted,
-										originalEstimateCompleted, jiraIssue);
+								storyPointCompleted = KpiDataHelper.getStoryPoint(overAllStoryPointsCompleted,
+										storyPointCompleted, jiraIssue);
+								originalEstimateCompleted = KpiDataHelper.getOriginalEstimate(
+										overAllOriginalEstimateCompleted, originalEstimateCompleted, jiraIssue);
 							}
-							KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
+							KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue,
+									fieldMapping, modalObjectMap);
 						}
 						List<IterationKpiData> data = new ArrayList<>();
 						IterationKpiData issueCountsPlanned;
 						IterationKpiData issueCountsActual;
-						issueCountsPlanned = createIterationKpiData(OVERALL_UNPLANNED, fieldMapping, issueCountUnplanned,
-								storyPointUnplanned, originalEstimateUnplanned, modalValues);
+						issueCountsPlanned = createIterationKpiData(OVERALL_UNPLANNED, fieldMapping,
+								issueCountUnplanned, storyPointUnplanned, originalEstimateUnplanned, modalValues);
 						issueCountsActual = createIterationKpiData(COMPLETED, fieldMapping, issueCountCompleted,
 								storyPointCompleted, originalEstimateCompleted, null);
 						data.add(issueCountsPlanned);

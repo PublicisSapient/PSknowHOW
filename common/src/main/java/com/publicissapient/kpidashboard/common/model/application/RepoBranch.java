@@ -44,32 +44,6 @@ public class RepoBranch {
 	private String branch = StringUtils.EMPTY;
 	private RepoType type = RepoType.UNKNOWN;
 
-	/**
-	 * The Enum RepoType.
-	 */
-	public enum RepoType {
-		SVN, GIT, UNKNOWN;
-
-		/**
-		 * From string.
-		 *
-		 * @param value
-		 *            the value
-		 * @return the com.publicissapient.kpidashboard.model. repo branch. repo type
-		 */
-		public static RepoBranch.RepoType fromString(String value) {
-			if (value == null) {
-				return RepoType.UNKNOWN;
-			}
-			for (RepoBranch.RepoType repoType : values()) {
-				if (repoType.toString().equalsIgnoreCase(value)) {
-					return repoType;
-				}
-			}
-			throw new IllegalArgumentException(value + " is not a valid RepoType.");
-		}
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -104,5 +78,31 @@ public class RepoBranch {
 			return url;
 		}
 
+	}
+
+	/**
+	 * The Enum RepoType.
+	 */
+	public enum RepoType {
+		SVN, GIT, UNKNOWN;
+
+		/**
+		 * From string.
+		 *
+		 * @param value
+		 *            the value
+		 * @return the com.publicissapient.kpidashboard.model. repo branch. repo type
+		 */
+		public static RepoBranch.RepoType fromString(String value) {
+			if (value == null) {
+				return RepoType.UNKNOWN;
+			}
+			for (RepoBranch.RepoType repoType : values()) {
+				if (repoType.toString().equalsIgnoreCase(value)) {
+					return repoType;
+				}
+			}
+			throw new IllegalArgumentException(value + " is not a valid RepoType.");
+		}
 	}
 }

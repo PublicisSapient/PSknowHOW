@@ -87,15 +87,16 @@ public interface KanbanAccountHierarchyRepository extends MongoRepository<Kanban
 	@Query("{'createdDate' :{$gt : ?0},'labelName': {$in : ?1 }}")
 	List<KanbanAccountHierarchy> findByCreatedDateGreaterThan(LocalDateTime dateTime, List<String> labelList);
 
-
 	/**
 	 * find by node id and path
-	 * @param nodeId the node id
-	 * @param path the path
+	 * 
+	 * @param nodeId
+	 *            the node id
+	 * @param path
+	 *            the path
 	 * @return list of AccountHierarchy
 	 */
 	List<KanbanAccountHierarchy> findByNodeIdAndPath(String nodeId, String path);
-
 
 	/**
 	 * Deletes the documents for which path ends with given string.
@@ -146,7 +147,9 @@ public interface KanbanAccountHierarchyRepository extends MongoRepository<Kanban
 
 	/**
 	 * Delete by ids
-	 * @param ids list of ids to be deleted
+	 * 
+	 * @param ids
+	 *            list of ids to be deleted
 	 */
 	void deleteByIdIn(List<ObjectId> ids);
 

@@ -43,13 +43,16 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 		this.authService = authService;
 		this.authProperties = authProperties;
 	}
+
 	/**
 	 * Performs Authentication
+	 * 
 	 * @param authentication
 	 * @return Authentication
 	 */
 	@Override
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException { //NOSONAR //NOPMD
+	public Authentication authenticate(Authentication authentication) throws AuthenticationException { // NOSONAR
+																									   // //NOPMD
 		try {
 			Authentication auth = authService.authenticate(authentication.getName(),
 					(String) authentication.getCredentials());
@@ -68,9 +71,11 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 		}
 
 	}
+
 	/**
 	 * 
-	 * @return true if this AuthenticationProvider supports theindicated Authentication object. 
+	 * @return true if this AuthenticationProvider supports theindicated
+	 *         Authentication object.
 	 */
 	@Override
 	public boolean supports(Class<?> authentication) {

@@ -28,8 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -66,6 +64,8 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class fetches the defect count KPI along with trend analysis. Trend
@@ -303,7 +303,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 			Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrum(sprintWiseDefectDataList,
 					customApiConfig);
 			projectWisePriorityList.addAll(priorityCountMap.keySet());
-			sprintWiseDefectDataListMap.put(sprintFilter,sprintWiseDefectDataList);
+			sprintWiseDefectDataListMap.put(sprintFilter, sprintWiseDefectDataList);
 
 			setSprintWiseLogger(sprintFilter, storyIdList, sprintWiseDefectDataList, priorityCountMap);
 
@@ -339,7 +339,8 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 					dataCountMap.computeIfAbsent(priority, k -> new ArrayList<>()).add(dataCount);
 				});
 
-				populateExcelDataObject(requestTrackerId,node.getSprintFilter().getName(), excelData,sprintWiseDefectDataListMap.get(currentNodeIdentifier));
+				populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
+						sprintWiseDefectDataListMap.get(currentNodeIdentifier));
 			}
 			log.debug("[DC-SPRINT-WISE][{}]. DC for sprint {}  is {} and trend value is {}", requestTrackerId,
 					node.getSprintFilter().getName(), sprintWiseDCPriorityMap.get(currentNodeIdentifier),
@@ -381,8 +382,8 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		return dataCount;
 	}
 
-	private void populateExcelDataObject(String requestTrackerId, String sprintName,
-			List<KPIExcelData> excelData, List<JiraIssue> sprintWiseDefectDataList) {
+	private void populateExcelDataObject(String requestTrackerId, String sprintName, List<KPIExcelData> excelData,
+			List<JiraIssue> sprintWiseDefectDataList) {
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateDefectRelatedExcelData(sprintName, sprintWiseDefectDataList, excelData,

@@ -25,9 +25,9 @@ import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 /**
  * Client for fetching job and build information from Jenkins.
@@ -35,11 +35,11 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 public interface JenkinsClient {
 
 	/**
-	 * Finds all details for a given jub and returns the set of builds for the job. At a minimum, the number and url of
-	 * each Build will be populated.
+	 * Finds all details for a given jub and returns the set of builds for the job.
+	 * At a minimum, the number and url of each Build will be populated.
 	 *
 	 * @param jenkinsServer
-	 * 		the URL for the Jenkins instance
+	 *            the URL for the Jenkins instance
 	 * @param proBasicConfig
 	 * @return a summary of every build for each job on the instance
 	 */

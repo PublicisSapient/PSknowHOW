@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -117,7 +118,6 @@ public class IterationKpiModalValue implements Serializable {
 	@JsonProperty("Time taken to reopen")
 	private String durationToReopen;
 	// end for Defect Reopen Rate - submohan1
-
 
 	@JsonProperty("Change Date")
 	private String changeDate;

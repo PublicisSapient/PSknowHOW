@@ -1,12 +1,13 @@
 package com.publicissapient.kpidashboard.apis.model;
 
+import java.util.List;
+
 import com.publicissapient.kpidashboard.common.model.application.KPIFieldMapping;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * Represents Kpi fieldmapping response.
@@ -18,5 +19,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KPIFieldMappingResponse {
-    private List<KPIFieldMapping> kpiFieldMappingList;
+	private List<KPIFieldMapping> kpiFieldMappingList;
 }

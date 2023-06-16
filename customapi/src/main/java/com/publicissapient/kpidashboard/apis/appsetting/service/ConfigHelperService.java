@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
-import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +43,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
+import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiFieldMappingRepository;
@@ -52,6 +51,7 @@ import com.publicissapient.kpidashboard.common.repository.application.KpiMasterR
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
+import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
 
 /**
  * Helper class for configuration

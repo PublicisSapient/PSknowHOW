@@ -53,6 +53,7 @@ import com.publicissapient.kpidashboard.azurerepo.repository.AzureRepoRepository
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -67,11 +68,10 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectToo
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -98,21 +98,14 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	private final ProcessorItemRepository<ProcessorItem> processorItemRepository;
 
 	private final CommitRepository commitsRepo;
-	
-	private MergeRequestRepository mergReqRepo;
-
 	private final ConnectionRepository connectionsRepository;
-
 	private final ProcessorToolConnectionService processorToolConnectionService;
-
 	private final ProjectBasicConfigRepository projectConfigRepository;
-
 	boolean executionStatus = true;
-	
+	private MergeRequestRepository mergReqRepo;
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
-	
 
 	@Autowired
 	protected AzureRepoProcessorJobExecutor(TaskScheduler taskScheduler, // NOSONAR
@@ -122,7 +115,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 			CommitRepository commitsRepo, ConnectionRepository connectionsRepository,
 			ProcessorToolConnectionService processorToolConnectionService,
 			ProjectBasicConfigRepository projectConfigRepository, MergeRequestRepository mergReqRepo,
-			ProcessorExecutionTraceLogService processorExecutionTraceLogService, ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository) {
+			ProcessorExecutionTraceLogService processorExecutionTraceLogService,
+			ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository) {
 		super(taskScheduler, ProcessorConstants.AZUREREPO);
 		this.azureRepoProcessorRepo = azureRepoProcessorRepo;
 		this.azureRepoConfig = azureRepoConfig;
@@ -152,8 +146,10 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	/**
 	 * Adds the processor items.
 	 *
-	 * @param processor the processor
-	 * @param tools     the processor
+	 * @param processor
+	 *            the processor
+	 * @param tools
+	 *            the processor
 	 */
 	private void addProcessorItems(Processor processor, List<ProjectToolConfig> tools) {
 
@@ -177,8 +173,10 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	/**
 	 * Creates the processor item.
 	 *
-	 * @param tool        the tool
-	 * @param processorId the processor id
+	 * @param tool
+	 *            the tool
+	 * @param processorId
+	 *            the processor id
 	 * @return the processor item
 	 */
 	private ProcessorItem createProcessorItem(ProjectToolConfig tool, ObjectId processorId) {
@@ -202,8 +200,10 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	/**
 	 * Checks if is processor item exist.
 	 *
-	 * @param tool           the tool
-	 * @param processorItems the processor items
+	 * @param tool
+	 *            the tool
+	 * @param processorItems
+	 *            the processor items
 	 * @return true, if is processor item exist
 	 */
 	private boolean isProcessorItemExist(ProjectToolConfig tool, List<ProcessorItem> processorItems) {
@@ -236,8 +236,10 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	/**
 	 * Checks if is new commitDetails.
 	 *
-	 * @param azureRepo     the bit repo
-	 * @param commitDetails the commitDetails
+	 * @param azureRepo
+	 *            the bit repo
+	 * @param commitDetails
+	 *            the commitDetails
 	 * @return true, if is new commit
 	 */
 	private boolean isNewCommit(AzureRepoModel azureRepo, CommitDetails commitDetails) {
@@ -245,8 +247,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 				commitDetails.getRevisionNumber());
 		return dbCommit == null;
 	}
-	
-	private boolean  isNewMergeReq(AzureRepoModel azureRepo, MergeRequests mergeRequests) {
+
+	private boolean isNewMergeReq(AzureRepoModel azureRepo, MergeRequests mergeRequests) {
 		MergeRequests dbCommit = mergReqRepo.findByProcessorItemIdAndRevisionNumber(azureRepo.getId(),
 				mergeRequests.getRevisionNumber());
 		return dbCommit == null;
@@ -255,7 +257,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	/**
 	 * Gets the active repos.
 	 *
-	 * @param processor the processor
+	 * @param processor
+	 *            the processor
 	 * @return the active repos
 	 */
 	private List<AzureRepoModel> getActiveRepos(Processor processor) {
@@ -274,7 +277,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	/**
 	 * Execute.
 	 *
-	 * @param processor the processor
+	 * @param processor
+	 *            the processor
 	 */
 	@Override
 	public boolean execute(AzureRepoProcessor processor) {
@@ -350,9 +354,12 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	 * 
 	 * processRepoData
 	 * 
-	 * @param azurerepoRepos  azurerepoRepos
-	 * @param azureRepoInfo   azureRepoInfo
-	 * @param reposCount      reposCount
+	 * @param azurerepoRepos
+	 *            azurerepoRepos
+	 * @param azureRepoInfo
+	 *            azureRepoInfo
+	 * @param reposCount
+	 *            reposCount
 	 * @param projectBasicConfig
 	 * @return executionStatus
 	 */
@@ -414,10 +421,9 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 
 	}
 
-	
-	private int processMergeRequestData(List<AzureRepoModel> azurerepoRepos, List<ProcessorToolConnection> azureRepoInfo,
-			int reposCount, ProjectBasicConfig proBasicConfig) {
-		
+	private int processMergeRequestData(List<AzureRepoModel> azurerepoRepos,
+			List<ProcessorToolConnection> azureRepoInfo, int reposCount, ProjectBasicConfig proBasicConfig) {
+
 		int mergReqCount = 0;
 		for (AzureRepoModel azureRepo : azurerepoRepos) {
 			for (ProcessorToolConnection entry : azureRepoInfo) {
@@ -433,8 +439,8 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 								"Azurerepo Processor started collecting data for Url: " + entry.getUrl()
 										+ " and branch : " + entry.getBranch());
 
-						List<MergeRequests> mergeRequestsList = azureRepoClient.fetchAllMergeRequest(azureRepo, firstTimeRun,
-								entry, proBasicConfig);
+						List<MergeRequests> mergeRequestsList = azureRepoClient.fetchAllMergeRequest(azureRepo,
+								firstTimeRun, entry, proBasicConfig);
 						if (proBasicConfig.isSaveAssigneeDetails()
 								&& !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
 							List<MergeRequests> updateAuthor = new ArrayList<>();
@@ -449,7 +455,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 							mergReqRepo.saveAll(updateAuthor);
 						}
 						List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
-								.filter(mergReq ->  isNewMergeReq(azureRepo, mergReq)).collect(Collectors.toList());
+								.filter(mergReq -> isNewMergeReq(azureRepo, mergReq)).collect(Collectors.toList());
 						unsavedMergeRequests.forEach(mergReq -> mergReq.setProcessorItemId(azureRepo.getId()));
 						mergReqRepo.saveAll(unsavedMergeRequests);
 						mergReqCount += unsavedMergeRequests.size();
@@ -469,7 +475,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		return mergReqCount;
 
 	}
-	
+
 	/**
 	 * Gets the processor.
 	 *
@@ -492,6 +498,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		});
 		return processorExecutionTraceLog;
 	}
+
 	/**
 	 * Gets the processor repository.
 	 *
@@ -505,8 +512,10 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	/**
 	 * Cleans the cache in the Custom API
 	 * 
-	 * @param cacheEndPoint the cache endpoint
-	 * @param cacheName     the cache name
+	 * @param cacheEndPoint
+	 *            the cache endpoint
+	 * @param cacheName
+	 *            the cache name
 	 */
 	private void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
@@ -533,7 +542,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		} else {
 			log.error("[AZURE REPO-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache: {}", cacheName);
 		}
-		
+
 		clearToolItemCache(azureRepoConfig.getCustomApiBaseUrl());
 	}
 

@@ -31,8 +31,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
-import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenAuthenticationProvider;
-import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenAuthenticationToken;
 import com.publicissapient.kpidashboard.apis.auth.service.ApiTokenService;
 
 @RunWith(MockitoJUnitRunner.class)

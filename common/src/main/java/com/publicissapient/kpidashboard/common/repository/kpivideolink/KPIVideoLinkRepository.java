@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.repository.kpivideolink;
 
-
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
@@ -28,16 +27,13 @@ import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLink;
 @Repository
 public interface KPIVideoLinkRepository extends MongoRepository<KPIVideoLink, ObjectId> {
 
-
-
 	/**
 	 * Finds by kpiId.
 	 *
-	 * @param kpiId the kpiId
+	 * @param kpiId
+	 *            the kpiId
 	 * @return the KpiVideoLink
 	 */
 	KPIVideoLink findByKpiId(String kpiId);
-	
-
 
 }

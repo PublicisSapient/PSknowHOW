@@ -19,9 +19,7 @@ package com.publicissapient.kpidashboard.apis.data;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -29,7 +27,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -83,10 +81,8 @@ public class SprintDetailsDataFactory {
 		}
 	}
 
-
-    public List<SprintDetails> getSprintDetails() {
-        return sprintDetails;
-    }
-
+	public List<SprintDetails> getSprintDetails() {
+		return sprintDetails;
+	}
 
 }

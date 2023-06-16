@@ -28,23 +28,24 @@ public interface ADServerDetailsService {
 
 	/**
 	 * This method will add user.
+	 * 
 	 * @param adServerDetail
 	 * @return ADUserDetail
 	 */
-	
+
 	ServiceResponse addUpdateADServerDetails(ADServerDetail adServerDetail);
-	
-	
+
 	/**
 	 * This method give details of active directory user.
 	 * 
 	 * @return ADUserDetail
 	 */
-	 ServiceResponse getADServerDetails();
+	ServiceResponse getADServerDetails();
 
 	/**
 	 * gets Active Director Server configurations from DB
+	 * 
 	 * @return ADserverDetails
 	 */
-	 ADServerDetail getADServerConfig();
+	ADServerDetail getADServerConfig();
 }

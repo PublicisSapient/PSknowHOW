@@ -43,61 +43,49 @@ import com.publicissapient.kpidashboard.common.repository.application.KanbanAcco
 public class UserAuthorizedProjectsServiceTest {
 
 	@Mock
-	private UserInfoServiceImpl userInfoService;
-
-	@Mock
-	private AccountHierarchyRepository accountHierarchyRepo;
-
-	@Mock
-	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepository;
-
-	@Mock
 	TokenAuthenticationService tokenAuthenticationService;
-
 	@Mock
 	Authentication authentication;
-
-	@Mock
-	private AuthenticationService authenticationService;
-
 	@InjectMocks
 	UserAuthorizedProjectsService userAuthorizedProjectsService;
-
+	KpiRequest kpiRequest;
+	KpiElement kpiElement;
+	@Mock
+	private UserInfoServiceImpl userInfoService;
+	@Mock
+	private AccountHierarchyRepository accountHierarchyRepo;
+	@Mock
+	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepository;
+	@Mock
+	private AuthenticationService authenticationService;
 	@Mock
 	private CacheService cacheService;
-
 	private UserInfoDataFactory userInfoDataFactory = null;
 	private AccountHierarchyFilterDataFactory filterDataFactory = null;
 	private AccountHierarchiesDataFactory hierarchyFactory = null;
 	private AccountHierarchyKanbanFilterDataFactory kanbanFilterDataFactory = null;
 	private AccountHierarchiesKanbanDataFactory kanbanDataFactory = null;
-	private List<HierarchyLevel> hierarchyLevels=null;
-	KpiRequest kpiRequest;
-	KpiElement kpiElement;
+	private List<HierarchyLevel> hierarchyLevels = null;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		SecurityContext securityContext = mock(SecurityContext.class);
 
-		KpiRequestFactory kpiRequestFactory= KpiRequestFactory.newInstance("/json/default/kanban_kpi_request.json");
+		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance("/json/default/kanban_kpi_request.json");
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi51");
 		kpiRequest.setLabel("PROJECT");
-		kpiElement= kpiRequest.getKpiList().get(0);
+		kpiElement = kpiRequest.getKpiList().get(0);
 
 		SecurityContextHolder.setContext(securityContext);
 		userInfoDataFactory = UserInfoDataFactory.newInstance();
-		filterDataFactory = AccountHierarchyFilterDataFactory
-				.newInstance();
+		filterDataFactory = AccountHierarchyFilterDataFactory.newInstance();
 		hierarchyFactory = AccountHierarchiesDataFactory.newInstance();
-		kanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory
-				.newInstance();
-		kanbanDataFactory = AccountHierarchiesKanbanDataFactory
-				.newInstance();
+		kanbanFilterDataFactory = AccountHierarchyKanbanFilterDataFactory.newInstance();
+		kanbanDataFactory = AccountHierarchiesKanbanDataFactory.newInstance();
 
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
-
 
 	}
 
@@ -145,7 +133,6 @@ public class UserAuthorizedProjectsServiceTest {
 				.checkKanbanUserAuthForProjects(kanbanFilterDataFactory.getAccountHierarchyKanbanDataList());
 	}
 
-
 	@Test
 	public void filterKanbanProjects() {
 		Set<String> projectList = new HashSet<>();
@@ -172,4 +159,4 @@ public class UserAuthorizedProjectsServiceTest {
 
 	}
 
-	}
+}

@@ -235,8 +235,8 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
 			WebRequest request) {
-		Class<?> requiredType= ex.getRequiredType();
-		if(requiredType != null) {
+		Class<?> requiredType = ex.getRequiredType();
+		if (requiredType != null) {
 			Object errorDetail = errorDetails(request);
 			ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
 			apiError.setMessage(String.format("The parameter '%s' of value '%s' could not be converted to type '%s'",
@@ -245,7 +245,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 			apiError.setDetails(errorDetail);
 			return buildResponseEntity(apiError);
 		}
-		return  null;
+		return null;
 	}
 
 	/**

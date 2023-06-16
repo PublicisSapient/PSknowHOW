@@ -83,7 +83,7 @@ public class LoggingFilterTest {
 		when(httpServletRequest.getMethod()).thenReturn(HttpMethod.GET.toString());
 		when(settings.isCorsEnabled()).thenReturn(true);
 		when(settings.getCorsWhitelist()).thenReturn("url1,url2,origin");
-		
+
 		loggingFilter.doFilter(httpServletRequest, httpServletResponse, filterChain);
 		verify(settings, times(1)).getCorsWhitelist();
 	}
@@ -103,7 +103,7 @@ public class LoggingFilterTest {
 
 	@Test
 	public void testDoFilterDelete() throws Exception {
-		//when(httpServletRequest.get)
+		// when(httpServletRequest.get)
 		when(httpServletRequest.getInputStream()).thenReturn(servletInputStream);
 		when(httpServletRequest.getRequestURI()).thenReturn("Success");
 		when(httpServletRequest.getMethod()).thenReturn(HttpMethod.DELETE.toString());

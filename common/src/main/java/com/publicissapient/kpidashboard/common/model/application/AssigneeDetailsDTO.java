@@ -36,16 +36,16 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class AssigneeDetailsDTO {
-    private String name;
-    private String displayName;
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof AssigneeDetailsDTO) {
-            AssigneeDetailsDTO that = (AssigneeDetailsDTO) obj;
-            return Objects.equal(this.name, that.name) && Objects.equal(this.displayName, that.displayName);
-        }
-        return false;
-    }
+	private String name;
+	private String displayName;
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof AssigneeDetailsDTO) {
+			AssigneeDetailsDTO that = (AssigneeDetailsDTO) obj;
+			return Objects.equal(this.name, that.name) && Objects.equal(this.displayName, that.displayName);
+		}
+		return false;
+	}
 
 }

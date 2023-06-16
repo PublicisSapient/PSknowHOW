@@ -31,10 +31,11 @@ import javax.swing.*;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import com.publicissapient.kpidashboard.apis.model.MultiPartFileDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.publicissapient.kpidashboard.apis.model.MultiPartFileDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,12 +51,18 @@ public class FileExtensionValidator implements ConstraintValidator<ValidExtensio
 	public void initialize(ValidExtension extension) {
 		// no need to initialize anything
 	}
+
 	/**
 	 * 
-	 * <p>Validates <tt>file</tt> by checking the size,format and extension of the file.</p>
+	 * <p>
+	 * Validates <tt>file</tt> by checking the size,format and extension of the
+	 * file.
+	 * </p>
+	 * 
 	 * @param file
 	 * @param context
-	 * @return true if <tt>file</tt> size is greater than 0 and less than <tt>MAX_FILE_SIZE</tt>
+	 * @return true if <tt>file</tt> size is greater than 0 and less than
+	 *         <tt>MAX_FILE_SIZE</tt>
 	 */
 	@Override
 	public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
@@ -95,8 +102,10 @@ public class FileExtensionValidator implements ConstraintValidator<ValidExtensio
 		return isValidFileExtension && isValidFileFormat && isValidSize;
 
 	}
+
 	/**
 	 * Writes to file from <tt>content</tt>
+	 * 
 	 * @param fileName
 	 * @param content
 	 * @throws IOException
@@ -106,8 +115,10 @@ public class FileExtensionValidator implements ConstraintValidator<ValidExtensio
 			os.write(content);
 		}
 	}
+
 	/**
 	 * Reads the the content from file
+	 * 
 	 * @param fileName
 	 * @return the content of file in byte[]
 	 * @throws IOException

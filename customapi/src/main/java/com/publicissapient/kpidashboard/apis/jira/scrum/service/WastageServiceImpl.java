@@ -33,7 +33,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -56,14 +55,15 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -82,6 +82,21 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 	@Autowired
 	private ConfigHelperService configHelperService;
+
+	/**
+	 * Check for the flag status
+	 *
+	 * @param fieldMapping
+	 * @return boolean flagStatus
+	 */
+	private static boolean checkFlagIncludedStatus(FieldMapping fieldMapping) {
+		boolean isFlagIncluded = false;
+		if (null != fieldMapping && StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatus()) && fieldMapping
+				.getJiraIncludeBlockedStatus().contains(CommonConstant.IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE)) {
+			isFlagIncluded = true;
+		}
+		return isFlagIncluded;
+	}
 
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -121,7 +136,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 						CommonConstant.TOTAL_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
 					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(totalIssues);
-					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(totalIssues);
+					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(
+							totalIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueList);
@@ -165,7 +181,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 			Map<String, Map<String, List<JiraIssue>>> typeAndPriorityWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getPriority)));
-			//Creating map of modal Objects
+			// Creating map of modal Objects
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> priorities = new HashSet<>();
@@ -214,12 +230,15 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 							IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
 							jiraIssueModalObject.setBlockedTime(CommonUtils.convertIntoDays(jiraIssueBlockedTime));
 							jiraIssueModalObject.setWaitTime(CommonUtils.convertIntoDays(jiraIssueWaitedTime));
-							jiraIssueModalObject.setWastage(CommonUtils.convertIntoDays(jiraIssueBlockedTime+jiraIssueWaitedTime));
-							KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
+							jiraIssueModalObject.setWastage(
+									CommonUtils.convertIntoDays(jiraIssueBlockedTime + jiraIssueWaitedTime));
+							KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue,
+									fieldMapping, modalObjectMap);
 						}
 						List<IterationKpiData> data = new ArrayList<>();
 						IterationKpiData wastage = new IterationKpiData(WASTAGE,
-								Double.valueOf((waitedTime + blockedTime)), null, null, CommonConstant.DAY, modalValues);
+								Double.valueOf((waitedTime + blockedTime)), null, null, CommonConstant.DAY,
+								modalValues);
 						IterationKpiData blocked = new IterationKpiData(BLOCKED_TIME, Double.valueOf(blockedTime), null,
 								null, CommonConstant.DAY, null);
 						IterationKpiData waited = new IterationKpiData(WAITING_TIME, Double.valueOf(waitedTime), null,
@@ -259,22 +278,6 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	}
 
 	/**
-	 * Check for the flag status
-	 *
-	 * @param fieldMapping
-	 * @return boolean flagStatus
-	 */
-	private static boolean checkFlagIncludedStatus(FieldMapping fieldMapping) {
-		boolean isFlagIncluded = false;
-		if (null != fieldMapping && StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatus())
-				&& fieldMapping.getJiraIncludeBlockedStatus().contains(CommonConstant.IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE)) {
-			isFlagIncluded = true;
-		}
-		return isFlagIncluded;
-	}
-
-
-	/**
 	 * Check for the fieldMapping and return blockStatus and waitStatus as list
 	 * 
 	 * @param fieldMapping
@@ -284,8 +287,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		List<String> blockedStatus = new ArrayList<>();
 		List<String> waitStatus = new ArrayList<>();
 		if (null != fieldMapping) {
-			if ( StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatus()) &&
-					fieldMapping.getJiraIncludeBlockedStatus().contains(CommonConstant.BLOCKED_STATUS_WASTAGE)
+			if (StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatus())
+					&& fieldMapping.getJiraIncludeBlockedStatus().contains(CommonConstant.BLOCKED_STATUS_WASTAGE)
 					&& CollectionUtils.isNotEmpty(fieldMapping.getJiraBlockedStatus()))
 				blockedStatus = fieldMapping.getJiraBlockedStatus();
 
@@ -316,8 +319,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		for (int i = 0; i < statusUpdationLog.size(); i++) {
 			JiraHistoryChangeLog entry = statusUpdationLog.get(i);
 			if (!flagIncluded) {
-				blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList, statusUpdationLog, i,
-						sprintDetail, blockedTime);
+				blockedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, blockedStatusList, statusUpdationLog,
+						i, sprintDetail, blockedTime);
 			}
 			waitedTime = calculateBlockAndWaitTimeBasedOnFieldMapping(entry, waitStatusList, statusUpdationLog, i,
 					sprintDetail, waitedTime);
@@ -346,10 +349,12 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 * @param time
 	 * @return int
 	 */
-	private int calculateBlockTimeBasedOnFlagStatus(JiraHistoryChangeLog entry,List<JiraHistoryChangeLog> flagStatusUpdationLog, int index,
-													SprintDetails sprintDetails, int time){
-		LocalDateTime sprintStartDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),DateUtil.TIME_FORMAT);
-		LocalDateTime sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getEndDate(),DateUtil.TIME_FORMAT);
+	private int calculateBlockTimeBasedOnFlagStatus(JiraHistoryChangeLog entry,
+			List<JiraHistoryChangeLog> flagStatusUpdationLog, int index, SprintDetails sprintDetails, int time) {
+		LocalDateTime sprintStartDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),
+				DateUtil.TIME_FORMAT);
+		LocalDateTime sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getEndDate(),
+				DateUtil.TIME_FORMAT);
 		LocalDateTime entryActivityDate = entry.getUpdatedOn();
 		if (entry.getChangedTo().equalsIgnoreCase(CommonConstant.REQUIRED_ATTENTION_FLAG)) {
 			long hours = 0;
@@ -360,17 +365,18 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			} else {
 				// Find fetch the next element of flagStatusUpdationLog
 				JiraHistoryChangeLog nextEntry = flagStatusUpdationLog.get(index + 1);
-				if(!nextEntry.getChangedTo().equalsIgnoreCase(CommonConstant.REQUIRED_ATTENTION_FLAG)) {
-				LocalDateTime nextEntryActivityDate = nextEntry.getUpdatedOn();
-				// Checking if both alternate element are inside the sprint start and end date
-				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
-						&& !(entryActivityDate.isAfter(sprintEndDate)
-						&& nextEntryActivityDate.isAfter(sprintEndDate))) {
-					hours = hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
-							nextEntryActivityDate);
+				if (!nextEntry.getChangedTo().equalsIgnoreCase(CommonConstant.REQUIRED_ATTENTION_FLAG)) {
+					LocalDateTime nextEntryActivityDate = nextEntry.getUpdatedOn();
+					// Checking if both alternate element are inside the sprint start and end date
+					if (!(entryActivityDate.isBefore(sprintStartDate)
+							&& nextEntryActivityDate.isBefore(sprintStartDate))
+							&& !(entryActivityDate.isAfter(sprintEndDate)
+									&& nextEntryActivityDate.isAfter(sprintEndDate))) {
+						hours = hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
+								nextEntryActivityDate);
+					}
 				}
 			}
-		}
 			if (hours != 0)
 				time += hours;
 		}
@@ -388,7 +394,6 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		return timeInMin;
 	}
 
-
 	/**
 	 * Calculate the wait and block time w.r.t fieldMappingStatus
 	 *
@@ -400,10 +405,13 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 * @param time
 	 * @return int
 	 */
-	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraHistoryChangeLog entry, List<String> fieldMappingStatus,
-			List<JiraHistoryChangeLog> statusUpdationLog, int index, SprintDetails sprintDetails, int time) {
-		LocalDateTime sprintStartDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),DateUtil.TIME_FORMAT);
-		LocalDateTime sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getEndDate(),DateUtil.TIME_FORMAT);
+	private int calculateBlockAndWaitTimeBasedOnFieldMapping(JiraHistoryChangeLog entry,
+			List<String> fieldMappingStatus, List<JiraHistoryChangeLog> statusUpdationLog, int index,
+			SprintDetails sprintDetails, int time) {
+		LocalDateTime sprintStartDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getStartDate(),
+				DateUtil.TIME_FORMAT);
+		LocalDateTime sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getEndDate(),
+				DateUtil.TIME_FORMAT);
 		LocalDateTime entryActivityDate = entry.getUpdatedOn();
 		if (CollectionUtils.isNotEmpty(fieldMappingStatus) && fieldMappingStatus.contains(entry.getChangedTo())) {
 			long hours = 0;

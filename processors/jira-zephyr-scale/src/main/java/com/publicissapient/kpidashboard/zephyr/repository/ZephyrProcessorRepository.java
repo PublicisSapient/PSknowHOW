@@ -18,8 +18,8 @@
 
 package com.publicissapient.kpidashboard.zephyr.repository;
 
-import com.publicissapient.kpidashboard.zephyr.model.ZephyrProcessor;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
+import com.publicissapient.kpidashboard.zephyr.model.ZephyrProcessor;
 
 /**
  * Repository for {@link ZephyrProcessor}.

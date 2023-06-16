@@ -18,19 +18,20 @@
 
 package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
 
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.joda.time.DateTime;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A self-contained, independently deployable piece of the larger application.

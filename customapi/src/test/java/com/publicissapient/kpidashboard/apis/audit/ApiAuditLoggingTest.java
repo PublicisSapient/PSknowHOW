@@ -17,7 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.audit;
 
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,36 +28,35 @@ import org.springframework.mock.web.MockHttpServletResponse;
 @RunWith(MockitoJUnitRunner.class)
 public class ApiAuditLoggingTest {
 
+	@InjectMocks
+	ApiAuditLogging apiAuditLogging;
+	private MockHttpServletResponse httpServletResponse;
+	private MockHttpServletRequest httpServletRequest;
 
-    private MockHttpServletResponse httpServletResponse;
-    private MockHttpServletRequest httpServletRequest;
+	@Before
+	public void setup() {
+		httpServletRequest = new MockHttpServletRequest("GET", "/api/jenkins/kpi");
+		httpServletRequest.addHeader("Content-Type", "application/json");
+		httpServletRequest.addHeader("Authorization",
+				"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJTVVBFUkFETUlOIiwiZGV0YWlscyI6IlNUQU5EQVJEIiwicm9sZXMiOlsiUk9MRV9TVVBFUkFETUlOIl0sImV4cCI6MTYxNDIzOTM4N30.i6u8vrg7eZZ3nCjMM7em2U6MNIs4IFMMG_VrvsfgLWXBdQivenVw5DAKGwcZz_auDsS4u9QbsYXgFj4AmvrDuA");
 
-    @InjectMocks
-    ApiAuditLogging apiAuditLogging;
+		httpServletResponse = new MockHttpServletResponse();
+		httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+		httpServletResponse.setHeader("Cache-Control", "no-cache");
+		httpServletResponse.setContentLength(1000);
+	}
 
+	@Test
+	public void testGetMethod() throws Exception {
 
-    @Before
-    public void setup(){
-        httpServletRequest = new MockHttpServletRequest("GET","/api/jenkins/kpi");
-        httpServletRequest.addHeader("Content-Type","application/json");
-        httpServletRequest.addHeader("Authorization","eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJTVVBFUkFETUlOIiwiZGV0YWlscyI6IlNUQU5EQVJEIiwicm9sZXMiOlsiUk9MRV9TVVBFUkFETUlOIl0sImV4cCI6MTYxNDIzOTM4N30.i6u8vrg7eZZ3nCjMM7em2U6MNIs4IFMMG_VrvsfgLWXBdQivenVw5DAKGwcZz_auDsS4u9QbsYXgFj4AmvrDuA");
+		apiAuditLogging.doDispatch(httpServletRequest, httpServletResponse);
 
-        httpServletResponse = new MockHttpServletResponse();
-        httpServletResponse.setHeader("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS, PATCH");
-        httpServletResponse.setHeader("Cache-Control","no-cache");
-        httpServletResponse.setContentLength(1000);
-    }
+	}
 
-    @Test
-    public void testGetMethod() throws Exception {
+	@Test
+	public void testPostMethod() throws Exception {
+		httpServletRequest.setMethod("POST");
+		apiAuditLogging.doDispatch(httpServletRequest, httpServletResponse);
 
-        apiAuditLogging.doDispatch(httpServletRequest,httpServletResponse);
-
-    }
-    @Test
-    public void testPostMethod() throws Exception {
-        httpServletRequest.setMethod("POST");
-        apiAuditLogging.doDispatch(httpServletRequest,httpServletResponse);
-
-    }
+	}
 }

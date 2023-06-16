@@ -18,11 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.auth.repository;
 
-import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import java.util.List;
+import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 
 /**
  * The interface Authentication repository.

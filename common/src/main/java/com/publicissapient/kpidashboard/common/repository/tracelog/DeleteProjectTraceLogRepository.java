@@ -17,9 +17,10 @@
 
 package com.publicissapient.kpidashboard.common.repository.tracelog;
 
-import com.publicissapient.kpidashboard.common.model.tracelog.DeleteProjectTraceLog;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.publicissapient.kpidashboard.common.model.tracelog.DeleteProjectTraceLog;
 
 /**
  * @author anisingh4

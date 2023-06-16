@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.bitbucket.processor.service.impl.common
 
 import java.nio.charset.StandardCharsets;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -37,6 +36,8 @@ import com.publicissapient.kpidashboard.bitbucket.config.BitBucketConfig;
 import com.publicissapient.kpidashboard.bitbucket.constants.BitBucketConstants;
 import com.publicissapient.kpidashboard.bitbucket.util.BitbucketRestOperations;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * BasicBitBucketClient.
@@ -55,9 +56,12 @@ public class BasicBitBucketClient {
 	/**
 	 * Instantiates a new basic bit bucket client.
 	 *
-	 * @param config                  the config
-	 * @param bitbucketRestOperations the rest operations supplier
-	 * @param aesEncryptionService    the aesEncryptionService
+	 * @param config
+	 *            the config
+	 * @param bitbucketRestOperations
+	 *            the rest operations supplier
+	 * @param aesEncryptionService
+	 *            the aesEncryptionService
 	 */
 	@Autowired
 	public BasicBitBucketClient(BitBucketConfig config, BitbucketRestOperations bitbucketRestOperations,
@@ -70,7 +74,8 @@ public class BasicBitBucketClient {
 	/**
 	 * Decrypt password.
 	 * 
-	 * @param encryptedPassword encrypted password
+	 * @param encryptedPassword
+	 *            encrypted password
 	 * @return plain text password
 	 */
 	public String decryptPassword(String encryptedPassword) {
@@ -82,9 +87,12 @@ public class BasicBitBucketClient {
 	/**
 	 * Gets the response.
 	 *
-	 * @param userName the user name
-	 * @param password the password
-	 * @param url      the url
+	 * @param userName
+	 *            the user name
+	 * @param password
+	 *            the password
+	 * @param url
+	 *            the url
 	 * @return the response
 	 */
 	protected ResponseEntity<String> getResponse(String userName, String password, String url) {
@@ -107,9 +115,11 @@ public class BasicBitBucketClient {
 	/**
 	 * Gets the JSON from response.
 	 *
-	 * @param payload the payload
+	 * @param payload
+	 *            the payload
 	 * @return the JSON from response
-	 * @throws ParseException the ParseException
+	 * @throws ParseException
+	 *             the ParseException
 	 */
 	protected JSONObject getJSONFromResponse(String payload) throws ParseException {
 		return (JSONObject) new JSONParser().parse(payload);
@@ -118,8 +128,10 @@ public class BasicBitBucketClient {
 	/**
 	 * Gets the string.
 	 *
-	 * @param jsonObject the json object
-	 * @param key        the key
+	 * @param jsonObject
+	 *            the json object
+	 * @param key
+	 *            the key
 	 * @return the string
 	 */
 	protected String getString(JSONObject jsonObject, String key) {

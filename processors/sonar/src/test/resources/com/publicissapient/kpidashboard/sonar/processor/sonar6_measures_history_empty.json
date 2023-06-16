@@ -8,19 +8,16 @@
     {
       "metric": "complexity",
       "history": [
-
       ]
     },
     {
       "metric": "ncloc",
       "history": [
-
       ]
     },
     {
       "metric": "new_violations",
       "history": [
-
       ]
     }
   ]

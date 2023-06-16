@@ -53,6 +53,7 @@ public final class SonarProcessorUtils {
 
 	private SonarProcessorUtils() {
 	}
+
 	/**
 	 * Provides JSONArray after parsing data.
 	 * 
@@ -176,18 +177,17 @@ public final class SonarProcessorUtils {
 	public static HttpHeaders getHeaders(String accessToken, boolean usingBasicAuth) {
 		HttpHeaders headers = new HttpHeaders();
 		if (accessToken != null && !accessToken.isEmpty()) {
-			if(usingBasicAuth){
+			if (usingBasicAuth) {
 				String authentication = accessToken + ":";
 				byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
 				String authenticationHeader = "Basic " + new String(encodedAuth);
 				headers.set(AUTHORIZATION, authenticationHeader);
-			}else{
+			} else {
 				headers.add(AUTHORIZATION, "Bearer " + accessToken);
 			}
 		}
 		return headers;
 	}
-
 
 	/**
 	 * Provides code quality metrics status.

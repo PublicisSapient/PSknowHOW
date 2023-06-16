@@ -58,41 +58,32 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 @RunWith(MockitoJUnitRunner.class)
 public class ZephyrServiceKanbanTest {
 
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	ConfigHelperService configHelperService;
-
 	@Mock
 	FilterHelperService filterHelperService;
-
 	@Mock
 	KpiHelperService kpiHelperService;
-
 	@InjectMocks
 	private ZephyrServiceKanban zephyrService;
-
 	@Mock
 	private CustomApiConfig customApiConfig;
-
 	@Mock
 	private CacheService cacheService;
-
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-
 	@Mock
 	private RegressionPercentageKanbanServiceImpl regressionPercentageKanbanServiceImpl;
-
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<ZephyrKPIService> services;
-
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-	private String [] projectKey ;
+	private String[] projectKey;
 	private Set<String> projects;
 
 	private KpiElement regressionKpiElement;
@@ -139,8 +130,8 @@ public class ZephyrServiceKanbanTest {
 		return kpiRequest;
 	}
 
-	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category,
-							   String kpiUnit, String source) {
+	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category, String kpiUnit,
+			String source) {
 		KpiElement kpiElement = new KpiElement();
 		kpiElement.setKpiId(kpiId);
 		kpiElement.setKpiName(kpiName);
@@ -153,7 +144,6 @@ public class ZephyrServiceKanbanTest {
 		kpiList.add(kpiElement);
 	}
 
-
 	/**
 	 * Test of empty filtered account hierarchy list.
 	 *
@@ -163,7 +153,7 @@ public class ZephyrServiceKanbanTest {
 	public void testProcessException() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest("Excel-ZephyrKanban");
-		when(filterHelperService.getFilteredBuildsKanban(kpiRequest,"project")).thenThrow(Exception.class);
+		when(filterHelperService.getFilteredBuildsKanban(kpiRequest, "project")).thenThrow(Exception.class);
 		zephyrService.process(kpiRequest);
 
 	}

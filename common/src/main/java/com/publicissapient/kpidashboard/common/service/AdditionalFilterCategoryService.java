@@ -1,10 +1,10 @@
 package com.publicissapient.kpidashboard.common.service;
 
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-
 import java.util.List;
+
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 
 public interface AdditionalFilterCategoryService {
 
-    List<AdditionalFilterCategory> getAdditionalFilterCategories();
+	List<AdditionalFilterCategory> getAdditionalFilterCategories();
 }

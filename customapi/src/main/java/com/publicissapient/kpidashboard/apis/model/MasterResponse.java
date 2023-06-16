@@ -28,38 +28,40 @@ import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
  * @author prigupta8
  */
 public class MasterResponse {
-    private List<KpiMaster> kpiList;
+	private List<KpiMaster> kpiList;
 
-    /**
-     * Instantiates a new Master response.
-     */
-    public MasterResponse() {
-    }
+	/**
+	 * Instantiates a new Master response.
+	 */
+	public MasterResponse() {
+	}
 
-    /**
-     * Instantiates a new Master response.
-     *
-     * @param kpiList the kpi list
-     */
-    public MasterResponse(List<KpiMaster> kpiList) {
-        this.kpiList = kpiList;
-    }
+	/**
+	 * Instantiates a new Master response.
+	 *
+	 * @param kpiList
+	 *            the kpi list
+	 */
+	public MasterResponse(List<KpiMaster> kpiList) {
+		this.kpiList = kpiList;
+	}
 
-    /**
-     * Gets kpi list.
-     *
-     * @return the kpi list
-     */
-    public List<KpiMaster> getKpiList() {
-        return kpiList;
-    }
+	/**
+	 * Gets kpi list.
+	 *
+	 * @return the kpi list
+	 */
+	public List<KpiMaster> getKpiList() {
+		return kpiList;
+	}
 
-    /**
-     * Sets kpi list.
-     *
-     * @param kpiList the kpi list
-     */
-    public void setKpiList(List<KpiMaster> kpiList) {
-        this.kpiList = kpiList;
-    }
+	/**
+	 * Sets kpi list.
+	 *
+	 * @param kpiList
+	 *            the kpi list
+	 */
+	public void setKpiList(List<KpiMaster> kpiList) {
+		this.kpiList = kpiList;
+	}
 }

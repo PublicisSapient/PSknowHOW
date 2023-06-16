@@ -12,17 +12,17 @@ import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExe
 public interface KanbanTestExecutionRepositoryCustom {
 
 	/**
-	 *Returns TestExecutionDetail documents for selected filters and date
-	 * range.
-		 *            filters applied
-		 * @param uniqueProjectMap
-		 *            project specific filters
-		 * @param dateFrom
-		 *            start date
-		 * @param dateTo
-		 *            end date
-		 * @return result list
-		 */
-		List<KanbanTestExecution> findTestExecutionDetailByFilters(Map<String, List<String>> mapOfFilters,
-				Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo);
+	 * Returns TestExecutionDetail documents for selected filters and date range.
+	 * filters applied
+	 * 
+	 * @param uniqueProjectMap
+	 *            project specific filters
+	 * @param dateFrom
+	 *            start date
+	 * @param dateTo
+	 *            end date
+	 * @return result list
+	 */
+	List<KanbanTestExecution> findTestExecutionDetailByFilters(Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo);
 }

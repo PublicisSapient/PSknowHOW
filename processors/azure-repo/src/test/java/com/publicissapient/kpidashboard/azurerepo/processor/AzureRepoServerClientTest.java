@@ -46,55 +46,51 @@ import com.publicissapient.kpidashboard.azurerepo.model.AzureRepoModel;
 import com.publicissapient.kpidashboard.azurerepo.processor.service.impl.AzureRepoServerClient;
 import com.publicissapient.kpidashboard.azurerepo.processor.service.impl.AzureRepoServerURIBuilder;
 import com.publicissapient.kpidashboard.azurerepo.util.AzureRepoRestOperations;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @ExtendWith(SpringExtension.class)
 class AzureRepoServerClientTest {
-	
+
 	@Mock
 	private AzureRepoConfig config;
-	
+
 	@Mock
 	private RestOperations restTemplate;
-	
-	
-	
+
 	@Mock
 	private AzureRepoRestOperations azurerepoRestOperations;
-	
-	private AzureRepoServerClient stashClient;
-	
 
+	private AzureRepoServerClient stashClient;
 
 	@Mock
 	private AesEncryptionService aesEncryptionService;
-	
+
 	@BeforeEach
-	public void init() throws Exception{
-		
+	public void init() throws Exception {
+
 		when(azurerepoRestOperations.getTypeInstance()).thenReturn(restTemplate);
-		
+
 		config = new AzureRepoConfig();
-    	config.setApi("_apis/git/repositories");
-    	config.setPageSize(2);
-    	config.setInitialPageSize(25);
-    	config.setAesEncryptionKey("708C150A5363290AAE3F579BF3746AD5") ;
-    	
+		config.setApi("_apis/git/repositories");
+		config.setPageSize(2);
+		config.setInitialPageSize(25);
+		config.setAesEncryptionKey("708C150A5363290AAE3F579BF3746AD5");
+
 		stashClient = new AzureRepoServerClient(config, azurerepoRestOperations, aesEncryptionService);
 	}
-	
+
 	@Test
-	void testFetchCommits() throws Exception{
+	void testFetchCommits() throws Exception {
 		String serverResponse = getServerResponse("/com/stashresponse.json");
-		
-		String filePath = "src/test/resources/com/processoritem.json" ; 
-		File file = new File(filePath) ;
-		ObjectMapper objectMapper = new ObjectMapper() ;
-		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false) ;
-		List<AzureRepoModel> repo = Arrays.asList(objectMapper.readValue(file, AzureRepoModel[].class)) ;
+
+		String filePath = "src/test/resources/com/processoritem.json";
+		File file = new File(filePath);
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		List<AzureRepoModel> repo = Arrays.asList(objectMapper.readValue(file, AzureRepoModel[].class));
 		ProcessorToolConnection azureRepoProcessorInfo = new ProcessorToolConnection();
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		azureRepoProcessorInfo.setApiVersion("5.1");
@@ -107,18 +103,19 @@ class AzureRepoServerClientTest {
 		String restUri = new AzureRepoServerURIBuilder(repo.get(0), config, azureRepoProcessorInfo).build();
 		when(stashClient.decryptPat(repo.get(0).getPat())).thenReturn("test");
 
-		when(restTemplate.exchange(eq(restUri), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
-				.thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
-		List<CommitDetails> commits = stashClient.fetchAllCommits(repo.get(0), true, azureRepoProcessorInfo, projectBasicConfig);
+		when(restTemplate.exchange(eq(restUri), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
+				eq(String.class))).thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
+		List<CommitDetails> commits = stashClient.fetchAllCommits(repo.get(0), true, azureRepoProcessorInfo,
+				projectBasicConfig);
 		Assert.assertEquals(2, commits.size());
-		
+
 		CommitDetails azureRepoCommit = commits.get(0);
 		Assert.assertEquals("Merged PR 2: Updated test file master", azureRepoCommit.getCommitLog());
-	
+
 	}
 
-	private String getServerResponse(String resource) throws Exception{
+	private String getServerResponse(String resource) throws Exception {
 		return IOUtils.toString(this.getClass().getResourceAsStream(resource));
 	}
-	
+
 }

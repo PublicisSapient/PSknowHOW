@@ -16,10 +16,9 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 
 @Component
 public class CookieUtil {
+	private static final String AUTH_COOKIE = "authCookie";
 	@Autowired
 	private CustomApiConfig customApiConfig;
-
-	private static final String AUTH_COOKIE = "authCookie";
 
 	public Cookie createAccessTokenCookie(String token) {
 		Cookie cookie = new Cookie(AUTH_COOKIE, token);

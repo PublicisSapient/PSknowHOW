@@ -4,5 +4,5 @@ import com.publicissapient.kpidashboard.common.model.ToolCredential;
 
 public interface ToolCredentialProvider {
 
-    ToolCredential findCredential(String credRef);
+	ToolCredential findCredential(String credRef);
 }

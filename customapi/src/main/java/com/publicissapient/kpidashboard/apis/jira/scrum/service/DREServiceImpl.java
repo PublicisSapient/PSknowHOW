@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -63,6 +61,8 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculated KPI value for DRE and its trend analysis.
@@ -285,8 +285,8 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			subCategoryWiseDREList.add(dreForCurrentLeaf);
 			sprintWiseClosedDefectList.addAll(subCategoryWiseClosedDefectList);
 			sprintWiseTotaldDefectList.addAll(subCategoryWiseTotaldDefectList);
-			sprintWiseCloseddDefectListMap.put(sprint,sprintWiseClosedDefectList);
-			sprintWiseTotaldDefectListMap.put(sprint,sprintWiseTotaldDefectList);
+			sprintWiseCloseddDefectListMap.put(sprint, sprintWiseClosedDefectList);
+			sprintWiseTotaldDefectListMap.put(sprint, sprintWiseTotaldDefectList);
 
 			setSprintWiseLogger(sprint, totalStoryIdList, sprintWiseTotaldDefectList, sprintWiseClosedDefectList);
 
@@ -307,7 +307,8 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				dreForCurrentLeaf = sprintWiseDREMap.get(currentNodeIdentifier);
 				List<JiraIssue> sprintWiseClosedDefectList = sprintWiseCloseddDefectListMap.get(currentNodeIdentifier);
 				List<JiraIssue> sprintWiseTotaldDefectList = sprintWiseTotaldDefectListMap.get(currentNodeIdentifier);
-				populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,sprintWiseClosedDefectList, sprintWiseTotaldDefectList);
+				populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
+						sprintWiseClosedDefectList, sprintWiseTotaldDefectList);
 
 			} else {
 				dreForCurrentLeaf = 0.0d;
@@ -332,9 +333,8 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_REMOVAL_EFFICIENCY.getColumns());
 	}
 
-	private void populateExcelDataObject(String requestTrackerId,String sprintName,
-			List<KPIExcelData> excelData, List<JiraIssue> sprintWiseClosedDefectList,
-			List<JiraIssue> sprintWiseTotaldDefectList) {
+	private void populateExcelDataObject(String requestTrackerId, String sprintName, List<KPIExcelData> excelData,
+			List<JiraIssue> sprintWiseClosedDefectList, List<JiraIssue> sprintWiseTotaldDefectList) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
 			Map<String, JiraIssue> totalDefectList = new HashMap<>();

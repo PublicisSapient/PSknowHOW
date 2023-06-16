@@ -38,17 +38,9 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 @Service
 public class BitBucketKPIServiceFactory {
 
+	private static final Map<String, BitBucketKPIService<?, ?, ?>> BIT_BUCKET_SERVICE_CACHE = new HashMap<>();
 	@Autowired
 	private List<BitBucketKPIService<?, ?, ?>> services;
-
-	private static final Map<String, BitBucketKPIService<?, ?, ?>> BIT_BUCKET_SERVICE_CACHE = new HashMap<>();
-
-	@PostConstruct
-	public void initMyServiceCache() {
-		for (BitBucketKPIService<?, ?, ?> service : services) {
-			BIT_BUCKET_SERVICE_CACHE.put(service.getQualifierType(), service);
-		}
-	}
 
 	@SuppressWarnings("rawtypes")
 	public static BitBucketKPIService getBitBucketKPIService(String type) throws ApplicationException {
@@ -58,6 +50,13 @@ public class BitBucketKPIServiceFactory {
 					"Bitbucket KPI Service Factory not initalized");
 		}
 		return service;
+	}
+
+	@PostConstruct
+	public void initMyServiceCache() {
+		for (BitBucketKPIService<?, ?, ?> service : services) {
+			BIT_BUCKET_SERVICE_CACHE.put(service.getQualifierType(), service);
+		}
 	}
 
 }

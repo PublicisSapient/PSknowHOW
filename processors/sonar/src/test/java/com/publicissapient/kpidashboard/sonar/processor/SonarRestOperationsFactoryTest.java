@@ -25,17 +25,15 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.RestOperations;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class SonarRestOperationsFactoryTest {
 
-    @InjectMocks
-    private SonarRestOperationsFactory sonarRestOperationsFactory;
+	@InjectMocks
+	private SonarRestOperationsFactory sonarRestOperationsFactory;
 
-
-    @Test
-    public void get() {
-        RestOperations restOperations = sonarRestOperationsFactory.getTypeInstance();
-        Assert.assertTrue(restOperations instanceof RestOperations);
-    }
+	@Test
+	public void get() {
+		RestOperations restOperations = sonarRestOperationsFactory.getTypeInstance();
+		Assert.assertTrue(restOperations instanceof RestOperations);
+	}
 }

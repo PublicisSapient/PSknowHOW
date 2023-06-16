@@ -27,7 +27,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
  */
 public interface RolesHelperService {
 
-	
 	/**
 	 * Gets all roles.
 	 * 
@@ -45,11 +44,12 @@ public interface RolesHelperService {
 	 *         is found,false if not data found
 	 */
 	ServiceResponse getRoleById(String id);
-	
+
 	/**
 	 * Modifies a role. Finds role by @param id and replaces it with @param role
 	 * 
-	 * @param role, id
+	 * @param role,
+	 *            id
 	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found

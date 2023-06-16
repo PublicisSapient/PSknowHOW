@@ -88,18 +88,18 @@ public class RolesHelperServiceImpl implements RolesHelperService {
 		if (role.isPresent()) {
 			log.info("Successfully found role@{}", id);
 			return new ServiceResponse(true, "Found role@" + id, Arrays.asList(role));
-		}
-		else{
+		} else {
 			log.info("Roles Db returned null");
 			return new ServiceResponse(false, "role@" + id + " does not exist", null);
 		}
-		
+
 	}
 
 	/**
 	 * Modify/Update a role by id.
 	 * 
-	 * @param id, RoleData
+	 * @param id,
+	 *            RoleData
 	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
@@ -120,7 +120,7 @@ public class RolesHelperServiceImpl implements RolesHelperService {
 			log.info("rolename, role description or Permissions are empty");
 			return new ServiceResponse(false, "Mandatory fields cannot be empty", null);
 		}
-		
+
 		role.setLastModifiedDate(new Date());
 		repository.save(role);
 		log.info("Successfully modified role@{}", id);

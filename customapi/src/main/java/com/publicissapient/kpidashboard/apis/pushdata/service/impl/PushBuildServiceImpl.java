@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,24 +43,22 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Slf4j
 public class PushBuildServiceImpl implements PushBaseService {
 
 	@Autowired
+	CustomApiConfig customApiConfig;
+	@Autowired
 	private BuildServiceImpl buildService;
-
 	@Autowired
 	private DeployServiceImpl deployService;
-
 	@Autowired
 	private PushDataTraceLogService pushDataTraceLogService;
-
 	@Autowired
 	private CacheService cacheService;
-
-	@Autowired
-	CustomApiConfig customApiConfig;
 
 	/**
 	 * validate pushed buildDeploy data and if all requested data is valid then only
@@ -84,24 +80,25 @@ public class PushBuildServiceImpl implements PushBaseService {
 		List<Deployment> deploymentList = new ArrayList<>();
 		List<PushErrorData> buildErrorList = new ArrayList<>();
 		List<PushErrorData> deployErrorList = new ArrayList<>();
-		List<PushDataDetail> pushDataDetails= new ArrayList<>();
+		List<PushDataDetail> pushDataDetails = new ArrayList<>();
 		int buildFailedRecords = buildService.checkandCreateBuilds(projectConfigId, buildDeploy.getBuilds(), buildList,
-				buildErrorList,pushDataDetails);
+				buildErrorList, pushDataDetails);
 		int deployFailedRecords = deployService.checkandCreateDeployment(projectConfigId, buildDeploy.getDeployments(),
-				deploymentList, deployErrorList,pushDataDetails);
+				deploymentList, deployErrorList, pushDataDetails);
 		pushDataResponse.setBuilds(buildErrorList);
 		pushDataResponse.setDeploy(deployErrorList);
 		pushDataResponse.setTotalFailedRecords(buildFailedRecords + deployFailedRecords);
 		pushDataResponse.setTotalSavedRecords(buildList.size() + deploymentList.size());
 		log.info(
 				"Total Records for " + projectConfigId + " to be Saved are " + pushDataResponse.getTotalSavedRecords());
-		totalSaveRecords(pushDataResponse, buildList, deploymentList,pushDataDetails);
+		totalSaveRecords(pushDataResponse, buildList, deploymentList, pushDataDetails);
 		return pushDataResponse;
 
 	}
 
 	/**
 	 * partial correct data will not be saved to respective dba
+	 * 
 	 * @param pushDataResponse
 	 * @param buildList
 	 * @param deploymentList
@@ -112,7 +109,7 @@ public class PushBuildServiceImpl implements PushBaseService {
 		PushDataTraceLog instance = PushDataTraceLog.getInstance();
 		instance.setTotalRecord(pushDataResponse.getTotalRecords());
 		instance.setTotalFailedRecord(pushDataResponse.getTotalFailedRecords());
-		if (pushDataResponse.getTotalFailedRecords() > 0 ) {
+		if (pushDataResponse.getTotalFailedRecords() > 0) {
 			pushDataResponse.setTotalSavedRecords(0);
 			instance.setTotalSavedRecord(0);
 			instance.setPushDataDetails(pushDataDetails);

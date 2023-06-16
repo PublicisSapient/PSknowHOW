@@ -23,25 +23,29 @@ package com.publicissapient.kpidashboard.github.customexception;
  */
 public class FetchingCommitException extends Exception {
 
+	private static final long serialVersionUID = -7003770711199668845L;
 
-    private static final long serialVersionUID = -7003770711199668845L;
+	/**
+	 * 
+	 * The constructor.
+	 * 
+	 * @param message
+	 *            message
+	 */
+	public FetchingCommitException(String message) {
+		super(message);
+	}
 
-    /**
-     * 
-     * The constructor.
-     * @param message message
-     */
-    public FetchingCommitException(String message) {
-        super(message);
-    }
-
-    /**
-     * 
-     * The constructor.
-     * @param message message
-     * @param cause cause
-     */
-    public FetchingCommitException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	/**
+	 * 
+	 * The constructor.
+	 * 
+	 * @param message
+	 *            message
+	 * @param cause
+	 *            cause
+	 */
+	public FetchingCommitException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

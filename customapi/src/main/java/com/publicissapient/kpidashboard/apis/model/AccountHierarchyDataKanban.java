@@ -37,13 +37,12 @@ public class AccountHierarchyDataKanban implements Serializable { // NOPMD
 	// This is required for account heirarchy Kanban
 
 	private static final long serialVersionUID = 1L;
-	
-	
+
 	private String labelName;
-	
+
 	private String leafNodeId;
-	
+
 	private ObjectId basicProjectConfigId;
-	
+
 	private List<Node> node;
 }

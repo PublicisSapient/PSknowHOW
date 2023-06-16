@@ -21,12 +21,13 @@ package com.publicissapient.kpidashboard.jira.client.release;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 public interface ReleaseDataClient {
-    /**
-     * Explicitly updates queries for the source system, and initiates the update to
-     * MongoDB from those calls.
-     *
-     * @param projectConfig project config
-     *
-     */
-    void processReleaseInfo(ProjectConfFieldMapping projectConfig);
+	/**
+	 * Explicitly updates queries for the source system, and initiates the update to
+	 * MongoDB from those calls.
+	 *
+	 * @param projectConfig
+	 *            project config
+	 *
+	 */
+	void processReleaseInfo(ProjectConfFieldMapping projectConfig);
 }

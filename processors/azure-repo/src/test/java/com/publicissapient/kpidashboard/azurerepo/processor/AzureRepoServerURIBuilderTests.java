@@ -37,22 +37,22 @@ import com.publicissapient.kpidashboard.common.model.processortool.ProcessorTool
 
 @ExtendWith(SpringExtension.class)
 class AzureRepoServerURIBuilderTests {
-	
+
 	@Mock
 	private AzureRepoModel azureRepoRepo;
-	
+
 	@Mock
 	private AzureRepoConfig config;
-	
+
 	private AzureRepoServerURIBuilder uriBuilder;
-	
+
 	@BeforeEach
 	public void init() {
-		
+
 		Map<String, Object> options = new HashMap<>();
 		options.put("repositoryName", "testRepo");
 		options.put("apiVersion", "5.1");
-		
+
 		when(config.getApi()).thenReturn("_apis/git/repositories");
 		ProcessorToolConnection azureRepoProcessorInfo = new ProcessorToolConnection();
 		azureRepoProcessorInfo.setApiVersion("5.1");
@@ -60,12 +60,12 @@ class AzureRepoServerURIBuilderTests {
 		azureRepoProcessorInfo.setUrl("https://test.com/testUser/testRepo");
 		azureRepoProcessorInfo.setPat("testPat");
 		azureRepoProcessorInfo.setRepositoryName("testRepo");
-		
-		uriBuilder = new AzureRepoServerURIBuilder(azureRepoRepo, config,azureRepoProcessorInfo);
+
+		uriBuilder = new AzureRepoServerURIBuilder(azureRepoRepo, config, azureRepoProcessorInfo);
 	}
-	
+
 	@Test
-	public void testBuild() throws Exception{	
+	public void testBuild() throws Exception {
 		String url = uriBuilder.build();
 		String expected = "https://test.com/testUser/testRepo/_apis/git/repositories/testRepo/commits?searchCriteria.itemVersion.version=master&api.Version=5.1";
 		Assert.assertEquals(expected, url);

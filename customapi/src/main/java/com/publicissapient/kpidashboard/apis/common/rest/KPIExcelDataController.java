@@ -40,8 +40,8 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 
 /**
- * This class fetches KPI data for received filter. This API is used by Application
- * Dashboard to fetch Excel Data.
+ * This class fetches KPI data for received filter. This API is used by
+ * Application Dashboard to fetch Excel Data.
  *
  * @author tauakram
  */
@@ -56,8 +56,10 @@ public class KPIExcelDataController {
 	/**
 	 * Fetches KPI validation data (story keys, defect keys) for a specific KPI id.
 	 *
-	 * @param kpiRequest the kpi request
-	 * @param kpiID      the kpi id
+	 * @param kpiRequest
+	 *            the kpi request
+	 * @param kpiID
+	 *            the kpi id
 	 * @return validation kpi data
 	 */
 	@RequestMapping(value = "/v1/kpi/{kpiID}", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR

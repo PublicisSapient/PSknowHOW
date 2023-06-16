@@ -1,13 +1,14 @@
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 
 @Component
 @Repository
@@ -17,8 +18,9 @@ public interface IssueBacklogCustomHistoryRepository extends CrudRepository<Issu
 	List<IssueBacklogCustomHistory> findByStoryIDAndBasicProjectConfigId(String storyID, String basicProjectConfigId);
 
 	void deleteByBasicProjectConfigId(String projectID);
+
 	List<IssueBacklogCustomHistory> findByStoryIDInAndBasicProjectConfigIdIn(List<String> storyID,
-																		  List<String> basicProjectConfigId);
+			List<String> basicProjectConfigId);
 
 	List<IssueBacklogCustomHistory> findByStoryIDIn(List<String> storyList);
 

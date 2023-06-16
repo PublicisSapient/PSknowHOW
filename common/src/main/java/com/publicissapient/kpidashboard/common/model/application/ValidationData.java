@@ -62,7 +62,6 @@ public class ValidationData {
 	@JsonProperty("In Progress Stories")
 	private List<String> progressKeyList;
 
-
 	@JsonProperty("Tickets")
 	private List<String> ticketKeyList;
 
@@ -257,7 +256,7 @@ public class ValidationData {
 
 	@JsonProperty("Epic Name")
 	private List<String> epicNameList;
-	
+
 	@JsonProperty("Total Test Case")
 	private List<String> totalTests;
 
@@ -265,43 +264,43 @@ public class ValidationData {
 	private List<Integer> totalBuildCountList;
 
 	@JsonProperty("Total Build Failure Count")
-	private List<Integer>  totalBuildFailureCountList;
+	private List<Integer> totalBuildFailureCountList;
 
 	@JsonProperty("Build Failure Percentage")
-	private List<Double>  buildFailurePercentageList;
+	private List<Double> buildFailurePercentageList;
 
 	@JsonProperty("Weeks")
-	private List<String>  weeksList;
+	private List<String> weeksList;
 
 	@JsonProperty("Month")
-	private List<String>  monthList;
+	private List<String> monthList;
 
 	@JsonProperty("Environment")
-	private List<String>  environmentList;
-	
+	private List<String> environmentList;
+
 	@JsonProperty("Opened Ticket")
-	private List<String>  openedTicketList;
+	private List<String> openedTicketList;
 
 	@JsonProperty("Opened Ticket Issue Type")
-	private List<String>  openedTicketIssueTypeList;
-	
+	private List<String> openedTicketIssueTypeList;
+
 	@JsonProperty("Opened Ticket Priority")
-	private List<String>  openedTicketPriorityList;
-	
+	private List<String> openedTicketPriorityList;
+
 	@JsonProperty("Closed Ticket")
-	private List<String>  closedTicketList;
-	
+	private List<String> closedTicketList;
+
 	@JsonProperty("Closed Ticket Issue Type")
-	private List<String>  closedTicketIssueTypeList;
-	
+	private List<String> closedTicketIssueTypeList;
+
 	@JsonProperty("Closed Ticket Priority")
-	private List<String>  closedTicketPriorityList;
-	
+	private List<String> closedTicketPriorityList;
+
 	@JsonProperty("Issues")
 	private List<String> issues;
 
 	@JsonProperty("Created Tickets")
-	private List<String>  createdTicketList;
+	private List<String> createdTicketList;
 
 	@JsonProperty("Defects Added after Sprint Start")
 	private List<String> defectsAddedAfterSprint;

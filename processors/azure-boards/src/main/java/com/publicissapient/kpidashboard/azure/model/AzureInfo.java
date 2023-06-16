@@ -28,12 +28,12 @@ import lombok.Setter;
 @Data
 @Builder
 public class AzureInfo {
-    
+
 	private String username;
-    private String password;
-    private String azureConfigBaseUrl;
-    private String azureConfigProxyUrl;
-    private String azureConfigProxyPort;
-    private String azureConfigAccessToken;
-    
+	private String password;
+	private String azureConfigBaseUrl;
+	private String azureConfigProxyUrl;
+	private String azureConfigProxyPort;
+	private String azureConfigAccessToken;
+
 }

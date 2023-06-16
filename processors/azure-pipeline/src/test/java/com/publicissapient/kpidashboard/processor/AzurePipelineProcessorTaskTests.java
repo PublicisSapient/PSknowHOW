@@ -63,6 +63,7 @@ import com.publicissapient.kpidashboard.azurepipeline.repository.AzurePipelinePr
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -75,14 +76,21 @@ import com.publicissapient.kpidashboard.common.repository.application.Deployment
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 @ExtendWith(SpringExtension.class)
 public class AzurePipelineProcessorTaskTests {
 
+	private static final String SERVER1 = "server1";
+	private static final String NICENAME1 = "niceName1";
+	private static final ProcessorToolConnection AZUREPIPELINE_SAMPLE_SERVER = new ProcessorToolConnection();
+	private static final ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+	private static final long LASTUPDATEDTIME = 0;
+	Map<String, List<ProjectToolConfig>> azurePipelineJobFromConfig = Maps.newHashMap();
+	List<ProjectBasicConfig> listProjectBasicConfig = new ArrayList<>();
+	List<ProcessorToolConnection> listProcessorToolConnection = new ArrayList<>();
 	@InjectMocks
 	private AzurePipelineProcessorJobExecutor task;
 	@Mock
@@ -103,40 +111,24 @@ public class AzurePipelineProcessorTaskTests {
 	private AzurePipelineConfig azurePipelineConfig;
 	@Mock
 	private AesEncryptionService aesEncryptionService;
-
 	@Mock
 	private AzurePipelineFactory azurePipelineFactory;
-
 	@Mock
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
-
 	@Mock
 	private ProcessorToolConnectionService processorToolConnectionService;
-
 	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
 	@Mock
 	private DefaultAzurePipelineClient buildClient;
-
 	@Mock
 	private AzurePipelineDeploymentClient deployClient;
-
 	@Mock
 	private DeploymentRepository deploymentRepository;
 	@Mock
 	private ProjectBasicConfigRepository projectConfigRepository;
 	@Mock
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
-	private static final String SERVER1 = "server1";
-	private static final String NICENAME1 = "niceName1";
-	private static final ProcessorToolConnection AZUREPIPELINE_SAMPLE_SERVER = new ProcessorToolConnection();
-	private static final ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
-	private static final long LASTUPDATEDTIME = 0;
-
-	Map<String, List<ProjectToolConfig>> azurePipelineJobFromConfig = Maps.newHashMap();
-	List<ProjectBasicConfig> listProjectBasicConfig = new ArrayList<>();
-	List<ProcessorToolConnection> listProcessorToolConnection = new ArrayList<>();
 	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
 	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
@@ -201,7 +193,8 @@ public class AzurePipelineProcessorTaskTests {
 		when(azurePipelineFactory.getAzurePipelineClient("Build")).thenReturn(buildClient);
 		when(projectBasicConfigRepository.findAll()).thenReturn(listProjectBasicConfig);
 		when(buildRepository.findByProjectToolConfigIdAndBuildJob(any(), any())).thenReturn(new ArrayList<Build>());
-		when(buildClient.getInstanceJobs(any(), any(Long.class), any())).thenReturn(new HashMap<ObjectId, Set<Build>>());
+		when(buildClient.getInstanceJobs(any(), any(Long.class), any()))
+				.thenReturn(new HashMap<ObjectId, Set<Build>>());
 		when(projectToolConfigRepository.findByToolName("AzurePipeline")).thenReturn(azurePipelineJob());
 		AzurePipelineProcessor azurePipelineProcessor = new AzurePipelineProcessor();
 		task.execute(azurePipelineProcessor);
@@ -254,9 +247,9 @@ public class AzurePipelineProcessorTaskTests {
 		when(projectConfigRepository.findAll()).thenReturn(basicConfigs);
 		when(azurePipelineClient.getInstanceJobs(Mockito.any(), anyLong(), any()))
 				.thenReturn(twoJobsWithTwoBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
-		when(processorExecutionTraceLogRepository.
-				findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREPIPELINE, "63da71facaac4d289c38744d"))
-				.thenReturn(optionalProcessorExecutionTraceLog);
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
+				ProcessorConstants.AZUREPIPELINE, "63da71facaac4d289c38744d"))
+						.thenReturn(optionalProcessorExecutionTraceLog);
 		task.execute(processor);
 		assertTrue(task.execute(processor));
 	}
@@ -280,9 +273,9 @@ public class AzurePipelineProcessorTaskTests {
 		when(projectConfigRepository.findAll()).thenReturn(basicConfigs);
 		when(azurePipelineClient.getInstanceJobs(Mockito.any(), anyLong(), any()))
 				.thenReturn(twoJobsWithTwoBuilds(AZUREPIPELINE_SAMPLE_SERVER.getId()));
-		when(processorExecutionTraceLogRepository.
-				findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.AZUREPIPELINE, "63da71facaac4d289c38744d"))
-				.thenReturn(optionalProcessorExecutionTraceLog);
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
+				ProcessorConstants.AZUREPIPELINE, "63da71facaac4d289c38744d"))
+						.thenReturn(optionalProcessorExecutionTraceLog);
 		task.execute(processor);
 		assertTrue(task.execute(processor));
 	}

@@ -17,15 +17,17 @@
 
 package com.publicissapient.kpidashboard.common.service;
 
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-
 import java.util.List;
+
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 
 /**
  * @author anisingh4
  */
 public interface ProcessorExecutionTraceLogService {
-    void save(ProcessorExecutionTraceLog processorExecutionTracelog);
-    List<ProcessorExecutionTraceLog> getTraceLogs();
-    List<ProcessorExecutionTraceLog> getTraceLogs(String processorName, String basicProjectConfigId);
+	void save(ProcessorExecutionTraceLog processorExecutionTracelog);
+
+	List<ProcessorExecutionTraceLog> getTraceLogs();
+
+	List<ProcessorExecutionTraceLog> getTraceLogs(String processorName, String basicProjectConfigId);
 }

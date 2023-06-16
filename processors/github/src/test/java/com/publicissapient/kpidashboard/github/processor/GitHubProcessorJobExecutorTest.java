@@ -20,7 +20,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.client.RestOperations;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
@@ -30,7 +32,9 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.github.config.GitHubConfig;
 import com.publicissapient.kpidashboard.github.customexception.FetchingCommitException;
 import com.publicissapient.kpidashboard.github.model.GitHubProcessor;
@@ -38,10 +42,6 @@ import com.publicissapient.kpidashboard.github.model.GitHubProcessorItem;
 import com.publicissapient.kpidashboard.github.processor.service.GitHubClient;
 import com.publicissapient.kpidashboard.github.repository.GitHubProcessorItemRepository;
 import com.publicissapient.kpidashboard.github.repository.GitHubProcessorRepository;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
 /**
  * @author narsingh9
@@ -99,15 +99,13 @@ public class GitHubProcessorJobExecutorTest {
 	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
 	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
 
-
-
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 
 	}
 
-	private List<ProjectBasicConfig> getProjectConfigList(){
+	private List<ProjectBasicConfig> getProjectConfigList() {
 		List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 		ProjectBasicConfig p = new ProjectBasicConfig();
 		p.setId(new ObjectId("61f22fbb16e55b7609b0a36b"));
@@ -115,7 +113,6 @@ public class GitHubProcessorJobExecutorTest {
 		projectConfigList.add(p);
 		return projectConfigList;
 	}
-
 
 	@Test
 	public void testExecute() throws FetchingCommitException {
@@ -131,19 +128,21 @@ public class GitHubProcessorJobExecutorTest {
 		doReturn(getProjectConfigList()).when(projectConfigRepository).findAll();
 		doReturn(getProcessorItemList().get(0)).when(gitHubProcessorItemRepository).save(ArgumentMatchers.any());
 
-		doReturn(getProcessorToolConnectionList()).when(processorToolConnectionService).findByToolAndBasicProjectConfigId(ArgumentMatchers.anyString(), ArgumentMatchers.any(ObjectId.class));
-		doReturn(getCommitDetailsList()).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(), ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
+		doReturn(getProcessorToolConnectionList()).when(processorToolConnectionService)
+				.findByToolAndBasicProjectConfigId(ArgumentMatchers.anyString(), ArgumentMatchers.any(ObjectId.class));
+		doReturn(getCommitDetailsList()).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(),
+				ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
 
-		doReturn(getMergeDetailsList()).when(gitHubClient).fetchMergeRequests(ArgumentMatchers.any(), ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
+		doReturn(getMergeDetailsList()).when(gitHubClient).fetchMergeRequests(ArgumentMatchers.any(),
+				ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
 		doReturn("http://customapi:8080/").when(gitHubConfig).getCustomApiBaseUrl();
-		when(processorExecutionTraceLogRepository.
-				findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITHUB, "624d5c9ed837fc14d40b3039"))
-				.thenReturn(optionalProcessorExecutionTraceLog);
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITHUB,
+				"624d5c9ed837fc14d40b3039")).thenReturn(optionalProcessorExecutionTraceLog);
 		boolean executed = gitHubProcessorJobExecutor.execute(gitHubProcessor);
 		assertTrue(executed);
 	}
 
-	private List<ProcessorToolConnection> getProcessorToolConnectionList(){
+	private List<ProcessorToolConnection> getProcessorToolConnectionList() {
 		ProcessorToolConnection connectionDetail = new ProcessorToolConnection();
 		connectionDetail.setRepositoryName("release");
 		connectionDetail.setBranch("release/core-r4.4");

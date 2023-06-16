@@ -20,11 +20,11 @@ package com.publicissapient.kpidashboard.common.model.processortool;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 
 import lombok.Data;
 import lombok.Getter;
@@ -32,8 +32,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * @author narsingh9
- * mapping class of {@link ProjectToolConfig} and {@link Connection}
+ * @author narsingh9 mapping class of {@link ProjectToolConfig} and
+ *         {@link Connection}
  */
 
 @Data
@@ -41,7 +41,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ProcessorToolConnection {
-	
+
 	private ObjectId id;
 	private String toolName;
 	private ObjectId basicProjectConfigId;
@@ -85,7 +85,7 @@ public class ProcessorToolConnection {
 	private boolean cloudEnv;
 	private boolean accessTokenEnabled;
 	private String organizationKey;
-	//TestCase Fields for Zephyr tool
+	// TestCase Fields for Zephyr tool
 	private List<String> regressionAutomationLabels;
 	private String testAutomationStatusLabel;
 	private List<String> automatedTestValue;
@@ -118,6 +118,7 @@ public class ProcessorToolConnection {
 	public boolean getbearerToken() {
 		return bearerToken;
 	}
+
 	public void setbearerToken(boolean bearerToken) {
 		bearerToken = bearerToken;
 	}

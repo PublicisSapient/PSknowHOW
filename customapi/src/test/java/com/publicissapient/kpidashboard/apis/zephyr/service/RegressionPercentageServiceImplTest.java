@@ -18,6 +18,26 @@
 
 package com.publicissapient.kpidashboard.apis.zephyr.service;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.bson.types.ObjectId;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
@@ -31,7 +51,11 @@ import com.publicissapient.kpidashboard.apis.data.TestCaseDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -43,25 +67,13 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
-import org.bson.types.ObjectId;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RegressionPercentageServiceImplTest {
 
+	private final static String TESTCASEKEY = "testCaseData";
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
 	@Mock
@@ -76,20 +88,16 @@ public class RegressionPercentageServiceImplTest {
 	FieldMappingRepository fieldMappingRepository;
 	@Mock
 	TestCaseDetailsRepository testCaseDetailsRepository;
+	List<JiraIssue> totalTestCaseList = new ArrayList<>();
+	List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
+	List<TestCaseDetails> testCaseDetailsList = new ArrayList<>();
+	List<TestCaseDetails> automatedTestCaseList = new ArrayList<>();
 	@Mock
 	private KpiHelperService kpiHelperService;
 	@Mock
 	private CustomApiConfig customApiConfig;
 	@Mock
 	private CommonService commonService;
-
-	private final static String TESTCASEKEY = "testCaseData";
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-	List<JiraIssue> totalTestCaseList = new ArrayList<>();
-	List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
-	List<TestCaseDetails> testCaseDetailsList = new ArrayList<>();
-	List<TestCaseDetails> automatedTestCaseList = new ArrayList<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
@@ -125,7 +133,7 @@ public class RegressionPercentageServiceImplTest {
 		maturityRangeMap.put("automationPercentage", Arrays.asList("-20", "20-40", "40-60", "60-79", "80-"));
 
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
-		when(testCaseDetailsRepository.findTestDetails(any(),any(), any())).thenReturn(testCaseDetailsList);
+		when(testCaseDetailsRepository.findTestDetails(any(), any(), any())).thenReturn(testCaseDetailsList);
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		String kpiRequestTrackerId = "Excel-Zephyr-5be544de025de212549176a9";
@@ -169,7 +177,7 @@ public class RegressionPercentageServiceImplTest {
 
 	@Test
 	public void calculateKpiValueTest() {
-		Double kpiValue = regressionPercentageServiceImpl.calculateKpiValue(Arrays.asList(1.0,2.0), "kpi14");
+		Double kpiValue = regressionPercentageServiceImpl.calculateKpiValue(Arrays.asList(1.0, 2.0), "kpi14");
 		assertThat("Kpi value  :", kpiValue, equalTo(0.0));
 	}
 }

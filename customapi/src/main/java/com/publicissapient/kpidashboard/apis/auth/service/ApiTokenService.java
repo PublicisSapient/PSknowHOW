@@ -38,19 +38,25 @@ public interface ApiTokenService {
 	/**
 	 * Gets api token.
 	 *
-	 * @param apiUser      the api user
-	 * @param expirationDt the expiration dt
+	 * @param apiUser
+	 *            the api user
+	 * @param expirationDt
+	 *            the expiration dt
 	 * @return the api token
-	 * @throws EncryptionException the encryption exception
-	 * @throws ApplicationException     the application exception
+	 * @throws EncryptionException
+	 *             the encryption exception
+	 * @throws ApplicationException
+	 *             the application exception
 	 */
 	String getApiToken(String apiUser, Long expirationDt) throws EncryptionException, ApplicationException;
 
 	/**
 	 * Authenticate user.
 	 *
-	 * @param username the username
-	 * @param password the password
+	 * @param username
+	 *            the username
+	 * @param password
+	 *            the password
 	 * @return the org . springframework . security . core . authentication
 	 */
 	org.springframework.security.core.Authentication authenticate(String username, String password);

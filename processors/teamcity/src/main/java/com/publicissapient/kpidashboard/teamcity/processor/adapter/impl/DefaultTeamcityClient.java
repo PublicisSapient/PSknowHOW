@@ -46,16 +46,15 @@ import org.springframework.web.client.RestOperations;
 
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.teamcity.config.Constants;
 import com.publicissapient.kpidashboard.teamcity.config.TeamcityConfig;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.util.ProcessorUtils;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
-
 
 /**
  * TeamcityClient implementation that uses RestTemplate and JSONSimple to fetch
@@ -89,6 +88,42 @@ public class DefaultTeamcityClient implements TeamcityClient {
 	}
 
 	/**
+	 * Rebuilds the API endpoint because the buildUrl obtained via Teamcity API.
+	 *
+	 * @param build
+	 *            the build
+	 * @param server
+	 *            the server
+	 * @return the build job URL
+	 * @throws URISyntaxException
+	 *             if there is any illegal character in URI
+	 * @throws MalformedURLException
+	 *             if there is an invalid URL
+	 * @throws UnsupportedEncodingException
+	 *             if there is wrong encoding specified
+	 */
+	public static String rebuildJobUrl(String build, String server)
+			throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
+		URL instanceUrl = new URL(server);
+		String userInfo = instanceUrl.getUserInfo();
+		String instanceProtocol = instanceUrl.getProtocol();
+
+		// decode to handle spaces in the job name.
+		URL buildUrl = new URL(URLDecoder.decode(build, "UTF-8"));
+		String buildPath = buildUrl.getPath();
+
+		// adding to correcc the code analysis issue
+		String host = instanceUrl.getHost();
+
+		int port = buildUrl.getPort();
+		if (-1 == port) {
+			port = instanceUrl.getPort();
+		}
+		URI newUri = new URI(instanceProtocol, userInfo, host, port, buildPath, null, null);
+		return newUri.toString();
+	}
+
+	/**
 	 * Provides Instance Jobs.
 	 *
 	 * @param teamcityServer
@@ -100,7 +135,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 		log.debug("Enter getInstanceJobs");
 		Map<ObjectId, Set<Build>> result = new LinkedHashMap<>();
 
-		JSONObject jobs = getJobs(teamcityServer);	
+		JSONObject jobs = getJobs(teamcityServer);
 
 		int jobsCount = getJobsCount(jobs);
 		log.info("Number of jobs {}", jobsCount);
@@ -147,7 +182,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 				final String jobURL = ProcessorUtils.getString(jsonJob, Constants.URL);
 
 				log.debug("Process jobName {}  jobURL {}", jobName, jobURL);
-				if(jobName.trim().equals(teamcityServer.getJobName().trim())) {
+				if (jobName.trim().equals(teamcityServer.getJobName().trim())) {
 					recursiveGetJobDetails(jobName, jobURL, teamcityServer.getUrl(), result, teamcityServer);
 				}
 			}
@@ -182,8 +217,8 @@ public class DefaultTeamcityClient implements TeamcityClient {
 	}
 
 	/**
-	 * Provides the number of jobs first so that we don't get 500 internal
-	 * server logError when paging with index out of bounds.
+	 * Provides the number of jobs first so that we don't get 500 internal server
+	 * logError when paging with index out of bounds.
 	 *
 	 * @param jobs
 	 *            the connection properties for Teamcity server
@@ -240,9 +275,10 @@ public class DefaultTeamcityClient implements TeamcityClient {
 
 				// A basic Build object. This will be fleshed out later if this
 				// is a new Build.
-				JSONObject buildDetails = getBuildInfo(jsonBuild.get("href").toString()+ Constants.BUILD_URL_END_POINT, instanceUrl, teamcityServer);
+				JSONObject buildDetails = getBuildInfo(jsonBuild.get("href").toString() + Constants.BUILD_URL_END_POINT,
+						instanceUrl, teamcityServer);
 				String buildNumber = getBuildNumberFromLatestBuild(buildDetails);
-				
+
 				if (null != buildDetails) {
 					Build tcbuild = createBuildObject(buildNumber, buildDetails, instanceUrl);
 					if (null != tcbuild)
@@ -265,8 +301,8 @@ public class DefaultTeamcityClient implements TeamcityClient {
 		}
 
 	}
-	
-	private Build createBuildObject(String buildNumber,JSONObject buildDetails,String instanceUrl) {
+
+	private Build createBuildObject(String buildNumber, JSONObject buildDetails, String instanceUrl) {
 		String hostIp = teamcityConfig.getDockerHostIp();
 		Build teamcityBuild = null;
 		if (!ZERO_AS_STR.equals(buildNumber)) {
@@ -281,7 +317,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 		}
 		return teamcityBuild;
 	}
-	
+
 	private String getBuildNumberFromLatestBuild(JSONObject buildDetails) {
 		String buildNumber = ZERO_AS_STR;
 		if (null != buildDetails) {
@@ -322,11 +358,11 @@ public class DefaultTeamcityClient implements TeamcityClient {
 	 * Provides Build Details.
 	 *
 	 * @param buildUrl
-	 * 		the build URL
+	 *            the build URL
 	 * @param instanceUrl
-	 * 		the Teamcity instance URL
+	 *            the Teamcity instance URL
 	 * @param teamcityServer
-	 * 		the connection properties for Teamcity server
+	 *            the connection properties for Teamcity server
 	 * @param proBasicConfig
 	 * @return the Build details
 	 */
@@ -428,48 +464,12 @@ public class DefaultTeamcityClient implements TeamcityClient {
 
 			JSONObject latestBuildDetails = getBuildInfo(latestbuildUrl, teamcityServer.getUrl(), teamcityServer);
 
-			if(null != latestBuildDetails)
+			if (null != latestBuildDetails)
 				return createBuild(latestbuildUrl, teamcityServer, latestBuildDetails, proBasicConfig);
 		} catch (ParseException parseException) {
 			log.error(String.format("Error in parsing build response: %s", buildUrl), parseException);
 		}
 		return null;
-	}
-
-	/**
-	 * Rebuilds the API endpoint because the buildUrl obtained via Teamcity API.
-	 *
-	 * @param build
-	 *            the build
-	 * @param server
-	 *            the server
-	 * @return the build job URL
-	 * @throws URISyntaxException
-	 *             if there is any illegal character in URI
-	 * @throws MalformedURLException
-	 *             if there is an invalid URL
-	 * @throws UnsupportedEncodingException
-	 *             if there is wrong encoding specified
-	 */
-	public static String rebuildJobUrl(String build, String server)
-			throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
-		URL instanceUrl = new URL(server);
-		String userInfo = instanceUrl.getUserInfo();
-		String instanceProtocol = instanceUrl.getProtocol();
-
-		// decode to handle spaces in the job name.
-		URL buildUrl = new URL(URLDecoder.decode(build, "UTF-8"));
-		String buildPath = buildUrl.getPath();
-
-		// adding to correcc the code analysis issue
-		String host = instanceUrl.getHost();
-
-		int port = buildUrl.getPort();
-		if (-1 == port) {
-			port = instanceUrl.getPort();
-		}
-		URI newUri = new URI(instanceProtocol, userInfo, host, port, buildPath, null, null);
-		return newUri.toString();
 	}
 
 	/**

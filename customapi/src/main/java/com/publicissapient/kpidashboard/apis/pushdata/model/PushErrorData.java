@@ -24,7 +24,7 @@ import lombok.Data;
 
 @Data
 public class PushErrorData {
+	Map<String, String> errors;
 	private String jobName;
 	private String number;
-	Map<String, String> errors;
 }

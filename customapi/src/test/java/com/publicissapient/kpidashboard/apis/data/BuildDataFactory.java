@@ -64,8 +64,8 @@ public class BuildDataFactory {
 		}
 	}
 
-    public List<Build> getbuildDataList() {
-        return buildDataFactory;
-    }
+	public List<Build> getbuildDataList() {
+		return buildDataFactory;
+	}
 
 }

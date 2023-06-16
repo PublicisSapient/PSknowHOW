@@ -19,7 +19,13 @@
 package com.publicissapient.kpidashboard.apis.auth.service;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -43,6 +49,32 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 	@Autowired
 	public ApiTokenServiceImpl(ApiTokenRepository apiTokenRepository) {
 		this.apiTokenRepository = apiTokenRepository;
+	}
+
+	/**
+	 *
+	 * @param argA
+	 *            firstDate
+	 * @param argB
+	 *            secondDate
+	 * @return 0 = equal, -1 = firstDate is before secondDate, 1 = firstDate is
+	 *         after secondDate
+	 */
+	private static int compareDates(Date argA, Date argB) {
+
+		if (argA == null || argB == null) {
+			return -1;
+		}
+
+		int retVal = argA.compareTo(argB);
+		if (retVal == 0) { // if dates are equal.
+			return 0;
+		} else if (retVal < 0) { // if argA is before argument.
+			return -1;
+		} else { // if argA is after argument.
+			return 1;
+		}
+
 	}
 
 	@Override
@@ -90,7 +122,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 
 	/**
 	 * check if user exists
-	 * 
+	 *
 	 * @param username
 	 * @param apiToken
 	 * @return
@@ -104,31 +136,5 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 		authorities.forEach(authority -> grantedAuthorities.add(new SimpleGrantedAuthority(authority)));
 
 		return grantedAuthorities;
-	}
-
-	/**
-	 *
-	 * @param argA
-	 *            firstDate
-	 * @param argB
-	 *            secondDate
-	 * @return 0 = equal, -1 = firstDate is before secondDate, 1 = firstDate is
-	 *         after secondDate
-	 */
-	private static int compareDates(Date argA, Date argB) {
-
-		if (argA == null || argB == null) {
-			return -1;
-		}
-
-		int retVal = argA.compareTo(argB);
-		if (retVal == 0) { // if dates are equal.
-			return 0;
-		} else if (retVal < 0) { // if argA is before argument.
-			return -1;
-		} else { // if argA is after argument.
-			return 1;
-		}
-
 	}
 }

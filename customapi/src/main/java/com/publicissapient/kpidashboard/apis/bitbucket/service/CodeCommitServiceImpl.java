@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -69,6 +67,7 @@ import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -164,7 +163,8 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		String requestTrackerId = getRequestTrackerId();
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(YYYYMMDD);
 		String endDate = formatter.print(DateTime.now());
-		String startDate = formatter.print(DateTime.now().minusDays(customApiConfig.getRepoXAxisCountForCheckInsAndMergeRequests() - 1));
+		String startDate = formatter
+				.print(DateTime.now().minusDays(customApiConfig.getRepoXAxisCountForCheckInsAndMergeRequests() - 1));
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
@@ -327,23 +327,27 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 			Map<String, Object> hoverValues = new HashMap<>();
 			if (commitCountForRepo != null && commitCountForRepo.get(currentDate) != null) {
 				Long commitForDay = commitCountForRepo.get(currentDate);
-				excelDataLoader.put(DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT), commitForDay);
+				excelDataLoader.put(DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT),
+						commitForDay);
 				dataCount.setValue(commitForDay);
 				hoverValues.put(NO_CHECKIN, commitForDay.intValue());
 			} else {
-				excelDataLoader.put(DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT), 0l);
+				excelDataLoader.put(DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT),
+						0l);
 				dataCount.setValue(0l);
 				hoverValues.put(NO_CHECKIN, 0);
 
 			}
 			if (mergeCountForRepo != null && mergeCountForRepo.get(currentDate) != null) {
 				Long mergeForDay = mergeCountForRepo.get(currentDate);
-				mergeRequestExcelDataLoader.put(DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT), mergeForDay);
+				mergeRequestExcelDataLoader.put(
+						DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT), mergeForDay);
 				dataCount.setLineValue(mergeForDay);
 				hoverValues.put(NO_MERGE, mergeForDay.intValue());
 
 			} else {
-				mergeRequestExcelDataLoader.put(DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT), 0l);
+				mergeRequestExcelDataLoader
+						.put(DateUtil.dateTimeConverter(currentDate, YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT), 0l);
 				dataCount.setLineValue(0l);
 				hoverValues.put(NO_MERGE, 0);
 

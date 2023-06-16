@@ -33,9 +33,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.util.DateUtil;
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -66,6 +63,9 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class fetches the daily closure on Iteration dashboard. Trend analysis
@@ -101,6 +101,14 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	private static final String JIRAOPENISSUECUSTOMHISTORYMAP = "jiraOpenIssueCustomHistoryMap";
 	private static final String OVERALL = "Overall";
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
+
+	private static Integer getRemainingEstimateTime(JiraIssue issueObject) {
+		Integer remainingEstimate = 0;
+		if (issueObject.getRemainingEstimateMinutes() != null) {
+			remainingEstimate = (issueObject.getRemainingEstimateMinutes() / 60) / 8;
+		}
+		return remainingEstimate;
+	}
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -156,7 +164,8 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 
 				List<JiraIssue> totalJiraIssues = getJiraIssuesFromBaseClass(issuesList);
 
-				List<JiraIssueCustomHistory> totalJiraIssuesHistory = getJiraIssuesCustomHistoryFromBaseClass(issuesList);
+				List<JiraIssueCustomHistory> totalJiraIssuesHistory = getJiraIssuesCustomHistoryFromBaseClass(
+						issuesList);
 
 				Map<String, JiraIssue> jiraOpenIssueMap;
 				Map<String, JiraIssue> jiraIssueMap = new HashMap<>();
@@ -484,7 +493,8 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		iterationStatus.setPriority(issueObject.getPriority());
 		iterationStatus.setIssueDescription(issueObject.getName());
 		iterationStatus.setIssueStatus(issueObject.getStatus());
-		iterationStatus.setDueDate(DateUtil.dateTimeConverter(issueObject.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT));
+		iterationStatus.setDueDate(DateUtil.dateTimeConverter(issueObject.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC,
+				DateUtil.DISPLAY_DATE_FORMAT));
 		if (issueObject.getRemainingEstimateMinutes() != null) {
 			iterationStatus.setRemainingEstimateMinutes(issueObject.getRemainingEstimateMinutes() / 60);
 		}
@@ -620,14 +630,6 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		delayDaysAlready = CommonUtils.openStoryDelay(currDate, sprintStart, true);
 		delayList = (delayList + delayDaysAlready + estimateTime);
 		return prepareStoryDetails(issueObject, String.valueOf(delayList));
-	}
-
-	private static Integer getRemainingEstimateTime(JiraIssue issueObject) {
-		Integer remainingEstimate = 0;
-		if (issueObject.getRemainingEstimateMinutes() != null) {
-			remainingEstimate = (issueObject.getRemainingEstimateMinutes() / 60) / 8;
-		}
-		return remainingEstimate;
 	}
 
 	private IterationStatus potentialDelayOfStoriesPastDueDateClosedSprint(JiraIssue issueObject, String endDate)

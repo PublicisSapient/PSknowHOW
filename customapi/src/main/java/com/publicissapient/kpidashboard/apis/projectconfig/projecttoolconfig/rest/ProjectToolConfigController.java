@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.re
 
 import javax.validation.Valid;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -42,6 +40,8 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigService;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author yasbano
@@ -124,8 +124,8 @@ public class ProjectToolConfigController {
 
 		boolean isDeleted = toolService.deleteTool(basicProjectConfigId, projectToolId);
 		ServiceResponse serviceResponse = null;
-		if (isDeleted){
-			serviceResponse = new ServiceResponse(true, "Tool deleted successfully" , null);
+		if (isDeleted) {
+			serviceResponse = new ServiceResponse(true, "Tool deleted successfully", null);
 		} else {
 			serviceResponse = new ServiceResponse(false, "Failed to delete tool", null);
 		}
@@ -136,7 +136,7 @@ public class ProjectToolConfigController {
 	@PreAuthorize("hasPermission(#basicProjectConfigId, 'CLEAN_PROJECT_TOOL_DATA')")
 	@DeleteMapping(value = "/basicconfigs/{basicProjectConfigId}/tools/clean/{projectToolId}")
 	public ResponseEntity<ServiceResponse> cleanToolData(@PathVariable String basicProjectConfigId,
-													 @PathVariable String projectToolId) {
+			@PathVariable String projectToolId) {
 
 		boolean isDeleted = toolService.cleanToolData(basicProjectConfigId, projectToolId);
 		ServiceResponse serviceResponse = null;

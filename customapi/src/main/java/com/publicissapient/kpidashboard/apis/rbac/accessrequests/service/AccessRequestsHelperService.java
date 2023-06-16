@@ -28,7 +28,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
  * @author anamital
  */
 public interface AccessRequestsHelperService {
-	
+
 	/**
 	 * Gets all access requests.
 	 * 
@@ -46,7 +46,6 @@ public interface AccessRequestsHelperService {
 	 *         is found,false if not data found
 	 */
 	ServiceResponse getAccessRequestById(String id);
-
 
 	/**
 	 * Gets all access requests created by @param username.
@@ -70,7 +69,6 @@ public interface AccessRequestsHelperService {
 	 */
 	ServiceResponse getAccessRequestByUsernameAndStatus(String username, String status);
 
-	
 	/**
 	 * Gets all access requests with current status @param status.
 	 * 
@@ -80,13 +78,12 @@ public interface AccessRequestsHelperService {
 	 *         is found,false if not data found
 	 */
 	ServiceResponse getAccessRequestByStatus(String status);
-	
 
 	/**
 	 * Gets access requests count with current status @param status.
 	 * 
 	 * @param status
-	 *               status
+	 *            status
 	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
@@ -95,6 +92,7 @@ public interface AccessRequestsHelperService {
 
 	/**
 	 * Gets access request which has the project id
+	 * 
 	 * @param basicProjectConfigId
 	 * @return access requests
 	 */
@@ -102,7 +100,9 @@ public interface AccessRequestsHelperService {
 
 	/**
 	 * Update access request
-	 * @param accessRequestsData access request
+	 * 
+	 * @param accessRequestsData
+	 *            access request
 	 * @return updated access request
 	 */
 	AccessRequest updateAccessRequest(AccessRequest accessRequestsData);

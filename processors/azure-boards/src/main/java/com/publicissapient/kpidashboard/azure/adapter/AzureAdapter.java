@@ -125,6 +125,7 @@ public interface AzureAdapter {
 
 	/**
 	 * get all issues based on sprintId
+	 * 
 	 * @param azureServer
 	 * @param sprintId
 	 * @return

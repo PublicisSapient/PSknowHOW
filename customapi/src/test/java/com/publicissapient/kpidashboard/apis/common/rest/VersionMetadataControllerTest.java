@@ -31,25 +31,22 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.publicissapient.kpidashboard.apis.common.rest.VersionMetadataController;
 import com.publicissapient.kpidashboard.apis.common.service.VersionMetadataService;
 import com.publicissapient.kpidashboard.apis.util.TestUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VersionMetadataControllerTest {
 
+	@InjectMocks
+	VersionMetadataController versionMetadataController;
 	@Mock
 	private VersionMetadataService versionMetadataService;
-
-	@InjectMocks
-    VersionMetadataController versionMetadataController;
+	private MockMvc mockMvc;
 
 	@Before
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(versionMetadataController).build();
 	}
-
-	private MockMvc mockMvc;
 
 	@After
 	public void after() {

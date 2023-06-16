@@ -1,9 +1,9 @@
 package com.publicissapient.kpidashboard.apis.jenkins.service;
 
-import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
@@ -15,9 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -40,8 +42,7 @@ public class JenkinsToolConfigServiceImpl {
 	 *
 	 * @param connectionId
 	 *            the jenkins server connection details
-	 * @return @{@code List<String>}
-	 * 		    job name list for build/deploy job type
+	 * @return @{@code List<String>} job name list for build/deploy job type
 	 */
 	public List<String> getJenkinsJobNameList(String connectionId) {
 
@@ -51,7 +52,8 @@ public class JenkinsToolConfigServiceImpl {
 			Connection connection = optConnection.get();
 			String baseUrl = connection.getBaseUrl() == null ? null : connection.getBaseUrl().trim();
 			String username = connection.getUsername() == null ? null : connection.getUsername().trim();
-			String password = connection.getApiKey() == null ? null : restAPIUtils.decryptPassword(connection.getApiKey());
+			String password = connection.getApiKey() == null ? null
+					: restAPIUtils.decryptPassword(connection.getApiKey());
 
 			String url = baseUrl + RESOURCE_JOBS_ENDPOINT;
 
@@ -68,8 +70,7 @@ public class JenkinsToolConfigServiceImpl {
 					}
 				} else {
 					String statusCode = response.getStatusCode().toString();
-					log.error("Error while fetching getJenkinsJobNameList from {}. with status {}", url,
-							statusCode);
+					log.error("Error while fetching getJenkinsJobNameList from {}. with status {}", url, statusCode);
 				}
 
 			} catch (Exception exception) {

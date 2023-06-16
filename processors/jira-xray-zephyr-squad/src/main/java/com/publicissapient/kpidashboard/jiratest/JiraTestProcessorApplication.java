@@ -24,14 +24,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * @author HirenKumar Babariya
- * JiraTestProcessorApplication configuration and bootstrap
+ * @author HirenKumar Babariya JiraTestProcessorApplication configuration and
+ *         bootstrap
  */
 @SpringBootApplication
 @EnableCaching

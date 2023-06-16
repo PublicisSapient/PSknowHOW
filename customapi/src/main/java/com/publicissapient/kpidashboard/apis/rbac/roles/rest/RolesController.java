@@ -48,14 +48,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RolesController {
 
-	@Autowired	
+	@Autowired
 	private RolesHelperService rolesHelperService;
-	
+
 	/**
-     * Fetch all roles data.
-     *
-     * @return the roles 
-     */
+	 * Fetch all roles data.
+	 *
+	 * @return the roles
+	 */
 	@RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getAllRoles() {
 		log.info("Fetching all roles");
@@ -63,11 +63,12 @@ public class RolesController {
 	}
 
 	/**
-     * Fetch a role by id.
-     * 
-     *@param id unique object id already present in the database
-     * @return responseEntity with data,message and status
-     */
+	 * Fetch a role by id.
+	 * 
+	 * @param id
+	 *            unique object id already present in the database
+	 * @return responseEntity with data,message and status
+	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getRoleById(@PathVariable("id") String id) {
 		log.info("Fetching role@{}", id);
@@ -75,34 +76,39 @@ public class RolesController {
 	}
 
 	/**
-     * Modify/Update a role by id.
-     * 
-     *@param id unique object_id present in the database
-     *@param roleDTO request object that replaces the role data present at object_id id.
-     *
-     * @return responseEntity with data,message and status
-     */
+	 * Modify/Update a role by id.
+	 * 
+	 * @param id
+	 *            unique object_id present in the database
+	 * @param roleDTO
+	 *            request object that replaces the role data present at object_id
+	 *            id.
+	 *
+	 * @return responseEntity with data,message and status
+	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> modifyRoleById(@PathVariable("id") String id, @Valid @RequestBody RoleDataDTO roleDTO) {
+	public ResponseEntity<ServiceResponse> modifyRoleById(@PathVariable("id") String id,
+			@Valid @RequestBody RoleDataDTO roleDTO) {
 		final ModelMapper modelMapper = new ModelMapper();
-		RoleData role= modelMapper.map(roleDTO, RoleData.class);
-		
+		RoleData role = modelMapper.map(roleDTO, RoleData.class);
+
 		log.info("role@{} updated", id);
 		return ResponseEntity.status(HttpStatus.OK).body(rolesHelperService.modifyRoleById(id, role));
 	}
 
 	/**
-     * Create a role in the database.
-     *
-     *@param roleDTO request object that is created in the database.
-     *
-     * @return responseEntity with data,message and status
-     */
+	 * Create a role in the database.
+	 *
+	 * @param roleDTO
+	 *            request object that is created in the database.
+	 *
+	 * @return responseEntity with data,message and status
+	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> createRole(@Valid @RequestBody RoleDataDTO roleDTO) {
 		final ModelMapper modelMapper = new ModelMapper();
-		final RoleData role= modelMapper.map(roleDTO, RoleData.class);
-		
+		final RoleData role = modelMapper.map(roleDTO, RoleData.class);
+
 		log.info("created new role");
 		return ResponseEntity.status(HttpStatus.OK).body(rolesHelperService.createRole(role));
 	}

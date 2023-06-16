@@ -19,10 +19,10 @@ package com.publicissapient.kpidashboard.apis.projectconfig.basic.service;
 
 import java.time.LocalDateTime;
 
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.tracelog.DeleteProjectTraceLog;
 import com.publicissapient.kpidashboard.common.repository.tracelog.DeleteProjectTraceLogRepository;

@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
@@ -35,7 +34,7 @@ public interface TestCaseDetailsRepository
 		extends MongoRepository<TestCaseDetails, ObjectId>, TestCaseDetailsRepositoryCustom {
 
 	List<TestCaseDetails> findByNumberAndBasicProjectConfigId(String number, String basicProjectConfigId);
-	
+
 	/**
 	 * Deletes all documents that matches with given basicProjectConfigId.
 	 * 

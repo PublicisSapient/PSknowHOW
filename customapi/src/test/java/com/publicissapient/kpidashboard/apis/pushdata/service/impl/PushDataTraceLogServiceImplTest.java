@@ -42,13 +42,11 @@ import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 @RunWith(MockitoJUnitRunner.class)
 public class PushDataTraceLogServiceImplTest {
 
+	List<PushDataTraceLog> pushBuildDeploy;
 	@InjectMocks
 	private PushDataTraceLogServiceImpl pushDataTraceLogService;
-
 	@Mock
 	private PushDataTraceLogRepository pushDataTraceLogRepository;
-
-	List<PushDataTraceLog> pushBuildDeploy;
 
 	@Before
 	public void setup() {

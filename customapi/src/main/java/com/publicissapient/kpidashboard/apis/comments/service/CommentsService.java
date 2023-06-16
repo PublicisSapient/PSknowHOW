@@ -1,8 +1,8 @@
 package com.publicissapient.kpidashboard.apis.comments.service;
 
-import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
-
 import java.util.Map;
+
+import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 
 public interface CommentsService {
 

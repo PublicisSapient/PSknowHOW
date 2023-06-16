@@ -29,9 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +45,10 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jenkins.factory.JenkinsKPIServiceFactory;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
@@ -60,48 +60,36 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 @RunWith(MockitoJUnitRunner.class)
 public class JenkinsServiceKanbanRTest {
 
+	private static String GROUP_PROJECT = "PROJECT";
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	FilterHelperService filterHelperService;
-
 	@Mock
 	KpiHelperService kpiHelperService;
-
 	@InjectMocks
 	private JenkinsServiceKanbanR jenkinsServiceKanbanR;
-
 	@Mock
 	private CustomApiConfig customApiConfig;
-
 	@Mock
 	private CacheService cacheService;
-
 	@Mock
 	private CodeBuildTimeKanbanServiceImpl codeBuildTimeKanbanServiceImpl;
-
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JenkinsKPIService> services;
-
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private String[] projectKey;
 	private Set<String> projects;
-
 	private KpiElement buildKpiElement;
-
 	private Map<String, JenkinsKPIService<?, ?, ?>> jenkinsServiceCache = new HashMap<>();
-
 	@Mock
 	private JenkinsKPIServiceFactory jenkinsKPIServiceFactory;
-
-	private static String GROUP_PROJECT = "PROJECT";
 
 	@Before
 	public void setup() throws EntityNotFoundException {
@@ -155,8 +143,8 @@ public class JenkinsServiceKanbanRTest {
 		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME_KANBAN.name(), mcokAbstract);
 
 		try (MockedStatic<JenkinsKPIServiceFactory> utilities = Mockito.mockStatic(JenkinsKPIServiceFactory.class)) {
-			utilities.when((MockedStatic.Verification) JenkinsKPIServiceFactory.getJenkinsKPIService(KPICode.CODE_BUILD_TIME_KANBAN.name()))
-					.thenReturn(mcokAbstract);
+			utilities.when((MockedStatic.Verification) JenkinsKPIServiceFactory
+					.getJenkinsKPIService(KPICode.CODE_BUILD_TIME_KANBAN.name())).thenReturn(mcokAbstract);
 		}
 
 		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(buildKpiElement);
@@ -191,12 +179,14 @@ public class JenkinsServiceKanbanRTest {
 		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME_KANBAN.name(), mcokAbstract);
 
 		try (MockedStatic<JenkinsKPIServiceFactory> utilities = Mockito.mockStatic(JenkinsKPIServiceFactory.class)) {
-			utilities.when((MockedStatic.Verification) JenkinsKPIServiceFactory.getJenkinsKPIService(KPICode.CODE_BUILD_TIME_KANBAN.name()))
-					.thenReturn(mcokAbstract);
+			utilities.when((MockedStatic.Verification) JenkinsKPIServiceFactory
+					.getJenkinsKPIService(KPICode.CODE_BUILD_TIME_KANBAN.name())).thenReturn(mcokAbstract);
 		}
 
-		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.getKanbanProjectNodesForRequest(accountHierarchyDataKanbanList)).thenReturn(projects);
+		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest))
+				.thenReturn(projectKey);
+		when(authorizedProjectsService.getKanbanProjectNodesForRequest(accountHierarchyDataKanbanList))
+				.thenReturn(projects);
 
 		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(buildKpiElement);
 
@@ -225,8 +215,8 @@ public class JenkinsServiceKanbanRTest {
 
 		KpiRequest kpiRequest = createKpiRequest(2, "Jenkins");
 
-		when(cacheService.getFromApplicationCache(Mockito.any(), Mockito.any(), Mockito.any(), ArgumentMatchers.anyList()))
-				.thenReturn(new ArrayList<>());
+		when(cacheService.getFromApplicationCache(Mockito.any(), Mockito.any(), Mockito.any(),
+				ArgumentMatchers.anyList())).thenReturn(new ArrayList<>());
 
 		List<KpiElement> resultList = jenkinsServiceKanbanR.process(kpiRequest);
 		assertThat("Kpi list :", resultList.size(), equalTo(0));

@@ -24,22 +24,16 @@ import com.publicissapient.kpidashboard.common.repository.application.HierarchyL
 @RunWith(MockitoJUnitRunner.class)
 public class HierarchyLevelSuggestionsServiceTest {
 
+	List<HierarchyLevelSuggestion> hierarchyLevelSuggestions = new ArrayList<>();
 	@InjectMocks
 	private HierarchyLevelSuggestionsServiceImpl hierarchyLevelSuggestionsService;
-
 	@Mock
 	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
-
 	@Mock
 	private HierarchyLevelService hierarchyLevelService;
-
 	@Mock
 	private HierarchyLevelRepository hierarchyLevelRepository;
-
 	private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
-
-	List<HierarchyLevelSuggestion> hierarchyLevelSuggestions = new ArrayList<>();
-
 	private HierarchyLevel hierarchyLevel1 = new HierarchyLevel();
 	private HierarchyLevel hierarchyLevel2 = new HierarchyLevel();
 	private HierarchyLevel hierarchyLevel3 = new HierarchyLevel();
@@ -47,6 +41,7 @@ public class HierarchyLevelSuggestionsServiceTest {
 	private HierarchyLevelSuggestion hierarchyLevel1Suggestion = new HierarchyLevelSuggestion();
 	private HierarchyLevelSuggestion hierarchyLevel2Suggestion = new HierarchyLevelSuggestion();
 	private HierarchyLevelSuggestion hierarchyLevel3Suggestion = new HierarchyLevelSuggestion();
+
 	@Before
 	public void setUp() {
 
@@ -74,7 +69,6 @@ public class HierarchyLevelSuggestionsServiceTest {
 		hierarchyLevel2Values.add("hierarchyLevel2Value1");
 		hierarchyLevel3Values.add("hierarchyLevel3Value1");
 
-
 		hierarchyLevel1Suggestion.setId(new ObjectId("60ed70a572dafe33d3e37111"));
 		hierarchyLevel1Suggestion.setHierarchyLevelId("hierarchyLevel1Id");
 		hierarchyLevel1Suggestion.setValues(hierarchyLevel1Values);
@@ -91,21 +85,23 @@ public class HierarchyLevelSuggestionsServiceTest {
 	}
 
 	@Test
-	public void getSuggestionsTest(){
+	public void getSuggestionsTest() {
 		when(hierarchyLevelSuggestionRepository.findAll()).thenReturn(hierarchyLevelSuggestions);
 		List<HierarchyLevelSuggestion> result = hierarchyLevelSuggestionsService.getSuggestions();
-		assertEquals(result , hierarchyLevelSuggestions);
+		assertEquals(result, hierarchyLevelSuggestions);
 	}
 
 	@Test
 	public void addIfNotPresent_AlreadyExistsHierarchyLevel() {
 
-		when(hierarchyLevelSuggestionRepository.findByHierarchyLevelId(anyString())).thenReturn(hierarchyLevel2Suggestion);
+		when(hierarchyLevelSuggestionRepository.findByHierarchyLevelId(anyString()))
+				.thenReturn(hierarchyLevel2Suggestion);
 		TreeSet<String> existingValues = hierarchyLevel2Suggestion.getValues();
 		existingValues.add("hierarchyLevel2Value2");
 		hierarchyLevel2Suggestion.setValues(existingValues);
 		when(hierarchyLevelSuggestionRepository.save(hierarchyLevel2Suggestion)).thenReturn(hierarchyLevel2Suggestion);
-		HierarchyLevelSuggestion result = hierarchyLevelSuggestionsService.addIfNotPresent("hierarchyLevel2Id", "hierarchyLevel2Value2");
+		HierarchyLevelSuggestion result = hierarchyLevelSuggestionsService.addIfNotPresent("hierarchyLevel2Id",
+				"hierarchyLevel2Value2");
 		assertEquals(2, result.getValues().size());
 
 	}
@@ -121,10 +117,10 @@ public class HierarchyLevelSuggestionsServiceTest {
 		hierarchyLevel4Suggestion.setHierarchyLevelId("hierarchyLevel4Id");
 		hierarchyLevel4Suggestion.setValues(values);
 		when(hierarchyLevelSuggestionRepository.save(hierarchyLevel4Suggestion)).thenReturn(hierarchyLevel4Suggestion);
-		HierarchyLevelSuggestion result = hierarchyLevelSuggestionsService.addIfNotPresent("hierarchyLevel4Id", "hierarchyLevel4Value1");
+		HierarchyLevelSuggestion result = hierarchyLevelSuggestionsService.addIfNotPresent("hierarchyLevel4Id",
+				"hierarchyLevel4Value1");
 		assertEquals("60ed70a572dafe33d3e37444", result.getId().toHexString());
 
 	}
-
 
 }

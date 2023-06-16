@@ -34,20 +34,21 @@ import org.springframework.web.client.RestTemplate;
  */
 @SpringBootApplication
 @EnableCaching
-@EnableMongoRepositories(basePackages = {"com.publicissapient.**.repository"})
-@ComponentScan(basePackages = {"com.publicissapient.kpidashboard.*"})
+@EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
+@ComponentScan(basePackages = { "com.publicissapient.kpidashboard.*" })
 public class JenkinsProcessorApplication {
 
 	@Value("${jenkins.defaultHostnameVerifier:true}")
 	private static boolean defaultHostnameVerifier;
 
-    public static void main(String[] args) {
-        HttpsURLConnection.setDefaultHostnameVerifier((s, sslSession) -> defaultHostnameVerifier);
-        SpringApplication.run(JenkinsProcessorApplication.class, args);
-    }
+	public static void main(String[] args) {
+		HttpsURLConnection.setDefaultHostnameVerifier((s, sslSession) -> defaultHostnameVerifier);
+		SpringApplication.run(JenkinsProcessorApplication.class, args);
+	}
 
 	/**
 	 * Instantiate RestTemplate.
+	 * 
 	 * @return the RestTemplate
 	 */
 	@Bean

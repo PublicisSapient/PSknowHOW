@@ -25,7 +25,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 
-
 /**
  * The Class GitLabRestOperations.
  */
@@ -38,11 +37,10 @@ public class GitLabRestOperations implements RestOperationsFactory<RestOperation
 	 * @return the rest operations
 	 */
 	@Override
-    public RestOperations getTypeInstance() {
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(20_000);
-        requestFactory.setReadTimeout(20_000);
-        return new RestTemplate(requestFactory);
-    }
+	public RestOperations getTypeInstance() {
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+		requestFactory.setConnectTimeout(20_000);
+		requestFactory.setReadTimeout(20_000);
+		return new RestTemplate(requestFactory);
+	}
 }
-

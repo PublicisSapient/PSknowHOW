@@ -22,6 +22,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 
 public interface GrantAccessListener {
 
-    void onSuccess(UserInfo userInfo);
-    void onFailure(AccessRequest accessRequest, String message);
+	void onSuccess(UserInfo userInfo);
+
+	void onFailure(AccessRequest accessRequest, String message);
 }

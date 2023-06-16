@@ -18,12 +18,12 @@
 
 package com.publicissapient.kpidashboard.common.repository.rbac;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.repository.CrudRepository;
 
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
-
-import java.util.List;
 
 /**
  * Repository for {@link UserTokenData}.
@@ -46,7 +46,7 @@ public interface UserTokenReopository extends CrudRepository<UserTokenData, Obje
 	 *            the user token
 	 */
 	void deleteByUserToken(String userToken);
-	
+
 	/**
 	 * Deletes by user name.
 	 *
@@ -57,7 +57,7 @@ public interface UserTokenReopository extends CrudRepository<UserTokenData, Obje
 
 	void deleteAllByUserName(String userName);
 
-	void  deleteByUserNameIn(List<String> usernames);
+	void deleteByUserNameIn(List<String> usernames);
 
 	UserTokenData findByUserName(String userName);
 

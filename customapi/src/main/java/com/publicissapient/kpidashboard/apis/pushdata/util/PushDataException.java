@@ -28,11 +28,6 @@ public class PushDataException extends RuntimeException {
 	private static final long serialVersionUID = -664077740219817001L;
 
 	private PushDataResponse pushDataResponse;
-
-	public HttpStatus getCode() {
-		return code;
-	}
-
 	private HttpStatus code;
 
 	public PushDataException() {
@@ -42,14 +37,6 @@ public class PushDataException extends RuntimeException {
 	public PushDataException(String unauthorizedAccessException, HttpStatus code) {
 		super(unauthorizedAccessException);
 		this.code = code;
-	}
-
-	public PushDataResponse getPushBuildDeployResponse() {
-		return pushDataResponse;
-	}
-
-	public void setPushBuildDeployResponse(PushDataResponse pushDataResponse) {
-		this.pushDataResponse = pushDataResponse;
 	}
 
 	public PushDataException(String str) {
@@ -81,6 +68,18 @@ public class PushDataException extends RuntimeException {
 	 */
 	public PushDataException(Throwable throwable) {
 		super(throwable);
+	}
+
+	public HttpStatus getCode() {
+		return code;
+	}
+
+	public PushDataResponse getPushBuildDeployResponse() {
+		return pushDataResponse;
+	}
+
+	public void setPushBuildDeployResponse(PushDataResponse pushDataResponse) {
+		this.pushDataResponse = pushDataResponse;
 	}
 
 }

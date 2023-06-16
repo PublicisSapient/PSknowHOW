@@ -113,8 +113,7 @@ public class FilterHelperServiceImplTest {
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
 
-		HierachyLevelFactory hierachyLevelFactory2 = HierachyLevelFactory
-				.newInstance();
+		HierachyLevelFactory hierachyLevelFactory2 = HierachyLevelFactory.newInstance();
 		hierarchyLevels2 = hierachyLevelFactory2.getHierarchyLevels();
 
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
@@ -270,7 +269,8 @@ public class FilterHelperServiceImplTest {
 	public void getHierarachyLevelId() {
 		when(cacheService.getFullHierarchyLevelMap()).thenReturn(
 				hierarchyLevels2.stream().collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x)));
-		Assert.assertEquals(filterHelperService.getHierarachyLevelId(4, "project",projectConfigScrum.isKanban()), "project");
+		Assert.assertEquals(filterHelperService.getHierarachyLevelId(4, "project", projectConfigScrum.isKanban()),
+				"project");
 
 	}
 

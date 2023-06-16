@@ -15,16 +15,16 @@ public class UserTokenDeletionServiceImplTest {
 
 	@InjectMocks
 	UserTokenDeletionServiceImpl service;
-	
+
 	@Mock
 	UserTokenReopository userTokenReopository;
-	
+
 	@Test
 	public void validateDeleteUserDetails() {
 		service.deleteUserDetails("token");
 		verify(userTokenReopository).deleteByUserToken("token");
 	}
-	
+
 	@Test
 	public void validateInvalidateSession() {
 		service.invalidateSession("user");

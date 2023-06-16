@@ -37,7 +37,7 @@ import com.publicissapient.kpidashboard.apis.mapper.CustomObjectMapper;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan({ "com.publicissapient.kpidashboard"})
+@ComponentScan({ "com.publicissapient.kpidashboard" })
 public class CustomWebMVCConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
@@ -50,8 +50,8 @@ public class CustomWebMVCConfig extends WebMvcConfigurerAdapter {
 
 		jackson.setObjectMapper(new CustomObjectMapper());
 		jackson.getObjectMapper().disable(SerializationFeature.WRITE_NULL_MAP_VALUES)
-			.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING)
-			.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+				.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING)
+				.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
 		converters.add(jackson);
 	}

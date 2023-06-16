@@ -59,14 +59,19 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
+	public static final String BACKLOG_CUSTOM_HISTORY = "backlogCustomHistory";
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private static final Logger LOGGER = LoggerFactory.getLogger(FlowDistributionServiceImpl.class);
 	@Autowired
 	private CustomApiConfig customApiConfig;
-
 	@Autowired
 	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	public static final String BACKLOG_CUSTOM_HISTORY = "backlogCustomHistory";
-	private static final Logger LOGGER = LoggerFactory.getLogger(FlowDistributionServiceImpl.class);
+
+	// storyType have more than two word the stackChart hover fn break
+	private static String combineType(String storyType) {
+		// logic to combine multiple words into a single key
+		return storyType.replaceAll("\\s+", "-");
+	}
 
 	@Override
 	public String getQualifierType() {
@@ -102,8 +107,8 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 		if (leafNode != null) {
 			LOGGER.info("Flow Distribution kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			List<IssueBacklogCustomHistory> issueBacklogCustomHistoryList = issueBacklogCustomHistoryRepository.
-					findByBasicProjectConfigIdIn(basicProjectConfigId);
+			List<IssueBacklogCustomHistory> issueBacklogCustomHistoryList = issueBacklogCustomHistoryRepository
+					.findByBasicProjectConfigIdIn(basicProjectConfigId);
 			resultListMap.put(BACKLOG_CUSTOM_HISTORY, new ArrayList<>(issueBacklogCustomHistoryList));
 		}
 		return resultListMap;
@@ -112,7 +117,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 	/**
 	 * Populates KPI value to leaf nodes and gives the trend analysis at project
 	 * level.
-	 * 
+	 *
 	 * @param leafNode
 	 * @param trendValueList
 	 * @param kpiElement
@@ -173,7 +178,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 
 	/**
 	 * for populating the trendValueList
-	 * 
+	 *
 	 * @param dataList
 	 * @param dateTypeCountMap
 	 */
@@ -190,7 +195,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 
 	/**
 	 * populate the Excel for modal window
-	 * 
+	 *
 	 * @param requestTrackerId
 	 * @param excelData
 	 * @param dateTypeCountMap
@@ -201,12 +206,6 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 				&& !Objects.isNull(dateTypeCountMap)) {
 			KPIExcelUtility.populateFlowKPI(dateTypeCountMap, excelData);
 		}
-	}
-
-	// storyType have more than two word the stackChart hover fn break
-	private static String combineType(String storyType) {
-		// logic to combine multiple words into a single key
-		return storyType.replaceAll("\\s+", "-");
 	}
 
 	/**
@@ -255,7 +254,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 	private Map<String, Integer> startDateTypeCount(String startDate,
 			TreeMap<String, Map<String, Integer>> sortedByDateTypeCountMap) {
 		Map<String, Integer> startDateTypeCount = new HashMap<>();
-		for (Map.Entry<String, Map<String, Integer>> entry : sortedByDateTypeCountMap.entrySet() ) {
+		for (Map.Entry<String, Map<String, Integer>> entry : sortedByDateTypeCountMap.entrySet()) {
 			String date = entry.getKey();
 			Map<String, Integer> typeCountMap = entry.getValue();
 

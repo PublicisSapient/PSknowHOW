@@ -1,16 +1,18 @@
 package com.publicissapient.kpidashboard.common.model.jira;
 
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
+import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @SuppressWarnings({ "javadoc" })
 @NoArgsConstructor
@@ -184,15 +186,6 @@ public class IssueBacklog extends BasicModel implements Cloneable {
 
 	private List<ReleaseVersion> releaseVersions;
 	private boolean defectRaisedByQA;
-
-	public boolean isDefectRaisedByQA() {
-		return defectRaisedByQA;
-	}
-
-	public void setDefectRaisedByQA(boolean defectRaisedByQA) {
-		this.defectRaisedByQA = defectRaisedByQA;
-	}
-
 	private Integer originalEstimateMinutes;
 	private Integer remainingEstimateMinutes;
 	private boolean productionDefect;
@@ -201,5 +194,13 @@ public class IssueBacklog extends BasicModel implements Cloneable {
 	@Indexed
 	private String updateDate;
 	private String devDueDate;
+
+	public boolean isDefectRaisedByQA() {
+		return defectRaisedByQA;
+	}
+
+	public void setDefectRaisedByQA(boolean defectRaisedByQA) {
+		this.defectRaisedByQA = defectRaisedByQA;
+	}
 
 }

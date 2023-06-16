@@ -41,7 +41,6 @@ public class GlobalConfigurationController {
 
 	@Autowired
 	private GlobalConfigService globalConfigService;
-	
 
 	@RequestMapping(value = "/zephyrcloudurl", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getZephyrCloudUrl() {

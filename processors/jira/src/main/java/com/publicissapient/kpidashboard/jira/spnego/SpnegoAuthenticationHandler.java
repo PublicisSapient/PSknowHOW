@@ -26,24 +26,28 @@ import com.atlassian.jira.rest.client.api.AuthenticationHandler;
  */
 public class SpnegoAuthenticationHandler implements AuthenticationHandler {
 
-    private static final String COOKIE_HEADER = "Cookie";
+	private static final String COOKIE_HEADER = "Cookie";
 
-    private final String authCookies;
+	private final String authCookies;
 
-    /**
-     * Constructor for authentication handler
-     * @param authCookies authCookies
-     */
-    public SpnegoAuthenticationHandler(final String authCookies){
-        this.authCookies = authCookies;
-    }
+	/**
+	 * Constructor for authentication handler
+	 * 
+	 * @param authCookies
+	 *            authCookies
+	 */
+	public SpnegoAuthenticationHandler(final String authCookies) {
+		this.authCookies = authCookies;
+	}
 
-    /**
-     * overridden configure method
-     * @param builder builder
-     */
-    @Override
-    public void configure(Request.Builder builder) {
-        builder.setHeader(COOKIE_HEADER, authCookies);
-    }
+	/**
+	 * overridden configure method
+	 * 
+	 * @param builder
+	 *            builder
+	 */
+	@Override
+	public void configure(Request.Builder builder) {
+		builder.setHeader(COOKIE_HEADER, authCookies);
+	}
 }

@@ -45,41 +45,36 @@ import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
  */
 @Component
 public class NotificationEventProducer {
-	@Autowired
-	private KafkaTemplate<String, Object> kafkaTemplate;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationEventProducer.class);
 	private static final String SUCCESS_MESSAGE = "Mail message to topic sent successfully";
 	private static final String FAILURE_MESSAGE = "Error Sending the mail message to topic and the exception is: ";
+	@Autowired
+	private KafkaTemplate<String, Object> kafkaTemplate;
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	public void sendNotificationEvent(String key, EmailEvent email, Map<String, String> headerDetails, String topic) {
 		if (customApiConfig.isNotificationSwitch()) {
 			try {
-			LOGGER.info(
-					"Notification Switch is on. Sending message now.....");
-			ProducerRecord<String, Object> producerRecord = buildProducerRecord(key, email, headerDetails, topic);
-			LOGGER.info(
-					"created producer record.....");
-			ListenableFuture<SendResult<String, Object>> listenableFuture = kafkaTemplate.send(producerRecord);
-			LOGGER.info(
-					"sent msg.....");
-			listenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
+				LOGGER.info("Notification Switch is on. Sending message now.....");
+				ProducerRecord<String, Object> producerRecord = buildProducerRecord(key, email, headerDetails, topic);
+				LOGGER.info("created producer record.....");
+				ListenableFuture<SendResult<String, Object>> listenableFuture = kafkaTemplate.send(producerRecord);
+				LOGGER.info("sent msg.....");
+				listenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
 
-				@Override
-				public void onFailure(Throwable ex) {
-					handleFailure(ex);
-				}
+					@Override
+					public void onFailure(Throwable ex) {
+						handleFailure(ex);
+					}
 
-				@Override
-				public void onSuccess(SendResult<String, Object> result) {
-					handleSuccess(key, email, result);
-				}
+					@Override
+					public void onSuccess(SendResult<String, Object> result) {
+						handleSuccess(key, email, result);
+					}
 
-			});
-			}catch(Exception ex) {
+				});
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		} else {
@@ -90,7 +85,7 @@ public class NotificationEventProducer {
 	}
 
 	private ProducerRecord<String, Object> buildProducerRecord(String key, EmailEvent email,
-			Map<String, String> headerDetails,String topic) {
+			Map<String, String> headerDetails, String topic) {
 		List<Header> recordHeaders = new ArrayList<>();
 		if (MapUtils.isNotEmpty(headerDetails)) {
 			headerDetails.forEach((k, v) -> {

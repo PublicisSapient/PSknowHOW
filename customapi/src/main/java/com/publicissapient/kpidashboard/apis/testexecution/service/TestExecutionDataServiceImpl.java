@@ -34,27 +34,21 @@ import com.publicissapient.kpidashboard.common.repository.application.TestExecut
 @Service
 public class TestExecutionDataServiceImpl implements TestExecutionService {
 
+	private static final String DATE_PATTERN = "\\d{4}-\\d{2}-\\d{2}";
+	private static final String DATE_FORMAT = "yyyy-MM-dd";
+	private static final String SPRINT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 	@Autowired
 	private TestExecutionRepository testExecutionRepository;
 	@Autowired
 	private KanbanTestExecutionRepository kanbanTestExecutionRepo;
-
 	@Autowired
 	private CacheService cacheService;
-
 	@Autowired
 	private ProjectBasicConfigService projectBasicConfigService;
-
 	@Autowired
 	private SprintDetailsService sprintDetailsService;
-
 	@Autowired
 	private CustomApiConfig customApiConfig;
-
-	private static final String DATE_PATTERN = "\\d{4}-\\d{2}-\\d{2}";
-	private static final String DATE_FORMAT = "yyyy-MM-dd";
-
-	private static final String SPRINT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	/**
 	 * This method process the test Execution data.
@@ -130,8 +124,9 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 
 		List<SprintDetails> closedSprints = allSprints.stream()
 				.filter(sprintDetails -> SprintDetails.SPRINT_STATE_CLOSED.equalsIgnoreCase(sprintDetails.getState()))
-				.sorted(Comparator.comparing((SprintDetails sprintDetails) -> LocalDateTime.parse(sprintDetails.getStartDate(),
-						DateTimeFormatter.ofPattern(SPRINT_DATE_FORMAT))).reversed())
+				.sorted(Comparator.comparing((SprintDetails sprintDetails) -> LocalDateTime
+						.parse(sprintDetails.getStartDate(), DateTimeFormatter.ofPattern(SPRINT_DATE_FORMAT)))
+						.reversed())
 				.limit(customApiConfig.getSprintCountForFilters()).collect(Collectors.toList());
 
 		List<SprintDetails> activeSprints = allSprints.stream()
@@ -358,8 +353,7 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 		return date;
 
 	}
-	
-	
+
 	/**
 	 * delete test execution by basicProjectConfigId
 	 * 
@@ -369,9 +363,9 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 	 *            basicProjectConfigId
 	 */
 	public void deleteTestExecutionByProject(boolean isKanban, String basicProjectConfigId) {
-		if(isKanban) {
+		if (isKanban) {
 			kanbanTestExecutionRepo.deleteByBasicProjectConfigId(basicProjectConfigId);
-		}else {
+		} else {
 			testExecutionRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
 		}
 	}

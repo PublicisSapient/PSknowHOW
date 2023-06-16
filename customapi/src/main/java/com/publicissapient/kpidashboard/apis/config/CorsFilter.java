@@ -28,9 +28,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
-import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +35,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.publicissapient.kpidashboard.apis.constant.CORSConstants;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -138,12 +139,11 @@ public class CorsFilter extends OncePerRequestFilter {
 				CORSConstants.HEADER_VALUE_ALLOWED_HEADERS);
 		response.addHeader(CORSConstants.HEADER_NAME_ACCESS_CONTROL_EXPOSE_HEADERS,
 				CORSConstants.HEADER_VALUE_EXPOSE_HEADERS);
-		response.setHeader("Access-Control-Allow-Credentials","true");
-		ExecutionLogContext executionLogContext= new ExecutionLogContext();
+		response.setHeader("Access-Control-Allow-Credentials", "true");
+		ExecutionLogContext executionLogContext = new ExecutionLogContext();
 		executionLogContext.setRequestId(request.getHeader(CORSConstants.REQUEST_ID));
 		executionLogContext.setEnvironment(orign);
 		ExecutionLogContext.set(executionLogContext);
-
 
 	}
 }

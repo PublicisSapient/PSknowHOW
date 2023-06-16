@@ -50,31 +50,24 @@ import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepositor
 @RunWith(MockitoJUnitRunner.class)
 public class CustomAnalyticsServiceImplTest {
 
-	@InjectMocks
-	private CustomAnalyticsServiceImpl customAnalyticsServiceImpl;
-
-	@Mock
-	private UserInfoRepository userInfoRepository;
-
 	@Mock
 	UserAuthorizedProjectsService userAuthorizedProjectsService;
-
-	@Mock
-	private AuthenticationRepository authenticationRepository;
-
-	@Mock
-	private CustomApiConfig customAPISettings;
-
-	@Mock
-	private ProjectAccessManager projectAccessManager;
-
-	@Mock
-	private UserInfoServiceImpl service;
-
 	Authentication authentication;
 	UserInfo user;
 	RoleWiseProjects roleWiseProjects;
 	List<RoleWiseProjects> listRoleWiseProjects = new ArrayList<>();
+	@InjectMocks
+	private CustomAnalyticsServiceImpl customAnalyticsServiceImpl;
+	@Mock
+	private UserInfoRepository userInfoRepository;
+	@Mock
+	private AuthenticationRepository authenticationRepository;
+	@Mock
+	private CustomApiConfig customAPISettings;
+	@Mock
+	private ProjectAccessManager projectAccessManager;
+	@Mock
+	private UserInfoServiceImpl service;
 
 	@Test
 	public void testAddAnalyticsData() {

@@ -34,8 +34,8 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemR
 public interface AzureRepoRepository extends ProcessorItemRepository<AzureRepoModel> {
 
 	/**
-	 * Represents a function that accepts one input arguments and returns list
-	 * of AzurerepoRepo.
+	 * Represents a function that accepts one input arguments and returns list of
+	 * AzurerepoRepo.
 	 *
 	 * @param processorId
 	 *            the processor id

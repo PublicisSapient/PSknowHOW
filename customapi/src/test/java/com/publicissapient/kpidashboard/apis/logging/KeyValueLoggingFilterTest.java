@@ -48,7 +48,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Lists;
-import com.publicissapient.kpidashboard.apis.logging.KeyValueLoggingFilter;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -58,32 +57,25 @@ import ch.qos.logback.core.Appender;
 @RunWith(MockitoJUnitRunner.class)
 public class KeyValueLoggingFilterTest {
 
+	KeyValueLoggingFilter filter;
 	@Mock
 	private HttpServletRequest request;
-
 	@Mock
 	private HttpServletResponse response;
-
 	@Mock
 	private FilterChain chain;
-
 	@Mock
 	private HttpSession session;
-
 	@Mock
 	private Appender appender;
-
 	@Captor
 	private ArgumentCaptor<LoggingEvent> logCaptor;
-
 	private String remoteAddress = "http://127.0.0.1";
 	private String appName = "appName";
 	private String appVersion = "2.0.5-SNAPSHOT";
 	private String requestUrl = "http://127.0.0.1/api";
 	private String requestMethod = "POST";
 	private int statusCode = 200;
-
-	KeyValueLoggingFilter filter;
 
 	@Before
 	public void setup() {
@@ -104,13 +96,13 @@ public class KeyValueLoggingFilterTest {
 		Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 		logger.detachAppender(appender);
 	}
-	
+
 	@Test
 	public void testMethod() {
-		
+
 	}
 
-//	@Test
+	// @Test
 	public void shouldLogSplunkEntryNullSessionAndUser() throws IOException, ServletException {
 		filter.doFilter(request, response, chain);
 
@@ -126,7 +118,7 @@ public class KeyValueLoggingFilterTest {
 		assertTrue(verifyLogContains(loggingEvent, KeyValueLoggingFilter.STATUS_CODE, statusCode));
 	}
 
-//	@Test
+	// @Test
 	public void shouldLogSplunkEntryWithUserAndSession() throws IOException, ServletException {
 		String sessionId = "sessionId";
 		String principal = "username";

@@ -50,40 +50,76 @@ class JiraTestServiceImplTest {
 
 	@InjectMocks
 	JiraTestServiceImpl jiraTestServiceImpl;
-
-	@Mock
-	private TestCaseDetailsRepository testCaseDetailsRepository;
-
-	@Mock
-	private JiraTestProcessorConfig jiraTestProcessorConfig;
-
-	@Mock
-	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
-	@Mock
-	private AesEncryptionService aesEncryptionService;
-
-	@Mock
-	private JiraTestProcessorRepository jiraTestProcessorRepository;
-
 	@Mock
 	ProcessorJiraRestClient client;
 	@Mock
-	private JiraRestClientFactory jiraRestClientFactory;
-	@Mock
 	SearchRestClient searchRestClient;
 	@Mock
+	Promise<SearchResult> promisedRs;
+	Iterable<Issue> issueIterable;
+	List<Issue> issues = new ArrayList<>();
+	@Mock
+	private TestCaseDetailsRepository testCaseDetailsRepository;
+	@Mock
+	private JiraTestProcessorConfig jiraTestProcessorConfig;
+	@Mock
+	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	@Mock
+	private AesEncryptionService aesEncryptionService;
+	@Mock
+	private JiraTestProcessorRepository jiraTestProcessorRepository;
+	@Mock
+	private JiraRestClientFactory jiraRestClientFactory;
+	@Mock
 	private JiraOAuthProperties jiraOAuthProperties;
-
 	@Mock
 	private ToolCredentialProvider toolCredentialProvider;
 
-	@Mock
-	Promise<SearchResult> promisedRs;
+	private static ProjectConfFieldMapping getProjectConfFieldMapping() {
+		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
+		projectConfFieldMapping.setProjectKey("XYZ");
+		projectConfFieldMapping.setProjectName("JIRA TEST Scrum");
+		projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("625fd013572701449a44b3de"));
+		projectConfFieldMapping.setKanban(false);
+		projectConfFieldMapping.setProcessorToolConnection(getJiraToolConfig());
+		return projectConfFieldMapping;
+	}
 
-	Iterable<Issue> issueIterable;
-
-	List<Issue> issues = new ArrayList<>();
+	private static ProcessorToolConnection getJiraToolConfig() {
+		ProcessorToolConnection toolInfo = new ProcessorToolConnection();
+		toolInfo.setId(new ObjectId("625fd013572701449a44b556"));
+		toolInfo.setBasicProjectConfigId(new ObjectId("625fd013572701449a44b3de"));
+		toolInfo.setToolName(ProcessorConstants.JIRA_TEST);
+		toolInfo.setUrl("https://abc.com/jira");
+		toolInfo.setApiEndPoint("rest/api/2/");
+		toolInfo.setUsername("test");
+		toolInfo.setPassword("password");
+		toolInfo.setProjectKey("testProjectKey");
+		toolInfo.setConnectionId(new ObjectId("625d0d9d10ce157f45918b5c"));
+		String[] testCaseType = new String[2];
+		testCaseType[0] = "Test";
+		testCaseType[1] = "TestCase";
+		toolInfo.setTestAutomatedIdentification("CustomField");
+		toolInfo.setJiraTestCaseType(testCaseType);
+		toolInfo.setTestAutomationCompletedIdentification("CustomField");
+		toolInfo.setTestRegressionIdentification("Labels");
+		toolInfo.setTestAutomationCompletedByCustomField("customfield_43701");
+		toolInfo.setTestRegressionByCustomField("customfield_43702");
+		List<String> automatedTestValue = new ArrayList<>();
+		automatedTestValue.add("Automation");
+		toolInfo.setJiraAutomatedTestValue(automatedTestValue);
+		List<String> testRegressionValue = new ArrayList<>();
+		testRegressionValue.add("RegressionLabel");
+		toolInfo.setJiraRegressionTestValue(testRegressionValue);
+		List<String> canBeAutomatedTestValue = new ArrayList<>();
+		canBeAutomatedTestValue.add("Y");
+		toolInfo.setJiraCanBeAutomatedTestValue(canBeAutomatedTestValue);
+		List<String> testCaseStatus = new ArrayList<>();
+		testCaseStatus.add("Abandoned");
+		toolInfo.setTestCaseStatus(testCaseStatus);
+		toolInfo.setCloudEnv(false);
+		return toolInfo;
+	}
 
 	@Test
 	void processesJiraIssues() {
@@ -182,52 +218,6 @@ class JiraTestServiceImplTest {
 			}
 		};
 		SearchResult searchResult = new SearchResult(0, 0, 1, issueIterable);
-	}
-
-	private static ProjectConfFieldMapping getProjectConfFieldMapping() {
-		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-		projectConfFieldMapping.setProjectKey("XYZ");
-		projectConfFieldMapping.setProjectName("JIRA TEST Scrum");
-		projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("625fd013572701449a44b3de"));
-		projectConfFieldMapping.setKanban(false);
-		projectConfFieldMapping.setProcessorToolConnection(getJiraToolConfig());
-		return projectConfFieldMapping;
-	}
-
-	private static ProcessorToolConnection getJiraToolConfig() {
-		ProcessorToolConnection toolInfo = new ProcessorToolConnection();
-		toolInfo.setId(new ObjectId("625fd013572701449a44b556"));
-		toolInfo.setBasicProjectConfigId(new ObjectId("625fd013572701449a44b3de"));
-		toolInfo.setToolName(ProcessorConstants.JIRA_TEST);
-		toolInfo.setUrl("https://abc.com/jira");
-		toolInfo.setApiEndPoint("rest/api/2/");
-		toolInfo.setUsername("test");
-		toolInfo.setPassword("password");
-		toolInfo.setProjectKey("testProjectKey");
-		toolInfo.setConnectionId(new ObjectId("625d0d9d10ce157f45918b5c"));
-		String[] testCaseType = new String[2];
-		testCaseType[0] = "Test";
-		testCaseType[1] = "TestCase";
-		toolInfo.setTestAutomatedIdentification("CustomField");
-		toolInfo.setJiraTestCaseType(testCaseType);
-		toolInfo.setTestAutomationCompletedIdentification("CustomField");
-		toolInfo.setTestRegressionIdentification("Labels");
-		toolInfo.setTestAutomationCompletedByCustomField("customfield_43701");
-		toolInfo.setTestRegressionByCustomField("customfield_43702");
-		List<String> automatedTestValue = new ArrayList<>();
-		automatedTestValue.add("Automation");
-		toolInfo.setJiraAutomatedTestValue(automatedTestValue);
-		List<String> testRegressionValue = new ArrayList<>();
-		testRegressionValue.add("RegressionLabel");
-		toolInfo.setJiraRegressionTestValue(testRegressionValue);
-		List<String> canBeAutomatedTestValue = new ArrayList<>();
-		canBeAutomatedTestValue.add("Y");
-		toolInfo.setJiraCanBeAutomatedTestValue(canBeAutomatedTestValue);
-		List<String> testCaseStatus = new ArrayList<>();
-		testCaseStatus.add("Abandoned");
-		toolInfo.setTestCaseStatus(testCaseStatus);
-		toolInfo.setCloudEnv(false);
-		return toolInfo;
 	}
 
 }

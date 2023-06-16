@@ -32,10 +32,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import com.publicissapient.kpidashboard.apis.connection.rest.ConnectionController;
 import com.publicissapient.kpidashboard.apis.connection.service.ConnectionService;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.apis.util.TestUtil;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 
 /**
  * @author dilip
@@ -80,7 +81,8 @@ public class ConnectionControllerTest {
 	 *
 	 * Get all connection
 	 *
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 
 	@Test
@@ -93,7 +95,8 @@ public class ConnectionControllerTest {
 	/**
 	 * method to Modify single connection
 	 *
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	@Test
 	public void testModifyConnectionById() throws Exception {
@@ -105,7 +108,8 @@ public class ConnectionControllerTest {
 	/**
 	 * method to test save restPoint ; Create new connection
 	 *
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	@Test
 	public void testSaveConnectionDetails() throws Exception {
@@ -118,7 +122,8 @@ public class ConnectionControllerTest {
 	/**
 	 * method to delete single connection
 	 *
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	@Test
 	public void testDeleteConnectionById() throws Exception {

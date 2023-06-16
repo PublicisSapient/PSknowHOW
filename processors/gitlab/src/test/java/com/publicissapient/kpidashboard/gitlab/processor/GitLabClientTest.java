@@ -40,6 +40,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
@@ -48,34 +49,30 @@ import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 import com.publicissapient.kpidashboard.gitlab.processor.service.impl.GitLabClient;
 import com.publicissapient.kpidashboard.gitlab.processor.service.impl.GitLabURIBuilder;
 import com.publicissapient.kpidashboard.gitlab.util.GitLabRestOperations;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GitLabClientTest {
 
+	ProcessorToolConnection gitLabInfo = new ProcessorToolConnection();
+	ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 	@Mock
 	private GitLabConfig gitLabConfig;
-
 	@Mock
 	private GitLabRestOperations gitLabRestOperations;
-
 	@Mock
 	private RestOperations restTemplate;
 	@InjectMocks
 	private GitLabClient gitLabClient;
-
 	@Mock
 	private GitLabRepo repo;
-	
 	@Mock
 	private AesEncryptionService aesEncryptionService;
-	ProcessorToolConnection gitLabInfo=new ProcessorToolConnection();
-	ProjectBasicConfig projectBasicConfig=new ProjectBasicConfig();
+
 	@BeforeEach
 	public void init() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		when(gitLabRestOperations.getTypeInstance()).thenReturn(restTemplate);
-		
+
 		gitLabInfo.setBranch("release/core-r4.4");
 		gitLabInfo.setPassword("testPassword");
 		gitLabInfo.setUrl("http://localhost:9999/scm/testproject/test.git");
@@ -94,9 +91,9 @@ public class GitLabClientTest {
 		String restUrl = new GitLabURIBuilder(repo, gitLabConfig, gitLabInfo).build();
 		restUrl = URLDecoder.decode(restUrl, "UTF-8");
 		projectBasicConfig.setSaveAssigneeDetails(true);
-		when(restTemplate.exchange(eq(restUrl), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
-				.thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
-		List<CommitDetails> commits = gitLabClient.fetchAllCommits(repo,gitLabInfo, projectBasicConfig);
+		when(restTemplate.exchange(eq(restUrl), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
+				eq(String.class))).thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
+		List<CommitDetails> commits = gitLabClient.fetchAllCommits(repo, gitLabInfo, projectBasicConfig);
 		Assert.assertEquals(2, commits.size());
 		CommitDetails gitLabCommit = commits.get(0);
 		Assert.assertEquals("userab", gitLabCommit.getAuthor());

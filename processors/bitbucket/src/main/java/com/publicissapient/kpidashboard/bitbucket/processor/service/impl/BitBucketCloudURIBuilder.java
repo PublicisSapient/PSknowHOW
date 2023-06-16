@@ -48,9 +48,12 @@ public class BitBucketCloudURIBuilder {
 	/**
 	 * Instantiates a new bit bucket server URI builder.
 	 *
-	 * @param repo                the repo
-	 * @param config              the config
-	 * @param bitBucketServerInfo the bitBucketServerInfo
+	 * @param repo
+	 *            the repo
+	 * @param config
+	 *            the config
+	 * @param bitBucketServerInfo
+	 *            the bitBucketServerInfo
 	 */
 	public BitBucketCloudURIBuilder(BitbucketRepo repo, BitBucketConfig config,
 			ProcessorToolConnection bitBucketServerInfo) {
@@ -63,8 +66,10 @@ public class BitBucketCloudURIBuilder {
 	 * Builds the.
 	 *
 	 * @return the string
-	 * @throws URISyntaxException uri syntax exception
-	 * @throws URISyntaxException the URISyntaxException
+	 * @throws URISyntaxException
+	 *             uri syntax exception
+	 * @throws URISyntaxException
+	 *             the URISyntaxException
 	 */
 	public String build() throws URISyntaxException {
 		final URIBuilder builder = new URIBuilder();
@@ -80,10 +85,11 @@ public class BitBucketCloudURIBuilder {
 
 		return builder.build().toString();
 	}
-	
+
 	/**
 	 * @return URL
-	 * @throws URISyntaxException the URISyntaxException
+	 * @throws URISyntaxException
+	 *             the URISyntaxException
 	 */
 	public String buildMergeReqURL() throws URISyntaxException {
 		final URIBuilder builder = new URIBuilder();
@@ -109,14 +115,14 @@ public class BitBucketCloudURIBuilder {
 				StringUtils.isNotEmpty(bitBucketServerInfo.getBranch())
 						? bitBucketServerInfo.getBranch().replace(" ", "%20")
 						: "master");
-		
+
 		if (config.getPageSize() > 0) {
 			map.put("paglen", String.valueOf(config.getPageSize()));
 		}
 
 		return map;
 	}
-	
+
 	/**
 	 * Gets the merge params.
 	 *
@@ -130,7 +136,6 @@ public class BitBucketCloudURIBuilder {
 		if (StringUtils.isNotBlank(config.getStatusCloudPull())) {
 			map.put("state", String.valueOf(config.getStatusCloudPull()));
 		}
-		
 
 		return map;
 	}
@@ -151,7 +156,7 @@ public class BitBucketCloudURIBuilder {
 				.append(bitBucketServerInfo.getRepoSlug()).append("/commits/");
 		return sb.toString();
 	}
-	
+
 	/**
 	 * @return path
 	 */

@@ -38,4 +38,3 @@ public class AzureOAuthProperties {
 	private String accessToken;
 
 }
-

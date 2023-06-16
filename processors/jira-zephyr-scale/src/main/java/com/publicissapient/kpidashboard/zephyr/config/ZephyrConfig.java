@@ -55,5 +55,5 @@ public class ZephyrConfig {
 	private String customApiBaseUrl;
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
-	
+
 }

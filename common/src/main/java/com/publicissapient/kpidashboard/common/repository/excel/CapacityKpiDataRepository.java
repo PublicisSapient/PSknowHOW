@@ -19,14 +19,14 @@
 
 package com.publicissapient.kpidashboard.common.repository.excel;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
-
-import java.util.List;
 
 /**
  * Repository for {@link CapacityKpiData}.
@@ -66,7 +66,6 @@ public interface CapacityKpiDataRepository extends CrudRepository<CapacityKpiDat
 	 */
 	CapacityKpiData findBySprintIDAndBasicProjectConfigId(String sprintId, ObjectId basicProjectConfigId);
 
-	
 	/**
 	 * delete capacity projectwise
 	 * 

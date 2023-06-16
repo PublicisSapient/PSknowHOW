@@ -31,11 +31,11 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @SpringBootApplication
 @EnableCaching
 @ComponentScan({ "com.publicissapient" })
-@EnableMongoRepositories(basePackages = {"com.publicissapient.**.repository"})
+@EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
 public class GitLabApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(GitLabApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(GitLabApplication.class, args);
+	}
 
 }

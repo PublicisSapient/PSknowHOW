@@ -33,9 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.util.DateUtil;
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -60,6 +57,9 @@ import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author prigupta8
@@ -142,7 +142,10 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 					LocalDate monday = weeks[0];
 					LocalDate sunday = weeks[1];
 
-					String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+					String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT) + " to "
+							+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT,
+									DateUtil.DISPLAY_DATE_FORMAT);
 					Long startms = monday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 					Long endms = sunday.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 					Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,
@@ -245,9 +248,8 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 
 			globalSonarViolationsHowerMap.add(sonarViolationsHowerMap);
 
-			Long sonarViolations = sonarViolationsHowerMap.values().stream()
-					.map(Integer.class::cast).mapToLong(val -> val)
-					.sum();
+			Long sonarViolations = sonarViolationsHowerMap.values().stream().map(Integer.class::cast)
+					.mapToLong(val -> val).sum();
 
 			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
 			DataCount dcObj = getDataCountObject(sonarViolations, sonarViolationsHowerMap, projectName, date,
@@ -329,20 +331,19 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 	}
 
 	/**
-	 *  @param violations
+	 * @param violations
 	 * @param valueMap
 	 * @param key
 	 */
 	private void evaluateViolations(Object violations, Map<String, Object> valueMap, String key) {
-			if (violations instanceof Double) {
-				valueMap.put(key, ((Double) violations).intValue());
-			} else if (violations instanceof String) {
-				valueMap.put(key, (Integer.parseInt(violations.toString())));
-			} else {
-				valueMap.put(key, (Integer) violations);
-			}
+		if (violations instanceof Double) {
+			valueMap.put(key, ((Double) violations).intValue());
+		} else if (violations instanceof String) {
+			valueMap.put(key, (Integer.parseInt(violations.toString())));
+		} else {
+			valueMap.put(key, (Integer) violations);
 		}
-
+	}
 
 	/**
 	 * Not used
