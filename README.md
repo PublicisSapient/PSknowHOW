@@ -16,10 +16,7 @@ For installation instruction please refer to the link ->
 https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/1966195/KnowHOW+-+Installation+Setup
 
 
-Upcoming  Major Release Updates :
 
-Next Version - 6.0.0 
-Key Features -
- Security Fixes
- JIRA Board Support
+
+
  
