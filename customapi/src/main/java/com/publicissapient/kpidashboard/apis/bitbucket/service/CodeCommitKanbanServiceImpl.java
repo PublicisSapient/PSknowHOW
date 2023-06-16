@@ -51,12 +51,12 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -67,6 +67,7 @@ import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -113,7 +114,8 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
-		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes()
+				.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 
 		dateWiseLeafNodeValue(mapTmp, projectList, kpiElement, kpiRequest);
 
@@ -176,8 +178,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 						kpiRequest.getDuration());
 				List<Tool> reposList = getBitBucketJobs(toolMap, node);
 				if (CollectionUtils.isEmpty(reposList)) {
-					log.error("[CODE_COMMIT_KANBAN]. No Jobs found for this project {}",
-							node.getProjectFilter());
+					log.error("[CODE_COMMIT_KANBAN]. No Jobs found for this project {}", node.getProjectFilter());
 					return;
 				}
 				String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
@@ -189,7 +190,8 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 				currentDate = getNextRangeDate(kpiRequest, currentDate);
 
 				if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateCodeCommitKanbanExcelData(node.getProjectFilter().getName(), repoWiseCommitList, listOfRepo, listOfBranch, excelData);
+					KPIExcelUtility.populateCodeCommitKanbanExcelData(node.getProjectFilter().getName(),
+							repoWiseCommitList, listOfRepo, listOfBranch, excelData);
 				}
 
 			}
@@ -214,8 +216,8 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	 * @return
 	 */
 	private Map<String, Long> filterKanbanDataBasedOnStartAndEndDateAndCommitDetails(List<Tool> reposList,
-																					 CustomDateRange dateRange, Map<ObjectId, Map<String, Long>> commitListItemId, String projectName,
-																					 List<Map<String, Long>> repoWiseCommitList, List<String> listOfRepo, List<String> listOfBranch) {
+			CustomDateRange dateRange, Map<ObjectId, Map<String, Long>> commitListItemId, String projectName,
+			List<Map<String, Long>> repoWiseCommitList, List<String> listOfRepo, List<String> listOfBranch) {
 		LocalDate startDate = dateRange.getStartDate();
 		LocalDate endDate = dateRange.getEndDate();
 		Map<String, Long> filterWiseValue = new HashMap<>();
@@ -291,7 +293,10 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (CommonConstant.WEEK.equalsIgnoreCase(kpiRequest.getDuration())) {
-			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (CommonConstant.MONTH.equalsIgnoreCase(kpiRequest.getDuration())) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
 		} else {
@@ -358,8 +363,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 
 	private List<Tool> getBitBucketJobs(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
 		ProjectFilter projectFilter = node.getProjectFilter();
-		ObjectId configId = projectFilter == null ? null
-				: projectFilter.getBasicProjectConfigId();
+		ObjectId configId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
 		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(configId);
 		List<Tool> bitbucketJob = new ArrayList<>();
 		if (null != toolListMap) {

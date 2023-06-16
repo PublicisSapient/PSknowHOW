@@ -29,9 +29,9 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
  */
 public class LdapAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, AuthType> {
 
-    @Override
-    public AuthType buildDetails(HttpServletRequest context) {
-        return AuthType.LDAP;
-    }
+	@Override
+	public AuthType buildDetails(HttpServletRequest context) {
+		return AuthType.LDAP;
+	}
 
 }

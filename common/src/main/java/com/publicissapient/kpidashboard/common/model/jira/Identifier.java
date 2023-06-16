@@ -23,12 +23,11 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 public class Identifier {
 
 	private String type;
 	private List<String> value;
-	
+
 }

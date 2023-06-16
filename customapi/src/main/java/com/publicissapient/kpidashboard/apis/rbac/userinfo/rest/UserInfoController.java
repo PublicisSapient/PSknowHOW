@@ -18,16 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.userinfo.rest;
 
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
-import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Objects;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,9 +36,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.Objects;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author narsingh9
@@ -57,7 +60,7 @@ public class UserInfoController {
 
 	@Autowired
 	private UserInfoService userInfoService;
-	
+
 	@Autowired
 	private UserTokenDeletionService userTokenDeletionService;
 
@@ -66,7 +69,6 @@ public class UserInfoController {
 
 	@Autowired
 	private UserInfoRepository userInfoRepository;
-
 
 	/**
 	 * Fetch only approved user info data.
@@ -79,10 +81,12 @@ public class UserInfoController {
 		log.info("Fetching all user info data");
 		return ResponseEntity.status(HttpStatus.OK).body(this.userInfoService.getAllUserInfo());
 	}
+
 	/***
 	 * update the role updateAccessOfUserInfo()
 	 * 
-	 * @param username unique object username present in the database
+	 * @param username
+	 *            unique object username present in the database
 	 * @return responseEntity of userInfo with data,message and status
 	 */
 	@PreAuthorize("hasPermission(null, 'UPDATE_USER_INFO')")
@@ -96,9 +100,7 @@ public class UserInfoController {
 		ServiceResponse response = userInfoService.updateUserRole(username, userInfo);
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
-	
-	
-	
+
 	}
 
 	/**
@@ -106,23 +108,24 @@ public class UserInfoController {
 	 *
 	 * @return the Service Response
 	 */
-	/*@PreAuthorize("hasPermission(null, 'DELETE_USER')")
-	@DeleteMapping(value = "/{userName}")
-	public ServiceResponse deleteUser(@PathVariable String userName) {
-		log.info("Inside deleteUser() method of UserInfoController ");
-		String loggedUserName = authenticationService.getLoggedInUser();
-		UserInfo userInfo = userInfoRepository.findByUsername(userName);
-		if ((!loggedUserName.equals(userName)
-				&& !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))
-		) {
-			ServiceResponse response = userInfoService.deleteUser(userName);
-			return new ServiceResponse(true, userName + " deleted Successfully", response);
-		} else {
-			log.info("Unauthorized to perform deletion of user " + userName);
-			return new ServiceResponse(false, "Unauthorized to perform deletion of user", "Unauthorized");
-		}
-
-	}*/
+	/*
+	 * @PreAuthorize("hasPermission(null, 'DELETE_USER')")
+	 * 
+	 * @DeleteMapping(value = "/{userName}") public ServiceResponse
+	 * deleteUser(@PathVariable String userName) {
+	 * log.info("Inside deleteUser() method of UserInfoController "); String
+	 * loggedUserName = authenticationService.getLoggedInUser(); UserInfo userInfo =
+	 * userInfoRepository.findByUsername(userName); if
+	 * ((!loggedUserName.equals(userName) &&
+	 * !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN)) ) {
+	 * ServiceResponse response = userInfoService.deleteUser(userName); return new
+	 * ServiceResponse(true, userName + " deleted Successfully", response); } else {
+	 * log.info("Unauthorized to perform deletion of user " + userName); return new
+	 * ServiceResponse(false, "Unauthorized to perform deletion of user",
+	 * "Unauthorized"); }
+	 * 
+	 * }
+	 */
 
 	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
 	@DeleteMapping(value = "/{userName}")
@@ -130,20 +133,20 @@ public class UserInfoController {
 		log.info("Inside deleteUser() method of UserInfoController ");
 		String loggedUserName = authenticationService.getLoggedInUser();
 		UserInfo userInfo = userInfoRepository.findByUsername(userName);
-		if ((!loggedUserName.equals(userName)
-				&& !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))
-		) {
+		if ((!loggedUserName.equals(userName) && !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))) {
 			ServiceResponse response = userInfoService.deleteUser(userName);
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		} else {
 			log.info("Unauthorized to perform deletion of user " + userName);
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ServiceResponse(false, "Unauthorized to perform deletion of user", "Unauthorized"));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body(new ServiceResponse(false, "Unauthorized to perform deletion of user", "Unauthorized"));
 		}
 
 	}
 
 	/**
 	 * get user details via token
+	 * 
 	 * @param request
 	 * @return
 	 */

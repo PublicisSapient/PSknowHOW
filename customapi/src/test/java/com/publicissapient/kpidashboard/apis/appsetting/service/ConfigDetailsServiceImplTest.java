@@ -42,16 +42,12 @@ public class ConfigDetailsServiceImplTest {
 
 	private static final String PERCENTILE = "percentile";
 	private static final String SUM = "sum";
-
-	@InjectMocks
-	private ConfigDetailsServiceImpl configDetailsServiceImpl;
-
-	@Mock
-	private CustomApiConfig customApiConfig;
-
 	@Mock
 	ConfigHelperService configHelperService;
-
+	@InjectMocks
+	private ConfigDetailsServiceImpl configDetailsServiceImpl;
+	@Mock
+	private CustomApiConfig customApiConfig;
 	private Map<String, String> kpiWiseAggregation;
 	private DateRangeFilter dateRangeFilter;
 

@@ -1,8 +1,17 @@
 package com.publicissapient.kpidashboard.apis.jenkins.service;
 
-import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -19,20 +28,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.eq;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JenkinsToolConfigServiceImplTest {
@@ -74,19 +74,19 @@ public class JenkinsToolConfigServiceImplTest {
 		assertEquals(optConnection, testConnectionOpt);
 		when(restAPIUtils.decryptPassword(connection.getApiKey())).thenReturn("decryptKey");
 		HttpHeaders header = new HttpHeaders();
-		header.add("Authorization","base64str");
+		header.add("Authorization", "base64str");
 		when(restAPIUtils.getHeaders(connection.getUsername(), "decryptKey")).thenReturn(header);
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("jenkinsJobNameList.json"), HttpStatus.OK))
-				.when(restTemplate).exchange(eq(jenkinsUrl),
-						eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
+				.when(restTemplate).exchange(eq(jenkinsUrl), eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("url", "http://dummyServer.com/job/API_Build/");
 		jsonObject.put("_class", "org.jenkinsci.plugins.workflow.job.WorkflowJob");
 		jsonArray.add(jsonObject);
 		responseProjectList.add(jsonObject.toJSONString());
-		when(restAPIUtils.convertJSONArrayFromResponse(getServerResponseFromJson("jenkinsJobNameList.json"), "jobs")).thenReturn(jsonArray);
+		when(restAPIUtils.convertJSONArrayFromResponse(getServerResponseFromJson("jenkinsJobNameList.json"), "jobs"))
+				.thenReturn(jsonArray);
 		when(restAPIUtils.convertListFromMultipleArray(jsonArray, "url")).thenReturn(responseProjectList);
 		Assert.assertEquals(jenkinsToolConfigService.getJenkinsJobNameList(connectionId).size(),
 				responseProjectList.size());
@@ -99,13 +99,12 @@ public class JenkinsToolConfigServiceImplTest {
 		assertEquals(optConnection, testConnectionOpt);
 		when(restAPIUtils.decryptPassword(connection.getApiKey())).thenReturn("decryptKey");
 		HttpHeaders header = new HttpHeaders();
-		header.add("Authorization","base64str");
+		header.add("Authorization", "base64str");
 		when(restAPIUtils.getHeaders(connection.getUsername(), "decryptKey")).thenReturn(header);
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
-		doReturn(new ResponseEntity<>(null,null, HttpStatus.NO_CONTENT))
-				.when(restTemplate).exchange(eq(jenkinsUrl),
-						eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
-		Assert.assertEquals(0 ,jenkinsToolConfigService.getJenkinsJobNameList(connectionId).size());
+		doReturn(new ResponseEntity<>(null, null, HttpStatus.NO_CONTENT)).when(restTemplate).exchange(eq(jenkinsUrl),
+				eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
+		Assert.assertEquals(0, jenkinsToolConfigService.getJenkinsJobNameList(connectionId).size());
 	}
 
 	private String getServerResponseFromJson(String fileName) throws IOException {

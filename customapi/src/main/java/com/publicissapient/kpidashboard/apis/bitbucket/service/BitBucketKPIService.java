@@ -20,9 +20,9 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
-import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
 import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -35,22 +35,23 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 /**
  * Bitbucket Kpi service.
  * 
- * @param <R> type of kpi value
- * @param <S> type of kpi trend object
- * @param <T> type of db object
+ * @param <R>
+ *            type of kpi value
+ * @param <S>
+ *            type of kpi trend object
+ * @param <T>
+ *            type of db object
  */
-public abstract class BitBucketKPIService<R, S, T> extends ToolsKPIService<R,S>  implements
-		ApplicationKPIService<R, S, T> {
+public abstract class BitBucketKPIService<R, S, T> extends ToolsKPIService<R, S>
+		implements ApplicationKPIService<R, S, T> {
 
+	private static final String CONNECTOR = " -> ";
 	@Autowired
 	private CacheService cacheService;
-
 	@Autowired
 	private CommonService commonService;
 
 	public abstract String getQualifierType();
-
-	private static final String CONNECTOR = " -> ";
 
 	/**
 	 * Returns API Request tracker Id to be used for logging/debugging and using it
@@ -63,7 +64,8 @@ public abstract class BitBucketKPIService<R, S, T> extends ToolsKPIService<R,S> 
 	}
 
 	protected String getRequestTrackerIdKanban() {
-		return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKETKANBAN.name());
+		return cacheService
+				.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKETKANBAN.name());
 	}
 
 	/**
@@ -77,12 +79,13 @@ public abstract class BitBucketKPIService<R, S, T> extends ToolsKPIService<R,S> 
 	public abstract KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException;
 
-
 	/**
 	 * This method creates branch filters for kpis
 	 * 
-	 * @param repo        tool repo
-	 * @param projectName projectName
+	 * @param repo
+	 *            tool repo
+	 * @param projectName
+	 *            projectName
 	 * @return branch filter
 	 */
 	public String getBranchSubFilter(Tool repo, String projectName) {

@@ -18,6 +18,12 @@
 
 package com.publicissapient.kpidashboard.jira.adapter;
 
+import java.io.IOException;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
 import com.atlassian.jira.rest.client.api.domain.Field;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
@@ -29,19 +35,13 @@ import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
-import java.time.LocalDateTime;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
-
 public interface JiraAdapter {
 
 	/**
 	 * Gets all issues from JIRA
 	 *
 	 * @param boardDetails
-	 * 			  boardDetails
+	 *            boardDetails
 	 * @param projectConfig
 	 *            projectConfig Object
 	 * @param startDateTimeByIssueType
@@ -54,8 +54,9 @@ public interface JiraAdapter {
 	 *            data exist in db or not
 	 * @return list of issues
 	 */
-	SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig, String startDateTimeByIssueType,
-						   String userTimeZone, int pageStart, boolean dataExist) throws InterruptedException;
+	SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig,
+			String startDateTimeByIssueType, String userTimeZone, int pageStart, boolean dataExist)
+			throws InterruptedException;
 
 	/**
 	 * Gets all issues from JIRA
@@ -73,7 +74,7 @@ public interface JiraAdapter {
 	 * @return list of issues
 	 */
 	SearchResult getIssues(ProjectConfFieldMapping projectConfig, Map<String, LocalDateTime> startDateTimeByIssueType,
-						   String userTimeZone, int pageStart, boolean dataExist) throws InterruptedException;
+			String userTimeZone, int pageStart, boolean dataExist) throws InterruptedException;
 
 	/**
 	 * Gets page size from feature settings
@@ -139,6 +140,5 @@ public interface JiraAdapter {
 	String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url) throws IOException;
 
 	List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig);
-
 
 }

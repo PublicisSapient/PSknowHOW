@@ -29,8 +29,7 @@ import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution
 public interface TestExecutionRepositoryCustom {
 
 	/**
-	 * Returns TestExecution documents for selected filters and date
-	 * range.
+	 * Returns TestExecution documents for selected filters and date range.
 	 * 
 	 * @param mapOfFilters
 	 *            filters applied

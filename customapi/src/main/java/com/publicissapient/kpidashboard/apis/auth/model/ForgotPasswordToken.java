@@ -25,7 +25,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * This class serves as the model for storing credential used for login and

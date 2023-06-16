@@ -20,15 +20,16 @@ package com.publicissapient.kpidashboard.common.model.rbac;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
+import com.publicissapient.kpidashboard.common.constant.AuthType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bson.types.ObjectId;
-
-import com.publicissapient.kpidashboard.common.constant.AuthType;
 
 /**
  * The User info dto.

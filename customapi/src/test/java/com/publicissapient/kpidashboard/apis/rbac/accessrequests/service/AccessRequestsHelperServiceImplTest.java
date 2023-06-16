@@ -72,47 +72,6 @@ import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepositor
 @RunWith(MockitoJUnitRunner.class)
 public class AccessRequestsHelperServiceImplTest {
 
-	@InjectMocks
-	private AccessRequestsHelperServiceImpl accessRequestsHelperServiceImpl;
-	@Mock
-	private UserInfoServiceImpl userInfoServiceImpl;
-
-	@Mock
-	private CustomApiConfig customApiConfig;
-
-	@Mock
-	private AccessRequestsRepository accessRequestsRepository;
-
-	@Mock
-	private AuthenticationRepository authenticationRepository;
-
-	@Mock
-	private UserInfoRepository userInfoRepository;
-
-	@Mock
-	private RolesRepository rolesRepository;
-
-	@Mock
-	private UserTokenDeletionService userTokenDeletionService;
-
-	@Mock
-	private SecurityContext securityContext;
-
-	@Mock
-	private Authentication authentication;
-
-	private UserInfo userInfo;
-
-	private UserInfo nonSuperadminUserInfo;
-	
-	private UserInfo projectAdminUserInfo;
-	
-	@Mock
-    private CommonService commonService;
-	
-	@Mock
-	private ProjectAccessManager accessManager;
-
 	/*
 	 * Creating a new test AccessRequestsData object
 	 */
@@ -137,6 +96,33 @@ public class AccessRequestsHelperServiceImplTest {
 	 * Creating a new string object to store test approvedStatus
 	 */
 	boolean approvedStatus;
+	@InjectMocks
+	private AccessRequestsHelperServiceImpl accessRequestsHelperServiceImpl;
+	@Mock
+	private UserInfoServiceImpl userInfoServiceImpl;
+	@Mock
+	private CustomApiConfig customApiConfig;
+	@Mock
+	private AccessRequestsRepository accessRequestsRepository;
+	@Mock
+	private AuthenticationRepository authenticationRepository;
+	@Mock
+	private UserInfoRepository userInfoRepository;
+	@Mock
+	private RolesRepository rolesRepository;
+	@Mock
+	private UserTokenDeletionService userTokenDeletionService;
+	@Mock
+	private SecurityContext securityContext;
+	@Mock
+	private Authentication authentication;
+	private UserInfo userInfo;
+	private UserInfo nonSuperadminUserInfo;
+	private UserInfo projectAdminUserInfo;
+	@Mock
+	private CommonService commonService;
+	@Mock
+	private ProjectAccessManager accessManager;
 
 	/**
 	 * method includes preprocesses for test cases
@@ -149,10 +135,10 @@ public class AccessRequestsHelperServiceImplTest {
 		testAccessRequestsData.setUsername("testuser");
 		testAccessRequestsData.setStatus("Approved");
 		testAccessRequestsData.setRole("ROLE_PROJECT_VIEWER");
-		
+
 		AccessNode node = new AccessNode();
 		node.setAccessLevel(Constant.PROJECT);
-		
+
 		AccessItem item = new AccessItem();
 		item.setItemId("605aaf595a160c3fe46fdbbc");
 		item.setItemName("testproject");
@@ -271,7 +257,7 @@ public class AccessRequestsHelperServiceImplTest {
 		testId = "5ca455aa70c53c4f50076e34";
 		List<AccessRequest> testListAccessRequestsData = new ArrayList<>();
 		testListAccessRequestsData.add(testAccessRequestsData);
-		Optional<AccessRequest> testAccessRequestsDataOpt=Optional.ofNullable(testAccessRequestsData);
+		Optional<AccessRequest> testAccessRequestsDataOpt = Optional.ofNullable(testAccessRequestsData);
 		when(accessRequestsRepository.findById(new ObjectId(testId))).thenReturn(testAccessRequestsDataOpt);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestById(testId);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
@@ -506,7 +492,6 @@ public class AccessRequestsHelperServiceImplTest {
 		assertEquals(testListAccessRequestsData, response.getData());
 	}
 
-
 	/**
 	 * create ProjectsForAccessRequest object
 	 * 
@@ -548,7 +533,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(authenticationRepository.findByApproved(approvedStatus)).thenReturn(null);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(createNotificationDataResponseTest(0,0), response.getData());
+		assertEquals(createNotificationDataResponseTest(0, 0), response.getData());
 	}
 
 	/**
@@ -570,7 +555,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(authenticationRepository.findByApproved(approvedStatus)).thenReturn(null);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(createNotificationDataResponseTest(1,0), response.getData());
+		assertEquals(createNotificationDataResponseTest(1, 0), response.getData());
 	}
 
 	/**
@@ -592,14 +577,14 @@ public class AccessRequestsHelperServiceImplTest {
 		when(authenticationRepository.findByApproved(approvedStatus)).thenReturn(testListAuthentication);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(createNotificationDataResponseTest(0,1), response.getData());
+		assertEquals(createNotificationDataResponseTest(0, 1), response.getData());
 	}
 
 	/**
 	 * if PROJECT_ACCESS count and USER_APPROVAL count is zero
 	 *
 	 */
-	private List<NotificationDataDTO> createNotificationDataResponseTest(int count1,int count2) {
+	private List<NotificationDataDTO> createNotificationDataResponseTest(int count1, int count2) {
 		NotificationDataDTO notificationDataDTO1 = new NotificationDataDTO();
 		List<NotificationDataDTO> notificationDataDTOList = new ArrayList<>();
 		notificationDataDTO1.setType(NotificationEnum.PROJECT_ACCESS.getValue());
@@ -626,7 +611,7 @@ public class AccessRequestsHelperServiceImplTest {
 		when(authentication.getPrincipal()).thenReturn("guest");
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(nonSuperadminUserInfo);
 		when(accessRequestsRepository.findByUsernameAndStatus(testUsername, testStatus)).thenReturn(null);
-		
+
 		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 		assertEquals(createNotificationDataResponseTest4(0), response.getData());
@@ -671,8 +656,7 @@ public class AccessRequestsHelperServiceImplTest {
 		AccessRequest updatedRequest = accessRequestsHelperServiceImpl.updateAccessRequest(accessRequestForUpdate);
 		assertEquals("605aaf595a160c3fe46fdbbc", updatedRequest.getId().toHexString());
 	}
-	
-	
+
 	/**
 	 * access request by status -> projectadmin
 	 */
@@ -683,17 +667,18 @@ public class AccessRequestsHelperServiceImplTest {
 		basicconfigList.add("605aaf595a160c3fe46fdbba");
 		List<AccessRequest> testListAccessRequestsData = new ArrayList<>();
 		testListAccessRequestsData.add(testAccessRequestsData);
-		when(accessRequestsRepository.findByStatusAndAccessLevel(anyString(),anyString())).thenReturn(testListAccessRequestsData);
+		when(accessRequestsRepository.findByStatusAndAccessLevel(anyString(), anyString()))
+				.thenReturn(testListAccessRequestsData);
 		SecurityContextHolder.setContext(securityContext);
 		when(SecurityContextHolder.getContext().getAuthentication()).thenReturn(authentication);
 		when(authentication.getPrincipal()).thenReturn("guest2");
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(projectAdminUserInfo);
 		when(accessManager.getProjectBasicOnRoleList(any(), any())).thenReturn(basicconfigList);
-		
+
 		ServiceResponse response = accessRequestsHelperServiceImpl.getAccessRequestByStatus(testStatus);
-		assertEquals( Boolean.TRUE,response.getSuccess());
+		assertEquals(Boolean.TRUE, response.getSuccess());
 	}
-	
+
 	/**
 	 * notification method test by project admin
 	 */
@@ -709,11 +694,12 @@ public class AccessRequestsHelperServiceImplTest {
 		when(SecurityContextHolder.getContext().getAuthentication()).thenReturn(authentication);
 		when(authentication.getPrincipal()).thenReturn("guest2");
 		when(userInfoServiceImpl.getUserInfo(any())).thenReturn(projectAdminUserInfo);
-		when(accessRequestsRepository.findByStatusAndAccessLevel(anyString(),anyString())).thenReturn(testListAccessRequestsData);
+		when(accessRequestsRepository.findByStatusAndAccessLevel(anyString(), anyString()))
+				.thenReturn(testListAccessRequestsData);
 		when(accessManager.getProjectBasicOnRoleList(any(), any())).thenReturn(basicconfigList);
 		ServiceResponse response = accessRequestsHelperServiceImpl.getNotificationByStatus(testStatus);
-		assertEquals(Boolean.TRUE,response.getSuccess());
-		assertEquals(createNotificationDataResponseTest4(1),response.getData());
+		assertEquals(Boolean.TRUE, response.getSuccess());
+		assertEquals(createNotificationDataResponseTest4(1), response.getData());
 	}
 
 	private AccessRequest createAccessRequestForUpdate() {

@@ -25,10 +25,6 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClient;
-import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientFactory;
-import lombok.extern.slf4j.Slf4j;
-
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
@@ -47,8 +43,12 @@ import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactor
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
 import com.publicissapient.kpidashboard.jira.client.metadata.MetaDataClientImpl;
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClient;
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class JiraOnlineRunnable.
@@ -98,6 +98,65 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 	private PSLogData psLogData = new PSLogData();
 
 	/**
+	 * Sets the configurations and variables .
+	 *
+	 * @param latch
+	 *            latch
+	 * @param jiraAdapter
+	 *            JiraAdapter
+	 * @param onlineLineprojectConfigMap
+	 *            OnlineConfigurationMap
+	 * @param projectReleaseRepo
+	 *            ProjectReleaseRepo
+	 * @param accountHierarchyRepository
+	 *            AccountHierarchyRepository
+	 * @param kanbanAccountHierarchyRepo
+	 *            KanbanAccountHierarchyRepository
+	 * @param factory
+	 *            JiraIssueClientFactory
+	 * @param jiraProcessorConfig
+	 *            the jira processor config
+	 * @param boardMetadataRepository
+	 *            BoardMetadataRepository
+	 * @param fieldMappingRepository
+	 *            FieldMappingRepository
+	 * @param metadataIdentifierRepository
+	 *            MetadataIdentifierRepository
+	 * @param jiraRestClientFactory
+	 *            jiraRestClientFactory
+	 */
+	public JiraOnlineRunnable(CountDownLatch latch, JiraAdapter jiraAdapter, // NOSONAR
+			ProjectConfFieldMapping onlineLineprojectConfigMap, ProjectReleaseRepo projectReleaseRepo,
+			AccountHierarchyRepository accountHierarchyRepository,
+			KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo, JiraIssueClientFactory factory,
+			JiraProcessorConfig jiraProcessorConfig, BoardMetadataRepository boardMetadataRepository,
+			FieldMappingRepository fieldMappingRepository, MetadataIdentifierRepository metadataIdentifierRepository,
+			JiraRestClientFactory jiraRestClientFactory, ReleaseDataClientFactory releaseDataClientFactory,
+			ExecutionLogContext executionLogContext) // NOPMD
+	{
+		this.latch = latch;
+		this.jiraAdapter = jiraAdapter;
+		this.onlineLineprojectConfigMap = onlineLineprojectConfigMap;
+		this.projectReleaseRepo = projectReleaseRepo;
+		this.accountHierarchyRepository = accountHierarchyRepository;
+		this.kanbanAccountHierarchyRepo = kanbanAccountHierarchyRepo;
+		this.factory = factory;
+		this.jiraProcessorConfig = jiraProcessorConfig;
+		this.boardMetadataRepository = boardMetadataRepository;
+		this.fieldMappingRepository = fieldMappingRepository;
+		this.metadataIdentifierRepository = metadataIdentifierRepository;
+		this.jiraRestClientFactory = jiraRestClientFactory;
+		this.releaseDataClientFactory = releaseDataClientFactory;
+		this.executionLogContext = executionLogContext;
+	}
+
+	/**
+	 * Instantiates a new jira online runnable.
+	 */
+	public JiraOnlineRunnable() {
+	}
+
+	/**
 	 * Run.
 	 */
 	@Override
@@ -144,65 +203,7 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 		if (Objects.nonNull(context) && Objects.nonNull(context.getRequestId())) {
 			ExecutionLogContext.updateContext(context);
 		}
-		executionLogContext=null;
-	}
-
-	/**
-	 * Sets the configurations and variables .
-	 *
-	 * @param latch
-	 *            latch
-	 * @param jiraAdapter
-	 *            JiraAdapter
-	 * @param onlineLineprojectConfigMap
-	 *            OnlineConfigurationMap
-	 * @param projectReleaseRepo
-	 *            ProjectReleaseRepo
-	 * @param accountHierarchyRepository
-	 *            AccountHierarchyRepository
-	 * @param kanbanAccountHierarchyRepo
-	 *            KanbanAccountHierarchyRepository
-	 * @param factory
-	 *            JiraIssueClientFactory
-	 * @param jiraProcessorConfig
-	 *            the jira processor config
-	 * @param boardMetadataRepository
-	 *            BoardMetadataRepository
-	 * @param fieldMappingRepository
-	 *            FieldMappingRepository
-	 * @param metadataIdentifierRepository
-	 *            MetadataIdentifierRepository
-	 * @param jiraRestClientFactory
-	 *            jiraRestClientFactory
-	 */
-	public JiraOnlineRunnable(CountDownLatch latch, JiraAdapter jiraAdapter,//NOSONAR
-							  ProjectConfFieldMapping onlineLineprojectConfigMap,
-							  ProjectReleaseRepo projectReleaseRepo, AccountHierarchyRepository accountHierarchyRepository,
-							  KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo, JiraIssueClientFactory factory,
-							  JiraProcessorConfig jiraProcessorConfig, BoardMetadataRepository boardMetadataRepository,
-							  FieldMappingRepository fieldMappingRepository, MetadataIdentifierRepository metadataIdentifierRepository,
-							  JiraRestClientFactory jiraRestClientFactory,ReleaseDataClientFactory releaseDataClientFactory, ExecutionLogContext executionLogContext) //NOPMD
-	{
-		this.latch = latch;
-		this.jiraAdapter = jiraAdapter;
-		this.onlineLineprojectConfigMap = onlineLineprojectConfigMap;
-		this.projectReleaseRepo = projectReleaseRepo;
-		this.accountHierarchyRepository = accountHierarchyRepository;
-		this.kanbanAccountHierarchyRepo = kanbanAccountHierarchyRepo;
-		this.factory = factory;
-		this.jiraProcessorConfig = jiraProcessorConfig;
-		this.boardMetadataRepository = boardMetadataRepository;
-		this.fieldMappingRepository = fieldMappingRepository;
-		this.metadataIdentifierRepository = metadataIdentifierRepository;
-		this.jiraRestClientFactory = jiraRestClientFactory;
-		this.releaseDataClientFactory=releaseDataClientFactory;
-		this.executionLogContext=executionLogContext;
-	}
-
-	/**
-	 * Instantiates a new jira online runnable.
-	 */
-	public JiraOnlineRunnable() {
+		executionLogContext = null;
 	}
 
 	/**
@@ -216,22 +217,23 @@ public class JiraOnlineRunnable implements Runnable {// NOPMD
 	 */
 	private void collectReleaseData(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig) {
 		Instant start = Instant.now();
-		ReleaseDataClient jiraIssueDataClient = releaseDataClientFactory.getReleaseDataClient(projectConfig,jiraAdapter);
+		ReleaseDataClient jiraIssueDataClient = releaseDataClientFactory.getReleaseDataClient(projectConfig,
+				jiraAdapter);
 		jiraIssueDataClient.processReleaseInfo(projectConfig);
-		psLogData.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
+		psLogData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
 		psLogData.setAction(CommonConstant.RELEASE_DATA);
 		log.info("Time Taken to process release data", kv(CommonConstant.PSLOGDATA, psLogData));
 
 	}
 
-		/**
-         * Collects JiraIssue Data.
-         *
-         * @param jiraAdapter
-         *            JiraAdapter to create Connection
-         * @param projectConfig
-         *            Project Configuration map
-         */
+	/**
+	 * Collects JiraIssue Data.
+	 *
+	 * @param jiraAdapter
+	 *            JiraAdapter to create Connection
+	 * @param projectConfig
+	 *            Project Configuration map
+	 */
 	private void collectJiraIssueData(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig) {
 		long startJiraIssueTime = System.currentTimeMillis();
 		projectConfig.setIssueCount(0);

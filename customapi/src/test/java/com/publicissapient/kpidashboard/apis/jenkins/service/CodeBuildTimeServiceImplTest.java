@@ -71,39 +71,30 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 @RunWith(MockitoJUnitRunner.class)
 public class CodeBuildTimeServiceImplTest {
 
+	Map<String, List<Tool>> toolGroup = new HashMap<>();
+	@Mock
+	BuildRepository buildRepository;
+	@Mock
+	CacheService cacheService;
+	@Mock
+	ConfigHelperService configHelperService;
+	@Mock
+	FilterHelperService filterHelperService;
+	@Mock
+	ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	FieldMappingRepository fieldMappingRepository;
+	@Mock
+	CustomApiConfig customApiConfig;
+	@InjectMocks
+	CodeBuildTimeServiceImpl codeBuildTimeServiceImpl;
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
-	Map<String, List<Tool>> toolGroup = new HashMap<>();
 	private List<Build> buildList = new ArrayList<>();
-
-	@Mock
-	BuildRepository buildRepository;
-
-	@Mock
-	CacheService cacheService;
-
-	@Mock
-	ConfigHelperService configHelperService;
-
-	@Mock
-	FilterHelperService filterHelperService;
-
-	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
-
-	@Mock
-	CustomApiConfig customApiConfig;
-
-	@InjectMocks
-	CodeBuildTimeServiceImpl codeBuildTimeServiceImpl;
-
 	@Mock
 	private CommonService commonService;
 
@@ -116,7 +107,6 @@ public class CodeBuildTimeServiceImplTest {
 
 	@Before
 	public void setup() {
-
 
 		setTreadValuesDataCount();
 
@@ -144,7 +134,6 @@ public class CodeBuildTimeServiceImplTest {
 
 	}
 
-
 	private void setTreadValuesDataCount() {
 		DataCount dataCount = setDataCountValues("KnowHow", "3", "4", new DataCount());
 		trendValues.add(dataCount);
@@ -164,7 +153,6 @@ public class CodeBuildTimeServiceImplTest {
 
 	@Test
 	public void testGetCodeBuildTime() throws Exception {
-
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);

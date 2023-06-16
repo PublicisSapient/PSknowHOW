@@ -19,56 +19,54 @@
 package com.publicissapient.kpidashboard.azure.client.azureissue;
 
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(SpringExtension.class)
 public class AzureIssueClientFactoryTest {
 
-    @Mock
-    private KanbanAzureIssueClientImpl kanbanAzureIssueClient;
+	@InjectMocks
+	AzureIssueClientFactory azureIssueClientFactory;
+	ProjectConfFieldMapping projectConfFieldMapping;
+	@Mock
+	private KanbanAzureIssueClientImpl kanbanAzureIssueClient;
+	@Mock
+	private ScrumAzureIssueClientImpl scrumAzureIssueClient;
 
-    @Mock
-    private ScrumAzureIssueClientImpl scrumAzureIssueClient;
+	@BeforeEach
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
+	}
 
-    @InjectMocks
-    AzureIssueClientFactory azureIssueClientFactory;
-    ProjectConfFieldMapping projectConfFieldMapping;
+	@Test
+	public void getAzureIssueDataClientKanban() {
+		prepareProjectConfig();
+		Assert.assertEquals(kanbanAzureIssueClient,
+				azureIssueClientFactory.getAzureIssueDataClient(projectConfFieldMapping));
+	}
 
-    @BeforeEach
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
-    @Test
-    public void getAzureIssueDataClientKanban() {
-        prepareProjectConfig();
-        Assert.assertEquals(kanbanAzureIssueClient,azureIssueClientFactory.getAzureIssueDataClient(projectConfFieldMapping));
-    }
+	@Test
+	public void getAzureIssueDataClientScrum() {
+		prepareProjectConfigScrum();
+		Assert.assertEquals(scrumAzureIssueClient,
+				azureIssueClientFactory.getAzureIssueDataClient(projectConfFieldMapping));
+	}
 
-    @Test
-    public void getAzureIssueDataClientScrum() {
-        prepareProjectConfigScrum();
-        Assert.assertEquals(scrumAzureIssueClient,azureIssueClientFactory.getAzureIssueDataClient(projectConfFieldMapping));
-    }
+	private void prepareProjectConfig() {
+		projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
+		projectConfFieldMapping.setKanban(true);
+	}
 
-    private void prepareProjectConfig(){
-        projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-        projectConfFieldMapping.setKanban(true);
-    }
-
-    private void prepareProjectConfigScrum(){
-        projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-        projectConfFieldMapping.setKanban(false);
-    }
-
-
-
+	private void prepareProjectConfigScrum() {
+		projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
+		projectConfFieldMapping.setKanban(false);
+	}
 
 }

@@ -42,6 +42,7 @@ public class CommitCount {
 	private Long mergeCount;
 	private Map<String, Long> hoverValue;
 	private Map<String, Long> mergeHoverValue;
+
 	/**
 	 * Instantiates a new Commit count.
 	 *

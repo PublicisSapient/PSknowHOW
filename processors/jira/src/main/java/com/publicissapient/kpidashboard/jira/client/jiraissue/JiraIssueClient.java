@@ -31,8 +31,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -53,6 +51,8 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 public abstract class JiraIssueClient {// NOPMD //NOSONAR
 
@@ -62,16 +62,20 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 
 	protected static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
 
+	public static String hash(String input) {
+		return String.valueOf(Objects.hash(input));
+	}
+
 	/**
-	 * Explicitly updates queries for the source system, and initiates the
-	 * update to MongoDB from those calls.
+	 * Explicitly updates queries for the source system, and initiates the update to
+	 * MongoDB from those calls.
 	 *
 	 * @param projectConfig
 	 *            Project Configuration Mapping
 	 * @param jiraAdapter
 	 *            JiraAdapter client
 	 * @param isOffline
-	 * 				offline processor or not
+	 *            offline processor or not
 	 * @return int Count of Jira stories processed
 	 */
 	public abstract int processesJiraIssues(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter,
@@ -113,10 +117,10 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 	}
 
 	/**
-	 * Sets Issue Tech Story Type after identifying s whether a story is tech
-	 * story or simple feature story. There can be possible 3 ways to identify a
-	 * tech story 1. Specific 'label' is maintained 2. 'Issue type' itself is a
-	 * 'Tech Story' 3. A separate 'custom field' is maintained
+	 * Sets Issue Tech Story Type after identifying s whether a story is tech story
+	 * or simple feature story. There can be possible 3 ways to identify a tech
+	 * story 1. Specific 'label' is maintained 2. 'Issue type' itself is a 'Tech
+	 * Story' 3. A separate 'custom field' is maintained
 	 *
 	 * @param fieldMapping
 	 *            fieldMapping provided by the User
@@ -128,7 +132,7 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 	 *            Map of Issue Fields
 	 */
 	public void setIssueTechStoryType(FieldMapping fieldMapping, Issue issue, JiraIssue jiraIssue,
-									  Map<String, IssueField> fields) {
+			Map<String, IssueField> fields) {
 
 		if (StringUtils.isNotBlank(fieldMapping.getJiraTechDebtIdentification())) {
 			if (fieldMapping.getJiraTechDebtIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
@@ -207,6 +211,7 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 
 	/**
 	 * setting AggregatedTime Estimates
+	 *
 	 * @param jiraIssue
 	 * @param fields
 	 */
@@ -245,7 +250,7 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 	 *            Jira Processor Configuration
 	 */
 	public void setEstimate(JiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping, // NOSONAR
-							JiraProcessorConfig jiraProcessorConfig) {
+			JiraProcessorConfig jiraProcessorConfig) {
 
 		Double value = 0d;
 		String valueString = "0";
@@ -291,16 +296,18 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 
 	/**
 	 * This method process owner and user details
-	 *  @param jiraIssue
+	 *
+	 * @param jiraIssue
 	 *            JiraIssue Object to set Owner details
 	 * @param user
 	 *            Jira issue User Object
 	 * @param assigneeSetToSave
-	 * 			 to save assignee details
+	 *            to save assignee details
 	 * @param projectConfig
-	 *          project congig fieldmapping
+	 *            project congig fieldmapping
 	 */
-	public void setJiraAssigneeDetails(JiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig) {
+	public void setJiraAssigneeDetails(JiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave,
+			ProjectConfFieldMapping projectConfig) {
 		if (user == null) {
 			jiraIssue.setOwnersUsername(Collections.<String>emptyList());
 			jiraIssue.setOwnersShortName(Collections.<String>emptyList());
@@ -332,16 +339,18 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 			jiraIssue.setOwnersFullName(assigneeDisplayName);
 			if (StringUtils.isNotEmpty(jiraIssue.getAssigneeId())
 					&& StringUtils.isNotEmpty(jiraIssue.getAssigneeName())) {
-				updateAssigneeDetailsToggleWise(jiraIssue, assigneeSetToSave, projectConfig, assigneeKey, assigneeName, assigneeDisplayName);
+				updateAssigneeDetailsToggleWise(jiraIssue, assigneeSetToSave, projectConfig, assigneeKey, assigneeName,
+						assigneeDisplayName);
 			}
 		}
 
 	}
 
-	private void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig, List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
+	private void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, Set<Assignee> assigneeSetToSave,
+			ProjectConfFieldMapping projectConfig, List<String> assigneeKey, List<String> assigneeName,
+			List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
-			List<String> ownerName = assigneeName.stream().map(JiraIssueClient::hash)
-					.collect(Collectors.toList());
+			List<String> ownerName = assigneeName.stream().map(JiraIssueClient::hash).collect(Collectors.toList());
 			List<String> ownerId = assigneeKey.stream().map(JiraIssueClient::hash).collect(Collectors.toList());
 			List<String> ownerFullName = assigneeDisplayName.stream().map(JiraIssueClient::hash)
 					.collect(Collectors.toList());
@@ -354,10 +363,6 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 		} else {
 			assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
 		}
-	}
-
-	public static String hash(String input) {
-		return String.valueOf(Objects.hash(input));
 	}
 
 	public String getAssignee(User user) {
@@ -411,22 +416,22 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 	}
 
 	public String getDeltaDate(String lastSuccessfulRun) {
-		LocalDateTime ldt = DateUtil.stringToLocalDateTime(lastSuccessfulRun,QUERYDATEFORMAT);
+		LocalDateTime ldt = DateUtil.stringToLocalDateTime(lastSuccessfulRun, QUERYDATEFORMAT);
 		ldt = ldt.minusDays(30);
 		return DateUtil.dateTimeFormatter(ldt, QUERYDATEFORMAT);
 	}
 
 	public void setStartDate(JiraProcessorConfig jiraProcessorConfig) {
 		LocalDateTime localDateTime = null;
-		if(jiraProcessorConfig.isConsiderStartDate()){
-			try{
-				localDateTime = DateUtil.stringToLocalDateTime(jiraProcessorConfig.getStartDate(),QUERYDATEFORMAT);
+		if (jiraProcessorConfig.isConsiderStartDate()) {
+			try {
+				localDateTime = DateUtil.stringToLocalDateTime(jiraProcessorConfig.getStartDate(), QUERYDATEFORMAT);
 			} catch (DateTimeParseException ex) {
 				log.error("exception while parsing start date provided from property file picking last 6 months data.."
 						+ ex.getMessage());
 				localDateTime = LocalDateTime.now().minusMonths(6);
 			}
-		}else{
+		} else {
 			localDateTime = LocalDateTime.now().minusMonths(6);
 		}
 		jiraProcessorConfig.setStartDate(DateUtil.dateTimeFormatter(localDateTime, QUERYDATEFORMAT));

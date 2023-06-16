@@ -47,7 +47,7 @@ public class ProcessorItem extends BasicModel {
 
 	private String desc;
 	private boolean isActive;
-	private  List<ProcessorError> errors = Lists.newArrayList();
+	private List<ProcessorError> errors = Lists.newArrayList();
 	private ObjectId processorId;
 	private long updatedTime;
 	private Map<String, Object> toolDetailsMap = Maps.newHashMap();

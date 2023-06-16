@@ -20,12 +20,12 @@ package com.publicissapient.kpidashboard.common.model;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 
 @Data
 @Getter

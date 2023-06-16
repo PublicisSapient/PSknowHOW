@@ -37,6 +37,7 @@ public class AzureRestClientFactory {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AzureRestClientFactory.class);
 	@Autowired
 	private AzureProcessorConfig azureProcessorConfig;
+
 	/**
 	 * Cleans the cache in th Custom API
 	 * 

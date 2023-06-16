@@ -17,8 +17,10 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.model.application;
 
-import lombok.Data;
 import java.util.List;
+
+import lombok.Data;
+
 /**
  *
  * @author yasbano
@@ -27,7 +29,7 @@ import java.util.List;
 @Data
 public class KpiDetailsTableRow {
 
-    private String type;
-    private List<String> value;
+	private String type;
+	private List<String> value;
 
 }

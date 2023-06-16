@@ -23,7 +23,6 @@ import java.net.URI;
 import java.util.Base64;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -44,6 +43,7 @@ import org.springframework.web.client.RestTemplate;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 
 import lombok.extern.slf4j.Slf4j;
@@ -52,21 +52,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TestConnectionServiceImpl implements TestConnectionService {
 
-	@Autowired
-	private CustomApiConfig customApiConfig;
-
-	@Autowired
-	private RestTemplate restTemplate;
-
 	private static final String SPACE = " ";
 	private static final String ENCODED_SPACE = "%20";
 	private static final String URL_SAPERATOR = "/";
 	private static final int GITHUB_RATE_LIMIT_PER_HOUR = 60;
 	private static final String VALID_MSG = "Valid Credentials ";
 	private static final String INVALID_MSG = "Invalid Credentials ";
-
 	private static final String WRONG_JIRA_BEARER = "{\"expand\":\"projects\",\"projects\":[]}";
-
+	@Autowired
+	private CustomApiConfig customApiConfig;
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Override
 	public ServiceResponse validateConnection(Connection connection, String toolName) {
@@ -96,11 +92,11 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				}
 			} else {
 				apiUrl = createApiUrl(connection.getBaseUrl(), toolName);
-				if (!connection.isCloudEnv() && connection.isAccessTokenEnabled()){
+				if (!connection.isCloudEnv() && connection.isAccessTokenEnabled()) {
 					if (checkDetailsForTool(apiUrl, password)) {
 						statusCode = validateTestConn(connection, apiUrl, password, toolName);
 					}
-				}else {
+				} else {
 					statusCode = testConnectionDetails(connection, apiUrl, password, toolName);
 				}
 			}
@@ -144,12 +140,13 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return new ServiceResponse(false, "Password/API token missing", HttpStatus.NOT_FOUND);
 	}
 
-	private boolean testConnection(Connection connection, String toolName, String apiUrl,
-								   String password, boolean isSonarWithAccessToken) {
+	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password,
+			boolean isSonarWithAccessToken) {
 		boolean isValidConnection = false;
-		if(connection.isJaasKrbAuth()){
+		if (connection.isJaasKrbAuth()) {
 			try {
-				KerberosClient client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(), connection.getJaasUser(), connection.getSamlEndPoint(),
+				KerberosClient client = new KerberosClient(connection.getJaasConfigFilePath(),
+						connection.getKrb5ConfigFilePath(), connection.getJaasUser(), connection.getSamlEndPoint(),
 						connection.getBaseUrl());
 				client.login(customApiConfig.getSamlTokenStartString(), customApiConfig.getSamlTokenEndString(),
 						customApiConfig.getSamlUrlStartString(), customApiConfig.getSamlUrlEndString());
@@ -157,10 +154,10 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				if (null != response && response.getStatusLine().getStatusCode() == 200) {
 					isValidConnection = true;
 				}
-			}catch (RestClientException ex){
+			} catch (RestClientException ex) {
 				log.error("exception occured while trying to hit api.");
 			}
-		}else {
+		} else {
 			HttpStatus status = getApiResponseWithBasicAuth(connection.getUsername(), password, apiUrl, toolName,
 					isSonarWithAccessToken);
 			isValidConnection = status.is2xxSuccessful();
@@ -184,7 +181,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	private boolean checkDetails(String apiUrl, String password, Connection connection) {
 		boolean b = false;
-		if (apiUrl != null && isUrlValid(apiUrl) && (StringUtils.isNotEmpty(password)||connection.isJaasKrbAuth())
+		if (apiUrl != null && isUrlValid(apiUrl) && (StringUtils.isNotEmpty(password) || connection.isJaasKrbAuth())
 				&& StringUtils.isNotEmpty(connection.getUsername())) {
 			b = true;
 		}
@@ -210,16 +207,16 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			isValid = testConnectionForTools(apiUrl, password);
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else if (toolName.equals(Constant.TOOL_SONAR)) {
-			if(connection.isCloudEnv()) {
+			if (connection.isCloudEnv()) {
 				isValid = testConnectionForTools(apiUrl, password);
 			} else if (!connection.isCloudEnv() && connection.isAccessTokenEnabled()) {
 				isValid = testConnection(connection, toolName, apiUrl, password, true);
-			}else{
+			} else {
 				isValid = testConnection(connection, toolName, apiUrl, password, false);
 			}
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else {
-			if(connection.isBearerToken()){
+			if (connection.isBearerToken()) {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 			} else {
@@ -307,19 +304,21 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	/**
 	 * Create API URL using base URL and API path for bitbucket
-	 * @param connection connection
+	 * 
+	 * @param connection
+	 *            connection
 	 *
 	 * @param connection
 	 * @return apiURL
 	 */
 	private String createBitBucketUrl(Connection connection) {
 		URI uri = URI.create(connection.getBaseUrl().replace(SPACE, ENCODED_SPACE));
-		if(connection.isCloudEnv()) {
+		if (connection.isCloudEnv()) {
 			return uri.getScheme() + "://" + uri.getHost() + StringUtils.removeEnd(connection.getApiEndPoint(), "/")
-			+ "/workspaces/";
-		}else {
+					+ "/workspaces/";
+		} else {
 			return uri.getScheme() + "://" + uri.getHost() + StringUtils.removeEnd(connection.getApiEndPoint(), "/")
-				+ "/projects/";
+					+ "/projects/";
 		}
 	}
 
@@ -330,12 +329,13 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 * @param password
 	 * @return
 	 */
-	private HttpHeaders createHeadersWithAuthentication(String username, String password, boolean isSonarWithAccessToken) {
+	private HttpHeaders createHeadersWithAuthentication(String username, String password,
+			boolean isSonarWithAccessToken) {
 		String plainCreds = null;
 
-		if(isSonarWithAccessToken){
+		if (isSonarWithAccessToken) {
 			plainCreds = password + ":";
-		}else{
+		} else {
 			plainCreds = username + ":" + password;
 		}
 		byte[] base64CredsBytes = Base64.getEncoder().encode(plainCreds.getBytes());
@@ -348,8 +348,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private HttpHeaders createHeadersWithBearer(String pat) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + pat);
-		headers.add(HttpHeaders.ACCEPT,"*/*");
-		headers.add(HttpHeaders.CONTENT_TYPE,"application/json");
+		headers.add(HttpHeaders.ACCEPT, "*/*");
+		headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
 		headers.set("Cookie", "");
 		return headers;
 	}
@@ -362,8 +362,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 * @param apiUrl
 	 * @return API response
 	 */
-	private HttpStatus getApiResponseWithBasicAuth(String username, String password, String apiUrl, String toolName
-			, boolean isSonarWithAccessToken) {
+	private HttpStatus getApiResponseWithBasicAuth(String username, String password, String apiUrl, String toolName,
+			boolean isSonarWithAccessToken) {
 		RestTemplate rest = new RestTemplate();
 		HttpHeaders httpHeaders;
 		ResponseEntity<?> responseEntity;
@@ -377,8 +377,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		}
 
 		Object responseBody = responseEntity.getBody();
-		if (toolName.equalsIgnoreCase(Constant.TOOL_SONAR) && ((responseBody != null
-				&& responseBody.toString().contains("false")) || responseBody.toString().contains("</html>"))) {
+		if (toolName.equalsIgnoreCase(Constant.TOOL_SONAR)
+				&& ((responseBody != null && responseBody.toString().contains("false"))
+						|| responseBody.toString().contains("</html>"))) {
 			return HttpStatus.UNAUTHORIZED;
 		}
 		if (toolName.equalsIgnoreCase(Constant.TOOL_BITBUCKET)
@@ -403,12 +404,13 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		}
 		HttpStatus responseCode = responseEntity.getStatusCode();
 
-		if(responseCode.is2xxSuccessful() && null != responseEntity.getBody()
-				&& responseEntity.getBody().toString().equalsIgnoreCase(WRONG_JIRA_BEARER)){
+		if (responseCode.is2xxSuccessful() && null != responseEntity.getBody()
+				&& responseEntity.getBody().toString().equalsIgnoreCase(WRONG_JIRA_BEARER)) {
 			responseCode = HttpStatus.UNAUTHORIZED;
 		}
 		return responseCode;
 	}
+
 	/**
 	 * Create API URL using base URL and API path
 	 * 
@@ -417,18 +419,17 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 * @return apiURL
 	 */
 	private HttpResponse getApiResponseWithKerbAuth(KerberosClient client, String apiUrl) {
-		HttpUriRequest request = RequestBuilder.get().
-				setUri(apiUrl)
+		HttpUriRequest request = RequestBuilder.get().setUri(apiUrl)
 				.setHeader(org.apache.http.HttpHeaders.ACCEPT, "application/json")
-				.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json")
-				.build();
+				.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json").build();
 		try {
 			return client.getHttpResponse(request);
 		} catch (IOException e) {
-			log.error("error occured while executing kerberos client request."+e.getMessage());
+			log.error("error occured while executing kerberos client request." + e.getMessage());
 			return null;
 		}
 	}
+
 	private String createApiUrl(String baseUrl, String toolName) {
 		String apiPath = getApiPath(toolName);
 		if (StringUtils.isNotEmpty(baseUrl) && StringUtils.isNotEmpty(apiPath)) {
@@ -504,8 +505,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		if (Constant.TOOL_SONAR.equalsIgnoreCase(toolName) && connection.isCloudEnv()) {
 			return connection.getAccessToken();
 		}
-		if (Constant.TOOL_SONAR.equalsIgnoreCase(toolName) &&
-				StringUtils.isNotEmpty(connection.getAccessToken())) {
+		if (Constant.TOOL_SONAR.equalsIgnoreCase(toolName) && StringUtils.isNotEmpty(connection.getAccessToken())) {
 			return connection.getAccessToken();
 		}
 		if (Constant.TOOL_JIRA.equalsIgnoreCase(toolName) && connection.isBearerToken()) {

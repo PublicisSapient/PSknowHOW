@@ -263,7 +263,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			LOGGER.info("First Time Pass rate -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
-			//Creating map of modal Objects
+			// Creating map of modal Objects
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			List<JiraIssue> totalStoryList = new ArrayList<>();
 			List<JiraIssue> totalJiraIssues = new ArrayList<>();
@@ -314,7 +314,8 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 					overAllFTPS.set(0, overAllFTPS.get(0) + 1);
 				}
 
-				KPIExcelUtility.populateIterationKPI(overAllmodalValues,modalValues,jiraIssue,fieldMapping,modalObjectMap);
+				KPIExcelUtility.populateIterationKPI(overAllmodalValues, modalValues, jiraIssue, fieldMapping,
+						modalObjectMap);
 				setKPISpecificData(modalObjectMap, listOfStory, allDefects, ftprStory, jiraIssue);
 
 			}

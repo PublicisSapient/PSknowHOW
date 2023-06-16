@@ -1,8 +1,18 @@
 package com.publicissapient.kpidashboard.apis.azure.service;
 
-import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -21,18 +31,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AzureToolConfigServiceImplTest {
@@ -55,7 +56,6 @@ public class AzureToolConfigServiceImplTest {
 	private List<String> responseProjectList = new ArrayList<>();
 	private Connection connection2;
 	private Optional<Connection> testConnectionOpt1;
-
 
 	@Before
 	public void setup() {
@@ -82,11 +82,12 @@ public class AzureToolConfigServiceImplTest {
 		assertEquals(optConnection, testConnectionOpt);
 		when(restAPIUtils.decryptPassword(connection1.getPat())).thenReturn("decryptKey");
 		HttpHeaders header = new HttpHeaders();
-		header.add("Authorization","base64str");
+		header.add("Authorization", "base64str");
 		when(restAPIUtils.getHeaders(connection1.getUsername(), "decryptKey")).thenReturn(header);
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("azurePipelineAndDefinitions.json"), HttpStatus.OK))
-				.when(restTemplate).exchange(eq("https://test.server.com/testUser/TestProject/_apis/build/definitions?api-version=6.0"),
+				.when(restTemplate)
+				.exchange(eq("https://test.server.com/testUser/TestProject/_apis/build/definitions?api-version=6.0"),
 						eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObject = new JSONObject();
@@ -97,7 +98,7 @@ public class AzureToolConfigServiceImplTest {
 		when(restAPIUtils.convertJSONArrayFromResponse(anyString(), anyString())).thenReturn(jsonArray);
 		when(restAPIUtils.convertToString(jsonObject, "name")).thenReturn("TEST_PROJECT");
 		when(restAPIUtils.convertToString(jsonObject, "id")).thenReturn("1");
-		Assert.assertEquals(azureToolConfigService.getAzurePipelineNameAndDefinitionIdList(connectionId , "6.0").size(),
+		Assert.assertEquals(azureToolConfigService.getAzurePipelineNameAndDefinitionIdList(connectionId, "6.0").size(),
 				responseProjectList.size());
 	}
 
@@ -108,13 +109,14 @@ public class AzureToolConfigServiceImplTest {
 		assertEquals(optConnection, testConnectionOpt);
 		when(restAPIUtils.decryptPassword(connection1.getPat())).thenReturn("decryptKey");
 		HttpHeaders header = new HttpHeaders();
-		header.add("Authorization","base64str");
+		header.add("Authorization", "base64str");
 		when(restAPIUtils.getHeaders(connection1.getUsername(), "decryptKey")).thenReturn(header);
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
-		doReturn(new ResponseEntity<>(null,null, HttpStatus.NO_CONTENT))
-				.when(restTemplate).exchange(eq("https://test.server.com/testUser/TestProject/_apis/build/definitions?api-version=6.0"),
-						eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
-		Assert.assertEquals(0,azureToolConfigService.getAzurePipelineNameAndDefinitionIdList(connectionId , "6.0").size());
+		doReturn(new ResponseEntity<>(null, null, HttpStatus.NO_CONTENT)).when(restTemplate).exchange(
+				eq("https://test.server.com/testUser/TestProject/_apis/build/definitions?api-version=6.0"),
+				eq(HttpMethod.GET), eq(httpEntity), eq(String.class));
+		Assert.assertEquals(0,
+				azureToolConfigService.getAzurePipelineNameAndDefinitionIdList(connectionId, "6.0").size());
 	}
 
 	private String getServerResponseFromJson(String fileName) throws IOException {
@@ -133,6 +135,5 @@ public class AzureToolConfigServiceImplTest {
 		HttpEntity<?> httpEntity = new HttpEntity<>(header);
 		Assert.assertEquals(0, azureToolConfigService.getAzureReleaseNameAndDefinitionIdList(connectionId).size());
 	}
-
 
 }

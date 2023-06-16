@@ -32,11 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.jira.Assignee;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -67,6 +62,7 @@ import com.publicissapient.kpidashboard.azure.util.AzureProcessorUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -81,14 +77,18 @@ import com.publicissapient.kpidashboard.common.model.azureboards.iterations.Azur
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUpdatesModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.WorkItem;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -98,60 +98,45 @@ import lombok.extern.slf4j.Slf4j;
 public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 	private static final String CLOSED = "CLOSED";
-	
+
 	private static final String SPRINT_STATE_CLOSED = "past";
 	private static final String SPRINT_STATE_ACTIVE = "current";
-
+	private final Map<String, com.publicissapient.kpidashboard.common.model.azureboards.iterations.Value> sprintPathsMap = new HashMap<>();
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
-
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
 	@Autowired
 	private AzureProcessorRepository azureProcessorRepository;
-
 	@Autowired
 	private AccountHierarchyRepository accountHierarchyRepository;
-
 	@Autowired
 	private AzureProcessorConfig azureProcessorConfig;
-
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
-
 	@Autowired
 	private ProcessorAzureRestClient processorAzureRestClient;
-	
 	@Autowired
 	private SprintClient sprintClient;
-	
 	@Autowired
 	private AdditionalFilterHelper additionalFilterHelper;
-	
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
-
 	@Autowired
 	private ScrumHandleAzureIssueHistory scrumHandleAzureIssueHistory;
-
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
-
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
-	private final Map<String, com.publicissapient.kpidashboard.common.model.azureboards.iterations.Value> sprintPathsMap = new HashMap<>();
-
 	@Override
 	public int processesAzureIssues(ProjectConfFieldMapping projectConfig, String projectKey, // NOSONAR
-									// //NOPMD
-									AzureAdapter azureAdapter) {
+			// //NOPMD
+			AzureAdapter azureAdapter) {
 		int count = 0;
 		int totalSavedCount = 0;
 		Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
-		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
-				projectConfig);
+		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(projectConfig);
 		// fetch delta start date. for first run data is fetch from date
 		// mentioned in deltaStartDate property property file
 		// otherwise fetch latest update date from AzureIssue collection and
@@ -164,8 +149,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 			Map<String, LocalDateTime> startTimesByIssueType = new HashMap<>();
 
-			maxChangeDatesByIssueType.forEach((k, v) ->
-				startTimesByIssueType.put(k, v.minusMinutes(azureProcessorConfig.getMinsToReduce())));
+			maxChangeDatesByIssueType.forEach(
+					(k, v) -> startTimesByIssueType.put(k, v.minusMinutes(azureProcessorConfig.getMinsToReduce())));
 
 			int pageSize = azureAdapter.getPageSize();
 
@@ -207,13 +192,12 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 							pagedworkItemIds);
 					List<Value> issues = azureBoardsWIModel.getValue();
 					/*
-					 * To check for Offline mode // in case of offline method
-					 * issues size can be greater than // pageSize, increase
-					 * page size so that same issues not read
+					 * To check for Offline mode // in case of offline method issues size can be
+					 * greater than // pageSize, increase page size so that same issues not read
 					 */
 
 					if (CollectionUtils.isNotEmpty(issues)) {
-						totalSavedCount += saveAzureIssueDetails(issues, projectConfig , sprintDetailsSet);
+						totalSavedCount += saveAzureIssueDetails(issues, projectConfig, sprintDetailsSet);
 						count += issues.size();
 					}
 
@@ -224,8 +208,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 					}
 				}
 
-				lastSavedJiraIssueChangedDateByType = findLastSavedJiraIssueByType(projectConfig.getBasicProjectConfigId(),
-						projectConfig.getFieldMapping());
+				lastSavedJiraIssueChangedDateByType = findLastSavedJiraIssueByType(
+						projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
 
 				// sprint report prepare and save sprint details
 				sprintClient.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, azureServer);
@@ -243,8 +227,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				processorExecutionTraceLog.setLastSuccessfulRun(null);
 				log.error("Error in Fetching Issues");
 			} else {
-				processorExecutionTraceLog
-						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.DATE_TIME_FORMAT));
+				processorExecutionTraceLog.setLastSuccessfulRun(
+						DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.DATE_TIME_FORMAT));
 			}
 			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess,
 					projectConfig.getProjectBasicConfig());
@@ -304,8 +288,9 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 *             Error If JSON is invalid
 	 */
 	@Override
-	public int saveAzureIssueDetails(List<Value> currentPagedAzureRs, ProjectConfFieldMapping projectConfig , Set<SprintDetails> sprintDetailsSet) // NOSONAR
-	// //NOPMD
+	public int saveAzureIssueDetails(List<Value> currentPagedAzureRs, ProjectConfFieldMapping projectConfig,
+			Set<SprintDetails> sprintDetailsSet) // NOSONAR
+			// //NOPMD
 			throws JSONException {
 
 		if (null == currentPagedAzureRs) {
@@ -352,7 +337,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 			String issueType = fields.getSystemWorkItemType();
 
-			setURL(issueId,azureIssue,projectConfig);
+			setURL(issueId, azureIssue, projectConfig);
 
 			// Add RCA to JiraIssue
 			setRCA(fieldMapping, issue, azureIssue, fieldsMap, azureProcessorConfig.getRcaValuesForCodeIssue());
@@ -399,7 +384,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 				// Set project specific details
 				setProjectSpecificDetails(projectConfig, azureIssue);
-				
+
 				// Set additional filters
 				setAdditionalFilters(azureIssue, issue, projectConfig);
 
@@ -419,16 +404,17 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				String sprintPathFromIssue = issue.getFields().getSystemIterationPath();
 				String finalsprintPathFromIssue = getModifiedSprintsPath(sprintPathFromIssue);
 				if (null != sprintPathsMap && sprintPathsMap.containsKey(finalsprintPathFromIssue)) {
-					processSprintData(azureIssue, sprintPathsMap.get(finalsprintPathFromIssue), projectConfig, sprintDetailsSet);
+					processSprintData(azureIssue, sprintPathsMap.get(finalsprintPathFromIssue), projectConfig,
+							sprintDetailsSet);
 				}
 
-				setJiraAssigneeDetails(azureIssue, fields , assigneeSetToSave, projectConfig);
+				setJiraAssigneeDetails(azureIssue, fields, assigneeSetToSave, projectConfig);
 
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
 				setAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig, fieldsMap);
 
-				setDueDates(azureIssue , fields , fieldsMap , fieldMapping);
+				setDueDates(azureIssue, fields, fieldsMap, fieldMapping);
 
 				if (StringUtils.isNotBlank(azureIssue.getProjectID())) {
 					azureIssuesToSave.add(azureIssue);
@@ -441,7 +427,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		// Saving back to MongoDB
 		jiraIssueRepository.saveAll(azureIssuesToSave);
 		jiraIssueCustomHistoryRepository.saveAll(azureIssueHistoryToSave);
-		saveAssigneeDetailsToDb(projectConfig , assigneeSetToSave , assigneeDetails);
+		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
 
 		saveAccountHierarchy(azureIssuesToSave, projectConfig, hierarchyLevelList);
 		return azureIssuesToSave.size();
@@ -463,8 +449,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 * @return JiraIssue corresponding to provided IssueId in DB
 	 */
 	private JiraIssue findOneAzureIssue(String issueId, String basicProjectConfigId) {
-		List<JiraIssue> jiraIssues = jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId),
-				basicProjectConfigId);
+		List<JiraIssue> jiraIssues = jiraIssueRepository
+				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
 
 		// Not sure of the state of the data
 		if (jiraIssues.size() > 1) {
@@ -514,7 +500,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 */
 
 	private void setThirdPartyDefectIdentificationField(FieldMapping fieldMapping, Value issue, JiraIssue azureIssue,
-														Map<String, Object> fieldsMap) {
+			Map<String, Object> fieldsMap) {
 		Fields fields = issue.getFields();
 
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
@@ -524,11 +510,11 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 			if (StringUtils.isNotBlank(fieldMapping.getJiraBugRaisedByIdentification())
 					&& fieldMapping.getJiraBugRaisedByIdentification().trim()
-					.equalsIgnoreCase(AzureConstants.CUSTOM_FIELD)
+							.equalsIgnoreCase(AzureConstants.CUSTOM_FIELD)
 					&& fieldsMap.containsKey(jiraBugRaisedByCustomField.trim())
 					&& fieldsMap.get(jiraBugRaisedByCustomField.trim()) != null
 					&& isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getJiraBugRaisedByValue(),
-					fieldsMap.get(jiraBugRaisedByCustomField.trim()))) {
+							fieldsMap.get(jiraBugRaisedByCustomField.trim()))) {
 				azureIssue.setDefectRaisedBy(NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue());
 			} else {
 				azureIssue.setDefectRaisedBy("");
@@ -560,8 +546,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 *            Value containing sprint Data
 	 */
 	private void processSprintData(JiraIssue azureIssue,
-								   com.publicissapient.kpidashboard.common.model.azureboards.iterations.Value value,
-								   ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet) {
+			com.publicissapient.kpidashboard.common.model.azureboards.iterations.Value value,
+			ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet) {
 		if (value == null) {
 			// Issue #678 - leave sprint blank. Not having a sprint does not
 			// imply kanban
@@ -583,7 +569,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	}
 
 	private void setSprintData(JiraIssue jiraIssue,
-							   com.publicissapient.kpidashboard.common.model.azureboards.iterations.Value value, String sprintId) {
+			com.publicissapient.kpidashboard.common.model.azureboards.iterations.Value value, String sprintId) {
 		List<String> sprintsList = new ArrayList<>();
 
 		sprintsList.add(value.getId());
@@ -617,7 +603,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 */
 
 	private void setQADefectIdentificationField(FieldMapping fieldMapping, Value issue, JiraIssue azureIssue,
-												Map<String, Object> fieldsMap) {
+			Map<String, Object> fieldsMap) {
 		try {
 			Fields fields = issue.getFields();
 
@@ -641,13 +627,14 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	}
 
 	private boolean isBugRaisedConditionforCustomField(FieldMapping fieldMapping, Map<String, Object> fieldsMap,
-													   String jiraBugRaisedByQACustomField) {
+			String jiraBugRaisedByQACustomField) {
 		return null != fieldMapping.getJiraBugRaisedByQAIdentification()
-				&& fieldMapping.getJiraBugRaisedByQAIdentification().trim().equalsIgnoreCase(AzureConstants.CUSTOM_FIELD)
+				&& fieldMapping.getJiraBugRaisedByQAIdentification().trim()
+						.equalsIgnoreCase(AzureConstants.CUSTOM_FIELD)
 				&& fieldsMap.containsKey(jiraBugRaisedByQACustomField.trim())
 				&& fieldsMap.get(jiraBugRaisedByQACustomField.trim()) != null
 				&& isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getJiraBugRaisedByQAValue(),
-				fieldsMap.get(jiraBugRaisedByQACustomField.trim()));
+						fieldsMap.get(jiraBugRaisedByQACustomField.trim()));
 	}
 
 	private void getJiraBugRaisedByQAForLabels(FieldMapping fieldMapping, JiraIssue azureIssue, Fields fields) {
@@ -707,7 +694,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	}
 
 	private void setAzureIssueHistory(JiraIssueCustomHistory azureIssueHistory, JiraIssue azureIssue, Value issue,
-									  FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig, Map<String, Object> fieldsMap) {
+			FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig, Map<String, Object> fieldsMap) {
 
 		azureIssueHistory.setProjectID(azureIssue.getProjectName());
 		azureIssueHistory.setProjectComponentId(azureIssue.getProjectID());
@@ -720,7 +707,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		// This method is not setup method. write it to keep
 		// custom history
 		processAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig, fieldsMap);
-		
+
 		azureIssueHistory.setBasicProjectConfigId(azureIssue.getBasicProjectConfigId());
 	}
 
@@ -760,7 +747,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				azureIssueCustomHistory.setDefectStoryID(azureIssue.getDefectStoryID());
 			}
 
-			scrumHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory,valueList, fieldMapping, fieldsMap, azureIssue);
+			scrumHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory, valueList,
+					fieldMapping, fieldsMap, azureIssue);
 
 		}
 
@@ -781,15 +769,16 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 *            project Fieldmapping
 	 */
 	private void addStoryHistory(JiraIssueCustomHistory azureIssueCustomHistory, JiraIssue azureIssue, Value issue,
-								 List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> valueList,
-								 FieldMapping fieldMapping, Map<String, Object> fieldsMap) {
+			List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> valueList,
+			FieldMapping fieldMapping, Map<String, Object> fieldsMap) {
 
 		DateTime dateTime = new DateTime(
 				AzureProcessorUtil.getFormattedDateTime(issue.getFields().getSystemCreatedDate()));
 		azureIssueCustomHistory.setCreatedDate(dateTime);
 
 		azureIssueCustomHistory.setStoryID(azureIssue.getNumber());
-		scrumHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory,valueList, fieldMapping, fieldsMap, azureIssue);
+		scrumHandleAzureIssueHistory.setJiraIssueCustomHistoryUpdationLog(azureIssueCustomHistory, valueList,
+				fieldMapping, fieldsMap, azureIssue);
 		// estimate
 		azureIssueCustomHistory.setEstimate(azureIssue.getEstimate());
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(azureIssue.getTypeName())) {
@@ -808,7 +797,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 * @param hierarchyLevelList
 	 *            hierarchyLevelList
 	 */
-	private void saveAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig, // NOPMD //NOSONAR
+	private void saveAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig, // NOPMD
+																											// //NOSONAR
 			List<HierarchyLevel> hierarchyLevelList) { // NOSONAR
 
 		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
@@ -818,7 +808,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = AzureIssueClientUtil
 				.getAccountHierarchy(accountHierarchyRepository);
-
 
 		Set<AccountHierarchy> setToSave = new HashSet<>();
 		for (JiraIssue jiraIssue : jiraIssueList) {
@@ -885,7 +874,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	}
 
 	private void setDefectStorySet(Set<String> defectStorySet, List<Relation> relations,
-								   ProjectConfFieldMapping projectConfig) {
+			ProjectConfFieldMapping projectConfig) {
 		for (Relation relation : relations) {
 			Attribute attributes = relation.getAttributes();
 			if (attributes != null) {
@@ -905,7 +894,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		}
 	}
 
-	private Map<String, LocalDateTime> findLastSavedJiraIssueByType(ObjectId projectConfigId,  FieldMapping fieldMapping) {
+	private Map<String, LocalDateTime> findLastSavedJiraIssueByType(ObjectId projectConfigId,
+			FieldMapping fieldMapping) {
 		String[] jiraIssueTypeNames = fieldMapping.getJiraIssueTypeNames();
 		Set<String> uniqueIssueTypes = new HashSet<>(Arrays.asList(jiraIssueTypeNames));
 
@@ -915,7 +905,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 			JiraIssue jiraIssue = jiraIssueRepository
 					.findTopByProcessorIdAndBasicProjectConfigIdAndTypeNameAndChangeDateGreaterThanOrderByChangeDateDesc(
-							azureProcessorId, projectConfigId.toString(), issueType, azureProcessorConfig.getStartDate());
+							azureProcessorId, projectConfigId.toString(), issueType,
+							azureProcessorConfig.getStartDate());
 			LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
 					DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
 
@@ -963,8 +954,10 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 					lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 				}
 
-				// When toggle is On first time it will update lastUpdatedDateByIssueType to start date
-				setLastUpdatedDateToStartDate(projectBasicConfig, lastUpdatedDateByIssueType, projectTraceLog, configuredStartDate, issueType);
+				// When toggle is On first time it will update lastUpdatedDateByIssueType to
+				// start date
+				setLastUpdatedDateToStartDate(projectBasicConfig, lastUpdatedDateByIssueType, projectTraceLog,
+						configuredStartDate, issueType);
 
 			} else {
 				lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
@@ -978,11 +971,14 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	/**
 	 * * Set Details related to issues with Epic Issue type
 	 *
-	 * @param fieldMapping fieldMapping
+	 * @param fieldMapping
+	 *            fieldMapping
 	 *
-	 * @param azureIssue azureIssue
+	 * @param azureIssue
+	 *            azureIssue
 	 *
-	 * @param fieldsMap fieldsMap
+	 * @param fieldsMap
+	 *            fieldsMap
 	 */
 	private void setEpicIssueData(FieldMapping fieldMapping, JiraIssue azureIssue, Map<String, Object> fieldsMap) {
 		if (fieldsMap.get(fieldMapping.getEpicJobSize()) != null) {
@@ -1011,7 +1007,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				+ azureIssue.getTimeCriticality();
 		azureIssue.setCostOfDelay(costOfDelay);
 	}
-	
+
 	private void populateSprintDetails(com.publicissapient.kpidashboard.common.model.azureboards.iterations.Value value,
 			Set<SprintDetails> sprintDetailsSet, String sprintId) {
 		SprintDetails sprintDetails = new SprintDetails();
@@ -1034,7 +1030,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		}
 		return convertedDate;
 	}
-	
+
 	private String getState(String state) {
 		String sprintState = null;
 		if (SPRINT_STATE_CLOSED.equals(state)) {
@@ -1046,12 +1042,12 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		}
 		return sprintState;
 	}
-	
+
 	private void setAdditionalFilters(JiraIssue jiraIssue, Value issue, ProjectConfFieldMapping projectConfig) {
 		List<AdditionalFilter> additionalFilter = additionalFilterHelper.getAdditionalFilter(issue, projectConfig);
 		jiraIssue.setAdditionalFilters(additionalFilter);
 	}
-	
+
 	private void setProjectSpecificDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue) {
 		String name = projectConfig.getProjectName();
 		String id = new StringBuffer(name).append(CommonConstant.UNDERSCORE)
@@ -1068,7 +1064,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		jiraIssue.setProjectIsDeleted("False");
 		jiraIssue.setProjectPath("");
 	}
-	
+
 	private AccountHierarchy createHierarchyForSprint(JiraIssue jiraIssue, ProjectBasicConfig projectBasicConfig,
 			AccountHierarchy projectHierarchy, HierarchyLevel hierarchyLevel) {
 		AccountHierarchy accountHierarchy = null;
@@ -1127,7 +1123,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 		return accountHierarchies;
 	}
-	
+
 	/**
 	 * @param setToSave
 	 * @param accountHierarchy
@@ -1148,25 +1144,28 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 	/**
 	 * setting URL to jira_issue
+	 * 
 	 * @param ticketNumber
 	 * @param jiraIssue
 	 * @param projectConfig
 	 */
 	private void setURL(String ticketNumber, JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig) {
 		String baseUrl = projectConfig.getAzure().getConnection().getBaseUrl();
-		baseUrl= baseUrl + (baseUrl.endsWith("/") ? "" : "/");
-		jiraIssue.setUrl(baseUrl.equals("")?"": baseUrl+azureProcessorConfig.getAzureDirectTicketLinkKey() + ticketNumber);
+		baseUrl = baseUrl + (baseUrl.endsWith("/") ? "" : "/");
+		jiraIssue.setUrl(
+				baseUrl.equals("") ? "" : baseUrl + azureProcessorConfig.getAzureDirectTicketLinkKey() + ticketNumber);
 	}
 
-	private void setDueDates(JiraIssue jiraIssue, Fields fields, Map<String, Object> fieldsMap ,
+	private void setDueDates(JiraIssue jiraIssue, Fields fields, Map<String, Object> fieldsMap,
 			FieldMapping fieldMapping) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
 			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
 					&& ObjectUtils.isNotEmpty(fields.getMicrosoftVSTSSchedulingDueDate())) {
-				jiraIssue.setDueDate(AzureProcessorUtil.deodeUTF8String(fields.getMicrosoftVSTSSchedulingDueDate()).split("T")[0]
-						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+				jiraIssue.setDueDate(
+						AzureProcessorUtil.deodeUTF8String(fields.getMicrosoftVSTSSchedulingDueDate()).split("T")[0]
+								.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
 			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
-					&& fieldsMap.containsKey(fieldMapping.getJiraDueDateCustomField()) 
+					&& fieldsMap.containsKey(fieldMapping.getJiraDueDateCustomField())
 					&& ObjectUtils.isNotEmpty(fieldsMap.get(fieldMapping.getJiraDueDateCustomField()))) {
 				Object issueField = fieldsMap.get(fieldMapping.getJiraDueDateCustomField());
 				if (ObjectUtils.isNotEmpty(issueField)) {
@@ -1176,8 +1175,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 			}
 		}
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
-				&& fieldsMap.containsKey(fieldMapping.getJiraDevDueDateCustomField()) && 
-				ObjectUtils.isNotEmpty(fieldsMap.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+				&& fieldsMap.containsKey(fieldMapping.getJiraDevDueDateCustomField())
+				&& ObjectUtils.isNotEmpty(fieldsMap.get(fieldMapping.getJiraDevDueDateCustomField()))) {
 			Object issueField = fieldsMap.get(fieldMapping.getJiraDevDueDateCustomField());
 			if (ObjectUtils.isNotEmpty(issueField)) {
 				jiraIssue.setDevDueDate((AzureProcessorUtil.deodeUTF8String(issueField.toString()).split("T")[0]
@@ -1187,7 +1186,9 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	}
 
 	/**
-	 * save assignee details from jira issue and if already exist then update assignee list
+	 * save assignee details from jira issue and if already exist then update
+	 * assignee list
+	 * 
 	 * @param projectConfig
 	 * @param assigneeSetToSave
 	 * @param assigneeDetails
@@ -1245,7 +1246,5 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 	}
-
-
 
 }

@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -51,6 +49,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -61,6 +60,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -102,7 +102,7 @@ public class IterationCommitmentServiceImplTest {
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
-		
+
 		setMockProjectConfig();
 		setMockFieldMapping();
 		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(1);
@@ -142,8 +142,8 @@ public class IterationCommitmentServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(iterationCommitmentServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		try {
-			KpiElement kpiElement = iterationCommitmentServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+			KpiElement kpiElement = iterationCommitmentServiceImpl.getKpiData(kpiRequest,
+					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {

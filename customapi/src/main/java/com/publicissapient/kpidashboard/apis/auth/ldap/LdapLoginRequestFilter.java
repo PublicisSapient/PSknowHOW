@@ -18,14 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.auth.ldap;
 
-import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
-import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -34,8 +29,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
+import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 
 /**
  * The type Ldap login request filter. Fills need for ldap based configurations.
@@ -53,19 +54,24 @@ public class LdapLoginRequestFilter extends UsernamePasswordAuthenticationFilter
 	/**
 	 * Instantiates a new Ldap login request filter.
 	 *
-	 * @param path                         the path
-	 * @param authenticationManager        the authentication manager
-	 * @param authenticationResultHandler  the authentication result handler
-	 * @param authenticationFailureHandler authenticationFailureHandler
-	 * @param customApiConfig              customApiConfig
-	 * @param adServerDetailsService       adServerDetailsService
+	 * @param path
+	 *            the path
+	 * @param authenticationManager
+	 *            the authentication manager
+	 * @param authenticationResultHandler
+	 *            the authentication result handler
+	 * @param authenticationFailureHandler
+	 *            authenticationFailureHandler
+	 * @param customApiConfig
+	 *            customApiConfig
+	 * @param adServerDetailsService
+	 *            adServerDetailsService
 	 * 
 	 */
 	public LdapLoginRequestFilter(String path, AuthenticationManager authenticationManager,
-								  AuthenticationResultHandler authenticationResultHandler,
-								  CustomAuthenticationFailureHandler authenticationFailureHandler,
-								  CustomApiConfig customApiConfig, ADServerDetailsService adServerDetailsService,
-								  AuthTypesConfigService authTypesConfigService) {
+			AuthenticationResultHandler authenticationResultHandler,
+			CustomAuthenticationFailureHandler authenticationFailureHandler, CustomApiConfig customApiConfig,
+			ADServerDetailsService adServerDetailsService, AuthTypesConfigService authTypesConfigService) {
 		super();
 		setAuthenticationSuccessHandler(authenticationResultHandler);
 		setAuthenticationFailureHandler(authenticationFailureHandler);
@@ -80,15 +86,17 @@ public class LdapLoginRequestFilter extends UsernamePasswordAuthenticationFilter
 	/**
 	 * Attempts Authentication
 	 *
-	 * @param request  request
-	 * @param response response
+	 * @param request
+	 *            request
+	 * @param response
+	 *            response
 	 * @return Authentication
 	 */
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		AuthTypeStatus authTypesStatus = authTypesConfigService.getAuthTypesStatus();
-		if (authTypesStatus != null && !authTypesStatus.isAdLogin()){
+		if (authTypesStatus != null && !authTypesStatus.isAdLogin()) {
 			throw new AuthenticationServiceException("Active Directory login is disabled");
 		}
 

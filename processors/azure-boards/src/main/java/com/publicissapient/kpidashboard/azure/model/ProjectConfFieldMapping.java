@@ -33,21 +33,21 @@ import lombok.Setter;
 @Setter
 @Data
 @Builder
-public class ProjectConfFieldMapping {//NOPMD
-    //Do not remove pmd this is for ignoring TooManyFields violation
-    // it is required
-    private String projectKey;
+public class ProjectConfFieldMapping {// NOPMD
+	// Do not remove pmd this is for ignoring TooManyFields violation
+	// it is required
+	private String projectKey;
 
-    // Azure and fields mapping of Azure
-    private AzureToolConfig azure;
-    private FieldMapping fieldMapping;
+	// Azure and fields mapping of Azure
+	private AzureToolConfig azure;
+	private FieldMapping fieldMapping;
 
-    private ObjectId basicProjectConfigId;
-    // if project is kanban or Scrum
-    private boolean isKanban;
-    private int issueCount;
-    private int sprintCount;
-    
+	private ObjectId basicProjectConfigId;
+	// if project is kanban or Scrum
+	private boolean isKanban;
+	private int issueCount;
+	private int sprintCount;
+
 	private String projectName;
 	private ProjectToolConfig projectToolConfig;
 	private ObjectId azureBoardToolConfigId;

@@ -19,9 +19,7 @@
 package com.publicissapient.kpidashboard.common.repository.jira;
 
 import java.util.List;
-import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -44,9 +42,9 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	List<KanbanJiraIssue> findByIssueIdAndBasicProjectConfigId(String issueId, String asicProjectConfigId);
 
 	/**
-	 * Finds object with max date for given project. This essentially returns
-	 * the max change date from the collection, based on the projectkey and last
-	 * change date (or default delta change date property) available
+	 * Finds object with max date for given project. This essentially returns the
+	 * max change date from the collection, based on the projectkey and last change
+	 * date (or default delta change date property) available
 	 * 
 	 * @param processorId
 	 *            Processor ID of source system collector
@@ -54,8 +52,8 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	 *            projectKey of the project
 	 * @param changeDate
 	 *            Last available change date or delta begin date property
-	 * @return A single Change Date value that is the maximum value of the
-	 *         existing collection
+	 * @return A single Change Date value that is the maximum value of the existing
+	 *         collection
 	 */
 	@Deprecated
 	@Query
@@ -63,9 +61,9 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 			ObjectId processorId, String projectKey, String changeDate);
 
 	/**
-	 * Finds object with max date for given project. This essentially returns
-	 * the max change date from the collection, based on the projectConfigId and
-	 * last change date (or default delta change date property) available
+	 * Finds object with max date for given project. This essentially returns the
+	 * max change date from the collection, based on the projectConfigId and last
+	 * change date (or default delta change date property) available
 	 * 
 	 * @param processorId
 	 *            Processor ID of source system collector
@@ -73,8 +71,8 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	 *            project config id of projectConfig
 	 * @param startDate
 	 *            Last available change date or delta begin date property
-	 * @return A single Change Date value that is the maximum value of the
-	 *         existing collection
+	 * @return A single Change Date value that is the maximum value of the existing
+	 *         collection
 	 */
 	List<KanbanJiraIssue> findTopByProcessorIdAndBasicProjectConfigIdAndChangeDateGreaterThanOrderByChangeDateDesc(
 			ObjectId processorId, String projectConfigId, String startDate);
@@ -88,7 +86,7 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	 */
 	@Query(" {'number' : ?0 }")
 	List<KanbanJiraIssue> getStoryByNumber(String number);
-	
+
 	List<KanbanJiraIssue> findByNumberAndBasicProjectConfigId(String number, String basicProjectConfigId);
 
 	/**
@@ -102,15 +100,15 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	List<KanbanJiraIssue> findByIssueId(String issueId);
 
 	/**
-	 * This essentially returns the max change date from the collection, based
-	 * on the last change date (or default delta change date property) available
+	 * This essentially returns the max change date from the collection, based on
+	 * the last change date (or default delta change date property) available
 	 *
 	 * @param processorId
 	 *            Processor ID of source system processor
 	 * @param changeDate
 	 *            Last available change date or delta begin date property
-	 * @return A single Change Date value that is the maximum value of the
-	 *         existing collection
+	 * @return A single Change Date value that is the maximum value of the existing
+	 *         collection
 	 */
 	List<KanbanJiraIssue> findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(ObjectId processorId,
 			String changeDate);
@@ -133,9 +131,9 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	void deleteByBasicProjectConfigId(String basicProjectConfigId);
 
 	/**
-	 * This essentially returns the max change date from the collection, based
-	 * on the basicProjectConfigId(projectConfigId from projectConfig) and last
-	 * change date
+	 * This essentially returns the max change date from the collection, based on
+	 * the basicProjectConfigId(projectConfigId from projectConfig) and last change
+	 * date
 	 *
 	 * @param processorId
 	 *            processorId
@@ -149,7 +147,7 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 	 */
 	KanbanJiraIssue findTopByProcessorIdAndBasicProjectConfigIdAndTypeNameAndChangeDateGreaterThanOrderByChangeDateDesc(
 			ObjectId processorId, String basicProjectConfigId, String typeName, String changeDate);
-	
+
 	List<KanbanJiraIssue> findAll();
 
 }

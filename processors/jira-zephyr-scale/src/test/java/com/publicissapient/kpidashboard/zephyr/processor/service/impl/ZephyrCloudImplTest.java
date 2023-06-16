@@ -144,10 +144,11 @@ public class ZephyrCloudImplTest {
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(anyString(), any()))
 				.thenReturn(projectToolConnection);
 		when(zephyrConfig.getPageSize()).thenReturn(5);
-		doReturn(new ResponseEntity<>(getServerResponseFromJson("test_cases_response_zephyr_cloud.json"),
-				HttpStatus.OK)).when(restTemplate).exchange(eq(
-						"https://api.test.com/v2/testcases?maxResults=5&startAt=0&projectKey=TEST"),
-						eq(HttpMethod.GET), eq(stringHttpEntity), eq(String.class));
+		doReturn(
+				new ResponseEntity<>(getServerResponseFromJson("test_cases_response_zephyr_cloud.json"), HttpStatus.OK))
+						.when(restTemplate)
+						.exchange(eq("https://api.test.com/v2/testcases?maxResults=5&startAt=0&projectKey=TEST"),
+								eq(HttpMethod.GET), eq(stringHttpEntity), eq(String.class));
 
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("folder_details_response_zephyr_cloud.json"),
 				HttpStatus.OK)).when(restTemplate).exchange(
@@ -177,10 +178,11 @@ public class ZephyrCloudImplTest {
 		HttpEntity<String> stringHttpEntity2 = new HttpEntity<>(headers2);
 		when(zephyrUtil.buildAuthenticationHeader("base64Str")).thenReturn(stringHttpEntity2);
 		when(zephyrConfig.getPageSize()).thenReturn(5);
-		doReturn(new ResponseEntity<>(getServerResponseFromJson("test_cases_response_zephyr_cloud.json"),
-				HttpStatus.OK)).when(restTemplate).exchange(eq(
-						"https://api.test.com/v2/testcases?maxResults=5&startAt=0&projectKey=TEST"),
-						eq(HttpMethod.GET), eq(stringHttpEntity), eq(String.class));
+		doReturn(
+				new ResponseEntity<>(getServerResponseFromJson("test_cases_response_zephyr_cloud.json"), HttpStatus.OK))
+						.when(restTemplate)
+						.exchange(eq("https://api.test.com/v2/testcases?maxResults=5&startAt=0&projectKey=TEST"),
+								eq(HttpMethod.GET), eq(stringHttpEntity), eq(String.class));
 
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("folder_details_response_zephyr_cloud.json"),
 				HttpStatus.OK)).when(restTemplate).exchange(
@@ -188,14 +190,13 @@ public class ZephyrCloudImplTest {
 						eq(stringHttpEntity), eq(String.class));
 
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("owner_details_response_zephyr_cloud.json"),
-				HttpStatus.OK)).when(restTemplate).exchange(eq(
-						"https://test.com/rest/api/2/user?accountId=5e315421a834270cb0992ca7"),
-						eq(HttpMethod.GET), eq(stringHttpEntity2), eq(String.class));
+				HttpStatus.OK)).when(restTemplate).exchange(
+						eq("https://test.com/rest/api/2/user?accountId=5e315421a834270cb0992ca7"), eq(HttpMethod.GET),
+						eq(stringHttpEntity2), eq(String.class));
 
 		doReturn(new ResponseEntity<>(getServerResponseFromJson("issue_links_response_zephyr_cloud.json"),
-				HttpStatus.OK)).when(restTemplate).exchange(
-						eq("https://test.com/rest/api/2/issue/66229"), eq(HttpMethod.GET),
-						eq(stringHttpEntity2), eq(String.class));
+				HttpStatus.OK)).when(restTemplate).exchange(eq("https://test.com/rest/api/2/issue/66229"),
+						eq(HttpMethod.GET), eq(stringHttpEntity2), eq(String.class));
 
 		assertEquals(zephyrCloud.getTestCase(0, projectConfFieldMapping).size(), testCaseList2.size());
 
@@ -219,9 +220,9 @@ public class ZephyrCloudImplTest {
 						eq("https://api.zephyrscale.smartbear.com/v2/folders?maxResults=1000"), eq(HttpMethod.GET),
 						eq(stringHttpEntity), eq(String.class));
 
-		doReturn(new ResponseEntity<>(null, HttpStatus.NO_CONTENT)).when(restTemplate).exchange(eq(
-				"https://api.test.com/v2/testcases?maxResults=5&startAt=0&projectKey=TEST"),
-				eq(HttpMethod.GET), eq(stringHttpEntity), eq(String.class));
+		doReturn(new ResponseEntity<>(null, HttpStatus.NO_CONTENT)).when(restTemplate).exchange(
+				eq("https://api.test.com/v2/testcases?maxResults=5&startAt=0&projectKey=TEST"), eq(HttpMethod.GET),
+				eq(stringHttpEntity), eq(String.class));
 
 		assertThrows(RestClientException.class, () -> {
 			zephyrCloud.getTestCase(0, projectConfFieldMapping);

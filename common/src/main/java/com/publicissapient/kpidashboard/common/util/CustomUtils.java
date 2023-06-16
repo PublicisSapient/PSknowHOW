@@ -18,10 +18,10 @@
 
 package com.publicissapient.kpidashboard.common.util;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Map;
 import java.util.UUID;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Custom utils for common operations

@@ -23,6 +23,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
  * @author anisingh4
  */
 public interface RejectAccessListener {
-    void onSuccess(AccessRequest accessRequest);
-    void onFailure(AccessRequest accessRequest, String message);
+	void onSuccess(AccessRequest accessRequest);
+
+	void onFailure(AccessRequest accessRequest, String message);
 }

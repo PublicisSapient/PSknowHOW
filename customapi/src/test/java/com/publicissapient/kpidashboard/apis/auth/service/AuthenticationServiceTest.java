@@ -38,8 +38,6 @@ import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepos
  */
 @RunWith(MockitoJUnitRunner.class)
 public class AuthenticationServiceTest {
-	
-	
 
 	@Mock
 	AuthenticationRepository authRepo;

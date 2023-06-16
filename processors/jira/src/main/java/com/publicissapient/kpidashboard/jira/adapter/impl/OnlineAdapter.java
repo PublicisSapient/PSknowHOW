@@ -18,46 +18,7 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.impl;
 
-import com.atlassian.jira.rest.client.api.RestClientException;
-import com.atlassian.jira.rest.client.api.domain.Field;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.IssueType;
-import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
-import com.atlassian.jira.rest.client.api.domain.SearchResult;
-import com.atlassian.jira.rest.client.api.domain.Status;
-import com.google.common.collect.Lists;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
-import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.util.JiraConstants;
-import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
-import io.atlassian.util.concurrent.Promise;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.springframework.stereotype.Service;
+import static net.logstash.logback.argument.StructuredArguments.kv;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -85,7 +46,48 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static net.logstash.logback.argument.StructuredArguments.kv;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.stereotype.Service;
+
+import com.atlassian.jira.rest.client.api.RestClientException;
+import com.atlassian.jira.rest.client.api.domain.Field;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.IssuelinksType;
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.atlassian.jira.rest.client.api.domain.Status;
+import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
+import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.client.jiraprojectmetadata.JiraIssueMetadata;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
+
+import io.atlassian.util.concurrent.Promise;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Default JIRA client which interacts with Java JIRA API to extract data for
@@ -95,31 +97,31 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 @Service
 public class OnlineAdapter implements JiraAdapter {
 
-    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
-    private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
-    private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
-    private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
-    private static final String NO_RESULT_QUERY = "No result available for query: {}";
-    private static final String EXCEPTION = "Exception";
-    private static final String CONTENTS = "contents";
-    private static final String COMPLETED_ISSUES = "completedIssues";
-    private static final String PUNTED_ISSUES = "puntedIssues";
-    private static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
-    private static final String ADDED_ISSUES = "issueKeysAddedDuringSprint";
-    private static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
-    private static final String KEY = "key";
-    private static final String ENTITY_DATA = "entityData";
-    private static final String PRIORITYID = "priorityId";
-    private static final String STATUSID = "statusId";
+	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
+	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
+	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
+	private static final String NO_RESULT_QUERY = "No result available for query: {}";
+	private static final String EXCEPTION = "Exception";
+	private static final String CONTENTS = "contents";
+	private static final String COMPLETED_ISSUES = "completedIssues";
+	private static final String PUNTED_ISSUES = "puntedIssues";
+	private static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
+	private static final String ADDED_ISSUES = "issueKeysAddedDuringSprint";
+	private static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
+	private static final String KEY = "key";
+	private static final String ENTITY_DATA = "entityData";
+	private static final String PRIORITYID = "priorityId";
+	private static final String STATUSID = "statusId";
 
-    private static final String TYPEID = "typeId";
+	private static final String TYPEID = "typeId";
 
-    private JiraProcessorConfig jiraProcessorConfig;
-    private AesEncryptionService aesEncryptionService;
-    private ProcessorJiraRestClient client;
-    private PSLogData psLogData;
+	private JiraProcessorConfig jiraProcessorConfig;
+	private AesEncryptionService aesEncryptionService;
+	private ProcessorJiraRestClient client;
+	private PSLogData psLogData;
 
-    private ToolCredentialProvider toolCredentialProvider;
+	private ToolCredentialProvider toolCredentialProvider;
 
 	private KerberosClient krb5Client;
 
@@ -135,28 +137,33 @@ public class OnlineAdapter implements JiraAdapter {
 	 *            aesEncryptionService
 	 */
 	public OnlineAdapter(JiraProcessorConfig jiraProcessorConfig, ProcessorJiraRestClient client,
-			AesEncryptionService aesEncryptionService, ToolCredentialProvider toolCredentialProvider, KerberosClient krb5Client) {
+			AesEncryptionService aesEncryptionService, ToolCredentialProvider toolCredentialProvider,
+			KerberosClient krb5Client) {
 		this.jiraProcessorConfig = jiraProcessorConfig;
 		this.client = client;
 		this.aesEncryptionService = aesEncryptionService;
 		this.toolCredentialProvider = toolCredentialProvider;
 		this.krb5Client = krb5Client;
-		this.psLogData= new PSLogData();
+		this.psLogData = new PSLogData();
 	}
 
 	/**
 	 * Gets all issues from JIRA
 	 *
-	 * @param startDateTimeByIssueType map of start dataTime of issue types
-	 * @param userTimeZone             user timezone
-	 * @param pageStart                page start
-	 * @param dataExist                dataExist on db or not
+	 * @param startDateTimeByIssueType
+	 *            map of start dataTime of issue types
+	 * @param userTimeZone
+	 *            user timezone
+	 * @param pageStart
+	 *            page start
+	 * @param dataExist
+	 *            dataExist on db or not
 	 * @return list of issues
 	 */
 	@Override
 	public SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig,
-			String startDateTimeByIssueType, String userTimeZone, int pageStart,
-			boolean dataExist) throws InterruptedException{
+			String startDateTimeByIssueType, String userTimeZone, int pageStart, boolean dataExist)
+			throws InterruptedException {
 		SearchResult searchResult = null;
 
 		if (client == null) {
@@ -169,25 +176,26 @@ public class OnlineAdapter implements JiraAdapter {
 				psLogData.setJql(query);
 				psLogData.setBoardId(boardDetails.getBoardId());
 				Instant start = Instant.now();
-				Promise<SearchResult> promisedRs = client.getCustomIssueClient().searchBoardIssue(boardDetails.getBoardId(), query,
-						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
+				Promise<SearchResult> promisedRs = client.getCustomIssueClient().searchBoardIssue(
+						boardDetails.getBoardId(), query, jiraProcessorConfig.getPageSize(), pageStart,
+						JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
-				psLogData.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
-				log.debug("jql query processed for board", kv(CommonConstant.PSLOGDATA,psLogData));
+				psLogData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
+				log.debug("jql query processed for board", kv(CommonConstant.PSLOGDATA, psLogData));
 				if (searchResult != null) {
 					psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
 					psLogData.setAction(CommonConstant.FETCHING_ISSUE);
 					log.info(String.format("Processing issues %d - %d out of %d", pageStart,
-									Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
-							kv(CommonConstant.PSLOGDATA,psLogData));
+							Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
+							kv(CommonConstant.PSLOGDATA, psLogData));
 				}
 				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 			} catch (RestClientException e) {
 				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-					log.error(ERROR_MSG_401, kv(CommonConstant.PSLOGDATA,psLogData));
+					log.error(ERROR_MSG_401, kv(CommonConstant.PSLOGDATA, psLogData));
 				} else {
-					log.info(NO_RESULT_QUERY, query,kv(CommonConstant.PSLOGDATA,psLogData));
-					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause(), kv(CommonConstant.PSLOGDATA,psLogData));
+					log.info(NO_RESULT_QUERY, query, kv(CommonConstant.PSLOGDATA, psLogData));
+					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause(), kv(CommonConstant.PSLOGDATA, psLogData));
 				}
 			}
 
@@ -199,24 +207,29 @@ public class OnlineAdapter implements JiraAdapter {
 	/**
 	 * Gets all issues from JIRA
 	 *
-	 * @param startDateTimeByIssueType map of start dataTime of issue types
-	 * @param userTimeZone             user timezone
-	 * @param pageStart                page start
-	 * @param dataExist                dataExist on db or not
+	 * @param startDateTimeByIssueType
+	 *            map of start dataTime of issue types
+	 * @param userTimeZone
+	 *            user timezone
+	 * @param pageStart
+	 *            page start
+	 * @param dataExist
+	 *            dataExist on db or not
 	 * @return list of issues
 	 */
 	@Override
 	public SearchResult getIssues(ProjectConfFieldMapping projectConfig,
-			Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart,
-			boolean dataExist) throws InterruptedException{
+			Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart, boolean dataExist)
+			throws InterruptedException {
 		SearchResult searchResult = null;
 
 		if (client == null) {
 			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
-		} else if (StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey()) ||
-				StringUtils.isEmpty(projectConfig.getProjectToolConfig().getBoardQuery())) {
-			log.info("Either Project key is empty or boardQuery not provided. key {} boardquery {}"
-					, projectConfig.getProjectToolConfig().getProjectKey(), projectConfig.getProjectToolConfig().getBoardQuery());
+		} else if (StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())
+				|| StringUtils.isEmpty(projectConfig.getProjectToolConfig().getBoardQuery())) {
+			log.info("Either Project key is empty or boardQuery not provided. key {} boardquery {}",
+					projectConfig.getProjectToolConfig().getProjectKey(),
+					projectConfig.getProjectToolConfig().getBoardQuery());
 		} else {
 			StringBuilder query = new StringBuilder("project in (")
 					.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") AND ");
@@ -240,13 +253,13 @@ public class OnlineAdapter implements JiraAdapter {
 				Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
-				psLogData.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
+				psLogData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
 				log.debug("jql query processed for JQL", kv(CommonConstant.PSLOGDATA, psLogData));
 				if (searchResult != null) {
 					psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
 					psLogData.setAction(CommonConstant.FETCHING_ISSUE);
 					log.info(String.format("Processing issues %d - %d out of %d", pageStart,
-									Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
+							Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
 							kv(CommonConstant.PSLOGDATA, psLogData));
 				}
 				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
@@ -264,7 +277,7 @@ public class OnlineAdapter implements JiraAdapter {
 		return searchResult;
 	}
 
-	public List<Issue> getEpicIssuesQuery(List<String> epicKeyList, PSLogData logData) throws InterruptedException{
+	public List<Issue> getEpicIssuesQuery(List<String> epicKeyList, PSLogData logData) throws InterruptedException {
 		List<Issue> issueList = new ArrayList<>();
 		SearchResult searchResult = null;
 		try {
@@ -273,7 +286,7 @@ public class OnlineAdapter implements JiraAdapter {
 				int pageStart = 0;
 				int totalEpic = 0;
 				int fetchedEpic = 0;
-				boolean continueFlag  = true;
+				boolean continueFlag = true;
 				Instant start = Instant.now();
 				do {
 					Promise<SearchResult> promise = client.getSearchClient().searchJql(query,
@@ -299,7 +312,7 @@ public class OnlineAdapter implements JiraAdapter {
 					}
 					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 				} while (totalEpic < fetchedEpic || continueFlag);
-				logData.setTimeTaken(String.valueOf(Duration.between( start,Instant.now()).toMillis()));
+				logData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
 				logData.setTotalFetchedIssues(String.valueOf(totalEpic));
 				logData.setJql(query);
 				log.info("Issues in epic", kv(CommonConstant.PSLOGDATA, logData));
@@ -313,14 +326,14 @@ public class OnlineAdapter implements JiraAdapter {
 		return issueList;
 	}
 
-    private void exceptionBlockProcess(RestClientException e) {
-        if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-            log.error(ERROR_MSG_401);
-        } else {
-            log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
-        }
-        log.debug(EXCEPTION, e);
-    }
+	private void exceptionBlockProcess(RestClientException e) {
+		if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+			log.error(ERROR_MSG_401);
+		} else {
+			log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+		}
+		log.debug(EXCEPTION, e);
+	}
 
 	@Override
 	public List<Field> getField() {
@@ -423,7 +436,8 @@ public class OnlineAdapter implements JiraAdapter {
 	/**
 	 * Gets the timeZone of user who is logged in jira
 	 *
-	 * @param projectConfig user provided project configuration
+	 * @param projectConfig
+	 *            user provided project configuration
 	 * @return String of UserTimeZone
 	 */
 	@Override
@@ -476,25 +490,22 @@ public class OnlineAdapter implements JiraAdapter {
 	public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url) throws IOException {
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 		boolean spenagoClient = connectionOptional.map(Connection::isJaasKrbAuth).orElse(false);
-		if(spenagoClient){
-			HttpUriRequest request = RequestBuilder.get().
-							setUri(url.toString())
-					.setHeader(HttpHeaders.ACCEPT,"application/json")
-					.setHeader(HttpHeaders.CONTENT_TYPE,"application/json")
-					.build();
+		if (spenagoClient) {
+			HttpUriRequest request = RequestBuilder.get().setUri(url.toString())
+					.setHeader(HttpHeaders.ACCEPT, "application/json")
+					.setHeader(HttpHeaders.CONTENT_TYPE, "application/json").build();
 			return krb5Client.getResponse(request);
-		}else{
+		} else {
 			return getDataFromServer(url, connectionOptional);
 		}
 	}
 
-	private String getDataFromServer(URL url, Optional<Connection> connectionOptional)
-			throws IOException {
+	private String getDataFromServer(URL url, Optional<Connection> connectionOptional) throws IOException {
 		HttpURLConnection request = (HttpURLConnection) url.openConnection();
 		String username = null;
 		String password = null;
 
-		if(connectionOptional.isPresent()) {
+		if (connectionOptional.isPresent()) {
 			Connection conn = connectionOptional.get();
 			if (conn.isVault()) {
 				ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
@@ -508,10 +519,10 @@ public class OnlineAdapter implements JiraAdapter {
 				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
 			}
 		}
-		if(connectionOptional.isPresent() && connectionOptional.get().isBearerToken()) {
+		if (connectionOptional.isPresent() && connectionOptional.get().isBearerToken()) {
 			String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
 			request.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
-		} else{
+		} else {
 			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
 		}
 		request.connect();
@@ -531,7 +542,8 @@ public class OnlineAdapter implements JiraAdapter {
 	/**
 	 * Checks if Jira credentails are empty
 	 *
-	 * @param projectConfigList user provided project configuration
+	 * @param projectConfigList
+	 *            user provided project configuration
 	 * @return True if credentials are not configured else False
 	 */
 	@SuppressWarnings("unused")
@@ -545,10 +557,13 @@ public class OnlineAdapter implements JiraAdapter {
 	/**
 	 * Gets Url constructed using user provided details
 	 *
-	 * @param projectConfig user provided project configuration
-	 * @param jiraUserName  jira credentials username
+	 * @param projectConfig
+	 *            user provided project configuration
+	 * @param jiraUserName
+	 *            jira credentials username
 	 * @return URL
-	 * @throws MalformedURLException when URL not constructed properly
+	 * @throws MalformedURLException
+	 *             when URL not constructed properly
 	 */
 	private URL getUrl(ProjectConfFieldMapping projectConfig, String jiraUserName) throws MalformedURLException {
 
@@ -579,16 +594,21 @@ public class OnlineAdapter implements JiraAdapter {
 	/**
 	 * Gets the sprint report based on sprint id and board id
 	 *
-	 * @param projectConfig   projectConfig
-	 * @param sprintId        sprintId
-	 * @param boardId         boardId
-	 * @param sprint          sprint
-	 * @param dbSprintDetails old dbSprintDetails
+	 * @param projectConfig
+	 *            projectConfig
+	 * @param sprintId
+	 *            sprintId
+	 * @param boardId
+	 *            boardId
+	 * @param sprint
+	 *            sprint
+	 * @param dbSprintDetails
+	 *            old dbSprintDetails
 	 */
 	@Override
 	public void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
 			SprintDetails sprint, SprintDetails dbSprintDetails) {
-		PSLogData sprintReportLog= new PSLogData();
+		PSLogData sprintReportLog = new PSLogData();
 		sprintReportLog.setAction(CommonConstant.SPRINT_REPORTDATA);
 		sprintReportLog.setBoardId(boardId);
 		sprintReportLog.setSprintId(sprintId);
@@ -598,14 +618,14 @@ public class OnlineAdapter implements JiraAdapter {
 				Instant start = Instant.now();
 				URL url = getSprintReportUrl(projectConfig, sprintId, boardId);
 				sprintReportLog.setUrl(url.toString());
-				getReport(getDataFromClient(projectConfig, url), sprint, projectConfig,
-						dbSprintDetails, boardId);
-				sprintReportLog.setTimeTaken(String.valueOf(Duration.between(start,Instant.now()).toMillis()));
+				getReport(getDataFromClient(projectConfig, url), sprint, projectConfig, dbSprintDetails, boardId);
+				sprintReportLog.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
 			}
 			log.info(String.format("Fetched Sprint Report for Sprint Id : %s , Board Id : %s", sprintId, boardId),
 					kv(CommonConstant.PSLOGDATA, sprintReportLog));
 		} catch (RestClientException rce) {
-			log.error("Client exception when loading sprint report " + rce, kv(CommonConstant.PSLOGDATA, sprintReportLog));
+			log.error("Client exception when loading sprint report " + rce,
+					kv(CommonConstant.PSLOGDATA, sprintReportLog));
 			throw rce;
 		} catch (MalformedURLException mfe) {
 			log.error("Malformed url for loading sprint report", mfe, kv(CommonConstant.PSLOGDATA, sprintReportLog));
@@ -629,20 +649,19 @@ public class OnlineAdapter implements JiraAdapter {
 
 	}
 
-    private URL getVersionUrl(ProjectConfFieldMapping projectConfig)
-            throws MalformedURLException {
+	private URL getVersionUrl(ProjectConfFieldMapping projectConfig) throws MalformedURLException {
 
-        Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-        boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
-        String serverURL = jiraProcessorConfig.getJiraVersionApi();
-        if (isCloudEnv) {
-            serverURL = jiraProcessorConfig.getJiraCloudVersionApi();
-        }
-        serverURL = serverURL.replace("{projectKey}", projectConfig.getJira().getProjectKey());
-        String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
-        return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
+		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+		boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
+		String serverURL = jiraProcessorConfig.getJiraVersionApi();
+		if (isCloudEnv) {
+			serverURL = jiraProcessorConfig.getJiraCloudVersionApi();
+		}
+		serverURL = serverURL.replace("{projectKey}", projectConfig.getJira().getProjectKey());
+		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
 
-    }
+	}
 
 	private void getReport(String sprintReportObj, SprintDetails sprint, ProjectConfFieldMapping projectConfig,
 			SprintDetails dbSprintDetails, String boardId) {
@@ -655,18 +674,24 @@ public class OnlineAdapter implements JiraAdapter {
 			JSONObject entityDataJson = new JSONObject();
 
 			boolean otherBoardExist = findIfOtherBoardExist(sprint);
-			Set<SprintIssue> completedIssues = initializeIssues(null == dbSprintDetails ? new HashSet<>()
-					: dbSprintDetails.getCompletedIssues(), boardId, otherBoardExist);
-			Set<SprintIssue> notCompletedIssues = initializeIssues(null == dbSprintDetails ? new HashSet<>()
-					: dbSprintDetails.getNotCompletedIssues(), boardId, otherBoardExist);
-			Set<SprintIssue> puntedIssues = initializeIssues(null == dbSprintDetails ? new HashSet<>()
-					: dbSprintDetails.getPuntedIssues(), boardId, otherBoardExist);
-			Set<SprintIssue> completedIssuesAnotherSprint = initializeIssues(null == dbSprintDetails ? new HashSet<>()
-					: dbSprintDetails.getCompletedIssuesAnotherSprint(), boardId, otherBoardExist);
-			Set<SprintIssue> totalIssues = initializeIssues(null == dbSprintDetails ? new HashSet<>()
-					: dbSprintDetails.getTotalIssues(), boardId, otherBoardExist);
-			Set<String> addedIssues = initializeAddedIssues(null == dbSprintDetails ? new HashSet<>()
-					: dbSprintDetails.getAddedIssues(), totalIssues, puntedIssues, otherBoardExist);
+			Set<SprintIssue> completedIssues = initializeIssues(
+					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getCompletedIssues(), boardId,
+					otherBoardExist);
+			Set<SprintIssue> notCompletedIssues = initializeIssues(
+					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getNotCompletedIssues(), boardId,
+					otherBoardExist);
+			Set<SprintIssue> puntedIssues = initializeIssues(
+					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getPuntedIssues(), boardId,
+					otherBoardExist);
+			Set<SprintIssue> completedIssuesAnotherSprint = initializeIssues(
+					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getCompletedIssuesAnotherSprint(),
+					boardId, otherBoardExist);
+			Set<SprintIssue> totalIssues = initializeIssues(
+					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getTotalIssues(), boardId,
+					otherBoardExist);
+			Set<String> addedIssues = initializeAddedIssues(
+					null == dbSprintDetails ? new HashSet<>() : dbSprintDetails.getAddedIssues(), totalIssues,
+					puntedIssues, otherBoardExist);
 			try {
 				JSONObject obj = (JSONObject) new JSONParser().parse(sprintReportObj);
 				if (null != obj) {
@@ -691,7 +716,7 @@ public class OnlineAdapter implements JiraAdapter {
 						projectConfig, boardId);
 
 				addedIssues = setAddedIssues(addedIssuesJson, addedIssues);
-				if(sprint != null) {
+				if (sprint != null) {
 					sprint.setCompletedIssues(completedIssues);
 					sprint.setNotCompletedIssues(notCompletedIssues);
 					sprint.setCompletedIssuesAnotherSprint(completedIssuesAnotherSprint);
@@ -708,14 +733,13 @@ public class OnlineAdapter implements JiraAdapter {
 
 	private Set<SprintIssue> initializeIssues(Set<SprintIssue> sprintIssues, String boardId, boolean otherBoardExist) {
 		if (otherBoardExist) {
-			return CollectionUtils.emptyIfNull(sprintIssues).stream().filter(issue -> null != issue.getOriginBoardId() &&
-							!issue.getOriginBoardId().equalsIgnoreCase(boardId))
+			return CollectionUtils.emptyIfNull(sprintIssues).stream().filter(
+					issue -> null != issue.getOriginBoardId() && !issue.getOriginBoardId().equalsIgnoreCase(boardId))
 					.collect(Collectors.toSet());
 		} else {
 			return new HashSet<>();
 		}
 	}
-
 
 	private Set<String> initializeAddedIssues(Set<String> addedIssue, Set<SprintIssue> totalIssues,
 			Set<SprintIssue> puntedIssues, boolean otherBoardExist) {
@@ -768,8 +792,10 @@ public class OnlineAdapter implements JiraAdapter {
 	}
 
 	/**
-	 * @param addedIssuesJson addedIssuesJson
-	 * @param addedIssues     addedIssues
+	 * @param addedIssuesJson
+	 *            addedIssuesJson
+	 * @param addedIssues
+	 *            addedIssues
 	 * @return added issues
 	 */
 	@SuppressWarnings("unchecked")
@@ -786,8 +812,8 @@ public class OnlineAdapter implements JiraAdapter {
 	 * @param puntedIssues
 	 */
 	@SuppressWarnings("unchecked")
-	private void setPuntedCompletedAnotherSprint(JSONArray puntedIssuesJson, Set<SprintIssue> puntedIssues
-			, ProjectConfFieldMapping projectConfig, String boardId) {
+	private void setPuntedCompletedAnotherSprint(JSONArray puntedIssuesJson, Set<SprintIssue> puntedIssues,
+			ProjectConfFieldMapping projectConfig, String boardId) {
 		puntedIssuesJson.forEach(puntedObj -> {
 			JSONObject punObj = (JSONObject) puntedObj;
 			if (null != punObj) {
@@ -798,8 +824,7 @@ public class OnlineAdapter implements JiraAdapter {
 		});
 	}
 
-	private SprintIssue getSprintIssue(JSONObject obj, ProjectConfFieldMapping projectConfig,
-			String boardId) {
+	private SprintIssue getSprintIssue(JSONObject obj, ProjectConfFieldMapping projectConfig, String boardId) {
 		SprintIssue issue = new SprintIssue();
 		issue.setNumber(obj.get(KEY).toString());
 		issue.setOriginBoardId(boardId);
@@ -820,12 +845,12 @@ public class OnlineAdapter implements JiraAdapter {
 	}
 
 	private void setTimeTrackingStatistics(SprintIssue issue, JSONObject obj) {
-		Object timeEstimateFieldId = getStatisticsFieldId((JSONObject) obj.get("trackingStatistic"),
-				"statFieldId");
+		Object timeEstimateFieldId = getStatisticsFieldId((JSONObject) obj.get("trackingStatistic"), "statFieldId");
 		if (null != timeEstimateFieldId) {
-			Object timeTrackingObject = getStatistics((JSONObject) obj.get("trackingStatistic"),
-					"statFieldValue", "value");
-			issue.setRemainingEstimate(timeTrackingObject == null ? null : Double.valueOf(timeTrackingObject.toString()));
+			Object timeTrackingObject = getStatistics((JSONObject) obj.get("trackingStatistic"), "statFieldValue",
+					"value");
+			issue.setRemainingEstimate(
+					timeTrackingObject == null ? null : Double.valueOf(timeTrackingObject.toString()));
 		}
 	}
 
@@ -833,9 +858,10 @@ public class OnlineAdapter implements JiraAdapter {
 		Object currentEstimateFieldId = getStatisticsFieldId((JSONObject) obj.get("currentEstimateStatistic"),
 				"statFieldId");
 		if (null != currentEstimateFieldId) {
-			Object estimateObject = getStatistics((JSONObject) obj.get("currentEstimateStatistic"),
-					"statFieldValue", "value");
-			String storyPointCustomField = StringUtils.defaultIfBlank(projectConfig.getFieldMapping().getJiraStoryPointsCustomField(), "");
+			Object estimateObject = getStatistics((JSONObject) obj.get("currentEstimateStatistic"), "statFieldValue",
+					"value");
+			String storyPointCustomField = StringUtils
+					.defaultIfBlank(projectConfig.getFieldMapping().getJiraStoryPointsCustomField(), "");
 			if (storyPointCustomField.equalsIgnoreCase(currentEstimateFieldId.toString())) {
 				issue.setStoryPoints(estimateObject == null ? null : Double.valueOf(estimateObject.toString()));
 			} else {
@@ -867,15 +893,18 @@ public class OnlineAdapter implements JiraAdapter {
 	}
 
 	/**
-	 * @param projectConfig projectConfig
-	 * @param issues        issues
-	 * @param projectConfig projectConfig
-	 * @param totalIssues   totalIssues
+	 * @param projectConfig
+	 *            projectConfig
+	 * @param issues
+	 *            issues
+	 * @param projectConfig
+	 *            projectConfig
+	 * @param totalIssues
+	 *            totalIssues
 	 */
 	@SuppressWarnings("unchecked")
-	private void setIssues(JSONArray issuesJson, Set<SprintIssue> issues,
-			Set<SprintIssue> totalIssues, ProjectConfFieldMapping projectConfig,
-			String boardId) {
+	private void setIssues(JSONArray issuesJson, Set<SprintIssue> issues, Set<SprintIssue> totalIssues,
+			ProjectConfFieldMapping projectConfig, String boardId) {
 		issuesJson.forEach(jsonObj -> {
 			JSONObject obj = (JSONObject) jsonObj;
 			if (null != obj) {
@@ -907,7 +936,6 @@ public class OnlineAdapter implements JiraAdapter {
 		return resultObj;
 	}
 
-
 	public List<Issue> getEpic(ProjectConfFieldMapping projectConfig, String boardId) throws InterruptedException {
 		List<String> epicList = new ArrayList<>();
 		PSLogData logData = new PSLogData();
@@ -927,7 +955,7 @@ public class OnlineAdapter implements JiraAdapter {
 					startIndex = epicList.size();
 					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 				} while (!isLast);
-				logData.setTimeTaken(String.valueOf(Duration.between( start,Instant.now()).toMillis()));
+				logData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
 				logData.setEpicListFetched(epicList);
 				log.info("Epics fetched through board", kv(CommonConstant.PSLOGDATA, logData));
 			}
@@ -967,7 +995,6 @@ public class OnlineAdapter implements JiraAdapter {
 		return projectVersionList;
 	}
 
-
 	private void parseVersionData(String dataFromServer, List<ProjectVersion> projectVersionDetailList) {
 		if (StringUtils.isNotBlank(dataFromServer)) {
 			try {
@@ -983,10 +1010,14 @@ public class OnlineAdapter implements JiraAdapter {
 						projectVersion
 								.setReleased(Boolean.parseBoolean(getOptionalString((JSONObject) values, "released")));
 						if (getOptionalString((JSONObject) values, "startDate") != null) {
-							projectVersion.setStartDate(DateUtil.stringToDateTime(Objects.requireNonNull(getOptionalString((JSONObject) values, "startDate")),"yyyy-MM-dd"));
+							projectVersion.setStartDate(DateUtil.stringToDateTime(
+									Objects.requireNonNull(getOptionalString((JSONObject) values, "startDate")),
+									"yyyy-MM-dd"));
 						}
 						if (getOptionalString((JSONObject) values, "releaseDate") != null) {
-							projectVersion.setReleaseDate(DateUtil.stringToDateTime(Objects.requireNonNull(getOptionalString((JSONObject) values, "releaseDate")),"yyyy-MM-dd"));
+							projectVersion.setReleaseDate(DateUtil.stringToDateTime(
+									Objects.requireNonNull(getOptionalString((JSONObject) values, "releaseDate")),
+									"yyyy-MM-dd"));
 						}
 						projectVersionDetailList.add(projectVersion);
 					});
@@ -998,23 +1029,23 @@ public class OnlineAdapter implements JiraAdapter {
 		}
 	}
 
-    private boolean populateData(String sprintReportObj, List<String> epicList) {
-        boolean isLast = true;
-        if (StringUtils.isNotBlank(sprintReportObj)) {
-            JSONArray valuesJson = new JSONArray();
-            try {
-                JSONObject obj = (JSONObject) new JSONParser().parse(sprintReportObj);
-                if (null != obj) {
-                    valuesJson = (JSONArray) obj.get("values");
-                }
-                getEpic(valuesJson, epicList);
-                isLast = Boolean.valueOf(obj.get("isLast").toString());
-            } catch (ParseException pe) {
-                log.error("Parser exception when parsing statuses", pe);
-            }
-        }
-        return isLast;
-    }
+	private boolean populateData(String sprintReportObj, List<String> epicList) {
+		boolean isLast = true;
+		if (StringUtils.isNotBlank(sprintReportObj)) {
+			JSONArray valuesJson = new JSONArray();
+			try {
+				JSONObject obj = (JSONObject) new JSONParser().parse(sprintReportObj);
+				if (null != obj) {
+					valuesJson = (JSONArray) obj.get("values");
+				}
+				getEpic(valuesJson, epicList);
+				isLast = Boolean.valueOf(obj.get("isLast").toString());
+			} catch (ParseException pe) {
+				log.error("Parser exception when parsing statuses", pe);
+			}
+		}
+		return isLast;
+	}
 
 	private void getEpic(JSONArray valuesJson, List<String> epicList) {
 		valuesJson.forEach(values -> {

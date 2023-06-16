@@ -49,17 +49,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestOperations;
 
 import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.jenkins.config.JenkinsConfig;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.impl.JenkinsBuildClient;
 import com.publicissapient.kpidashboard.jenkins.util.ProcessorUtils;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @ExtendWith(SpringExtension.class)
 public class JenkinsBuildClientTests {
 
+	private static final ProcessorToolConnection JENKINS_SAMPLE_SERVER_ONE = new ProcessorToolConnection();
+	private static final ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 	@Mock
 	private RestOperationsFactory<RestOperations> restOperationsFactory;
 	@Mock
@@ -67,9 +69,6 @@ public class JenkinsBuildClientTests {
 	private JenkinsConfig config;
 	private JenkinsClient jenkinsClient;
 	private JenkinsBuildClient jenkinsBuildClient;
-
-	private static final ProcessorToolConnection JENKINS_SAMPLE_SERVER_ONE = new ProcessorToolConnection();
-	private static final ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 
 	@BeforeEach
 	public void init() {
@@ -156,7 +155,8 @@ public class JenkinsBuildClientTests {
 	public void instanceJobs_emptyResponse_returnsEmptyMap() {
 		when(rest.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class),
 				eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
-		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE, projectBasicConfig);
+		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE,
+				projectBasicConfig);
 
 		assertThat(jobs.size(), is(0));
 	}
@@ -167,7 +167,8 @@ public class JenkinsBuildClientTests {
 				eq(String.class)))
 						.thenReturn(new ResponseEntity<>(getJson("instance_jobs_2_jobs_2_builds.json"), HttpStatus.OK));
 
-		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE, projectBasicConfig);
+		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE,
+				projectBasicConfig);
 
 		assertThat(jobs.size(), is(1));
 
@@ -189,7 +190,8 @@ public class JenkinsBuildClientTests {
 				eq(String.class))).thenReturn(
 						new ResponseEntity<>(getJson("instance_jobs_multibranch_pipeline.json"), HttpStatus.OK));
 
-		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE, projectBasicConfig);
+		Map<ObjectId, Set<Build>> jobs = jenkinsClient.getBuildJobsFromServer(JENKINS_SAMPLE_SERVER_ONE,
+				projectBasicConfig);
 
 		assertThat(jobs.size(), is(1));
 

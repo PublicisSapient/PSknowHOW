@@ -21,61 +21,62 @@ package com.publicissapient.kpidashboard.sonar.util;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 public class SonarUtilsTest {
 
-    @Test
-    public void testAddSpaceIfNeeded() {
-        StringBuilder stringBuilder = new StringBuilder("Test message");
-        SonarUtils.addSpaceIfNeeded(stringBuilder);
-        Assert.assertEquals(' ', stringBuilder.toString().charAt(stringBuilder.length()-1));
+	@Test
+	public void testAddSpaceIfNeeded() {
+		StringBuilder stringBuilder = new StringBuilder("Test message");
+		SonarUtils.addSpaceIfNeeded(stringBuilder);
+		Assert.assertEquals(' ', stringBuilder.toString().charAt(stringBuilder.length() - 1));
 
-    }
+	}
 
-    @Test
-    public void testFormatDuration() {
-        int days = 1;
-        int hours = 0;
-        int minutes = 0;
-        boolean isNegative = false;
-        String actual = SonarUtils.formatDuration(days, hours, minutes, isNegative);
+	@Test
+	public void testFormatDuration() {
+		int days = 1;
+		int hours = 0;
+		int minutes = 0;
+		boolean isNegative = false;
+		String actual = SonarUtils.formatDuration(days, hours, minutes, isNegative);
 
-        Assert.assertEquals("1d", actual);
+		Assert.assertEquals("1d", actual);
 
-    }
-    @Test
-    public void testFormatDurationDisplayHour() {
-        int days = 2;
-        int hours = 3;
-        int minutes = 0;
-        boolean isNegative = false;
-        String actual = SonarUtils.formatDuration(days, hours, minutes, isNegative);
-        Assert.assertEquals("2d 3h", actual);
+	}
 
-    }
+	@Test
+	public void testFormatDurationDisplayHour() {
+		int days = 2;
+		int hours = 3;
+		int minutes = 0;
+		boolean isNegative = false;
+		String actual = SonarUtils.formatDuration(days, hours, minutes, isNegative);
+		Assert.assertEquals("2d 3h", actual);
 
-    @Test
-    public void testFormatDurationDisplyMinute() {
-        int days = 0;
-        int hours = 3;
-        int minutes = 5;
-        boolean isNegative = false;
-        SonarUtils.formatDuration(days, hours, minutes, isNegative);
+	}
 
-        String actual = SonarUtils.formatDuration(days, hours, minutes, isNegative);
-        Assert.assertEquals("3h 5min", actual);
+	@Test
+	public void testFormatDurationDisplyMinute() {
+		int days = 0;
+		int hours = 3;
+		int minutes = 5;
+		boolean isNegative = false;
+		SonarUtils.formatDuration(days, hours, minutes, isNegative);
 
-    }
-    @Test
-    public void testFormatDurationDisplyMinuteNegative() {
-        int days = 0;
-        int hours = 3;
-        int minutes = 5;
-        boolean isNegative = true;
-        SonarUtils.formatDuration(days, hours, minutes, isNegative);
+		String actual = SonarUtils.formatDuration(days, hours, minutes, isNegative);
+		Assert.assertEquals("3h 5min", actual);
 
-        String actual = SonarUtils.formatDuration(days, hours, minutes, isNegative);
-        Assert.assertEquals("-3h 5min", actual);
+	}
 
-    }
+	@Test
+	public void testFormatDurationDisplyMinuteNegative() {
+		int days = 0;
+		int hours = 3;
+		int minutes = 5;
+		boolean isNegative = true;
+		SonarUtils.formatDuration(days, hours, minutes, isNegative);
+
+		String actual = SonarUtils.formatDuration(days, hours, minutes, isNegative);
+		Assert.assertEquals("-3h 5min", actual);
+
+	}
 }

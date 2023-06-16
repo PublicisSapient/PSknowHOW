@@ -39,8 +39,8 @@ import com.publicissapient.kpidashboard.apis.model.CustomCaptcha;
 @RestController
 public class CustomCaptchaController {
 
-	private final CaptchaService captchaService;
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomCaptchaController.class);
+	private final CaptchaService captchaService;
 
 	/**
 	 * Constructor to autowire all dependencies

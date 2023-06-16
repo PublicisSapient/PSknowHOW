@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.common.context;
 
 import java.io.Serializable;
@@ -36,13 +35,6 @@ public class ExecutionLogContext implements Serializable {
 	private static final AtomicInteger nextId = new AtomicInteger(0);
 
 	private static final String CONTEXT_ERROR = "Unauthorize to access.";
-	private String requestId;
-	private String environment;
-	private String projectName;
-	private String projectBasicConfgId;
-	private String isCron;
-	private int threadId;
-
 	private static final ThreadLocal<ExecutionLogContext> EXECUTION_CONTEXT = new ThreadLocal<ExecutionLogContext>() {
 
 		@Override
@@ -50,6 +42,44 @@ public class ExecutionLogContext implements Serializable {
 			return new ExecutionLogContext(nextId.getAndIncrement());
 		}
 	};
+	private String requestId;
+	private String environment;
+	private String projectName;
+	private String projectBasicConfgId;
+	private String isCron;
+	private int threadId;
+
+	public ExecutionLogContext() {
+	}
+
+	private ExecutionLogContext(int threadId) {
+		this.threadId = threadId;
+	}
+
+	public static synchronized ExecutionLogContext getContext() {
+
+		if (Objects.isNull(EXECUTION_CONTEXT.get())) {
+			EXECUTION_CONTEXT.set(new ExecutionLogContext(nextId.getAndIncrement()));
+		}
+		return EXECUTION_CONTEXT.get();
+	}
+
+	public static void set(ExecutionLogContext executionContextUtil) {
+		if (Objects.nonNull(executionContextUtil)) {
+			EXECUTION_CONTEXT.set(executionContextUtil);
+		}
+	}
+
+	public static ExecutionLogContext updateContext(ExecutionLogContext context) {
+		ExecutionLogContext currentContext = ExecutionLogContext.getContext();
+		currentContext.setRequestId(context.getRequestId());
+		currentContext.setThreadId(context.getThreadId());
+		currentContext.setEnvironment(context.getEnvironment());
+		currentContext.setProjectName(context.getProjectName());
+		currentContext.setProjectBasicConfgId(context.getProjectBasicConfgId());
+		currentContext.setIsCron(context.getIsCron());
+		return currentContext;
+	}
 
 	public String getProjectBasicConfgId() {
 		return projectBasicConfgId;
@@ -87,41 +117,12 @@ public class ExecutionLogContext implements Serializable {
 		this.environment = environment;
 	}
 
-	public ExecutionLogContext() {
-	}
-
-	public void setThreadId(int threadId) {
-		this.threadId = threadId;
-	}
-
-	private ExecutionLogContext(int threadId) {
-		this.threadId = threadId;
-	}
-
 	public void destroy() {
 		EXECUTION_CONTEXT.remove();
 	}
 
-	public static synchronized ExecutionLogContext getContext() {
-
-		if (Objects.isNull(EXECUTION_CONTEXT.get())) {
-			EXECUTION_CONTEXT.set(new ExecutionLogContext(nextId.getAndIncrement()));
-		}
-		return EXECUTION_CONTEXT.get();
-	}
-
-	public static void set(ExecutionLogContext executionContextUtil) {
-		if (Objects.nonNull(executionContextUtil)) {
-			EXECUTION_CONTEXT.set(executionContextUtil);
-		}
-	}
-
 	public String getRequestId() {
 		return requestId;
-	}
-
-	public int getThreadId() {
-		return threadId;
 	}
 
 	public void setRequestId(String requestId) {
@@ -129,15 +130,12 @@ public class ExecutionLogContext implements Serializable {
 		this.requestId = requestId;
 	}
 
-	public static ExecutionLogContext updateContext(ExecutionLogContext context) {
-		ExecutionLogContext currentContext = ExecutionLogContext.getContext();
-		currentContext.setRequestId(context.getRequestId());
-		currentContext.setThreadId(context.getThreadId());
-		currentContext.setEnvironment(context.getEnvironment());
-		currentContext.setProjectName(context.getProjectName());
-		currentContext.setProjectBasicConfgId(context.getProjectBasicConfgId());
-		currentContext.setIsCron(context.getIsCron());
-		return currentContext;
+	public int getThreadId() {
+		return threadId;
+	}
+
+	public void setThreadId(int threadId) {
+		this.threadId = threadId;
 	}
 
 }

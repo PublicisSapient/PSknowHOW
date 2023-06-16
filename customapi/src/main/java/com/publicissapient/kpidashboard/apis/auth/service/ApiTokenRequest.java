@@ -43,7 +43,8 @@ public class ApiTokenRequest {
 	/**
 	 * Sets api user.
 	 *
-	 * @param apiUser the api user
+	 * @param apiUser
+	 *            the api user
 	 */
 	public void setApiUser(String apiUser) {
 		this.apiUser = apiUser;
@@ -61,7 +62,8 @@ public class ApiTokenRequest {
 	/**
 	 * Sets expiration dt.
 	 *
-	 * @param expirationDt the expiration dt
+	 * @param expirationDt
+	 *            the expiration dt
 	 */
 	public void setExpirationDt(Long expirationDt) {
 		this.expirationDt = expirationDt;

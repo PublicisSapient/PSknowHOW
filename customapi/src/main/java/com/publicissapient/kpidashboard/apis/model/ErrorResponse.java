@@ -30,86 +30,20 @@ import org.springframework.validation.ObjectError;
 
 public class ErrorResponse {
 
+	private final Map<String, List<String>> globalErrors = new HashMap<>();
+	private final Map<String, List<String>> fieldErrors = new HashMap<>();
 	private long timestamp;
 	private int code;
 	private String error;
 	private String message;
-
-	private final Map<String, List<String>> globalErrors = new HashMap<>();
-	private final Map<String, List<String>> fieldErrors = new HashMap<>();
 
 	public ErrorResponse() {
 		timestamp = new Date().getTime();
 	}
 
 	/**
-	 * 
-	 * @return error.
-	 */
-	public String getError() {
-		return error;
-	}
-
-	/**
-	 * Sets error
-	 * 
-	 * @param error
-	 */
-	public void setError(String error) {
-		this.error = error;
-	}
-
-	/**
-	 * 
-	 * @return code
-	 */
-	public int getCode() {
-		return code;
-	}
-
-	/**
-	 * Sets code
-	 * 
-	 * @param code
-	 */
-	public void setCode(int code) {
-		this.code = code;
-	}
-
-	/**
-	 * 
-	 * @return globalErrors
-	 */
-	public Map<String, List<String>> getGlobalErrors() {
-		return globalErrors;
-	}
-
-	/**
-	 * 
-	 * @return fieldErrors
-	 */
-	public Map<String, List<String>> getFieldErrors() {
-		return fieldErrors;
-	}
-
-	/**
-	 * Adds fieldError entries to List
-	 * 
-	 * @param field
-	 * @param error
-	 */
-	public void addFieldError(String field, String error) {
-		List<String> errors = getFieldErrors().get(field);
-		if (errors == null) {
-			errors = new ArrayList<>();
-			getFieldErrors().put(field, errors);
-		}
-		errors.add(error);
-	}
-
-	/**
 	 * Iterates over list of global errors and maps errors to ObjectName
-	 * 
+	 *
 	 * @param bindException
 	 * @return errorResponse
 	 */
@@ -135,6 +69,71 @@ public class ErrorResponse {
 		}
 
 		return errorResponse;
+	}
+
+	/**
+	 *
+	 * @return error.
+	 */
+	public String getError() {
+		return error;
+	}
+
+	/**
+	 * Sets error
+	 *
+	 * @param error
+	 */
+	public void setError(String error) {
+		this.error = error;
+	}
+
+	/**
+	 *
+	 * @return code
+	 */
+	public int getCode() {
+		return code;
+	}
+
+	/**
+	 * Sets code
+	 *
+	 * @param code
+	 */
+	public void setCode(int code) {
+		this.code = code;
+	}
+
+	/**
+	 *
+	 * @return globalErrors
+	 */
+	public Map<String, List<String>> getGlobalErrors() {
+		return globalErrors;
+	}
+
+	/**
+	 *
+	 * @return fieldErrors
+	 */
+	public Map<String, List<String>> getFieldErrors() {
+		return fieldErrors;
+	}
+
+	/**
+	 * Adds fieldError entries to List
+	 *
+	 * @param field
+	 * @param error
+	 */
+	public void addFieldError(String field, String error) {
+		List<String> errors = getFieldErrors().get(field);
+		if (errors == null) {
+			errors = new ArrayList<>();
+			getFieldErrors().put(field, errors);
+		}
+		errors.add(error);
 	}
 
 	public long getTimestamp() {

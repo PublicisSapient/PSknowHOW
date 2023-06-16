@@ -68,6 +68,12 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, 
 	@Autowired
 	private CommonServiceImpl commonService;
 
+	private static void getPriorityRCACount(Map<String, List<JiraIssue>> rcaData, Map<String, Integer> rcaCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> rcaEntry : rcaData.entrySet()) {
+			rcaCountMap.put(rcaEntry.getKey(), rcaEntry.getValue().size());
+		}
+	}
+
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
 		return null;
@@ -91,7 +97,7 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, 
 					defectType.addAll(fieldMapping.getJiradefecttype());
 				}
 				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
-				mapOfProjectFilters.put(basicProjectConfigId,defectType);
+				mapOfProjectFilters.put(basicProjectConfigId, defectType);
 				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(mapOfProjectFilters);
 				resultListMap.put(TOTAL_DEFECT, releaseDefects);
 			}
@@ -167,12 +173,6 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, 
 				}
 			}
 			kpiElement.setTrendValueList(filterDataList);
-		}
-	}
-
-	private static void getPriorityRCACount(Map<String, List<JiraIssue>> rcaData, Map<String, Integer> rcaCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> rcaEntry : rcaData.entrySet()) {
-			rcaCountMap.put(rcaEntry.getKey(), rcaEntry.getValue().size());
 		}
 	}
 

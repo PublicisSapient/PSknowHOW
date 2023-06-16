@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
-import java.util.List;
-
 import org.joda.time.DateTime;
 
 import lombok.AllArgsConstructor;
@@ -32,7 +30,6 @@ import lombok.Setter;
  * board
  *
  */
-
 
 @Getter
 @Setter

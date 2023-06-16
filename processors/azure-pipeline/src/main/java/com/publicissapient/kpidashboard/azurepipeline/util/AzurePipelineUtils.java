@@ -89,8 +89,7 @@ public final class AzurePipelineUtils {
 	 * Convert time in milliseconds to date time format in UTC timezone
 	 * 
 	 * @param time
-	 *            the time in milliseconds we want to convert to date time
-	 *            format
+	 *            the time in milliseconds we want to convert to date time format
 	 * @return date time in string
 	 */
 	public static String getDateFromTimeInMili(long time) {
@@ -198,8 +197,10 @@ public final class AzurePipelineUtils {
 	/**
 	 * Check whether two urls have the same server info
 	 * 
-	 * @param url1 url1
-	 * @param url2 url2
+	 * @param url1
+	 *            url1
+	 * @param url2
+	 *            url2
 	 * @return true if they have same server info else false
 	 */
 	public static boolean isSameServerInfo(String url1, String url2) {

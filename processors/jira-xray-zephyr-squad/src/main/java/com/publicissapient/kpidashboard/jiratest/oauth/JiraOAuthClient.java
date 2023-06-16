@@ -167,16 +167,9 @@ public class JiraOAuthClient implements AuthenticationHandler {
 		return jiraOAuthProperties.getJiraBaseURL() + "/token/";
 	}
 
-	@SuppressWarnings("unused")
-	final class TokenSecretVerifierHolder {
-		private String token;
-		private String verifier;// NOSONAR
-		private String secret;// NOSONAR
-	}
-
 	/**
 	 * Provides oauthVerifier
-	 * 
+	 *
 	 * @param authorizationUrl
 	 *            authorizationUrl
 	 * @param username
@@ -237,7 +230,7 @@ public class JiraOAuthClient implements AuthenticationHandler {
 
 	/**
 	 * Provides acessToken
-	 * 
+	 *
 	 * @param username
 	 *            username
 	 * @param password
@@ -285,6 +278,13 @@ public class JiraOAuthClient implements AuthenticationHandler {
 			log.error("Error while authenticating jira OAuth", e);
 		}
 
+	}
+
+	@SuppressWarnings("unused")
+	final class TokenSecretVerifierHolder {
+		private String token;
+		private String verifier;// NOSONAR
+		private String secret;// NOSONAR
 	}
 
 }

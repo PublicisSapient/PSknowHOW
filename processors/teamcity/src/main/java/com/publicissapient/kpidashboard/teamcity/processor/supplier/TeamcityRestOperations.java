@@ -29,12 +29,12 @@ import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
  */
 @Component
 public class TeamcityRestOperations implements RestOperationsFactory<RestOperations> {
-   
+
 	/**
 	 * Instantiate RestTemplate.
 	 */
 	@Override
-    public RestOperations getTypeInstance() {
-        return new RestTemplate();
-    }
+	public RestOperations getTypeInstance() {
+		return new RestTemplate();
+	}
 }

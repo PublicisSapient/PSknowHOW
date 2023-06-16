@@ -124,7 +124,8 @@ public class JiraIssueDataFactory {
 	}
 
 	public List<JiraIssue> findIssueByNumberList(List<String> ids) {
-		return jiraIssues.stream().filter(jiraIssue -> ids.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+		return jiraIssues.stream().filter(jiraIssue -> ids.contains(jiraIssue.getNumber()))
+				.collect(Collectors.toList());
 	}
 
 	public List<JiraIssue> findIssueByStatusInTypeNames(String status, List<String> typeName) {
@@ -140,8 +141,7 @@ public class JiraIssueDataFactory {
 	}
 
 	public List<JiraIssue> findAutomatedTestCases() {
-		return jiraIssues.stream()
-				.filter(jiraIssue -> jiraIssue.getIsTestAutomated().equals("Yes"))
+		return jiraIssues.stream().filter(jiraIssue -> jiraIssue.getIsTestAutomated().equals("Yes"))
 				.collect(Collectors.toList());
 	}
 
@@ -151,15 +151,16 @@ public class JiraIssueDataFactory {
 		List<JiraIssue> stories = getStories();
 
 		Map<String, List<JiraIssue>> sprintWiseIssuesMap = stories.stream()
-				.collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getSprintID(),  Collectors.toList()));
+				.collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getSprintID(), Collectors.toList()));
 
 		sprintWiseIssuesMap.forEach((sprintId, sprintStories) -> {
 			SprintWiseStory sprintWiseStory = new SprintWiseStory();
 			sprintWiseStory.setSprint(sprintId);
-			List<String> storiesIdsOfSprint = sprintStories.stream().map(JiraIssue::getSprintID).collect(Collectors.toList());
+			List<String> storiesIdsOfSprint = sprintStories.stream().map(JiraIssue::getSprintID)
+					.collect(Collectors.toList());
 			sprintWiseStory.setStoryList(storiesIdsOfSprint);
 			JiraIssue firstIssue = sprintStories.size() > 0 ? sprintStories.get(0) : null;
-			if (firstIssue != null){
+			if (firstIssue != null) {
 				sprintWiseStory.setSprintName(firstIssue.getSprintName());
 				sprintWiseStory.setSSprintBeginDate(firstIssue.getSprintBeginDate());
 
@@ -167,10 +168,7 @@ public class JiraIssueDataFactory {
 			sprintWiseStories.add(sprintWiseStory);
 		});
 
-
 		return sprintWiseStories;
 	}
-
-
 
 }

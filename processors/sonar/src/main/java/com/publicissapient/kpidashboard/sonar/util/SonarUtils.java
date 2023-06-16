@@ -34,9 +34,9 @@ public final class SonarUtils {
 	private static final String DAYS_FORMAT = "%sd";
 
 	private SonarUtils() {
-		
+
 	}
-	
+
 	/**
 	 * Adds space to message if needed.
 	 *
@@ -107,10 +107,12 @@ public final class SonarUtils {
 		return minutes > 0 && hours < 10 && days == 0;
 	}
 
-	public static ToolCredential getToolCredentials(ToolCredentialProvider toolCredentialProvider, ProcessorToolConnection sonarServer) {
+	public static ToolCredential getToolCredentials(ToolCredentialProvider toolCredentialProvider,
+			ProcessorToolConnection sonarServer) {
 		ToolCredential toolCredential = new ToolCredential();
 		if (sonarServer.isVault()) {
-			ToolCredential toolCredentialFromProvider = toolCredentialProvider.findCredential(sonarServer.getUsername());
+			ToolCredential toolCredentialFromProvider = toolCredentialProvider
+					.findCredential(sonarServer.getUsername());
 			if (toolCredentialFromProvider != null) {
 				toolCredential.setUsername(toolCredentialFromProvider.getUsername());
 				toolCredential.setPassword(toolCredentialFromProvider.getPassword());
@@ -119,9 +121,11 @@ public final class SonarUtils {
 		} else {
 			toolCredential.setUsername(sonarServer.getUsername() == null ? null : sonarServer.getUsername().trim());
 			if (sonarServer.isCloudEnv()) {
-				toolCredential.setPassword(sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim());
+				toolCredential
+						.setPassword(sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim());
 			} else if (sonarServer.isAccessTokenEnabled()) {
-				toolCredential.setPassword(sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim());
+				toolCredential
+						.setPassword(sonarServer.getAccessToken() == null ? null : sonarServer.getAccessToken().trim());
 			} else {
 				toolCredential.setPassword(sonarServer.getPassword() == null ? null : sonarServer.getPassword().trim());
 			}

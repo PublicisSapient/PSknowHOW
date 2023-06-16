@@ -47,16 +47,19 @@ public interface FileStorageService {
 	 * @return BaseResponse
 	 *
 	 */
-	BaseResponse upload(String type , MultipartFile file);
+	BaseResponse upload(String type, MultipartFile file);
+
 	/**
 	 * Gets logo image
+	 * 
 	 * @return lOGO
 	 */
 	Logo getLogo();
 
 	/**
 	 * Delete logo image
-	 * @return boolean 
+	 * 
+	 * @return boolean
 	 */
 	boolean deleteLogo();
 

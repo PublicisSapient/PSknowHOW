@@ -21,7 +21,12 @@
  */
 package com.publicissapient.kpidashboard.apis.auth.service;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,25 +58,20 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ForgotPasswordServiceImpl.class);
 	private static final String FORGOT_PASSWORD_TEMPLATE = "Forgot_Password_Template";
-
-	@Autowired
-	private AuthenticationRepository authenticationRepository;
-
-	@Autowired
-	private ForgotPasswordTokenRepository forgotPasswordTokenRepository;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
-
-	@Autowired
-	private CommonService commonService;
-
 	/*
 	 * validatePath
 	 */
 	private static final String VALIDATE_PATH = "/validateToken?token="; // NOSONAR
 	private static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})";
 	private static final String FORGOT_PASSWORD_NOTIFICATION_KEY = "Forgot_Password";
+	@Autowired
+	private AuthenticationRepository authenticationRepository;
+	@Autowired
+	private ForgotPasswordTokenRepository forgotPasswordTokenRepository;
+	@Autowired
+	private CustomApiConfig customApiConfig;
+	@Autowired
+	private CommonService commonService;
 
 	/**
 	 * Process forgotPassword request.
@@ -95,7 +95,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					customApiConfig.getForgotPasswordExpiryInterval());
 			LOGGER.info("Notification message sent to kafka with key : {}", FORGOT_PASSWORD_NOTIFICATION_KEY);
 			commonService.sendEmailWithoutKafka(Arrays.asList(email), customData, customApiConfig.getEmailSubject(),
-					FORGOT_PASSWORD_NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(),FORGOT_PASSWORD_TEMPLATE);
+					FORGOT_PASSWORD_NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(), FORGOT_PASSWORD_TEMPLATE);
 			return authentication;
 		}
 		return null;
@@ -266,10 +266,14 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	/**
 	 * * create custom data for email
 	 *
-	 * @param username emailId
-	 * @param token token
-	 * @param url url
-	 * @param expiryTime expiryTime in Min
+	 * @param username
+	 *            emailId
+	 * @param token
+	 *            token
+	 * @param url
+	 *            url
+	 * @param expiryTime
+	 *            expiryTime in Min
 	 * @return Map<String, String>
 	 */
 	private Map<String, String> createCustomData(String username, String token, String url, String expiryTime) {

@@ -30,11 +30,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -58,7 +53,12 @@ import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -190,8 +190,8 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 		leafNode.forEach(node -> {
 
 			Map<String, LocalDateTime> jiraDateMap = validateUnAssignedIssueBacklogs(unAssignedIssueBacklogs,
-					readyForRefinementIssueBacklogs, acceptedInRefinementIssueBacklogs, rejectedInRefinementIssueBacklogs,
-					issueBacklogCustomHistories,
+					readyForRefinementIssueBacklogs, acceptedInRefinementIssueBacklogs,
+					rejectedInRefinementIssueBacklogs, issueBacklogCustomHistories,
 					configHelperService.getFieldMappingMap().get(node.getProjectFilter().getBasicProjectConfigId()));
 
 			Map<String, Object> defaultMap = new HashMap<>();
@@ -206,7 +206,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 			List<DataCount> dataList = new ArrayList<>();
 			List<IssueBacklog> issuesExcel = new ArrayList<>();
 			if (null != projectWiseMap.get(node.getId()) && !rejectedInRefinementIssueBacklogs.isEmpty()
-			&& !readyForRefinementIssueBacklogs.isEmpty() && !acceptedInRefinementIssueBacklogs.isEmpty()) {
+					&& !readyForRefinementIssueBacklogs.isEmpty() && !acceptedInRefinementIssueBacklogs.isEmpty()) {
 				getWeekWiseRecord(projectWiseMap.get(node.getId()), weekAndTypeMap, weekMap, jiraDateMap);
 				for (Map.Entry<String, Map<String, List<IssueBacklog>>> entry : weekAndTypeMap.entrySet()) {
 					String week = entry.getKey();
@@ -225,7 +225,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 			}
 			weekAndTypeMap.keySet().stream().forEach(f -> weekAndTypeMap.get(f).keySet().stream()
 					.forEach(issue -> issuesExcel.addAll(weekAndTypeMap.get(f).get(issue))));
-			KPIExcelUtility.populateRefinementRejectionExcelData(excelData, issuesExcel, weekAndTypeMap,jiraDateMap);
+			KPIExcelUtility.populateRefinementRejectionExcelData(excelData, issuesExcel, weekAndTypeMap, jiraDateMap);
 			mapTmp.get(node.getId()).setValue(trendValueList);
 			kpiElement.setTrendValueList(trendValueList);
 		});
@@ -248,8 +248,8 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	 */
 	public Map<String, LocalDateTime> validateUnAssignedIssueBacklogs(List<IssueBacklog> unAssignedIssueBacklogs,
 			List<IssueBacklog> readyForRefinementIssueBacklogs, List<IssueBacklog> acceptedInRefinementIssueBacklogs,
-			List<IssueBacklog> rejectedInRefinementIssueBacklogs, List<IssueBacklogCustomHistory> issueBacklogCustomHistories,
-			FieldMapping fieldMapping) {
+			List<IssueBacklog> rejectedInRefinementIssueBacklogs,
+			List<IssueBacklogCustomHistory> issueBacklogCustomHistories, FieldMapping fieldMapping) {
 		Map<String, LocalDateTime> jiraDateMap = new HashMap<>();
 		for (IssueBacklogCustomHistory hist : issueBacklogCustomHistories) {
 			List<IssueBacklog> issueBacklog = unAssignedIssueBacklogs.stream()
@@ -319,7 +319,9 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 			LocalDate monday = currentDate.with(DayOfWeek.MONDAY);
 			LocalDate sunday = currentDate.with(DayOfWeek.SUNDAY);
 			String weekName = "Week" + (i);
-			String dateRange = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT);
+			String dateRange = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
 			currentDate = sunday.plusDays(1);
 			weekMap.put(weekName, dateRange);
 		}
@@ -390,11 +392,14 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 				})));
 	}
 
-	private void genrateWeekAndPopulateJiraDateMap(Map<String, Map<String, List<IssueBacklog>>> dataMap, Map<String, String> weekMap, String sub, IssueBacklog issue, LocalDate jiraDate) {
+	private void genrateWeekAndPopulateJiraDateMap(Map<String, Map<String, List<IssueBacklog>>> dataMap,
+			Map<String, String> weekMap, String sub, IssueBacklog issue, LocalDate jiraDate) {
 		if (null != jiraDate) {
 			LocalDate monday = jiraDate.with(DayOfWeek.MONDAY);
 			LocalDate sunday = jiraDate.with(DayOfWeek.SUNDAY);
-			String value = DateUtil.dateTimeConverter(monday.toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(sunday.toString(),DateUtil.DATE_FORMAT,DateUtil.DISPLAY_DATE_FORMAT);
+			String value = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
 			String weekVal = "";
 			for (String week : weekMap.keySet()) {
 				if (weekMap.get(week).equalsIgnoreCase(value)) {
@@ -467,7 +472,8 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 
 		List<IssueBacklog> unAssignedIssueBacklogs = new ArrayList<>();
 		unAssignedIssueBacklogs.addAll(issueBacklogRepository.findUnassignedIssues(startDate, endDate, mapOfFilters));
-		List<String> historyData = unAssignedIssueBacklogs.stream().map(IssueBacklog::getNumber).collect(Collectors.toList());
+		List<String> historyData = unAssignedIssueBacklogs.stream().map(IssueBacklog::getNumber)
+				.collect(Collectors.toList());
 		List<IssueBacklogCustomHistory> issueBacklogCustomHistories = new ArrayList<>();
 		issueBacklogCustomHistories.addAll(
 				issueBacklogCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(historyData, projectList));

@@ -69,6 +69,13 @@ public class ReleaseDefectCountByPriorityServiceImpl
 	@Autowired
 	private CommonServiceImpl commonService;
 
+	private static void getPriorityWiseCount(Map<String, List<JiraIssue>> priorityData,
+			Map<String, Integer> priorityCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> priorityEntry : priorityData.entrySet()) {
+			priorityCountMap.put(priorityEntry.getKey(), priorityEntry.getValue().size());
+		}
+	}
+
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
 		return null;
@@ -167,13 +174,6 @@ public class ReleaseDefectCountByPriorityServiceImpl
 				}
 			}
 			kpiElement.setTrendValueList(filterDataList);
-		}
-	}
-
-	private static void getPriorityWiseCount(Map<String, List<JiraIssue>> priorityData,
-			Map<String, Integer> priorityCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> priorityEntry : priorityData.entrySet()) {
-			priorityCountMap.put(priorityEntry.getKey(), priorityEntry.getValue().size());
 		}
 	}
 

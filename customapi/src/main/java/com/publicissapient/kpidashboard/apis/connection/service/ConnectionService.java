@@ -41,7 +41,8 @@ public interface ConnectionService {
 	/**
 	 * Gets all connection for this type.
 	 * 
-	 * @param type for type of the connection.
+	 * @param type
+	 *            for type of the connection.
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
 	 */
@@ -50,7 +51,8 @@ public interface ConnectionService {
 	/**
 	 * Creates and save a connection.
 	 * 
-	 * @param conn for details.
+	 * @param conn
+	 *            for details.
 	 * 
 	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
@@ -62,8 +64,10 @@ public interface ConnectionService {
 	 * Modifies a connection. Finds connection by @param id and replaces it
 	 * with @param conn
 	 * 
-	 * @param connection for details.
-	 * @param id         replaces the connection data present at id.
+	 * @param connection
+	 *            for details.
+	 * @param id
+	 *            replaces the connection data present at id.
 	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found
@@ -73,7 +77,8 @@ public interface ConnectionService {
 	/**
 	 * deletes a connection. Finds connection by @param id and delete.
 	 * 
-	 * @param id deleted the connection data present at id.
+	 * @param id
+	 *            deleted the connection data present at id.
 	 * 
 	 * @return ServiceResponse with data object,message and status flag true if data
 	 *         is found,false if not data found.

@@ -31,7 +31,7 @@ import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
 public interface MetadataIdentifierRepository extends CrudRepository<MetadataIdentifier, ObjectId> {
 
 	MetadataIdentifier findByTool(String tool);
-	
+
 	MetadataIdentifier findByToolAndIsKanban(String tool, Boolean isKanban);
 
 	MetadataIdentifier findByTemplateCodeAndToolAndIsKanban(String templateCode, String tool, Boolean isKanban);

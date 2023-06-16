@@ -32,23 +32,28 @@ import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 public interface TestCaseDetailsRepositoryCustom {
 
 	/**
-	 * Find TestCase by unique parameters and Folder list. if label is in query will not be considered
+	 * Find TestCase by unique parameters and Folder list. if label is in query will
+	 * not be considered
 	 *
-	 * @param mapOfFilters     the map of filters
-	 * @param uniqueProjectMap the unique project map
+	 * @param mapOfFilters
+	 *            the map of filters
+	 * @param uniqueProjectMap
+	 *            the unique project map
 	 * @return list of feature
 	 */
 	List<TestCaseDetails> findNonRegressionTestDetails(Map<String, List<String>> mapOfFilters,
-													 Map<String, Map<String, Object>> uniqueProjectMap, String mapStatusCriteria);
+			Map<String, Map<String, Object>> uniqueProjectMap, String mapStatusCriteria);
 
 	/**
 	 * Find TestCase by unique parameters and Folder list.
 	 *
-	 * @param mapOfFilters     the map of filters
-	 * @param uniqueProjectMap the unique project map
+	 * @param mapOfFilters
+	 *            the map of filters
+	 * @param uniqueProjectMap
+	 *            the unique project map
 	 * @return list of feature
 	 */
 	List<TestCaseDetails> findTestDetails(Map<String, List<String>> mapOfFilters,
-										Map<String, Map<String, Object>> uniqueProjectMap, String mapStatusCriteria);
+			Map<String, Map<String, Object>> uniqueProjectMap, String mapStatusCriteria);
 
 }

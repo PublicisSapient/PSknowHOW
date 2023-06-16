@@ -24,7 +24,8 @@ import java.util.Map;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 
 /**
- * The interface Capacity kpi data custom repository for {@link CapacityKpiData}.
+ * The interface Capacity kpi data custom repository for
+ * {@link CapacityKpiData}.
  *
  * @author anisingh4
  */
@@ -33,8 +34,10 @@ public interface CapacityKpiDataCustomRepository {
 	/**
 	 * Find by filters list.
 	 *
-	 * @param mapofFilters     the mapof filters
-	 * @param uniqueProjectMap the unique project map
+	 * @param mapofFilters
+	 *            the mapof filters
+	 * @param uniqueProjectMap
+	 *            the unique project map
 	 * @return list
 	 */
 	List<CapacityKpiData> findByFilters(Map<String, Object> mapofFilters,

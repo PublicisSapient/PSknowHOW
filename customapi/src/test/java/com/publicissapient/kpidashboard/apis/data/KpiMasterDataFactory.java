@@ -86,7 +86,7 @@ public class KpiMasterDataFactory {
 		return kpiList;
 	}
 
-	public List<KpiMaster> getSpecificKpis(List<String> kpis){
+	public List<KpiMaster> getSpecificKpis(List<String> kpis) {
 		return kpiList.stream().filter(master -> kpis.contains(master.getKpiId())).collect(Collectors.toList());
 	}
 

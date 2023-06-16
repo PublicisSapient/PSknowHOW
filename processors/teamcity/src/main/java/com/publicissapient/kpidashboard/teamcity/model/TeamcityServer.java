@@ -33,5 +33,5 @@ public class TeamcityServer {
 	private String ipAddress;
 	private String username;
 	private String password;
-	
+
 }

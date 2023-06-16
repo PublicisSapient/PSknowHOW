@@ -28,11 +28,11 @@ import lombok.Setter;
 @Data
 @Builder
 public class JiraInfo {
-    private String username;
-    private String password;
-    private String jiraConfigBaseUrl;
-    private String jiraConfigProxyUrl;
-    private String jiraConfigProxyPort;
-    private String jiraConfigAccessToken;
-    private boolean bearerToken;
+	private String username;
+	private String password;
+	private String jiraConfigBaseUrl;
+	private String jiraConfigProxyUrl;
+	private String jiraConfigProxyPort;
+	private String jiraConfigAccessToken;
+	private boolean bearerToken;
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,6 @@ import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 
 public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryCustom {
 
-
-
 	private static final String IDENT_CREATED_DATE = "$createdDate";
 	private static final String SCM_CREATED_DATE = "createdDate";
 	private static final String COUNT = "count";
@@ -26,11 +25,10 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 	private static final String PROCESSOR_ITEM_ID = "processorItemId";
 	private static final String ID = "_id";
 	private static final String DATE = "date";
-
+	private static final String SCM_MERGED_TIMESTAMP = "closedDate";
 	@Autowired
 	private MongoOperations operations;
-	private static final String SCM_MERGED_TIMESTAMP = "closedDate";
-	
+
 	@Override
 	public List<MergeRequests> findMergeList(List<ObjectId> collectorItemIdList, Long startDate, Long endDate,
 			BasicDBList filterList) {
@@ -41,19 +39,18 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 						new BasicDBObject("$or", filterList).append(SCM_CREATED_DATE,
 								new BasicDBObject("$gte", startDate).append("$lte", endDate))),
 				new BasicDBObject(IDENT_PROJECT,
-						new BasicDBObject(SCM_CREATED_DATE, new BasicDBObject("$add", array))
-								.append(PROCESSOR_ITEM_ID, 1)),
-				new BasicDBObject("$group", new BasicDBObject(ID, new BasicDBObject(DATE,
-						new BasicDBObject("$dateToString",
-								new BasicDBObject("format", "%Y-%m-%d").append(DATE, IDENT_CREATED_DATE)))
-										.append(PROCESSOR_ITEM_ID, "$processorItemId")).append(COUNT,
-												new BasicDBObject("$sum", 1))),
+						new BasicDBObject(SCM_CREATED_DATE, new BasicDBObject("$add", array)).append(PROCESSOR_ITEM_ID,
+								1)),
+				new BasicDBObject("$group",
+						new BasicDBObject(ID, new BasicDBObject(DATE,
+								new BasicDBObject("$dateToString",
+										new BasicDBObject("format", "%Y-%m-%d").append(DATE, IDENT_CREATED_DATE)))
+												.append(PROCESSOR_ITEM_ID, "$processorItemId")).append(COUNT,
+														new BasicDBObject("$sum", 1))),
 				new BasicDBObject(IDENT_PROJECT,
 						new BasicDBObject(ID, 0).append(DATE, "$_id.date")
 								.append(PROCESSOR_ITEM_ID, "$_id.processorItemId").append(COUNT, 1)),
-				new BasicDBObject("$sort", new BasicDBObject(DATE, 1))
-				);
-		
+				new BasicDBObject("$sort", new BasicDBObject(DATE, 1)));
 
 		AggregateIterable<Document> cursor = operations.getCollection("merge_requests").aggregate(pipeline);
 		MongoCursor<Document> itr = cursor.iterator();
@@ -65,8 +62,6 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 		}
 		return returnList;
 	}
-
-	
 
 	@Override
 	public List<MergeRequests> findMergeRequestList(List<ObjectId> collectorItemIdList, Long startDate, Long endDate,
@@ -86,6 +81,5 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 		}
 		return returnList;
 	}
-
 
 }

@@ -18,9 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.common.service;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -29,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -38,17 +34,16 @@ import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.common.service.impl.VersionMetadataServiceImpl;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.VersionDetails;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VersionMetadataServiceImplTest {
 
-	private final ResourceLoader resourceLoader= new DefaultResourceLoader();
-	
+	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+
 	@Mock
 	private CustomApiConfig customApiConfig;
-	
+
 	@Mock
 	private RestTemplate restTemplate;
 
@@ -67,18 +62,17 @@ public class VersionMetadataServiceImplTest {
 		VersionDetails details = versionMetadataServiceImpl.getVersionMetadata();
 		Assert.assertNotNull(details);
 	}
-	
+
 	@Test
 	public void testGetVersionMetadataC() {
 		String pathAccountData = "classpath:\\com\\publicissapient\\kpidashboard\\apis\\filter\\service\\accountDataList";
-		File file =null;
+		File file = null;
 		try {
-			Resource resource=resourceLoader.getResource(pathAccountData);
+			Resource resource = resourceLoader.getResource(pathAccountData);
 			file = resource.getFile();
 		} catch (IOException e) {
 			Assert.assertEquals(null, file);
 		}
-
 
 		versionMetadataServiceImpl.getVersionMetadata();
 	}

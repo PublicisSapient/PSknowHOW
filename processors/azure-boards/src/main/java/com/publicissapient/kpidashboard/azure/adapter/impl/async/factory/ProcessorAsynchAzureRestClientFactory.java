@@ -67,59 +67,18 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 	private static final String ERROR_WHILE_PARSING = "Error while parsing getIterationsResponse API";
 	private static final String API_VERSION = "api-version";
 	private static final String NO_RESULT_QUERY = "No result available for query: {}";
-
+	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd";
 	private final RestOperations restOperations;
 	private final AzureProcessorConfig azureProcessorConfig;
-
-	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd";
-
 	ObjectMapper mapper;
 
 	@Autowired
 	public ProcessorAsynchAzureRestClientFactory(RestOperationsFactory<RestOperations> restOperationsFactory,
-												 AzureProcessorConfig azureProcessorConfig, ObjectMapper mapper) {
+			AzureProcessorConfig azureProcessorConfig, ObjectMapper mapper) {
 		this.restOperations = restOperationsFactory.getTypeInstance();
 		this.azureProcessorConfig = azureProcessorConfig;
 		this.mapper = mapper;
 	}
-
-	/**
-	 * Makes Rest Call.
-	 *
-	 * @param sUrl
-	 *            the rest call URL
-	 * @param azureInfo
-	 *            azureInfo
-	 * @return the response entity
-	 *
-	 */
-	public ResponseEntity<String> doRestCall(String sUrl, AzureServer azureInfo) {
-		log.debug("Inside doRestCall {}", sUrl);
-		URI theUri = URI.create(sUrl);
-		String userInfo = getUserInfo(sUrl, azureInfo);
-
-		if (StringUtils.isNotEmpty(userInfo)) {
-			return restOperations.exchange(theUri, HttpMethod.GET, new HttpEntity<>(createHeaders(userInfo)),
-					String.class);
-		} else {
-			return restOperations.exchange(theUri, HttpMethod.GET, null, String.class);
-		}
-	}
-
-	public ResponseEntity<String> doRestPOSTCall(String sUrl, AzureServer azureServer, Map<String, String> params) {
-		log.debug("Inside doRestPOSTCall {}", sUrl);
-		URI theUri = URI.create(sUrl);
-		String userInfo = getUserInfo(sUrl, azureServer);
-
-		if (StringUtils.isNotEmpty(userInfo)) {
-
-			return restOperations.exchange(theUri, HttpMethod.POST, new HttpEntity<>(params, createHeaders(userInfo)),
-					String.class);
-		} else {
-			return restOperations.exchange(theUri, HttpMethod.POST, new HttpEntity<>(params), String.class);
-		}
-	}
-
 
 	/**
 	 * Creates HTTP Headers.
@@ -135,33 +94,6 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.AUTHORIZATION, authHeader);
 		return headers;
-	}
-
-	/**
-	 * Gets user info.
-	 *
-	 * @param sUrl
-	 *            the url
-	 * @param azureServer
-	 *            the azure server
-	 * @return userInfo info
-	 */
-	private String getUserInfo(String sUrl, AzureServer azureServer) {
-		String userInfo = "";
-
-		if (isSameServerInfo(sUrl, azureServer.getUrl())) {
-
-			if (StringUtils.isNotEmpty(azureServer.getPat())) {
-				userInfo = azureServer.getUsername() + ":" + azureServer.getPat();
-			} else {
-				log.warn(
-						"Credentials for the following url was not found. This could happen if the domain/subdomain/IP address in the build url returned by AzurePipeline and the AzurePipeline instance url in your configuration do not match: {} ",
-						sUrl);
-			}
-
-		}
-
-		return userInfo;
 	}
 
 	/**
@@ -222,6 +154,109 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 		return uri.getPort();
 	}
 
+	private static String getFromattedQueryInput(String field) {
+		return "'" + field + "'";
+	}
+
+	/**
+	 * append pre and post query
+	 *
+	 * @param preQuery
+	 * @param postQuery
+	 * @return appended query
+	 */
+	private static StringBuilder appendDateQuery(String preQuery, String postQuery) {
+		StringBuilder sb = new StringBuilder();
+		if (StringUtils.containsIgnoreCase(preQuery, AzureConstants.WHERE)) {
+			sb.append(preQuery.replace(AzureConstants.WHERE, AzureConstants.WHERE + " (" + postQuery + ") AND "));
+		} else {
+			sb.append(preQuery);
+			sb.append(" " + AzureConstants.WHERE + " ");
+			sb.append("(");
+			sb.append(postQuery);
+			sb.append(")");
+		}
+
+		return sb;
+	}
+
+	/**
+	 * replace changed date
+	 *
+	 * @param preQuery
+	 * @param postQuery
+	 * @return replaced query
+	 */
+	private static StringBuilder replaceDateQuery(String preQuery, String postQuery) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(preQuery.replace(AzureConstants.CHANGEDDATE, " (" + postQuery + ") "));
+		return sb;
+	}
+
+	/**
+	 * Makes Rest Call.
+	 *
+	 * @param sUrl
+	 *            the rest call URL
+	 * @param azureInfo
+	 *            azureInfo
+	 * @return the response entity
+	 *
+	 */
+	public ResponseEntity<String> doRestCall(String sUrl, AzureServer azureInfo) {
+		log.debug("Inside doRestCall {}", sUrl);
+		URI theUri = URI.create(sUrl);
+		String userInfo = getUserInfo(sUrl, azureInfo);
+
+		if (StringUtils.isNotEmpty(userInfo)) {
+			return restOperations.exchange(theUri, HttpMethod.GET, new HttpEntity<>(createHeaders(userInfo)),
+					String.class);
+		} else {
+			return restOperations.exchange(theUri, HttpMethod.GET, null, String.class);
+		}
+	}
+
+	public ResponseEntity<String> doRestPOSTCall(String sUrl, AzureServer azureServer, Map<String, String> params) {
+		log.debug("Inside doRestPOSTCall {}", sUrl);
+		URI theUri = URI.create(sUrl);
+		String userInfo = getUserInfo(sUrl, azureServer);
+
+		if (StringUtils.isNotEmpty(userInfo)) {
+
+			return restOperations.exchange(theUri, HttpMethod.POST, new HttpEntity<>(params, createHeaders(userInfo)),
+					String.class);
+		} else {
+			return restOperations.exchange(theUri, HttpMethod.POST, new HttpEntity<>(params), String.class);
+		}
+	}
+
+	/**
+	 * Gets user info.
+	 *
+	 * @param sUrl
+	 *            the url
+	 * @param azureServer
+	 *            the azure server
+	 * @return userInfo info
+	 */
+	private String getUserInfo(String sUrl, AzureServer azureServer) {
+		String userInfo = "";
+
+		if (isSameServerInfo(sUrl, azureServer.getUrl())) {
+
+			if (StringUtils.isNotEmpty(azureServer.getPat())) {
+				userInfo = azureServer.getUsername() + ":" + azureServer.getPat();
+			} else {
+				log.warn(
+						"Credentials for the following url was not found. This could happen if the domain/subdomain/IP address in the build url returned by AzurePipeline and the AzurePipeline instance url in your configuration do not match: {} ",
+						sUrl);
+			}
+
+		}
+
+		return userInfo;
+	}
+
 	@Override
 	public AzureBoardsWIModel getWorkItemInfo(AzureServer azureServer, List<Integer> azureWorkItemIds) {
 		AzureBoardsWIModel azureBoardsWIModel = new AzureBoardsWIModel();
@@ -248,7 +283,7 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 
 	@Override
 	public AzureWiqlModel getWiqlResponse(AzureServer azureServer, Map<String, Long> startTimesByIssueType,
-										  ProjectConfFieldMapping projectConfig,boolean dataExist) {
+			ProjectConfFieldMapping projectConfig, boolean dataExist) {
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
 		StringBuilder url = new StringBuilder(
 				AzureProcessorUtil.joinURL(azureServer.getUrl(), azureProcessorConfig.getApiEndpointWiql()));
@@ -256,7 +291,7 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 
 		if (null != projectConfig.getFieldMapping().getJiraIssueTypeNames()
 				&& projectConfig.getFieldMapping().getJiraIssueTypeNames().length > 0) {
-			azureWiqlModel = prepareWiqlResponse(azureServer, projectConfig, startTimesByIssueType, url,dataExist);
+			azureWiqlModel = prepareWiqlResponse(azureServer, projectConfig, startTimesByIssueType, url, dataExist);
 		}
 
 		return azureWiqlModel;
@@ -264,12 +299,13 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 	}
 
 	private AzureWiqlModel prepareWiqlResponse(AzureServer azureServer, ProjectConfFieldMapping projectConfig,
-											   Map<String, Long> startTimesByIssueType, StringBuilder url,boolean dataExist) {
+			Map<String, Long> startTimesByIssueType, StringBuilder url, boolean dataExist) {
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
 		String finalQuery = null;
 
-		if(projectConfig.getAzure().isQueryEnabled()) {
-			finalQuery = processProvidedQuery(projectConfig.getAzure().getBoardQuery(),startTimesByIssueType,dataExist);
+		if (projectConfig.getAzure().isQueryEnabled()) {
+			finalQuery = processProvidedQuery(projectConfig.getAzure().getBoardQuery(), startTimesByIssueType,
+					dataExist);
 		} else {
 			finalQuery = prepareDefaultQuery(projectConfig, startTimesByIssueType);
 		}
@@ -283,7 +319,7 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 			try {
 				if (StringUtils.isNotEmpty(response)) {
 					azureWiqlModel = mapper.readValue(response, AzureWiqlModel.class);
-				}else {
+				} else {
 					log.info(NO_RESULT_QUERY, finalQuery);
 				}
 			} catch (IOException e) {
@@ -294,10 +330,6 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 			log.error("Response Error for Wiql API call ");
 		}
 		return azureWiqlModel;
-	}
-
-	private static String getFromattedQueryInput(String field) {
-		return "'" + field + "'";
 	}
 
 	@Override
@@ -395,13 +427,14 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 				issueTypeQuery.append(" OR ");
 			}
 		}
-		query.append("[System.TeamProject] = '" + projectConfig.getProjectKey() +"' AND (" + issueTypeQuery + ") ");
+		query.append("[System.TeamProject] = '" + projectConfig.getProjectKey() + "' AND (" + issueTypeQuery + ") ");
 		query.append(azureProcessorConfig.getWiqlSortQuery());
 
 		return query.toString();
 	}
 
-	private String processProvidedQuery(String userProvidedQuery, Map<String, Long> startDateTimeStrByIssueType,boolean dataExist) {
+	private String processProvidedQuery(String userProvidedQuery, Map<String, Long> startDateTimeStrByIssueType,
+			boolean dataExist) {
 		StringBuilder finalQuery = new StringBuilder();
 		if (StringUtils.isEmpty(userProvidedQuery) || startDateTimeStrByIssueType == null) {
 			return finalQuery.toString();
@@ -422,56 +455,21 @@ public class ProcessorAsynchAzureRestClientFactory implements ProcessorAzureRest
 			}
 		}
 
-		if(dataExist) {
-			if(StringUtils.containsIgnoreCase(userProvidedQuery, AzureConstants.CHANGEDDATE)){
-				finalQuery = replaceDateQuery(userProvidedQuery,issueTypeQuery.toString());
+		if (dataExist) {
+			if (StringUtils.containsIgnoreCase(userProvidedQuery, AzureConstants.CHANGEDDATE)) {
+				finalQuery = replaceDateQuery(userProvidedQuery, issueTypeQuery.toString());
 			} else {
-				finalQuery = appendDateQuery(userProvidedQuery,issueTypeQuery.toString());
+				finalQuery = appendDateQuery(userProvidedQuery, issueTypeQuery.toString());
 			}
-		}else {
-			if(StringUtils.containsIgnoreCase(userProvidedQuery, AzureConstants.CHANGEDDATE)){
-				finalQuery.append(userProvidedQuery+" ");
-			}else {
-				finalQuery = appendDateQuery(userProvidedQuery,issueTypeQuery.toString());
+		} else {
+			if (StringUtils.containsIgnoreCase(userProvidedQuery, AzureConstants.CHANGEDDATE)) {
+				finalQuery.append(userProvidedQuery + " ");
+			} else {
+				finalQuery = appendDateQuery(userProvidedQuery, issueTypeQuery.toString());
 			}
 		}
 
-		finalQuery.append(" "+azureProcessorConfig.getWiqlSortQuery());
+		finalQuery.append(" " + azureProcessorConfig.getWiqlSortQuery());
 		return finalQuery.toString();
-	}
-
-	/**
-	 * append pre and post query
-	 *
-	 * @param preQuery
-	 * @param postQuery
-	 * @return appended query
-	 */
-	private static StringBuilder appendDateQuery(String preQuery,String postQuery) {
-		StringBuilder sb = new StringBuilder();
-		if(StringUtils.containsIgnoreCase(preQuery, AzureConstants.WHERE)) {
-			sb.append(preQuery.replace(AzureConstants.WHERE, AzureConstants.WHERE+" ("+postQuery+") AND "));
-		}else {
-			sb.append(preQuery);
-			sb.append(" "+AzureConstants.WHERE+" ");
-			sb.append("(");
-			sb.append(postQuery);
-			sb.append(")");
-		}
-
-		return sb;
-	}
-
-	/**
-	 * replace changed date
-	 *
-	 * @param preQuery
-	 * @param postQuery
-	 * @return replaced query
-	 */
-	private static StringBuilder replaceDateQuery(String preQuery,String postQuery) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(preQuery.replace(AzureConstants.CHANGEDDATE, " (" + postQuery + ") "));
-		return sb;
 	}
 }

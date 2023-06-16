@@ -23,26 +23,26 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AccessItem {
-    private String itemId;
-    private String itemName;
+	private String itemId;
+	private String itemName;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        AccessItem that = (AccessItem) o;
+		AccessItem that = (AccessItem) o;
 
-        return itemId != null ? itemId.equals(that.itemId) : that.itemId == null;
-    }
+		return itemId != null ? itemId.equals(that.itemId) : that.itemId == null;
+	}
 
-    @Override
-    public int hashCode() {
-        return itemId != null ? itemId.hashCode() : 0;
-    }
+	@Override
+	public int hashCode() {
+		return itemId != null ? itemId.hashCode() : 0;
+	}
 
 }

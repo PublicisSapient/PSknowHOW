@@ -166,8 +166,8 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 								&& parser.parseDateTime(test.getTestAutomatedDate()).isBefore(endDate))
 						.collect(Collectors.toList());
 				setHowerMap(sprintWiseAutomatedTest, sprintWiseTotalTest, howerMap, AUTOMATED, TOTAL);
-				populateExcelDataObject(requestTrackerId, excelData, node.getSprintFilter().getName(), sprintWiseAutomatedTest,
-						sprintWiseTotalTest);
+				populateExcelDataObject(requestTrackerId, excelData, node.getSprintFilter().getName(),
+						sprintWiseAutomatedTest, sprintWiseTotalTest);
 				sprintWiseAutomation = (double) Math
 						.round((100.0 * sprintWiseAutomatedTest.size()) / (sprintWiseTotalTest.size()));
 			}
@@ -220,7 +220,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 			}
 
 			KPIExcelUtility.populateRegressionAutomationExcelData(sprintName, totalTestCaseMap, automatedTest,
-					excelData,KPICode.REGRESSION_AUTOMATION_COVERAGE.getKpiId(), "");
+					excelData, KPICode.REGRESSION_AUTOMATION_COVERAGE.getKpiId(), "");
 
 		}
 	}

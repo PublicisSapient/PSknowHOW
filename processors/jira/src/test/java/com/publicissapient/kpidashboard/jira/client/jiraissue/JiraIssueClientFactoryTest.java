@@ -29,43 +29,41 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 public class JiraIssueClientFactoryTest {
 
-    @Mock
-    private KanbanJiraIssueClientImpl kanbanJiraIssueClient;
+	@InjectMocks
+	JiraIssueClientFactory jiraIssueClientFactory;
+	ProjectConfFieldMapping projectConfFieldMapping;
+	@Mock
+	private KanbanJiraIssueClientImpl kanbanJiraIssueClient;
+	@Mock
+	private ScrumJiraIssueClientImpl scrumJiraIssueClient;
 
-    @Mock
-    private ScrumJiraIssueClientImpl scrumJiraIssueClient;
+	@BeforeEach
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
+	}
 
-    @InjectMocks
-    JiraIssueClientFactory jiraIssueClientFactory;
-    ProjectConfFieldMapping projectConfFieldMapping;
+	@Test
+	public void getJiraIssueDataClientKanban() {
+		prepareProjectConfig();
+		Assert.assertEquals(kanbanJiraIssueClient,
+				jiraIssueClientFactory.getJiraIssueDataClient(projectConfFieldMapping));
+	}
 
-    @BeforeEach
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
-    @Test
-    public void getJiraIssueDataClientKanban() {
-        prepareProjectConfig();
-        Assert.assertEquals(kanbanJiraIssueClient,jiraIssueClientFactory.getJiraIssueDataClient(projectConfFieldMapping));
-    }
+	@Test
+	public void getJiraIssueDataClientScrum() {
+		prepareProjectConfigScrum();
+		Assert.assertEquals(scrumJiraIssueClient,
+				jiraIssueClientFactory.getJiraIssueDataClient(projectConfFieldMapping));
+	}
 
-    @Test
-    public void getJiraIssueDataClientScrum() {
-        prepareProjectConfigScrum();
-        Assert.assertEquals(scrumJiraIssueClient,jiraIssueClientFactory.getJiraIssueDataClient(projectConfFieldMapping));
-    }
+	private void prepareProjectConfig() {
+		projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
+		projectConfFieldMapping.setKanban(true);
+	}
 
-    private void prepareProjectConfig(){
-        projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-        projectConfFieldMapping.setKanban(true);
-    }
-
-    private void prepareProjectConfigScrum(){
-        projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-        projectConfFieldMapping.setKanban(false);
-    }
-
-
-
+	private void prepareProjectConfigScrum() {
+		projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
+		projectConfFieldMapping.setKanban(false);
+	}
 
 }

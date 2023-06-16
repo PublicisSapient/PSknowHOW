@@ -25,18 +25,14 @@ import com.publicissapient.kpidashboard.apis.model.FeedbackSubmitDTO;
 @RunWith(MockitoJUnitRunner.class)
 public class FeedbackControllerTest {
 
+	ObjectMapper mapper = new ObjectMapper();
 	private MockMvc mockMvc;
-
 	private FeedbackSubmitDTO feedbackSubmitDTO;
 	private String testUsername;
-
 	@InjectMocks
 	private FeedbackController feedbackController;
-
 	@Mock
 	private FeedbackService feedbackService;
-
-	ObjectMapper mapper = new ObjectMapper();
 
 	/**
 	 * method includes pre-processes for test cases
@@ -79,8 +75,9 @@ public class FeedbackControllerTest {
 	}
 
 	/**
-	 * method to test POST /feedback/submitfeedback restPoint ;
-	 * to submit all feedback
+	 * method to test POST /feedback/submitfeedback restPoint ; to submit all
+	 * feedback
+	 * 
 	 * @throws Exception
 	 */
 	@Test

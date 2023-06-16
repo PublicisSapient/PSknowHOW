@@ -24,7 +24,7 @@ import lombok.Data;
  */
 @Data
 public class AccessRequestDecision {
-    private String status;
-    private String message;
-    private String role;
+	private String status;
+	private String message;
+	private String role;
 }

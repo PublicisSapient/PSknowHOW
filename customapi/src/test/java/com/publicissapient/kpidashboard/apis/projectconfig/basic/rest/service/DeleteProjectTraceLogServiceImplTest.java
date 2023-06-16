@@ -1,15 +1,9 @@
 package com.publicissapient.kpidashboard.apis.projectconfig.basic.rest.service;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,12 +17,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.DeleteProjectTraceLogServiceImpl;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.tracelog.DeleteProjectTraceLog;
 import com.publicissapient.kpidashboard.common.repository.tracelog.DeleteProjectTraceLogRepository;
-
-import ch.qos.logback.classic.spi.LoggingEvent;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeleteProjectTraceLogServiceImplTest {

@@ -29,22 +29,17 @@ import com.publicissapient.kpidashboard.common.repository.application.impl.Proje
 public class ConfigHelperServiceTest {
 
 	@Mock
-	private ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	private FieldMappingRepository fieldMappingRepository;
-
-	@Mock
-	private ProjectToolConfigRepositoryCustom toolConfigRepository;
-
-	@Mock
 	CacheService cacheService;
-
-	@InjectMocks
-	private ConfigHelperService configHelperService;
-
 	List<ProjectBasicConfig> projectList = null;
 	List<FieldMapping> fieldMappingList = null;
+	@Mock
+	private ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	private FieldMappingRepository fieldMappingRepository;
+	@Mock
+	private ProjectToolConfigRepositoryCustom toolConfigRepository;
+	@InjectMocks
+	private ConfigHelperService configHelperService;
 
 	@Before
 	public void setUp() {
@@ -57,12 +52,15 @@ public class ConfigHelperServiceTest {
 		Mockito.when(projectConfigRepository.findAll()).thenReturn(projectList);
 		Mockito.when(fieldMappingRepository.findAll()).thenReturn(fieldMappingList);
 		configHelperService.loadConfigData();
-		Assertions.assertTrue(((Map<String, ProjectBasicConfig>)configHelperService.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP)).size()>0);
-		Assertions.assertTrue(((Map<ObjectId, FieldMapping>)configHelperService.getConfigMapData(CommonConstant.CACHE_FIELD_MAPPING_MAP)).size()>0);
+		Assertions.assertTrue(((Map<String, ProjectBasicConfig>) configHelperService
+				.getConfigMapData(CommonConstant.CACHE_PROJECT_CONFIG_MAP)).size() > 0);
+		Assertions.assertTrue(((Map<ObjectId, FieldMapping>) configHelperService
+				.getConfigMapData(CommonConstant.CACHE_FIELD_MAPPING_MAP)).size() > 0);
 	}
-	 @Test
-	 public void loadToolConfig(){
-		List<Tool> toolList =  new ArrayList<>();
+
+	@Test
+	public void loadToolConfig() {
+		List<Tool> toolList = new ArrayList<>();
 		Tool tool1 = new Tool();
 		tool1.setTool("scm");
 		tool1.setBranch("master");
@@ -71,6 +69,8 @@ public class ConfigHelperServiceTest {
 		toolList.add(tool1);
 		Mockito.when(toolConfigRepository.getToolList()).thenReturn(toolList);
 		configHelperService.loadToolConfig();
-		 Assertions.assertTrue(((Map<ObjectId, Tool>)configHelperService.getConfigMapData(CommonConstant.CACHE_TOOL_CONFIG_MAP)).size()>0);
+		Assertions.assertTrue(
+				((Map<ObjectId, Tool>) configHelperService.getConfigMapData(CommonConstant.CACHE_TOOL_CONFIG_MAP))
+						.size() > 0);
 	}
 }

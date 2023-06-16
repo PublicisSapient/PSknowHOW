@@ -38,7 +38,8 @@ public class BaseResponse {
 	/**
 	 * Sets message.
 	 *
-	 * @param message the message
+	 * @param message
+	 *            the message
 	 */
 	public void setMessage(String message) {
 		this.message = message;
@@ -56,7 +57,8 @@ public class BaseResponse {
 	/**
 	 * Sets success.
 	 *
-	 * @param success the success
+	 * @param success
+	 *            the success
 	 */
 	public void setSuccess(Boolean success) {
 		this.success = success;

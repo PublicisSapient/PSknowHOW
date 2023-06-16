@@ -17,13 +17,13 @@
 
 package com.publicissapient.kpidashboard.common.model;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
-
-import java.time.LocalDateTime;
-import java.util.Map;
 
 /**
  * @author anisingh4
@@ -31,21 +31,21 @@ import java.util.Map;
 @Document("processor_execution_trace_log")
 @Data
 public class ProcessorExecutionTraceLog {
-    private ObjectId id;
-    private String processorName;
-    private String basicProjectConfigId;
+	private ObjectId id;
+	private String processorName;
+	private String basicProjectConfigId;
 
-    /**
-     * time in milliseconds
-     */
-    private long executionStartedAt;
-    /**
-     * time in milliseconds
-     */
-    private long executionEndedAt;
+	/**
+	 * time in milliseconds
+	 */
+	private long executionStartedAt;
+	/**
+	 * time in milliseconds
+	 */
+	private long executionEndedAt;
 	private boolean executionSuccess;
-    private String lastSuccessfulRun;
-    private Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType;
-    private boolean lastEnableAssigneeToggleState;
+	private String lastSuccessfulRun;
+	private Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType;
+	private boolean lastEnableAssigneeToggleState;
 
 }

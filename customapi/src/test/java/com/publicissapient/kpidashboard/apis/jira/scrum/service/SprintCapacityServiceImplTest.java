@@ -27,9 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
+
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +43,9 @@ import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
+import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -66,45 +67,35 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 @RunWith(MockitoJUnitRunner.class)
 public class SprintCapacityServiceImplTest {
+	private final static String SPRINTCAPACITYKEY = "sprintCapacityKey";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<JiraIssue> totalJiraIssueList = new ArrayList<>();
-	private final static String SPRINTCAPACITYKEY = "sprintCapacityKey";
-	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	List<CapacityKpiData> dataList = new ArrayList<>();
+	@Mock
+	JiraIssueRepository jiraIssueRepository;
+	@Mock
+	CacheService cacheService;
+	@Mock
+	ConfigHelperService configHelperService;
+	@Mock
+	KpiHelperService kpiHelperService;
+	@InjectMocks
+	SprintCapacityServiceImpl sprintCapacityServiceImpl;
+	@Mock
+	ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	FieldMappingRepository fieldMappingRepository;
+	@Mock
+	CustomApiConfig customApiConfig;
+	@Mock
+	CapacityKpiDataRepository capacityKpiDataRepository;
+	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-
-	@Mock
-	JiraIssueRepository jiraIssueRepository;
-
-	@Mock
-	CacheService cacheService;
-
-	@Mock
-	ConfigHelperService configHelperService;
-
-	@Mock
-	KpiHelperService kpiHelperService;
-
-	@InjectMocks
-	SprintCapacityServiceImpl sprintCapacityServiceImpl;
-
-	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
-
-	@Mock
-	CustomApiConfig customApiConfig;
-
 	@Mock
 	private CommonService commonService;
-
-	@Mock
-	CapacityKpiDataRepository capacityKpiDataRepository;
 
 	@Before
 	public void setup() {
@@ -148,8 +139,8 @@ public class SprintCapacityServiceImplTest {
 		kpiWiseAggregation.put("sprintCapacity", "average");
 
 		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
-		Map<String, Object> capacityListMap = sprintCapacityServiceImpl.fetchKPIDataFromDb(leafNodeList, null,
-				null, kpiRequest);
+		Map<String, Object> capacityListMap = sprintCapacityServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
+				kpiRequest);
 		assertThat("Capacity value :", ((List<JiraIssue>) (capacityListMap.get(SPRINTCAPACITYKEY))).size(),
 				equalTo(41));
 	}
@@ -171,7 +162,7 @@ public class SprintCapacityServiceImplTest {
 		when(kpiHelperService.fetchSprintCapacityDataFromDb(Mockito.any())).thenReturn(totalJiraIssueList);
 		kpiWiseAggregation.put("sprintCapacity", "average");
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
-		//when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
+		// when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
@@ -197,7 +188,7 @@ public class SprintCapacityServiceImplTest {
 
 	@Test
 	public void calculateKpiValueTest() {
-		Double kpiValue = sprintCapacityServiceImpl.calculateKpiValue(Arrays.asList(1.0,2.0), "kpi14");
+		Double kpiValue = sprintCapacityServiceImpl.calculateKpiValue(Arrays.asList(1.0, 2.0), "kpi14");
 		assertThat("Kpi value  :", kpiValue, equalTo(0.0));
 	}
 

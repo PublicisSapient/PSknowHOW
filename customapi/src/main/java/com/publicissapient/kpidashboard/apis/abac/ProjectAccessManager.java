@@ -29,18 +29,14 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
-import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import javax.validation.constraints.NotNull;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -53,6 +49,7 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.autoapprove.service.AutoApproveAccessService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -78,6 +75,8 @@ import com.publicissapient.kpidashboard.common.repository.rbac.RolesRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author anisingh4
@@ -132,6 +131,25 @@ public class ProjectAccessManager {
 
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
+
+	private static String findRoleOfAccessItem(String requestedAccessLavel, AccessItem requestedAccessItem,
+			List<ProjectsAccess> projectsAccesses) {
+
+		String role = null;
+		for (ProjectsAccess pa : projectsAccesses) {
+			AccessItem searchedAccessItem = pa.getAccessNodes().stream()
+					.filter(accessNode -> accessNode.getAccessLevel().equals(requestedAccessLavel))
+					.flatMap(accessNode -> accessNode.getAccessItems().stream())
+					.filter(accessItem -> accessItem.equals(requestedAccessItem)).findFirst().orElse(null);
+
+			if (searchedAccessItem != null) {
+				role = pa.getRole();
+				break;
+			}
+
+		}
+		return role;
+	}
 
 	// get current role and access - input user
 	public UserInfo getUserInfo(String username) {
@@ -189,8 +207,9 @@ public class ProjectAccessManager {
 	public void createAccessRequest(AccessRequest accessRequest, AccessRequestListener listener) {
 		if (hasPendingAccessRequest(accessRequest)) {
 			listenAccessRequestFailure(listener, "Already has a pending request");
-		} else if (handelSuperAdminProjectLevelAccessRequest(accessRequest)){
-			listenAccessRequestFailure(listener, "SuperAdmin Role have all level of access, you can not request for any hierarchy or project level");
+		} else if (handelSuperAdminProjectLevelAccessRequest(accessRequest)) {
+			listenAccessRequestFailure(listener,
+					"SuperAdmin Role have all level of access, you can not request for any hierarchy or project level");
 		} else if (handleAccessRequest(accessRequest)) {
 			List<AccessRequest> requestList = getRequestList(accessRequest);
 			requestList = accessRequestsRepository.saveAll(requestList);
@@ -203,8 +222,10 @@ public class ProjectAccessManager {
 	}
 
 	/**
-	 * ROLE_SUPERADMIN have all level access but any user request for with role is superAdmin and
-	 * access request of any particular level or list of projects then denied request
+	 * ROLE_SUPERADMIN have all level access but any user request for with role is
+	 * superAdmin and access request of any particular level or list of projects
+	 * then denied request
+	 *
 	 * @param accessRequest
 	 * @return
 	 */
@@ -241,7 +262,8 @@ public class ProjectAccessManager {
 	 */
 	private List<AccessRequest> getRequestList(AccessRequest accessRequest) {
 		List<AccessRequest> list = new ArrayList<>();
-		if (accessRequest.getAccessNode().getAccessLevel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
+		if (accessRequest.getAccessNode().getAccessLevel()
+				.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)) {
 			list.addAll(getSeperateAccessRequest(accessRequest));
 		} else {
 			list.add(accessRequest);
@@ -518,7 +540,6 @@ public class ProjectAccessManager {
 
 	}
 
-
 	private void removeChildren(Map<String, Set<String>> globalChildrenMap, UserInfo resultUserInfo) {
 
 		resultUserInfo.getProjectsAccess().stream().flatMap(projectsAccess -> projectsAccess.getAccessNodes().stream())
@@ -591,25 +612,6 @@ public class ProjectAccessManager {
 		return pa;
 	}
 
-	private static String findRoleOfAccessItem(String requestedAccessLavel, AccessItem requestedAccessItem,
-			List<ProjectsAccess> projectsAccesses) {
-
-		String role = null;
-		for (ProjectsAccess pa : projectsAccesses) {
-			AccessItem searchedAccessItem = pa.getAccessNodes().stream()
-					.filter(accessNode -> accessNode.getAccessLevel().equals(requestedAccessLavel))
-					.flatMap(accessNode -> accessNode.getAccessItems().stream())
-					.filter(accessItem -> accessItem.equals(requestedAccessItem)).findFirst().orElse(null);
-
-			if (searchedAccessItem != null) {
-				role = pa.getRole();
-				break;
-			}
-
-		}
-		return role;
-	}
-
 	private void setFirstProjectsAccess(UserInfo resultUserInfo, String role, AccessNode accessNode) {
 		ProjectsAccess projectsAccess = new ProjectsAccess();
 		projectsAccess.setRole(role);
@@ -621,7 +623,7 @@ public class ProjectAccessManager {
 		List<String> authorities = userInfo.getAuthorities();
 		if (!authorities.contains(role)) {
 			authorities.add(role);
-			}
+		}
 		userInfo.setAuthorities(authorities);
 	}
 
@@ -889,8 +891,9 @@ public class ProjectAccessManager {
 		List<HierarchyValue> hierarchyLevelValues = projectConfig.getHierarchy();
 		CollectionUtils.emptyIfNull(hierarchyLevelValues).stream().sorted(Comparator
 				.comparing((HierarchyValue hierarchyValue) -> hierarchyValue.getHierarchyLevel().getLevel()).reversed())
-				.forEach(hierarchyValue -> parents.put(hierarchyValue.getHierarchyLevel().getHierarchyLevelId(), hierarchyValue.getValue()));
-		
+				.forEach(hierarchyValue -> parents.put(hierarchyValue.getHierarchyLevel().getHierarchyLevelId(),
+						hierarchyValue.getValue()));
+
 		UserInfo userInfo = getUserInfo(username);
 		List<ProjectsAccess> projectsAccesses = userInfo.getProjectsAccess();
 		String result = null;
@@ -933,8 +936,8 @@ public class ProjectAccessManager {
 		if (userInfo.getAuthorities().contains(Constant.ROLE_PROJECT_ADMIN)) {
 			Optional<AccessNode> projectNode = userInfo.getProjectsAccess().stream()
 					.filter(projectAccess -> Constant.ROLE_PROJECT_ADMIN.equals(projectAccess.getRole()))
-					.flatMap(projectsAccess -> projectsAccess.getAccessNodes().stream())
-					.filter(accessNode -> accessNode.getAccessLevel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT))
+					.flatMap(projectsAccess -> projectsAccess.getAccessNodes().stream()).filter(accessNode -> accessNode
+							.getAccessLevel().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT))
 					.findFirst();
 
 			if (projectNode.isPresent()) {
@@ -998,7 +1001,8 @@ public class ProjectAccessManager {
 			CollectionUtils.emptyIfNull(hierarchyLevelService.getTopHierarchyLevels()).stream()
 					.forEach(hierarchyLevel -> allowedAccessLevelsOrder.put(hierarchyLevel.getHierarchyLevelId(),
 							hierarchyLevel.getLevel()));
-			allowedAccessLevelsOrder.put(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, hierarchyLevelService.getTopHierarchyLevels().size() + 1);
+			allowedAccessLevelsOrder.put(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
+					hierarchyLevelService.getTopHierarchyLevels().size() + 1);
 			ProjectBasicConfigNode projectBasicConfigNode = projectBasicConfigService.getBasicConfigTree();
 
 			projectsAccess.forEach(projectAccess -> {

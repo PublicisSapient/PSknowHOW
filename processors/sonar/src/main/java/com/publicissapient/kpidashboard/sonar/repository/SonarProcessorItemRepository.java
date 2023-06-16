@@ -35,6 +35,7 @@ import com.publicissapient.kpidashboard.sonar.model.SonarProcessorItem;
 public interface SonarProcessorItemRepository extends ProcessorItemRepository<SonarProcessorItem> {
 
 	@Query("{ 'processorId' : ?0, 'toolConfigId': ?1, 'toolDetailsMap.instanceUrl' : ?2, 'isActive': true}")
-	List<SonarProcessorItem> findEnabledProjectsForTool(ObjectId processorId, ObjectId toolConfigId, String instanceUrl);
+	List<SonarProcessorItem> findEnabledProjectsForTool(ObjectId processorId, ObjectId toolConfigId,
+			String instanceUrl);
 
 }

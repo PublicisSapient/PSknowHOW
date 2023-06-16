@@ -93,7 +93,7 @@ public class RoleData {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		
+
 		RoleData other = (RoleData) obj;
 		if (roleName == null) {
 			if (other.roleName != null) {

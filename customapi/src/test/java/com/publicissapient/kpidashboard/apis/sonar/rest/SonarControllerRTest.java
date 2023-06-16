@@ -105,8 +105,6 @@ public class SonarControllerRTest {
 				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 		// @formatter:on
 
-
-
 		mockMvc.perform(post("/sonar/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request)).andDo(print())
 				.andExpect(status().isBadRequest());
 
@@ -143,8 +141,6 @@ public class SonarControllerRTest {
 		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
 				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 		// @formatter:on
-
-
 
 		mockMvc.perform(post("/sonarkanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());

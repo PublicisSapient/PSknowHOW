@@ -53,10 +53,12 @@ public class AccountHierarchyController {
 	 *            request body map of organisationId or businessunitId or accountId.
 	 * @return AccountFilterResponse
 	 *
-	 * @throws ApplicationException ApplicationException
+	 * @throws ApplicationException
+	 *             ApplicationException
 	 */
 	@PostMapping(value = "/filterdata", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> filterData(@RequestBody AccountFilterRequest filter) throws ApplicationException {
+	public ResponseEntity<ServiceResponse> filterData(@RequestBody AccountFilterRequest filter)
+			throws ApplicationException {
 		AccountHierarchyService<?, ?> accountHierarchyService = null;
 		try {
 			if (filter.isKanban()) {
@@ -69,9 +71,10 @@ public class AccountHierarchyController {
 			throw ae;
 
 		}
-		ServiceResponse response = new ServiceResponse(false,"No hierarchy found",null);
+		ServiceResponse response = new ServiceResponse(false, "No hierarchy found", null);
 		if (null != accountHierarchyService) {
-				response = new ServiceResponse(true,"fetched successfully",accountHierarchyService.getFilteredList(filter));
+			response = new ServiceResponse(true, "fetched successfully",
+					accountHierarchyService.getFilteredList(filter));
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}

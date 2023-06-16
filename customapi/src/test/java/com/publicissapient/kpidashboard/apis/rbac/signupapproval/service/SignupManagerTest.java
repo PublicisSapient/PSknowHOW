@@ -1,14 +1,13 @@
 package com.publicissapient.kpidashboard.apis.rbac.signupapproval.service;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.constant.AuthType;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +24,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.GrantApprovalListener;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.RejectApprovalListener;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 

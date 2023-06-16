@@ -18,14 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.model.dto;
 
+import org.bson.types.ObjectId;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import org.bson.types.ObjectId;
 
 @Data
 @Builder

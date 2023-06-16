@@ -31,7 +31,8 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 @Repository
 public interface ProcessorExecutionTraceLogRepository extends MongoRepository<ProcessorExecutionTraceLog, ObjectId> {
 
-	Optional<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigId(String processorName, String basicProjectConfigId);
+	Optional<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigId(String processorName,
+			String basicProjectConfigId);
 
 	void deleteByBasicProjectConfigId(String basicProjectConfigId);
 

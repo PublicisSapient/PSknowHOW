@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -44,6 +43,7 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -332,7 +332,8 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 			kpiElement.setTrendValueList(trendValue);
 		}
 	}
-@SuppressWarnings("java:S107")
+
+	@SuppressWarnings("java:S107")
 	private int getDelay(FieldMapping fieldMapping, Map<String, IterationKpiModalValue> modalObjectMap,
 			List<Integer> overallDelay, List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, int delay, JiraIssue jiraIssue, Map<String, Object> jiraIssueData,
@@ -405,8 +406,8 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 
 		Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
 		for (JiraHistoryChangeLog storySprintDetail : filterStorySprintDetails) {
-			LocalDate activityLocalDate = LocalDate
-					.parse(storySprintDetail.getUpdatedOn().toString().split("T")[0], DATE_TIME_FORMATTER);
+			LocalDate activityLocalDate = LocalDate.parse(storySprintDetail.getUpdatedOn().toString().split("T")[0],
+					DATE_TIME_FORMATTER);
 
 			if (inProgressStatuses.contains(storySprintDetail.getChangedTo()) && !isStartDateFound) {
 				startDate = activityLocalDate;

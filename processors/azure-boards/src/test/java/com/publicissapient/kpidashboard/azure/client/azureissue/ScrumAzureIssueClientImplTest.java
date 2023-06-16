@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
@@ -43,8 +40,6 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.application.SubProjectConfig;
 import com.publicissapient.kpidashboard.common.model.azureboards.AzureBoardsWIModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.Fields;
 import com.publicissapient.kpidashboard.common.model.azureboards.Value;
@@ -55,11 +50,14 @@ import com.publicissapient.kpidashboard.common.model.azureboards.wiql.WorkItem;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
 @ExtendWith(SpringExtension.class)
 public class ScrumAzureIssueClientImplTest {
@@ -71,35 +69,11 @@ public class ScrumAzureIssueClientImplTest {
 	List<ProjectConfFieldMapping> projectConfFieldMappingList = new ArrayList<>();
 	List<Value> issues = new ArrayList<>();
 	List<JiraIssueCustomHistory> listJiraIssueCustomHistory = new ArrayList<>();
-	List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> valueList =new ArrayList<>();
+	List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> valueList = new ArrayList<>();
 	AccountHierarchy accountHierarchy;
 
 	@InjectMocks
 	JiraIssue jiraIssue;
-
-	@Mock
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Mock
-	private AzureProcessorRepository azureProcessorRepository;
-
-	@Mock
-	private AccountHierarchyRepository accountHierarchyRepo;
-
-	@Mock
-	private AzureProcessorConfig azureProcessorConfig;
-
-	@InjectMocks
-	private ScrumAzureIssueClientImpl scrumIssueClientImpl;
-
-	@Mock
-	private AesEncryptionService aesEncryptionService;
-
-	@Mock
-	private ProcessorAzureRestClient processorAzureRestClient;
-
-	@Mock
-	private AzureAdapter azureAdapter;
 	@Mock
 	JiraIssueCustomHistory jiraIssueCustomHistory;
 	@Mock
@@ -112,32 +86,40 @@ public class ScrumAzureIssueClientImplTest {
 	AzureIterationsModel azureIterationsModel;
 	@Mock
 	AzureBoardsWIModel azureBoardsWIModel;
-
 	AzureUpdatesModel azureUpdatesModel;
-	
+	Fields field;
+	com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields fields;
+	@Mock
+	private JiraIssueRepository jiraIssueRepository;
+	@Mock
+	private AzureProcessorRepository azureProcessorRepository;
+	@Mock
+	private AccountHierarchyRepository accountHierarchyRepo;
+	@Mock
+	private AzureProcessorConfig azureProcessorConfig;
+	@InjectMocks
+	private ScrumAzureIssueClientImpl scrumIssueClientImpl;
+	@Mock
+	private AesEncryptionService aesEncryptionService;
+	@Mock
+	private ProcessorAzureRestClient processorAzureRestClient;
+	@Mock
+	private AzureAdapter azureAdapter;
 	@Mock
 	private SprintClient sprintClient;
-	
 	@Mock
 	private AdditionalFilterHelper additionalFilterHelper;
-
 	@Mock
 	private HierarchyLevelService hierarchyLevelService;
 	@Mock
 	private ScrumHandleAzureIssueHistory scrumHandleAzureIssueHistory;
-
 	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
-
 	private ProjectBasicConfig projectConfig = new ProjectBasicConfig();
+	// AzureUpdatesModel azureUpdatesModel=new AzureUpdatesModel();
 
-	Fields field;
-	com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields fields;
-	//AzureUpdatesModel azureUpdatesModel=new AzureUpdatesModel();
-	
 	@BeforeEach
 	public void setUp() throws Exception {
 		prepareProjectData();
@@ -145,13 +127,13 @@ public class ScrumAzureIssueClientImplTest {
 		prepareFieldMapping();
 		setProjectConfigFieldMap();
 		jiraIssue = JiraIssue.builder().build();
-		azureUpdatesModel=new AzureUpdatesModel();
-		List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> valueList=new ArrayList<>();
-		com.publicissapient.kpidashboard.common.model.azureboards.updates.Value value1=new com.publicissapient.kpidashboard.common.model.azureboards.updates.Value();
+		azureUpdatesModel = new AzureUpdatesModel();
+		List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> valueList = new ArrayList<>();
+		com.publicissapient.kpidashboard.common.model.azureboards.updates.Value value1 = new com.publicissapient.kpidashboard.common.model.azureboards.updates.Value();
 		value1.setId(2);
 		value1.setRev(2);
 		valueList.add(value1);
-		fields=new com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields();
+		fields = new com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields();
 		value1.setFields(fields);
 		azureUpdatesModel.setValue(valueList);
 	}
@@ -171,7 +153,7 @@ public class ScrumAzureIssueClientImplTest {
 		when(azureAdapter.getWiqlModel(any(), any(), any(), anyBoolean())).thenReturn(azureWiqlModel);
 		when(azureProcessorConfig.getMinsToReduce()).thenReturn(30);
 		when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any() ,any())).thenReturn(null);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any())).thenReturn(null);
 		createIssue();
 
 		WorkItem work = new WorkItem();
@@ -184,18 +166,18 @@ public class ScrumAzureIssueClientImplTest {
 		value.setFields(field);
 		Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 		when(azureWiqlModel.getWorkItems()).thenReturn(workItems);
-		when(processorAzureRestClient.getUpdatesResponse(any(),any())).thenReturn(azureUpdatesModel);
+		when(processorAzureRestClient.getUpdatesResponse(any(), any())).thenReturn(azureUpdatesModel);
 		when(accountHierarchyRepo.findByLabelNameAndBasicProjectConfigId("Project", scrumProjectList.get(0).getId()))
 				.thenReturn(Arrays.asList(accountHierarchy));
 
-		when(azureAdapter.getUpdates(any(),anyString())).thenReturn(azureUpdatesModel);
+		when(azureAdapter.getUpdates(any(), anyString())).thenReturn(azureUpdatesModel);
 		projectConfFieldMapping.setProjectKey("prkey");
 		projectConfFieldMapping.setProjectName("prName");
 		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
 
 		scrumIssueClientImpl.processesAzureIssues(projectConfFieldMapping, "TestKey", azureAdapter);
 		scrumIssueClientImpl.purgeAzureIssues(issues, projectConfFieldMapping);
-		scrumIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping , sprintDetailsSet);
+		scrumIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping, sprintDetailsSet);
 
 	}
 
@@ -246,7 +228,6 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
 		fieldMapping.setJiradefecttype(jiraType);
 		fieldMapping.setJiraIssueEpicType(jiraType);
-	
 
 		fieldMapping.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
 		fieldMapping.setJiraTechDebtCustomField("customfield_14141");

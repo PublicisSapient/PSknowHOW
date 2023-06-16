@@ -32,104 +32,99 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "displayName",
-    "url",
-    "id",
-    "uniqueName",
-    "imageUrl",
-    "descriptor"
-})
+@JsonPropertyOrder({ "displayName", "url", "id", "uniqueName", "imageUrl", "descriptor" })
 public class SystemCreatedBy {
 
-    @JsonProperty("displayName")
-    private String displayName;
-    @JsonProperty("url")
-    private String url;
-    @JsonProperty("id")
-    private String id;
-    @JsonProperty("uniqueName")
-    private String uniqueName;
-    @JsonProperty("imageUrl")
-    private String imageUrl;
-    @JsonProperty("descriptor")
-    private String descriptor;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+	@JsonProperty("displayName")
+	private String displayName;
+	@JsonProperty("url")
+	private String url;
+	@JsonProperty("id")
+	private String id;
+	@JsonProperty("uniqueName")
+	private String uniqueName;
+	@JsonProperty("imageUrl")
+	private String imageUrl;
+	@JsonProperty("descriptor")
+	private String descriptor;
+	@JsonIgnore
+	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("displayName")
-    public String getDisplayName() {
-        return displayName;
-    }
+	@JsonProperty("displayName")
+	public String getDisplayName() {
+		return displayName;
+	}
 
-    @JsonProperty("displayName")
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
+	@JsonProperty("displayName")
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 
-    @JsonProperty("url")
-    public String getUrl() {
-        return url;
-    }
+	@JsonProperty("url")
+	public String getUrl() {
+		return url;
+	}
 
-    @JsonProperty("url")
-    public void setUrl(String url) {
-        this.url = url;
-    }
+	@JsonProperty("url")
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-    @JsonProperty("id")
-    public String getId() {
-        return id;
-    }
+	@JsonProperty("id")
+	public String getId() {
+		return id;
+	}
 
-    @JsonProperty("id")
-    public void setId(String id) {
-        this.id = id;
-    }
+	@JsonProperty("id")
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    @JsonProperty("uniqueName")
-    public String getUniqueName() {
-        return uniqueName;
-    }
+	@JsonProperty("uniqueName")
+	public String getUniqueName() {
+		return uniqueName;
+	}
 
-    @JsonProperty("uniqueName")
-    public void setUniqueName(String uniqueName) {
-        this.uniqueName = uniqueName;
-    }
+	@JsonProperty("uniqueName")
+	public void setUniqueName(String uniqueName) {
+		this.uniqueName = uniqueName;
+	}
 
-    @JsonProperty("imageUrl")
-    public String getImageUrl() {
-        return imageUrl;
-    }
+	@JsonProperty("imageUrl")
+	public String getImageUrl() {
+		return imageUrl;
+	}
 
-    @JsonProperty("imageUrl")
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+	@JsonProperty("imageUrl")
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 
-    @JsonProperty("descriptor")
-    public String getDescriptor() {
-        return descriptor;
-    }
+	@JsonProperty("descriptor")
+	public String getDescriptor() {
+		return descriptor;
+	}
 
-    @JsonProperty("descriptor")
-    public void setDescriptor(String descriptor) {
-        this.descriptor = descriptor;
-    }
+	@JsonProperty("descriptor")
+	public void setDescriptor(String descriptor) {
+		this.descriptor = descriptor;
+	}
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+	@JsonAnyGetter
+	public Map<String, Object> getAdditionalProperties() {
+		return this.additionalProperties;
+	}
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+	@JsonAnySetter
+	public void setAdditionalProperty(String name, Object value) {
+		this.additionalProperties.put(name, value);
+	}
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("displayName", displayName).append("url", url).append("id", id).append("uniqueName", uniqueName).append("imageUrl", imageUrl).append("descriptor", descriptor).append("additionalProperties", additionalProperties).toString();
-    }
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append("displayName", displayName).append("url", url).append("id", id)
+				.append("uniqueName", uniqueName).append("imageUrl", imageUrl).append("descriptor", descriptor)
+				.append("additionalProperties", additionalProperties).toString();
+	}
 
 }

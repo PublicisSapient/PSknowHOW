@@ -229,8 +229,9 @@ public class CodeCommitKanbanServiceImplTest {
 
 		String kpiRequestTrackerId = "Excel-Bitbucket-5be544de025de212549176a9";
 
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKETKANBAN.name()))
-				.thenReturn(kpiRequestTrackerId);
+		when(cacheService
+				.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKETKANBAN.name()))
+						.thenReturn(kpiRequestTrackerId);
 
 		KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);

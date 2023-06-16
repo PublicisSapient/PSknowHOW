@@ -42,23 +42,23 @@ import lombok.Setter;
 public class ZephyrTestCaseDTO {
 
 	private String owner;
-	private String updatedBy; //unused
+	private String updatedBy; // unused
 	private String updatedOn;
-	private int majorVersion; //unused
-	private String priority; //unused
+	private int majorVersion; // unused
+	private String priority; // unused
 	private String createdOn;
-	private String objective; //unused
-	private String component; //unused
-	private String projectKey; //unused
+	private String objective; // unused
+	private String component; // unused
+	private String projectKey; // unused
 	private String folder;
-	private String createdBy; //unused
-	private boolean latestVersion; //unused
-	private String lastTestResultStatus; //unused
-	private String name; //unused
+	private String createdBy; // unused
+	private boolean latestVersion; // unused
+	private String lastTestResultStatus; // unused
+	private String name; // unused
 	private String key;
-	private String status; //unused
+	private String status; // unused
 	private Map<String, String> customFields;
-	private ZephyrTestCaseScript testScript; //unused
+	private ZephyrTestCaseScript testScript; // unused
 	private Set<String> issueLinks;
 	private List<String> labels;
 

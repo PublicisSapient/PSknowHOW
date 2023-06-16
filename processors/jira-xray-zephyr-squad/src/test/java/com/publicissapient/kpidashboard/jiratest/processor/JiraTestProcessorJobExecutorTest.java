@@ -65,43 +65,29 @@ public class JiraTestProcessorJobExecutorTest {
 
 	private final ObjectId PROCESSOR_ID = new ObjectId("5e16dc92f1aab3fbb1b198f3");
 	@Mock
-	private ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	private JiraTestProcessorRepository jiraTestProcessorRepository;
-
-	@Mock
-	private TaskScheduler taskScheduler;
-
-	@Mock
-	private JiraTestProcessorConfig jiraProcessorConfig;
-
-	@Mock
-	private ProcessorToolConnectionService processorToolConnectionService;
-
-	@Mock
-	private JiraTestService jiraTestService;
-
-	@Mock
-	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
-	@Mock
 	RestTemplate restTemplate;
-
 	@InjectMocks
 	JiraTestProcessorJobExecutor jiraTestProcessorJobExecutor;
-
-	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
-
-	private ProjectConfFieldMapping projectConfFieldMapping;
-
-	private ProjectBasicConfig projectBasicConfig;
-
-	private List<ProcessorToolConnection> toolList = new ArrayList<>();
-
-	private ProcessorToolConnection toolInfo;
-
 	JiraTestProcessor jiraTestProcessor = new JiraTestProcessor();
+	@Mock
+	private ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	private JiraTestProcessorRepository jiraTestProcessorRepository;
+	@Mock
+	private TaskScheduler taskScheduler;
+	@Mock
+	private JiraTestProcessorConfig jiraProcessorConfig;
+	@Mock
+	private ProcessorToolConnectionService processorToolConnectionService;
+	@Mock
+	private JiraTestService jiraTestService;
+	@Mock
+	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
+	private ProjectConfFieldMapping projectConfFieldMapping;
+	private ProjectBasicConfig projectBasicConfig;
+	private List<ProcessorToolConnection> toolList = new ArrayList<>();
+	private ProcessorToolConnection toolInfo;
 
 	@BeforeEach
 	public void setUp() throws Exception {

@@ -49,19 +49,21 @@ public class ProjectBasicConfigDTO {
 	private boolean kanban;
 	private List<HierarchyValueDTO> hierarchy;
 	private boolean saveAssigneeDetails;
-	/**
-	 * set isKanban value
-	 * 
-	 * @param isKanban boolean value
-	 */
-	public void setIsKanban(boolean isKanban) {
-		this.kanban = isKanban;
-	}
 
 	/**
 	 * @return isKanban value
 	 */
 	public boolean getIsKanban() {
 		return this.kanban;
+	}
+
+	/**
+	 * set isKanban value
+	 *
+	 * @param isKanban
+	 *            boolean value
+	 */
+	public void setIsKanban(boolean isKanban) {
+		this.kanban = isKanban;
 	}
 }

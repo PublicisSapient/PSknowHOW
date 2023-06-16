@@ -1,5 +1,21 @@
 package com.publicissapient.kpidashboard.apis.auth.service;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.testng.AssertJUnit.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.InvalidAuthTypeConfigException;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
@@ -14,168 +30,150 @@ import com.publicissapient.kpidashboard.common.model.application.ValidationMessa
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.testng.AssertJUnit.assertNotNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthTypesConfigServiceImplTest {
 
-    @Mock
-    private ADServerDetailsService adServerDetailsService;
+	@Mock
+	private ADServerDetailsService adServerDetailsService;
 
-    @Mock
-    private GlobalConfigRepository globalConfigRepository;
+	@Mock
+	private GlobalConfigRepository globalConfigRepository;
 
+	@Mock
+	private AesEncryptionService aesEncryptionService;
 
-    @Mock
-    private AesEncryptionService aesEncryptionService;
+	@Mock
+	private CustomApiConfig customApiConfig;
 
-    @Mock
-    private CustomApiConfig customApiConfig;
+	@Mock
+	private AuthTypeConfigValidator authTypeConfigValidator;
 
-    @Mock
-    private AuthTypeConfigValidator authTypeConfigValidator;
+	@Mock
+	private TokenAuthenticationService tokenAuthenticationService;
 
-    @Mock
-    private TokenAuthenticationService tokenAuthenticationService;
+	@Mock
+	private UserInfoService userInfoService;
 
-    @Mock
-    private UserInfoService userInfoService;
+	@InjectMocks
+	private AuthTypesConfigServiceImpl authTypesConfigService;
 
-    @InjectMocks
-    private AuthTypesConfigServiceImpl authTypesConfigService;
+	@Test
+	public void saveAuthTypeConfig_OnlyAdLogin() {
+		ValidationMessage validationMessage = new ValidationMessage();
+		validationMessage.setValid(true);
+		when(authTypeConfigValidator.validateConfig(any(AuthTypeConfig.class))).thenReturn(validationMessage);
+		when(globalConfigRepository.findAll()).thenReturn(createDefaultGlobalConfigCollection());
+		when(globalConfigRepository.saveAll(anyList())).thenReturn(new ArrayList<>());
+		when(userInfoService.getUserInfoByAuthType(AuthType.STANDARD.name())).thenReturn(getStandardUsers());
+		doNothing().when(tokenAuthenticationService).invalidateAuthToken(anyList());
+		AuthTypeConfig authTypeConfig = createAuthTypeConfig(false, true, createAdServerDetails());
+		AuthTypeConfig result = authTypesConfigService.saveAuthTypeConfig(authTypeConfig);
+		assertNotNull(result);
 
-    @Test
-    public void saveAuthTypeConfig_OnlyAdLogin() {
-        ValidationMessage validationMessage = new ValidationMessage();
-        validationMessage.setValid(true);
-        when(authTypeConfigValidator.validateConfig(any(AuthTypeConfig.class))).thenReturn(validationMessage);
-        when(globalConfigRepository.findAll()).thenReturn(createDefaultGlobalConfigCollection());
-        when(globalConfigRepository.saveAll(anyList())).thenReturn(new ArrayList<>());
-        when(userInfoService.getUserInfoByAuthType(AuthType.STANDARD.name())).thenReturn(getStandardUsers());
-        doNothing().when(tokenAuthenticationService).invalidateAuthToken(anyList());
-        AuthTypeConfig authTypeConfig = createAuthTypeConfig(false, true, createAdServerDetails());
-        AuthTypeConfig result = authTypesConfigService.saveAuthTypeConfig(authTypeConfig);
-        assertNotNull(result);
+	}
 
-    }
+	@Test
+	public void saveAuthTypeConfig_OnlyStandardLogin() {
+		ValidationMessage validationMessage = new ValidationMessage();
+		validationMessage.setValid(true);
+		when(authTypeConfigValidator.validateConfig(any(AuthTypeConfig.class))).thenReturn(validationMessage);
+		when(globalConfigRepository.findAll()).thenReturn(createDefaultGlobalConfigCollection());
+		when(globalConfigRepository.saveAll(anyList())).thenReturn(new ArrayList<>());
+		when(userInfoService.getUserInfoByAuthType(AuthType.LDAP.name())).thenReturn(getAdUsers());
+		doNothing().when(tokenAuthenticationService).invalidateAuthToken(anyList());
+		AuthTypeConfig authTypeConfig = createAuthTypeConfig(true, false, null);
+		AuthTypeConfig result = authTypesConfigService.saveAuthTypeConfig(authTypeConfig);
+		assertNotNull(result);
 
-    @Test
-    public void saveAuthTypeConfig_OnlyStandardLogin() {
-        ValidationMessage validationMessage = new ValidationMessage();
-        validationMessage.setValid(true);
-        when(authTypeConfigValidator.validateConfig(any(AuthTypeConfig.class))).thenReturn(validationMessage);
-        when(globalConfigRepository.findAll()).thenReturn(createDefaultGlobalConfigCollection());
-        when(globalConfigRepository.saveAll(anyList())).thenReturn(new ArrayList<>());
-        when(userInfoService.getUserInfoByAuthType(AuthType.LDAP.name())).thenReturn(getAdUsers());
-        doNothing().when(tokenAuthenticationService).invalidateAuthToken(anyList());
-        AuthTypeConfig authTypeConfig = createAuthTypeConfig(true, false, null);
-        AuthTypeConfig result = authTypesConfigService.saveAuthTypeConfig(authTypeConfig);
-        assertNotNull(result);
+	}
 
-    }
+	@Test
+	public void saveAuthTypeConfig_StandardAndAdLogin() {
+		ValidationMessage validationMessage = new ValidationMessage();
+		validationMessage.setValid(true);
+		when(authTypeConfigValidator.validateConfig(any(AuthTypeConfig.class))).thenReturn(validationMessage);
+		when(globalConfigRepository.findAll()).thenReturn(createDefaultGlobalConfigCollection());
+		when(globalConfigRepository.saveAll(anyList())).thenReturn(new ArrayList<>());
+		doNothing().when(tokenAuthenticationService).invalidateAuthToken(anyList());
+		AuthTypeConfig authTypeConfig = createAuthTypeConfig(true, true, createAdServerDetails());
+		AuthTypeConfig result = authTypesConfigService.saveAuthTypeConfig(authTypeConfig);
+		assertNotNull(result);
 
-    @Test
-    public void saveAuthTypeConfig_StandardAndAdLogin() {
-        ValidationMessage validationMessage = new ValidationMessage();
-        validationMessage.setValid(true);
-        when(authTypeConfigValidator.validateConfig(any(AuthTypeConfig.class))).thenReturn(validationMessage);
-        when(globalConfigRepository.findAll()).thenReturn(createDefaultGlobalConfigCollection());
-        when(globalConfigRepository.saveAll(anyList())).thenReturn(new ArrayList<>());
-        doNothing().when(tokenAuthenticationService).invalidateAuthToken(anyList());
-        AuthTypeConfig authTypeConfig = createAuthTypeConfig(true, true, createAdServerDetails());
-        AuthTypeConfig result = authTypesConfigService.saveAuthTypeConfig(authTypeConfig);
-        assertNotNull(result);
+	}
 
-    }
+	@Test(expected = InvalidAuthTypeConfigException.class)
+	public void saveAuthTypeConfig_Invalid() {
+		ValidationMessage validationMessage = new ValidationMessage();
+		validationMessage.setValid(false);
+		validationMessage.setMessage("Invalid input");
+		AuthTypeConfig authTypeConfig = createAuthTypeConfig(true, true, createAdServerDetails());
+		when(authTypeConfigValidator.validateConfig(any(AuthTypeConfig.class))).thenReturn(validationMessage);
 
-    @Test(expected = InvalidAuthTypeConfigException.class)
-    public void saveAuthTypeConfig_Invalid(){
-        ValidationMessage validationMessage = new ValidationMessage();
-        validationMessage.setValid(false);
-        validationMessage.setMessage("Invalid input");
-        AuthTypeConfig authTypeConfig = createAuthTypeConfig(true, true, createAdServerDetails());
-        when(authTypeConfigValidator.validateConfig(any(AuthTypeConfig.class))).thenReturn(validationMessage);
+		authTypesConfigService.saveAuthTypeConfig(authTypeConfig);
+	}
 
-        authTypesConfigService.saveAuthTypeConfig(authTypeConfig);
-    }
+	@Test
+	public void getAuthTypeConfig() {
+		when(globalConfigRepository.findAll()).thenReturn(createDefaultGlobalConfigCollection());
+		AuthTypeConfig authTypeConfig = authTypesConfigService.getAuthTypeConfig();
+		assertNotNull(authTypeConfig);
+	}
 
+	@Test
+	public void getAuthTypesStatus() {
 
+		when(globalConfigRepository.findAll()).thenReturn(createDefaultGlobalConfigCollection());
+		AuthTypeStatus authTypesStatus = authTypesConfigService.getAuthTypesStatus();
+		assertNotNull(authTypesStatus);
+	}
 
-    @Test
-    public void getAuthTypeConfig() {
-        when(globalConfigRepository.findAll()).thenReturn(createDefaultGlobalConfigCollection());
-        AuthTypeConfig authTypeConfig = authTypesConfigService.getAuthTypeConfig();
-        assertNotNull(authTypeConfig);
-    }
+	private List<GlobalConfig> createDefaultGlobalConfigCollection() {
+		GlobalConfig globalConfig = new GlobalConfig();
 
-    @Test
-    public void getAuthTypesStatus() {
+		globalConfig.setAuthTypeStatus(createAuthTypeStatus(true, false));
+		globalConfig.setAdServerDetail(null);
+		return Arrays.asList(globalConfig);
+	}
 
-        when(globalConfigRepository.findAll()).thenReturn(createDefaultGlobalConfigCollection());
-        AuthTypeStatus authTypesStatus = authTypesConfigService.getAuthTypesStatus();
-        assertNotNull(authTypesStatus);
-    }
+	private AuthTypeConfig createAuthTypeConfig(boolean standardLogin, boolean adLogin, ADServerDetail adServerDetail) {
+		AuthTypeConfig authTypeConfig = new AuthTypeConfig();
+		authTypeConfig.setAuthTypeStatus(createAuthTypeStatus(standardLogin, adLogin));
+		authTypeConfig.setAdServerDetail(adServerDetail);
+		return authTypeConfig;
+	}
 
-    private List<GlobalConfig> createDefaultGlobalConfigCollection(){
-        GlobalConfig globalConfig = new GlobalConfig();
+	private ADServerDetail createAdServerDetails() {
+		ADServerDetail adServerDetail = new ADServerDetail();
+		adServerDetail.setUsername("TestUser");
+		adServerDetail.setPassword("Test@123");
+		adServerDetail.setHost("testHost");
+		adServerDetail.setRootDn("testRootDn");
+		adServerDetail.setPort(100);
 
-        globalConfig.setAuthTypeStatus(createAuthTypeStatus(true, false));
-        globalConfig.setAdServerDetail(null);
-        return Arrays.asList(globalConfig);
-    }
+		return adServerDetail;
+	}
 
-    private AuthTypeConfig createAuthTypeConfig(boolean standardLogin, boolean adLogin, ADServerDetail adServerDetail) {
-        AuthTypeConfig authTypeConfig = new AuthTypeConfig();
-        authTypeConfig.setAuthTypeStatus(createAuthTypeStatus(standardLogin, adLogin));
-        authTypeConfig.setAdServerDetail(adServerDetail);
-        return authTypeConfig;
-    }
+	private AuthTypeStatus createAuthTypeStatus(boolean standardLogin, boolean adLogin) {
+		AuthTypeStatus authTypeStatus = new AuthTypeStatus();
+		authTypeStatus.setStandardLogin(standardLogin);
+		authTypeStatus.setAdLogin(adLogin);
+		return authTypeStatus;
+	}
 
-    private ADServerDetail createAdServerDetails(){
-        ADServerDetail adServerDetail = new ADServerDetail();
-        adServerDetail.setUsername("TestUser");
-        adServerDetail.setPassword("Test@123");
-        adServerDetail.setHost("testHost");
-        adServerDetail.setRootDn("testRootDn");
-        adServerDetail.setPort(100);
+	private List<UserInfo> getStandardUsers() {
 
-        return adServerDetail;
-    }
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUsername("user1");
+		userInfo.setAuthType(AuthType.STANDARD);
+		return Arrays.asList(userInfo);
+	}
 
-    private AuthTypeStatus createAuthTypeStatus(boolean standardLogin, boolean adLogin){
-        AuthTypeStatus authTypeStatus = new AuthTypeStatus();
-        authTypeStatus.setStandardLogin(standardLogin);
-        authTypeStatus.setAdLogin(adLogin);
-        return authTypeStatus;
-    }
+	private List<UserInfo> getAdUsers() {
 
-    private List<UserInfo> getStandardUsers() {
-
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUsername("user1");
-        userInfo.setAuthType(AuthType.STANDARD);
-        return Arrays.asList(userInfo);
-    }
-
-    private List<UserInfo> getAdUsers() {
-
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUsername("user2");
-        userInfo.setAuthType(AuthType.LDAP);
-        return Arrays.asList(userInfo);
-    }
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUsername("user2");
+		userInfo.setAuthType(AuthType.LDAP);
+		return Arrays.asList(userInfo);
+	}
 }

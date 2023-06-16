@@ -18,10 +18,8 @@
 
 package com.publicissapient.kpidashboard.sonar.processor;
 
-import com.publicissapient.kpidashboard.sonar.factory.SonarClientFactory;
-import com.publicissapient.kpidashboard.sonar.processor.adapter.SonarClient;
-import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar6And7Client;
-import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar8Client;
+import static org.hamcrest.Matchers.instanceOf;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +27,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.Matchers.instanceOf;
+import com.publicissapient.kpidashboard.sonar.factory.SonarClientFactory;
+import com.publicissapient.kpidashboard.sonar.processor.adapter.SonarClient;
+import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar6And7Client;
+import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar8Client;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SonarClientFactoryTest {
@@ -63,7 +64,6 @@ public class SonarClientFactoryTest {
 			Assert.assertEquals("API Version should be Empty For Sonar", exception.getMessage());
 		}
 	}
-
 
 	@Test
 	public void getSonarClieent_versionInInt() throws Exception {

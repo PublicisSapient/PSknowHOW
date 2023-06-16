@@ -20,15 +20,15 @@ package com.publicissapient.kpidashboard.apis.pushdata.model;
 
 import java.util.List;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * token details for push data via expose api
@@ -40,7 +40,7 @@ import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 @NoArgsConstructor
 @Document(collection = "push_data_trace_log")
 public class PushDataTraceLog extends BasicModel {
-	private static PushDataTraceLog pushDataTraceLog=null;
+	private static PushDataTraceLog pushDataTraceLog = null;
 
 	private String pushApiSource;
 	private String projectName;
@@ -55,14 +55,14 @@ public class PushDataTraceLog extends BasicModel {
 	private String errorMessage;
 	private List<PushDataDetail> pushDataDetails;
 
-	public static synchronized  PushDataTraceLog getInstance(){
-		if(pushDataTraceLog==null){
-			pushDataTraceLog=new PushDataTraceLog();
+	public static synchronized PushDataTraceLog getInstance() {
+		if (pushDataTraceLog == null) {
+			pushDataTraceLog = new PushDataTraceLog();
 		}
 		return pushDataTraceLog;
 	}
 
-	public static void destroy(){
-		pushDataTraceLog=null;
+	public static void destroy() {
+		pushDataTraceLog = null;
 	}
 }

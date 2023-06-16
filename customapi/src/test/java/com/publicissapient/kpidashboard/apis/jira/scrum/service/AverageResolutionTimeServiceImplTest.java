@@ -15,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -37,6 +36,7 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
@@ -59,57 +59,43 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 @RunWith(MockitoJUnitRunner.class)
 public class AverageResolutionTimeServiceImplTest {
+	List<JiraIssue> totalIssueList = new ArrayList<>();
+	List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
+	@InjectMocks
+	AverageResolutionTimeServiceImpl averageResolutionTimeServiceImpl;
+	@Mock
+	JiraIssueRepository jiraIssueRepository;
+	@Mock
+	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Mock
+	CacheService cacheService;
+	@Mock
+	KpiHelperService kpiHelperService;
+	@Mock
+	ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	FieldMappingRepository fieldMappingRepository;
+	@Mock
+	CustomApiConfig customApiSetting;
+	@Mock
+	FilterHelperService filterHelperService;
+	@Mock
+	ConfigHelperService configHelperService;
+	@Mock
+	CustomApiConfig customApiConfig;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private List<AccountHierarchyData> ahdList1 = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
-
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
 	private Map<String, List<String>> maturityRangeMap = new HashMap<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-	List<JiraIssue> totalIssueList = new ArrayList<>();
-
-	List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
-
-	@InjectMocks
-	AverageResolutionTimeServiceImpl averageResolutionTimeServiceImpl;
-
-	@Mock
-	JiraIssueRepository jiraIssueRepository;
-
-	@Mock
-	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
-	@Mock
-	CacheService cacheService;
-
-	@Mock
-	KpiHelperService kpiHelperService;
-
-	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
-
-	@Mock
-	CustomApiConfig customApiSetting;
-
 	@Mock
 	private CommonService commonService;
-
-	@Mock
-	FilterHelperService filterHelperService;
-
-	@Mock
-	ConfigHelperService configHelperService;
-
-	@Mock
-	CustomApiConfig customApiConfig;
 
 	@Before
 	public void setup() {

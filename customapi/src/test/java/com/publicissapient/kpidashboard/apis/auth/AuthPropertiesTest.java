@@ -24,8 +24,6 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-
 public class AuthPropertiesTest {
 
 	private AuthProperties tokenAuthProperties;

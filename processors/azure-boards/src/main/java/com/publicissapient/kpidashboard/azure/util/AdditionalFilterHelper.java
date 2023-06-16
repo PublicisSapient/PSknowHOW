@@ -79,10 +79,10 @@ public class AdditionalFilterHelper {
 
 		List<AdditionalFilterValue> values = new ArrayList<>();
 
-		if (CommonConstant.LABELS.equals(additionalFilterConfig.getIdentifyFrom())
-				&& null != issue.getFields() && StringUtils.isNotEmpty(issue.getFields().getSystemTags())) {
+		if (CommonConstant.LABELS.equals(additionalFilterConfig.getIdentifyFrom()) && null != issue.getFields()
+				&& StringUtils.isNotEmpty(issue.getFields().getSystemTags())) {
 			String[] labelArray = issue.getFields().getSystemTags().split(";");
-			Set<String> labels = new HashSet<>(Arrays.asList(labelArray));	
+			Set<String> labels = new HashSet<>(Arrays.asList(labelArray));
 			labels.forEach(label -> {
 				AdditionalFilterValue additionalFilterValue = new AdditionalFilterValue();
 				additionalFilterValue.setValue(label);
@@ -108,15 +108,15 @@ public class AdditionalFilterHelper {
 	}
 
 	private Set<String> getCustomFieldValues(Value issue, AdditionalFilterConfig additionalFilterConfig) {
-		Map<String, Object> fields =  AzureIssueClientUtil.buildFieldMap(issue.getFields());
+		Map<String, Object> fields = AzureIssueClientUtil.buildFieldMap(issue.getFields());
 		Set<String> values = new HashSet<>();
 		String customField = additionalFilterConfig.getIdentificationField();
 
 		if (null != fields.get(customField)) {
 			try {
 				if (fields.get(customField) instanceof JSONObject) {
-					if (StringUtils.isNotBlank(
-							(String) ((JSONObject) fields.get(customField)).get(AzureConstants.VALUE))) {
+					if (StringUtils
+							.isNotBlank((String) ((JSONObject) fields.get(customField)).get(AzureConstants.VALUE))) {
 						values.add((String) ((JSONObject) fields.get(customField)).get(AzureConstants.VALUE));
 					} else {
 						values.add(AzureProcessorUtil.deodeUTF8String(fields.get(customField)));

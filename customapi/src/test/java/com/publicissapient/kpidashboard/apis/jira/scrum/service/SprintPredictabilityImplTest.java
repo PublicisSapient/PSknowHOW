@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -39,6 +38,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -61,17 +61,15 @@ public class SprintPredictabilityImplTest {
 	private static final String SPRINT_WISE_PREDICTABILITY = "predictability";
 
 	private static final String SPRINT_WISE_SPRINT_DETAILS = "sprintWiseSprintDetailMap";
-	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-	private KpiRequest kpiRequest;
-	private Map<String, Object> filterLevelMap;
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMapForActualEstimation = new HashMap<>();
-	private Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
-
-	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
-
 	List<JiraIssue> sprintWiseStoryList = new ArrayList<>();
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private KpiRequest kpiRequest;
+	private Map<String, Object> filterLevelMap;
+	private Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
+	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 
 	@Mock
@@ -144,7 +142,8 @@ public class SprintPredictabilityImplTest {
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		FieldMapping fieldMappingWithActualEstimation = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingWithActualEstimation.setEstimationCriteria("Actual Estimation");
-		fieldMappingMapForActualEstimation.put(fieldMapping.getBasicProjectConfigId(), fieldMappingWithActualEstimation);
+		fieldMappingMapForActualEstimation.put(fieldMapping.getBasicProjectConfigId(),
+				fieldMappingWithActualEstimation);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 

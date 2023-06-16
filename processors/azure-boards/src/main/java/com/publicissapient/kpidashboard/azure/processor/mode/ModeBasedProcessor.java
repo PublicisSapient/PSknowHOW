@@ -54,7 +54,8 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	/**
 	 * Validate and Collects Issues and data
 	 * 
-	 * @param projectConfigList projectConfiguration list
+	 * @param projectConfigList
+	 *            projectConfiguration list
 	 * @return Map of validateAndCollectIssues
 	 */
 	public abstract Map<String, Integer> validateAndCollectIssues(List<ProjectBasicConfig> projectConfigList);
@@ -63,8 +64,10 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	 * Adds corresponding projectConfig and Fieldmapping to single
 	 * ProjectConfFieldMapping
 	 * 
-	 * @param projectConfigList List of project configurations
-	 * @param fieldMappingList  List of all the Field mappings
+	 * @param projectConfigList
+	 *            List of project configurations
+	 * @param fieldMappingList
+	 *            List of all the Field mappings
 	 * @return Map of Project Key and ProjectConfFieldMapping
 	 */
 	public Map<String, ProjectConfFieldMapping> createProjectConfigMap(List<ProjectBasicConfig> projectConfigList,
@@ -109,7 +112,8 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	/**
 	 * This method gets list of RelevantProjects based on mode
 	 * 
-	 * @param projectConfigList list of all the projects present in the DB
+	 * @param projectConfigList
+	 *            list of all the projects present in the DB
 	 * @return relevant project list i.e. online project list or offline project
 	 *         list
 	 */
@@ -118,7 +122,8 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	/**
 	 * Gets AzureProjectKey
 	 * 
-	 * @param basicProjectConfigId basicProjectConfigId
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
 	 * @return ProjectKey
 	 */
 	private String getAzureProjectKey(ObjectId basicProjectConfigId) {
@@ -130,7 +135,8 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	/**
 	 * Gets AzureToolConfig
 	 * 
-	 * @param basicProjectConfigId basicProjectConfigId
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
 	 * @return AzureToolConfig
 	 */
 	private AzureToolConfig getAzureToolConfig(ObjectId basicProjectConfigId) {

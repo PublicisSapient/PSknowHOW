@@ -24,6 +24,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
@@ -33,9 +36,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 /**
  * Represents the permissions data used in roleData.
@@ -49,39 +49,39 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 @Document(collection = "action_policy_rule")
 public class ActionPolicyRule extends BasicModel {
 
-    @Field("name")
-    private String name;
+	@Field("name")
+	private String name;
 
-    @Field("roleAllowed")
-    private String roleAllowed;
+	@Field("roleAllowed")
+	private String roleAllowed;
 
-    @Field("description")
-    private String description;
+	@Field("description")
+	private String description;
 
-    @Field("roleActionCheck")
-    private String roleActionCheck;
+	@Field("roleActionCheck")
+	private String roleActionCheck;
 
-    @Field("condition")
-    private String condition;
+	@Field("condition")
+	private String condition;
 
-    @CreatedDate
-    private Date createdDate;
+	@CreatedDate
+	private Date createdDate;
 
-    @LastModifiedDate
-    private Date lastModifiedDate;
+	@LastModifiedDate
+	private Date lastModifiedDate;
 
-    @Field("isDeleted")
-    private String isDeleted;
+	@Field("isDeleted")
+	private String isDeleted;
 
-    public Expression getRoleActionCheck() {
-        ExpressionParser parser = new SpelExpressionParser();
-        return parser.parseExpression(roleActionCheck);
+	public Expression getRoleActionCheck() {
+		ExpressionParser parser = new SpelExpressionParser();
+		return parser.parseExpression(roleActionCheck);
 
-    }
+	}
 
-    public Expression getCondition() {
-        ExpressionParser parser = new SpelExpressionParser();
-        return parser.parseExpression(condition);
+	public Expression getCondition() {
+		ExpressionParser parser = new SpelExpressionParser();
+		return parser.parseExpression(condition);
 
-    }
+	}
 }

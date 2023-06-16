@@ -23,8 +23,8 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
+import com.publicissapient.kpidashboard.gitlab.model.GitLabRepo;
 
 /**
  * GitLabRepoRepository is used to process GitLabRepo.
@@ -32,10 +32,11 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemR
 public interface GitLabRepoRepository extends ProcessorItemRepository<GitLabRepo> {
 
 	/**
-	 * Represents a function that accepts one input arguments 
-	 * and returns list of GitLabRepo.
+	 * Represents a function that accepts one input arguments and returns list of
+	 * GitLabRepo.
 	 *
-	 * @param processorId the processor id
+	 * @param processorId
+	 *            the processor id
 	 * @return GitLabRepo list of GitLabRepo
 	 */
 	@Query("{ 'processorId' : ?0, 'isActive': true}")

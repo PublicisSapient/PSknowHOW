@@ -20,9 +20,7 @@ package com.publicissapient.kpidashboard.common.repository.jira;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
@@ -65,7 +63,8 @@ public interface KanbanJiraIssueRepoCustom {
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo, String range);
 
 	/**
-	 * Finds KanbanFeature objects for given filters and date and jira status have as per mapStatusCriteria
+	 * Finds KanbanFeature objects for given filters and date and jira status have
+	 * as per mapStatusCriteria
 	 *
 	 * @param mapOfFilters
 	 * @param uniqueProjectMap
@@ -77,7 +76,6 @@ public interface KanbanJiraIssueRepoCustom {
 	List<KanbanJiraIssue> findIssuesByDateAndTypeAndStatus(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo, String range,
 			String mapStatusCriteria);
-
 
 	/**
 	 * Find costOfDelay by type list.

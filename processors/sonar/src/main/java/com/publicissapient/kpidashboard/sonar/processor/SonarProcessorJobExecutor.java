@@ -26,9 +26,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.sonar.util.SonarUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +44,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
@@ -58,6 +56,7 @@ import com.publicissapient.kpidashboard.common.repository.sonar.SonarDetailsRepo
 import com.publicissapient.kpidashboard.common.repository.sonar.SonarHistoryRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.sonar.config.SonarConfig;
 import com.publicissapient.kpidashboard.sonar.factory.SonarClientFactory;
 import com.publicissapient.kpidashboard.sonar.model.SonarProcessor;
@@ -66,6 +65,7 @@ import com.publicissapient.kpidashboard.sonar.processor.adapter.SonarClient;
 import com.publicissapient.kpidashboard.sonar.repository.SonarProcessorItemRepository;
 import com.publicissapient.kpidashboard.sonar.repository.SonarProcessorRepository;
 import com.publicissapient.kpidashboard.sonar.util.SonarProcessorUtils;
+import com.publicissapient.kpidashboard.sonar.util.SonarUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -336,9 +336,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 					new HttpEntity<>(SonarProcessorUtils.getHeaders(sonarServer.getAccessToken())), metrics);
 		} else if (!sonarServer.isCloudEnv() && sonarServer.isAccessTokenEnabled()) {
 			sonarDetailsMetrics = sonarClient.getLatestSonarDetails(project,
-					new HttpEntity<>(
-							SonarProcessorUtils.getHeaders(sonarServer.getAccessToken(), true)),
-					metrics);
+					new HttpEntity<>(SonarProcessorUtils.getHeaders(sonarServer.getAccessToken(), true)), metrics);
 		} else {
 			sonarDetailsMetrics = sonarClient.getLatestSonarDetails(project,
 					new HttpEntity<>(
@@ -394,7 +392,6 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 		String username = toolCredentials.getUsername();
 		String password = toolCredentials.getPassword();
 
-
 		List<SonarHistory> sonarHistoryList;
 		if (sonarServer.isCloudEnv()) {
 			sonarHistoryList = sonarClient.getPastSonarDetails(ci,
@@ -402,7 +399,7 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 
 		} else if (!sonarServer.isCloudEnv() && sonarServer.isAccessTokenEnabled()) {
 			sonarHistoryList = sonarClient.getPastSonarDetails(ci,
-					new HttpEntity<>(SonarProcessorUtils.getHeaders(password,true)), metrics);
+					new HttpEntity<>(SonarProcessorUtils.getHeaders(password, true)), metrics);
 		} else {
 			sonarHistoryList = sonarClient.getPastSonarDetails(ci,
 					new HttpEntity<>(SonarProcessorUtils.getHeaders(username, password)), metrics);

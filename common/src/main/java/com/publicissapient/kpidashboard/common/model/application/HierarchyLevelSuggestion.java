@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 @Document(collection = "hierarchy_level_suggestions")
-public class HierarchyLevelSuggestion  extends BasicModel {
-    private String hierarchyLevelId;
-    private TreeSet<String> values;
+public class HierarchyLevelSuggestion extends BasicModel {
+	private String hierarchyLevelId;
+	private TreeSet<String> values;
 }

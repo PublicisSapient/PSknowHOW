@@ -26,11 +26,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingServiceImpl;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,20 +37,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Optional;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingServiceImpl;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 /**
  * @author anisingh4
@@ -93,11 +91,11 @@ public class FieldMappingServiceImplTest {
 
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("5d0533b0ff45ea9c730bb718"));
-		Optional<ProjectToolConfig> projectToolConfigOpt=Optional.of(projectToolConfig);
-		
+		Optional<ProjectToolConfig> projectToolConfigOpt = Optional.of(projectToolConfig);
+
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(new ObjectId("5d0533b0ff45ea9c730bb718"));
-		Optional<ProjectBasicConfig> projectBasicConfigOpt=Optional.of(projectBasicConfig);
+		Optional<ProjectBasicConfig> projectBasicConfigOpt = Optional.of(projectBasicConfig);
 
 		Set<String> configIds = new HashSet<>();
 		configIds.add("5d0533b0ff45ea9c730bb718");
@@ -260,7 +258,7 @@ public class FieldMappingServiceImplTest {
 		assertNotNull(result);
 
 	}
-	
+
 	/**
 	 * fields are updated
 	 */
@@ -275,7 +273,7 @@ public class FieldMappingServiceImplTest {
 		assertNotNull(result);
 
 	}
-	
+
 	@Test
 	public void addFieldMappingScrum() {
 		FieldMapping fieldMapping = createFieldMappingScrum();
@@ -290,7 +288,7 @@ public class FieldMappingServiceImplTest {
 		fieldMappingService.addFieldMapping("5d0533b0ff45ea9c730bb618", null);
 
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void addFieldMappingInvalidId() {
 		fieldMappingService.addFieldMapping("5d0533b0ff40bb618", null);
@@ -298,7 +296,7 @@ public class FieldMappingServiceImplTest {
 	}
 
 	@Test
-	public void deleteByBasicProjectConfigId(){
+	public void deleteByBasicProjectConfigId() {
 		doNothing().when(fieldMappingRepository).deleteByBasicProjectConfigId(Mockito.any(ObjectId.class));
 		fieldMappingService.deleteByBasicProjectConfigId(new ObjectId("601a75729638120001b90891"));
 		verify(fieldMappingRepository, times(1)).deleteByBasicProjectConfigId(new ObjectId("601a75729638120001b90891"));
@@ -307,17 +305,20 @@ public class FieldMappingServiceImplTest {
 	private void mockRepositoriesForScrum() {
 		FieldMapping fieldMapping = createFieldMappingScrum();
 		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class))).thenReturn(fieldMapping);
-		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class))).thenReturn(createProjectBasicConfig(false));
+		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class)))
+				.thenReturn(createProjectBasicConfig(false));
 		when(fieldMappingRepository.save(Mockito.any(FieldMapping.class))).thenReturn(fieldMapping);
 		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(Mockito.any(String.class),
 				Mockito.any(String.class))).thenReturn(createProcessorExecutionTraceLog());
-		when(projectToolConfigRepository.findById("5d0533b0ff45ea9c730bb718")).thenReturn(createProjectToolConfigOpt().get());
+		when(projectToolConfigRepository.findById("5d0533b0ff45ea9c730bb718"))
+				.thenReturn(createProjectToolConfigOpt().get());
 	}
-	
+
 	private void mockRepositoriesForKanban() {
 		FieldMapping fieldMapping = createFieldMappingScrum();
 		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class))).thenReturn(fieldMapping);
-		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class))).thenReturn(createProjectBasicConfig(true));
+		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class)))
+				.thenReturn(createProjectBasicConfig(true));
 		when(fieldMappingRepository.save(Mockito.any(FieldMapping.class))).thenReturn(fieldMapping);
 		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(Mockito.any(String.class),
 				Mockito.any(String.class))).thenReturn(Optional.empty());
@@ -420,7 +421,7 @@ public class FieldMappingServiceImplTest {
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setId(new ObjectId("5fa29069c5a8470e24667c36"));
 		projectBasicConfig.setIsKanban(isKanban);
-		Optional<ProjectBasicConfig> projectBasicConfigOpt=Optional.of(projectBasicConfig);
+		Optional<ProjectBasicConfig> projectBasicConfigOpt = Optional.of(projectBasicConfig);
 		return projectBasicConfigOpt;
 	}
 

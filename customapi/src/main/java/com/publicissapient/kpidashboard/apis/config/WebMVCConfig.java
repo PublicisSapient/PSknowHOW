@@ -19,10 +19,6 @@ package com.publicissapient.kpidashboard.apis.config;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.apis.mapper.CustomObjectMapper;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -34,9 +30,14 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.publicissapient.kpidashboard.apis.mapper.CustomObjectMapper;
+
 /**
- * An extension of {@link WebMvcConfigurerAdapter} to provide project specific web
- * mvc configuration.
+ * An extension of {@link WebMvcConfigurerAdapter} to provide project specific
+ * web mvc configuration.
  * 
  * @author anisingh4
  */
@@ -49,7 +50,7 @@ public class WebMVCConfig extends WebMvcConfigurerAdapter {
 		configurer.enable("api");
 	}
 
-//	TODO
+	// TODO
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 		MappingJackson2HttpMessageConverter jackson = new MappingJackson2HttpMessageConverter();

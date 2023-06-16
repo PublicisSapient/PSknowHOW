@@ -18,13 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
-import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
-import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDataTraceLogDTO;
-import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -43,11 +40,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
+import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
+import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDataTraceLogDTO;
 import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 import com.publicissapient.kpidashboard.apis.pushdata.service.PushBaseService;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Validated
 @RestController
@@ -55,16 +55,13 @@ import java.util.List;
 @Slf4j
 public class PushDataController {
 
+	final ModelMapper modelMapper = new ModelMapper();
 	@Autowired
 	PushBaseService pushBuildService;
-
 	@Autowired
 	AuthExposeAPIService authExposeAPIService;
-
 	@Autowired
 	private PushDataTraceLogService pushDataTraceLogService;
-
-	final ModelMapper modelMapper = new ModelMapper();
 
 	/**
 	 * push data api for build tools
@@ -90,13 +87,12 @@ public class PushDataController {
 		List<PushDataTraceLogDTO> allLogs = pushDataTraceLogService.getByProjectConfigId(new ObjectId(basicConfigId));
 		ServiceResponse response;
 		if (CollectionUtils.isNotEmpty(allLogs)) {
-			log.info("Fetching all logs of configId "+basicConfigId);
+			log.info("Fetching all logs of configId " + basicConfigId);
 			response = new ServiceResponse(true, "Found Logs", allLogs);
 		} else {
-			response = new ServiceResponse(false, "No Logs Present",null);
+			response = new ServiceResponse(false, "No Logs Present", null);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-
 
 }

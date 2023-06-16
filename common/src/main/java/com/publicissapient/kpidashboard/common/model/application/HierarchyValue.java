@@ -20,17 +20,7 @@ package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.Objects;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 
 @Data
 public class HierarchyValue {
@@ -40,8 +30,10 @@ public class HierarchyValue {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 		HierarchyValue that = (HierarchyValue) o;
 		return Objects.equals(hierarchyLevel, that.hierarchyLevel) && Objects.equals(value, that.value);
 	}

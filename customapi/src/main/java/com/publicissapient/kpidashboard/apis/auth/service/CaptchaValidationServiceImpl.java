@@ -58,8 +58,8 @@ public class CaptchaValidationServiceImpl implements CaptchaValidationService {
 
 			try {
 				resultDecrypted = AESEncryption.decrypt(encryptedString);
-			} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
-					| BadPaddingException | IllegalBlockSizeException exception) {
+			} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException
+					| IllegalBlockSizeException exception) {
 				LOGGER.error("Error while decryption", exception);
 			}
 

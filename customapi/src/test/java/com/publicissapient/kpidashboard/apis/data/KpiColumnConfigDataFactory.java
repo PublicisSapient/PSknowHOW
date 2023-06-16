@@ -17,64 +17,68 @@
 
 package com.publicissapient.kpidashboard.apis.data;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfig;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class KpiColumnConfigDataFactory {
-    private static final String FILE_PATH_KPI_COL_CONFIG = "/json/kpiColumnConfig/project_kpi_column_config.json";
-    private List<KpiColumnConfig> kpiColumnConfigs;
-    private ObjectMapper mapper;
-    private KpiColumnConfigDataFactory(){
+	private static final String FILE_PATH_KPI_COL_CONFIG = "/json/kpiColumnConfig/project_kpi_column_config.json";
+	private List<KpiColumnConfig> kpiColumnConfigs;
+	private ObjectMapper mapper;
 
-    }
+	private KpiColumnConfigDataFactory() {
 
-    public static KpiColumnConfigDataFactory newInstance(String filePath) {
+	}
 
-        KpiColumnConfigDataFactory factory = new KpiColumnConfigDataFactory();
-        factory.createObjectMapper();
-        factory.init(filePath);
-        return factory;
-    }
+	public static KpiColumnConfigDataFactory newInstance(String filePath) {
 
-    public static KpiColumnConfigDataFactory newInstance() {
+		KpiColumnConfigDataFactory factory = new KpiColumnConfigDataFactory();
+		factory.createObjectMapper();
+		factory.init(filePath);
+		return factory;
+	}
 
-        return newInstance(null);
-    }
+	public static KpiColumnConfigDataFactory newInstance() {
 
+		return newInstance(null);
+	}
 
-    private void init(String filePath) {
-        try {
+	private void init(String filePath) {
+		try {
 
-            String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_KPI_COL_CONFIG : filePath;
+			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_KPI_COL_CONFIG : filePath;
 
-            kpiColumnConfigs = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
-                    new TypeReference<List<KpiColumnConfig>>() {
-                    });
-        } catch (IOException e) {
-            log.error("Error in reading project basic config from file = " + filePath, e);
-        }
-    }
-    private void createObjectMapper() {
+			kpiColumnConfigs = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
+					new TypeReference<List<KpiColumnConfig>>() {
+					});
+		} catch (IOException e) {
+			log.error("Error in reading project basic config from file = " + filePath, e);
+		}
+	}
 
-        if (mapper == null) {
-            mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        }
+	private void createObjectMapper() {
 
-    }
-    public List<KpiColumnConfig> getKpiColumnConfigs() {
-        return kpiColumnConfigs;
-    }
+		if (mapper == null) {
+			mapper = new ObjectMapper();
+			mapper.registerModule(new JavaTimeModule());
+			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		}
+
+	}
+
+	public List<KpiColumnConfig> getKpiColumnConfigs() {
+		return kpiColumnConfigs;
+	}
 }

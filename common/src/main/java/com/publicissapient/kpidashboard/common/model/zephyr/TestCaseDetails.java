@@ -31,27 +31,27 @@ import lombok.Data;
 @Document(collection = "test_case_details")
 public class TestCaseDetails extends BasicModel {
 
-    private ObjectId processorId;
-    private String number;
-    private String originalTypeName;
-    private String typeName;
-    private List<String> labels;
-    private String createdDate;
-    private String updateDate;
-    private String projectName;
-    private String projectID;
-    private String basicProjectConfigId;
-    private String name;
-    /*
-     * Automated Test Data
-     */
-    private String testAutomated;
-    private String isTestAutomated;
-    private String isTestCanBeAutomated;
-    private String testCaseFolderName;
-    private String testAutomatedDate;
-    private Set<String> defectStoryID;
-    private String defectRaisedBy;
-    private String testCaseStatus;
+	private ObjectId processorId;
+	private String number;
+	private String originalTypeName;
+	private String typeName;
+	private List<String> labels;
+	private String createdDate;
+	private String updateDate;
+	private String projectName;
+	private String projectID;
+	private String basicProjectConfigId;
+	private String name;
+	/*
+	 * Automated Test Data
+	 */
+	private String testAutomated;
+	private String isTestAutomated;
+	private String isTestCanBeAutomated;
+	private String testCaseFolderName;
+	private String testAutomatedDate;
+	private Set<String> defectStoryID;
+	private String defectRaisedBy;
+	private String testCaseStatus;
 
 }

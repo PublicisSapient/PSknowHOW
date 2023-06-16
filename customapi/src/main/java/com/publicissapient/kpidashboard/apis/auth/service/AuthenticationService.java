@@ -117,72 +117,91 @@ public interface AuthenticationService {
 
 	/**
 	 * Checks if username already exists in db
-	 * @param username the username
+	 * 
+	 * @param username
+	 *            the username
 	 * @return true if username already exists in db
 	 */
 	boolean isUsernameExists(String username);
+
 	/**
 	 * Checks if username already exists in USERINFO collection
-	 * @param username the username
+	 * 
+	 * @param username
+	 *            the username
 	 * @return true if username already exists in db
 	 */
 	boolean isUsernameExistsInUserInfo(String username);
-	
+
 	/**
 	 * Check if valid old Password
-	 * @param email email id
-	 * @param oldPassword password
+	 * 
+	 * @param email
+	 *            email id
+	 * @param oldPassword
+	 *            password
 	 * @return true/false
 	 */
 	boolean checkIfValidOldPassword(String email, String oldPassword);
-	
+
 	/**
 	 * Change password and saves it to the store
-	 * @param email email of user
-	 * @param password password of user
+	 * 
+	 * @param email
+	 *            email of user
+	 * @param password
+	 *            password of user
 	 * @return newly created Authentication object
 	 */
 	org.springframework.security.core.Authentication changePassword(String email, String password);
 
-
-    /**
-     * Gets authentication object
-     * @param username username
-     * @return authentication
-     */
+	/**
+	 * Gets authentication object
+	 * 
+	 * @param username
+	 *            username
+	 * @return authentication
+	 */
 	Authentication getAuthentication(String username);
 
-    /**
-     * Update email id of the user
-     * @param username the username
-     * @param email the email
-     * @return true if successfully updated
-     */
+	/**
+	 * Update email id of the user
+	 * 
+	 * @param username
+	 *            the username
+	 * @param email
+	 *            the email
+	 * @return true if successfully updated
+	 */
 	boolean updateEmail(String username, String email);
+
 	/**
 	 * check new password is not same as old password
 	 * 
-	 * @param oldPassword oldpassword
-	 * @param newPassword newpassword
+	 * @param oldPassword
+	 *            oldpassword
+	 * @param newPassword
+	 *            newpassword
 	 * @return true if new password is not same as old password
 	 */
 	boolean isPasswordIdentical(String oldPassword, String newPassword);
 
-
 	/**
 	 * Gets logged in user's username
+	 * 
 	 * @return logged in user
 	 */
 	String getLoggedInUser();
 
 	/**
 	 * Gets username from authentication object
-	 * @param authentication authentication object
+	 * 
+	 * @param authentication
+	 *            authentication object
 	 * @return username
 	 */
 	String getUsername(org.springframework.security.core.Authentication authentication);
 
 	Iterable<Authentication> getAuthenticationByApproved(boolean approved);
-
 
 }

@@ -29,11 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
-import com.publicissapient.kpidashboard.apis.kpis.KPIMasterController;
-import com.publicissapient.kpidashboard.apis.model.MasterResponse;
-import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +38,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.model.MasterResponse;
+import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 
 /**
  * @author prigupta8

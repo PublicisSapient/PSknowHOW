@@ -18,6 +18,37 @@
 
 package com.publicissapient.kpidashboard.apis.auth.rest;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+
+import java.io.IOException;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationResponseService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
@@ -34,36 +65,8 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
+
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 /**
  * Rest Controller to handle authentication requests
@@ -72,18 +75,16 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 @Slf4j
 public class AuthenticationController {
 
+	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
+	private static final String STATUS = "Success";
+	private static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
 	private final AuthenticationService authenticationService;
 	private final AuthenticationResponseService authenticationResponseService;
 	private final AuthProperties authProperties;
 	private final UserInfoService userInfoService;
 	private final SignupManager signupManager;
-
 	private AuthTypesConfigService authTypesConfigService;
-
 	private TokenAuthenticationService tokenAuthenticationService;
-	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
-	private static final String STATUS = "Success";
-	private static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
 
 	/**
 	 * Instantiates a new Authentication controller.
@@ -132,7 +133,7 @@ public class AuthenticationController {
 		try {
 			AuthTypeStatus authTypesStatus = authTypesConfigService.getAuthTypesStatus();
 
-			if (authTypesStatus != null && !authTypesStatus.isStandardLogin()){
+			if (authTypesStatus != null && !authTypesStatus.isStandardLogin()) {
 				return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false,
 						"Cannot complete the registration process. Standard authentication is disabled", null));
 			}
@@ -371,11 +372,10 @@ public class AuthenticationController {
 	@RequestMapping(value = "/authdetails", method = GET)
 	public ResponseEntity<ServiceResponse> getAuthDetails(HttpServletRequest request, Authentication authentication) {
 		JSONObject jsonObject = tokenAuthenticationService.getOrSaveUserByToken(request, authentication);
-		if(jsonObject != null) {
+		if (jsonObject != null) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "User Data Found", jsonObject));
 		}
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(new ServiceResponse(false, "Invalid token", null));
+		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Invalid token", null));
 
 	}
 

@@ -32,15 +32,16 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 @RunWith(MockitoJUnitRunner.class)
 public class EncryptionServiceImplTest {
 
+	@Mock
+	CustomApiConfig customApiConfig;
 	@InjectMocks
 	private EncryptionServiceImpl encryptionService;
 
-	@Mock
-    CustomApiConfig customApiConfig;
 	@Test
 	public void encrypt() {
 		Mockito.when(customApiConfig.getAesEncryptionKey()).thenReturn("708C150A5363290AAE3F579BF3746AD5");
-		Assert.assertEquals("Encryption check","709AC0CDA8CC8796BDC9ACADCD8C4430",encryptionService.encrypt("TestString"));
+		Assert.assertEquals("Encryption check", "709AC0CDA8CC8796BDC9ACADCD8C4430",
+				encryptionService.encrypt("TestString"));
 	}
 
 }

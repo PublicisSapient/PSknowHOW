@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SprintDetailsDataFactory {
 
-
 	private static final String FILE_PATH_SPRINT_DETAILS = "/json/sprint_details_collection.json";
 	private List<SprintDetails> sprintDetails;
 	private ObjectMapper mapper;
@@ -61,7 +60,6 @@ public class SprintDetailsDataFactory {
 
 		}
 	}
-
 
 	public List<SprintDetails> getSprintDetails() {
 		return sprintDetails;

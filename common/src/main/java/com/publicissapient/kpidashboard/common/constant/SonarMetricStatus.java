@@ -26,5 +26,5 @@ import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
  * @author anisingh4
  */
 public enum SonarMetricStatus {
-    OK, WARNING, ALERT
+	OK, WARNING, ALERT
 }

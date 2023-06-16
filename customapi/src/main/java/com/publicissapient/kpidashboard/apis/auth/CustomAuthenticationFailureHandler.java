@@ -29,9 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Component;
 
 /**
  * This class will handle authentication failed exception like Bad credentials
@@ -40,13 +40,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
-	private static final String WRONGCREDENTIALS="Login Failed: The username or password entered is incorrect";
+	private static final String WRONGCREDENTIALS = "Login Failed: The username or password entered is incorrect";
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
 			AuthenticationException exception) throws IOException, ServletException {
 		httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-        httpServletResponse.setContentType("application/json");
+		httpServletResponse.setContentType("application/json");
 
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("timestamp", Calendar.getInstance().getTime());
@@ -54,11 +54,9 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 		data.put("status", HttpStatus.UNAUTHORIZED.value());
 
 		data.put("error", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-		if(exception.getMessage().contains("error code 49 - 80090308"))
-		{
+		if (exception.getMessage().contains("error code 49 - 80090308")) {
 			data.put("message", "Authentication Failed: " + WRONGCREDENTIALS);
-		}
-		else{
+		} else {
 			data.put("message", "Authentication Failed: " + exception.getMessage());
 		}
 		data.put("path", httpServletRequest.getRequestURI());

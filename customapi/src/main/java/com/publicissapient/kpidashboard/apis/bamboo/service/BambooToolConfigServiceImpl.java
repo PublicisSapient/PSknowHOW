@@ -1,12 +1,9 @@
 package com.publicissapient.kpidashboard.apis.bamboo.service;
 
-import com.publicissapient.kpidashboard.apis.bamboo.model.BambooBranchesResponseDTO;
-import com.publicissapient.kpidashboard.apis.bamboo.model.BambooDeploymentProjectsResponseDTO;
-import com.publicissapient.kpidashboard.apis.bamboo.model.BambooPlansResponseDTO;
-import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,18 +17,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.publicissapient.kpidashboard.apis.bamboo.model.BambooBranchesResponseDTO;
+import com.publicissapient.kpidashboard.apis.bamboo.model.BambooDeploymentProjectsResponseDTO;
+import com.publicissapient.kpidashboard.apis.bamboo.model.BambooPlansResponseDTO;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
 public class BambooToolConfigServiceImpl {
-
-	private static final String JOBS_URL_SUFFIX = "/rest/api/latest/plan.json?expand=plans&max-result=2000";
-	private static final String DEPLOYMENTPROJECT_URL_SUFFIX = "/rest/api/latest/search/deployments.json?max-result=2000";
-
-	private static final String RESOURCE_BRANCH_ENDPOINT = "/rest/api/latest/plan/%s/branch.json?max-result=2000";
 
 	public static final String PLAN_LIST = "plans";
 	public static final String PLAN = "plan";
@@ -44,7 +41,9 @@ public class BambooToolConfigServiceImpl {
 	public static final String SEARCHLIST = "searchEntity";
 	public static final String DEPLOYMENT_PROJECT = "projectName";
 	public static final String PROJECT_ID = "key";
-
+	private static final String JOBS_URL_SUFFIX = "/rest/api/latest/plan.json?expand=plans&max-result=2000";
+	private static final String DEPLOYMENTPROJECT_URL_SUFFIX = "/rest/api/latest/search/deployments.json?max-result=2000";
+	private static final String RESOURCE_BRANCH_ENDPOINT = "/rest/api/latest/plan/%s/branch.json?max-result=2000";
 	@Autowired
 	private RestTemplate restTemplate;
 
@@ -118,7 +117,8 @@ public class BambooToolConfigServiceImpl {
 					parseBranchesResponse(responseDTOList, response);
 				} else {
 					String statusCode = response.getStatusCode().toString();
-					log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url, statusCode);
+					log.error("Error while fetching BambooBranchesNameAndKeys from {}. with status {}", url,
+							statusCode);
 				}
 
 			} catch (Exception exception) {
@@ -149,6 +149,7 @@ public class BambooToolConfigServiceImpl {
 
 	/**
 	 * fetch deployment project list
+	 * 
 	 * @param connectionId
 	 * @return
 	 */
@@ -169,13 +170,16 @@ public class BambooToolConfigServiceImpl {
 
 				if (response.getStatusCode() == HttpStatus.OK) {
 					JSONParser respParser = new JSONParser();
-					JSONArray searchResults = (JSONArray) ((JSONObject) respParser.parse(response.getBody())).get(SEARCHKEY);
+					JSONArray searchResults = (JSONArray) ((JSONObject) respParser.parse(response.getBody()))
+							.get(SEARCHKEY);
 
 					for (Object job : searchResults) {
 						BambooDeploymentProjectsResponseDTO bambooPlansResponseDTO = new BambooDeploymentProjectsResponseDTO();
 						Object searchEntity = ((JSONObject) job).get(SEARCHLIST);
-						final String deploymentProjectName = restAPIUtils.convertToString((JSONObject) searchEntity, DEPLOYMENT_PROJECT).trim();
-						final String deploymentProjectId = restAPIUtils.convertToString((JSONObject) searchEntity, PROJECT_ID).trim();
+						final String deploymentProjectName = restAPIUtils
+								.convertToString((JSONObject) searchEntity, DEPLOYMENT_PROJECT).trim();
+						final String deploymentProjectId = restAPIUtils
+								.convertToString((JSONObject) searchEntity, PROJECT_ID).trim();
 						bambooPlansResponseDTO.setDeploymentProjectName(deploymentProjectName);
 						bambooPlansResponseDTO.setDeploymentProjectId(deploymentProjectId);
 						responseDTOList.add(bambooPlansResponseDTO);

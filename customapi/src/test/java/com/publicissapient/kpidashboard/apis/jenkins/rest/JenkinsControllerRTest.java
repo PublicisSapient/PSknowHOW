@@ -40,7 +40,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.jenkins.rest.JenkinsController;
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -78,9 +77,8 @@ public class JenkinsControllerRTest {
 				+ "      \"kpiId\": \"kpi8\",\n" + "      \"kpiName\": \"Code Build Time\",\n"
 				+ "      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Productivity\",\n"
 				+ "      \"kpiUnit\": \"min\",\n" + "      \"kpiSource\": \"Jenkins\",\n"
-				+ "      \"maxValue\": \"\",\n"
-				+ "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n" + "  \"ids\": [\n"
-				+ "    \"GMA_GMA\"\n" + "  ],\n" + "  \"level\": 1\n" + "}";
+				+ "      \"maxValue\": \"\",\n" + "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n"
+				+ "  \"ids\": [\n" + "    \"GMA_GMA\"\n" + "  ],\n" + "  \"level\": 1\n" + "}";
 
 		List<KpiElement> kpiElementList = new ArrayList<KpiElement>();
 		KpiElement kpiElement = new KpiElement();
@@ -94,7 +92,7 @@ public class JenkinsControllerRTest {
 
 	}
 
-	 @Test
+	@Test
 	public void getJenkinsKPIMetricThrowException() throws Exception {
 
 		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
@@ -105,15 +103,14 @@ public class JenkinsControllerRTest {
 
 	}
 
-	 @Test
+	@Test
 	public void getJenkinsKanbanAggregatedMetricsReturnsValue() throws Exception {
 		String request = "{\n" + "  \"kpiList\": [\n" + "    {\n" + "      \"id\": \"5b753628d42937acd035b7ef\",\n"
-			+ "      \"kpiId\": \"kpi8\",\n" + "      \"kpiName\": \"Code Build Time\",\n"
-			+ "      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Productivity\",\n"
-			+ "      \"kpiUnit\": \"min\",\n" + "      \"kpiSource\": \"Jenkins\",\n"
-			+ "      \"maxValue\": \"\",\n"
-			+ "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n" + "  \"ids\": [\n"
-			+ "    \"GMA_GMA\"\n" + "  ],\n" + "  \"level\": 1\n" + "}";
+				+ "      \"kpiId\": \"kpi8\",\n" + "      \"kpiName\": \"Code Build Time\",\n"
+				+ "      \"isDeleted\": \"False\",\n" + "      \"kpiCategory\": \"Productivity\",\n"
+				+ "      \"kpiUnit\": \"min\",\n" + "      \"kpiSource\": \"Jenkins\",\n"
+				+ "      \"maxValue\": \"\",\n" + "      \"chartType\": \"gaugeChart\"\n" + "    }\n" + "  ],\n"
+				+ "  \"ids\": [\n" + "    \"GMA_GMA\"\n" + "  ],\n" + "  \"level\": 1\n" + "}";
 
 		List<KpiElement> kpiElementList = new ArrayList<KpiElement>();
 		KpiElement kpiElement = new KpiElement();
@@ -123,20 +120,18 @@ public class JenkinsControllerRTest {
 		kpiElement.setKpiId(KPICode.CODE_BUILD_TIME_KANBAN.getKpiId());
 		kpiElementList.add(kpiElement);
 		when(jenkinsServiceKanban.process(Mockito.any())).thenReturn(kpiElementList);
-		mockMvc.perform(
-				post("/jenkinskanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/jenkinskanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
 				.andExpect(status().is2xxSuccessful());
 
 	}
 
-	 @Test
+	@Test
 	public void getJenkinsKanbanKPIMetricReturns400() throws Exception {
 
 		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
-			+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
+				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 
-		mockMvc.perform(
-				post("/jenkinskanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/jenkinskanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}

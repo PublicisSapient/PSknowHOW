@@ -1,5 +1,5 @@
 {
-  "_class" : "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+  "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
   "builds": [
     {
       "number": 2,
@@ -10,5 +10,4 @@
       "url": "http://server/job/job1/job/master/1/"
     }
   ]
-
 }

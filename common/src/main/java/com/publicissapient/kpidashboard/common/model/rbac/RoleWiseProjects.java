@@ -17,12 +17,12 @@
 
 package com.publicissapient.kpidashboard.common.model.rbac;
 
-import lombok.Data;
-
 import java.util.List;
+
+import lombok.Data;
 
 @Data
 public class RoleWiseProjects {
-    private String role;
-    private List<ProjectsForAccessRequest> projects;
+	private String role;
+	private List<ProjectsForAccessRequest> projects;
 }

@@ -47,8 +47,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public final class ProcessorUtils {//NOPMD
-	
+public final class ProcessorUtils {// NOPMD
+
 	private static final String TRIGGERED = "triggered";
 
 	private ProcessorUtils() {
@@ -117,7 +117,7 @@ public final class ProcessorUtils {//NOPMD
 		headers.set(HttpHeaders.AUTHORIZATION, authHeader);
 		headers.set(HttpHeaders.ACCEPT, Constants.FORMAT);
 		headers.set(HttpHeaders.CONTENT_TYPE, Constants.FORMAT);
-	
+
 		return headers;
 	}
 
@@ -206,8 +206,11 @@ public final class ProcessorUtils {//NOPMD
 
 	/**
 	 * Gets RepoBranch
-	 * @param branchName the branch name
-	 * @param url the url
+	 * 
+	 * @param branchName
+	 *            the branch name
+	 * @param url
+	 *            the url
 	 * @return RepoBranch object if branch name is not null
 	 */
 	private static RepoBranch createRepoBranch(String branchName, String url) {
@@ -294,24 +297,25 @@ public final class ProcessorUtils {//NOPMD
 	 */
 	public static String firstCulprit(JSONObject buildJson) {
 		JSONObject triggered = (JSONObject) buildJson.get(TRIGGERED);
-		JSONObject lastChanged = (JSONObject) buildJson.get("lastChanges"); 
+		JSONObject lastChanged = (JSONObject) buildJson.get("lastChanges");
 		String culpritName = StringUtils.EMPTY;
 		if (triggered != null) {
 			JSONObject user = (JSONObject) triggered.get("user");
 			if (user != null) {
 				culpritName = user.get("name").toString();
 			}
-			
-		} if (lastChanged != null) {
+
+		}
+		if (lastChanged != null) {
 			JSONArray changedArray = (JSONArray) lastChanged.get("change");
 			if (!changedArray.isEmpty()) {
 				JSONObject culprit = (JSONObject) changedArray.get(0);
 				culpritName = culprit.get("username").toString();
 			}
 		}
-		
+
 		return culpritName;
-		
+
 	}
 
 	public static String startDate(JSONObject buildJson) {
@@ -323,7 +327,6 @@ public final class ProcessorUtils {//NOPMD
 		return getFullName(culprit);
 	}
 
-	
 	/**
 	 * Provides Full Name.
 	 *
@@ -340,9 +343,7 @@ public final class ProcessorUtils {//NOPMD
 		JSONObject triggered = (JSONObject) jsonObject.get(TRIGGERED);
 		return getString(triggered, "date");
 	}
-	
-	
-	
+
 	/**
 	 * Provides Commit Author.
 	 *
@@ -359,21 +360,22 @@ public final class ProcessorUtils {//NOPMD
 	/**
 	 * Provides commit Timestamp.
 	 *
-	 * @param dateString the josn item
+	 * @param dateString
+	 *            the josn item
 	 *
 	 * @return the timestamp
 	 */
 	public static long getCommitTimestamp(String dateString) {
-		String parseableDate = dateString.substring(0,4)+ '-' + dateString.substring(4, 6) + "-" + dateString.substring(6, 8)+"T"+ dateString.substring(9, 11)+":"+dateString.substring(11, 13) + ":" +dateString.substring(13, 15);
+		String parseableDate = dateString.substring(0, 4) + '-' + dateString.substring(4, 6) + "-"
+				+ dateString.substring(6, 8) + "T" + dateString.substring(9, 11) + ":" + dateString.substring(11, 13)
+				+ ":" + dateString.substring(13, 15);
 
-			try {
-				return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).parse(parseableDate).getTime();
-			} 
-				catch (java.text.ParseException e) {
-					log.error(String.format("Invalid date string: %s", parseableDate), e);
-				}
-			
-		
+		try {
+			return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).parse(parseableDate).getTime();
+		} catch (java.text.ParseException e) {
+			log.error(String.format("Invalid date string: %s", parseableDate), e);
+		}
+
 		return 0;
 	}
 

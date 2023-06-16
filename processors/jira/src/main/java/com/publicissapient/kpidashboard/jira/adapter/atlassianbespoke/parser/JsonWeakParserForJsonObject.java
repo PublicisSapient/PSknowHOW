@@ -18,9 +18,10 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.parser;
 
-import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+
+import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 
 class JsonWeakParserForJsonObject<T> implements JsonWeakParser<T> {
 	private final JsonObjectParser<T> jsonParser;
@@ -33,7 +34,8 @@ class JsonWeakParserForJsonObject<T> implements JsonWeakParser<T> {
 		try {
 			return clazz.cast(o);
 		} catch (ClassCastException e) {
-			throw new JSONException("Expected [" + clazz.getSimpleName() + "], but found [" + o.getClass().getSimpleName() + "]");
+			throw new JSONException(
+					"Expected [" + clazz.getSimpleName() + "], but found [" + o.getClass().getSimpleName() + "]");
 		}
 	}
 

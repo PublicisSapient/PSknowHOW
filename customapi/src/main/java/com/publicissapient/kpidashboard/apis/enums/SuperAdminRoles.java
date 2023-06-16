@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum SuperAdminRoles {
-    ROLE_SUPERADMIN;
+	ROLE_SUPERADMIN;
 
-    public static List<String> getAdminRoles() {
+	public static List<String> getAdminRoles() {
 
-        return EnumSet.allOf(SuperAdminRoles.class).stream().map(SuperAdminRoles::name).collect(Collectors.toList());
-    }
+		return EnumSet.allOf(SuperAdminRoles.class).stream().map(SuperAdminRoles::name).collect(Collectors.toList());
+	}
 }

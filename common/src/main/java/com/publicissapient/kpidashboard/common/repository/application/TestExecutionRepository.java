@@ -20,6 +20,9 @@
  * 
  */
 package com.publicissapient.kpidashboard.common.repository.application;
+
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -27,15 +30,13 @@ import org.springframework.data.repository.CrudRepository;
 import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.repository.excel.TestExecutionRepositoryCustom;
 
-import java.util.List;
-
 /**
  * @author sansharm13
  *
  */
 public interface TestExecutionRepository extends CrudRepository<TestExecution, ObjectId>,
-QuerydslPredicateExecutor<TestExecution>,TestExecutionRepositoryCustom {
-	
+		QuerydslPredicateExecutor<TestExecution>, TestExecutionRepositoryCustom {
+
 	/**
 	 * Gets Test Execution by sprint id project name.
 	 *
@@ -43,11 +44,12 @@ QuerydslPredicateExecutor<TestExecution>,TestExecutionRepositoryCustom {
 	 *            the sprint id project name
 	 * @return the TestExecution by sprint id project name
 	 */
-	
+
 	TestExecution findBySprintId(String sprintIdProjectName);
 
 	/**
 	 * Find Test execution of sprints
+	 * 
 	 * @param sprintIds
 	 * @return list of test execution data
 	 */

@@ -28,10 +28,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SonarComponent {
-    private String id;
-    private String name;
-    private String key;
-    private String organization;
-    private String qualifier;
-    private String project;
+	private String id;
+	private String name;
+	private String key;
+	private String organization;
+	private String qualifier;
+	private String project;
 }

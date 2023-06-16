@@ -29,7 +29,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 /**
  * 
  * BitBucketConfig represents a class which holds BitBucketConfig details.
@@ -44,17 +43,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BitBucketConfig {
-    private String host;
-    private String cron;
-    @Value("${aesEncryptionKey}")
-    private String aesEncryptionKey;
-    private int initialRunOccurrenceInDays;
-    private String api;
-    private String customApiBaseUrl;
-    private int pageSize;
-    private int initialPageSize;
-    private int sinceDaysCloud;
-    private int pageSizeCloudPull;
-    private String statusCloudPull;
-    private int sinceDaysMergedCloud;
+	private String host;
+	private String cron;
+	@Value("${aesEncryptionKey}")
+	private String aesEncryptionKey;
+	private int initialRunOccurrenceInDays;
+	private String api;
+	private String customApiBaseUrl;
+	private int pageSize;
+	private int initialPageSize;
+	private int sinceDaysCloud;
+	private int pageSizeCloudPull;
+	private String statusCloudPull;
+	private int sinceDaysMergedCloud;
 }

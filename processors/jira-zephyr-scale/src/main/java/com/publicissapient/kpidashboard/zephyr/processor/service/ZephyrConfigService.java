@@ -20,11 +20,11 @@ package com.publicissapient.kpidashboard.zephyr.processor.service;
 
 import javax.annotation.PostConstruct;
 
-import com.publicissapient.kpidashboard.zephyr.config.ZephyrConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.util.PropertyUtils;
+import com.publicissapient.kpidashboard.zephyr.config.ZephyrConfig;
 
 /**
  * Service for trimming property file

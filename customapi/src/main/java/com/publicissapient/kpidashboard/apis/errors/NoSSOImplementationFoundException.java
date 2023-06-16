@@ -18,7 +18,7 @@
 package com.publicissapient.kpidashboard.apis.errors;
 
 public class NoSSOImplementationFoundException extends RuntimeException {
-    public NoSSOImplementationFoundException(String message) {
-        super(message);
-    }
+	public NoSSOImplementationFoundException(String message) {
+		super(message);
+	}
 }

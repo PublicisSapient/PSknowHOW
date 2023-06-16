@@ -16,5 +16,5 @@ import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelS
 public interface HierarchyLevelSuggestionRepository extends MongoRepository<HierarchyLevelSuggestion, ObjectId> {
 
 	HierarchyLevelSuggestion findByHierarchyLevelId(String hierarchyLevelId);
-	
+
 }

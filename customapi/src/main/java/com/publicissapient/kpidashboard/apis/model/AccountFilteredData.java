@@ -18,15 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.model;
 
-
 import java.util.Objects;
+
+import org.bson.types.ObjectId;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bson.types.ObjectId;
 
 /**
  * Represents the account filtered data.

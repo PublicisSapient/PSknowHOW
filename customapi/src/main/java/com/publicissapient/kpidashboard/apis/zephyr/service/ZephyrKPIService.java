@@ -34,8 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -71,34 +71,28 @@ import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetails
  */
 
 @Service
-public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> implements
-		ApplicationKPIService<R, S, T> {
-
-	@Autowired
-	private CacheService cacheService;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
-
-	@Autowired
-	private TestCaseDetailsRepository testCaseDetailsRepository;
-
-	@Autowired
-	private ConfigHelperService configHelperService;
+public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
+		implements ApplicationKPIService<R, S, T> {
 
 	private static final String TOOL_ZEPHYR = ProcessorConstants.ZEPHYR;
-	
 	private static final String TOOL_JIRA_TEST = ProcessorConstants.JIRA_TEST;
 	private static final String TESTCASEKEY = "testCaseData";
-
 	private static final String NIN = "nin";
 	private static final String AUTOMATED_TESTCASE_KEY = "automatedTestCaseData";
+	@Autowired
+	private CacheService cacheService;
+	@Autowired
+	private CustomApiConfig customApiConfig;
+	@Autowired
+	private TestCaseDetailsRepository testCaseDetailsRepository;
+	@Autowired
+	private ConfigHelperService configHelperService;
 
 	public abstract String getQualifierType();
 
 	/**
-	 * Returns API Request tracker Id to be used for logging/debugging and using
-	 * it for maintaining any sort of cache.
+	 * Returns API Request tracker Id to be used for logging/debugging and using it
+	 * for maintaining any sort of cache.
 	 *
 	 * @return request tracker id
 	 */
@@ -107,13 +101,14 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> im
 	}
 
 	/**
-	 * Returns API Request tracker Id to be used for logging/debugging and using
-	 * it for maintaining any sort of cache.
+	 * Returns API Request tracker Id to be used for logging/debugging and using it
+	 * for maintaining any sort of cache.
 	 *
 	 * @return request tracker id for kanban
 	 */
 	protected String getKanbanRequestTrackerId() {
-		return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYRKANBAN.name());
+		return cacheService
+				.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYRKANBAN.name());
 	}
 
 	/**
@@ -138,8 +133,8 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> im
 			String individualDevOrQa, FilterHelperService flterHelperService) {
 		Map<String, AdditionalFilterCategory> addFilterCat = flterHelperService.getAdditionalFilterHierarchyLevel();
 		Map<String, AdditionalFilterCategory> addFilterCategory = addFilterCat.entrySet().stream()
-	            .collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
-		
+				.collect(Collectors.toMap(entry -> entry.getKey().toUpperCase(), Map.Entry::getValue));
+
 		if (MapUtils.isNotEmpty(kpiRequest.getSelectedMap())) {
 			for (Map.Entry<String, List<String>> entry : kpiRequest.getSelectedMap().entrySet()) {
 				if (CollectionUtils.isNotEmpty(entry.getValue()) && null != addFilterCategory.get(entry.getKey())) {
@@ -151,7 +146,6 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> im
 			}
 		}
 	}
-
 
 	/**
 	 * Aggregates values at leaf nodes.
@@ -234,8 +228,8 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> im
 	 * @return List of ProjectToolConfig
 	 */
 
-	public List<ProjectToolConfig> getToolConfigBasedOnProcessors(Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap,
-			ObjectId basicProjectConfId , String toolName) {
+	public List<ProjectToolConfig> getToolConfigBasedOnProcessors(
+			Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap, ObjectId basicProjectConfId, String toolName) {
 		List<ProjectToolConfig> tools = new ArrayList<>();
 		if (MapUtils.isNotEmpty(toolMap) && toolMap.get(basicProjectConfId) != null
 				&& toolMap.get(basicProjectConfId).containsKey(toolName)) {
@@ -264,9 +258,11 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> im
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			List<ProjectToolConfig> zephyrTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId, TOOL_ZEPHYR);
+			List<ProjectToolConfig> zephyrTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId,
+					TOOL_ZEPHYR);
 
-			List<ProjectToolConfig> jiraTestTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId, TOOL_JIRA_TEST);
+			List<ProjectToolConfig> jiraTestTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId,
+					TOOL_JIRA_TEST);
 
 			List<String> regressionLabels = new ArrayList<>();
 			List<String> regressionAutomationFolderPath = new ArrayList<>();
@@ -297,7 +293,6 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> im
 				Arrays.asList(NormalizedJira.YES_VALUE.getValue()));
 		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 				Arrays.asList(NormalizedJira.TEST_TYPE.getValue()));
-
 
 		List<TestCaseDetails> testCasesList = testCaseDetailsRepository.findTestDetails(mapOfFilters, uniqueProjectMap,
 				NIN);
@@ -339,8 +334,8 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S> im
 	 * @param regressionLabels
 	 * @param mapOfProjectFiltersNotIn
 	 */
-	public void setZephyrSquadConfig(List<ProjectToolConfig> jiraTestTools, List<String> regressionLabels
-			, Map<String, Object> mapOfProjectFiltersNotIn) {
+	public void setZephyrSquadConfig(List<ProjectToolConfig> jiraTestTools, List<String> regressionLabels,
+			Map<String, Object> mapOfProjectFiltersNotIn) {
 		jiraTestTools.forEach(tool -> {
 			if (CollectionUtils.isNotEmpty(tool.getJiraRegressionTestValue())) {
 				regressionLabels.addAll(tool.getJiraRegressionTestValue());

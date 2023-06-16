@@ -39,13 +39,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SonarConfig {
-    private String cron;
-    private List<String> metrics;
-    private String customApiBaseUrl;
-    private int pageSize;
+	private String cron;
+	private List<String> metrics;
+	private String customApiBaseUrl;
+	private int pageSize;
 
-    @Value("${aesEncryptionKey}")
-    private String aesEncryptionKey;
-    
-    
+	@Value("${aesEncryptionKey}")
+	private String aesEncryptionKey;
+
 }

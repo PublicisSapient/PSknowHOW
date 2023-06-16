@@ -12,26 +12,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.Version;
-import com.google.common.collect.Lists;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
+import org.springframework.stereotype.Service;
 
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
+import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.atlassian.jira.rest.client.api.domain.Version;
+import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
@@ -186,7 +186,8 @@ public class HandleJiraHistory {
 		List<JiraHistoryChangeLog> dueDateChangeLog = getDueDateChangeLog(changeLogList, fieldMapping, fields);
 		List<JiraHistoryChangeLog> sprintChangeLog = getCustomFieldChangeLog(changeLogList,
 				handleStr(fieldMapping.getSprintName()), fields);
-		List<JiraHistoryChangeLog> flagStatusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.FLAG_STATUS);
+		List<JiraHistoryChangeLog> flagStatusChangeLog = getJiraFieldChangeLog(changeLogList,
+				JiraConstants.FLAG_STATUS);
 
 		createFirstEntryOfChangeLog(statusChangeLog, issue,
 				ObjectUtils.isNotEmpty(issue.getStatus()) ? issue.getStatus().getName() : "");
@@ -258,9 +259,8 @@ public class HandleJiraHistory {
 	private void createFixVersionHistory(List<JiraHistoryChangeLog> fixVersionChangeLog, Issue issue,
 			String currentFixVersion) {
 
-		if(!fixVersionChangeLog.isEmpty())
-		{
-			String lastChangedTo = fixVersionChangeLog.get(fixVersionChangeLog.size()-1).getChangedTo();
+		if (!fixVersionChangeLog.isEmpty()) {
+			String lastChangedTo = fixVersionChangeLog.get(fixVersionChangeLog.size() - 1).getChangedTo();
 			currentFixVersion = createChangedToForFixVersion(currentFixVersion, lastChangedTo);
 		}
 		final String[] lastLogChangeToValue = { currentFixVersion };
@@ -268,7 +268,8 @@ public class HandleJiraHistory {
 			String currLogChangeToValue = currChangeLog.getChangedTo();
 			String currLogChangeFromValue = currChangeLog.getChangedFrom();
 			String differences = getNonCommonFixVersion(currLogChangeToValue, lastLogChangeToValue[0]);
-			currChangeLog.setChangedTo(createChangedToForFixVersion(currChangeLog.getChangedTo(),lastLogChangeToValue[0]));
+			currChangeLog
+					.setChangedTo(createChangedToForFixVersion(currChangeLog.getChangedTo(), lastLogChangeToValue[0]));
 			currChangeLog.setChangedFrom(concatStrUsingCommaSeparator(currLogChangeFromValue, differences));
 			lastLogChangeToValue[0] = currChangeLog.getChangedFrom();
 		});
@@ -282,7 +283,7 @@ public class HandleJiraHistory {
 		Set<String> set = new HashSet<>();
 		set.addAll(Arrays.asList(lastChangedToList));
 		set.addAll(Arrays.asList(currentFixVersionList));
-		return StringUtils.join(set,",");
+		return StringUtils.join(set, ",");
 	}
 
 	private String getNonCommonFixVersion(String currLogChangeToValue, String lastLogChangeToValue) {

@@ -24,11 +24,11 @@ import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfig
 public interface KpiColumnConfigService {
 
 	/**
-	 *  Create and save KpiConfig
+	 * Create and save KpiConfig
 	 *
 	 * @param kpiColumnConfigDTO*
 	 * @return ServiceResponse with data object,message and status flag true if data
-	 * 		is saved else false
+	 *         is saved else false
 	 */
 	ServiceResponse saveKpiColumnConfig(KpiColumnConfigDTO kpiColumnConfigDTO);
 
@@ -37,8 +37,8 @@ public interface KpiColumnConfigService {
 	 *
 	 * @param basicProjectConfigId*
 	 * @param kpiId*
-	 * @return config of kpi column of that project if exist else
-	 * 			return default config of kpi where basicProjectConfigId is null.
+	 * @return config of kpi column of that project if exist else return default
+	 *         config of kpi where basicProjectConfigId is null.
 	 */
 	KpiColumnConfigDTO getByKpiColumnConfig(String basicProjectConfigId, String kpiId);
 }

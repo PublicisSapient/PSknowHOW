@@ -47,7 +47,8 @@ public final class AggregationUtils {
 	/**
 	 * Calculates median for input list
 	 *
-	 * @param numbers the numbers
+	 * @param numbers
+	 *            the numbers
 	 * @return median of input.
 	 */
 	public static Double median(List<Double> numbers) {
@@ -68,7 +69,8 @@ public final class AggregationUtils {
 	/**
 	 * Calculates median for input list
 	 *
-	 * @param numbers the numbers
+	 * @param numbers
+	 *            the numbers
 	 * @return median of input.
 	 */
 	public static Long getMedianForLong(List<Long> numbers) {
@@ -85,11 +87,12 @@ public final class AggregationUtils {
 		}
 		return median;
 	}
-	
+
 	/**
 	 * Calculates median for input list
 	 *
-	 * @param numbers the numbers
+	 * @param numbers
+	 *            the numbers
 	 * @return median of input.
 	 */
 	public static Integer getMedianForInteger(List<Integer> numbers) {
@@ -110,7 +113,8 @@ public final class AggregationUtils {
 	/**
 	 * Calculates average for input list
 	 *
-	 * @param numbers the numbers
+	 * @param numbers
+	 *            the numbers
 	 * @return average of input.
 	 */
 	public static Double average(List<Double> numbers) {
@@ -132,7 +136,8 @@ public final class AggregationUtils {
 	/**
 	 * Calculates average for input list
 	 *
-	 * @param numbers the numbers
+	 * @param numbers
+	 *            the numbers
 	 * @return average of input.
 	 */
 	public static Long averageLong(List<Long> numbers) {
@@ -144,13 +149,14 @@ public final class AggregationUtils {
 			}
 			average = (Double.valueOf(sum) / numbers.size());
 		}
-		return average == null ? null : Math.round(average) ;
+		return average == null ? null : Math.round(average);
 	}
-	
+
 	/**
 	 * Calculates average for input list
 	 *
-	 * @param numbers the numbers
+	 * @param numbers
+	 *            the numbers
 	 * @return average of input.
 	 */
 	public static Integer averageInteger(List<Integer> numbers) {
@@ -162,14 +168,16 @@ public final class AggregationUtils {
 			}
 			average = (Double.valueOf(sum) / numbers.size());
 		}
-		return average == null ? null : (int)Math.round(average) ;
+		return average == null ? null : (int) Math.round(average);
 	}
 
 	/**
 	 * Calculates weighted average for inputs
 	 *
-	 * @param numbers the numbers
-	 * @param wgt     the wgt
+	 * @param numbers
+	 *            the numbers
+	 * @param wgt
+	 *            the wgt
 	 * @return weighted average.
 	 */
 	public static Double weightedAverage(List<Double> numbers, List<Double> wgt) {
@@ -197,8 +205,10 @@ public final class AggregationUtils {
 	/**
 	 * Calculates percentiles for inputs
 	 *
-	 * @param numbers     the numbers
-	 * @param percentiles the percentiles
+	 * @param numbers
+	 *            the numbers
+	 * @param percentiles
+	 *            the percentiles
 	 * @return percentiles. double
 	 */
 	public static Double percentiles(List<Double> numbers, Double percentiles) {
@@ -219,8 +229,10 @@ public final class AggregationUtils {
 	/**
 	 * Calculates percentiles for inputs
 	 *
-	 * @param numbers     the numbers
-	 * @param percentiles the percentiles
+	 * @param numbers
+	 *            the numbers
+	 * @param percentiles
+	 *            the percentiles
 	 * @return percentiles. long
 	 */
 	public static Long percentilesLong(List<Long> numbers, Double percentiles) {
@@ -242,8 +254,10 @@ public final class AggregationUtils {
 	/**
 	 * Calculates percentiles for inputs
 	 *
-	 * @param numbers     the numbers
-	 * @param percentiles the percentiles
+	 * @param numbers
+	 *            the numbers
+	 * @param percentiles
+	 *            the percentiles
 	 * @return percentiles. integer
 	 */
 	public static Integer percentilesInteger(List<Integer> numbers, Double percentiles) {
@@ -260,8 +274,10 @@ public final class AggregationUtils {
 	/**
 	 * Calculates percentiles for inputs
 	 *
-	 * @param numbers     the numbers
-	 * @param percentiles the percentiles
+	 * @param numbers
+	 *            the numbers
+	 * @param percentiles
+	 *            the percentiles
 	 * @return percentiles. long
 	 */
 	public static Long percentilesForLongValues(List<Long> numbers, Double percentiles) {
@@ -285,8 +301,10 @@ public final class AggregationUtils {
 	/**
 	 * Calculates Sonar percentiles in double.
 	 *
-	 * @param numbers     the numbers
-	 * @param percentiles the percentiles
+	 * @param numbers
+	 *            the numbers
+	 * @param percentiles
+	 *            the percentiles
 	 * @return the double
 	 */
 	public static Double sonarPercentiles(List<Double> numbers, Double percentiles) {
@@ -303,9 +321,12 @@ public final class AggregationUtils {
 	/**
 	 * Calculates weighted percentiles for inputs
 	 *
-	 * @param numbers     the numbers
-	 * @param wgt         the wgt
-	 * @param percentiles the percentiles
+	 * @param numbers
+	 *            the numbers
+	 * @param wgt
+	 *            the wgt
+	 * @param percentiles
+	 *            the percentiles
 	 * @return weighted percentiles.
 	 */
 	public static Double weightedPercentiles(List<Double> numbers, List<Double> wgt, Double percentiles) {
@@ -329,7 +350,8 @@ public final class AggregationUtils {
 	/**
 	 * Gets weighted sum.
 	 *
-	 * @param weightList the weight list
+	 * @param weightList
+	 *            the weight list
 	 * @return the weighted sum
 	 */
 	public static Double getWeightedSum(List<Double> weightList) {
@@ -348,7 +370,8 @@ public final class AggregationUtils {
 	 * is 90 percentile. The tight coupling of aggregation calculation has to be
 	 * freed if needed.
 	 *
-	 * @param aggregatedValueList List of objects
+	 * @param aggregatedValueList
+	 *            List of objects
 	 * @return returns object
 	 */
 	@SuppressWarnings("unchecked")
@@ -376,7 +399,8 @@ public final class AggregationUtils {
 	/**
 	 * Calculates sum for input list
 	 *
-	 * @param numbers the numbers
+	 * @param numbers
+	 *            the numbers
 	 * @return sum of input.
 	 */
 	public static Double sum(List<Double> numbers) {
@@ -390,7 +414,8 @@ public final class AggregationUtils {
 	/**
 	 * Sum list of numbers as long.
 	 *
-	 * @param numbers the numbers
+	 * @param numbers
+	 *            the numbers
 	 * @return the long
 	 */
 	public static Long sumLong(List<Long> numbers) {

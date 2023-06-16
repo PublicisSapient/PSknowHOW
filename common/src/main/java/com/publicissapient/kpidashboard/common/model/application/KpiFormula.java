@@ -17,8 +17,10 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.model.application;
 
-import lombok.Data;
 import java.util.List;
+
+import lombok.Data;
+
 /**
  *
  * @author yasbano
@@ -26,10 +28,10 @@ import java.util.List;
  */
 @Data
 public class KpiFormula {
-	
+
 	private String type;
-    private String lhs;
-    private String rhs;
-    private String operator;
-    private List<String> operands;
+	private String lhs;
+	private String rhs;
+	private String operator;
+	private List<String> operands;
 }

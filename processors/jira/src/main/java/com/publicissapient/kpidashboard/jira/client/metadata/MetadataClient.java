@@ -24,12 +24,13 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
  * The Interface MetadataClient.
  */
 public interface MetadataClient {
-   
-    /**
-     * Process metadata.
-     *
-     * @param projectConfig the project config
-     * @return boolean value
-     */
-    boolean processMetadata(ProjectConfFieldMapping projectConfig);
+
+	/**
+	 * Process metadata.
+	 *
+	 * @param projectConfig
+	 *            the project config
+	 * @return boolean value
+	 */
+	boolean processMetadata(ProjectConfFieldMapping projectConfig);
 }

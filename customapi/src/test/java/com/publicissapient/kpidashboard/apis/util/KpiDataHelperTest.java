@@ -28,22 +28,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
-import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 
 /**
  * @author anisingh4
@@ -51,40 +49,38 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 @RunWith(MockitoJUnitRunner.class)
 public class KpiDataHelperTest {
 
-    @Mock
-    private CacheService cacheService;
-    @Mock
-    FilterHelperService flterHelperService;
-    private Map<String, AdditionalFilterCategory> additonalFilterMap;
+	@Mock
+	FilterHelperService flterHelperService;
+	@Mock
+	private CacheService cacheService;
+	private Map<String, AdditionalFilterCategory> additonalFilterMap;
 
-    @Before
-    public void setUp(){
-        AdditionalFilterCategoryFactory additionalFilterCategoryFactory = AdditionalFilterCategoryFactory.newInstance();
-        List<AdditionalFilterCategory> additionalFilterCategoryList = additionalFilterCategoryFactory
-                .getAdditionalFilterCategoryList();
-        additonalFilterMap = additionalFilterCategoryList.stream()
-                .collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
-        when(flterHelperService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
+	@Before
+	public void setUp() {
+		AdditionalFilterCategoryFactory additionalFilterCategoryFactory = AdditionalFilterCategoryFactory.newInstance();
+		List<AdditionalFilterCategory> additionalFilterCategoryList = additionalFilterCategoryFactory
+				.getAdditionalFilterCategoryList();
+		additonalFilterMap = additionalFilterCategoryList.stream()
+				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
+		when(flterHelperService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
 
+	}
 
-    }
+	@Test
+	public void createAdditionalFilterMap_SPRINT() {
 
+		KpiRequest kpiRequest = createKpiRequest();
+		Map<String, List<String>> selectedMap = new HashMap<>();
+		selectedMap.put(Constant.SPRINT, Arrays.asList("Test"));
 
-    @Test
-    public void createAdditionalFilterMap_SPRINT() {
+		kpiRequest.setSelectedMap(selectedMap);
 
-        KpiRequest kpiRequest = createKpiRequest();
-        Map<String, List<String>> selectedMap = new HashMap<>();
-        selectedMap.put(Constant.SPRINT, Arrays.asList("Test"));
+		Map<String, List<String>> mapOfFilters = new HashMap<>();
 
-        kpiRequest.setSelectedMap(selectedMap);
-
-        Map<String, List<String>> mapOfFilters = new HashMap<>();
-
-        String actual = KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM,
-                Constant.SPRINT,flterHelperService);
-        assertEquals(Constant.SPRINT, actual);
-    }
+		String actual = KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM,
+				Constant.SPRINT, flterHelperService);
+		assertEquals(Constant.SPRINT, actual);
+	}
 
 	private KpiRequest createKpiRequest() {
 		KpiRequest kpiRequest = new KpiRequest();
@@ -95,7 +91,7 @@ public class KpiDataHelperTest {
 		kpiElement.setKpiCategory("Quality");
 		kpiElement.setKpiUnit("%");
 		kpiElement.setKpiSource("Jira");
-		
+
 		kpiElement.setMaxValue("500");
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);

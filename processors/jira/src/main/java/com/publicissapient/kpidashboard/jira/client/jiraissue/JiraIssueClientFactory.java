@@ -18,30 +18,32 @@
 
 package com.publicissapient.kpidashboard.jira.client.jiraissue;
 
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 @Component
 public class JiraIssueClientFactory {
 
-    @Autowired
-    private KanbanJiraIssueClientImpl kanbanJiraIssueClient;
+	@Autowired
+	private KanbanJiraIssueClientImpl kanbanJiraIssueClient;
 
-    @Autowired
-    private ScrumJiraIssueClientImpl scrumJiraIssueClient;
+	@Autowired
+	private ScrumJiraIssueClientImpl scrumJiraIssueClient;
 
-    /**
-     * Gets JiraIssue Client based on the Project type (Kanban or Scrum)
-     *
-     * @param projectConfig user provided project Configuration mapping
-     * @return KanbanJiraIssueClient if isKanban true else ScrumJiraIssueClient
-     */
-    public JiraIssueClient getJiraIssueDataClient(ProjectConfFieldMapping projectConfig) {
-        if (projectConfig.isKanban()) {
-            return kanbanJiraIssueClient;
-        } else {
-           return scrumJiraIssueClient;
-        }
-    }
+	/**
+	 * Gets JiraIssue Client based on the Project type (Kanban or Scrum)
+	 *
+	 * @param projectConfig
+	 *            user provided project Configuration mapping
+	 * @return KanbanJiraIssueClient if isKanban true else ScrumJiraIssueClient
+	 */
+	public JiraIssueClient getJiraIssueDataClient(ProjectConfFieldMapping projectConfig) {
+		if (projectConfig.isKanban()) {
+			return kanbanJiraIssueClient;
+		} else {
+			return scrumJiraIssueClient;
+		}
+	}
 }

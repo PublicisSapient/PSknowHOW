@@ -24,7 +24,7 @@ import org.joda.time.DateTime;
  * @author vijkumar18
  *
  */
-public class ReleaseVersion { 
+public class ReleaseVersion {
 	/** The release name. */
 	private String releaseName;
 
@@ -37,6 +37,10 @@ public class ReleaseVersion {
 		this.releaseDate = releaseDate;
 	}
 
+	public ReleaseVersion() {
+		super();
+	}
+
 	/**
 	 * Gets the release name.
 	 *
@@ -46,14 +50,11 @@ public class ReleaseVersion {
 		return releaseName;
 	}
 
-	public ReleaseVersion() {
-		super();
-	}
-
 	/**
 	 * Sets the release name.
 	 *
-	 * @param releaseName the new release name
+	 * @param releaseName
+	 *            the new release name
 	 */
 	public void setReleaseName(String releaseName) {
 		this.releaseName = releaseName;
@@ -71,7 +72,8 @@ public class ReleaseVersion {
 	/**
 	 * Sets the release date.
 	 *
-	 * @param releaseDate the new release date
+	 * @param releaseDate
+	 *            the new release date
 	 */
 	public void setReleaseDate(DateTime releaseDate) {
 		this.releaseDate = releaseDate;
@@ -86,8 +88,10 @@ public class ReleaseVersion {
 			return false;
 		}
 		ReleaseVersion version = (ReleaseVersion) obj;
-		return  (releaseName == version.releaseName || (releaseName != null && releaseName.equals(version.getReleaseName())))
-				&& (releaseDate == version.getReleaseDate() || (releaseDate != null && releaseDate.equals(version.getReleaseDate())));
+		return (releaseName == version.releaseName
+				|| (releaseName != null && releaseName.equals(version.getReleaseName())))
+				&& (releaseDate == version.getReleaseDate()
+						|| (releaseDate != null && releaseDate.equals(version.getReleaseDate())));
 	}
 
 	@Override

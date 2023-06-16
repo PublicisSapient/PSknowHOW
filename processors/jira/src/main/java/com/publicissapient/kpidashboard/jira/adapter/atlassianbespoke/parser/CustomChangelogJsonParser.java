@@ -18,26 +18,29 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.parser;
 
+import java.util.Collection;
+
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.joda.time.DateTime;
+
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
 import com.atlassian.jira.rest.client.internal.json.ChangelogItemJsonParser;
 import com.atlassian.jira.rest.client.internal.json.ChangelogJsonParser;
 import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.util.JsonParseUtil;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-import org.joda.time.DateTime;
-
-import java.util.Collection;
 
 public class CustomChangelogJsonParser extends ChangelogJsonParser {
 
 	private final ChangelogItemJsonParser changelogItemJsonParser = new ChangelogItemJsonParser();
 
-	@Override public ChangelogGroup parse(JSONObject json) throws JSONException {
+	@Override
+	public ChangelogGroup parse(JSONObject json) throws JSONException {
 		final DateTime created = JsonParseUtil.parseDateTime(json, "created");
 		final BasicUser author = json.has("author") ? JsonParseUtil.parseBasicUser(json.getJSONObject("author")) : null;
-		final Collection<ChangelogItem> items = JsonParseUtil.parseJsonArray(json.getJSONArray("items"), changelogItemJsonParser);
+		final Collection<ChangelogItem> items = JsonParseUtil.parseJsonArray(json.getJSONArray("items"),
+				changelogItemJsonParser);
 		return new ChangelogGroup(author, created, items);
 	}
 }

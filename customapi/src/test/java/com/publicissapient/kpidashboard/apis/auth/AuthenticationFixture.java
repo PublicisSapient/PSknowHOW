@@ -59,7 +59,7 @@ public class AuthenticationFixture {
 
 	public static String getJwtToken(String username, String secret, long expirationTime) {
 		Authentication authentication = getAuthentication(username);
-		List<String> authorities = Arrays.asList("ROLE_VIEWER","ROLE_SUPERADMIN");
+		List<String> authorities = Arrays.asList("ROLE_VIEWER", "ROLE_SUPERADMIN");
 		return Jwts.builder().setSubject(authentication.getName()).claim(DETAILS_CLAIM, authentication.getDetails())
 				.claim(ROLES_CLAIM, authorities).setExpiration(new Date(System.currentTimeMillis() + expirationTime))
 				.signWith(SignatureAlgorithm.HS512, secret).compact();

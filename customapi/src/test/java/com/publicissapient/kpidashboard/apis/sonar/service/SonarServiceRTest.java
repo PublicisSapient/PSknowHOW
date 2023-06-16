@@ -205,7 +205,8 @@ public class SonarServiceRTest {
 		String[] exampleStringList = { "exampleElement", "exampleElement" };
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest))
 				.thenReturn(exampleStringList);
-		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(),anyString(), Mockito.anyBoolean())).thenReturn("project");
+		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+				.thenReturn("project");
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		Map<String, Integer> map = new HashMap<>();
 		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()

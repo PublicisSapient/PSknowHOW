@@ -46,7 +46,7 @@ public class SprintClientImplTest {
 
 	@Mock
 	private AzureAdapter azureAdapter;
-	
+
 	@Mock
 	private AzureProcessorRepository azureProcessorRepository;
 
@@ -60,7 +60,7 @@ public class SprintClientImplTest {
 	private SprintDetails sprintDetails2;
 
 	private SprintDetails sprintDetails3;
-	
+
 	private Set<SprintDetails> sprintDetailsSet = new HashSet<>();
 	private List<SprintDetails> dbSprintDetailsList = new ArrayList<>();
 
@@ -138,15 +138,16 @@ public class SprintClientImplTest {
 		issueItemList.add("1");
 		issueItemList.add("2");
 		issueItemList.add("3");
-		when(azureAdapter.getIssuesBySprint(prepareAzureServer(), "testSprint_TestAzure_5ba8e182d3735010e7f1fa45")).thenReturn(issueItemList);
+		when(azureAdapter.getIssuesBySprint(prepareAzureServer(), "testSprint_TestAzure_5ba8e182d3735010e7f1fa45"))
+				.thenReturn(issueItemList);
 
-		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList() , anyString())).thenReturn(jiraIssueList);
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList(), anyString()))
+				.thenReturn(jiraIssueList);
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
 
-		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet , azureAdapter , prepareAzureServer());
+		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer());
 	}
-
 
 	@Test
 	void collectIssuesAndPrepareSprintReportForFirstTime() throws Exception {
@@ -161,14 +162,14 @@ public class SprintClientImplTest {
 		issueItemList.add("89");
 		issueItemList.add("90");
 		when(azureAdapter.getIssuesBySprint(prepareAzureServer(), "sprint1")).thenReturn(issueItemList);
-		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList() , anyString())).thenReturn(jiraIssueList);
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList(), anyString()))
+				.thenReturn(jiraIssueList);
 
 		when(projectToolConfigRepository.findById(anyString())).thenReturn(projectToolConfig);
 		when(sprintRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>(sprintDetailsSet));
 
-		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet , azureAdapter , prepareAzureServer());
+		sprintClientImpl.prepareSprintReport(projectConfig, sprintDetailsSet, azureAdapter, prepareAzureServer());
 	}
-
 
 	private AzureServer prepareAzureServer() {
 		AzureServer azureServer = new AzureServer();
@@ -179,6 +180,5 @@ public class SprintClientImplTest {
 		return azureServer;
 
 	}
-
 
 }

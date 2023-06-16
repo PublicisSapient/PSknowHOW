@@ -46,6 +46,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.common.constant.CommitType;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
@@ -56,7 +57,6 @@ import com.publicissapient.kpidashboard.github.customexception.FetchingCommitExc
 import com.publicissapient.kpidashboard.github.model.GitHubProcessorItem;
 import com.publicissapient.kpidashboard.github.processor.service.GitHubClient;
 import com.publicissapient.kpidashboard.gitlab.util.GitHubURIBuilder;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,16 +69,13 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class GitHubClientImpl implements GitHubClient {
 
+	private static final String PAGE_PARAM = "&page=";
 	@Autowired
 	private GitHubConfig gitLabConfig;
-
 	@Autowired
 	private RestTemplate restTemplate;
-
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
-
-	private static final String PAGE_PARAM = "&page=";
 
 	/**
 	 * Decrypt apiToken.
@@ -110,7 +107,8 @@ public class GitHubClientImpl implements GitHubClient {
 	 *             the exception
 	 */
 	public List<CommitDetails> fetchAllCommits(GitHubProcessorItem gitHubProcessorItem, boolean firstRun,
-			ProcessorToolConnection githubToolConnection, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
+			ProcessorToolConnection githubToolConnection, ProjectBasicConfig proBasicConfig)
+			throws FetchingCommitException {
 
 		String restUri = null;
 		List<CommitDetails> commits = new ArrayList<>();
@@ -169,21 +167,22 @@ public class GitHubClientImpl implements GitHubClient {
 					parentList.add(getString(parentObject, GitHubConstants.RESP_ID_KEY));
 				}
 			}
-			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList, proBasicConfig);
+			commitDetails(gitLabInfo, commits, scmRevisionNumber, message, author, timestamp, parentList,
+					proBasicConfig);
 
 		}
 	}
 
 	@Override
 	public List<MergeRequests> fetchMergeRequests(GitHubProcessorItem gitHubProcessorItem, boolean firstRun,
-			ProcessorToolConnection processorToolConnection, ProjectBasicConfig proBasicConfig) throws FetchingCommitException {
+			ProcessorToolConnection processorToolConnection, ProjectBasicConfig proBasicConfig)
+			throws FetchingCommitException {
 
 		String restUri = null;
 		List<MergeRequests> mergeRequests = new ArrayList<>();
 		try {
 			String decryptedApiToken = decryptApiToken(processorToolConnection.getAccessToken());
-			String restUrl = new GitHubURIBuilder(processorToolConnection)
-					.mergeRequestUrlbuild();
+			String restUrl = new GitHubURIBuilder(processorToolConnection).mergeRequestUrlbuild();
 			restUri = URLDecoder.decode(restUrl, "UTF-8");
 			log.debug("REST URL {}", restUri);
 			boolean hasMorePage = true;
@@ -286,17 +285,19 @@ public class GitHubClientImpl implements GitHubClient {
 		}
 		return timestamp;
 	}
-   @SuppressWarnings("java:S107")
+
+	@SuppressWarnings("java:S107")
 	private void commitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
-			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList, ProjectBasicConfig proBasicConfig) {
+			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList,
+			ProjectBasicConfig proBasicConfig) {
 		CommitDetails gitLabCommit = new CommitDetails();
 		gitLabCommit.setBranch(gitLabInfo.getBranch());
 		gitLabCommit.setUrl(gitLabInfo.getUrl());
 		gitLabCommit.setTimestamp(System.currentTimeMillis());
 		gitLabCommit.setRevisionNumber(scmRevisionNumber);
-	   if (proBasicConfig.isSaveAssigneeDetails()) {
-		   gitLabCommit.setAuthor(author);
-	   }
+		if (proBasicConfig.isSaveAssigneeDetails()) {
+			gitLabCommit.setAuthor(author);
+		}
 		gitLabCommit.setCommitLog(message);
 		gitLabCommit.setParentRevisionNumbers(parentList);
 		gitLabCommit.setCommitTimestamp(timestamp);

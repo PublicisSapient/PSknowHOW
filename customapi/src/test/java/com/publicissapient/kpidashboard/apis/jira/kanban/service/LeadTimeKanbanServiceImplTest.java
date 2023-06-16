@@ -46,6 +46,10 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHi
 
 @RunWith(MockitoJUnitRunner.class)
 public class LeadTimeKanbanServiceImplTest {
+	private static final String LEAD_TIME = "Lead Time";
+	private static final String OPEN_TO_TRIAGE = "Open - Triage";
+	private static final String TRIAGE_TO_COMPLETE = "Triage - Complete";
+	private static final String COMPLETE_TO_LIVE = "Complete - Live";
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -59,16 +63,10 @@ public class LeadTimeKanbanServiceImplTest {
 	private List<KanbanIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
 	private Map<String, List<String>> maturityRangeMap = new HashMap<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
-
-	private static final String LEAD_TIME = "Lead Time";
-	private static final String OPEN_TO_TRIAGE = "Open - Triage";
-	private static final String TRIAGE_TO_COMPLETE = "Triage - Complete";
-	private static final String COMPLETE_TO_LIVE = "Complete - Live";
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 
@@ -97,7 +95,6 @@ public class LeadTimeKanbanServiceImplTest {
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
-
 		setTreadValuesDataCount();
 
 		maturityRangeMap.put("LeadTime", new ArrayList<>(Arrays.asList("-60,60-45,45-30,30-10,10-")));
@@ -108,7 +105,6 @@ public class LeadTimeKanbanServiceImplTest {
 		kpiWiseAggregation.put("kanban_Lead_Time", "average");
 
 	}
-
 
 	private void setTreadValuesDataCount() {
 		List<DataCount> dataCountList = new ArrayList<>();
@@ -133,7 +129,6 @@ public class LeadTimeKanbanServiceImplTest {
 		return dataCount;
 	}
 
-	
 	@Test
 	public void testLeadTimeKanban() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,

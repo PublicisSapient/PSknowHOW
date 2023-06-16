@@ -37,13 +37,11 @@ public class BambooController {
 		ServiceResponse response;
 		List<BambooPlansResponseDTO> projectKeyList = bambooToolConfigService.getProjectsAndPlanKeyList(connectionId);
 		if (CollectionUtils.isEmpty(projectKeyList)) {
-			response = new ServiceResponse(false, "No plans details found",
-					null);
+			response = new ServiceResponse(false, "No plans details found", null);
 		} else {
 			response = new ServiceResponse(true, "FETCHED_SUCCESSFULLY", projectKeyList);
 		}
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	/**
@@ -65,8 +63,7 @@ public class BambooController {
 		} else {
 			response = new ServiceResponse(true, "Fetched successfully", projectKeyList);
 		}
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	/**
@@ -78,14 +75,13 @@ public class BambooController {
 	@GetMapping(value = "/bamboo/deploy/{connectionId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getBambooDeploymentProject(@PathVariable String connectionId) {
 		ServiceResponse response;
-		List<BambooDeploymentProjectsResponseDTO> projectKeyList = bambooToolConfigService.getDeploymentProjectList(connectionId);
+		List<BambooDeploymentProjectsResponseDTO> projectKeyList = bambooToolConfigService
+				.getDeploymentProjectList(connectionId);
 		if (CollectionUtils.isEmpty(projectKeyList)) {
-			response = new ServiceResponse(false, "No deployment project found",
-					null);
+			response = new ServiceResponse(false, "No deployment project found", null);
 		} else {
 			response = new ServiceResponse(true, "FETCHED_SUCCESSFULLY", projectKeyList);
 		}
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 }

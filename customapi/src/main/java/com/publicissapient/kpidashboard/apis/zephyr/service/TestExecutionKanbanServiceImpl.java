@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -40,10 +38,12 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
@@ -175,7 +175,7 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 
 	private void kpiWithoutFilter(Map<String, Map<String, KanbanTestExecution>> projectWiseTestExecutions,
 			Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		List<KPIExcelData> excelData= new ArrayList<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 		String requestTrackerId = getKanbanRequestTrackerId();
 
 		leafNodeList.forEach(node -> {
@@ -207,8 +207,7 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 							testExecutionAggregatedValuesForDateRange);
 					dataCounts.add(dcObj);
 
-					populateValidationDataObject(projectName, requestTrackerId,
-							dataForTreadList, excelData);
+					populateValidationDataObject(projectName, requestTrackerId, dataForTreadList, excelData);
 
 					if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 						currentDate = currentDate.minusWeeks(1);
@@ -274,7 +273,8 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 	private String getXAxisDataPointName(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
-			range = DateUtil.localDateTimeConverter(dateRange.getStartDate()) + " to " + DateUtil.localDateTimeConverter(dateRange.getEndDate());
+			range = DateUtil.localDateTimeConverter(dateRange.getStartDate()) + " to "
+					+ DateUtil.localDateTimeConverter(dateRange.getEndDate());
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString();
 		} else {
@@ -320,7 +320,7 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 	}
 
 	private void populateValidationDataObject(String projectName, String requestTrackerId,
-											  Map<String, KanbanTestExecution> dataForTreadList, List<KPIExcelData> excelData) {
+			Map<String, KanbanTestExecution> dataForTreadList, List<KPIExcelData> excelData) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 
 			dataForTreadList.forEach((date, testExecution) -> {

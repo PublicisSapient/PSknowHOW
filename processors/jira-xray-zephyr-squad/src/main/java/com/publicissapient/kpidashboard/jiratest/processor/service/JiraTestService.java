@@ -63,6 +63,4 @@ public interface JiraTestService {
 	 * @return String of UserTimeZone
 	 */
 
-
-
 }

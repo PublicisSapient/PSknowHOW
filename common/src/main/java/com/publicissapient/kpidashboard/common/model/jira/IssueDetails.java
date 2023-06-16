@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.common.model.jira;
 
 import com.google.common.base.Objects;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

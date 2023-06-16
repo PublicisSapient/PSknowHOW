@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class AdditionalFilterValue {
-    private String valueId;
-    private String value;
+	private String valueId;
+	private String value;
 }

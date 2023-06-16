@@ -18,10 +18,10 @@
 
 package com.publicissapient.kpidashboard.jira.client.release;
 
-import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 @Component
@@ -39,8 +39,9 @@ public class ReleaseDataClientFactory {
 	 * @param projectConfig
 	 *            user provided project Configuration mapping
 	 * @param jiraAdapter
-	 * 			jiraAdapter to be set for all the clients
-	 * @return KanbanReleaseDataClientImpl if isKanban true else ScrumReleaseDataClientImpl
+	 *            jiraAdapter to be set for all the clients
+	 * @return KanbanReleaseDataClientImpl if isKanban true else
+	 *         ScrumReleaseDataClientImpl
 	 */
 	public ReleaseDataClient getReleaseDataClient(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter) {
 		if (projectConfig.isKanban()) {

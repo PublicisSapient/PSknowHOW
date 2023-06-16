@@ -21,10 +21,13 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -44,12 +47,12 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -62,14 +65,11 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 public class ClosurePossibleTodayServiceImplTest {
 
 	@Mock
+	CacheService cacheService;
+	@Mock
 	private JiraIssueRepository jiraIssueRepository;
-
 	@Mock
 	private ConfigHelperService configHelperService;
-
-	@Mock
-	CacheService cacheService;
-
 	@Mock
 	private ProjectBasicConfigRepository projectConfigRepository;
 
@@ -99,10 +99,10 @@ public class ClosurePossibleTodayServiceImplTest {
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
-		sprintDetails=SprintDetailsDataFactory.newInstance().getSprintDetails().get(0);
+		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(0);
 
-		List<String> jiraIssueList = sprintDetails.getTotalIssues().stream().filter(Objects::nonNull).map(SprintIssue::getNumber)
-				.distinct().collect(Collectors.toList());
+		List<String> jiraIssueList = sprintDetails.getTotalIssues().stream().filter(Objects::nonNull)
+				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		storyList = jiraIssueDataFactory.findIssueByNumberList(jiraIssueList);
 
@@ -113,7 +113,6 @@ public class ClosurePossibleTodayServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
 	}
-
 
 	@Test
 	public void testGetKpiDataProject() throws ApplicationException {
@@ -130,8 +129,8 @@ public class ClosurePossibleTodayServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(closurePossibleTodayServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		try {
-			KpiElement kpiElement = closurePossibleTodayServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+			KpiElement kpiElement = closurePossibleTodayServiceImpl.getKpiData(kpiRequest,
+					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
 			assertNotNull(kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {
@@ -139,7 +138,6 @@ public class ClosurePossibleTodayServiceImplTest {
 		}
 
 	}
-
 
 	@After
 	public void cleanup() {

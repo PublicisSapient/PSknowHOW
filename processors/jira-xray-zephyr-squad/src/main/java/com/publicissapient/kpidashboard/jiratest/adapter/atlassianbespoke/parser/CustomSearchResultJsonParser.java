@@ -40,7 +40,8 @@ public class CustomSearchResultJsonParser extends SearchResultJsonParser {
 
 		final Iterable<Issue> issues;
 		if (issuesJsonArray.length() > 0) {
-			final CustomIssueJsonParser issueParser = new CustomIssueJsonParser(json.getJSONObject("names"), json.getJSONObject("schema"));
+			final CustomIssueJsonParser issueParser = new CustomIssueJsonParser(json.getJSONObject("names"),
+					json.getJSONObject("schema"));
 			final GenericJsonArrayParser<Issue> issuesParser = GenericJsonArrayParser.create(issueParser);
 			issues = issuesParser.parse(issuesJsonArray);
 		} else {

@@ -18,12 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDate;
 
-import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
-import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
+import javax.servlet.http.HttpServletRequest;
+
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,18 +36,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.ExposeAPITokenRequestDTO;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.ExposeAPITokenResponseDTO;
 import com.publicissapient.kpidashboard.apis.pushdata.repository.ExposeApiTokenRepository;
-
-import javax.servlet.http.HttpServletRequest;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
+import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthExposeAPIServiceImplTest {
@@ -126,7 +126,8 @@ public class AuthExposeAPIServiceImplTest {
 	public void validateTokenPushDataWithInValidToken() {
 		when(httpServletRequest.getHeader("Api-Key")).thenReturn("invalid_token");
 		when(exposeApiTokenRepository.findByApiToken("invalid_token")).thenReturn(null);
-		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(),any(Object.class));
+		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(),
+				any(Object.class));
 		authExposeAPIService.validateToken(httpServletRequest);
 
 	}

@@ -54,161 +54,156 @@ import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 @RunWith(MockitoJUnitRunner.class)
 public class AccessRequestsControllerTest {
 
-		private MockMvc mockMvc;
+	ObjectMapper mapper = new ObjectMapper();
+	private MockMvc mockMvc;
+	private AccessRequestsDataDTO testAccessRequestsData;
+	private String testUsername;
+	private String testId;
+	private String testStatus;
+	@InjectMocks
+	private AccessRequestsController accessRequestsController;
+	@Mock
+	private AccessRequestsHelperService accessRequestsHelperService;
+	@Mock
+	private UserTokenDeletionService userTokenDeletionService;
 
-		private AccessRequestsDataDTO testAccessRequestsData;
-		private String testUsername;
-		private String testId;
-		private String testStatus;
-		
-		@InjectMocks
-		private AccessRequestsController accessRequestsController;
+	/**
+	 * method includes preprocesses for test cases
+	 */
+	@Before
+	public void before() {
+		testUsername = "user1";
+		testId = "5dbfcc60e645ca2ee4075381";
+		testStatus = "Pending";
 
-		@Mock
-		private AccessRequestsHelperService accessRequestsHelperService;
-		
-		@Mock
-		private UserTokenDeletionService userTokenDeletionService;
-		
-		ObjectMapper mapper = new ObjectMapper();
-		
-		/**
-		 * method includes preprocesses for test cases
-		 */
-		@Before
-		public void before() {
-			testUsername = "user1";
-			testId = "5dbfcc60e645ca2ee4075381";
-			testStatus = "Pending";
-			
-			mockMvc = MockMvcBuilders.standaloneSetup(accessRequestsController).build();
+		mockMvc = MockMvcBuilders.standaloneSetup(accessRequestsController).build();
 
-			testAccessRequestsData = new AccessRequestsDataDTO();
-			testAccessRequestsData.setUsername("UnitTest");
-			
-			List<ProjectsForAccessRequest> testProjects = new ArrayList<>();
-			testProjects.add(createProjectsForAccessRequest("TestProjectForAccessRequest1", "46290"));
-			testProjects.add(createProjectsForAccessRequest("TestProjectForAccessRequest2", "64920"));
-			testAccessRequestsData.setProjects(testProjects);
-			
-			List<RoleData> roles = new ArrayList<>();
-			RoleData testRoleData = new RoleData();
-			testRoleData.setId(new ObjectId("5ca455aa70c53c4f50076e34"));
-			testRoleData.setRoleName("ROLE_SUPERADMIN");
-			testRoleData.setRoleDescription("Pending");
-			List<Permissions> testPermissions = new ArrayList<Permissions>();
-			
-			Permissions perm1 = new Permissions();
-			perm1.setPermissionName("TestProjectForRole1");
-			perm1.setResourceId(new ObjectId("5ca455aa70c53c4f50076e34"));
-			perm1.setResourceName("resource1");
-			
-			testPermissions.add(perm1);
-			
-			Permissions perm2 = new Permissions();
-			perm2.setPermissionName("TestProjectForRole1");
-			perm2.setResourceId(new ObjectId("5ca455aa70c53c4f50076e34"));
-			perm2.setResourceName("resource1");
-			
-			testPermissions.add(perm2);
-			testRoleData.setPermissions(testPermissions);
-			
-			roles.add(testRoleData);
-			testAccessRequestsData.setRoles(roles);
-		}
+		testAccessRequestsData = new AccessRequestsDataDTO();
+		testAccessRequestsData.setUsername("UnitTest");
 
-		/**
-		 * method includes post processes for test cases
-		 */
-		@After
-		public void after() {
-			mockMvc = null;
-			testAccessRequestsData = null;
-			testId = null;
-			testUsername = null;
-			testStatus = null;
-		}
+		List<ProjectsForAccessRequest> testProjects = new ArrayList<>();
+		testProjects.add(createProjectsForAccessRequest("TestProjectForAccessRequest1", "46290"));
+		testProjects.add(createProjectsForAccessRequest("TestProjectForAccessRequest2", "64920"));
+		testAccessRequestsData.setProjects(testProjects);
 
-		/**
-		 * method to test GET /accessrequests restPoint ;
-		 * 
-		 * Get all access requests
-		 * 
-		 * @throws Exception
-		 */
-		@Test
-		public void testGetAllAccessRequests() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/accessrequests/")
-					.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-		}
+		List<RoleData> roles = new ArrayList<>();
+		RoleData testRoleData = new RoleData();
+		testRoleData.setId(new ObjectId("5ca455aa70c53c4f50076e34"));
+		testRoleData.setRoleName("ROLE_SUPERADMIN");
+		testRoleData.setRoleDescription("Pending");
+		List<Permissions> testPermissions = new ArrayList<Permissions>();
 
-		/**
-		 * method to test GET /accessrequests/user/{username} restPoint ;
-		 * Get access requests created by username
-		 * 
-		 * @throws Exception
-		 */
-		@Test
-		public void testGetAccessRequestByUsername() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/accessrequests/user/"+testUsername)
-					.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-		}
-		
-		/**
-		 * method to test GET /accessrequests/status/{status} restPoint ;
-		 * Get access requests with current status
-		 * 
-		 * @throws Exception
-		 */
-		@Test
-		public void testGetAccessRequestByStatus() throws Exception {
-			testStatus = "Pending";
-			mockMvc.perform(MockMvcRequestBuilders.get("/accessrequests/status/"+testStatus)
-					.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-		}
-		
-		/**
-		 * method to test GET /accessrequests/{id} restPoint ;
-		 * Get access request with id
-		 * 
-		 * @throws Exception
-		 */
-		@Test
-		public void testGetAccessRequestById() throws Exception {
-			mockMvc.perform(MockMvcRequestBuilders.get("/accessrequests/"+testId)
-					.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-		}
-		
-		/**
-		 * method to test PUT /accessrequests/{id} restPoint ;
-		 * Modify access request with id
-		 * 
-		 * @throws Exception
-		 */
-		@Test
-		public void testModifyAccessRequest() throws Exception {
-			
-			mockMvc.perform(MockMvcRequestBuilders.put("/accessrequests/"+testId)
-			       .content(mapper.writeValueAsString(testAccessRequestsData))
-					.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-			
-		}
-		
-		/**
-		 * create ProjectsForAccessRequest object
-		 * 
-		 * @param projectName
-		 *            projectName
-		 * @param projectId
-		 *            projectId
-		 * @return object
-		 */
-		private ProjectsForAccessRequest createProjectsForAccessRequest(String projectName, String projectId) {
-			ProjectsForAccessRequest par = new ProjectsForAccessRequest();
-			par.setProjectName(projectName);
-			par.setProjectId(projectId);
-			return par;
-		}
-	
+		Permissions perm1 = new Permissions();
+		perm1.setPermissionName("TestProjectForRole1");
+		perm1.setResourceId(new ObjectId("5ca455aa70c53c4f50076e34"));
+		perm1.setResourceName("resource1");
+
+		testPermissions.add(perm1);
+
+		Permissions perm2 = new Permissions();
+		perm2.setPermissionName("TestProjectForRole1");
+		perm2.setResourceId(new ObjectId("5ca455aa70c53c4f50076e34"));
+		perm2.setResourceName("resource1");
+
+		testPermissions.add(perm2);
+		testRoleData.setPermissions(testPermissions);
+
+		roles.add(testRoleData);
+		testAccessRequestsData.setRoles(roles);
+	}
+
+	/**
+	 * method includes post processes for test cases
+	 */
+	@After
+	public void after() {
+		mockMvc = null;
+		testAccessRequestsData = null;
+		testId = null;
+		testUsername = null;
+		testStatus = null;
+	}
+
+	/**
+	 * method to test GET /accessrequests restPoint ;
+	 * 
+	 * Get all access requests
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetAllAccessRequests() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/accessrequests/").contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+	}
+
+	/**
+	 * method to test GET /accessrequests/user/{username} restPoint ; Get access
+	 * requests created by username
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetAccessRequestByUsername() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/accessrequests/user/" + testUsername)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+	}
+
+	/**
+	 * method to test GET /accessrequests/status/{status} restPoint ; Get access
+	 * requests with current status
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetAccessRequestByStatus() throws Exception {
+		testStatus = "Pending";
+		mockMvc.perform(MockMvcRequestBuilders.get("/accessrequests/status/" + testStatus)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+	}
+
+	/**
+	 * method to test GET /accessrequests/{id} restPoint ; Get access request with
+	 * id
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetAccessRequestById() throws Exception {
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/accessrequests/" + testId).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+	}
+
+	/**
+	 * method to test PUT /accessrequests/{id} restPoint ; Modify access request
+	 * with id
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testModifyAccessRequest() throws Exception {
+
+		mockMvc.perform(MockMvcRequestBuilders.put("/accessrequests/" + testId)
+				.content(mapper.writeValueAsString(testAccessRequestsData))
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 
 	}
+
+	/**
+	 * create ProjectsForAccessRequest object
+	 * 
+	 * @param projectName
+	 *            projectName
+	 * @param projectId
+	 *            projectId
+	 * @return object
+	 */
+	private ProjectsForAccessRequest createProjectsForAccessRequest(String projectName, String projectId) {
+		ProjectsForAccessRequest par = new ProjectsForAccessRequest();
+		par.setProjectName(projectName);
+		par.setProjectId(projectId);
+		return par;
+	}
+
+}

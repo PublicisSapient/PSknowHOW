@@ -18,12 +18,13 @@
 
 package com.publicissapient.kpidashboard.apis.auth.standard;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
-import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,12 +35,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
+import com.publicissapient.kpidashboard.apis.auth.AuthenticationResultHandler;
+import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHandler;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StandardLoginRequestFilterTest {
@@ -142,7 +143,5 @@ public class StandardLoginRequestFilterTest {
 		when(authTypesConfigService.getAuthTypesStatus()).thenReturn(authTypeStatus);
 		filter.attemptAuthentication(request, response);
 	}
-
-
 
 }

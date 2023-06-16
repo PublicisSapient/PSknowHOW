@@ -21,8 +21,9 @@ package com.publicissapient.kpidashboard.common.repository.excel;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import org.bson.types.ObjectId;
+
+import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 
 /**
  * The interface Kanban capacity repo custom.
@@ -43,9 +44,9 @@ public interface KanbanCapacityRepoCustom {
 	 * @return list of feature
 	 */
 	List<KanbanCapacity> findIssuesByType(Map<String, List<ObjectId>> mapOfFilters, String dateFrom, String dateTo);
-	
+
 	/**
-	 * find already existing kanban capacity 
+	 * find already existing kanban capacity
 	 * 
 	 * @param mapOfFilters
 	 *            the map of filters

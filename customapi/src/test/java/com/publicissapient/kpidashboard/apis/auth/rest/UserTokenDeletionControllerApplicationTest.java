@@ -23,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,10 +50,8 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 	@Mock
 	private CustomApiConfig customApiConfig;
 
-
 	@Mock
 	private CookieUtil cookieUtil;
-
 
 	@InjectMocks
 	private UserTokenDeletionControllerApplication userTokenDeletionControllerApplication;

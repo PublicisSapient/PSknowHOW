@@ -76,42 +76,33 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class RCAServiceImplTest {
 
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	List<JiraIssue> defectList = new ArrayList<>();
+	List<JiraIssue> totalStoryDefectLinkageBugList = new ArrayList<>();
+	@Mock
+	JiraIssueRepository featureRepository;
+	@Mock
+	CacheService cacheService;
+	@Mock
+	ConfigHelperService configHelperService;
+	@Mock
+	KpiHelperService kpiHelperService;
+	@InjectMocks
+	RCAServiceImpl rcaServiceImpl;
+	@Mock
+	ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	FieldMappingRepository fieldMappingRepository;
 	private List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-
 	private KpiRequest kpiRequest;
-	List<JiraIssue> defectList = new ArrayList<>();
-	List<JiraIssue> totalStoryDefectLinkageBugList = new ArrayList<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
-
-	@Mock
-	JiraIssueRepository featureRepository;
-
-	@Mock
-	CacheService cacheService;
-
-	@Mock
-	ConfigHelperService configHelperService;
-
-	@Mock
-	KpiHelperService kpiHelperService;
-
-	@InjectMocks
-	RCAServiceImpl rcaServiceImpl;
-
-	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
-
 	@Mock
 	private CustomApiConfig customApiConfig;
 

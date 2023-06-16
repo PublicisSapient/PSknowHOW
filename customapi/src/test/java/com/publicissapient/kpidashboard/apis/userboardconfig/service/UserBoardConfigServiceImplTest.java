@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +44,7 @@ import org.modelmapper.ModelMapper;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.data.KpiCategoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiCategoryMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiMasterDataFactory;
@@ -219,7 +219,7 @@ public class UserBoardConfigServiceImplTest {
 		when(kpiMasterRepository.findByKpiCategoryAndKanban(anyString(), anyBoolean())).thenReturn(filteredMaster);
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
-		assertEquals(userBoardConfigDTO.getOthers().size(),3);
+		assertEquals(userBoardConfigDTO.getOthers().size(), 3);
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}
@@ -237,7 +237,7 @@ public class UserBoardConfigServiceImplTest {
 		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasters);
 		when(kpiCategoryRepository.findAll()).thenReturn(kpiCategoryList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
-		assertEquals( userBoardConfigDTO.getKanban().get(0).getKpis().size(),7);
+		assertEquals(userBoardConfigDTO.getKanban().get(0).getKpis().size(), 7);
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}
@@ -264,7 +264,7 @@ public class UserBoardConfigServiceImplTest {
 		when(kpiMasterRepository.findByKpiCategoryAndKanban(anyString(), anyBoolean())).thenReturn(filteredMaster);
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
-		assertEquals( userBoardConfigDTO.getKanban().get(0).getKpis().size(),6);
+		assertEquals(userBoardConfigDTO.getKanban().get(0).getKpis().size(), 6);
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}
@@ -299,7 +299,7 @@ public class UserBoardConfigServiceImplTest {
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
-		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(),5, "Previously 4 kpis now 5");
+		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 5, "Previously 4 kpis now 5");
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}
@@ -334,7 +334,7 @@ public class UserBoardConfigServiceImplTest {
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
-		assertEquals( userBoardConfigDTO.getScrum().get(2).getKpis().size(),6, "Previously 4 kpis now 6");
+		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 6, "Previously 4 kpis now 6");
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}
@@ -369,7 +369,7 @@ public class UserBoardConfigServiceImplTest {
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
-		assertEquals( userBoardConfigDTO.getScrum().get(2).getKpis().size(),5, "Previously 4 kpis now 6");
+		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 5, "Previously 4 kpis now 6");
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}
@@ -403,7 +403,7 @@ public class UserBoardConfigServiceImplTest {
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
-		assertEquals( userBoardConfigDTO.getScrum().get(2).getKpis().size(),5, "Previously 4 kpis now 5");
+		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 5, "Previously 4 kpis now 5");
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}

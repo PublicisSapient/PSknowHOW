@@ -37,14 +37,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BambooProcessor extends Processor {
 
-	public static BambooProcessor prototype() {
-		return BambooProcessor.processorBuilder().name(ProcessorConstants.BAMBOO).online(true).enabled(true)
-				.processorType(ProcessorType.BUILD).lastExecuted(System.currentTimeMillis()).isLastSuccess(false).build();
-	}
-
 	@Builder(builderMethodName = "processorBuilder")
 	public BambooProcessor(String name, ProcessorType processorType, boolean enabled, boolean online,
 			List<ProcessorError> errors, long lastExecuted, ObjectId objectId, boolean isLastSuccess) {
 		super(name, processorType, enabled, online, errors, lastExecuted, objectId, isLastSuccess);
+	}
+
+	public static BambooProcessor prototype() {
+		return BambooProcessor.processorBuilder().name(ProcessorConstants.BAMBOO).online(true).enabled(true)
+				.processorType(ProcessorType.BUILD).lastExecuted(System.currentTimeMillis()).isLastSuccess(false)
+				.build();
 	}
 }

@@ -18,20 +18,25 @@
 
 package com.publicissapient.kpidashboard.apis.connection.service;
 
-import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.data.ConnectionsDataFactory;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.connection.ConnectionDTO;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -46,12 +51,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.data.ConnectionsDataFactory;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.connection.ConnectionDTO;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 
 /**
  * @author dilipKr
@@ -62,39 +75,9 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConnectionServiceImplTest {
-	@InjectMocks
-	private ConnectionServiceImpl connectionServiceImpl;
-
 	Connection listDataConnection = new Connection();
 	Connection listDataConnection1 = new Connection();
-	@Mock
-	private ConnectionRepository connectionRepository;
-
-	@Mock
-	private ProjectToolConfigRepository toolRepositroy;
-
-	@Mock
-	private UserAuthorizedProjectsService authorizedProjectsService;
-
-	@Mock
-	private Authentication authentication;
-
-	@Mock
-	private SecurityContext securityContext;
-	@Mock
-	private CustomApiConfig customApiConfig;
-
-	@Mock
-	private AesEncryptionService aesEncryptionService;
-
-	@Mock
-	private ProjectBasicConfigRepository projectBasicConfigRepository;
-
-	@Mock
-	private AuthenticationService authenticationService;
-
 	ConnectionsDataFactory connectionsDataFactory = null;
-
 	Connection testConnection = new Connection();
 	Optional<Connection> testConnectionOpt = Optional.empty();
 	ConnectionDTO testConnectiondto = new ConnectionDTO();
@@ -103,6 +86,26 @@ public class ConnectionServiceImplTest {
 	List<ProjectBasicConfig> projectBasicConfigList = new ArrayList<>();
 	String testId;
 	String testConnectionName;
+	@InjectMocks
+	private ConnectionServiceImpl connectionServiceImpl;
+	@Mock
+	private ConnectionRepository connectionRepository;
+	@Mock
+	private ProjectToolConfigRepository toolRepositroy;
+	@Mock
+	private UserAuthorizedProjectsService authorizedProjectsService;
+	@Mock
+	private Authentication authentication;
+	@Mock
+	private SecurityContext securityContext;
+	@Mock
+	private CustomApiConfig customApiConfig;
+	@Mock
+	private AesEncryptionService aesEncryptionService;
+	@Mock
+	private ProjectBasicConfigRepository projectBasicConfigRepository;
+	@Mock
+	private AuthenticationService authenticationService;
 
 	/**
 	 * method includes preprocesses for test cases
@@ -279,23 +282,24 @@ public class ConnectionServiceImplTest {
 	@Test
 	public void testUpdateConnection() {
 		Connection connection = connectionsDataFactory.findConnectionById("5fdc809fb55d53cc1692543c");
-		when( connectionRepository.findById(new ObjectId("5fdc809fb55d53cc1692543c"))).thenReturn(Optional.of(connection));
+		when(connectionRepository.findById(new ObjectId("5fdc809fb55d53cc1692543c")))
+				.thenReturn(Optional.of(connection));
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
-		ServiceResponse response = connectionServiceImpl.updateConnection("5fdc809fb55d53cc1692543c",
-				connection);
+		ServiceResponse response = connectionServiceImpl.updateConnection("5fdc809fb55d53cc1692543c", connection);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
-		assertEquals(((ConnectionDTO)response.getData()).getConnectionName(),connection.getConnectionName());
+		assertEquals(((ConnectionDTO) response.getData()).getConnectionName(), connection.getConnectionName());
 	}
 
 	@Test
 	public void testSaveConnectionDetailsZephyrCloud() {
-		ConnectionsDataFactory connectionsDataFactory = ConnectionsDataFactory.newInstance("/json/connections/zephyr_conn_input.json");
+		ConnectionsDataFactory connectionsDataFactory = ConnectionsDataFactory
+				.newInstance("/json/connections/zephyr_conn_input.json");
 
 		List<Connection> connectionsByType = connectionsDataFactory.findConnectionsByType(ProcessorConstants.ZEPHYR);
-		List<Connection> connList=new ArrayList<>();
-		List<String> connUsers=new ArrayList<>();
+		List<Connection> connList = new ArrayList<>();
+		List<String> connUsers = new ArrayList<>();
 		connUsers.add("test");
-		Connection c1=new Connection();
+		Connection c1 = new Connection();
 		c1.setConnPrivate(true);
 		c1.setType("Zephyr");
 		c1.setConnectionName("Zephyr Test");
@@ -308,24 +312,25 @@ public class ConnectionServiceImplTest {
 		connectionInput.setAccessToken("testAccessToken");
 		when(authenticationService.getLoggedInUser()).thenReturn("test");
 		when(connectionRepository.save(any(Connection.class))).thenReturn(connectionInput);
-		when(connectionRepository.findByTypeAndConnPrivate("Zephyr",true)).thenReturn(connList);
+		when(connectionRepository.findByTypeAndConnPrivate("Zephyr", true)).thenReturn(connList);
 		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connectionInput);
 		assertTrue(serviceResponse.getSuccess());
 	}
 
 	@Test
 	public void testSaveConnectionDetailsZephyrServer() {
-		ConnectionsDataFactory connectionsDataFactory = ConnectionsDataFactory.newInstance("/json/connections/zephyr_server_conn_input.json");
+		ConnectionsDataFactory connectionsDataFactory = ConnectionsDataFactory
+				.newInstance("/json/connections/zephyr_server_conn_input.json");
 
 		List<Connection> connectionsByType = connectionsDataFactory.findConnectionsByType(ProcessorConstants.ZEPHYR);
 		Connection connectionInput = connectionsByType.get(0);
 		connectionInput.setBaseUrl("https://test.abc.com/jira");
 		connectionInput.setUsername("test");
 		connectionInput.setAccessToken("testAccessToken");
-		List<Connection> connList=new ArrayList<>();
-		List<String> connUsers=new ArrayList<>();
+		List<Connection> connList = new ArrayList<>();
+		List<String> connUsers = new ArrayList<>();
 		connUsers.add("test");
-		Connection c1=new Connection();
+		Connection c1 = new Connection();
 		c1.setConnPrivate(false);
 		c1.setType("Zephyr");
 		c1.setConnectionName("Zephyr Test Connection");
@@ -336,7 +341,7 @@ public class ConnectionServiceImplTest {
 		c1.setCloudEnv(false);
 		connList.add(c1);
 		when(authenticationService.getLoggedInUser()).thenReturn("test");
-		when(connectionRepository.findByTypeAndConnPrivate("Zephyr",false)).thenReturn(connList);
+		when(connectionRepository.findByTypeAndConnPrivate("Zephyr", false)).thenReturn(connList);
 		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connectionInput);
 		assertFalse(serviceResponse.getSuccess());
 	}
@@ -381,16 +386,15 @@ public class ConnectionServiceImplTest {
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 		assertEquals(null, response.getData());
 	}
-	
+
 	@Test
 	public void testModifyConnectionNull() {
 		testId = "5f993135485b2c5028a5d33b";
-		testConnection=null;
+		testConnection = null;
 		ServiceResponse response = connectionServiceImpl.updateConnection(testId, testConnection);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 		assertEquals(null, response.getData());
 	}
-	
 
 	@Test
 	public void deleteConnection_Success() {
@@ -400,7 +404,7 @@ public class ConnectionServiceImplTest {
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
 		when(toolRepositroy.findByConnectionId(new ObjectId(id))).thenReturn(projectToolList);
 		ServiceResponse response = connectionServiceImpl.deleteConnection(id);
-		assertThat("deleted connection ", response.getSuccess(),equalTo(false) );
+		assertThat("deleted connection ", response.getSuccess(), equalTo(false));
 	}
 
 	@Test
@@ -409,7 +413,7 @@ public class ConnectionServiceImplTest {
 		ServiceResponse response = connectionServiceImpl.deleteConnection(id);
 		assertThat("Connection already in use: ", response.getSuccess(), equalTo(false));
 	}
-	
+
 	@Test
 	public void deleteConnection_invalidConnection() {
 		testId = "5f993135485b2c502";
@@ -534,13 +538,14 @@ public class ConnectionServiceImplTest {
 	}
 
 	@Test
-	public void saveGitHubConnection(){
-		ConnectionsDataFactory connectionsDataFactory = ConnectionsDataFactory.newInstance("/json/connections/github_connections_input.json");
+	public void saveGitHubConnection() {
+		ConnectionsDataFactory connectionsDataFactory = ConnectionsDataFactory
+				.newInstance("/json/connections/github_connections_input.json");
 		List<Connection> connectionsByType = connectionsDataFactory.findConnectionsByType(ProcessorConstants.GITHUB);
-		List<Connection> connList=new ArrayList<>();
-		List<String> connUsers=new ArrayList<>();
+		List<Connection> connList = new ArrayList<>();
+		List<String> connUsers = new ArrayList<>();
 		connUsers.add("test");
-		Connection c1=new Connection();
+		Connection c1 = new Connection();
 		c1.setConnPrivate(true);
 		c1.setType("GitHub");
 		c1.setConnectionName("Test GitHub");
@@ -554,26 +559,27 @@ public class ConnectionServiceImplTest {
 		connectionInput.setAccessToken("testAccessToken");
 		when(authenticationService.getLoggedInUser()).thenReturn("test");
 		when(connectionRepository.save(any(Connection.class))).thenReturn(connectionInput);
-		when(connectionRepository.findByTypeAndConnPrivate("GitHub",true)).thenReturn(connList);
+		when(connectionRepository.findByTypeAndConnPrivate("GitHub", true)).thenReturn(connList);
 		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connectionInput);
 		assertTrue(serviceResponse.getSuccess());
 
 	}
 
 	@Test
-	public void updateGitHubConnection_ConnectionNotPresent(){
+	public void updateGitHubConnection_ConnectionNotPresent() {
 
 		Connection connectionInput = createGitHubConnectionInput("/json/connections/github_input_for_update.json");
 
 		when(connectionRepository.findById(any(ObjectId.class))).thenReturn(Optional.empty());
 
-		ServiceResponse serviceResponse = connectionServiceImpl.updateConnection(connectionInput.getId().toHexString(), connectionInput);
+		ServiceResponse serviceResponse = connectionServiceImpl.updateConnection(connectionInput.getId().toHexString(),
+				connectionInput);
 		assertFalse(serviceResponse.getSuccess());
 
 	}
 
 	@Test
-	public void updateGitHubConnection_ConnectionWithSameName(){
+	public void updateGitHubConnection_ConnectionWithSameName() {
 
 		Connection connectionInput = createGitHubConnectionInput("/json/connections/github_input_for_update.json");
 		Connection existingConnection = getExistingGitHubConnection();
@@ -583,13 +589,14 @@ public class ConnectionServiceImplTest {
 		when(connectionRepository.findById(any(ObjectId.class))).thenReturn(Optional.of(existingConnection));
 		when(connectionRepository.findByConnectionName(anyString())).thenReturn(otherConnection);
 
-		ServiceResponse serviceResponse = connectionServiceImpl.updateConnection(connectionInput.getId().toHexString(), connectionInput);
+		ServiceResponse serviceResponse = connectionServiceImpl.updateConnection(connectionInput.getId().toHexString(),
+				connectionInput);
 		assertFalse(serviceResponse.getSuccess());
 
 	}
 
 	@Test
-	public void updateGitHubConnection_ConnectionByUnAuthorizedUser(){
+	public void updateGitHubConnection_ConnectionByUnAuthorizedUser() {
 
 		Connection connectionInput = createGitHubConnectionInput("/json/connections/github_input_for_update.json");
 		Connection existingConnection = getExistingGitHubConnection();
@@ -599,18 +606,21 @@ public class ConnectionServiceImplTest {
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
 		when(authenticationService.getLoggedInUser()).thenReturn("anotherUser");
 
-		ServiceResponse serviceResponse = connectionServiceImpl.updateConnection(connectionInput.getId().toHexString(), connectionInput);
+		ServiceResponse serviceResponse = connectionServiceImpl.updateConnection(connectionInput.getId().toHexString(),
+				connectionInput);
 		assertFalse(serviceResponse.getSuccess());
 
 	}
 
-	private Connection getExistingGitHubConnection(){
+	private Connection getExistingGitHubConnection() {
 		return createAndGetOneGitHubConnection("/json/connections/saved_github_connection.json");
 	}
-	private Connection createGitHubConnectionInput(String jsonFilePath){
+
+	private Connection createGitHubConnectionInput(String jsonFilePath) {
 		return createAndGetOneGitHubConnection(jsonFilePath);
 	}
-	private Connection createAndGetOneGitHubConnection(String jsonFilePath){
+
+	private Connection createAndGetOneGitHubConnection(String jsonFilePath) {
 		ConnectionsDataFactory connectionsDataFactory = ConnectionsDataFactory.newInstance(jsonFilePath);
 		List<Connection> connectionsByType = connectionsDataFactory.findConnectionsByType(ProcessorConstants.GITHUB);
 		return connectionsByType.get(0);

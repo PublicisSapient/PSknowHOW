@@ -62,8 +62,7 @@ public class ConfigDetailsControllerTest {
 
 	@Test
 	public void testGetAggregationType() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.get("/configDetails").contentType(TestUtil.APPLICATION_JSON_UTF8))
+		mockMvc.perform(MockMvcRequestBuilders.get("/configDetails").contentType(TestUtil.APPLICATION_JSON_UTF8))
 				.andExpect(status().isOk());
 	}
 

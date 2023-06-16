@@ -26,10 +26,11 @@ import java.util.Arrays;
  */
 public enum Filters {
 
-	 PROJECT, SPRINT, RELEASE, INVALID, ROOT;
+	PROJECT, SPRINT, RELEASE, INVALID, ROOT;
 
 	/**
 	 * Returns list view of Filter enums
+	 * 
 	 * @param filter
 	 * @return Filters
 	 */

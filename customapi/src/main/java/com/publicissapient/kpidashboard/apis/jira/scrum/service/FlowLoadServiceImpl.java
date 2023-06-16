@@ -29,25 +29,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
@@ -55,7 +48,14 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -204,12 +204,13 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		// If Issue is processed before startDate
 		if (size > 0 && statusChangeLog.get(size - 1).getUpdatedOn().toLocalDate().isBefore(startDate)) {
 			status = statusChangeLog.get(statusChangeLog.size() - 1).getChangedTo();
-			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, startDate, endDate, fieldMapping);
+			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, startDate, endDate,
+					fieldMapping);
 		}
 
 		// When issue is created after end date
-		else if (LocalDate.parse(issueBacklogCustomHistory.getCreatedDate().toString().split("T")[0])
-				.isAfter(endDate)) return;
+		else if (LocalDate.parse(issueBacklogCustomHistory.getCreatedDate().toString().split("T")[0]).isAfter(endDate))
+			return;
 		else {
 			for (int index = 0; index + 1 < statusChangeLog.size(); index++) {
 				JiraHistoryChangeLog changeLog = statusChangeLog.get(index);
@@ -217,8 +218,8 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 				status = changeLog.getChangedTo();
 				LocalDate intervalStartDate = changeLog.getUpdatedOn().toLocalDate();
 				LocalDate intervalEndDate = nextChangeLog.getUpdatedOn().toLocalDate();
-				savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, intervalStartDate, intervalEndDate,
-						fieldMapping);
+				savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, intervalStartDate,
+						intervalEndDate, fieldMapping);
 			}
 			JiraHistoryChangeLog lastChangeLog = statusChangeLog.get(statusChangeLog.size() - 1);
 			status = lastChangeLog.getChangedTo();
@@ -226,23 +227,24 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 			if (intervalStartDate.isAfter(endDate))
 				return;
 			LocalDate intervalEndDate = endDate;
-			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, intervalStartDate, intervalEndDate, fieldMapping);
+			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, intervalStartDate,
+					intervalEndDate, fieldMapping);
 		}
 	}
 
-	private void savingDateRangeInMap(LocalDate startDate, LocalDate endDate , Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate,
-			String status, LocalDate intervalStartDate, LocalDate intervalEndDate, FieldMapping fieldMapping) {
+	private void savingDateRangeInMap(LocalDate startDate, LocalDate endDate,
+			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate, String status,
+			LocalDate intervalStartDate, LocalDate intervalEndDate, FieldMapping fieldMapping) {
 		if (isStatusValid(fieldMapping, status)) {
 			if (intervalEndDate.isBefore(startDate) || intervalStartDate.isAfter(endDate))
-				return ;
+				return;
 			if (intervalStartDate.isBefore(startDate))
 				intervalStartDate = startDate;
 			if (intervalEndDate.isAfter(endDate))
 				intervalEndDate = endDate;
 			Pair<LocalDate, LocalDate> intervalRange = Pair.of(intervalStartDate, intervalEndDate);
 			status = status.replace(" ", "-");
-			if (!statusesWithStartAndEndDate.containsKey(status))
-			{
+			if (!statusesWithStartAndEndDate.containsKey(status)) {
 				statusesWithStartAndEndDate.put(status, new ArrayList<>());
 			}
 			statusesWithStartAndEndDate.get(status).add(intervalRange);
@@ -251,8 +253,10 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 
 	private boolean isStatusValid(FieldMapping fieldMapping, String status) {
 		return fieldMapping.getStoryFirstStatus().equalsIgnoreCase(status)
-				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress()) && fieldMapping.getJiraStatusForInProgress().contains(status))
-				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForQa()) && fieldMapping.getJiraStatusForQa().contains(status));
+				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())
+						&& fieldMapping.getJiraStatusForInProgress().contains(status))
+				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForQa())
+						&& fieldMapping.getJiraStatusForQa().contains(status));
 
 	}
 

@@ -87,42 +87,30 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 @RunWith(MockitoJUnitRunner.class)
 public class FirstTimePassRateServiceImplTest {
 
+	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	@InjectMocks
 	private FirstTimePassRateServiceImpl firstTimePassRateService;
-
 	@Mock
 	private ConfigHelperService configHelperService;
-
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
-
 	@Mock
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
 	@Mock
 	private KpiHelperService kpiHelperService;
-
 	@Mock
 	private CacheService cacheService;
-
 	@Mock
 	private CustomApiConfig customApiSetting;
-
 	@Mock
 	private JiraKPIService jiraKPIService;
-
 	@Mock
 	private CommonServiceImpl commonService;
-
 	@Mock
 	private FilterHelperService filterHelperService;
-
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-
 	private Map<String, Object> filterLevelMap;
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-
 	private List<String> defectPriority = new ArrayList<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
@@ -138,7 +126,8 @@ public class FirstTimePassRateServiceImplTest {
 		when(configHelperService.calculateCriteria()).thenReturn(kpiWiseAggregation);
 
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
-		maturityRangeMap.put(KPICode.FIRST_TIME_PASS_RATE.name(), Arrays.asList("-25", "25-50", "50-75", "75-90", "90-"));
+		maturityRangeMap.put(KPICode.FIRST_TIME_PASS_RATE.name(),
+				Arrays.asList("-25", "25-50", "50-75", "75-90", "90-"));
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory

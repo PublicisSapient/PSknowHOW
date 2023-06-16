@@ -33,8 +33,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClient;
-import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -69,6 +67,8 @@ import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.parser.CustomSearchResultJsonParser;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClient;
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.processor.mode.ModeBasedProcessor;
@@ -82,52 +82,39 @@ import lombok.extern.slf4j.Slf4j;
 public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 
 	private final CustomSearchResultJsonParser searchResultJsonParser = new CustomSearchResultJsonParser();
-
+	private final VersionJsonParser versionJsonParser = new VersionJsonParser();
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
-
 	@Autowired
 	private IssueOfflineTraceLogsRepository issueOfflineTraceLogsRepository;
-
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
-
 	@Autowired
 	private AlphanumComparator alphanumComparator;
-
 	@Autowired
 	private JiraIssueClientFactory jiraIssueClientFactory;
-
 	@Autowired
 	private ProjectReleaseRepo projectReleaseRepo;
-
 	@Autowired
 	private AccountHierarchyRepository accountHierarchyRepository;
-
 	@Autowired
 	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
-
 	@Autowired
 	private ConnectionRepository connectionRepository;
-
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
-
 	@Autowired
 	private SubProjectRepository subProjectRepository;
-
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-	
 	@Autowired
 	private ReleaseDataClientFactory releaseDataClientFactory;
-
-	private final VersionJsonParser versionJsonParser = new VersionJsonParser();
 
 	/**
 	 * Filters Offline Project and collectsIssues from files at shared URL
 	 * 
-	 * @param projectConfigList list of configured projects
+	 * @param projectConfigList
+	 *            list of configured projects
 	 */
 	@Override
 	public Map<String, Integer> validateAndCollectIssues(List<ProjectBasicConfig> projectConfigList) {
@@ -209,12 +196,18 @@ public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 	/**
 	 * Collects JIRA data in offline mode from provided file
 	 *
-	 * @param offLineprojectConfig offlineProjectConfig
-	 * @param listFiles            List of files
-	 * @param file                 File Object
-	 * @throws IOException    IOException
-	 * @throws JSONException  JSONException
-	 * @throws ParseException ParseException
+	 * @param offLineprojectConfig
+	 *            offlineProjectConfig
+	 * @param listFiles
+	 *            List of files
+	 * @param file
+	 *            File Object
+	 * @throws IOException
+	 *             IOException
+	 * @throws JSONException
+	 *             JSONException
+	 * @throws ParseException
+	 *             ParseException
 	 */
 	private void collectOfflineJiraData(ProjectConfFieldMapping offLineprojectConfig,
 			Map<String, JiraIssueOfflineFileTraceLogs> listFiles, File file)
@@ -223,39 +216,43 @@ public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 		if (isAlreadyProcessed(listFiles, file) && !isProjectConfigChanged(listFiles, file)) {
 			return;
 		}
-		/*ProcessorExecutionTraceLog processorExecutionTraceLog = createProcessorExecutionTraceLog(
-				offLineprojectConfig.getBasicProjectConfigId().toHexString());
-		processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-		if (file.getName().toLowerCase().contains(CommonConstant.RELEASE)) {
-			String fileContents = new String(Files.readAllBytes(Paths.get(file.getPath())), StandardCharsets.UTF_8);
-			List<Version> listVersion = parseJIRAOfflineDataForVersion(fileContents);
-			if (CollectionUtils.isEmpty(listVersion)) {
-				log.error("[Jira-Feature Collector]. File {} is not parsed.", file.getName());
-			}
-			JiraAdapter jiraClient = new OfflineAdapter(jiraProcessorConfig, null, listVersion);
-			collectReleaseData(jiraClient, offLineprojectConfig);
-			updateOfflineTraceLogs(file, offLineprojectConfig.getBasicProjectConfigId().toString());
-			processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-			processorExecutionTraceLog.setExecutionSuccess(true);
-			processorExecutionTraceLogService.save(processorExecutionTraceLog);
-			return;
-		}
-		MDC.put("OfflineProcessor", file.getName());
-		String fileContents = new String(Files.readAllBytes(Paths.get(file.getPath())), StandardCharsets.UTF_8);
-		SearchResult searchResult = parseJIRAOfflineData(fileContents);
-		if (null == searchResult) {
-			MDC.put("UnparsedFile", file.getName());
-		}
-		JiraAdapter jiraAdapter = new OfflineAdapter(jiraProcessorConfig, searchResult, null);
-		collectStoryData(jiraAdapter, offLineprojectConfig);
-		updateOfflineTraceLogs(file, offLineprojectConfig.getBasicProjectConfigId().toString());
-		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-		processorExecutionTraceLog.setExecutionSuccess(offLineprojectConfig.getIssueCount() > 0);
-
-		processorExecutionTraceLogService.save(processorExecutionTraceLog);*/
+		/*
+		 * ProcessorExecutionTraceLog processorExecutionTraceLog =
+		 * createProcessorExecutionTraceLog(
+		 * offLineprojectConfig.getBasicProjectConfigId().toHexString());
+		 * processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
+		 * if (file.getName().toLowerCase().contains(CommonConstant.RELEASE)) { String
+		 * fileContents = new String(Files.readAllBytes(Paths.get(file.getPath())),
+		 * StandardCharsets.UTF_8); List<Version> listVersion =
+		 * parseJIRAOfflineDataForVersion(fileContents); if
+		 * (CollectionUtils.isEmpty(listVersion)) {
+		 * log.error("[Jira-Feature Collector]. File {} is not parsed.",
+		 * file.getName()); } JiraAdapter jiraClient = new
+		 * OfflineAdapter(jiraProcessorConfig, null, listVersion);
+		 * collectReleaseData(jiraClient, offLineprojectConfig);
+		 * updateOfflineTraceLogs(file,
+		 * offLineprojectConfig.getBasicProjectConfigId().toString());
+		 * processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+		 * processorExecutionTraceLog.setExecutionSuccess(true);
+		 * processorExecutionTraceLogService.save(processorExecutionTraceLog); return; }
+		 * MDC.put("OfflineProcessor", file.getName()); String fileContents = new
+		 * String(Files.readAllBytes(Paths.get(file.getPath())),
+		 * StandardCharsets.UTF_8); SearchResult searchResult =
+		 * parseJIRAOfflineData(fileContents); if (null == searchResult) {
+		 * MDC.put("UnparsedFile", file.getName()); } JiraAdapter jiraAdapter = new
+		 * OfflineAdapter(jiraProcessorConfig, searchResult, null);
+		 * collectStoryData(jiraAdapter, offLineprojectConfig);
+		 * updateOfflineTraceLogs(file,
+		 * offLineprojectConfig.getBasicProjectConfigId().toString());
+		 * processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+		 * processorExecutionTraceLog.setExecutionSuccess(offLineprojectConfig.
+		 * getIssueCount() > 0);
+		 * 
+		 * processorExecutionTraceLogService.save(processorExecutionTraceLog);
+		 */
 	}
 
-	private ProcessorExecutionTraceLog createProcessorExecutionTraceLog(String basicProjectConfigId){
+	private ProcessorExecutionTraceLog createProcessorExecutionTraceLog(String basicProjectConfigId) {
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
@@ -272,7 +269,8 @@ public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 
 	private void collectReleaseData(JiraAdapter jiraClient, ProjectConfFieldMapping projectConfig) {
 		long releaseDataStart = System.currentTimeMillis();
-		ReleaseDataClient jiraIssueDataClient = releaseDataClientFactory.getReleaseDataClient(projectConfig,jiraClient);
+		ReleaseDataClient jiraIssueDataClient = releaseDataClientFactory.getReleaseDataClient(projectConfig,
+				jiraClient);
 		jiraIssueDataClient.processReleaseInfo(projectConfig);
 		long end = System.currentTimeMillis();
 		log.info("Jira-Feature Collector Release ends at: %s", end);
@@ -283,9 +281,11 @@ public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 	/**
 	 * Parses the offline json and return the parsed json in object
 	 *
-	 * @param fileContents Offline Jira data file content
+	 * @param fileContents
+	 *            Offline Jira data file content
 	 * @return Search results after parsing file content
-	 * @throws JSONException JSONException
+	 * @throws JSONException
+	 *             JSONException
 	 */
 	private SearchResult parseJIRAOfflineData(String fileContents) throws JSONException {
 
@@ -299,7 +299,8 @@ public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 	/**
 	 * Update offline Trace logs
 	 *
-	 * @param file File Object
+	 * @param file
+	 *            File Object
 	 */
 	private void updateOfflineTraceLogs(File file, String projectConfigId) {
 		JiraIssueOfflineFileTraceLogs jiraIssueOfflineFileTraceLogs = issueOfflineTraceLogsRepository
@@ -317,10 +318,14 @@ public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 	/**
 	 * Collects Jira Data
 	 *
-	 * @param jiraAdapter   JiraAdpater to establish connection
-	 * @param projectConfig User provided ProjectConfiguration
-	 * @throws ParseException ParseException
-	 * @throws JSONException  JSONException
+	 * @param jiraAdapter
+	 *            JiraAdpater to establish connection
+	 * @param projectConfig
+	 *            User provided ProjectConfiguration
+	 * @throws ParseException
+	 *             ParseException
+	 * @throws JSONException
+	 *             JSONException
 	 */
 	private void collectStoryData(JiraAdapter jiraAdapter, ProjectConfFieldMapping projectConfig) {
 		long storyDataStart = System.currentTimeMillis();
@@ -333,6 +338,5 @@ public class OfflineDataProcessorImpl extends ModeBasedProcessor {
 		long end = System.currentTimeMillis();
 		MDC.put("storyDataEndTime", String.valueOf(end));
 	}
-
 
 }

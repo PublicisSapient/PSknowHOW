@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -61,6 +60,7 @@ import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 /**
  * @author shichand0
@@ -191,7 +191,7 @@ public class SonarViolationsKanbanServiceImpl
 							kpiRequest.getDuration());
 					Long startms = dateRange.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant()
 							.toEpochMilli();
-					Long endms = dateRange.getEndDate().atTime(23,59,59).atZone(ZoneId.systemDefault()).toInstant()
+					Long endms = dateRange.getEndDate().atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant()
 							.toEpochMilli();
 					Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,
 							projectName);
@@ -203,8 +203,8 @@ public class SonarViolationsKanbanServiceImpl
 				}
 				mapTmp.get(projectName).setValue(projectWiseDataMap);
 				if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateSonarKpisExcelData(mapTmp.get(projectName).getName(),
-							projectList, violations, versionDate, excelData, KPICode.SONAR_VIOLATIONS_KANBAN.getKpiId());
+					KPIExcelUtility.populateSonarKpisExcelData(mapTmp.get(projectName).getName(), projectList,
+							violations, versionDate, excelData, KPICode.SONAR_VIOLATIONS_KANBAN.getKpiId());
 				}
 			}
 		});
@@ -241,7 +241,8 @@ public class SonarViolationsKanbanServiceImpl
 			List<String> versionDate) {
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Long> dateWiseViolationsList = new ArrayList<>();
-		List<Map<String, Object>> globalSonarViolationsHowerMap = new ArrayList<>();		history.forEach((keyName, sonarDetails) -> {
+		List<Map<String, Object>> globalSonarViolationsHowerMap = new ArrayList<>();
+		history.forEach((keyName, sonarDetails) -> {
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
 					.filter(metricValue -> metricValue.getMetricValue() != null)
 					.collect(Collectors.toMap(SonarMetric::getMetricName, SonarMetric::getMetricValue));
@@ -252,7 +253,7 @@ public class SonarViolationsKanbanServiceImpl
 			evaluateViolations(metricMap.get(Constant.MAJOR_VIOLATIONS), sonarViolationsHowerMap, MAJOR);
 			evaluateViolations(metricMap.get(Constant.MINOR_VIOLATIONS), sonarViolationsHowerMap, MINOR);
 			evaluateViolations(metricMap.get(Constant.INFO_VIOLATIONS), sonarViolationsHowerMap, INFO);
-			
+
 			sonarViolationsHowerMap = sonarViolationsHowerMap.entrySet().stream()
 					.sorted((i1, i2) -> ((Integer) i2.getValue()).compareTo((Integer) i1.getValue())).collect(Collectors
 							.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
@@ -261,14 +262,17 @@ public class SonarViolationsKanbanServiceImpl
 			Long sonarViolations = sonarViolationsHowerMap.values().stream().map(a -> (Integer) a).mapToLong(val -> val)
 					.sum();
 
-			DataCount dcObj = getDataCountObject(sonarViolations,sonarViolationsHowerMap, projectName, date, projectNodeId);
+			DataCount dcObj = getDataCountObject(sonarViolations, sonarViolationsHowerMap, projectName, date,
+					projectNodeId);
 			projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 			projectList.add(keyName);
 			versionDate.add(date);
 			dateWiseViolationsList.add(sonarViolations);
 			violations.add(sonarViolationsHowerMap.toString());
 		});
-		DataCount dcObj = getDataCountObject(calculateKpiValue(dateWiseViolationsList, KPICode.SONAR_VIOLATIONS.getKpiId()),calculateKpiValueForIntMap(globalSonarViolationsHowerMap,  KPICode.SONAR_VIOLATIONS.getKpiId()),
+		DataCount dcObj = getDataCountObject(
+				calculateKpiValue(dateWiseViolationsList, KPICode.SONAR_VIOLATIONS.getKpiId()),
+				calculateKpiValueForIntMap(globalSonarViolationsHowerMap, KPICode.SONAR_VIOLATIONS.getKpiId()),
 				projectName, date, projectNodeId);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 	}
@@ -292,8 +296,8 @@ public class SonarViolationsKanbanServiceImpl
 		}
 	}
 
-	private DataCount getDataCountObject(Long sonarViolations, Map<String, Object> sonarViolationsHowerMap, String projectName, String date,
-			String projectNodeId) {
+	private DataCount getDataCountObject(Long sonarViolations, Map<String, Object> sonarViolationsHowerMap,
+			String projectName, String date, String projectNodeId) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(sonarViolations));
 		dataCount.setSSprintID(date);
@@ -321,7 +325,10 @@ public class SonarViolationsKanbanServiceImpl
 	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
 		String range = null;
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
-			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT);
 		} else if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.MONTH)) {
 			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
 		} else {

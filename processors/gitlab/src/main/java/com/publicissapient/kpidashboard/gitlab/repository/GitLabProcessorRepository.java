@@ -18,13 +18,12 @@
 
 package com.publicissapient.kpidashboard.gitlab.repository;
 
-import com.publicissapient.kpidashboard.gitlab.model.GitLabProcessor;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
-
+import com.publicissapient.kpidashboard.gitlab.model.GitLabProcessor;
 
 /**
  * The Interface GitLabProcessorRepository.
  */
-public interface GitLabProcessorRepository extends ProcessorRepository<GitLabProcessor>{
+public interface GitLabProcessorRepository extends ProcessorRepository<GitLabProcessor> {
 
 }

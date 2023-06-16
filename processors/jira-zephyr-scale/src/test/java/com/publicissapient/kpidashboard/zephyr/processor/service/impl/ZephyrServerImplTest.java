@@ -37,35 +37,24 @@ import com.publicissapient.kpidashboard.zephyr.util.ZephyrUtil;
 @ExtendWith(SpringExtension.class)
 public class ZephyrServerImplTest {
 
-	@InjectMocks
-	private ZephyrServerImpl zephyrServer;
-
-	@Mock
-	private ZephyrConfig zephyrConfig;
-
-	@Mock
-	private RestTemplate restTemplate;
-
-	@Mock
-	private ZephyrUtil zephyrUtil;
-
-	@Mock
-	private ProcessorToolConnectionService processorToolConnectionService;
-
-	private ProjectConfFieldMapping projectConfFieldMapping;
-
-	private ProcessorToolConnection toolInfo;
-
-	private List<ZephyrTestCaseDTO> testCaseList;
-
-	private String folderPath;
-
-	@Mock
-	private HttpEntity<String> mockHttpEntity;
-
 	@Mock
 	ResponseEntity<ZephyrTestCaseDTO[]> testCaseResponse;
-
+	@InjectMocks
+	private ZephyrServerImpl zephyrServer;
+	@Mock
+	private ZephyrConfig zephyrConfig;
+	@Mock
+	private RestTemplate restTemplate;
+	@Mock
+	private ZephyrUtil zephyrUtil;
+	@Mock
+	private ProcessorToolConnectionService processorToolConnectionService;
+	private ProjectConfFieldMapping projectConfFieldMapping;
+	private ProcessorToolConnection toolInfo;
+	private List<ZephyrTestCaseDTO> testCaseList;
+	private String folderPath;
+	@Mock
+	private HttpEntity<String> mockHttpEntity;
 	private ZephyrTestCaseDTO zephyrTestCaseDTO;
 
 	private ZephyrTestCaseDTO[] zephyrTestCaseArr;

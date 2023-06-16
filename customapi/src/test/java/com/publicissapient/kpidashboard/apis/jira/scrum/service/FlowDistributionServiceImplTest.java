@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -56,16 +55,15 @@ import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCusto
 
 @RunWith(MockitoJUnitRunner.class)
 public class FlowDistributionServiceImplTest {
-	@InjectMocks
-	private FlowDistributionServiceImpl flowDistributionService;
 	@Mock
 	CustomApiConfig customApiConfig;
 	@Mock
 	CacheService cacheService;
+	List<IssueBacklogCustomHistory> customHistoryList = new ArrayList<>();
+	@InjectMocks
+	private FlowDistributionServiceImpl flowDistributionService;
 	@Mock
 	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
-
-	List<IssueBacklogCustomHistory> customHistoryList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 
@@ -112,6 +110,7 @@ public class FlowDistributionServiceImplTest {
 	public void testGetQualifierType() {
 		assertThat(flowDistributionService.getQualifierType(), equalTo("FLOW_DISTRIBUTION"));
 	}
+
 	@After
 	public void cleanup() {
 		issueBacklogCustomHistoryRepository.deleteAll();

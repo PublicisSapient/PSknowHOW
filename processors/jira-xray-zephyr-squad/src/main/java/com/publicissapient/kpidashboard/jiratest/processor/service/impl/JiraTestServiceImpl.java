@@ -85,41 +85,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class JiraTestServiceImpl implements JiraTestService {
 
-	@Autowired
-	private JiraTestProcessorConfig jiraTestProcessorConfig;
-
-	@Autowired
-	private JiraRestClientFactory jiraRestClientFactory;
-
-	@Autowired
-	private JiraOAuthProperties jiraOAuthProperties;
-
-	@Autowired
-	private JiraOAuthClient jiraOAuthClient;
-
-	@Autowired
-	private AesEncryptionService aesEncryptionService;
-
-	@Autowired
-	private ConnectionRepository connectionRepository;
-
-	@Autowired
-	private ProjectToolConfigRepository toolRepository;
-
-	@Autowired
-	private ToolCredentialProvider toolCredentialProvider;
-
-	@Autowired
-	private JiraTestProcessorRepository jiraTestProcessorRepository;
-
-	@Autowired
-	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
-	@Autowired
-	private TestCaseDetailsRepository testCaseDetailsRepository;
-
-	private ProcessorJiraRestClient client;
-
 	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
 	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
 	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
@@ -128,6 +93,29 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private static final String TEST_AUTOMATED_FLAG = "testAutomatedFlag";
 	private static final String TEST_CAN_BE_AUTOMATED_FLAG = "testCanBeAutomatedFlag";
 	private static final String AUTOMATED_VALUE = "automatedValue";
+	@Autowired
+	private JiraTestProcessorConfig jiraTestProcessorConfig;
+	@Autowired
+	private JiraRestClientFactory jiraRestClientFactory;
+	@Autowired
+	private JiraOAuthProperties jiraOAuthProperties;
+	@Autowired
+	private JiraOAuthClient jiraOAuthClient;
+	@Autowired
+	private AesEncryptionService aesEncryptionService;
+	@Autowired
+	private ConnectionRepository connectionRepository;
+	@Autowired
+	private ProjectToolConfigRepository toolRepository;
+	@Autowired
+	private ToolCredentialProvider toolCredentialProvider;
+	@Autowired
+	private JiraTestProcessorRepository jiraTestProcessorRepository;
+	@Autowired
+	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	@Autowired
+	private TestCaseDetailsRepository testCaseDetailsRepository;
+	private ProcessorJiraRestClient client;
 
 	/**
 	 * Explicitly updates queries for the source system, and initiates the update to
@@ -444,7 +432,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 			testCaseDetail.setIsTestCanBeAutomated(
 					finalMap.getOrDefault(TEST_CAN_BE_AUTOMATED_FLAG, testCanBeAutomatedValue));
 
-			setRegressionLabel(jiraTestToolInfo, fields , testCaseDetail);
+			setRegressionLabel(jiraTestToolInfo, fields, testCaseDetail);
 		} catch (Exception e) {
 			log.error("JIRA Processor |Error while parsing test automated field", e);
 		}
@@ -568,7 +556,8 @@ public class JiraTestServiceImpl implements JiraTestService {
 		return automationFlag;
 	}
 
-	private String processJsonForCustomFields(String fieldMapping, Map<String, IssueField> fields, List<String> jiraTestValue) {
+	private String processJsonForCustomFields(String fieldMapping, Map<String, IssueField> fields,
+			List<String> jiraTestValue) {
 		String fetchedValueFromJson = Strings.EMPTY;
 		try {
 			if (fields.get(fieldMapping) != null && fields.get(fieldMapping).getValue() != null) {
@@ -928,7 +917,8 @@ public class JiraTestServiceImpl implements JiraTestService {
 					customFieldMap, jiraTestToolInfo.getJiraRegressionTestValue());
 			if (StringUtils.isNotEmpty(regressionLabels)) {
 				Set<String> regressionCustomValueList = new HashSet<>(Arrays.asList(regressionLabels.split(", ")));
-				if (CollectionUtils.containsAny(jiraTestToolInfo.getJiraRegressionTestValue(), regressionCustomValueList)) {
+				if (CollectionUtils.containsAny(jiraTestToolInfo.getJiraRegressionTestValue(),
+						regressionCustomValueList)) {
 					if (CollectionUtils.isNotEmpty(testCaseDetails.getLabels())) {
 						regressionCustomValueList.addAll(testCaseDetails.getLabels());
 					}

@@ -21,6 +21,7 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 
 public interface GrantApprovalListener {
 
-    void onSuccess(Authentication authentication);
-    void onFailure(Authentication authentication, String message);
+	void onSuccess(Authentication authentication);
+
+	void onFailure(Authentication authentication, String message);
 }

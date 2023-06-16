@@ -33,26 +33,26 @@ import com.publicissapient.kpidashboard.apis.logging.LoggingFilter;
 @Configuration
 public class LoggingConfig {
 
-    /**
-     * Provides key value logging filter.
-     *
-     * @return the key value logging filter
-     */
-    @Bean
-    @Conditional(KeyValueLoggingCondition.class)
-    public KeyValueLoggingFilter splunkConnectionLoggingFilter() {
-        return new KeyValueLoggingFilter();
-    }
+	/**
+	 * Provides key value logging filter.
+	 *
+	 * @return the key value logging filter
+	 */
+	@Bean
+	@Conditional(KeyValueLoggingCondition.class)
+	public KeyValueLoggingFilter splunkConnectionLoggingFilter() {
+		return new KeyValueLoggingFilter();
+	}
 
-    /**
-     * Provides logging filter.
-     *
-     * @return the logging filter
-     */
-    @Bean
-    @Conditional(DatabaseLoggingCondition.class)
-    public LoggingFilter loggingFilter() {
-        return new LoggingFilter();
-    }
+	/**
+	 * Provides logging filter.
+	 *
+	 * @return the logging filter
+	 */
+	@Bean
+	@Conditional(DatabaseLoggingCondition.class)
+	public LoggingFilter loggingFilter() {
+		return new LoggingFilter();
+	}
 
 }

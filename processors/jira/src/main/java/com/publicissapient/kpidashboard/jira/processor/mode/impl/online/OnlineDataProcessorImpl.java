@@ -29,20 +29,15 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientFactory;
-import lombok.extern.slf4j.Slf4j;
-
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.jira.adapter.impl.OnlineAdapter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -57,10 +52,13 @@ import com.publicissapient.kpidashboard.common.repository.connection.ConnectionR
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
+import com.publicissapient.kpidashboard.jira.adapter.impl.OnlineAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.client.jiraissue.JiraIssueClientFactory;
+import com.publicissapient.kpidashboard.jira.client.release.ReleaseDataClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraInfo;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
@@ -69,6 +67,8 @@ import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthClient;
 import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthProperties;
 import com.publicissapient.kpidashboard.jira.processor.mode.ModeBasedProcessor;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -125,11 +125,11 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	@Autowired
 	private ReleaseDataClientFactory releaseDataClientFactory;
 
-
 	/**
 	 * Validates and collects Jira issues using JIA API for projects with onlinemode
 	 * 
-	 * @param projectConfigList List of all configured projects
+	 * @param projectConfigList
+	 *            List of all configured projects
 	 */
 	@Override
 	public Map<String, Integer> validateAndCollectIssues(List<ProjectBasicConfig> projectConfigList) {
@@ -159,8 +159,9 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 						Optional<Connection> connectionOptional = entry.getValue().getJira().getConnection();
 						if (connectionOptional.isPresent()) {
 							Connection conn = connectionOptional.get();
-							KerberosClient krb5Client = new KerberosClient(conn.getJaasConfigFilePath(), conn.getKrb5ConfigFilePath(),
-									conn.getJaasUser(), conn.getSamlEndPoint(), conn.getBaseUrl());
+							KerberosClient krb5Client = new KerberosClient(conn.getJaasConfigFilePath(),
+									conn.getKrb5ConfigFilePath(), conn.getJaasUser(), conn.getSamlEndPoint(),
+									conn.getBaseUrl());
 							client = getProcessorRestClient(projectConfigList, entry, isOauth, conn, krb5Client);
 
 							JiraAdapter jiraAdapter = new OnlineAdapter(jiraProcessorConfig, client,
@@ -168,8 +169,8 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 							Runnable worker = new JiraOnlineRunnable(latch, jiraAdapter, entry.getValue(),
 									projectReleaseRepo, accountHierarchyRepository, kanbanAccountHierarchyRepo,
 									jiraIssueClientFactory, jiraProcessorConfig, boardMetadataRepository,
-									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory,releaseDataClientFactory,
-									getExecutionLogContext());// NOPMD
+									fieldMappingRepository, metadataIdentifierRepository, jiraRestClientFactory,
+									releaseDataClientFactory, getExecutionLogContext());// NOPMD
 							executor.execute(worker);
 
 						}
@@ -198,25 +199,24 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	}
 
 	private ProcessorJiraRestClient getProcessorRestClient(List<ProjectBasicConfig> projectConfigList,
-														   Map.Entry<String, ProjectConfFieldMapping> entry,
-														   boolean isOauth, Connection conn, KerberosClient krb5Client){
-		if(conn.isJaasKrbAuth()){
+			Map.Entry<String, ProjectConfFieldMapping> entry, boolean isOauth, Connection conn,
+			KerberosClient krb5Client) {
+		if (conn.isJaasKrbAuth()) {
 			return jiraRestClientFactory.getSpnegoSamlClient(krb5Client);
-		}else{
+		} else {
 			return getProcessorJiraRestClient(projectConfigList, entry, isOauth, conn);
 		}
 	}
 
 	private ProcessorJiraRestClient getProcessorJiraRestClient(List<ProjectBasicConfig> projectConfigList,
-															   Map.Entry<String, ProjectConfFieldMapping> entry,
-															   boolean isOauth, Connection conn) {
+			Map.Entry<String, ProjectConfFieldMapping> entry, boolean isOauth, Connection conn) {
 		ProcessorJiraRestClient client;
 
 		String username = "";
 		String password = "";
 		if (conn.isVault()) {
 			ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
-			if(toolCredential != null){
+			if (toolCredential != null) {
 				username = toolCredential.getUsername();
 				password = toolCredential.getPassword();
 			}
@@ -228,7 +228,6 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 			password = decryptJiraPassword(conn.getPassword());
 		}
 
-
 		if (isOauth) {
 			// Sets Jira OAuth properties
 			jiraOAuthProperties.setJiraBaseURL(conn.getBaseUrl());
@@ -239,18 +238,15 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 			saveAccessToken(entry, projectConfigList);
 			jiraOAuthProperties.setAccessToken(conn.getAccessToken());
 
-			client = jiraRestClientFactory.getJiraOAuthClient(JiraInfo.builder()
-					.jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
-					.password(password)
-					.jiraConfigAccessToken(conn.getAccessToken()).jiraConfigProxyUrl(null)
-					.jiraConfigProxyPort(null).build());
+			client = jiraRestClientFactory.getJiraOAuthClient(JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl())
+					.username(username).password(password).jiraConfigAccessToken(conn.getAccessToken())
+					.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
 
 		} else {
 
-			client = jiraRestClientFactory.getJiraClient(JiraInfo.builder()
-					.jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
-					.password(password).jiraConfigProxyUrl(null)
-					.jiraConfigProxyPort(null).bearerToken(conn.isBearerToken()).build());
+			client = jiraRestClientFactory.getJiraClient(JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl())
+					.username(username).password(password).jiraConfigProxyUrl(null).jiraConfigProxyPort(null)
+					.bearerToken(conn.isBearerToken()).build());
 
 		}
 		return client;
@@ -259,15 +255,16 @@ public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 	/**
 	 * Generate and save accessToken
 	 * 
-	 * @param entry             Map of Jira project Configuration field mapping
-	 * @param projectConfigList List of project configuration mapping
+	 * @param entry
+	 *            Map of Jira project Configuration field mapping
+	 * @param projectConfigList
+	 *            List of project configuration mapping
 	 */
 	public void saveAccessToken(Map.Entry<String, ProjectConfFieldMapping> entry,
 			List<ProjectBasicConfig> projectConfigList) {
 		Optional<Connection> connectionOptional = entry.getValue().getJira().getConnection();
 		if (connectionOptional.isPresent()) {
-			Optional<String> checkNull = Optional
-					.ofNullable(connectionOptional.get().getAccessToken());
+			Optional<String> checkNull = Optional.ofNullable(connectionOptional.get().getAccessToken());
 			if (!checkNull.isPresent() || checkNull.get().isEmpty()) {
 
 				JiraToolConfig jiraToolConfig = entry.getValue().getJira();

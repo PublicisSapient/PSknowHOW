@@ -49,7 +49,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 		List<GlobalConfig> globalConfigs = globalConfigRepository.findAll();
 		GlobalConfig globalConfig = CollectionUtils.isEmpty(globalConfigs) ? null : globalConfigs.get(0);
-		EmailServerDetail emailServerDetail =  globalConfig == null ? null : globalConfig.getEmailServerDetail();
+		EmailServerDetail emailServerDetail = globalConfig == null ? null : globalConfig.getEmailServerDetail();
 		if (emailServerDetail != null) {
 			emailAddresses = emailServerDetail.getFeedbackEmailIds();
 		} else {

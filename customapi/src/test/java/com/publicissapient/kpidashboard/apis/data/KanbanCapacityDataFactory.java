@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 
 import lombok.extern.slf4j.Slf4j;
@@ -65,9 +64,9 @@ public class KanbanCapacityDataFactory {
 
 		return mapper;
 	}
-	
+
 	public List<KanbanCapacity> getKanbanCapacityDataList() {
-        return kanbanCapacity;
-    }
+		return kanbanCapacity;
+	}
 
 }

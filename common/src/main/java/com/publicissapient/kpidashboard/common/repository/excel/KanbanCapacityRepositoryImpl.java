@@ -18,11 +18,13 @@
 
 package com.publicissapient.kpidashboard.common.repository.excel;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -31,31 +33,24 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 /**
  * The type Kanban capacity repository.
  */
 public class KanbanCapacityRepositoryImpl implements KanbanCapacityRepoCustom {
 
-	@Autowired
-	private MongoOperations operations;
-
 	private static final String START_DATE = "startDate";
 	private static final String END_DATE = "endDate";
 	private static final String TICKET_PROJECT_ID_FIELD = "projectId";
 	private static final String DATE_PATTERN = "yyyy-MM-dd";
+	@Autowired
+	private MongoOperations operations;
 
 	@Override
-	public List<KanbanCapacity> findIssuesByType(Map<String, List<ObjectId>> mapOfFilters, String dateFrom, String dateTo) {
+	public List<KanbanCapacity> findIssuesByType(Map<String, List<ObjectId>> mapOfFilters, String dateFrom,
+			String dateTo) {
 		Criteria criteria = new Criteria();
-		DateTime startDateTime = DateTimeFormat.forPattern(DATE_PATTERN).parseDateTime(dateFrom)
-				.withTime(0, 0, 0, 0);
-		DateTime endDateTime = DateTimeFormat.forPattern(DATE_PATTERN).parseDateTime(dateTo)
-				.withTime(0, 0, 0, 0);
+		DateTime startDateTime = DateTimeFormat.forPattern(DATE_PATTERN).parseDateTime(dateFrom).withTime(0, 0, 0, 0);
+		DateTime endDateTime = DateTimeFormat.forPattern(DATE_PATTERN).parseDateTime(dateTo).withTime(0, 0, 0, 0);
 		// map of common filters Project and Sprint
 		for (Map.Entry<String, List<ObjectId>> entry : mapOfFilters.entrySet()) {
 			if (CollectionUtils.isNotEmpty(entry.getValue())) {
@@ -69,12 +64,11 @@ public class KanbanCapacityRepositoryImpl implements KanbanCapacityRepoCustom {
 		return operations.find(query, KanbanCapacity.class);
 
 	}
-	
+
 	@Override
 	public List<KanbanCapacity> findByFilterMapAndDate(Map<String, String> mapOfFilters, String dateFrom) {
 		Criteria criteria = new Criteria();
-		DateTime startDateTime = DateTimeFormat.forPattern(DATE_PATTERN).parseDateTime(dateFrom)
-				.withTime(0, 0, 0, 0);
+		DateTime startDateTime = DateTimeFormat.forPattern(DATE_PATTERN).parseDateTime(dateFrom).withTime(0, 0, 0, 0);
 		// map of common filters
 		for (Map.Entry<String, String> entry : mapOfFilters.entrySet()) {
 			if (StringUtils.isNotEmpty(entry.getValue())) {

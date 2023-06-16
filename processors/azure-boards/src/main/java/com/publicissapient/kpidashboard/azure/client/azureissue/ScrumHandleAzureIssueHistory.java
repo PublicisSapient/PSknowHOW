@@ -5,10 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -18,9 +14,13 @@ import com.publicissapient.kpidashboard.azure.util.AzureConstants;
 import com.publicissapient.kpidashboard.azure.util.AzureProcessorUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields;
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.Value;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -65,7 +65,8 @@ public class ScrumHandleAzureIssueHistory {
 		return jiraHistoryChangeLog;
 	}
 
-	private List<JiraHistoryChangeLog> getStatusChangeLog(List<Value> updateValueList, JiraIssue jiraIssue, FieldMapping fieldMapping) {
+	private List<JiraHistoryChangeLog> getStatusChangeLog(List<Value> updateValueList, JiraIssue jiraIssue,
+			FieldMapping fieldMapping) {
 
 		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
 		List<String> jiraStatusForQa = fieldMapping.getJiraStatusForQa();
@@ -219,7 +220,7 @@ public class ScrumHandleAzureIssueHistory {
 	}
 
 	private void setIndividualDetails(JiraIssue jiraIssue, List<String> jiraStatusForDevelopment,
-									  List<String> jiraStatusForQa, String status) {
+			List<String> jiraStatusForQa, String status) {
 		if (CollectionUtils.isNotEmpty(jiraStatusForDevelopment)
 				&& jiraStatusForDevelopment.stream().anyMatch(status::equalsIgnoreCase)
 				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeId())
@@ -230,8 +231,7 @@ public class ScrumHandleAzureIssueHistory {
 					+ jiraIssue.getAssigneeId() + AzureConstants.CLOSED_BRACKET);
 
 		}
-		if (CollectionUtils.isNotEmpty(jiraStatusForQa)
-				&& jiraStatusForQa.stream().anyMatch(status::equalsIgnoreCase)
+		if (CollectionUtils.isNotEmpty(jiraStatusForQa) && jiraStatusForQa.stream().anyMatch(status::equalsIgnoreCase)
 				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeId())
 				&& org.apache.commons.lang3.StringUtils.isNotBlank(jiraIssue.getAssigneeName())) {
 
@@ -243,7 +243,8 @@ public class ScrumHandleAzureIssueHistory {
 	}
 
 	public void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
-			List<Value> updateValueList, FieldMapping fieldMapping, Map<String, Object> fieldsMap, JiraIssue jiraIssue) {
+			List<Value> updateValueList, FieldMapping fieldMapping, Map<String, Object> fieldsMap,
+			JiraIssue jiraIssue) {
 		List<JiraHistoryChangeLog> statusChangeLog = getStatusChangeLog(updateValueList, jiraIssue, fieldMapping);
 		List<JiraHistoryChangeLog> assigneeChangeLog = getJiraFieldChangeLogFromAdditionProps(updateValueList,
 				AzureConstants.ASSIGNEE);

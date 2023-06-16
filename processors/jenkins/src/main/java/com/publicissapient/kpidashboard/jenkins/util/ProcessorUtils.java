@@ -49,7 +49,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class ProcessorUtils {
 
-
 	private ProcessorUtils() {
 	}
 
@@ -202,8 +201,11 @@ public final class ProcessorUtils {
 
 	/**
 	 * Gets RepoBranch
-	 * @param branchName the branch name
-	 * @param url the url
+	 * 
+	 * @param branchName
+	 *            the branch name
+	 * @param url
+	 *            the url
 	 * @return RepoBranch object if branch name is not null
 	 */
 	private static RepoBranch createRepoBranch(String branchName, String url) {
@@ -324,7 +326,8 @@ public final class ProcessorUtils {
 	/**
 	 * Provides commit Timestamp.
 	 *
-	 * @param jsonItem the josn item
+	 * @param jsonItem
+	 *            the josn item
 	 *
 	 * @return the timestamp
 	 */

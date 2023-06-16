@@ -18,21 +18,23 @@
 
 package com.publicissapient.kpidashboard.apis.auth.token;
 
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.errors.NoSSOImplementationFoundException;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
@@ -48,6 +50,9 @@ import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.errors.NoSSOImplementationFoundException;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
@@ -66,35 +71,28 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class TokenAuthenticationServiceImpl implements TokenAuthenticationService {
 
+	public static final String AUTH_DETAILS_UPDATED_FLAG = "auth-details-updated";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final String ROLES_CLAIM = "roles";
 	private static final String DETAILS_CLAIM = "details";
-	public static final String AUTH_DETAILS_UPDATED_FLAG = "auth-details-updated";
 	private static final String USER_NAME = "username";
 	private static final String USER_EMAIL = "emailAddress";
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final Object USER_AUTHORITIES = "authorities";
-
-
+	@Autowired
+	AuthenticationService authenticationService;
+	@Autowired
+	UserInfoService userInfoService;
+	@Autowired
+	CustomApiConfig customApiConfig;
 	@Autowired
 	private AuthProperties tokenAuthProperties;
 	@Autowired
 	private UserTokenReopository userTokenReopository;
-
 	@Autowired
 	private ProjectAccessManager projectAccessManager;
-
-	@Autowired
-	AuthenticationService authenticationService;
-
 	@Autowired
 	private CookieUtil cookieUtil;
-
-	@Autowired
-	UserInfoService userInfoService;
-
-	@Autowired
-	CustomApiConfig customApiConfig;
 
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
@@ -118,14 +116,13 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@Override
 	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
-		if (customApiConfig.isSsoLogin()){
+		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
 		} else {
-				Cookie authCookie = cookieUtil.getAuthCookie(request);
+			Cookie authCookie = cookieUtil.getAuthCookie(request);
 			if (StringUtils.isBlank(authCookie.getValue())) {
 				return null;
 			}
-
 
 			String token = authCookie.getValue();
 
@@ -136,7 +133,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		}
 
 	}
-
 
 	private Authentication createAuthentication(String token, HttpServletResponse response) {
 		try {
@@ -232,7 +228,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@Override
 	public String setUpdateAuthFlag(List<UserTokenData> userTokenDataList) {
 		UserTokenData userTokenData = getLatestUser(userTokenDataList);
-		if(userTokenData != null){
+		if (userTokenData != null) {
 			String expiryDate = userTokenData.getExpiryDate();
 			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
 					.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
@@ -269,12 +265,13 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@Override
 	public JSONObject createAuthDetailsJson(UserInfo userInfo) {
-		if(userInfo != null) {
+		if (userInfo != null) {
 			JSONObject json = new JSONObject();
 			json.put(USER_NAME, userInfo.getUsername());
 			json.put(USER_EMAIL, userInfo.getEmailAddress());
 			json.put(USER_AUTHORITIES, userInfo.getAuthorities());
-			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(userInfo.getUsername());
+			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager
+					.getProjectAccessesWithRole(userInfo.getUsername());
 			json.put(PROJECTS_ACCESS, projectAccessesWithRole);
 			return json;
 		}

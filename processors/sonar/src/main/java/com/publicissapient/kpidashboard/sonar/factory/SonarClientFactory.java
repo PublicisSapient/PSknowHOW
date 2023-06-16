@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class SonarClientFactory {
-	
+
 	public static final String VERSION_6 = "6";
 	public static final String VERSION_7 = "7";
 	public static final String VERSION_8 = "8";

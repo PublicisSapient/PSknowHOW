@@ -16,9 +16,8 @@ import lombok.Setter;
 /**
  * @author yasbano
  * 
- * Represents the merge requests in a repository.
+ *         Represents the merge requests in a repository.
  */
-
 
 @Data
 @Getter

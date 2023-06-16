@@ -52,17 +52,22 @@ import org.springframework.web.client.RestOperations;
 
 import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.teamcity.config.TeamcityConfig;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.impl.DefaultTeamcityClient;
 import com.publicissapient.kpidashboard.teamcity.util.ProcessorUtils;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @ExtendWith(SpringExtension.class)
 public class DefaultTeamcityClientTests {
 
+	private static final String URL_TEST = "/app/rest/builds/id:5";
+	private static final int PAGE_SIZE = 10;
+	private static final ProcessorToolConnection TEAMCITY_SAMPLE_SERVER_ONE = new ProcessorToolConnection();
+	private static final ProcessorToolConnection TEAMCITY_SAMPLE_SERVER_TWO = new ProcessorToolConnection();
+	private static final ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 	@Mock
 	private RestOperationsFactory<RestOperations> restOperationsFactory;
 	@Mock
@@ -70,12 +75,6 @@ public class DefaultTeamcityClientTests {
 	private TeamcityConfig config;
 	private TeamcityClient teamcityClient;
 	private DefaultTeamcityClient defaultTeamcityClient;
-
-	private static final String URL_TEST = "/app/rest/builds/id:5";
-	private static final int PAGE_SIZE = 10;
-	private static final ProcessorToolConnection TEAMCITY_SAMPLE_SERVER_ONE = new ProcessorToolConnection();
-	private static final ProcessorToolConnection TEAMCITY_SAMPLE_SERVER_TWO = new ProcessorToolConnection();
-	private static final ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 
 	@BeforeEach
 	public void init() {
@@ -92,7 +91,7 @@ public class DefaultTeamcityClientTests {
 		TEAMCITY_SAMPLE_SERVER_TWO.setUrl("http://server/");
 		TEAMCITY_SAMPLE_SERVER_TWO.setUsername("test");
 		TEAMCITY_SAMPLE_SERVER_TWO.setPassword("password");
-		
+
 	}
 
 	@Test
@@ -182,8 +181,8 @@ public class DefaultTeamcityClientTests {
 
 	@Test
 	public void instanceJobs_emptyResponse_returnsEmptyMap() {
-		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), Mockito.any(HttpEntity.class),
-				eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
+		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), Mockito.any(HttpEntity.class), eq(String.class)))
+				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 		Map<ObjectId, Set<Build>> jobs = teamcityClient.getInstanceJobs(TEAMCITY_SAMPLE_SERVER_ONE);
 
 		assertThat(jobs.size(), is(0));
@@ -217,10 +216,10 @@ public class DefaultTeamcityClientTests {
 
 	}
 
-	 @Test
+	@Test
 	public void buildDetails_full() throws Exception {
 
-		 projectBasicConfig.setSaveAssigneeDetails(true);
+		projectBasicConfig.setSaveAssigneeDetails(true);
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), Mockito.any(HttpEntity.class), eq(String.class)))
 				.thenReturn(new ResponseEntity<>(getJson("builds_info_complete.json"), HttpStatus.OK));
 

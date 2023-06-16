@@ -59,12 +59,11 @@ public class GitLabURIBuilder {
 	 * @param config
 	 *            the config
 	 */
-	public GitLabURIBuilder(GitLabRepo repo, GitLabConfig config,ProcessorToolConnection gitLabInfo) {
+	public GitLabURIBuilder(GitLabRepo repo, GitLabConfig config, ProcessorToolConnection gitLabInfo) {
 		this.repo = repo;
 		this.config = config;
 		this.gitLabInfo = gitLabInfo;
 	}
-
 
 	/**
 	 * Builds the.
@@ -88,7 +87,6 @@ public class GitLabURIBuilder {
 		return builder.build().toString();
 	}
 
-	
 	public String mergeRequestUrlbuild() throws URISyntaxException {
 		URI uri = getURI();
 		String scheme = "ssh".equalsIgnoreCase(uri.getScheme()) ? "https" : uri.getScheme();
@@ -101,6 +99,7 @@ public class GitLabURIBuilder {
 
 		return builder.build().toString();
 	}
+
 	/**
 	 * Gets the params.
 	 *
@@ -129,6 +128,7 @@ public class GitLabURIBuilder {
 		map.put("per_page", GitLabConstants.PER_PAGE_SIZE);
 		return map;
 	}
+
 	/**
 	 * Gets the path.
 	 *
@@ -149,7 +149,7 @@ public class GitLabURIBuilder {
 				.append(GitLabConstants.GITLAB_URL_API_MERGEREQUEST);
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Gets the uri.
 	 *

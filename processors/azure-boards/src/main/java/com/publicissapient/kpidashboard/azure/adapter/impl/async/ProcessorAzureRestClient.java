@@ -37,28 +37,36 @@ public interface ProcessorAzureRestClient {
 	 * 
 	 * Gets WorkItem Info from Azure API
 	 * 
-	 * @param azureServer for connection detail
-	 * @param workItemIds issues
+	 * @param azureServer
+	 *            for connection detail
+	 * @param workItemIds
+	 *            issues
 	 * @return AzureBoardsWIModel
 	 */
 	AzureBoardsWIModel getWorkItemInfo(AzureServer azureServer, List<Integer> workItemIds);
 
 	/**
-	 *  Gets Wiql Response from Azure API
+	 * Gets Wiql Response from Azure API
 	 * 
 	 * 
-	 * @param azureServer for connection detail
-	 * @param startTimesByIssueType startTimesByIssueType
-	 * @param projectConfig projectConfig
-	 * @param dataExist data present in db or not
+	 * @param azureServer
+	 *            for connection detail
+	 * @param startTimesByIssueType
+	 *            startTimesByIssueType
+	 * @param projectConfig
+	 *            projectConfig
+	 * @param dataExist
+	 *            data present in db or not
 	 * @return AzureWiqlModel
 	 */
-	AzureWiqlModel getWiqlResponse(AzureServer azureServer, Map<String, LocalDateTime> startTimesByIssueType, ProjectConfFieldMapping projectConfig,boolean dataExist);
+	AzureWiqlModel getWiqlResponse(AzureServer azureServer, Map<String, LocalDateTime> startTimesByIssueType,
+			ProjectConfFieldMapping projectConfig, boolean dataExist);
 
 	/**
 	 * Gets Iterations Response from Azure API
 	 * 
-	 * @param azureServer for connection detail
+	 * @param azureServer
+	 *            for connection detail
 	 * @return AzureIterationsModel
 	 */
 	AzureIterationsModel getIterationsResponse(AzureServer azureServer);
@@ -66,8 +74,10 @@ public interface ProcessorAzureRestClient {
 	/**
 	 * Gets UpdatesResponse based on issueId
 	 * 
-	 * @param azureServer for connection detail
-	 * @param issueId issueId
+	 * @param azureServer
+	 *            for connection detail
+	 * @param issueId
+	 *            issueId
 	 * @return AzureUpdatesModel
 	 */
 	AzureUpdatesModel getUpdatesResponse(AzureServer azureServer, String issueId);

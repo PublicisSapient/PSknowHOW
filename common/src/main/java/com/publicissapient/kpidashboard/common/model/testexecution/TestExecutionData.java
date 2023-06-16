@@ -32,12 +32,13 @@ import lombok.Setter;
 /**
  * @author sansharm13
  *
- */@Data
- @Builder
- @Getter
- @Setter
- @AllArgsConstructor
- @NoArgsConstructor
+ */
+@Data
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class TestExecutionData {
 	private String projectNodeId;
 	private String projectName;

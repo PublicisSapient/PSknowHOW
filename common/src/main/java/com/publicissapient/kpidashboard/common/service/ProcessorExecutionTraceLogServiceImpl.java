@@ -17,11 +17,9 @@
 
 package com.publicissapient.kpidashboard.common.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -47,7 +45,8 @@ public class ProcessorExecutionTraceLogServiceImpl implements ProcessorExecution
 
 	@Override
 	public void save(ProcessorExecutionTraceLog processorExecutionTracelog) {
-		log.info("last execution time of {} for project {} is {}. status is {} and lastSuccessfulRun is {} and LastEnableAssigneeToggleState is {} ",
+		log.info(
+				"last execution time of {} for project {} is {}. status is {} and lastSuccessfulRun is {} and LastEnableAssigneeToggleState is {} ",
 				processorExecutionTracelog.getProcessorName(), processorExecutionTracelog.getBasicProjectConfigId(),
 				processorExecutionTracelog.getExecutionEndedAt(), processorExecutionTracelog.isExecutionSuccess(),
 				processorExecutionTracelog.getLastSuccessfulRun(),

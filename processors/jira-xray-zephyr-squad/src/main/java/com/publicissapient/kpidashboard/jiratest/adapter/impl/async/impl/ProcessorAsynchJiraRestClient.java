@@ -61,6 +61,4 @@ public class ProcessorAsynchJiraRestClient extends AsynchronousJiraRestClient im
 		return searchRestClient;
 	}
 
-
-
 }

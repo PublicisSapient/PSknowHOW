@@ -44,14 +44,15 @@ public interface CommonService {
 	 * @return the maturity level
 	 */
 	String getMaturityLevel(List<String> maturityRangeList, String kpiId, String actualMaturityVal);
-	
+
 	/**
 	 * 
-	 * @param roles roles
+	 * @param roles
+	 *            roles
 	 * @return list of email address based on roles
 	 */
 	public List<String> getEmailAddressBasedOnRoles(List<String> roles);
-	
+
 	/**
 	 * This method get list of project admin email address
 	 * 
@@ -59,7 +60,7 @@ public interface CommonService {
 	 *            projectConfigId
 	 * @return list of email address based on projectconfigid
 	 */
-	public List<String> getProjectAdminEmailAddressBasedProjectId(String projectConfigId); 
+	public List<String> getProjectAdminEmailAddressBasedProjectId(String projectConfigId);
 
 	/**
 	 *
@@ -70,24 +71,26 @@ public interface CommonService {
 	 * @param topic
 	 */
 	public void sendNotificationEvent(List<String> emailAddresses, Map<String, String> customData, String notSubKey,
-			String notKey,String topic);
-	
+			String notKey, String topic);
+
 	/**
 	 * 
 	 * @return String
 	 * @throws UnknownHostException
 	 */
 	public String getApiHost() throws UnknownHostException;
-	
+
 	/**
 	 * 
-	 * @param trendMap trendMap
+	 * @param trendMap
+	 *            trendMap
 	 * @return sortedMap
 	 */
-	public Map<String,List<DataCount>> sortTrendValueMap(Map<String,List<DataCount>> trendMap);
+	public Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap);
 
 	/**
 	 * to send email without running kafka
+	 * 
 	 * @param emailAddresses
 	 * @param customData
 	 * @param notSubKey
@@ -96,6 +99,6 @@ public interface CommonService {
 	 * @param templateKey
 	 */
 	void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> customData, String notSubKey,
-						  String notKey, String topic, String templateKey);
+			String notKey, String topic, String templateKey);
 
 }

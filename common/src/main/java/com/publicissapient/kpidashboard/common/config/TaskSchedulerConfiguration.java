@@ -36,7 +36,7 @@ public class TaskSchedulerConfiguration {
 
 	@Bean
 	public TaskScheduler taskScheduler() {
-		ThreadPoolTaskScheduler threadPoolTaskScheduler =  new ThreadPoolTaskScheduler();
+		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 		threadPoolTaskScheduler.setErrorHandler(processorErrorHandler);
 		return threadPoolTaskScheduler;
 	}

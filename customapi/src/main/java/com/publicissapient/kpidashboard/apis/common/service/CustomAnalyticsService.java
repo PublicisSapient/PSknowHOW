@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.common.service;
 
 import javax.servlet.http.HttpServletResponse;
+
 import org.json.simple.JSONObject;
 
 /**
@@ -39,7 +40,6 @@ public interface CustomAnalyticsService {
 	 * @return JSON of analytics data
 	 */
 	JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username);
-
 
 	public JSONObject getAnalyticsCheck();
 }

@@ -25,21 +25,10 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.data.TestCaseDetailsDataFactory;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,12 +37,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
+import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
+import com.publicissapient.kpidashboard.apis.data.TestCaseDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
@@ -66,6 +63,7 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -74,47 +72,36 @@ import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetails
 @RunWith(MockitoJUnitRunner.class)
 public class AutomationPercentageServiceImplTest {
 
-	@Mock
-	JiraIssueRepository featureRepository;
-
-	@Mock
-	CacheService cacheService;
-
-	@Mock
-	KpiHelperService kpiHelperService;
-
-	@Mock
-	FilterHelperService filterHelperService;
-
-	@Mock
-	ConfigHelperService configHelperService;
-
-	@InjectMocks
-	AutomationPercentageServiceImpl automationPercentageServiceImpl;
-
-	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
-
-	@Mock
-	private CustomApiConfig customApiConfig;
-
-	@Mock
-	private CommonService commonService;
-
-	@Mock
-	TestCaseDetailsRepository testCaseDetailsRepository;
-
-	private List<FieldMapping> fieldMappingList = new ArrayList<>();
+	private final static String TESTCASEKEY = "testCaseData";
+	private final static String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	@Mock
+	JiraIssueRepository featureRepository;
+	@Mock
+	CacheService cacheService;
+	@Mock
+	KpiHelperService kpiHelperService;
+	@Mock
+	FilterHelperService filterHelperService;
+	@Mock
+	ConfigHelperService configHelperService;
+	@InjectMocks
+	AutomationPercentageServiceImpl automationPercentageServiceImpl;
+	@Mock
+	ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	FieldMappingRepository fieldMappingRepository;
+	@Mock
+	TestCaseDetailsRepository testCaseDetailsRepository;
 	List<TestCaseDetails> totalTestCaseList = new ArrayList<>();
 	List<TestCaseDetails> automatedTestCaseList = new ArrayList<>();
 	List<JiraIssue> issues = new ArrayList<>();
-	private final static String TESTCASEKEY = "testCaseData";
-	private final static String AUTOMATEDTESTCASEKEY = "automatedTestCaseData";
+	@Mock
+	private CustomApiConfig customApiConfig;
+	@Mock
+	private CommonService commonService;
+	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
@@ -159,8 +146,8 @@ public class AutomationPercentageServiceImplTest {
 		when(featureRepository.findIssuesGroupBySprint(any(), any(), any(), any()))
 				.thenReturn(JiraIssueDataFactory.newInstance().getSprintWiseStories());
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> defectDataListMap = automationPercentageServiceImpl.fetchKPIDataFromDb(leafNodeList,
-				null, null, kpiRequest);
+		Map<String, Object> defectDataListMap = automationPercentageServiceImpl.fetchKPIDataFromDb(leafNodeList, null,
+				null, kpiRequest);
 		assertThat("Total Test Case value :", ((List<JiraIssue>) (defectDataListMap.get(TESTCASEKEY))).size(),
 				equalTo(0));
 	}
@@ -173,11 +160,12 @@ public class AutomationPercentageServiceImplTest {
 		maturityRangeMap.put("automationPercentage", Arrays.asList("-20", "20-40", "40-60", "60-79", "80-"));
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 		when(featureRepository.findIssueAndDescByNumber(any())).thenReturn(issues);
-		when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name());
+		when(cacheService.getFromApplicationCache(Mockito.anyString()))
+				.thenReturn(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name());
 		testFetchKPIDataFromDbData();
 		try {
-			kpiElement = automationPercentageServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+			kpiElement = automationPercentageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
 			assertThat("Automated Percentage Value :",
 					((ArrayList) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
 					equalTo(5));
@@ -197,7 +185,7 @@ public class AutomationPercentageServiceImplTest {
 
 	@Test
 	public void calculateKpiValueTest() {
-		Double kpiValue = automationPercentageServiceImpl.calculateKpiValue(Arrays.asList(1.0,2.0), "kpi14");
+		Double kpiValue = automationPercentageServiceImpl.calculateKpiValue(Arrays.asList(1.0, 2.0), "kpi14");
 		assertThat("Kpi value  :", kpiValue, equalTo(0.0));
 	}
 

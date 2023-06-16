@@ -18,17 +18,19 @@
 
 package com.publicissapient.kpidashboard.common.repository.rbac;
 
-import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestsData;
-import com.publicissapient.kpidashboard.common.model.rbac.ActionPolicyRule;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-import java.util.List;
+import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestsData;
+import com.publicissapient.kpidashboard.common.model.rbac.ActionPolicyRule;
 
-public interface ActionPolicyRuleRepository extends MongoRepository<ActionPolicyRule, ObjectId>, QuerydslPredicateExecutor<AccessRequestsData> {
-    List<ActionPolicyRule> findByName(String name);
+public interface ActionPolicyRuleRepository
+		extends MongoRepository<ActionPolicyRule, ObjectId>, QuerydslPredicateExecutor<AccessRequestsData> {
+	List<ActionPolicyRule> findByName(String name);
 
-    List<ActionPolicyRule> findAll();
+	List<ActionPolicyRule> findAll();
 
 }

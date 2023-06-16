@@ -83,8 +83,7 @@ public class CapacityServiceImpl extends JiraKPIService<Integer, List<Object>, M
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Capacity -> Requested sprint : {}", leafNode.getName());
-			ObjectId basicProjectConfigId = leafNode.getProjectFilter()
-					.getBasicProjectConfigId();
+			ObjectId basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
 			String sprintId = leafNode.getSprintFilter().getId();
 			CapacityKpiData capacityKpiData = capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(sprintId,
 					basicProjectConfigId);
@@ -117,7 +116,7 @@ public class CapacityServiceImpl extends JiraKPIService<Integer, List<Object>, M
 		CapacityKpiData capacityKpiData = (CapacityKpiData) resultMap.get(CAPACITY_DATA);
 		if (null != capacityKpiData) {
 			LOGGER.info("Capacity -> request id : {} Project Name : {}  Sprint Id : {}", requestTrackerId,
-					capacityKpiData.getProjectName(),capacityKpiData.getSprintID());
+					capacityKpiData.getProjectName(), capacityKpiData.getSprintID());
 			kpiElement.setSprint(latestSprint.getName());
 			trendValue.setValue(capacityKpiData.getCapacityPerSprint());
 			kpiElement.setTrendValueList(trendValue);

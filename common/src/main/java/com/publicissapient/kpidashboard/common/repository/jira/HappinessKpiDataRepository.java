@@ -18,24 +18,27 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
 
 @Repository
-public interface HappinessKpiDataRepository extends MongoRepository<HappinessKpiData, ObjectId>{
+public interface HappinessKpiDataRepository extends MongoRepository<HappinessKpiData, ObjectId> {
 
-    /**
-     * Find all which matches provided ids
-     * @param sprintIDs sprint ids
-     * @return list of HappinessKpiData details
-     */
-    List<HappinessKpiData> findBySprintIDIn(List<String> sprintIDs);
+	/**
+	 * Find all which matches provided ids
+	 * 
+	 * @param sprintIDs
+	 *            sprint ids
+	 * @return list of HappinessKpiData details
+	 */
+	List<HappinessKpiData> findBySprintIDIn(List<String> sprintIDs);
 
-    HappinessKpiData findExistingByBasicProjectConfigIdAndSprintIDAndDateOfSubmission(ObjectId basicProjectConfigId, String sprintID, String dateOfSubmission);
-
+	HappinessKpiData findExistingByBasicProjectConfigIdAndSprintIDAndDateOfSubmission(ObjectId basicProjectConfigId,
+			String sprintID, String dateOfSubmission);
 
 }

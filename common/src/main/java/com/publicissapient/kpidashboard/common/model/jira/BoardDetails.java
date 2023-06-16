@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.model.jira;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 /**
  * @author yasbano
  *
@@ -28,7 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardDetails {
-    private String boardId;
-    private String boardName;
-    private String projectKey;
+	private String boardId;
+	private String boardName;
+	private String projectKey;
 }

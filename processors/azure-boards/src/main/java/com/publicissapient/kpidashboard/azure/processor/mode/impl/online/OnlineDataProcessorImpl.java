@@ -54,7 +54,6 @@ import com.publicissapient.kpidashboard.common.repository.connection.ConnectionR
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,40 +62,32 @@ import lombok.extern.slf4j.Slf4j;
 public class OnlineDataProcessorImpl extends ModeBasedProcessor {
 
 	@Autowired
+	AzureRestClientFactory azureRestClientFactory;
+	@Autowired
 	private AzureProcessorConfig azureProcessorConfig;
-
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
-
 	@Autowired
 	private AzureIssueClientFactory azureIssueClientFactory;
-
 	@Autowired
 	private ProcessorAzureRestClient processorAzureRestClient;
-
 	@Autowired
 	private BoardMetadataRepository boardMetadataRepository;
-
 	@Autowired
 	private MetadataIdentifierRepository metadataIdentifierRepository;
-
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
-
 	@Autowired
 	private ConnectionRepository connectionRepository;
-
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
-
-	@Autowired
-	AzureRestClientFactory azureRestClientFactory;
 
 	/**
 	 * Validates and collects Azure issues using JIA API for projects with
 	 * onlinemode
 	 *
-	 * @param projectConfigList List of all configured projects
+	 * @param projectConfigList
+	 *            List of all configured projects
 	 */
 	@Override
 	public Map<String, Integer> validateAndCollectIssues(List<ProjectBasicConfig> projectConfigList) {

@@ -57,31 +57,27 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageServiceImpl.class);
 	public static final String STR_CAPACITY = "CAPACITY";
 	public static final String STR_TESTEXECUTION = "TEST_EXECUTION";
 	public static final String STR_KANBAN_CAPACITY = "KANBAN_CAPACITY";
 	public static final String FILE_NAME = "filename";
 	public static final String UPLOAD_SUCCESS = "File uploaded successfully";
 	public static final String UPLOAD_FAIL = "Upload failed : ";
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageServiceImpl.class);
 	private static final String INVALID_FILE_CODE = "201";
 	private static final String INVALID_UPLOAD_TYPE = "202";
 	private static final String FILE_SAVE_ERROR = "203";
-
-	@Autowired
-	private GridFsOperations gridOperations;
-
+	private static final ModelMapper modelMapper = new ModelMapper();
 	@Autowired
 	CustomApiConfig customApiConfig;
-
-
-	private static final ModelMapper modelMapper = new ModelMapper();
+	@Autowired
+	private GridFsOperations gridOperations;
 
 	/**
 	 * Uploads <tt>Logo</tt> file
 	 * 
 	 * @param multifile
-	 * ``
+	 *            ``
 	 * @return baseResponse with success message if file uploads successfully.
 	 */
 	@Override
@@ -185,7 +181,6 @@ public class FileStorageServiceImpl implements FileStorageService {
 			}
 
 		});
-
 
 		return logo;
 	}

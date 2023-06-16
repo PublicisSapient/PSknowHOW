@@ -85,13 +85,13 @@ public class AccountHierarchyServiceImpl
 	public String getQualifierType() {
 		return "Scrum";
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Set<AccountFilteredData> getFilteredList(AccountFilterRequest request) {
 		List<AccountHierarchyData> hierarchyDataAll = (List<AccountHierarchyData>) cacheService
 				.cacheAccountHierarchyData();
-		hierarchyDataAll = filterHelperService.getAccountHierarchyDataForRequest(new HashSet<>(request.getSprintIncluded()),
-				hierarchyDataAll);
+		hierarchyDataAll = filterHelperService
+				.getAccountHierarchyDataForRequest(new HashSet<>(request.getSprintIncluded()), hierarchyDataAll);
 		Set<String> basicProjectConfigIds = tokenAuthenticationService.getUserProjects();
 		if (!authorizedProjectsService.ifSuperAdminUser() && CollectionUtils.isNotEmpty(hierarchyDataAll)) {
 			hierarchyDataAll = hierarchyDataAll.stream()
@@ -100,7 +100,7 @@ public class AccountHierarchyServiceImpl
 		}
 		return processAccountFilteredResponse(hierarchyDataAll);
 	}
-	
+
 	private Set<AccountFilteredData> processAccountFilteredResponse(
 			List<AccountHierarchyData> accountHierarchyDataList) {
 		Set<AccountFilteredData> result = new HashSet<>();
@@ -108,7 +108,7 @@ public class AccountHierarchyServiceImpl
 				.forEach(node -> result.add(getAccountFilteredResponse(node.getAccountHierarchy(), node.getLevel()))));
 		return result;
 	}
-	
+
 	private AccountFilteredData getAccountFilteredResponse(AccountHierarchy acc, int level) {
 		AccountFilteredData data = null;
 		if (null != acc) {
@@ -130,7 +130,6 @@ public class AccountHierarchyServiceImpl
 		return data;
 	}
 
-
 	/**
 	 * Returns list of AccountHierarchyData
 	 *
@@ -142,19 +141,18 @@ public class AccountHierarchyServiceImpl
 		List<AccountHierarchy> filterDataList = accountHierarchyRepository.findAll();
 		Map<String, List<AccountHierarchy>> parentWiseMap = filterDataList.stream()
 				.filter(fd -> fd.getParentId() != null).collect(Collectors.groupingBy(AccountHierarchy::getParentId));
-		
+
 		List<AccountHierarchyData> listHierarchyData = new ArrayList<>();
 		String firstLevel = filterHelperService.getFirstHierarachyLevel();
 
-		Map<String,Integer> hierarchyLevelIdMap = filterHelperService.getHierarchyIdLevelMap(false);
+		Map<String, Integer> hierarchyLevelIdMap = filterHelperService.getHierarchyIdLevelMap(false);
 
 		// create map of sprints with key as parent id of sprint
 		Map<String, List<AccountHierarchy>> parentWiseSprintMap = null;
 		Map<String, List<AccountHierarchy>> parentWiseReleaseMap = null;
-		List<String> sprintIds =  filterDataList.stream()
+		List<String> sprintIds = filterDataList.stream()
 				.filter(x -> CommonConstant.HIERARCHY_LEVEL_ID_SPRINT.equalsIgnoreCase(x.getLabelName()))
-				.map(AccountHierarchy::getNodeId)
-				.collect(Collectors.toList());
+				.map(AccountHierarchy::getNodeId).collect(Collectors.toList());
 		Map<String, SprintDetails> sprintDetailsMap = fetchSprintDetailsOf(sprintIds);
 
 		parentWiseSprintMap = filterDataList.stream()
@@ -166,7 +164,6 @@ public class AccountHierarchyServiceImpl
 				.filter(x -> (CommonConstant.HIERARCHY_LEVEL_ID_RELEASE.equalsIgnoreCase(x.getLabelName()))
 						&& (StringUtils.isNotEmpty(x.getBeginDate()) || StringUtils.isNotEmpty(x.getEndDate())))
 				.collect(Collectors.groupingBy(AccountHierarchy::getParentId));
-
 
 		// create list of sprints ids that need to be displayed in filter.
 		Map<String, List<String>> limitedDisplayMap = new HashMap<>();
@@ -197,7 +194,7 @@ public class AccountHierarchyServiceImpl
 
 	private List<String> limitRelease(List<AccountHierarchy> releaseHierarchies) {
 		List<String> releaseNodeId = new ArrayList<>();
-		if(CollectionUtils.isNotEmpty(releaseHierarchies)){
+		if (CollectionUtils.isNotEmpty(releaseHierarchies)) {
 			checkUnreleasedStatus(releaseHierarchies, releaseNodeId);
 			checkReleasedStatus(releaseHierarchies, releaseNodeId);
 		}
@@ -206,17 +203,16 @@ public class AccountHierarchyServiceImpl
 
 	/**
 	 * endtime should be within today-2months and today
+	 * 
 	 * @param releaseHierarchies
 	 * @param releaseNodeId
 	 */
 	private void checkReleasedStatus(List<AccountHierarchy> releaseHierarchies, List<String> releaseNodeId) {
 		releaseHierarchies.stream().filter(
-						accountHierarchy -> accountHierarchy.getReleaseState().equalsIgnoreCase(CommonConstant.RELEASED))
+				accountHierarchy -> accountHierarchy.getReleaseState().equalsIgnoreCase(CommonConstant.RELEASED))
 				.forEach(accountHierarchy -> {
-					if (StringUtils.isNotEmpty(accountHierarchy.getEndDate())
-							&& DateUtil.isWithinDateRange(
-							DateUtil.stringToLocalDate(accountHierarchy.getEndDate(),
-									DateUtil.TIME_FORMAT),
+					if (StringUtils.isNotEmpty(accountHierarchy.getEndDate()) && DateUtil.isWithinDateRange(
+							DateUtil.stringToLocalDate(accountHierarchy.getEndDate(), DateUtil.TIME_FORMAT),
 							LocalDate.now().minusMonths(2), LocalDate.now())) {
 						releaseNodeId.add(accountHierarchy.getNodeId());
 					}
@@ -224,8 +220,9 @@ public class AccountHierarchyServiceImpl
 	}
 
 	/**
-	 * endtime of release should not be greater than todays+6months or
-	 * starttime of release should be within today's and today+2months
+	 * endtime of release should not be greater than todays+6months or starttime of
+	 * release should be within today's and today+2months
+	 * 
 	 * @param releaseHierarchies
 	 * @param releaseNodeId
 	 */
@@ -237,8 +234,7 @@ public class AccountHierarchyServiceImpl
 							&& DateUtil.stringToLocalDate(accountHierarchy.getEndDate(), DateUtil.TIME_FORMAT)
 									.isBefore(LocalDate.now().plusMonths(6).plusDays(1))
 							|| (StringUtils.isNotEmpty(accountHierarchy.getBeginDate()) && DateUtil.isWithinDateRange(
-									DateUtil.stringToLocalDate(accountHierarchy.getBeginDate(),
-											DateUtil.TIME_FORMAT),
+									DateUtil.stringToLocalDate(accountHierarchy.getBeginDate(), DateUtil.TIME_FORMAT),
 									LocalDate.now(), LocalDate.now().plusMonths(1)))) {
 						releaseNodeId.add(accountHierarchy.getNodeId());
 					}
@@ -246,9 +242,10 @@ public class AccountHierarchyServiceImpl
 	}
 
 	private List<String> limitSprints(List<AccountHierarchy> accountHierarchies,
-									  Map<String, SprintDetails> sprintDetailsMap) {
+			Map<String, SprintDetails> sprintDetailsMap) {
 		List<AccountHierarchy> withSprintAAccountHierracchiesList = accountHierarchies.stream()
-				.filter(x -> CommonConstant.HIERARCHY_LEVEL_ID_SPRINT.equalsIgnoreCase(x.getLabelName())).collect(Collectors.toList());
+				.filter(x -> CommonConstant.HIERARCHY_LEVEL_ID_SPRINT.equalsIgnoreCase(x.getLabelName()))
+				.collect(Collectors.toList());
 
 		// closed sprint limit
 		List<String> finalList = withSprintAAccountHierracchiesList.stream()
@@ -277,7 +274,6 @@ public class AccountHierarchyServiceImpl
 
 		return sprintDetailsList.stream().collect(Collectors.toMap(SprintDetails::getSprintID, Function.identity()));
 	}
-
 
 	/**
 	 * Checks if should show in filter or not
@@ -311,10 +307,9 @@ public class AccountHierarchyServiceImpl
 		return StringUtils.equalsIgnoreCase(parentLabel, childAccountHierarchy.getParentId());
 	}
 
-
 	private void traverseRootToLeaf(AccountHierarchy hierarchy, Map<String, List<AccountHierarchy>> parentWiseMap,
 			List<AccountHierarchyData> listHierarchyData, AccountHierarchyData accountHierarchyData,
-			Map<String,Integer> hierarchyLevelIdMap, Map<String, List<String>> sprintIdListToDisplay,
+			Map<String, Integer> hierarchyLevelIdMap, Map<String, List<String>> sprintIdListToDisplay,
 			Map<String, SprintDetails> sprintDetailsMap) {
 
 		if (parentWiseMap.containsKey(hierarchy.getNodeId())) {
@@ -323,16 +318,16 @@ public class AccountHierarchyServiceImpl
 							&& isCurrentNodeChild(hierarchy, child) && isParentChildHierarchy(hierarchy, child))
 					.forEach(child -> {
 						SprintDetails sprintDetails = sprintDetailsMap.get(child.getNodeId());
-						if(!child.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT) ||
-								(child.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT) &&
-										null != sprintDetails && null != sprintDetails.getState())) {
-							AccountHierarchyData accountHierarchyDataClone = (AccountHierarchyData) SerializationUtils.clone(
-									accountHierarchyData);
+						if (!child.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+								|| (child.getLabelName().equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT)
+										&& null != sprintDetails && null != sprintDetails.getState())) {
+							AccountHierarchyData accountHierarchyDataClone = (AccountHierarchyData) SerializationUtils
+									.clone(accountHierarchyData);
 							setValuesInAccountHierarchyData(child, accountHierarchyDataClone, sprintDetails,
 									hierarchyLevelIdMap);
 							traverseRootToLeaf(child, parentWiseMap, listHierarchyData, accountHierarchyDataClone,
 									hierarchyLevelIdMap, sprintIdListToDisplay, sprintDetailsMap);
-						}else{
+						} else {
 							accountHierarchyData.setBasicProjectConfigId(hierarchy.getBasicProjectConfigId());
 							accountHierarchyData.setLabelName(hierarchy.getLabelName());
 							listHierarchyData.add(accountHierarchyData);
@@ -361,21 +356,20 @@ public class AccountHierarchyServiceImpl
 	 * @param accountHierarchyData
 	 */
 	private void setValuesInAccountHierarchyData(AccountHierarchy hierarchy, AccountHierarchyData accountHierarchyData,
-			SprintDetails sprintDetails, Map<String,Integer> hierarchyLevelIdMap) {
-		if (sprintDetails != null){
-			hierarchy
-					.setSprintState(sprintDetails.getState());
+			SprintDetails sprintDetails, Map<String, Integer> hierarchyLevelIdMap) {
+		if (sprintDetails != null) {
+			hierarchy.setSprintState(sprintDetails.getState());
 		}
-		Node node = new Node(0, hierarchy.getNodeId(), hierarchy.getNodeName(),
-				hierarchy.getParentId(), hierarchy.getLabelName(), hierarchy);
-		node.setLevel(hierarchyLevelIdMap.getOrDefault(hierarchy.getLabelName(),0));
+		Node node = new Node(0, hierarchy.getNodeId(), hierarchy.getNodeName(), hierarchy.getParentId(),
+				hierarchy.getLabelName(), hierarchy);
+		node.setLevel(hierarchyLevelIdMap.getOrDefault(hierarchy.getLabelName(), 0));
 		accountHierarchyData.setLabelName(hierarchy.getLabelName());
 		accountHierarchyData.setLeafNodeId(hierarchy.getNodeId());
-		if(CollectionUtils.isEmpty(accountHierarchyData.getNode())){
+		if (CollectionUtils.isEmpty(accountHierarchyData.getNode())) {
 			List<Node> dnode = new ArrayList<>();
 			dnode.add(node);
 			accountHierarchyData.setNode(dnode);
-		}else {
+		} else {
 			accountHierarchyData.getNode().add(node);
 		}
 	}

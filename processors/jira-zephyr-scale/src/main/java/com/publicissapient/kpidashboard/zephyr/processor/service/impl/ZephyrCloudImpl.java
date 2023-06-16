@@ -1,15 +1,15 @@
 package com.publicissapient.kpidashboard.zephyr.processor.service.impl;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
-import com.publicissapient.kpidashboard.common.model.zephyr.ZephyrTestCaseDTO;
-import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
-import com.publicissapient.kpidashboard.zephyr.client.ZephyrClient;
-import com.publicissapient.kpidashboard.zephyr.config.ZephyrConfig;
-import com.publicissapient.kpidashboard.zephyr.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.zephyr.model.ZephyrCloudFolderResponse;
-import com.publicissapient.kpidashboard.zephyr.util.ZephyrUtil;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -26,15 +26,17 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.model.zephyr.ZephyrTestCaseDTO;
+import com.publicissapient.kpidashboard.common.processortool.service.ProcessorToolConnectionService;
+import com.publicissapient.kpidashboard.zephyr.client.ZephyrClient;
+import com.publicissapient.kpidashboard.zephyr.config.ZephyrConfig;
+import com.publicissapient.kpidashboard.zephyr.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.zephyr.model.ZephyrCloudFolderResponse;
+import com.publicissapient.kpidashboard.zephyr.util.ZephyrUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * get test case details from zephyr cloud url
@@ -77,6 +79,19 @@ public class ZephyrCloudImpl implements ZephyrClient {
 
 	@Autowired
 	private ProcessorToolConnectionService processorToolConnectionService;
+
+	/**
+	 * get json array from responseBody
+	 *
+	 * @param responseBody
+	 * @param key
+	 *
+	 */
+	public static JSONArray parseData(String responseBody, String key) throws ParseException {
+		JSONParser jsonParser = new JSONParser();
+		JSONObject jsonObject = (JSONObject) jsonParser.parse(responseBody);
+		return (JSONArray) jsonObject.get(key);
+	}
 
 	/**
 	 * get Test case details from zephyr cloud
@@ -202,7 +217,7 @@ public class ZephyrCloudImpl implements ZephyrClient {
 		List<ProcessorToolConnection> projectToolConnection = processorToolConnectionService
 				.findByToolAndBasicProjectConfigId(ProcessorConstants.JIRA, toolInfo.getBasicProjectConfigId());
 
-		if(CollectionUtils.isNotEmpty(projectToolConnection)) {
+		if (CollectionUtils.isNotEmpty(projectToolConnection)) {
 			ProcessorToolConnection projectToolConnectionForJiraCloud = projectToolConnection.get(0);
 			return zephyrUtil.getCredentialsAsBase64String(projectToolConnectionForJiraCloud.getUsername(),
 					projectToolConnectionForJiraCloud.getPassword());
@@ -233,7 +248,7 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	 */
 	private String prepareOwnerDetails(JSONObject testcaseResponse, String jiraCloudCredential) throws ParseException {
 		String owner = null;
-		if(jiraCloudCredential != null) {
+		if (jiraCloudCredential != null) {
 			JSONObject jsonObject = getJSONObject(testcaseResponse, OWNER);
 			if (jsonObject != null) {
 				String url = getString(jsonObject, SELF);
@@ -313,8 +328,7 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	 * Issues Id getting from rest api call
 	 *
 	 * @param url
-	 *            for example =
-	 *            https://jira.cloudurl.com/rest/api/2/issue/103328
+	 *            for example = https://jira.cloudurl.com/rest/api/2/issue/103328
 	 * @param jiraCloudCredential
 	 *
 	 */
@@ -382,19 +396,6 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	}
 
 	/**
-	 * get json array from responseBody
-	 *
-	 * @param responseBody
-	 * @param key
-	 *
-	 */
-	public static JSONArray parseData(String responseBody, String key) throws ParseException {
-		JSONParser jsonParser = new JSONParser();
-		JSONObject jsonObject = (JSONObject) jsonParser.parse(responseBody);
-		return (JSONArray) jsonObject.get(key);
-	}
-
-	/**
 	 * prepare folder full path map(folderId,folderFullPath)
 	 *
 	 * @param accessToken
@@ -445,6 +446,5 @@ public class ZephyrCloudImpl implements ZephyrClient {
 		}
 		return folderMap;
 	}
-
 
 }

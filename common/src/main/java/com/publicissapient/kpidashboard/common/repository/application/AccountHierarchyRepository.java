@@ -64,8 +64,11 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 
 	/**
 	 * Find by parentId and path
-	 * @param parentId the parent id
-	 * @param path path
+	 * 
+	 * @param parentId
+	 *            the parent id
+	 * @param path
+	 *            path
 	 * @return list of AccountHierarchy
 	 */
 	List<AccountHierarchy> findByParentIdAndPath(String parentId, String path);
@@ -92,11 +95,13 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 	 */
 	List<AccountHierarchy> findByLabelNameAndNodeId(String labelName, String nodeId);
 
-
 	/**
 	 * find by node id and path
-	 * @param nodeId the node id
-	 * @param path the path
+	 * 
+	 * @param nodeId
+	 *            the node id
+	 * @param path
+	 *            the path
 	 * @return list of AccountHierarchy
 	 */
 	List<AccountHierarchy> findByNodeIdAndPath(String nodeId, String path);
@@ -139,12 +144,15 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 
 	/**
 	 * delete by basicProjectConfigId
-	 * @param basicProjectConfigId basic project config id
+	 * 
+	 * @param basicProjectConfigId
+	 *            basic project config id
 	 */
 	void deleteByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
 	 * delete by basicProjectConfigId and LabelName
+	 * 
 	 * @param basicProjectConfigId
 	 * @param labelName
 	 */
@@ -173,7 +181,9 @@ public interface AccountHierarchyRepository extends MongoRepository<AccountHiera
 
 	/**
 	 * Delete by ids
-	 * @param ids list of ids to be deleted
+	 * 
+	 * @param ids
+	 *            list of ids to be deleted
 	 */
 	void deleteByIdIn(List<ObjectId> ids);
 

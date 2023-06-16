@@ -48,9 +48,12 @@ public class AzureRepoServerURIBuilder {
 	/**
 	 * Instantiates a new azure repo server URI builder.
 	 * 
-	 * @param repo               AzureRepoConfig
-	 * @param config             config
-	 * @param azureRepoProcessor azureRepoProcessor
+	 * @param repo
+	 *            AzureRepoConfig
+	 * @param config
+	 *            config
+	 * @param azureRepoProcessor
+	 *            azureRepoProcessor
 	 */
 	public AzureRepoServerURIBuilder(AzureRepoModel repo, AzureRepoConfig config,
 			ProcessorToolConnection azureRepoProcessor) {
@@ -63,7 +66,8 @@ public class AzureRepoServerURIBuilder {
 	 * Builds the.
 	 *
 	 * @return the string
-	 * @throws URISyntaxException the URISyntaxException
+	 * @throws URISyntaxException
+	 *             the URISyntaxException
 	 */
 	public String build() throws URISyntaxException {
 		final URIBuilder builder = new URIBuilder();
@@ -110,7 +114,7 @@ public class AzureRepoServerURIBuilder {
 
 		return urlNew;
 	}
-	
+
 	private Map<String, String> getMergeRequestParams() { // additional parameter add to
 		// builder type
 		Map<String, String> map = new HashMap<>();
@@ -134,14 +138,14 @@ public class AzureRepoServerURIBuilder {
 		}
 		return map;
 	}
-	
+
 	/**
 	 * Gets the params.
 	 *
 	 * @return the params
 	 */
 	private Map<String, String> getParams() { // additional parameter add to
-												// builder type
+											  // builder type
 		Map<String, String> map = new HashMap<>();
 
 		map.put("api.Version", String.valueOf(azureRepoProcessor.getApiVersion()));
@@ -167,7 +171,8 @@ public class AzureRepoServerURIBuilder {
 	/**
 	 * Gets the path.
 	 *
-	 * @param uri the uri
+	 * @param uri
+	 *            the uri
 	 * @return the path
 	 */
 	private String getPath(URI uri) {
@@ -189,7 +194,7 @@ public class AzureRepoServerURIBuilder {
 		StringBuilder repoPathFinal = new StringBuilder(repoPath);
 		return repoPathFinal.append(sb).toString();
 	}
-	
+
 	private String getMRPath(URI uri) {
 
 		String repoPath = uri.getPath();
@@ -209,6 +214,7 @@ public class AzureRepoServerURIBuilder {
 		StringBuilder repoPathFinal = new StringBuilder(repoPath);
 		return repoPathFinal.append(sb).toString();
 	}
+
 	/**
 	 * Gets the uri.
 	 *

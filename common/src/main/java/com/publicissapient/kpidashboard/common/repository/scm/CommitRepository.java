@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.repository.scm;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -25,13 +27,11 @@ import org.springframework.data.repository.CrudRepository;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 
-import java.util.List;
-
 /**
  * Repository for {@link CommitDetails} data.
  */
-public interface CommitRepository
-		extends CrudRepository<CommitDetails, ObjectId>, QuerydslPredicateExecutor<CommitDetails>, CommitRepositoryCustom {
+public interface CommitRepository extends CrudRepository<CommitDetails, ObjectId>,
+		QuerydslPredicateExecutor<CommitDetails>, CommitRepositoryCustom {
 
 	/**
 	 * Finds the {@link CommitDetails} with the given revision number for a specific
@@ -47,7 +47,9 @@ public interface CommitRepository
 
 	/**
 	 * delete all documents with matching ids
-	 * @param processorItemIds processor item id
+	 * 
+	 * @param processorItemIds
+	 *            processor item id
 	 */
 	void deleteByProcessorItemIdIn(List<ObjectId> processorItemIds);
 

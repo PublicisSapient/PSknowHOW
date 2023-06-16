@@ -32,7 +32,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,6 +46,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.PushDataFactory;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
+import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -90,7 +90,8 @@ public class PushBuildServiceImplTest {
 		when(customApiConfig.getPushDataLimit()).thenReturn(51);
 		when(buildService.checkandCreateBuilds(any(), anySet(), anyList(), anyList(), anyList())).thenReturn(2);
 		when(deployService.checkandCreateDeployment(any(), anySet(), anyList(), anyList(), anyList())).thenReturn(1);
-		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(),any(Object.class));
+		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(),
+				any(Object.class));
 		Assert.assertThrows(PushDataException.class, () -> {
 			pushBuildService.processPushDataInput(pushBuildDeploy, projectBasicConfigId);
 		});
@@ -99,7 +100,7 @@ public class PushBuildServiceImplTest {
 	@Test
 	public void checkSizeFalse() {
 		when(customApiConfig.getPushDataLimit()).thenReturn(1);
-		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(),isNull());
+		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(), isNull());
 		Assert.assertThrows(PushDataException.class, () -> {
 			pushBuildService.getTotalRecords(pushBuildDeploy);
 		});
@@ -110,7 +111,8 @@ public class PushBuildServiceImplTest {
 		when(customApiConfig.getPushDataLimit()).thenReturn(51);
 		when(buildService.checkandCreateBuilds(any(), anySet(), anyList(), anyList(), anyList())).thenReturn(2);
 		when(deployService.checkandCreateDeployment(any(), anySet(), anyList(), anyList(), anyList())).thenReturn(1);
-		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(),any(Object.class));
+		doThrow(new PushDataException()).when(pushDataTraceLogService).setExceptionTraceLog(anyString(),
+				any(Object.class));
 		Assert.assertThrows(PushDataException.class, () -> {
 			pushBuildService.processPushDataInput(pushBuildDeploy, projectBasicConfigId);
 		});

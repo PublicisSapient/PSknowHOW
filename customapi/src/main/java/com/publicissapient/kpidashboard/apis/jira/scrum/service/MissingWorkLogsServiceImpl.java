@@ -65,22 +65,18 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MissingWorkLogsServiceImpl.class);
-
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private FilterHelperService flterHelperService;
-
 	private static final String STORY_LIST = "Total Issues(excluding open and dropped)";
 	private static final String TOTAL_STORY_LIST = "Total Issues(including open and dropped)";
 	private static final String DEV = "DeveloperKpi";
 	private static final String UNLOGGED_STORIES = "Issues Without Worklog";
 	private static final int UNLOGGED = 0;
 	private final DecimalFormat df2 = new DecimalFormat(".##");
+	@Autowired
+	private JiraIssueRepository jiraIssueRepository;
+	@Autowired
+	private ConfigHelperService configHelperService;
+	@Autowired
+	private FilterHelperService flterHelperService;
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -223,8 +219,8 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 
 			List<JiraIssue> stories = sprintWiseStoryMap.get(currentNodeIdentifier);
 			List<JiraIssue> totalStories = sprintWiseTotalStoryMap.get(currentNodeIdentifier);
-		
-			Double sumTotalStories = ((Integer)totalStories.size()).doubleValue();
+
+			Double sumTotalStories = ((Integer) totalStories.size()).doubleValue();
 
 			List<JiraIssue> totalStory = new ArrayList<>();
 			List<JiraIssue> unloggedStory = new ArrayList<>();
@@ -236,7 +232,8 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 			howerMap.put(UNLOGGED_STORIES, unloggedStory.size());
 			howerMap.put(TOTAL_STORY_LIST, sumTotalStories.intValue());
 
-			Double value = Double.valueOf(100 * ((Integer)howerMap.get(UNLOGGED_STORIES)) / (Integer) howerMap.get(STORY_LIST));
+			Double value = Double
+					.valueOf(100 * ((Integer) howerMap.get(UNLOGGED_STORIES)) / (Integer) howerMap.get(STORY_LIST));
 
 			if (CollectionUtils.isNotEmpty(totalStory)) {
 				populateValidationDataObject(kpiElement, requestTrackerId, totalStory, validationDataMap,
@@ -273,11 +270,10 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 	 * @param unloggedStory
 	 * 
 	 */
-	private void setSprintData(List<JiraIssue> stories, List<JiraIssue> totalStory,
-			List<JiraIssue> unloggedStory) {
+	private void setSprintData(List<JiraIssue> stories, List<JiraIssue> totalStory, List<JiraIssue> unloggedStory) {
 		if (CollectionUtils.isNotEmpty(stories)) {
-			totalStory.addAll(stories.stream()
-					.filter(issue -> Double.parseDouble(issue.getEstimate()) > 0.0).collect(Collectors.toList()));
+			totalStory.addAll(stories.stream().filter(issue -> Double.parseDouble(issue.getEstimate()) > 0.0)
+					.collect(Collectors.toList()));
 
 			unloggedStory.addAll(totalStory.stream().filter(
 					issue -> (issue.getTimeSpentInMinutes() == null || issue.getTimeSpentInMinutes() == UNLOGGED))

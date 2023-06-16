@@ -62,12 +62,12 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 @RunWith(MockitoJUnitRunner.class)
 public class ReleaseDefectCountByAssigneeServiceImplTest {
 
-	@InjectMocks
-	private ReleaseDefectCountByAssigneeServiceImpl defectCountByAssigneeService;
 	@Mock
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
+	@InjectMocks
+	private ReleaseDefectCountByAssigneeServiceImpl defectCountByAssigneeService;
 	@Mock
 	private JiraServiceR jiraService;
 

@@ -18,15 +18,16 @@
 
 package com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.parser;
 
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.SearchResult;
-import com.atlassian.jira.rest.client.internal.json.GenericJsonArrayParser;
-import com.atlassian.jira.rest.client.internal.json.SearchResultJsonParser;
+import java.util.Collections;
+
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-import java.util.Collections;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.atlassian.jira.rest.client.internal.json.GenericJsonArrayParser;
+import com.atlassian.jira.rest.client.internal.json.SearchResultJsonParser;
 
 public class CustomSearchResultJsonParser extends SearchResultJsonParser {
 
@@ -39,7 +40,8 @@ public class CustomSearchResultJsonParser extends SearchResultJsonParser {
 
 		final Iterable<Issue> issues;
 		if (issuesJsonArray.length() > 0) {
-			final CustomIssueJsonParser issueParser = new CustomIssueJsonParser(json.getJSONObject("names"), json.getJSONObject("schema"));
+			final CustomIssueJsonParser issueParser = new CustomIssueJsonParser(json.getJSONObject("names"),
+					json.getJSONObject("schema"));
 			final GenericJsonArrayParser<Issue> issuesParser = GenericJsonArrayParser.create(issueParser);
 			issues = issuesParser.parse(issuesJsonArray);
 		} else {

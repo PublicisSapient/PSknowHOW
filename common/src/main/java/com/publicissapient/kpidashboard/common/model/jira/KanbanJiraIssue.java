@@ -21,12 +21,12 @@ package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
 import java.util.List;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.AllArgsConstructor;

@@ -32,13 +32,16 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Data
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectToolConfigProcessorItem extends BasicModel{
+public class ProjectToolConfigProcessorItem extends BasicModel {
+	List<Connection> connection;
+	List<ProcessorItem> processorItemList;
 	private String toolName;
 	private ObjectId basicProjectConfigId;
 	private ObjectId connectionId;
@@ -57,6 +60,4 @@ public class ProjectToolConfigProcessorItem extends BasicModel{
 	private String updatedAt;
 	private boolean queryEnabled;
 	private String boardQuery;
-	List<Connection> connection;
-	List<ProcessorItem> processorItemList;
 }

@@ -1,7 +1,9 @@
 package com.publicissapient.kpidashboard.apis.util;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.codec.binary.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -11,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 
 /**
  * Utility class for rest api call request/response
@@ -29,6 +30,21 @@ public class RestAPIUtils {
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
+
+	public static HttpHeaders getHeaders(String accessToken, boolean usingBasicAuth) {
+		HttpHeaders headers = new HttpHeaders();
+		if (accessToken != null && !accessToken.isEmpty()) {
+			if (usingBasicAuth) {
+				String authentication = accessToken + ":";
+				byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
+				String authenticationHeader = "Basic " + new String(encodedAuth);
+				headers.set("Authorization", authenticationHeader);
+			} else {
+				headers.add("Authorization", "Bearer " + accessToken);
+			}
+		}
+		return headers;
+	}
 
 	/**
 	 * Creates HTTP Headers.
@@ -50,21 +66,6 @@ public class RestAPIUtils {
 		return header;
 	}
 
-	public static HttpHeaders getHeaders(String accessToken, boolean usingBasicAuth) {
-		HttpHeaders headers = new HttpHeaders();
-		if (accessToken != null && !accessToken.isEmpty()) {
-			if(usingBasicAuth){
-				String authentication = accessToken + ":";
-				byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
-				String authenticationHeader = "Basic " + new String(encodedAuth);
-				headers.set("Authorization", authenticationHeader);
-			}else{
-				headers.add("Authorization", "Bearer " + accessToken);
-			}
-		}
-		return headers;
-	}
-
 	public HttpHeaders getHeadersForPAT(String pat) {
 		HttpHeaders header = new HttpHeaders();
 		String authenticationHeader = "Bearer " + pat;
@@ -75,7 +76,8 @@ public class RestAPIUtils {
 	/**
 	 * Creates HTTP Headers.
 	 *
-	 * @param header  http header
+	 * @param header
+	 *            http header
 	 *
 	 * @param key
 	 *            key
@@ -84,7 +86,7 @@ public class RestAPIUtils {
 	 * @return HttpHeaders the http header
 	 */
 	public HttpHeaders addHeaders(HttpHeaders header, String key, String value) {
-		if(null != header) {
+		if (null != header) {
 			header = new HttpHeaders();
 		}
 		header.add(key, value);

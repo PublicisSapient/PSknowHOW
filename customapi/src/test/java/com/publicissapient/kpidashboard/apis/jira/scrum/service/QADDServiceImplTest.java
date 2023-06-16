@@ -71,6 +71,27 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 @RunWith(MockitoJUnitRunner.class)
 public class QADDServiceImplTest {
 
+	private static final String SUBGROUPCATEGORY = "subGroupCategory";
+	private static final String SPRINT = "Sprint";
+	private static final String STORY_POINTS_DATA = "storyPoints";
+	@InjectMocks
+	QADDServiceImpl qaddServiceImpl;
+	@Mock
+	JiraIssueRepository jiraIssueRepository;
+	@Mock
+	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Mock
+	CacheService cacheService;
+	@Mock
+	ConfigHelperService configHelperService;
+	@Mock
+	KpiHelperService kpiHelperService;
+	@Mock
+	ProjectBasicConfigRepository projectConfigRepository;
+	@Mock
+	FieldMappingRepository fieldMappingRepository;
+	@Mock
+	CustomApiConfig customApiSetting;
 	private KpiRequest kpiRequest;
 	private List<KpiElement> kpiElementList;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -79,45 +100,10 @@ public class QADDServiceImplTest {
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
-
 	private List<JiraIssue> jiraStoryList = new ArrayList<>();
-
 	private List<JiraIssue> defectList = new ArrayList<>();
-
 	private List<SprintWiseStory> sprintWiseStoryList = new ArrayList<>();
-	private static final String SUBGROUPCATEGORY = "subGroupCategory";
-	private static final String SPRINT = "Sprint";
-	private static final String STORY_POINTS_DATA = "storyPoints";
-
-	@InjectMocks
-	QADDServiceImpl qaddServiceImpl;
-
-	@Mock
-	JiraIssueRepository jiraIssueRepository;
-
-	@Mock
-	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
-	@Mock
-	CacheService cacheService;
-
-	@Mock
-	ConfigHelperService configHelperService;
-
-	@Mock
-	KpiHelperService kpiHelperService;
-
-	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
-
-	@Mock
-	CustomApiConfig customApiSetting;
-
 	@Mock
 	private CommonService commonService;
 
@@ -245,7 +231,8 @@ public class QADDServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		KpiElement kpiElement = qaddServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+		KpiElement kpiElement = qaddServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail);
 		return kpiElement.getTrendValueList();
 
 	}

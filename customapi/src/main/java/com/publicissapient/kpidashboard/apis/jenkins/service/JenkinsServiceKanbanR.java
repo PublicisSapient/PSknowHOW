@@ -74,14 +74,15 @@ public class JenkinsServiceKanbanR {
 		List<KpiElement> responseList = new ArrayList<>();
 		String[] kanbanProjectKeyCache = null;
 		try {
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(),kpiRequest.getLabel(),true);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
+					true);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			} else {
 				log.error("label name for selected hierarchy not found");
 			}
 			List<AccountHierarchyDataKanban> filteredAccountDataList = filterHelperService
-					.getFilteredBuildsKanban(kpiRequest,groupName);
+					.getFilteredBuildsKanban(kpiRequest, groupName);
 			kanbanProjectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
 
 			filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
@@ -91,10 +92,10 @@ public class JenkinsServiceKanbanR {
 			}
 
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-			
+
 			populateKanbanKpiRequest(kpiRequest);
-			Object cachedData = cacheService.getFromApplicationCache(kanbanProjectKeyCache, KPISource.JENKINSKANBAN.name(),
-					groupId, null);
+			Object cachedData = cacheService.getFromApplicationCache(kanbanProjectKeyCache,
+					KPISource.JENKINSKANBAN.name(), groupId, null);
 			if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 					&& null != cachedData) {
 				log.info("[JENKINS KANBAN][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
@@ -103,8 +104,8 @@ public class JenkinsServiceKanbanR {
 			}
 
 			TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, null,
-					filteredAccountDataList,filterHelperService.getFirstHierarachyLevel(), filterHelperService.getHierarchyIdLevelMap(false)
-					.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,0));
+					filteredAccountDataList, filterHelperService.getFirstHierarachyLevel(), filterHelperService
+							.getHierarchyIdLevelMap(false).getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, 0));
 
 			for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 
@@ -193,7 +194,8 @@ public class JenkinsServiceKanbanR {
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] kanbanProjectKeyCache) {
-		Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(true).get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+		Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(true)
+				.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& projectLevel >= kpiRequest.getLevel()) {
 

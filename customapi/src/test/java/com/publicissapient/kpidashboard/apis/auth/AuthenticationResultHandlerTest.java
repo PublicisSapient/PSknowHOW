@@ -25,11 +25,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import org.json.simple.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +36,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 
+import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 
 @RunWith(MockitoJUnitRunner.class)

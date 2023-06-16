@@ -35,7 +35,8 @@ public interface ProjectToolConfigRepository extends MongoRepository<ProjectTool
 	/**
 	 * Find by toolType.
 	 *
-	 * @param tool the tool
+	 * @param tool
+	 *            the tool
 	 * 
 	 * @return the list of ProjectToolConfig
 	 */
@@ -44,15 +45,17 @@ public interface ProjectToolConfigRepository extends MongoRepository<ProjectTool
 	/**
 	 * Finds by toolId.
 	 *
-	 * @param toolId the toolId
+	 * @param toolId
+	 *            the toolId
 	 * @return the ProjectToolConfig
 	 */
 	ProjectToolConfig findById(String toolId);
-	
+
 	/**
 	 * Finds by connectionId.
 	 *
-	 * @param connectionId the connectionId
+	 * @param connectionId
+	 *            the connectionId
 	 * @return the ProjectToolConfig
 	 */
 	List<ProjectToolConfig> findByConnectionId(ObjectId connectionId);
@@ -60,8 +63,10 @@ public interface ProjectToolConfigRepository extends MongoRepository<ProjectTool
 	/**
 	 * Find by toolType.
 	 *
-	 * @param tool the tool
-	 * @param basicProjectConfigId the project basic config id
+	 * @param tool
+	 *            the tool
+	 * @param basicProjectConfigId
+	 *            the project basic config id
 	 * 
 	 * @return the list of ProjectToolConfig
 	 */
@@ -69,6 +74,7 @@ public interface ProjectToolConfigRepository extends MongoRepository<ProjectTool
 
 	/**
 	 * Find tools of the project
+	 * 
 	 * @param basicProjectConfigId
 	 * @return list of tools
 	 */

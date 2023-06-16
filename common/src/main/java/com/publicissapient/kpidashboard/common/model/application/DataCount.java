@@ -60,7 +60,7 @@ public class DataCount implements Serializable {
 	private String kanbanDate;
 	private Map<String, Object> hoverValue;
 	private Map<String, ArrayList<Double>> hoverMap;
-	private Map<String,Integer> lineHoverValue;
+	private Map<String, Integer> lineHoverValue;
 	private String executed;
 	private String passed;
 	private String subFilter;
@@ -70,7 +70,7 @@ public class DataCount implements Serializable {
 	private String startDate;
 	private String endDate;
 	private String kpiGroup;
-	
+
 	private List<String> sprintIds;
 	private List<String> sprintNames;
 	private List<String> projectNames;
@@ -78,15 +78,17 @@ public class DataCount implements Serializable {
 	private String maturity;
 	private transient Object maturityValue;
 	private transient Object lineValue;
-	
+
 	private transient Map<String, Object> subfilterValues;
-	private String graphType;//for non-clustered bar and line graph
+	private String graphType;// for non-clustered bar and line graph
 
 	/**
 	 * Instantiates a new Data count.
 	 *
-	 * @param data  the data
-	 * @param count the count
+	 * @param data
+	 *            the data
+	 * @param count
+	 *            the count
 	 */
 	public DataCount(String data, Integer count) {
 		this.data = data;
@@ -96,8 +98,10 @@ public class DataCount implements Serializable {
 	/**
 	 * Instantiates a new Data count.
 	 *
-	 * @param data  the data
-	 * @param value the value
+	 * @param data
+	 *            the data
+	 * @param value
+	 *            the value
 	 */
 	public DataCount(String data, Object value) {
 		this.data = data;
@@ -107,9 +111,12 @@ public class DataCount implements Serializable {
 	/**
 	 * Instantiates a new Data count.
 	 *
-	 * @param data     the data
-	 * @param priority the priority
-	 * @param value    the value
+	 * @param data
+	 *            the data
+	 * @param priority
+	 *            the priority
+	 * @param value
+	 *            the value
 	 */
 	public DataCount(String data, String priority, Object value) {
 		this.data = data;
@@ -124,10 +131,10 @@ public class DataCount implements Serializable {
 	 * @param maturityValue
 	 * @param value
 	 */
-	public DataCount(String data, String maturity, Object maturityValue,Object value) {
+	public DataCount(String data, String maturity, Object maturityValue, Object value) {
 		this.data = data;
 		this.maturity = maturity;
-		this.maturityValue=maturityValue;
+		this.maturityValue = maturityValue;
 		this.value = value;
 
 	}

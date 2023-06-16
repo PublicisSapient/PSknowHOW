@@ -28,8 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -45,6 +43,8 @@ import com.publicissapient.kpidashboard.common.constant.BuildStatus;
 import com.publicissapient.kpidashboard.common.model.application.Build;
 import com.publicissapient.kpidashboard.common.repository.application.BuildRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -66,7 +66,7 @@ public class BuildServiceImpl {
 	 * @return
 	 */
 	public int checkandCreateBuilds(ObjectId basicProjectConfigId, Set<PushBuild> buildsList, List<Build> buildList,
-									List<PushErrorData> buildErrorList, List<PushDataDetail> pushDataDetails) {
+			List<PushErrorData> buildErrorList, List<PushDataDetail> pushDataDetails) {
 		AtomicInteger failedRecords = new AtomicInteger();
 		if (CollectionUtils.isNotEmpty(buildsList)) {
 			buildsList.forEach(pushBuild -> {
@@ -93,11 +93,11 @@ public class BuildServiceImpl {
 	}
 
 	private PushDataDetail createTraceLog(PushErrorData pushErrorData) {
-		PushDataDetail pushDataDetail=new PushDataDetail();
+		PushDataDetail pushDataDetail = new PushDataDetail();
 		pushDataDetail.setTool("build");
 		pushDataDetail.setJobName(pushErrorData.getJobName());
 		pushDataDetail.setJobNumber(pushErrorData.getNumber());
-		List<String> errors=new ArrayList<>();
+		List<String> errors = new ArrayList<>();
 		if (MapUtils.isNotEmpty(pushErrorData.getErrors())) {
 			pushErrorData.getErrors().forEach((k, v) -> errors.add(k + ":" + v));
 		}

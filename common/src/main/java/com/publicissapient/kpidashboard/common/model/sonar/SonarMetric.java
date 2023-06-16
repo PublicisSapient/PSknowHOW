@@ -40,49 +40,52 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SonarMetric {
-    private String metricName;
-    private Object metricValue;
-    private String formattedValue;
-    private SonarMetricStatus metricStatus;
-    private String message;
-    private String date;
-    private Object value;
+	private String metricName;
+	private Object metricValue;
+	private String formattedValue;
+	private SonarMetricStatus metricStatus;
+	private String message;
+	private String date;
+	private Object value;
 
-    /**
-     * Instantiates a new Sonar metric.
-     *
-     * @param metricName the metricName
-     */
+	/**
+	 * Instantiates a new Sonar metric.
+	 *
+	 * @param metricName
+	 *            the metricName
+	 */
 	public SonarMetric(String metricName) {
-        this.metricName = metricName;
-    }
+		this.metricName = metricName;
+	}
 
-    /**
-     * Instantiates a new Sonar metric.
-     *
-     * @param metricName  the metricName
-     * @param metricValue the metricValue
-     */
-    public SonarMetric(String metricName, Object metricValue) {
-        this.metricName = metricName;
-        this.metricValue = metricValue;
-    }
+	/**
+	 * Instantiates a new Sonar metric.
+	 *
+	 * @param metricName
+	 *            the metricName
+	 * @param metricValue
+	 *            the metricValue
+	 */
+	public SonarMetric(String metricName, Object metricValue) {
+		this.metricName = metricName;
+		this.metricValue = metricValue;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
 
-        return metricName.equals(((SonarMetric) obj).metricName);
-    }
+		return metricName.equals(((SonarMetric) obj).metricName);
+	}
 
-    @Override
-    public int hashCode() {
-        return metricName.hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return metricName.hashCode();
+	}
 
 }

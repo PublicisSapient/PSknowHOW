@@ -39,7 +39,8 @@ public interface UserBoardConfigService {
 	/**
 	 * This method save user board config
 	 * 
-	 * @param userBoardConfigDTO userBoardConfigDTO
+	 * @param userBoardConfigDTO
+	 *            userBoardConfigDTO
 	 * @return UserBoardConfigDTO
 	 */
 	UserBoardConfigDTO saveUserBoardConfig(UserBoardConfigDTO userBoardConfigDTO);

@@ -42,6 +42,10 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 public class JiraIssueRepositoryTest {
+	private static final String generalUseDate = "2015-11-01T00:00:00Z";
+	private static final String generalUseDate2 = "2015-12-01T00:00:00Z";
+	private static final String generalUseDate3 = "2015-12-15T00:00:00Z";
+	private static final ObjectId jiraCollectorId = new ObjectId();
 	private static JiraIssue mockV1JiraIssue;
 	private static JiraIssue mockJiraJiraIssue;
 	private static JiraIssue mockJiraJiraIssue2;
@@ -49,19 +53,26 @@ public class JiraIssueRepositoryTest {
 	private static JiraIssue mockJiraJiraIssue4;
 	private static JiraIssue mockJiraJiraIssue5;
 	private static JiraIssue mockJiraJiraIssue6;
-	private static final String generalUseDate = "2015-11-01T00:00:00Z";
-	private static final String generalUseDate2 = "2015-12-01T00:00:00Z";
-	private static final String generalUseDate3 = "2015-12-15T00:00:00Z";
 	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-	private static Calendar cal = Calendar.getInstance();
 	private static final String maxDateWinner = df.format(new Date());
+	private static Calendar cal = Calendar.getInstance();
 	private static String maxDateLoser = new String();
 	private static String currentSprintEndDate = new String();
-	private static final ObjectId jiraCollectorId = new ObjectId();
 	// private static final ObjectId v1CollectorId = new ObjectId();
-
 	@Mock
 	private JiraIssueRepository featureRepo;
+
+	public static List<Pattern> convertToPatternList(List<String> stringList) {
+		List<Pattern> regexList = new ArrayList<>();
+		for (String value : stringList) {
+			regexList.add(Pattern.compile(value, Pattern.CASE_INSENSITIVE));
+		}
+		return regexList;
+	}
+
+	public static Pattern convertToPatternText(String text) {
+		return Pattern.compile(text, Pattern.CASE_INSENSITIVE);
+	}
 
 	@Before
 	public void setUp() {
@@ -493,7 +504,8 @@ public class JiraIssueRepositoryTest {
 		jiraIssue.setIssueId("0812345");
 		jiraIssue.setBasicProjectConfigId("676987987897");
 		jiraIssueList.add(jiraIssue);
-		when(featureRepo.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(testStoryId), "676987987897")).thenReturn(jiraIssueList);
+		when(featureRepo.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(testStoryId),
+				"676987987897")).thenReturn(jiraIssueList);
 		assertEquals("Expected feature ID did not match actual feature ID", testStoryId,
 				jiraIssueList.get(0).getIssueId().toString());
 	}
@@ -578,17 +590,5 @@ public class JiraIssueRepositoryTest {
 		assertTrue("Actual size should result in a size of 0", jiraIssueList2.size() == 0);
 		assertTrue("Expected response of the maximum change date did not match the actual match change date",
 				jiraIssueList1.get(0).getChangeDate().toString().equalsIgnoreCase(maxDateWinner));
-	}
-
-	public static List<Pattern> convertToPatternList(List<String> stringList) {
-		List<Pattern> regexList = new ArrayList<>();
-		for (String value : stringList) {
-			regexList.add(Pattern.compile(value, Pattern.CASE_INSENSITIVE));
-		}
-		return regexList;
-	}
-
-	public static Pattern convertToPatternText(String text) {
-		return Pattern.compile(text, Pattern.CASE_INSENSITIVE);
 	}
 }

@@ -54,6 +54,7 @@ import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -142,7 +143,10 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 					LocalDate monday = weeks[0];
 					LocalDate sunday = weeks[1];
 
-					String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT) + " to " + DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+					String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT) + " to "
+							+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT,
+									DateUtil.DISPLAY_DATE_FORMAT);
 					Long startms = monday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 					Long endms = sunday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 					Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms);

@@ -97,6 +97,8 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 	private JiraTestService jiraTestService;
 
 	private boolean executionStatus = true;
+	@Autowired
+	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
 	/**
 	 * Instantiates a new ZEPHYR processor job executor.
@@ -109,9 +111,6 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 	protected JiraTestProcessorJobExecutor(TaskScheduler taskScheduler) {
 		super(taskScheduler, ProcessorConstants.JIRA_TEST);
 	}
-
-	@Autowired
-	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
 	@Override
 	public JiraTestProcessor getProcessor() {

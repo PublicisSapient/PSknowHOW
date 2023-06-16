@@ -9,12 +9,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +36,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
@@ -47,12 +43,12 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReleaseBurnupServiceImplTest {
-	@InjectMocks
-	private ReleaseBurnupServiceImpl releaseBurnupService;
 	@Mock
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
+	@InjectMocks
+	private ReleaseBurnupServiceImpl releaseBurnupService;
 	@Mock
 	private JiraServiceR jiraService;
 

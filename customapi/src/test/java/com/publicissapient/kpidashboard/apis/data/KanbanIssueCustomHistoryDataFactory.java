@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 
 import lombok.extern.slf4j.Slf4j;
@@ -82,14 +81,14 @@ public class KanbanIssueCustomHistoryDataFactory {
 
 		return mapper;
 	}
-	
+
 	public List<KanbanIssueCustomHistory> getKanbanIssueCustomHistoryDataList() {
-        return KanbanIssueCustomHistoryDataFactory;
-    }
+		return KanbanIssueCustomHistoryDataFactory;
+	}
 
 	public List<KanbanIssueCustomHistory> getKanbanIssueCustomHistoryDataListByTypeName(List<String> typeName) {
-		return KanbanIssueCustomHistoryDataFactory
-				.stream().filter(f->typeName.contains(f.getStoryType())).collect(Collectors.toList());
+		return KanbanIssueCustomHistoryDataFactory.stream().filter(f -> typeName.contains(f.getStoryType()))
+				.collect(Collectors.toList());
 	}
 
 }

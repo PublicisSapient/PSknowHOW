@@ -60,24 +60,18 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final Object USER_AUTHORITIES = "authorities";
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomAnalyticsServiceImpl.class);
-
-	@Autowired
-	private UserInfoRepository userInfoRepository;
-
-	@Autowired
-	private AuthenticationRepository authenticationRepository;
-
-	@Autowired
-	private CustomApiConfig settings;
-
 	@Autowired
 	UserAuthorizedProjectsService userAuthorizedProjectsService;
-
-	@Autowired
-	private ProjectAccessManager projectAccessManager;
-
 	@Autowired
 	UserInfoService userInfoService;
+	@Autowired
+	private UserInfoRepository userInfoRepository;
+	@Autowired
+	private AuthenticationRepository authenticationRepository;
+	@Autowired
+	private CustomApiConfig settings;
+	@Autowired
+	private ProjectAccessManager projectAccessManager;
 
 	/**
 	 * {@inheritDoc}

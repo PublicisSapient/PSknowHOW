@@ -44,10 +44,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Document(collection = "subprojects")
 public class Subproject extends BasicModel {
-	
+
 	private ObjectId toolConfigId;
 	private ObjectId basicProjectConfigId;
-    private String subProjectIdentification;
+	private String subProjectIdentification;
 	private List<String> subProjectIdentMultiValue;
 	private String subProjectIdentSingleValue;
 	private List<SubProjectUserProvided> subProjectUserProvided;

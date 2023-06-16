@@ -32,8 +32,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.standard.StandardAuthenticationProvider;
-import com.publicissapient.kpidashboard.apis.auth.standard.StandardAuthenticationToken;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StandardAuthenticationProviderTest {

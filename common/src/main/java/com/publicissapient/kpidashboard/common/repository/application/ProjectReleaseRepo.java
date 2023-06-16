@@ -40,7 +40,7 @@ public interface ProjectReleaseRepo extends MongoRepository<ProjectRelease, Obje
 	 * @return the project release
 	 */
 	ProjectRelease findByConfigId(ObjectId configId);
-	
+
 	/**
 	 * Deletes all documents that matches with given basicProjectConfigId.
 	 * 
@@ -48,7 +48,7 @@ public interface ProjectReleaseRepo extends MongoRepository<ProjectRelease, Obje
 	 *            basicProjectConfigId
 	 */
 	void deleteByConfigId(ObjectId basicProjectConfigId);
-	
+
 	/**
 	 * Find by config ids project release.
 	 *

@@ -42,7 +42,7 @@ public class JiraProcessorApplication {
 		HttpsURLConnection.setDefaultHostnameVerifier((s, sslSession) -> sslHostNameFlag);
 		SpringApplication.run(JiraProcessorApplication.class, args);
 	}
-	
+
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public RestTemplate restTemplate() {

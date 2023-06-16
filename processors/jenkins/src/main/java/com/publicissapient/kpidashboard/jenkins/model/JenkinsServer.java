@@ -33,5 +33,5 @@ public class JenkinsServer {
 	private String ipAddress;
 	private String username;
 	private String apiKey;
-	
+
 }

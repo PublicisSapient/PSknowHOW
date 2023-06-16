@@ -24,8 +24,6 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -44,6 +42,8 @@ import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
 @Slf4j
 public abstract class ProcessorJobExecutor<T extends Processor> implements Runnable {
@@ -52,6 +52,12 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 	private final String processorName;
 	private List<String> projectsBasicConfigIds;
 	private ExecutionLogContext executionLogContext;
+
+	@Autowired
+	protected ProcessorJobExecutor(TaskScheduler taskScheduler, String processorName) {
+		this.taskScheduler = taskScheduler;
+		this.processorName = processorName;
+	}
 
 	public ExecutionLogContext getExecutionLogContext() {
 		return executionLogContext;
@@ -73,12 +79,6 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 
 	public void setProjectsBasicConfigIds(List<String> projectsBasicConfigIds) {
 		this.projectsBasicConfigIds = projectsBasicConfigIds;
-	}
-
-	@Autowired
-	protected ProcessorJobExecutor(TaskScheduler taskScheduler, String processorName) {
-		this.taskScheduler = taskScheduler;
-		this.processorName = processorName;
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 			getProcessorRepository().save(processor);
 		}
 	}
-	
+
 	/**
 	 * clean tool item map
 	 * 
@@ -170,11 +170,9 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 		}
 
 		if (null != response && response.getStatusCode().is2xxSuccessful()) {
-			log.info("[TOOL-ITEM-CACHE-EVICT]. Successfully evicted cache: {} ",
-					CommonConstant.CACHE_TOOL_CONFIG_MAP);
+			log.info("[TOOL-ITEM-CACHE-EVICT]. Successfully evicted cache: {} ", CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		} else {
-			log.error("[TOOL-ITEM-CACHE-EVICT]. Error while evicting cache: {}",
-					CommonConstant.CACHE_TOOL_CONFIG_MAP);
+			log.error("[TOOL-ITEM-CACHE-EVICT]. Error while evicting cache: {}", CommonConstant.CACHE_TOOL_CONFIG_MAP);
 		}
 	}
 

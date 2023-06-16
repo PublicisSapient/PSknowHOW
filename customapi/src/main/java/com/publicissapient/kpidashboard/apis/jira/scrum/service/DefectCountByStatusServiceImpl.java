@@ -34,7 +34,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
@@ -67,13 +66,13 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 @Component
 public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByStatusServiceImpl.class);
-
 	public static final String UNCHECKED = "unchecked";
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByStatusServiceImpl.class);
 	private static final String TOTAL_ISSUES = "Total Issues";
 	private static final String CREATED_DURING_ITERATION = "Created during Iteration";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
@@ -85,6 +84,28 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 
 	@Autowired
 	private CommonServiceImpl commonService;
+
+	private static void overallStatusCountMap(List<DataCount> dataCountListForAllPriorities,
+			Map<String, Integer> overallStatusCountMapAggregate) {
+		for (DataCount dataCount : dataCountListForAllPriorities) {
+			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
+			statusCountMap.forEach((status, statusCountValue) -> overallStatusCountMapAggregate.merge(status,
+					statusCountValue, Integer::sum));
+		}
+	}
+
+	private static int getPriorityStatusCount(Map<String, Integer> overallStatusCountMap,
+			Map<String, List<JiraIssue>> statusData, int priorityRCACount, Map<String, Integer> statusCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> rcaEntry : statusData.entrySet()) {
+			String status = rcaEntry.getKey();
+			List<JiraIssue> issues = rcaEntry.getValue();
+
+			priorityRCACount += issues.size();
+			statusCountMap.put(status, issues.size());
+			overallStatusCountMap.merge(status, issues.size(), Integer::sum);
+		}
+		return priorityRCACount;
+	}
 
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -248,10 +269,11 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_PIE_CHART.getColumns());
 					kpiElement.setExcelData(excelData);
 					sortedFilterDataList.add(filterDataList.stream()
-							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(CREATED_DURING_ITERATION))
+							.filter(iterationKpiValue -> iterationKpiValue.getFilter1()
+									.equalsIgnoreCase(CREATED_DURING_ITERATION))
 							.findFirst().orElse(new IterationKpiValue()));
-					filterDataList
-							.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(CREATED_DURING_ITERATION));
+					filterDataList.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1()
+							.equalsIgnoreCase(CREATED_DURING_ITERATION));
 					sortListByKey(filterDataList);
 					sortedFilterDataList.addAll(filterDataList);
 					kpiElement.setTrendValueList(sortedFilterDataList);
@@ -260,28 +282,6 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 				}
 			}
 		}
-	}
-
-	private static void overallStatusCountMap(List<DataCount> dataCountListForAllPriorities,
-			Map<String, Integer> overallStatusCountMapAggregate) {
-		for (DataCount dataCount : dataCountListForAllPriorities) {
-			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
-			statusCountMap.forEach((status, statusCountValue) -> overallStatusCountMapAggregate.merge(status,
-					statusCountValue, Integer::sum));
-		}
-	}
-
-	private static int getPriorityStatusCount(Map<String, Integer> overallStatusCountMap,
-			Map<String, List<JiraIssue>> statusData, int priorityRCACount, Map<String, Integer> statusCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> rcaEntry : statusData.entrySet()) {
-			String status = rcaEntry.getKey();
-			List<JiraIssue> issues = rcaEntry.getValue();
-
-			priorityRCACount += issues.size();
-			statusCountMap.put(status, issues.size());
-			overallStatusCountMap.merge(status, issues.size(), Integer::sum);
-		}
-		return priorityRCACount;
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,

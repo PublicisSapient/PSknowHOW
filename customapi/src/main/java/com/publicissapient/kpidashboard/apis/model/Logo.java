@@ -23,24 +23,25 @@ package com.publicissapient.kpidashboard.apis.model;
  */
 public class Logo {
 
-    private byte[] image;
+	private byte[] image;
 
-    /**
-     * Get image byte [ ].
-     *
-     * @return the byte [ ]
-     */
-    public byte[] getImage() {
-        return image == null ? null : image.clone();
-    }
+	/**
+	 * Get image byte [ ].
+	 *
+	 * @return the byte [ ]
+	 */
+	public byte[] getImage() {
+		return image == null ? null : image.clone();
+	}
 
-    /**
-     * Sets image.
-     *
-     * @param image the image
-     */
-    public void setImage(byte[] image) {
-        this.image = image == null ? null : image.clone();
-    }
+	/**
+	 * Sets image.
+	 *
+	 * @param image
+	 *            the image
+	 */
+	public void setImage(byte[] image) {
+		this.image = image == null ? null : image.clone();
+	}
 
 }

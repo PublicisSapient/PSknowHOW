@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -65,6 +63,8 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculates the DSR and trend analysis of the DSR.
@@ -234,8 +234,8 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		List<JiraIssue> totalDefects = (List<JiraIssue>) defectDataListMap.get(TOTALBUGKEY);
 		Map<Pair<String, String>, Double> sprintWiseDsrMap = new HashMap<>();
 		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
-		Map<Pair<String, String>,List<JiraIssue>> sprintWiseSubCategoryWiseTotalBugListMap= new HashMap<>();
-		Map<Pair<String, String>,List<JiraIssue>> sprintWiseSubCategoryWiseUATBugListMap= new HashMap<>();
+		Map<Pair<String, String>, List<JiraIssue>> sprintWiseSubCategoryWiseTotalBugListMap = new HashMap<>();
+		Map<Pair<String, String>, List<JiraIssue>> sprintWiseSubCategoryWiseUATBugListMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
 
 		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
@@ -254,9 +254,9 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			List<JiraIssue> subCategoryWiseUatBugList = new ArrayList<>();
 
 			if (CollectionUtils.isNotEmpty(subCategoryWiseTotalBugList)) {
-				sprintWiseSubCategoryWiseTotalBugListMap.put(sprint,subCategoryWiseTotalBugList);
+				sprintWiseSubCategoryWiseTotalBugListMap.put(sprint, subCategoryWiseTotalBugList);
 				subCategoryWiseUatBugList = checkUATDefect(subCategoryWiseTotalBugList, projFieldMapping);
-				sprintWiseSubCategoryWiseUATBugListMap.put(sprint,subCategoryWiseUatBugList);
+				sprintWiseSubCategoryWiseUATBugListMap.put(sprint, subCategoryWiseUatBugList);
 			}
 
 			Map<String, Object> currentSprintLeafNodeDefectDataMap = new HashMap<>();
@@ -285,9 +285,10 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					Map<String, JiraIssue> totalBugList = new HashMap<>();
 					sprintWiseSubCategoryWiseTotalBugListMap.getOrDefault(currentNodeIdentifier, new ArrayList<>())
 							.stream().forEach(bugs -> totalBugList.putIfAbsent(bugs.getNumber(), bugs));
-					List<JiraIssue> subCategoryWiseUatBugList = sprintWiseSubCategoryWiseUATBugListMap.getOrDefault(currentNodeIdentifier, new ArrayList<>());
-					KPIExcelUtility.populateDefectRelatedExcelData(node.getSprintFilter().getName(), totalBugList, subCategoryWiseUatBugList,
-							excelData, KPICode.DEFECT_SEEPAGE_RATE.getKpiId());
+					List<JiraIssue> subCategoryWiseUatBugList = sprintWiseSubCategoryWiseUATBugListMap
+							.getOrDefault(currentNodeIdentifier, new ArrayList<>());
+					KPIExcelUtility.populateDefectRelatedExcelData(node.getSprintFilter().getName(), totalBugList,
+							subCategoryWiseUatBugList, excelData, KPICode.DEFECT_SEEPAGE_RATE.getKpiId());
 				}
 			} else {
 				dSRForCurrentLeaf = 0.0d;

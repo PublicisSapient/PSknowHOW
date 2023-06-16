@@ -18,5 +18,5 @@ public class MergeReqCount {
 	private String week;
 	private Double time;
 	private String unit;
-	
+
 }

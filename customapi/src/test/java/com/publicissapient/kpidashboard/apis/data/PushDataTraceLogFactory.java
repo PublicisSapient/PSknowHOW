@@ -3,8 +3,6 @@ package com.publicissapient.kpidashboard.apis.data;
 import java.io.IOException;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -13,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.publicissapient.kpidashboard.apis.pushdata.model.PushDataTraceLog;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class PushDataTraceLogFactory {

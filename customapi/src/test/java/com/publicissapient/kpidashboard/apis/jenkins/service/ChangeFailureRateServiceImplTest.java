@@ -47,6 +47,20 @@ import com.publicissapient.kpidashboard.common.repository.application.BuildRepos
 @RunWith(MockitoJUnitRunner.class)
 public class ChangeFailureRateServiceImplTest {
 
+	private static Tool tool1;
+	private static Tool tool2;
+	@Mock
+	BuildRepository buildRepository;
+	@Mock
+	CacheService cacheService;
+	@Mock
+	ConfigHelperService configHelperService;
+	@Mock
+	FilterHelperService filterHelperService;
+	@Mock
+	CustomApiConfig customApiConfig;
+	@InjectMocks
+	ChangeFailureRateServiceImpl changeFailureRateService;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
@@ -59,35 +73,11 @@ public class ChangeFailureRateServiceImplTest {
 	private Map<String, List<String>> maturityRangeMap = new HashMap<>();
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
-
-	private static Tool tool1;
-	private static Tool tool2;
-
-	@Mock
-	BuildRepository buildRepository;
-
-	@Mock
-	CacheService cacheService;
-
-	@Mock
-	ConfigHelperService configHelperService;
-
-	@Mock
-	FilterHelperService filterHelperService;
-
-	@Mock
-	CustomApiConfig customApiConfig;
-
-	@InjectMocks
-	ChangeFailureRateServiceImpl changeFailureRateService;
-
 	@Mock
 	private CommonService commonService;
 
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
-
-
 
 	@Before
 	public void setup() {

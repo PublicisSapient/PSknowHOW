@@ -76,62 +76,68 @@ public class ApiTokenAuthenticationTokenTest {
 		auth.eraseCredentials();
 		assertNull(auth.getCredentials());
 	}
+
 	@Test
 	public void equals() {
 		ApiTokenAuthenticationToken obj = new ApiTokenAuthenticationToken(PRINCIPAL, CREDS);
-		assertTrue (obj.equals(obj));;
-		
-    }
-	
+		assertTrue(obj.equals(obj));
+		;
+
+	}
+
 	@Test
 	public void NotEquals() {
 		Collection<? extends GrantedAuthority> authorities = Sets.newHashSet();
 		ApiTokenAuthenticationToken obj = new ApiTokenAuthenticationToken(PRINCIPAL, CREDS);
 		ApiTokenAuthenticationToken obj1 = new ApiTokenAuthenticationToken(PRINCIPAL, authorities);
-		assertFalse (obj.equals(obj1));;
-		
-    }
-	
+		assertFalse(obj.equals(obj1));
+		;
+
+	}
+
 	@Test
 	public void nullObj() {
 		ApiTokenAuthenticationToken obj = new ApiTokenAuthenticationToken(PRINCIPAL, CREDS);
-		assertFalse (obj.equals(null));;
-		
-    }
-	
+		assertFalse(obj.equals(null));
+		;
+
+	}
+
 	@Test
 	public void notNullObj() {
 		ApiTokenAuthenticationToken obj = new ApiTokenAuthenticationToken(PRINCIPAL, CREDS);
 		obj.equals(obj.getPrincipal());
-		
-    }
-	
+
+	}
+
 	@Test
 	public void ObjGetClass() {
 		ApiTokenAuthenticationToken obj = new ApiTokenAuthenticationToken(PRINCIPAL, CREDS);
-		assertFalse (getClass().equals(obj.getClass()));
-		
-    }
+		assertFalse(getClass().equals(obj.getClass()));
+
+	}
+
 	@Test
 	public void ObjGetClasstrue() {
 		ApiTokenAuthenticationTokenTest obj = new ApiTokenAuthenticationTokenTest();
-		assertTrue (getClass().equals(obj.getClass()));
-		
-    }
+		assertTrue(getClass().equals(obj.getClass()));
+
+	}
+
 	@Test
 	public void equalother() {
 		Object obj = new ApiTokenAuthenticationToken(PRINCIPAL, CREDS);
 		ApiTokenAuthenticationToken that = (ApiTokenAuthenticationToken) obj;
-		Object principal="principal";
-		Object credentials="creds";
-		assertTrue (principal.equals(that.getPrincipal()));
-		assertTrue (credentials.equals(that.getCredentials()));
-		
-    }
-	
+		Object principal = "principal";
+		Object credentials = "creds";
+		assertTrue(principal.equals(that.getPrincipal()));
+		assertTrue(credentials.equals(that.getCredentials()));
+
+	}
+
 	@Test
 	public void hashCodes() {
 		hashCode();
 	}
-	
+
 }

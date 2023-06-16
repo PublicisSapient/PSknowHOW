@@ -81,8 +81,8 @@ public class SonarDeatailsDataFactory {
 		}
 	}
 
-    public List<SonarDetails> getSonarDetailsList() {
-        return sonarDeatailsDataFactory;
-    }
+	public List<SonarDetails> getSonarDetailsList() {
+		return sonarDeatailsDataFactory;
+	}
 
 }

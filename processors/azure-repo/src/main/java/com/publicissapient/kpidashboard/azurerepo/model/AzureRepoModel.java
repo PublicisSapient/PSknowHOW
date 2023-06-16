@@ -23,7 +23,7 @@ import java.util.Date;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 
 /**
- * AzurerepoRepo represents a class which contains AzurerepoRepo information . 
+ * AzurerepoRepo represents a class which contains AzurerepoRepo information .
  * 
  * @see ProcessorItem
  */

@@ -1,5 +1,28 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -26,28 +49,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -204,8 +205,7 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 				Map<String, Map<String, List<JiraIssue>>> priorityWiseList = getPriorityWiseIssueList(
 						allCompletedDefects, createDuringIteration);
 				List<Integer> overAllRCAIssueCount = Arrays.asList(0);
-				LOGGER.info("DefectCountByPriorityServiceImpl -> priorityWiseList ->  : {}",
-						priorityWiseList);
+				LOGGER.info("DefectCountByPriorityServiceImpl -> priorityWiseList ->  : {}", priorityWiseList);
 				// filterDataList will consist of IterationKpiValue which will be set for all
 				// priorities
 				List<IterationKpiValue> filterDataList = new ArrayList<>();
@@ -251,10 +251,11 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY_PIE_CHART.getColumns());
 					kpiElement.setExcelData(excelData);
 					sortedFilterDataList.add(filterDataList.stream()
-							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(CREATED_DURING_ITERATION))
+							.filter(iterationKpiValue -> iterationKpiValue.getFilter1()
+									.equalsIgnoreCase(CREATED_DURING_ITERATION))
 							.findFirst().orElse(new IterationKpiValue()));
-					filterDataList.removeIf(
-							iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(CREATED_DURING_ITERATION));
+					filterDataList.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1()
+							.equalsIgnoreCase(CREATED_DURING_ITERATION));
 					sortListByKey(filterDataList);
 					sortedFilterDataList.addAll(filterDataList);
 					kpiElement.setTrendValueList(sortedFilterDataList);

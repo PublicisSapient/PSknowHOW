@@ -52,6 +52,7 @@ public class SprintFilter implements Serializable {
 		this.startDate = sprintStartDate;
 		this.endDate = sprintEndDate;
 	}
+
 	/**
 	 * 
 	 * @return id
@@ -59,6 +60,7 @@ public class SprintFilter implements Serializable {
 	public String getId() {
 		return id;
 	}
+
 	/**
 	 * 
 	 * @return name
@@ -66,6 +68,7 @@ public class SprintFilter implements Serializable {
 	public String getName() {
 		return name;
 	}
+
 	/**
 	 * 
 	 * @return startDate
@@ -73,6 +76,7 @@ public class SprintFilter implements Serializable {
 	public String getStartDate() {
 		return startDate;
 	}
+
 	/**
 	 * 
 	 * @return endDate

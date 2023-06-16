@@ -20,87 +20,85 @@ package com.publicissapient.kpidashboard.common.model.azureboards.updates;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "id",
-    "workItemId",
-    "rev",
-    "fields"
-})
+@JsonPropertyOrder({ "id", "workItemId", "rev", "fields" })
 public class Value {
 
-    @JsonProperty("id")
-    private Integer id;
-    @JsonProperty("workItemId")
-    private Integer workItemId;
-    @JsonProperty("rev")
-    private Integer rev;
-    @JsonProperty("fields")
-    private Fields fields;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+	@JsonProperty("id")
+	private Integer id;
+	@JsonProperty("workItemId")
+	private Integer workItemId;
+	@JsonProperty("rev")
+	private Integer rev;
+	@JsonProperty("fields")
+	private Fields fields;
+	@JsonIgnore
+	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("id")
-    public Integer getId() {
-        return id;
-    }
+	@JsonProperty("id")
+	public Integer getId() {
+		return id;
+	}
 
-    @JsonProperty("id")
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	@JsonProperty("id")
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    @JsonProperty("workItemId")
-    public Integer getWorkItemId() {
-        return workItemId;
-    }
+	@JsonProperty("workItemId")
+	public Integer getWorkItemId() {
+		return workItemId;
+	}
 
-    @JsonProperty("workItemId")
-    public void setWorkItemId(Integer workItemId) {
-        this.workItemId = workItemId;
-    }
+	@JsonProperty("workItemId")
+	public void setWorkItemId(Integer workItemId) {
+		this.workItemId = workItemId;
+	}
 
-    @JsonProperty("rev")
-    public Integer getRev() {
-        return rev;
-    }
+	@JsonProperty("rev")
+	public Integer getRev() {
+		return rev;
+	}
 
-    @JsonProperty("rev")
-    public void setRev(Integer rev) {
-        this.rev = rev;
-    }
-    
-    @JsonProperty("fields")
-    public Fields getFields() {
-        return fields;
-    }
+	@JsonProperty("rev")
+	public void setRev(Integer rev) {
+		this.rev = rev;
+	}
 
-    @JsonProperty("fields")
-    public void setFields(Fields fields) {
-        this.fields = fields;
-    }
+	@JsonProperty("fields")
+	public Fields getFields() {
+		return fields;
+	}
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+	@JsonProperty("fields")
+	public void setFields(Fields fields) {
+		this.fields = fields;
+	}
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+	@JsonAnyGetter
+	public Map<String, Object> getAdditionalProperties() {
+		return this.additionalProperties;
+	}
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("id", id).append("workItemId", workItemId).append("rev", rev).append("fields", fields).append("additionalProperties", additionalProperties).toString();
-    }
+	@JsonAnySetter
+	public void setAdditionalProperty(String name, Object value) {
+		this.additionalProperties.put(name, value);
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append("id", id).append("workItemId", workItemId).append("rev", rev)
+				.append("fields", fields).append("additionalProperties", additionalProperties).toString();
+	}
 
 }

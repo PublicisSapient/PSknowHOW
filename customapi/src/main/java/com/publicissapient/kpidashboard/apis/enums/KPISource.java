@@ -85,11 +85,10 @@ public enum KPISource {
 	 * TeamcityKanban kpi source
 	 */
 	TEAMCITYKANBAN("TEAMCITYKANBAN"),
-/**
+	/**
 	 * QADEFECTDENSITY kpi source.
 	 */
 	QADEFECTDENSITY("QADEFECTDENSITY"),
-
 
 	/**
 	 * Invalid.
@@ -102,15 +101,15 @@ public enum KPISource {
 		this.value = value;
 	}
 
+	public static KPISource getKPISource(String value) {
+		return Arrays.asList(KPISource.values()).stream().filter(kpi -> kpi.getValue().equalsIgnoreCase(value))
+				.findAny().orElse(INVALID);
+	}
+
 	/**
 	 * @return the value
 	 */
 	public String getValue() {
 		return value;
-	}
-
-	public static KPISource getKPISource(String value) {
-		return Arrays.asList(KPISource.values()).stream().filter(kpi -> kpi.getValue().equalsIgnoreCase(value))
-				.findAny().orElse(INVALID);
 	}
 }

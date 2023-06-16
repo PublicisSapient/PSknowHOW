@@ -33,6 +33,7 @@ public class PushDataValidation {
 
 	/**
 	 * check the Blank
+	 * 
 	 * @param parameter
 	 * @param literal
 	 * @param errors
@@ -46,6 +47,7 @@ public class PushDataValidation {
 
 	/**
 	 * check if input is numeric
+	 * 
 	 * @param parameter
 	 * @param number
 	 * @param errors
@@ -60,6 +62,7 @@ public class PushDataValidation {
 
 	/**
 	 * check if status is among Build Statuses
+	 * 
 	 * @param parameter
 	 * @param status
 	 * @param errors
@@ -77,6 +80,7 @@ public class PushDataValidation {
 
 	/**
 	 * check if status among Deployments Statuses
+	 * 
 	 * @param parameter
 	 * @param status
 	 * @param errors

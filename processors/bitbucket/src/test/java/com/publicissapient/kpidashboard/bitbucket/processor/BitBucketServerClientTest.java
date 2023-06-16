@@ -46,51 +46,51 @@ import com.publicissapient.kpidashboard.bitbucket.model.BitbucketRepo;
 import com.publicissapient.kpidashboard.bitbucket.processor.service.impl.BitBucketServerClient;
 import com.publicissapient.kpidashboard.bitbucket.processor.service.impl.BitBucketServerURIBuilder;
 import com.publicissapient.kpidashboard.bitbucket.util.BitbucketRestOperations;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BitBucketServerClientTest {
-	
+
 	@Mock
 	private BitBucketConfig config;
-	
+
 	@Mock
 	private RestOperations restTemplate;
-	
+
 	@Mock
 	private BitbucketRestOperations bitbucketRestOperations;
-	
+
 	@InjectMocks
 	private BitBucketServerClient stashClient;
 
 	@Mock
 	private AesEncryptionService aesEncryptionService;
-	
+
 	@BeforeEach
-	public void init() throws Exception{
+	public void init() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		when(bitbucketRestOperations.getTypeInstance()).thenReturn(restTemplate);
-		
+
 		config = new BitBucketConfig();
-    	config.setApi("/rest/api/1.0/");
-    	config.setPageSize(2);
-    	
+		config.setApi("/rest/api/1.0/");
+		config.setPageSize(2);
+
 		stashClient = new BitBucketServerClient(config, bitbucketRestOperations, aesEncryptionService);
 	}
-	
+
 	@Test
-	public void testFetchCommits() throws Exception{
+	public void testFetchCommits() throws Exception {
 		String serverResponse = getServerResponse("/bitbucket-server/stashresponse.json");
-		
+
 		BitbucketRepo repo = new BitbucketRepo();
 		repo.setRepoUrl("http://localhost:9999/scm/testproject/test.git");
 		repo.setBranch("release/core-r4.4");
 		repo.getToolDetailsMap().put("bitbucketApi", "/rest/api/1.0/");
-		ProcessorToolConnection connectionDetail=new ProcessorToolConnection();
-		ProjectBasicConfig projectBasicConfig =new ProjectBasicConfig();
+		ProcessorToolConnection connectionDetail = new ProcessorToolConnection();
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setSaveAssigneeDetails(true);
 		projectBasicConfig.setId(new ObjectId("5e2ac020e4b098db0edf5145"));
 		connectionDetail.setBranch("release/core-r4.4");
@@ -98,20 +98,22 @@ public class BitBucketServerClientTest {
 		connectionDetail.setUrl("http://localhost:9999/scm/testproject/test.git");
 		connectionDetail.setApiEndPoint("/rest/api/1.0/");
 		connectionDetail.setUsername("User");
-		String restUri = new BitBucketServerURIBuilder(repo, config,connectionDetail).build();
+		String restUri = new BitBucketServerURIBuilder(repo, config, connectionDetail).build();
 		when(stashClient.decryptPassword(connectionDetail.getPassword())).thenReturn("test");
-		
-		when(restTemplate.exchange(eq(URLDecoder.decode(restUri,"UTF-8")), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class))).thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
-		List<CommitDetails> commits = stashClient.fetchAllCommits(repo, true,connectionDetail, projectBasicConfig);
+
+		when(restTemplate.exchange(eq(URLDecoder.decode(restUri, "UTF-8")), eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
+						.thenReturn(new ResponseEntity<String>(serverResponse, HttpStatus.OK));
+		List<CommitDetails> commits = stashClient.fetchAllCommits(repo, true, connectionDetail, projectBasicConfig);
 		Assert.assertEquals(2, commits.size());
-		
+
 		CommitDetails bitBucketCommit = commits.get(0);
 		Assert.assertEquals("Test User One", bitBucketCommit.getAuthor());
 		Assert.assertEquals("Commit message one", bitBucketCommit.getCommitLog());
 	}
 
-	private String getServerResponse(String resource) throws Exception{
+	private String getServerResponse(String resource) throws Exception {
 		return IOUtils.toString(this.getClass().getResourceAsStream(resource));
 	}
-	
+
 }

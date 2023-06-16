@@ -58,13 +58,12 @@ public class JenkinsServiceR {
 
 	@Autowired
 	private CacheService cacheService;
-	
+
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
 	@SuppressWarnings({ "unchecked" })
-	public List<KpiElement> process(KpiRequest kpiRequest)
-			throws EntityNotFoundException {
+	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("[JENKINS][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
 				kpiRequest.getKpiList());
@@ -75,11 +74,13 @@ public class JenkinsServiceR {
 		try {
 
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(),kpiRequest.getLabel(),false);
+			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
+					false);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
-			}	
-			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest, groupName);
+			}
+			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
+					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
 
@@ -90,17 +91,17 @@ public class JenkinsServiceR {
 
 				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JENKINS.name(),
 						groupId, kpiRequest.getSprintIncluded());
-				if (!kpiRequest.getRequestTrackerId().toLowerCase()
-						.contains(KPISource.EXCEL.name().toLowerCase()) && null != cachedData) {
+				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+						&& null != cachedData) {
 					log.info("[JENKINS][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
 							kpiRequest.getIds());
 					return (List<KpiElement>) cachedData;
 				}
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-						filteredAccountDataList, null,filterHelperService.getFirstHierarachyLevel(), filterHelperService.getHierarchyIdLevelMap(false)
-						.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT,0));
-
+						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
+						filterHelperService.getHierarchyIdLevelMap(false)
+								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
 
 				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 
@@ -124,7 +125,7 @@ public class JenkinsServiceR {
 
 		return responseList;
 	}
-	
+
 	/**
 	 * @param kpiRequest
 	 * @param filteredAccountDataList
@@ -135,7 +136,7 @@ public class JenkinsServiceR {
 
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
 		if (!authorizedProjectsService.ifSuperAdminUser()) {
-				filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
+			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
 		}
 
 		return filteredAccountDataList;
@@ -191,7 +192,8 @@ public class JenkinsServiceR {
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] projectKeyCache) {
-		Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(false).get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+		Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(false)
+				.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 
 		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& projectLevel >= kpiRequest.getLevel()) {

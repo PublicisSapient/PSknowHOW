@@ -27,7 +27,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 
-
 /**
  * The Class BitbucketRestOperations.
  */
@@ -40,14 +39,11 @@ public class BitbucketRestOperations implements RestOperationsFactory<RestOperat
 	 * @return the rest operations
 	 */
 	@Override
-    public RestOperations getTypeInstance() {
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .disableAutomaticRetries()
-                .build();
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        requestFactory.setConnectTimeout(20_000);
-        requestFactory.setReadTimeout(20_000);
-        return new RestTemplate(requestFactory);
-    }
+	public RestOperations getTypeInstance() {
+		CloseableHttpClient httpClient = HttpClients.custom().disableAutomaticRetries().build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		requestFactory.setConnectTimeout(20_000);
+		requestFactory.setReadTimeout(20_000);
+		return new RestTemplate(requestFactory);
+	}
 }
-

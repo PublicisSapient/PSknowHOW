@@ -59,43 +59,35 @@ import com.publicissapient.kpidashboard.common.service.HierarchyLevelSuggestions
  * @author narsingh9
  *
  */
-@RunWith(MockitoJUnitRunner.class)	
+@RunWith(MockitoJUnitRunner.class)
 public class ProjectBasicConfigControllerTest {
 
-	private MockMvc mockMvc;
-
-	@InjectMocks
-	private ProjectBasicConfigController projectConfigController;
-
-	@Mock
-	private ProjectBasicConfigService projectConfigService;
-
-	@Mock
-	private HierarchyLevelSuggestionsServiceImpl hierarchyLevelSuggestionsService;
-
-	@Mock
-	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
-
-	@Mock
-	private ContextAwarePolicyEnforcement policy;
-	
-	@Mock
-	private ProjectBasicConfigRepository configRepo;
-	
 	@Mock
 	UserInfoService userInfoService;
-	
+	private MockMvc mockMvc;
+	@InjectMocks
+	private ProjectBasicConfigController projectConfigController;
+	@Mock
+	private ProjectBasicConfigService projectConfigService;
+	@Mock
+	private HierarchyLevelSuggestionsServiceImpl hierarchyLevelSuggestionsService;
+	@Mock
+	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
+	@Mock
+	private ContextAwarePolicyEnforcement policy;
+	@Mock
+	private ProjectBasicConfigRepository configRepo;
 	@Mock
 	private SecurityContext securityContext;
-	
+
 	@Mock
 	private Authentication authentication;
 
 	@Mock
 	private AuthenticationService authenticationService;
-	
+
 	private ProjectBasicConfigDTO basicConfigDTO;
-	
+
 	private ProjectBasicConfig projectBasicConfig;
 
 	@Mock
@@ -105,7 +97,6 @@ public class ProjectBasicConfigControllerTest {
 
 	private HierarchyLevelSuggestion hierarchyLevel1Suggestion = new HierarchyLevelSuggestion();
 
-	
 	/**
 	 * method includes pre processes for test cases
 	 */
@@ -113,9 +104,10 @@ public class ProjectBasicConfigControllerTest {
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(projectConfigController).build();
 
-		projectBasicConfig  = ProjectBasicConfigDataFactory.newInstance("/json/basicConfig/project_basic_config_request.json").getProjectBasicConfigs().get(0);
+		projectBasicConfig = ProjectBasicConfigDataFactory
+				.newInstance("/json/basicConfig/project_basic_config_request.json").getProjectBasicConfigs().get(0);
 		basicConfigDTO = modelMapper.map(projectBasicConfig, ProjectBasicConfigDTO.class);
-		
+
 		ProjectsForAccessRequest par = new ProjectsForAccessRequest();
 		par.setProjectId("5cd16683eef5c3167c799227");
 		par.setProjectName("dummy project");
@@ -134,19 +126,21 @@ public class ProjectBasicConfigControllerTest {
 	public void after() {
 		mockMvc = null;
 	}
-	
+
 	/**
 	 * method to test add functionality
 	 *
 	 * add basic config
 	 *
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	@Test
 	public void testAddBasicConfig() throws Exception {
 		SecurityContextHolder.setContext(securityContext);
 		when(authenticationService.getLoggedInUser()).thenReturn("standarduser");
-		when(hierarchyLevelSuggestionsService.addIfNotPresent("hierarchyLevel1Id" ,"hierarchyLevel1Value1")).thenReturn(hierarchyLevel1Suggestion);
+		when(hierarchyLevelSuggestionsService.addIfNotPresent("hierarchyLevel1Id", "hierarchyLevel1Value1"))
+				.thenReturn(hierarchyLevel1Suggestion);
 		this.mockMvc.perform(
 				MockMvcRequestBuilders.post("/basicconfigs").content(TestUtil.convertObjectToJsonBytes(basicConfigDTO))
 						.contentType(MediaType.APPLICATION_JSON_VALUE))

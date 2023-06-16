@@ -62,15 +62,14 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 @RunWith(MockitoJUnitRunner.class)
 public class ReleaseDefectCountByStatusServiceImplTest {
 
-	@InjectMocks
-	private ReleaseDefectCountByStatusServiceImpl defectCountByStatusService;
 	@Mock
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
 	JiraServiceR jiraService;
-
+	@InjectMocks
+	private ReleaseDefectCountByStatusServiceImpl defectCountByStatusService;
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private List<JiraIssue> bugList = new ArrayList<>();

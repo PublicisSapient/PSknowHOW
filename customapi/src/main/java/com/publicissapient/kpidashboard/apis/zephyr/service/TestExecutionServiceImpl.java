@@ -224,8 +224,8 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 		trendValueList.add(dataCount);
 
 		if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			KPIExcelUtility.populateTestExcecutionExcelData(node.getSprintFilter().getName(), executionDetail,null, executionPerc, passedPerc,
-					excelData);
+			KPIExcelUtility.populateTestExcecutionExcelData(node.getSprintFilter().getName(), executionDetail, null,
+					executionPerc, passedPerc, excelData);
 		}
 
 	}

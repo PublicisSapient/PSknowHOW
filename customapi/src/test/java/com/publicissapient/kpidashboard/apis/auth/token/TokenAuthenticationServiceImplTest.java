@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.auth.token;
 
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -39,8 +38,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +55,8 @@ import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationFixture;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
@@ -73,59 +72,43 @@ public class TokenAuthenticationServiceImplTest {
 	private static final String USERNAME = "username";
 
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
-
-	@InjectMocks
-	private TokenAuthenticationServiceImpl service;
-
-	@Mock
-	private AuthProperties tokenAuthProperties;
-
-	@Mock
-	private HttpServletResponse response;
-
-	@Mock
-	private HttpServletRequest request;
-
 	@Mock
 	UserTokenReopository userTokenReopository;
-
 	@Mock
 	Authentication authentication;
-
 	@Mock
 	SecurityContext securityContext;
-
-	@Mock
-	private UserInfoService userInfoService;
-
-	@Mock
-	private ProjectAccessManager projectAccessManager;
-
-	@Mock
-	private AuthenticationService authenticationService;
-
-	@Mock
-	private CookieUtil cookieUtil;
-
-	@Mock
-	private Cookie cookie;
-
-	@Mock
-	private CustomApiConfig customApiConfig;
-
 	List<AccessNode> listAccessNode = new ArrayList<>();
-
-
 	AccessNode accessNodes;
 	AccessItem accessItem;
 	List<AccessItem> accessItems = new ArrayList<>();
+	@InjectMocks
+	private TokenAuthenticationServiceImpl service;
+	@Mock
+	private AuthProperties tokenAuthProperties;
+	@Mock
+	private HttpServletResponse response;
+	@Mock
+	private HttpServletRequest request;
+	@Mock
+	private UserInfoService userInfoService;
+	@Mock
+	private ProjectAccessManager projectAccessManager;
+	@Mock
+	private AuthenticationService authenticationService;
+	@Mock
+	private CookieUtil cookieUtil;
+	@Mock
+	private Cookie cookie;
+	@Mock
+	private CustomApiConfig customApiConfig;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		SecurityContextHolder.clearContext();
-		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class)))
-				.thenReturn(new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
+		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
+				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
 
 	}
 
@@ -212,7 +195,7 @@ public class TokenAuthenticationServiceImplTest {
 	}
 
 	@Test
-	public void invalidateAuthToken(){
+	public void invalidateAuthToken() {
 
 		List<String> users = Arrays.asList("Test");
 		doNothing().when(userTokenReopository).deleteByUserNameIn(users);
