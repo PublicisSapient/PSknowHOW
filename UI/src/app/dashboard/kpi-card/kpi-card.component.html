@@ -94,9 +94,9 @@
         <!--place for chart to be rendered-->
         <ng-content></ng-content>
     </div>
-    <div class="kpi-card-footer d-flex justify-content-between">
-        <div class="p-d-flex p-align-center">
-            <!-- <object class="kpi-card-type-icon" data="../../../assets/img/Jira.svg"></object> -->
+    <div class="kpi-card-footer p-d-flex justify-content-between">
+        <div class="kpi-card-icons">
+            <img src="../../../assets/img/setting-icon.svg" alt="KPI Setting" class="ico-active p-mr-1 kpi-download-icon" (click)="displayConfigModel = true" pTooltip="Setting" tooltipPosition="top" tooltipEvent="hover" [escape]="false"/>
         </div>
         <div class="kpi-card-icons" *ngIf="showExport">
             <img src="../../../assets/img/download.svg" alt="Download" class="ico-active p-mr-1 kpi-download-icon" (click)="exportToExcel()" pTooltip="Explore" tooltipPosition="top" tooltipEvent="hover" [escape]="false"/>
@@ -147,3 +147,10 @@
        
     </div>
  </p-overlayPanel>
+
+ <p-dialog [(visible)]="displayConfigModel" [modal]="true" [draggable]="true" [resizable]="true">
+    <div class="p-mb-3 overlay-heading">
+        {{kpiData?.kpiName}}
+    </div>
+    <app-field-mapping-form></app-field-mapping-form>
+ </p-dialog>

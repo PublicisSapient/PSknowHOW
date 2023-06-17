@@ -180,6 +180,10 @@
     justify-content: center;
 }
 
-
+:host::ng-deep .p-dialog {
+    min-width: 90vw !important;
+    min-height: 70vh !important;
+    height: auto !important;
+}
 
 

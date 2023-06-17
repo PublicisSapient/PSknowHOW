@@ -28,6 +28,7 @@ import { NamePipePipe } from './name-pipe.pipe';
 import { PageLoaderComponent } from './page-loader/page-loader.component';
 import { FooterComponent } from './footer/footer.component';
 import { KpiFilterComponent } from './kpi-filter/kpi-filter.component';
+import { FieldMappingFormComponent } from './field-mapping-form/field-mapping-form.component';
 
 @NgModule({
   imports: [
@@ -45,14 +46,16 @@ import { KpiFilterComponent } from './kpi-filter/kpi-filter.component';
     PageLoaderComponent,
     CalendarModule,
     FooterComponent,
-    KpiFilterComponent
+    KpiFilterComponent,
+    FieldMappingFormComponent
   ],
   declarations: [
     ProjectFilterComponent,
     NamePipePipe,
     PageLoaderComponent,
     FooterComponent,
-    KpiFilterComponent
+    KpiFilterComponent,
+    FieldMappingFormComponent
   ]
 })
 export class SharedModuleModule { }

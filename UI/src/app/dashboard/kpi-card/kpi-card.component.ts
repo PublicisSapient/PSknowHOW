@@ -43,7 +43,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
  ];
  sprintDetailsList : Array<any>;
  colorCssClassArray = ['sprint-hover-project1','sprint-hover-project2','sprint-hover-project3','sprint-hover-project4','sprint-hover-project5','sprint-hover-project6'];
-
+ displayConfigModel = false;
 
   constructor(private service: SharedService) {
   }
