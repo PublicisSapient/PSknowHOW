@@ -182,8 +182,9 @@ public final class CommonConstant {
 
 	public static final String RELEASED = "Released";
 	public static final String UNRELEASED = "Unreleased";
+    public static final String CACHE_FIELD_MAPPING_STUCTURE = "cache_field_mapping_stucture";
 
-	private CommonConstant() {
+    private CommonConstant() {
 
 	}
 }

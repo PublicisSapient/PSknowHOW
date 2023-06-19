@@ -110,6 +110,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIntakeToDorIssueType;
 
 	private List<String> jiraStoryIdentification;
+	private List<String> jiraStoryIdentification_IC;
 
 	private String jiraLiveStatus;
 

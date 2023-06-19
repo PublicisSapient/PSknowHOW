@@ -419,7 +419,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					"jiraStatusForInProgress", "jiraDevDoneStatus", "jiraDefectSeepageIssueType",
 					"jiraQADefectDensityIssueType", "jiraDefectCountlIssueType", "jiraSprintVelocityIssueType",
 					"jiraDefectRemovalIssueType", "jiraDefectRejectionlIssueType", "jiraDefectInjectionIssueType",
-					"jiraTestAutomationIssueType", "jiraIntakeToDorIssueType", "jiraStoryIdentification",
+					"jiraTestAutomationIssueType", "jiraIntakeToDorIssueType", "jiraStoryIdentification","jiraStoryIdentification_IC",
 					"jiraFTPRStoryIdentification", "jiraSprintCapacityIssueType", "jiraIssueEpicType", "defectPriority",
 					"excludeRCAFromFTPR", "workingHoursDayCPT", "jiraDevDueDateCustomField", EPIC_USER_BUSINESS_VALUE,
 					EPIC_WSJF, "jiraDor", "resolutionTypeForRejection", "jiraDefectRejectionStatus",

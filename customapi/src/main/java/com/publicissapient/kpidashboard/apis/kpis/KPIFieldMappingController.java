@@ -2,9 +2,7 @@ package com.publicissapient.kpidashboard.apis.kpis;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.model.KPIFieldMappingResponse;
@@ -38,5 +36,10 @@ public class KPIFieldMappingController {
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public KPIFieldMappingResponse fetchKpiFieldMappingData() {
 		return kPIHelperService.fetchKpiFieldMappingList();
+	}
+
+	@RequestMapping(value = "/{kpiId} ", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public KPIFieldMappingResponse fetchFieldMappingStructureByKpiFieldMappingData(@PathVariable String kpiId) {
+		return kPIHelperService.fetchFieldMappingStructureByKpiFieldMappingData(kpiId);
 	}
 }

@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import com.publicissapient.kpidashboard.common.model.application.*;
+import com.publicissapient.kpidashboard.common.repository.application.*;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,21 +37,8 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelSuggestion;
-import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
-import com.publicissapient.kpidashboard.common.model.application.MaturityLevel;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
-import com.publicissapient.kpidashboard.common.repository.application.KpiFieldMappingRepository;
-import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
 
@@ -84,6 +73,9 @@ public class ConfigHelperService {
 	private ProjectToolConfigRepository projectToolConfigRepository;
 	@Autowired
 	private UserBoardConfigRepository userBoardConfigRepository;
+
+	@Autowired
+	private FieldMappingStructureRepository fieldMappingStructureRepository;
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfMap = new HashMap<>();
 
@@ -300,6 +292,13 @@ public class ConfigHelperService {
 	public Object loadKpiFieldMapping() {
 		LOGGER.info("loading KPI FieldMapping data");
 		return kpiFieldMappingRepository.findAll();
+	}
+
+	@PostConstruct
+	@Cacheable(CommonConstant.CACHE_FIELD_MAPPING_STUCTURE)
+	public Object loadFieldMappingStructure() {
+		LOGGER.info("loading FieldMappingStucture data");
+		return fieldMappingStructureRepository.findAll();
 	}
 
 	@PostConstruct

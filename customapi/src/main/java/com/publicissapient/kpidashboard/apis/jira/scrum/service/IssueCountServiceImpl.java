@@ -188,8 +188,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			List<String> jiraStoryIdentification = new ArrayList<>();
-			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
-				jiraStoryIdentification = fieldMapping.getJiraStoryIdentification().stream().map(String::toLowerCase)
+			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification_IC()).isPresent()) {
+				jiraStoryIdentification = fieldMapping.getJiraStoryIdentification_IC().stream().map(String::toLowerCase)
 						.collect(Collectors.toList());
 			}
 			projectWiseJiraIdentification.put(basicProjectConfigId.toString(), jiraStoryIdentification);
