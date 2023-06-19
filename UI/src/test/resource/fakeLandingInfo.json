@@ -10,12 +10,12 @@
         {
             "name": "Releases",
             "order": 2,
-            "content": "<div><ul class='p-pl-3'><li>Last release (v6.0.0) was shipped on 05-Dec-2022</li><li>Upcoming release (v6.1.0) is planned for 31-Jan-23</li><li>For detailed release notes, <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/12746760/Release+v6.0.0' target='_blank'>Click here</a></li></ul></div>"
+            "content": "<div><ul class='p-pl-3'><li>Release notes of v7.0.0 are available <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/12189906/PSKnowHOW+Releases' target='_blank'>here</a></li><li>Upcoming release (v8.0.0) is planned for 30-Sep-23</li></ul></div>"
         },
         {
             "name": "Roadmap",
             "order": 3,
-            "content": "<div><p class='p-mb-0'>Every 3 months, we build new features to enhance capabilities and improve experience for our users.</p><ul class='p-pl-3'><li>The planned features for Jan to Mar 20223  can be seen <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/12746753/Features+Jan-Mar+2023' target='_blank'>here</a></li><li>Next 6 months roadmap is available <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/3309626/PSknowHOW+-+Roadmap' target='_blank'>here</a></li></ul></div>"
+            "content": "<div><p class='p-mb-0'>Next 6 months of KnowHOW roadmap is available <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/3309626/PSknowHOW+-+Roadmap' target='_blank'>here</a>.</p></div>"
         }
         
 
