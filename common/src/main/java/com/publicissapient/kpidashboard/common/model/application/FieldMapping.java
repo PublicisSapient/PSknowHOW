@@ -90,14 +90,19 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraTestAutomationIssueType;
 	// value of the automated test case Eg. Yes, Cannot Automate, No
 
-	private List<String> jiraSprintVelocityIssueType;
+	private List<String> jiraSprintVelocityIssueType_SV;
+	private List<String> jiraSprintVelocityIssueType_BR;
 
 	private List<String> jiraSprintCapacityIssueType;
 
 	private List<String> jiraDefectRejectionlIssueType;
 	private List<String> jiraDefectCountlIssueType;
 
-	private List<String> jiraIssueDeliverdStatus;
+	private List<String> jiraIssueDeliverdStatus_BR;
+	private List<String> jiraIssueDeliverdStatus_SV;
+	private List<String> jiraIssueDeliverdStatus_AVR;
+	private List<String> jiraIssueDeliverdStatus_CVR;
+	private List<String> jiraIssueDeliverdStatus_FTPR;
 	private String readyForDevelopmentStatus;
 
 	private String jiraDor;

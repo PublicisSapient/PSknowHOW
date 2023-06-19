@@ -280,7 +280,7 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 		boolean devStatusFound = false;
 		boolean closedStatusFound = false;
 		List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
-				.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus());
+				.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus_AVR());
 
 		List<String> storyDevelopmentStatuses = (List<String>) CollectionUtils
 				.emptyIfNull(fieldMapping.getJiraStatusForDevelopment());
@@ -340,7 +340,7 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(jiraIssueTypes));
 				mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
-						fieldMapping.getJiraIssueDeliverdStatus());
+						fieldMapping.getJiraIssueDeliverdStatus_AVR());
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 			}
 

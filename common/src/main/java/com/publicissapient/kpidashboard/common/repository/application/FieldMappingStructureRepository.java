@@ -29,6 +29,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMappingStr
 @Repository
 public interface FieldMappingStructureRepository extends MongoRepository<FieldMappingStructure, ObjectId> {
 
-	List<FieldMappingStructure> findByFieldNameIn(List<String> projectId);
+	List<FieldMappingStructure> findByFieldNameIn(List<String> fieldName);
 
 }

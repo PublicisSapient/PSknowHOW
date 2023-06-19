@@ -13,7 +13,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'First Time Pass Rate',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus','jiraDefectRejectionStatus','jiraIterationCompletionStatusCustomField','jiraStatusForQa','jiraStatusForDevelopment','jiraFtprRejectStatus'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] ,'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField','jiraFTPRStoryIdentification']}
+        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus_FTPR','jiraDefectRejectionStatus','jiraIterationCompletionStatusCustomField','jiraStatusForQa','jiraStatusForDevelopment','jiraFtprRejectStatus'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] ,'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField','jiraFTPRStoryIdentification']}
         },
 
       {
@@ -63,7 +63,7 @@ db.getCollection('kpi_fieldmapping').insert(
         type: ['Scrum'],
         kpiName: 'Created vs Resolved defects',
 		kpiSource:'Jira',
-        fieldNames : {'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
+        fieldNames : {'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField','jiraIssueDeliverdStatus_CVR'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
       },
       {
         kpiId: 'kpi42',
@@ -133,7 +133,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Sprint Velocity',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] ,'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField']}
+        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType_SV','jiraIterationCompletionTypeCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] ,'Workflow Status Mapping' : ['jiraIssueDeliverdStatus_SV','jiraIterationCompletionStatusCustomField']}
       },
       {
         kpiId: 'kpi46',
@@ -147,7 +147,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Average Resolution Time',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus','jiraStatusForDevelopment'], 'Issue Types Mapping' : ['jiraIssueTypeNames'], 'Defects Mapping' : ['jiradefecttype'] }
+        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus_AVR','jiraStatusForDevelopment'], 'Issue Types Mapping' : ['jiraIssueTypeNames'], 'Defects Mapping' : ['jiradefecttype'] }
       },
       {
         kpiId: 'kpi84',
@@ -203,7 +203,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Sprint Predictability',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType','jiraIterationCompletionTypeCustomField'], 'Workflow Status Mapping' : ['jiraIssueDeliverdStatus','jiraIterationCompletionStatusCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
+        fieldNames : {'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'], 'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
       },
       {
         kpiId: 'kpi55',
@@ -509,7 +509,7 @@ db.getCollection('kpi_fieldmapping').insert(
               kpiName: 'Backlog Readiness Efficiency',
       		kpiSource: 'Jira',
               type: ['Other'],
-              fieldNames : {'Workflow Status Mapping' : ['readyForDevelopmentStatus'] }
+              fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueType_BR'],'Workflow Status Mapping' : ['readyForDevelopmentStatus','jiraIssueDeliverdStatus_BR'] }
             },
             {
              kpiId: 'Kpi148',
@@ -536,6 +536,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Count KPI Issue type",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "Value to identify kind of stories which are used for identification for story count.",
       "kpiImpacted": "Issue Count Kpi"
@@ -546,6 +547,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
+    "section": "Defect Mapping",
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as or any other value. So user need to provide value with which defect is identified in JIRA/AZURE",
       "kpiImpacted": "Jira/Azure Collector and KPIs"
@@ -556,6 +558,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
     "tooltip": {
       "kpiImpacted": "Iteration Dashboard and SPEED KPIs - Sprint Velocity, Commitment Reliability, Issue Count, Sprint Predictability"
     }
@@ -565,9 +568,80 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
     "fieldType": "chips",
     "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
     "tooltip": {
       "kpiImpacted": "Iteration Dashboard and SPEED KPIs - Sprint Velocity, Commitment Reliability, Issue Count, Sprint Predictability"
     }
+  },
+  {
+    "fieldName": "jiraSprintVelocityIssueType_SV",
+    "fieldLabel": "Sprint Velocity - Issue Types with Linked Defect",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+    "definition":"All issue types with which defect is linked. <br>  Example: Story, Change Request .<hr>"
+    }
+  },
+  {
+      "fieldName": "jiraSprintVelocityIssueType_BR",
+      "fieldLabel": "Sprint Velocity - Issue Types with Linked Defect",
+      "fieldType": "chips",
+      "fieldCategory": "Issue_Type",
+      "section": "Issue Types Mapping",
+      "tooltip": {
+      "definition":"All issue types with which defect is linked. <br>  Example: Story, Change Request .<hr>"
+      }
+    },
+ {
+    "fieldName": "jiraIssueDeliverdStatus_SV",
+    "fieldLabel": "Issue Delivered Status",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+    "definition":"Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
+    }
+  },
+ {
+    "fieldName": "jiraIssueDeliverdStatus_BR",
+    "fieldLabel": "Issue Delivered Status",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+    "definition":"Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
+    }
+  },
+ {
+    "fieldName": "jiraIssueDeliverdStatus_CVR",
+    "fieldLabel": "Issue Delivered Status",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+    "definition":"Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
+    }
+  },
+ {
+    "fieldName": "jiraIssueDeliverdStatus_FTPR",
+    "fieldLabel": "Issue Delivered Status",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+    "definition":"Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
+    }
+  },
+ {
+    "fieldName": "jiraIssueDeliverdStatus_AVR",
+    "fieldLabel": "Issue Delivered Status",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+    "definition":"Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
+    }
   }
 ]
-                                                   );
+);

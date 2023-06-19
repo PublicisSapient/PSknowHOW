@@ -133,7 +133,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		Map<String, Object> sprintVelocityStoryMap = new HashMap<>();
 		sprintVelocityStoryMap.put("sprintVelocityKey", storyList);
 
-		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any())).thenReturn(sprintVelocityStoryMap);
+		when(kpiHelperService.fetchBackLogReadinessFromdb(any(), any())).thenReturn(sprintVelocityStoryMap);
 
 		when(issueBacklogCustomHistoryRepository.findByStoryIDIn(any())).thenReturn(jiraIssueCustomHistories);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
