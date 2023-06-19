@@ -4,7 +4,7 @@
             <div class="kpi-card-title-container">
                 <h3 *ngIf="kpiData">{{kpiData?.kpiName}}
                     <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
-                        (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(true)" [style]="{'position': 'relative'}">
+                        (mouseover)="showTooltip(true)" (mouseleave)="showTooltip(false)" [style]="{'position': 'relative'}">
                         <app-tooltip *ngIf="isTooltip" [data]="kpiData?.kpiDetail?.kpiInfo"
                             (mouseleave)="showTooltip(false)" [showChartView]="showChartView"></app-tooltip>
                     </span>
