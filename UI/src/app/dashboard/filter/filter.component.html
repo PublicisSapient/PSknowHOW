@@ -24,17 +24,16 @@
                      </div>
                      <!-- Trend line value -->
                      <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
-                        <ng-select #selector
-                           [items]="trendLineValueList"
+                        <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            [multiple]="true"
+                           [items]="trendLineValueList"
                            bindLabel="nodeName"
                            bindValue="nodeId"
+                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 6)'"
                            [closeOnSelect]="false"
                            (remove)="handleRemove()"
-                           [maxSelectedItems]="3"
-                           class="trend-line-value p-pb-0"
-                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 3)'"
-                           formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" >
+                           [maxSelectedItems]="6"
+                           class="trend-line-value p-pb-0">
                            <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                               <div class="ng-value" *ngFor="let item of items | slice:0:2">
                                     <span class="ng-value-label">{{item.nodeName}}</span>
