@@ -666,7 +666,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
             .style('opacity', 1)
             .style('padding', '20px 10px')
             .style('max-width', 'unset')
-            .style('width', '620px');
+            .style('width', '400px');
 
           const htmlString = self.elem.querySelector('#svgLegend').innerHTML;
 
