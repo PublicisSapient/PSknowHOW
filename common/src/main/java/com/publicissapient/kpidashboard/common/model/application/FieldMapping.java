@@ -105,9 +105,9 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueDeliverdStatus_FTPR;
 	private String readyForDevelopmentStatus;
 
-	private String jiraDor;
+	private String jiraDorLT;
 
-	private List<String> jiraIntakeToDorIssueType;
+	private List<String> jiraIntakeToDorIssueTypeLT;
 
 	private List<String> jiraStoryIdentification;
 	private List<String> jiraStoryIdentification_IC;

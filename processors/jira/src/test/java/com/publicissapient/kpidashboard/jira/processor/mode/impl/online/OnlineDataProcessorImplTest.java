@@ -1078,7 +1078,7 @@ public class OnlineDataProcessorImplTest {
 		fieldMapping.setJiraTestAutomationIssueType(jiraType);
 		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
 		fieldMapping.setJiraDefectCountlIssueType(jiraType);
-		fieldMapping.setJiraIntakeToDorIssueType(jiraType);
+		fieldMapping.setJiraIntakeToDorIssueTypeLT(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
 
 		fieldMapping.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
@@ -1119,7 +1119,7 @@ public class OnlineDataProcessorImplTest {
 		jiraType.add("Closed");
 		fieldMapping.setJiraIssueDeliverdStatus(jiraType);
 
-		fieldMapping.setJiraDor("In Progress");
+		fieldMapping.setJiraDorLT("In Progress");
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 

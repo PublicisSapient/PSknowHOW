@@ -338,7 +338,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraDefectRejectionlIssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraDefectInjectionIssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraTestAutomationIssueType(Arrays.asList("Story"));
-		fieldMapping.setJiraIntakeToDorIssueType(Arrays.asList("Story", "Defect"));
+		fieldMapping.setJiraIntakeToDorIssueTypeLT(Arrays.asList("Story", "Defect"));
 		fieldMapping.setJiraTechDebtIssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraStoryIdentification(Arrays.asList("Story"));
 		fieldMapping.setJiraSprintCapacityIssueType(Arrays.asList("Story"));
@@ -346,7 +346,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraDefectCreatedStatus("Open");
 		fieldMapping.setStoryFirstStatus("Open");
 		fieldMapping.setJiraLiveStatus("Closed");
-		fieldMapping.setJiraDor("In Analysis");
+		fieldMapping.setJiraDorLT("In Analysis");
 		fieldMapping.setJiraDefectRejectionStatus("Closed");
 		fieldMapping.setJiraDod(Arrays.asList("Ready for Sign-Off"));
 		fieldMapping.setJiraIssueDeliverdStatus(Arrays.asList("Closed", "Ready for Delivery"));

@@ -301,9 +301,9 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraStatusForQa(workflowMap.get(CommonConstant.QA));
 			fieldMapping.setJiraDefectInjectionIssueType(issueTypeMap.get(CommonConstant.STORY));
 			if (CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.DOR))) {
-				fieldMapping.setJiraDor(workflowMap.get(CommonConstant.DOR).get(0));
+				fieldMapping.setJiraDorLT(workflowMap.get(CommonConstant.DOR).get(0));
 			} else {
-				fieldMapping.setJiraDor(null);
+				fieldMapping.setJiraDorLT(null);
 			}
 			fieldMapping.setJiraDod(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.STORY));
@@ -346,7 +346,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping
 					.setJiraIssueDeliverdStatus_FTPR(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping
-					.setJiraIntakeToDorIssueType(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+					.setJiraIntakeToDorIssueTypeLT(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentification_IC(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping
@@ -407,7 +407,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			} else {
 				fieldMapping.setJiraTechDebtIssueType(null);
 			}
-			fieldMapping.setJiraIntakeToDorIssueType(
+			fieldMapping.setJiraIntakeToDorIssueTypeLT(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 			fieldMapping
@@ -424,7 +424,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDod(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraLiveStatus(CommonConstant.CLOSED);
 			fieldMapping.setJiraDefectRemovalStatus(null);
-			fieldMapping.setJiraDor(CommonConstant.OPEN);
+			fieldMapping.setJiraDorLT(CommonConstant.OPEN);
 			fieldMapping.setResolutionTypeForRejection(
 					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setJiraDefectDroppedStatus(
