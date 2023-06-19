@@ -199,7 +199,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 																	  // comparison
 					.distinct().collect(Collectors.toList());
 
-			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping, categories,
+			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(), categories,
 					JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});

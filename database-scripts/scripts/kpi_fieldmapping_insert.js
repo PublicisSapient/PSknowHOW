@@ -524,3 +524,32 @@ db.getCollection('kpi_fieldmapping').insert(
         fieldNames : { }
       }
 	  ]);
+
+
+
+//field_mapping_structure
+db.getCollection('field_mapping_structure').remove({});
+db.getCollection('field_mapping_structure').insert({
+    //normal issue type
+    {
+      "fieldName": "jiraStoryIdentification_IC",
+	  "fieldLabel": "Issue Count KPI Issue type",
+      "fieldType": "chips",
+      "fieldCategory" : "Issue_Type",
+      "tooltip": {
+        "definition": "Value to identify kind of stories which are used for identification for story count.",
+        "kpiImpacted": "Issue Count Kpi"
+      }
+    },
+    {
+          "fieldName": "jiraStoryIdentification_IC",
+    	  "fieldLabel": "Issue Type to Identify Defect",
+          "fieldType": "chips",
+          "fieldCategory" : "Issue_Type",
+          "tooltip": {
+            "definition": "In JIRA/AZURE a defect can be defined as "Bug", "Defect", "Snag" or any other value. So user need to provide value with which defect is identified in JIRA/AZURE",
+            "kpiImpacted": "Jira/Azure Collector and KPIs"
+          }
+        }
+
+});
