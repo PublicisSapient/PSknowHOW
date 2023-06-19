@@ -7,7 +7,7 @@
     opacity: 1;
     box-shadow: 0px 0px 6px #b9b9bb;
     border-radius: 5px;
-    max-width: 550px !important;
+    width: 550px !important;
     min-width: 550px;
     color: #333;
     margin-left: -24px;
@@ -82,4 +82,10 @@ ul.kpi-info-list {
     -webkit-filter:  drop-shadow(0px -2px 1px #b9b9bb);
     filter:  drop-shadow(0px -2px 1px #b9b9bb);
     left: 190px;
+}
+
+
+.tooltip-width{
+    min-width: 450px;
+    width: 450px;
 }
