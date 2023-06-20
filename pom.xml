@@ -29,9 +29,9 @@
     </properties>
 
     <scm>
-        <connection>scm:git:https://github.com/PublicisSapient/knowHOW7.0.git</connection>
-        <developerConnection>scm:git:https://github.com/PublicisSapient/knowHOW7.0.git</developerConnection>
-        <url>https://github.com/PublicisSapient/knowHOW7.0.git</url>
+        <connection>scm:git:https://github.com/PublicisSapient/PSknowHOW.git</connection>
+        <developerConnection>scm:git:https://github.com/PublicisSapient/PSknowHOW.git</developerConnection>
+        <url>https://github.com/PublicisSapient/PSknowHOW.git</url>
         <tag>4.6.1</tag>
     </scm>
 
