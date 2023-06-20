@@ -53,8 +53,17 @@ public enum KPIFieldMapping {
 
 	kpi135(Arrays.asList("jiraStatusForDevelopmentIFTPR", "jiraIFTPRStoryIdentification")),
 
-	kpi53(Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT", "Issue Description", "First Time Pass")), kpi3(
-			Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT", "jiraDod", "jiraLiveStatus"));
+	kpi53(Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT", "Issue Description", "First Time Pass")),
+
+	kpi3(Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT", "jiraDod", "jiraLiveStatus")),
+
+	kpi34(Arrays.asList("jiraDefectRemovalStatusDRE", "resolutionTypeForRejectionDRE", "jiraDefectRejectionStatusDRE", "jiraDefectRemovalIssueTypeDRE")),
+
+	kpi37(Arrays.asList("resolutionTypeForRejectionDRR", "jiraDefectRejectionStatusDRR", "jiraDefectRejectionlIssueTypeDRR")),
+
+	kpi28(Arrays.asList("jiradefecttype", "estimationCriteria"));
+
+
 
 	// @formatter:on
 

@@ -36,6 +36,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPIFieldMapping;
+import com.publicissapient.kpidashboard.apis.model.*;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -54,11 +56,6 @@ import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
-import com.publicissapient.kpidashboard.apis.model.KPIFieldMappingResponse;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.MasterResponse;
-import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -66,7 +63,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
-import com.publicissapient.kpidashboard.common.model.application.KPIFieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
@@ -1418,27 +1414,12 @@ public class KpiHelperService { // NOPMD
 		return fieldWiseIssuesLatestMap;
 	}
 
-	/**
-	 * Fetchs kpi fieldmapping list KpiFieldMapping response.
-	 *
-	 * @return the KpiFieldMapping response
-	 */
-	public KPIFieldMappingResponse fetchKpiFieldMappingList() {
-		List<KPIFieldMapping> lisOfKpiFieldMapping = (List<KPIFieldMapping>) configHelperService.loadKpiFieldMapping();
-		KPIFieldMappingResponse kpiFieldMappingResponse = new KPIFieldMappingResponse();
-		kpiFieldMappingResponse.setKpiFieldMappingList(lisOfKpiFieldMapping);
-		return kpiFieldMappingResponse;
-	}
+	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiFieldMappingData(String kpiId) {
 
-	public KPIFieldMappingResponse fetchFieldMappingStructureByKpiFieldMappingData(String kpiId) {
-		KPIFieldMapping kpiFieldMapping = kpiFieldMappingRepository.findByKpiId(kpiId);
-		List<String> fieldList=new ArrayList<>();
-		kpiFieldMapping.getFieldNames().forEach((k,v)->{
-			fieldList.addAll(v);
-		});
+		List<String> fieldList=KPIFieldMapping.valueOf(kpiId).getFields();
 		List<FieldMappingStructure> fieldMappingStructureList= (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
 		List<FieldMappingStructure> fieldMappingStructures=fieldMappingStructureList.stream().filter(fieldList::contains).collect(Collectors.toList());
-		KPIFieldMappingResponse kpiFieldMappingResponse = new KPIFieldMappingResponse();
+		FieldMappingStructureResponse kpiFieldMappingResponse = new FieldMappingStructureResponse();
 
 		kpiFieldMappingResponse.setFieldMappingStructureList(fieldMappingStructures);
 		return kpiFieldMappingResponse;

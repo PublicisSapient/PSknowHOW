@@ -213,10 +213,10 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiraDefectInjectionIssueType(jiraType);
 		fieldMapping.setJiraTechDebtIssueType(jiraType);
 		fieldMapping.setJiraDefectSeepageIssueType(jiraType);
-		fieldMapping.setJiraDefectRemovalStatus(jiraType);
-		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
+		fieldMapping.setJiraDefectRemovalStatusDRE(jiraType);
+		fieldMapping.setJiraDefectRejectionlIssueTypeDRR(jiraType);
 		fieldMapping.setJiraTestAutomationIssueType(jiraType);
-		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
+		fieldMapping.setJiraDefectRejectionlIssueTypeDRR(jiraType);
 		fieldMapping.setJiraDefectCountlIssueType(jiraType);
 		fieldMapping.setJiraIntakeToDorIssueTypeLT(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
@@ -227,7 +227,7 @@ public class KanbanJiraIssueClientImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("TECH_DEBT");
 		fieldMapping.setJiraTechDebtValue(jiraType);
-		fieldMapping.setJiraDefectRejectionStatus("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusDRR("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();
@@ -236,7 +236,7 @@ public class KanbanJiraIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraDefectRemovalStatus(jiraType);
+		fieldMapping.setJiraDefectRemovalStatusDRE(jiraType);
 
 		fieldMapping.setJiraStoryPointsCustomField("customfield_56789");
 
@@ -250,14 +250,19 @@ public class KanbanJiraIssueClientImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("Story");
 		jiraType.add("Feature");
-		fieldMapping.setJiraSprintVelocityIssueType(jiraType);
+		fieldMapping.setJiraSprintVelocityIssueTypeBR(jiraType);
+		fieldMapping.setJiraSprintVelocityIssueTypeSV(jiraType);
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature" }));
 		fieldMapping.setJiraSprintCapacityIssueType(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraIssueDeliverdStatus(jiraType);
+		fieldMapping.setJiraIssueDeliverdStatusAVR(jiraType);
+		fieldMapping.setJiraIssueDeliverdStatusBR(jiraType);
+		fieldMapping.setJiraIssueDeliverdStatusCVR(jiraType);
+		fieldMapping.setJiraIssueDeliverdStatusFTPR(jiraType);
+		fieldMapping.setJiraIssueDeliverdStatusSV(jiraType);
 
 		fieldMapping.setJiraDorLT("In Progress");
 		fieldMapping.setJiraLiveStatus("Closed");
@@ -304,7 +309,7 @@ public class KanbanJiraIssueClientImplTest {
 
 		fieldMapping.setRootCause("customfield_19121");
 
-		fieldMapping.setJiraDefectRejectionStatus("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusDRR("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();
@@ -313,7 +318,7 @@ public class KanbanJiraIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraDefectRemovalStatus(jiraType);
+		fieldMapping.setJiraDefectRemovalStatusDRE(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("40");

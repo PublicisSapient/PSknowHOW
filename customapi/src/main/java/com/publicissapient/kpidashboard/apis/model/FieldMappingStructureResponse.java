@@ -19,8 +19,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class KPIFieldMappingResponse {
-	private List<KPIFieldMapping> kpiFieldMappingList;
+public class FieldMappingStructureResponse {
+//	private List<KPIFieldMapping> kpiFieldMappingList;
 	private List<FieldMappingStructure> fieldMappingStructureList;
 
 }
