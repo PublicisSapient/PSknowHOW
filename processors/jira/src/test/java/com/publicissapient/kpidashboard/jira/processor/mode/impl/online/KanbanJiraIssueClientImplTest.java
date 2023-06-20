@@ -275,7 +275,7 @@ public class KanbanJiraIssueClientImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("In Analysis");
 		jiraType.add("In Development");
-		fieldMapping.setJiraStatusForDevelopment(jiraType);
+		fieldMapping.setJiraStatusForDevelopmentAVR(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Testing");
@@ -361,7 +361,7 @@ public class KanbanJiraIssueClientImplTest {
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("In Analysis");
 		jiraSegData.add("In Development");
-		fieldMapping.setJiraStatusForDevelopment(jiraSegData);
+		fieldMapping.setJiraStatusForDevelopmentAVR(jiraSegData);
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Ready for Testing");

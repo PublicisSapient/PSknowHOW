@@ -206,7 +206,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(fieldMapping.getJiraDefectCountlIssueType()));
 			}
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping);
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionRCA(), fieldMapping.getJiraDefectRejectionStatusRCA());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 		});

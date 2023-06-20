@@ -53,7 +53,6 @@ public class FieldMappingStructure extends BasicModel {
 	private List<Options> options;
 
 	@Data
-	@Builder
 	@Getter
 	@Setter
 	class MappingToolTip {
@@ -62,7 +61,6 @@ public class FieldMappingStructure extends BasicModel {
 	}
 
 	@Data
-	@Builder
 	@Getter
 	@Setter
 	class Options {

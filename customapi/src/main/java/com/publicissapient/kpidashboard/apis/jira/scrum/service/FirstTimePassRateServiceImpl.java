@@ -283,9 +283,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			}
 
 			mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
-					fieldMapping.getJiraIssueDeliverdStatus_FTPR());
-			KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,
-					fieldMapping);
+					fieldMapping.getJiraIssueDeliverdStatusFTPR());
+			KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionFTPR(), fieldMapping.getJiraDefectRejectionStatusFTPR());
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
@@ -318,7 +317,12 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		List<String> storyIds = getIssueIds(defectListWoDrop);
 		List<JiraIssueCustomHistory> storiesHistory = jiraIssueCustomHistoryRepository.findByStoryIDIn(storyIds);
 
-		kpiHelperService.removeStoriesWithReturnTransaction(defectListWoDrop, storiesHistory);
+		defectListWoDrop.removeIf(issue -> {
+					Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
+					FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
+					return kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory, fieldMapping.getJiraStatusForDevelopmentFTPR());
+				}
+		);
 
 		List<String> storyIdList = new ArrayList<>();
 		sprintWiseStories.forEach(s -> storyIdList.addAll(s.getStoryList()));

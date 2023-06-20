@@ -209,7 +209,7 @@ public class OfflineDataProcessorImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("TECH_DEBT");
 		fieldMapping.setJiraTechDebtValue(jiraType);
-		fieldMapping.setJiraDefectRejectionStatus("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusDIR("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();
@@ -232,14 +232,14 @@ public class OfflineDataProcessorImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("Story");
 		jiraType.add("Feature");
-		fieldMapping.setJiraSprintVelocityIssueType(jiraType);
+		fieldMapping.setJiraSprintVelocityIssueTypeSV(jiraType);
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature" }));
 		fieldMapping.setJiraSprintCapacityIssueType(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraIssueDeliverdStatus(jiraType);
+		fieldMapping.setJiraIssueDeliverdStatusSV(jiraType);
 
 		fieldMapping.setJiraDorLT("In Progress");
 		fieldMapping.setJiraLiveStatus("Closed");
@@ -280,7 +280,7 @@ public class OfflineDataProcessorImplTest {
 
 		fieldMapping.setRootCause("customfield_19121");
 
-		fieldMapping.setJiraDefectRejectionStatus("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusDIR("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();
@@ -333,7 +333,7 @@ public class OfflineDataProcessorImplTest {
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("In Analysis");
 		jiraSegData.add("In Development");
-		fieldMapping.setJiraStatusForDevelopment(jiraSegData);
+		fieldMapping.setJiraStatusForDevelopmentAVR(jiraSegData);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("AutomationAutomation");

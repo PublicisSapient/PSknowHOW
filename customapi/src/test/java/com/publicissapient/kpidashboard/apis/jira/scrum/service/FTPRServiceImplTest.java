@@ -123,9 +123,9 @@ public class FTPRServiceImplTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMapping.setExcludeRCAFromFTPR(Arrays.asList("coding"));
 		fieldMapping.setJiraFTPRStoryIdentification(Arrays.asList("Story"));
-		fieldMapping.setJiraDefectRejectionStatus("");
-		fieldMapping.setResolutionTypeForRejection(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
-		fieldMapping.setJiraIssueDeliverdStatus(Arrays.asList("Closed"));
+		fieldMapping.setJiraDefectRejectionStatusIFTPR("");
+		fieldMapping.setResolutionTypeForRejectionIFTPR(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
+		fieldMapping.setJiraIssueDeliverdStatusFTPR(Arrays.asList("Closed"));
 		fieldMapping.setDefectPriority(Arrays.asList("p2", "p1"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);

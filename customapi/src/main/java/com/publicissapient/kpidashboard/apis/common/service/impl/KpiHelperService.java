@@ -36,9 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.*;
-import com.publicissapient.kpidashboard.common.repository.application.FieldMappingStructureRepository;
-import com.publicissapient.kpidashboard.common.repository.application.KpiFieldMappingRepository;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -67,6 +64,11 @@ import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
+import com.publicissapient.kpidashboard.common.model.application.KPIFieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
@@ -78,6 +80,7 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLink;
+import com.publicissapient.kpidashboard.common.repository.application.KpiFieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -142,14 +145,13 @@ public class KpiHelperService { // NOPMD
 	private KpiFieldMappingRepository kpiFieldMappingRepository;
 
 	public static void getDroppedDefectsFilters(Map<String, Map<String, List<String>>> droppedDefects,
-			ObjectId basicProjectConfigId, FieldMapping fieldMapping) {
+			ObjectId basicProjectConfigId, List<String> resolutionTypeForRejection, String jiraDefectRejectionStatus) {
 		Map<String, List<String>> filtersMap = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(fieldMapping.getResolutionTypeForRejection())) {
-			filtersMap.put(Constant.RESOLUTION_TYPE_FOR_REJECTION, fieldMapping.getResolutionTypeForRejection());
+		if (CollectionUtils.isNotEmpty(resolutionTypeForRejection)) {
+			filtersMap.put(Constant.RESOLUTION_TYPE_FOR_REJECTION, resolutionTypeForRejection);
 		}
-		if (StringUtils.isNotEmpty(fieldMapping.getJiraDefectRejectionStatus())) {
-			filtersMap.put(Constant.DEFECT_REJECTION_STATUS,
-					Arrays.asList(fieldMapping.getJiraDefectRejectionStatus()));
+		if (StringUtils.isNotEmpty(jiraDefectRejectionStatus)) {
+			filtersMap.put(Constant.DEFECT_REJECTION_STATUS, Arrays.asList(jiraDefectRejectionStatus));
 		}
 		droppedDefects.put(basicProjectConfigId.toString(), filtersMap);
 	}
@@ -396,7 +398,7 @@ public class KpiHelperService { // NOPMD
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueType()));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping);
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionDIR(), fieldMapping.getJiraDefectRejectionStatusDIR());
 		});
 
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
@@ -486,7 +488,7 @@ public class KpiHelperService { // NOPMD
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraQADefectDensityIssueType()));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping);
+			getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping.getResolutionTypeForRejectionQADD(),fieldMapping.getJiraDefectRejectionStatusQADD());
 		});
 
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
@@ -569,10 +571,10 @@ public class KpiHelperService { // NOPMD
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueType_SV()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueTypeSV()));
 
 			mapOfProjectFilters.put(JiraFeature.STATUS.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatus_SV()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatusSV()));
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
@@ -641,10 +643,10 @@ public class KpiHelperService { // NOPMD
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueType_BR()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueTypeBR()));
 
 			mapOfProjectFilters.put(JiraFeature.STATUS.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatus_BR()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatusBR()));
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
@@ -1442,15 +1444,8 @@ public class KpiHelperService { // NOPMD
 		return kpiFieldMappingResponse;
 	}
 
-	public void removeStoriesWithReturnTransaction(List<JiraIssue> firstTimePassStories,
-			List<JiraIssueCustomHistory> storiesHistory) {
-
-		firstTimePassStories.removeIf(issue -> hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory));
-
-	}
-
-	private boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue,
-			List<JiraIssueCustomHistory> storiesHistory) {
+	public boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue,
+			List<JiraIssueCustomHistory> storiesHistory,List<String> statusForDevelopemnt) {
 		JiraIssueCustomHistory jiraIssueCustomHistory = storiesHistory.stream()
 				.filter(issueHistory -> issueHistory.getStoryID().equals(issue.getNumber())).findFirst().orElse(null);
 		if (jiraIssueCustomHistory == null) {
@@ -1475,7 +1470,7 @@ public class KpiHelperService { // NOPMD
 						.orElse(null);
 				if (latestQAField != null) {
 					List<String> jiraStatusForDevelopemnt = (List<String>) CollectionUtils
-							.emptyIfNull(fieldMapping.getJiraStatusForDevelopment());
+							.emptyIfNull(statusForDevelopemnt);
 					DateTime latestQAFieldActivityDate = DateTime.parse(latestQAField.getUpdatedOn().toString());
 					return statusUpdationLog.stream()
 							.filter(statusHistory -> DateTime.parse(statusHistory.getUpdatedOn().toString())

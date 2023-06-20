@@ -280,10 +280,10 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 		boolean devStatusFound = false;
 		boolean closedStatusFound = false;
 		List<String> storyDeliveredStatuses = (List<String>) CollectionUtils
-				.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatus_AVR());
+				.emptyIfNull(fieldMapping.getJiraIssueDeliverdStatusAVR());
 
 		List<String> storyDevelopmentStatuses = (List<String>) CollectionUtils
-				.emptyIfNull(fieldMapping.getJiraStatusForDevelopment());
+				.emptyIfNull(fieldMapping.getJiraStatusForDevelopmentAVR());
 		for (int i = 0; i < statusUpdationLog.size(); i++) {
 			if (storyDevelopmentStatuses.contains(statusUpdationLog.get(i).getChangedTo()) && developmentTime == 0L) {
 				devStatusFound = true;
@@ -332,7 +332,7 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 			if (null != fieldMapping) {
 				projectFieldMapping.put(basicProjectConfigId.toString(), fieldMapping);
 				KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,
-						fieldMapping);
+						fieldMapping.getResolutionTypeForRejectionAVR(),fieldMapping.getJiraDefectRejectionStatusAVR());
 				List<String> jiraIssueTypes = new ArrayList<>(Arrays.asList(fieldMapping.getJiraIssueTypeNames()));
 				if (CollectionUtils.containsAny(jiraIssueTypes, fieldMapping.getJiradefecttype())) {
 					jiraIssueTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
@@ -340,7 +340,7 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(jiraIssueTypes));
 				mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
-						fieldMapping.getJiraIssueDeliverdStatus_AVR());
+						fieldMapping.getJiraIssueDeliverdStatusAVR());
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 			}
 

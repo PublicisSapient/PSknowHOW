@@ -61,7 +61,9 @@ public class FieldMapping extends BasicModel {
 	private String storyFirstStatus;
 	private String envImpacted;
 	private String rootCause;
-	private List<String> jiraStatusForDevelopment;
+	private List<String> jiraStatusForDevelopmentAVR;
+	private List<String> jiraStatusForDevelopmentFTPR;
+	private List<String> jiraStatusForDevelopmentIFTPR;
 	@Builder.Default
 	private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
 	// type of test cases
@@ -72,7 +74,17 @@ public class FieldMapping extends BasicModel {
 	private String jiraTechDebtIdentification;
 	private String jiraTechDebtCustomField;
 	private List<String> jiraTechDebtValue;
-	private String jiraDefectRejectionStatus;
+	private String jiraDefectRejectionStatusAVR;
+	private String jiraDefectRejectionStatusDC;
+	private String jiraDefectRejectionStatusDRE;
+	private String jiraDefectRejectionStatusDRR;
+	private String jiraDefectRejectionStatusDSR;
+	private String jiraDefectRejectionStatusFTPR;
+	private String jiraDefectRejectionStatusIFTPR;
+	private String jiraDefectRejectionStatusQS;
+	private String jiraDefectRejectionStatusRCA;
+	private String jiraDefectRejectionStatusDIR;
+	private String jiraDefectRejectionStatusQADD;
 	private String jiraBugRaisedByIdentification;
 	private List<String> jiraBugRaisedByValue;
 	private List<String> jiraDefectSeepageIssueType;
@@ -90,27 +102,26 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraTestAutomationIssueType;
 	// value of the automated test case Eg. Yes, Cannot Automate, No
 
-	private List<String> jiraSprintVelocityIssueType_SV;
-	private List<String> jiraSprintVelocityIssueType_BR;
+	private List<String> jiraSprintVelocityIssueTypeSV;
+	private List<String> jiraSprintVelocityIssueTypeBR;
 
 	private List<String> jiraSprintCapacityIssueType;
 
 	private List<String> jiraDefectRejectionlIssueType;
 	private List<String> jiraDefectCountlIssueType;
 
-	private List<String> jiraIssueDeliverdStatus_BR;
-	private List<String> jiraIssueDeliverdStatus_SV;
-	private List<String> jiraIssueDeliverdStatus_AVR;
-	private List<String> jiraIssueDeliverdStatus_CVR;
-	private List<String> jiraIssueDeliverdStatus_FTPR;
+	private List<String> jiraIssueDeliverdStatusBR;
+	private List<String> jiraIssueDeliverdStatusSV;
+	private List<String> jiraIssueDeliverdStatusAVR;
+	private List<String> jiraIssueDeliverdStatusCVR;
+	private List<String> jiraIssueDeliverdStatusFTPR;
 	private String readyForDevelopmentStatus;
 
 	private String jiraDorLT;
-
 	private List<String> jiraIntakeToDorIssueTypeLT;
 
 	private List<String> jiraStoryIdentification;
-	private List<String> jiraStoryIdentification_IC;
+	private List<String> jiraStoryIdentificationIC;
 
 	private String jiraLiveStatus;
 
@@ -143,8 +154,17 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraProductiveStatus;
 
 	private List<String> jiraCommitmentReliabilityIssueType;
-
-	private List<String> resolutionTypeForRejection;
+	private List<String> resolutionTypeForRejectionAVR;
+	private List<String> resolutionTypeForRejectionDC;
+	private List<String> resolutionTypeForRejectionDRE;
+	private List<String> resolutionTypeForRejectionDRR;
+	private List<String> resolutionTypeForRejectionDSR;
+	private List<String> resolutionTypeForRejectionFTPR;
+	private List<String> resolutionTypeForRejectionIFTPR;
+	private List<String> resolutionTypeForRejectionQS;
+	private List<String> resolutionTypeForRejectionRCA;
+	private List<String> resolutionTypeForRejectionDIR;
+	private List<String> resolutionTypeForRejectionQADD;
 	private List<String> qaRootCauseValue;
 	private List<String> jiraQADefectDensityIssueType;
 	private String jiraBugRaisedByQACustomField;
@@ -194,6 +214,7 @@ public class FieldMapping extends BasicModel {
 
 	// field for FTPR
 	private List<String> jiraFTPRStoryIdentification;
+	private List<String> jiraIFTPRStoryIdentification;
 
 	// field for Wasting - wait status
 	private List<String> jiraWaitStatus;
