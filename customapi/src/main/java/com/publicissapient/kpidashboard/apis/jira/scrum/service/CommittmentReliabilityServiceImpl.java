@@ -332,7 +332,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			} else if (INITIAL_ISSUE_COUNT.equalsIgnoreCase(key)) {
 				howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(INITIALCMPLTD_ISSUE_SIZE, 0.0d));
 				howerMap.put(INITIALLYCOMMITED, commitmentHowerMap.getOrDefault(INITIAL_ISSUE_SIZE, 0.0d));
-			} else if (INITIAL_STORY_POINT.equalsIgnoreCase(key)) {
+			} else if (INITIAL_ORIGINAL_ESTIMATE.equalsIgnoreCase(key)) {
 				howerMap.put(DELIVERED, commitmentHowerMap.get(INITIALCMPLTD_ORIGINAL_ESTIMATE) + " hrs");
 				howerMap.put(INITIALLYCOMMITED, commitmentHowerMap.get(INITIALISSUE_ORIGINAL_ESTIMATE) + " hrs");
 			} else {
