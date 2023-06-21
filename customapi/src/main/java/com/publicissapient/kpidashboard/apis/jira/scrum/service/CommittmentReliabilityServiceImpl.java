@@ -58,6 +58,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private static final String INITIAL_ISSUE_COUNT = "Initial Commitment (Count)";
 	private static final String FINAL_SCOPE_STORY_POINTS = "Final Scope (Story Points)";
 	private static final String INITIAL_STORY_POINT = "Initial Commitment (Story Points)";
+	private static final String INITIAL_ORIGINAL_ESTIMATE = "Initial Commitment (Hours)";
+	private static final String FINAL_SCOPE_ORIGINAL_ESTIMATE = "Final Scope (Hours)";
 	private static final String PROJECT_WISE_TOTAL_ISSUE = "projectWiseTotalIssues";
 	private static final String DEV = "DeveloperKpi";
 	private static final String TOTAL_ISSUE_SIZE = "totalIssueSize";
@@ -452,8 +454,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			commitmentResult.put(FINAL_SCOPE_STORY_POINTS, ObjectUtils.defaultIfNull(storyCount, 0L));
 			commitmentResult.put(INITIAL_STORY_POINT, ObjectUtils.defaultIfNull(initialStoryCount, 0L));
 		} else {
-			commitmentResult.put(CommonConstant.HOURS, ObjectUtils.defaultIfNull(totalHours, 0L));
-			commitmentResult.put(CommonConstant.INITIALHOURS, ObjectUtils.defaultIfNull(initialTotalHours, 0L));
+			commitmentResult.put(FINAL_SCOPE_ORIGINAL_ESTIMATE, ObjectUtils.defaultIfNull(totalHours, 0L));
+			commitmentResult.put(INITIAL_ORIGINAL_ESTIMATE, ObjectUtils.defaultIfNull(initialTotalHours, 0L));
 		}
 		commitmentResult.put(FINAL_SCOPE_COUNT, ObjectUtils.defaultIfNull(issueCount, 0L));
 		commitmentResult.put(INITIAL_ISSUE_COUNT, ObjectUtils.defaultIfNull(initialIssueCount, 0L));
