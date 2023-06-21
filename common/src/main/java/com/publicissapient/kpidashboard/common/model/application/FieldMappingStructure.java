@@ -49,14 +49,14 @@ public class FieldMappingStructure extends BasicModel {
 	private String fieldType;
 	private String fieldCategory;
 	private String section;
-	private MappingToolTip toolTip;
+	private MappingToolTip tooltip;
 	private List<Options> options;
 
 	@Data
 	@Getter
 	@Setter
 	class MappingToolTip {
-		String defintion;
+		String definition;
 		String kpiImpacted;
 	}
 

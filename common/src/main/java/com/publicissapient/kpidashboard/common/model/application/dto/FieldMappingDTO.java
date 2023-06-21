@@ -58,7 +58,10 @@ public class FieldMappingDTO extends BasicModel {
 	private String[] linkDefectToStoryField;
 	private String envImpacted;
 	private String rootCause;
-	private List<String> jiraStatusForDevelopment;
+	private List<String> jiraStatusForDevelopment;// TODO: Extra field
+	private List<String> jiraStatusForDevelopmentAVR;
+	private List<String> jiraStatusForDevelopmentFTPR;
+	private List<String> jiraStatusForDevelopmentIFTPR;
 	private String jiraAtmProjectId;
 	private String jiraAtmProjectKey;
 	private List<String> jiraIssueEpicType;
@@ -72,13 +75,26 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraTechDebtIdentification;
 	private String jiraTechDebtCustomField;
 	private List<String> jiraTechDebtValue;
-	private String jiraDefectRejectionStatus;
+	private String jiraDefectRejectionStatus;// TODO: Extra field
+	private String jiraDefectRejectionStatusAVR;
+	private String jiraDefectRejectionStatusDC;
+	private String jiraDefectRejectionStatusDRE;
+	private String jiraDefectRejectionStatusDRR;
+	private String jiraDefectRejectionStatusDSR;
+	private String jiraDefectRejectionStatusFTPR;
+	private String jiraDefectRejectionStatusIFTPR;
+	private String jiraDefectRejectionStatusQS;
+	private String jiraDefectRejectionStatusRCA;
+	private String jiraDefectRejectionStatusDIR;
+	private String jiraDefectRejectionStatusQADD;
 	private String jiraBugRaisedByIdentification;
 	private List<String> jiraBugRaisedByValue;
 	private List<String> jiraDefectSeepageIssueType;
 	private String jiraBugRaisedByCustomField;
-	private List<String> jiraDefectRemovalStatus;
-	private List<String> jiraDefectRemovalIssueType;
+	private List<String> jiraDefectRemovalStatus;// TODO: Extra field
+	private List<String> jiraDefectRemovalStatusDRE;
+	private List<String> jiraDefectRemovalIssueType;// TODO: Extra field
+	private List<String> jiraDefectRemovalIssueTypeDRE;
 	/**
 	 * Device Platform (iOS/Android/Desktop)
 	 */
@@ -88,22 +104,32 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraTestAutomationIssueType;
 	// value of the automated test case Eg. Yes, Cannot Automate, No
 
-	private List<String> jiraSprintVelocityIssueType;
+	private List<String> jiraSprintVelocityIssueType;// TODO: Extra field
+	private List<String> jiraSprintVelocityIssueTypeSV;
+	private List<String> jiraSprintVelocityIssueTypeBR;
 
 	private List<String> jiraSprintCapacityIssueType;
 
-	private List<String> jiraDefectRejectionlIssueType;
+	private List<String> jiraDefectRejectionlIssueType;// TODO: Extra field
+	private List<String> jiraDefectRejectionlIssueTypeDRR;
 	private List<String> jiraDefectCountlIssueType;
 
-	private List<String> jiraIssueDeliverdStatus;
+	private List<String> jiraIssueDeliverdStatus;// TODO: Extra field
+	private List<String> jiraIssueDeliverdStatusBR;
+	private List<String> jiraIssueDeliverdStatusSV;
+	private List<String> jiraIssueDeliverdStatusAVR;
+	private List<String> jiraIssueDeliverdStatusCVR;
+	private List<String> jiraIssueDeliverdStatusFTPR;
 	private String readyForDevelopmentStatus;
 
+	private String jiraDor;// TODO: Extra field
 	private String jiraDorLT;
 
+	private List<String> jiraIntakeToDorIssueType;// TODO: Extra field
 	private List<String> jiraIntakeToDorIssueTypeLT;
 
 	private List<String> jiraStoryIdentification;
-	private List<String> jiraStoryIdentification_IC;
+	private List<String> jiraStoryIdentificationIC;
 
 	private String jiraLiveStatus;
 
@@ -138,7 +164,18 @@ public class FieldMappingDTO extends BasicModel {
 
 	private List<String> jiraCommitmentReliabilityIssueType;
 
-	private List<String> resolutionTypeForRejection;
+	private List<String> resolutionTypeForRejection;// TODO: Extra field
+	private List<String> resolutionTypeForRejectionAVR;
+	private List<String> resolutionTypeForRejectionDC;
+	private List<String> resolutionTypeForRejectionDRE;
+	private List<String> resolutionTypeForRejectionDRR;
+	private List<String> resolutionTypeForRejectionDSR;
+	private List<String> resolutionTypeForRejectionFTPR;
+	private List<String> resolutionTypeForRejectionIFTPR;
+	private List<String> resolutionTypeForRejectionQS;
+	private List<String> resolutionTypeForRejectionRCA;
+	private List<String> resolutionTypeForRejectionDIR;
+	private List<String> resolutionTypeForRejectionQADD;
 	private List<String> qaRootCauseValue;
 	private List<String> jiraQADefectDensityIssueType;
 	private String jiraBugRaisedByQACustomField;

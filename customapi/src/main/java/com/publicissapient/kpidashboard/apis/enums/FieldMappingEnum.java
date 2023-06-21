@@ -25,43 +25,47 @@ import java.util.List;
  * to order the headings of excel columns
  */
 @SuppressWarnings("java:S1192")
-public enum KPIFieldMapping {
+public enum FieldMappingEnum {
 
 	KPI0(Arrays.asList("jiradefecttype", "jiraIssueTypeNames", "jiraIterationCompletionTypeCustomField",
 			"jiraIterationCompletionStatusCustomField", "estimationCriteria", "storyPointToHourMapping",
 			"jiraStoryPointsCustomField", "jiraStatusForDevelopment", "jiraDod")),
 
-	kpi40(Arrays.asList("jiraStoryIdentificationIC", "jiraIterationCompletionTypeCustomField",
+	KPI40(Arrays.asList("jiraStoryIdentificationIC", "jiraIterationCompletionTypeCustomField",
 			"jiraIterationCompletionStatusCustomField", "jiradefecttype")),
 
-	kpi39(Arrays.asList("jiraSprintVelocityIssueTypeSV", "jiraIterationCompletionTypeCustomField",
+	KPI39(Arrays.asList("jiraSprintVelocityIssueTypeSV", "jiraIterationCompletionTypeCustomField",
 			"jiraIssueDeliverdStatusSV", "jiraIterationCompletionStatusCustomField", "estimationCriteria",
 			"storyPointToHourMapping", "jiraStoryPointsCustomField")),
 
-	kpi72(Arrays.asList("jiraIterationCompletionTypeCustomField", "jiraIterationCompletionStatusCustomField",
+	KPI72(Arrays.asList("jiraIterationCompletionTypeCustomField", "jiraIterationCompletionStatusCustomField",
 			"estimationCriteria", "storyPointToHourMapping", "jiraStoryPointsCustomField")),
 
-	kpi5(Arrays.asList("jiraIterationCompletionTypeCustomField", "jiraIterationCompletionStatusCustomField",
+	KPI5(Arrays.asList("jiraIterationCompletionTypeCustomField", "jiraIterationCompletionStatusCustomField",
 			"estimationCriteria", "storyPointToHourMapping", "jiraStoryPointsCustomField")),
 
-	kpi46(Arrays.asList("jiraSprintCapacityIssueType")),
+	KPI46(Arrays.asList("jiraSprintCapacityIssueType")),
 
-	kpi83(Arrays.asList("resolutionTypeForRejectionAVR", "jiraIssueDeliverdStatusAVR", "jiraDefectRejectionStatusAVR",
+	KPI83(Arrays.asList("resolutionTypeForRejectionAVR", "jiraIssueDeliverdStatusAVR", "jiraDefectRejectionStatusAVR",
 			"jiraIssueTypeNames", "jiradefecttype", "jiraStatusForDevelopmentAVR")),
 
-	kpi82(Arrays.asList("jiraStatusForDevelopmentFTPR", "jiraFTPRStoryIdentification")),
+	KPI82(Arrays.asList("jiraStatusForDevelopmentFTPR", "jiraFTPRStoryIdentification")),
 
-	kpi135(Arrays.asList("jiraStatusForDevelopmentIFTPR", "jiraIFTPRStoryIdentification")),
+	KPI135(Arrays.asList("jiraStatusForDevelopmentIFTPR", "jiraIFTPRStoryIdentification")),
 
-	kpi53(Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT", "Issue Description", "First Time Pass")),
+	KPI53(Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT", "Issue Description", "First Time Pass")),
 
-	kpi3(Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT", "jiraDod", "jiraLiveStatus")),
+	KPI3(Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT", "jiraDod", "jiraLiveStatus")),
 
-	kpi34(Arrays.asList("jiraDefectRemovalStatusDRE", "resolutionTypeForRejectionDRE", "jiraDefectRejectionStatusDRE", "jiraDefectRemovalIssueTypeDRE")),
+	KPI34(Arrays.asList("jiraDefectRemovalStatusDRE", "resolutionTypeForRejectionDRE", "jiraDefectRejectionStatusDRE", "jiraDefectRemovalIssueTypeDRE")),
 
-	kpi37(Arrays.asList("resolutionTypeForRejectionDRR", "jiraDefectRejectionStatusDRR", "jiraDefectRejectionlIssueTypeDRR")),
+	KPI37(Arrays.asList("resolutionTypeForRejectionDRR", "jiraDefectRejectionStatusDRR", "jiraDefectRejectionlIssueTypeDRR")),
 
-	kpi28(Arrays.asList("jiradefecttype", "estimationCriteria"));
+	KPI28(Arrays.asList("jiradefecttype", "estimationCriteria")),
+
+	KPI140(Arrays.asList("jiradefecttype")),
+
+	KPI144(Arrays.asList("jiradefecttype"));
 
 
 
@@ -69,7 +73,7 @@ public enum KPIFieldMapping {
 
 	private List<String> fields;
 
-	KPIFieldMapping(List<String> fields) {
+	FieldMappingEnum(List<String> fields) {
 		this.fields = fields;
 
 	}
