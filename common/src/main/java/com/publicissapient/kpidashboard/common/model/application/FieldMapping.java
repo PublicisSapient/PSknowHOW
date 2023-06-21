@@ -164,6 +164,7 @@ public class FieldMapping extends BasicModel {
 	private String productionDefectIdentifier;
 	private List<String> productionDefectValue;
 	private String productionDefectComponentValue;
+	private List<String>  productionDefectsAgeingIssueType;
 
 	// field for In Progress status
 	private List<String> jiraStatusForInProgress;

@@ -468,7 +468,10 @@
                 ],
                 "Defects Mapping": [
                     "productionDefectIdentifier"
-                ]
+                ],
+                 "Issue Types Mapping" : [
+                    "productionDefectsAgeingIssueType"
+              ]
             }
         },
         {

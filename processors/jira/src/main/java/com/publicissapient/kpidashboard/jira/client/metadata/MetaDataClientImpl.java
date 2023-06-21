@@ -286,6 +286,9 @@ public class MetaDataClientImpl implements MetadataClient {
 					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 			fieldMapping
 					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
+			fieldMapping.
+					setProductionDefectsAgeingIssueType(issueTypeMap.get(CommonConstant.PRODUCTION_DEFECTS_AGEING_ISSUE_TYPE)
+							.stream().collect(Collectors.toList()));
 
 			List<String> firstStatusList = workflowMap.get(CommonConstant.FIRST_STATUS);
 
@@ -387,6 +390,9 @@ public class MetaDataClientImpl implements MetadataClient {
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping
 					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
+			fieldMapping.
+					setProductionDefectsAgeingIssueType(issueTypeMap.get(CommonConstant.PRODUCTION_DEFECTS_AGEING_ISSUE_TYPE)
+							.stream().collect(Collectors.toList()));
 			if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE)) {
 				fieldMapping.setJiraTechDebtIssueType(
 						issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));

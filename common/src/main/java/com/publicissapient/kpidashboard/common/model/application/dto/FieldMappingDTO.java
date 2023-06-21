@@ -167,6 +167,7 @@ public class FieldMappingDTO extends BasicModel {
 	private String productionDefectIdentifier;
 	private List<String> productionDefectValue;
 	private String productionDefectComponentValue;
+	private List<String>  productionDefectsAgeingIssueType;
 
 	// issue status to exclude missing worklogs
 	private List<String> issueStatusToBeExcludedFromMissingWorklogs;

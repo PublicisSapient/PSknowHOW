@@ -82,6 +82,8 @@ public final class CommonConstant {
 	public static final String KANBAN_CYCLE_TIME_ISSUE_TYPE = "kanbanCycleTimeIssue";
 	public static final String KANBAN_TECH_DEBT_ISSUE_TYPE = "kanbanTechDebtIssueType";
 
+	public static final String PRODUCTION_DEFECTS_AGEING_ISSUE_TYPE = "productionDefectsAgeingIssueType";
+
 	public static final String META_ISSUE_TYPE = "Issue_Type";
 	public static final String META_WORKFLOW = "workflow";
 	public static final String META_FIELD = "fields";
