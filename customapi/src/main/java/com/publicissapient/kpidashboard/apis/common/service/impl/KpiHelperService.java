@@ -578,7 +578,7 @@ public class KpiHelperService { // NOPMD
 
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
-
+			jiraKPIService.processSprintBasedOnFieldMapping(sprintDetails, configHelperService);
 			sprintDetails.stream().forEach(sprintDetail -> {
 
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
@@ -589,9 +589,6 @@ public class KpiHelperService { // NOPMD
 			});
 			mapOfFilters.put(JiraFeature.ISSUE_NUMBER.getFieldValueInFeature(),
 					totalIssueIds.stream().distinct().collect(Collectors.toList()));
-		} else {
-			mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
-					sprintList.stream().distinct().collect(Collectors.toList()));
 		}
 
 		/** additional filter **/
@@ -607,12 +604,7 @@ public class KpiHelperService { // NOPMD
 			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
 
-		} else {
-			List<JiraIssue> sprintVelocityList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
-					uniqueProjectMap);
-			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
-			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, null);
-		}
+		} 
 
 		return resultListMap;
 	}

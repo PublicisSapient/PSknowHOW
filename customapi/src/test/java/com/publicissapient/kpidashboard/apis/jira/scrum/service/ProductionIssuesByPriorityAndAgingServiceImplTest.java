@@ -63,8 +63,6 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<IssueBacklog> totalIssueBacklogList = new ArrayList<>();
 	@Mock
-	IssueBacklogRepository issueBacklogRepository;
-	@Mock
 	JiraIssueRepository jiraIssueRepository;
 	@Mock
 	CacheService cacheService;
@@ -125,8 +123,6 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 		List<String> xAxisRange = new ArrayList<>(Arrays.asList("0-1", "1-3", "3-6", "6-12", ">12"));
 		when(customApiConfig.getTotalDefectCountAgingXAxisRange()).thenReturn(xAxisRange);
 
-		Mockito.doReturn(totalIssueBacklogList).when(issueBacklogRepository).findIssuesByDateAndTypeAndStatus(anyMap(),
-				anyMap(), anyString(), anyString(), anyString(), anyString(), eq(true));
 
 		when(customApiConfig.getpriorityP1()).thenReturn(P1);
 		when(customApiConfig.getpriorityP2()).thenReturn(P2);
