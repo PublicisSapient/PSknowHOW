@@ -126,25 +126,27 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 			Optional<String> updatedOnDate = Optional.ofNullable(testCases.getUpdatedOn());
 			LocalDateTime instant = LocalDateTime.now();
 			LocalDateTime currentDateMinus15Months = instant.minusMonths(15);
-			if (cloud) {
-				if ((folderName.isPresent() && folderPathList.contains(folderName.get())) && ((updatedOnDate.isPresent()
-						&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
-								.isAfter(currentDateMinus15Months))
-						|| (createdOnDate.isPresent() && DateUtil
-								.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
-								.isAfter(currentDateMinus15Months)))) {
-					filteredTestCasesList.add(testCases);
+			folderPathList.forEach(folderPath -> {
+				if (cloud) {
+					if ((folderName.isPresent() && folderName.get().contains(folderPath)) && ((updatedOnDate.isPresent()
+							&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
+							.isAfter(currentDateMinus15Months))
+							|| (createdOnDate.isPresent() && DateUtil
+							.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
+							.isAfter(currentDateMinus15Months)))) {
+						filteredTestCasesList.add(testCases);
+					}
+				} else {
+					if ((folderName.isPresent() && folderName.get().contains(folderPath)) && ((updatedOnDate.isPresent()
+							&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
+							.isAfter(currentDateMinus15Months))
+							|| (createdOnDate.isPresent()
+							&& DateUtil.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
+							.isAfter(currentDateMinus15Months)))) {
+						filteredTestCasesList.add(testCases);
+					}
 				}
-			} else {
-				if ((folderName.isPresent() && folderPathList.contains(folderName.get())) && ((updatedOnDate.isPresent()
-						&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
-								.isAfter(currentDateMinus15Months))
-						|| (createdOnDate.isPresent()
-								&& DateUtil.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
-										.isAfter(currentDateMinus15Months)))) {
-					filteredTestCasesList.add(testCases);
-				}
-			}
+			});
 		});
 		return filteredTestCasesList;
 	}
