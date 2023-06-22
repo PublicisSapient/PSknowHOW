@@ -1,7 +1,10 @@
 .indicator-container {
+    display: flex;
+    justify-content: space-between;
     border: 1px solid var(--color-secondary-blue);
     border-left: 5px solid var(--color-secondary-blue);
     border-radius: 3px;
+    align-items: baseline;
     padding: 8px 5px;
 }
 
@@ -21,6 +24,7 @@
 .indicator-maturity-data {
     display: flex;
     justify-content: space-between;
+    width: 100%;
 }
 
 .average-data-primary {

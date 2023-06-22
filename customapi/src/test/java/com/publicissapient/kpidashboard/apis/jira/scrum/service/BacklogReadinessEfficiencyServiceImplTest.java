@@ -143,8 +143,8 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(velocityServiceHelper.calculateSprintVelocityValue(any(), any(), any(), any())).thenReturn(10.0);
-		doNothing().when(velocityServiceHelper).getSprintIssuesForProject(any(), any(), any(), any());
+		when(velocityServiceHelper.calculateSprintVelocityValue(any(), any(), any())).thenReturn(10.0);
+		doNothing().when(velocityServiceHelper).getSprintIssuesForProject(any(), any(), any());
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(backlogReadinessEfficiencyServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
