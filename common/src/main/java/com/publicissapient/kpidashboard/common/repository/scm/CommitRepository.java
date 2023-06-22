@@ -53,4 +53,12 @@ public interface CommitRepository extends CrudRepository<CommitDetails, ObjectId
 	 */
 	void deleteByProcessorItemIdIn(List<ObjectId> processorItemIds);
 
+	/**
+	 *
+	 * @param processorItemId
+	 * @param revisionNumber
+	 * @return
+	 */
+	List<CommitDetails> findByProcessorItemIdAndRevisionNumberIn(ObjectId processorItemId, List<String> revisionNumber);
+
 }
