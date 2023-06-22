@@ -29,6 +29,10 @@ import { PageLoaderComponent } from './page-loader/page-loader.component';
 import { FooterComponent } from './footer/footer.component';
 import { KpiFilterComponent } from './kpi-filter/kpi-filter.component';
 import { FieldMappingFormComponent } from './field-mapping-form/field-mapping-form.component';
+import { DialogModule } from 'primeng/dialog';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 
 @NgModule({
   imports: [
@@ -37,7 +41,10 @@ import { FieldMappingFormComponent } from './field-mapping-form/field-mapping-fo
     CalendarModule,
     NgSelectModule,
     MultiSelectModule,
-    DropdownModule
+    DropdownModule,
+    DialogModule,
+    ToastModule,
+    ConfirmDialogModule
   ],
   exports: [
     NgSelectModule,
@@ -56,6 +63,7 @@ import { FieldMappingFormComponent } from './field-mapping-form/field-mapping-fo
     FooterComponent,
     KpiFilterComponent,
     FieldMappingFormComponent
-  ]
+  ],
+  providers: [ConfirmationService]
 })
 export class SharedModuleModule { }

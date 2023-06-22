@@ -38,21 +38,12 @@ export class FieldMappingComponent implements OnInit {
   fieldMappingForm: UntypedFormGroup;
   fieldMappingFormObj: any;
   selectedConfig: any = {};
-  fieldMappingMultiSelectValues: any = [];
-  techDebtIdentification: any = [];
-  additionalFilterIdentificationOptions: any = [];
-  estimationCriteriaTypes: any = [];
-  defectIdentification: any = [];
+  
   selectedPriority: any = [];
-  isZephyr = false;
   fieldMappingSubmitted = false;
   singleSelectionDropdown = false;
-  displayDialog = false;
   fieldMappingMetaData: any = [];
-  dropdownSettingsMulti = {};
-  dropdownSettingsSingle = {};
-  selectedValue = [];
-  selectedMultiValue = [];
+ 
   selectedField = '';
   bodyScrollPosition = 0;
   selectedToolConfig: any = {};
@@ -60,150 +51,27 @@ export class FieldMappingComponent implements OnInit {
   disableSave = false;
   populateDropdowns = true;
   uploadedFileName = '';
-  productionDefectIdentificationOptions: any = [];
-  testCaseIdentification: any = [];
+ 
 
   // additional filters
   filterHierarchy: any = [];
   additionalFilterIdentifier: any = {};
   additionalFiltersArray: any = [];
   additionalFilterOptions: any = [];
-  // kpi to field mapping relationships
-  kpiRelationShips: any = [];
-  fieldstoShow=[];
-  groupsToShow={
-    groupNames:[],
-    groupFields:{},
-    showAllgroups:true
-  };
-  disableAdditionalFilterAdd =true;
+
 
   private setting = {
     element: {
       dynamicDownload: null as HTMLElement
     }
   };
- dueDateTypes: any = [];
- wastageBlockedCriteria: any = [];
+
+
 
   constructor(private formBuilder: UntypedFormBuilder, private router: Router, private sharedService: SharedService,
     private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService,private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
-    this.techDebtIdentification = [
-      {
-        label: 'CustomField',
-        value: 'CustomField'
-      },
-      {
-        label: 'Labels',
-        value: 'Labels'
-      },
-      {
-        label: 'IssueType',
-        value: 'IssueType'
-      }
-    ];
-    this.additionalFilterIdentificationOptions = [
-      {
-        label: 'Component',
-        value: 'Component'
-      },
-      {
-        label: 'CustomField',
-        value: 'CustomField'
-      },
-      {
-        label: 'Labels',
-        value: 'Labels'
-      }
-    ];
-    this.estimationCriteriaTypes = [
-      {
-        label: 'Story Point',
-        value: 'Story Point'
-      },
-      {
-        label: 'Actual (Original Estimation)',
-        value: 'Actual Estimation'
-      }
-    ];
-    this.dueDateTypes =[
-       {
-        label: 'Custom Field',
-        value: 'Custom Field'
-      },
-      {
-        label: 'Due Date',
-        value: 'Due Date'
-      }
-    ]
-    this.defectIdentification = [
-      {
-        label: 'CustomField',
-        value: 'CustomField'
-      },
-      {
-        label: 'Labels',
-        value: 'Labels'
-      }
-    ];
-    this.productionDefectIdentificationOptions = [
-      {
-        label: 'CustomField',
-        value: 'CustomField'
-      },
-      {
-        label: 'Labels',
-        value: 'Labels'
-      },
-      {
-        label: 'Component',
-        value: 'Component'
-      }
-    ];
-    this.selectedPriority = [
-      {
-        label: 'p1',
-        value: 'p1'
-      },
-      {
-        label: 'p2',
-        value: 'p2'
-      },
-      {
-        label: 'p3',
-        value: 'p3'
-      },
-      {
-        label: 'p4',
-        value: 'p4'
-      },
-      {
-        label: 'p5',
-        value: 'p5'
-      }
-    ];
-    this.testCaseIdentification = [
-      {
-        label: 'CustomField',
-        value: 'CustomField'
-      },
-      {
-        label: 'Labels',
-        value: 'Labels'
-      }
-    ];
-    this.wastageBlockedCriteria = [
-      {
-        label: 'Blocked Status',
-        value: 'Blocked Status'
-      },
-      {
-        label: 'Include Flagged Issue',
-        value: 'Include Flagged Issue'
-      }
-    ]
 
     this.filterHierarchy = JSON.parse(localStorage.getItem('completeHierarchyData')).scrum;
 
@@ -215,7 +83,6 @@ export class FieldMappingComponent implements OnInit {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     }
 
-    this.initializeFields();
     this.fieldMappingForm = this.formBuilder.group(this.fieldMappingFormObj);
     if (this.sharedService.getSelectedToolConfig()) {
       this.selectedToolConfig = this.sharedService.getSelectedToolConfig().filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
@@ -226,7 +93,6 @@ export class FieldMappingComponent implements OnInit {
       }
     }
     this.getMappings();
-    this.getKPIFieldMappingRelationships();
   }
 
   getMappings() {
@@ -242,14 +108,7 @@ export class FieldMappingComponent implements OnInit {
     }
   }
 
-  getKPIFieldMappingRelationships() {
-    this.http.getKPIFieldMappingRelationships().subscribe(response => {
-      if (response['kpiFieldMappingList']) {
-        this.kpiRelationShips = response['kpiFieldMappingList'];
-        this.kpiRelationShips = this.kpiRelationShips.filter((kpi) => (kpi.type.includes('Scrum') || kpi.type.includes('Other')) && kpi.kpiSource === 'Jira');
-      }
-    });
-  }
+  
 
   generateAdditionalFilterMappings() {
     this.addAdditionalFilterOptions();
@@ -309,193 +168,7 @@ export class FieldMappingComponent implements OnInit {
   get fieldMapping() {
     return this.fieldMappingForm.controls;
   }
-
-  showDialogToAddValue(isSingle, fieldName, type) {
-    this.populateDropdowns = true;
-    this.selectedField = fieldName;
-
-    if (isSingle) {
-      this.singleSelectionDropdown = true;
-    } else {
-      this.singleSelectionDropdown = false;
-    }
-
-    switch (type) {
-      case 'fields':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.fields) {
-          this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.fields;
-        } else {
-          this.fieldMappingMultiSelectValues = [];
-        }
-        break;
-      case 'workflow':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.workflow) {
-          this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.workflow;
-        } else {
-          this.fieldMappingMultiSelectValues = [];
-        }
-        break;
-      case 'Issue_Link':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.Issue_Link) {
-          this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.Issue_Link;
-        } else {
-          this.fieldMappingMultiSelectValues = [];
-        }
-        break;
-      case 'Issue_Type':
-        if (this.fieldMappingMetaData && this.fieldMappingMetaData.Issue_Type) {
-          this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.Issue_Type;
-        } else {
-          this.fieldMappingMultiSelectValues = [];
-        }
-        break;
-      default:
-        this.fieldMappingMultiSelectValues = [];
-        break;
-    }
-
-    if (isSingle) {
-      if (this.fieldMappingForm.controls[this.selectedField].value) {
-        this.selectedValue = this.fieldMappingMultiSelectValues.filter(fieldMappingMultiSelectValue => (fieldMappingMultiSelectValue.data === this.fieldMappingForm.controls[this.selectedField].value));
-        if (this.selectedValue && this.selectedValue.length) {
-          if (this.selectedValue[0].data) {
-            this.selectedValue = this.selectedValue[0].data;
-          }
-        }
-      }
-    } else {
-      if (this.fieldMappingForm.controls[this.selectedField].value) {
-        this.selectedMultiValue = this.fieldMappingMultiSelectValues.filter(fieldMappingMultiSelectValue => (this.fieldMappingForm.controls[this.selectedField].value).includes(fieldMappingMultiSelectValue.data));
-      }
-    }
-
-    this.displayDialog = true;
-  }
-
-
-  cancelDialog() {
-    this.populateDropdowns = false;
-    this.displayDialog = false;
-  }
-
-  saveDialog() {
-    if (this.singleSelectionDropdown) {
-      if (this.selectedValue.length) {
-        this.fieldMappingForm.controls[this.selectedField].setValue(this.selectedValue);
-      }
-    } else {
-      const selectedMultiValueLabels = [];
-      if (this.selectedMultiValue.length) {
-        if (this.fieldMappingForm.controls[this.selectedField].value) {
-          for (const index in this.selectedMultiValue) {
-            selectedMultiValueLabels.push(this.selectedMultiValue[index].key);
-          }
-          const allMultiValueLabels = [];
-          for (const index in this.fieldMappingMultiSelectValues) {
-            allMultiValueLabels.push(this.fieldMappingMultiSelectValues[index].key);
-          }
-
-          if (!selectedMultiValueLabels.includes(this.fieldMappingForm.controls[this.selectedField].value)) {
-            for (const selectedFieldIndex in this.fieldMappingForm.controls[this.selectedField].value) {
-              if (!allMultiValueLabels.includes(this.fieldMappingForm.controls[this.selectedField].value[selectedFieldIndex])) {
-                selectedMultiValueLabels.push(this.fieldMappingForm.controls[this.selectedField].value[selectedFieldIndex]);
-              }
-            }
-          }
-
-        }
-      }
-
-      this.fieldMappingForm.controls[this.selectedField].setValue(Array.from(new Set(selectedMultiValueLabels)));
-    }
-    this.populateDropdowns = false;
-    this.displayDialog = false;
-  }
-
-
-  initializeFields() {
-    this.fieldMappingFormObj = {
-      // workflow status mapping
-      readyForDevelopmentStatus: [''],
-      storyFirstStatus: [''],
-      jiraDefectCreatedStatus: [''],
-      jiraDefectDroppedStatus: [[]],
-      jiraLiveStatus: [''],
-      jiraDor: [''],
-      jiraDefectRejectionStatus: [''],
-      issueStatusExcluMissingWork: [],
-      jiraOnHoldStatus: [],
-      jiraDod: [[]],
-      jiraIssueDeliverdStatus: [[]],
-      jiraDefectRemovalStatus: [[]],
-      resolutionTypeForRejection: [],
-      jiraStatusForDevelopment: [[]],
-      jiraStatusForQa: [[]],
-      jiraBlockedStatus:[[]],
-      jiraIncludeBlockedStatus:[],
-      jiraWaitStatus:[],
-      jiraStatusForInProgress: [],
-      jiraDevDoneStatus : [],
-      jiraDefectClosedStatus: [[]],
-      jiraIterationCompletionStatusCustomField : [[]],
-      // issue type mapping
-      jiraIssueTypeNames: [[]],
-      jiraDefectSeepageIssueType: [[]],
-      jiraQADefectDensityIssueType: [[]],
-      jiraDefectCountlIssueType: [[]],
-      jiraSprintVelocityIssueType: [[]],
-      jiraDefectRemovalIssueType: [[]],
-      jiraDefectRejectionlIssueType: [[]],
-      jiraDefectInjectionIssueType: [[]],
-      jiraTestAutomationIssueType: [[]],
-      jiraIntakeToDorIssueType: [[]],
-      jiraStoryIdentification: [[]],
-      jiraFTPRStoryIdentification: [[]],
-      jiraSprintCapacityIssueType: [[]],
-      jiraIssueEpicType: [[]],
-      jiraIterationCompletionTypeCustomField : [[]],
-      // custom field mapping
-      sprintName: [''],
-      rootCause: [''],
-      jiraStoryPointsCustomField: [''],
-      estimationCriteria: [''],
-      storyPointToHourMapping: [''],
-      epicCostOfDelay: [''],
-      epicRiskReduction: [''],
-      epicUserBusinessValue: [''],
-      epicWsjf: [''],
-      epicTimeCriticality: [''],
-      epicJobSize: [''],
-      workingHoursDayCPT: [''],
-      jiraDueDateCustomField : [''],
-      jiraDueDateField : [''],
-      jiraDevDueDateCustomField : [''],
-      // defect mapping
-      jiradefecttype: [[]],
-
-      defectPriority: [[]],
-      jiraBugRaisedByIdentification: [''],
-      jiraBugRaisedByCustomField: [''],
-      jiraBugRaisedByValue: [[]],
-      jiraBugRaisedByQAIdentification: [''],
-      jiraBugRaisedByQACustomField: [''],
-      jiraBugRaisedByQAValue: [[]],
-
-      productionDefectCustomField: [''],
-      productionDefectIdentifier: [''],
-      productionDefectComponentValue: [''],
-      productionDefectValue: [[]],
-      // qaRootCauseValue: [[]],
-      excludeRCAFromFTPR: [[]],
-      jiraReadyForRefinement: [[]],
-      jiraAcceptedInRefinement: [[]],
-      jiraRejectedInRefinement: [[]],
-      jiraFtprRejectStatus: [[]]
-    };
-
-    this.addAdditionalFilterOptions();
-  }
-
+  
   addAdditionalFilterOptions() {
     this.additionalFilterOptions = [];
     const additionalFilters = this.filterHierarchy.filter((filter) => filter.level > this.filterHierarchy.filter(f => f.hierarchyLevelId === 'sprint')[0].level);
@@ -663,35 +336,6 @@ export class FieldMappingComponent implements OnInit {
     this.fieldMappingForm.patchValue({[fieldName]: ''});
   }
 
-  showFields(kpiRelatedFields) {
-    this.closeAllAccordionTabs();
-    this.fieldstoShow=[];
-    this.groupsToShow={
-      groupFields:{},
-      groupNames:[],
-      showAllgroups:true
-    };
-
-    if(kpiRelatedFields?.hasOwnProperty('fieldNames')){
-      for(const key in kpiRelatedFields.fieldNames){
-        this.groupsToShow.groupNames.push(key);
-        this.groupsToShow.groupFields[key]=kpiRelatedFields.fieldNames[key].length;
-        this.fieldstoShow.push(...Object.values(kpiRelatedFields.fieldNames[key]));
-      }
-      this.groupsToShow.showAllgroups =false;
-    }else{
-      this.fieldstoShow=[];
-      this.groupsToShow.showAllgroups =true;
-    }
-  }
-
-  closeAllAccordionTabs() {
-    if(this.accordion){
-        for(const tab of this.accordion.tabs) {
-              tab.selected = false;
-        }
-    }
-}
 
   handleAdditionalFilters(submitData: any): any {
     /** addiitional filters start*/

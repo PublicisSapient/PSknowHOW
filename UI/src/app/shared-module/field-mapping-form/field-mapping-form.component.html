@@ -1,1 +1,40 @@
 <p>field-mapping-form works!</p>
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
+
+
+
+<!-- Search Dialog -->
+<p-dialog header="Add Value(s)" [(visible)]="displayDialog" showEffect="fade" [modal]="true" [style]="{width: '500px'}"
+    (onShow)="recordScrollPosition()" (onHide)="scrollToPosition()">
+    <div class="dialog-panel" style="width: 450px; min-height: 450px; overflow: hidden;">
+        <div *ngIf="singleSelectionDropdown">
+            <p-dropdown *ngIf="populateDropdowns" inputId="singleSelectionDropdown" autoWidth="false"
+                [style]="{'width':'100%', 'max-width': '100%'}" [options]="fieldMappingMultiSelectValues"
+                placeholder="Select Value" [(ngModel)]="selectedValue" optionLabel="key" optionValue="data"
+                filter="true" showClear="true">
+            </p-dropdown>
+        </div>
+        <div *ngIf="!singleSelectionDropdown" class="multiselect-container p-field p-col-12">
+            <p-multiSelect *ngIf="populateDropdowns" inputId="multiSelectionDropdown"
+                [style]="{'width':'436px', 'max-width': '100%'}" [options]="fieldMappingMultiSelectValues"
+                defaultLabel="Select Values" [(ngModel)]="selectedMultiValue" optionLabel="key" display="chip">
+            </p-multiSelect>
+        </div>
+    </div>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="button" pButton pRipple icon="pi pi-times" (click)="cancelDialog()" label="Cancel"
+                class="p-button p-button-danger p-button-raised"></button>
+            <button type="button" pButton pRipple icon="fa fa-check" (click)="saveDialog()" label="Add"
+                class="p-button p-button-success p-button-raised"></button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+<!-- Confirmation Dialog while saving field mapping -->
+<p-confirmDialog #templateInfoDialog key="templateInfoDialog" [style]="{width: '50vw'}">
+    <p-footer>
+        <button type="button" (click)="templateInfoDialog.reject()" pButton label="Cancel" class="enable-dialog-btn"></button>
+        <button type="button" (click)="templateInfoDialog.accept()" pButton label="Proceed"></button>
+    </p-footer>
+</p-confirmDialog>
