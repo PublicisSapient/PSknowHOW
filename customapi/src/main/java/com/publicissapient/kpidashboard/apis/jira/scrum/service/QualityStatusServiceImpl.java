@@ -244,8 +244,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			Map<String, List<String>> configPriority = customApiConfig.getPriority();
 			Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 			Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
-			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint, fieldMapping);
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping);
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint, fieldMapping.getDefectPriorityQS());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getExcludeRCAFromQS());
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects, latestSprint.getProjectFilter().getBasicProjectConfigId(),fieldMapping.getResolutionTypeForRejectionQS(), fieldMapping.getJiraDefectRejectionStatusQS());
 			KpiHelperService.getDefectsWithoutDrop(droppedDefects, jiraIssueList, totalJiraIssues);
 

@@ -55,7 +55,12 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiradefecttype;
 
 	// defectPriority
-	private List<String> defectPriority;
+	private List<String> defectPriority;//TODO: Extra field
+	private List<String> defectPriorityIFTPR;
+	private List<String> defectPriorityDIR;
+	private List<String> defectPriorityQADD;
+	private List<String> defectPriorityFTPR;
+	private List<String> defectPriorityQS;
 	private String[] jiraIssueTypeNames;
 	private List<String> jiraIssueEpicType;
 	private String storyFirstStatus;
@@ -69,7 +74,11 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
-	private List<String> jiraDod;
+	private List<String> jiraDod;//TODO: Extra field
+	private List<String> jiraDodDIR;
+	private List<String> jiraDodQADD;
+	private List<String> jiraDodLT;
+	private List<String> jiraDodPDA;
 	private String jiraDefectCreatedStatus;
 	private List<String> jiraTechDebtIssueType;
 	private String jiraTechDebtIdentification;
@@ -89,12 +98,11 @@ public class FieldMapping extends BasicModel {
 	private String jiraDefectRejectionStatusQADD;
 	private String jiraBugRaisedByIdentification;
 	private List<String> jiraBugRaisedByValue;
+
 	private List<String> jiraDefectSeepageIssueType;
 	private String jiraBugRaisedByCustomField;
-	private List<String> jiraDefectRemovalStatus;// TODO: Extra field
-	private List<String> jiraDefectRemovalStatusDRE;
-	private List<String> jiraDefectRemovalIssueType;// TODO: Extra field
-	private List<String> jiraDefectRemovalIssueTypeDRE;
+	private List<String> jiraDefectRemovalStatus;
+	private List<String> jiraDefectRemovalIssueType;
 	// Added for Defect Reopen Rate KPI.
 	private List<String> jiraDefectClosedStatus;
 	/**
@@ -112,8 +120,7 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> jiraSprintCapacityIssueType;
 
-	private List<String> jiraDefectRejectionlIssueType;// TODO: Extra field
-	private List<String> jiraDefectRejectionlIssueTypeDRR;
+	private List<String> jiraDefectRejectionlIssueType;
 	private List<String> jiraDefectCountlIssueType;
 	private List<String> jiraDefectCountlIssueTypeDC;
 	private List<String> jiraDefectCountlIssueTypeRCA;
@@ -159,7 +166,12 @@ public class FieldMapping extends BasicModel {
 	private String jiraStatusMappingCustomField;
 
 	private List<String> rootCauseValue;
+	//TODO: Extra field
 	private List<String> excludeRCAFromFTPR;
+	private List<String> excludeRCAFromIFTPR;
+	private List<String> excludeRCAFromDIR;
+	private List<String> excludeRCAFromQADD;
+	private List<String> excludeRCAFromQS;
 
 	// For Lloyds KPIs
 	private List<String> jiraDorToLiveIssueType;

@@ -332,7 +332,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			// DOR. Here Intake is created date of issue.
 			for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistories) {
 				String dor = fieldMapping.getJiraDorLT();
-				List<String> dod = fieldMapping.getJiraDod();
+				List<String> dod = fieldMapping.getJiraDodLT();
 				String live = fieldMapping.getJiraLiveStatus();
 				CycleTimeValidationData cycleTimeValidationData = new CycleTimeValidationData();
 				cycleTimeValidationData.setIssueNumber(jiraIssueCustomHistory.getStoryID());

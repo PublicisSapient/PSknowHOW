@@ -223,16 +223,11 @@ public class KpiHelperService { // NOPMD
 
 	}
 
-	/**
-	 * @param projectWiseRCA
-	 * @param leaf
-	 * @param fieldMapping
-	 */
 	public static void addRCAProjectWise(Map<String, Set<String>> projectWiseRCA, Node leaf,
-			FieldMapping fieldMapping) {
-		if (CollectionUtils.isNotEmpty(fieldMapping.getExcludeRCAFromFTPR())) {
+			List<String> excludeRCA) {
+		if (CollectionUtils.isNotEmpty(excludeRCA)) {
 			Set<String> uniqueRCA = new HashSet<>();
-			for (String rca : fieldMapping.getExcludeRCAFromFTPR()) {
+			for (String rca : excludeRCA) {
 				if (rca.equalsIgnoreCase(Constant.CODING) || rca.equalsIgnoreCase(Constant.CODE)) {
 					rca = Constant.CODE_ISSUE;
 				}
@@ -243,15 +238,16 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
+	 *
 	 * @param projectWisePriority
 	 * @param configPriority
 	 * @param leaf
-	 * @param fieldMapping
+	 * @param defectPriority
 	 */
 	public static void addPriorityProjectWise(Map<String, List<String>> projectWisePriority,
-			Map<String, List<String>> configPriority, Node leaf, FieldMapping fieldMapping) {
-		if (CollectionUtils.isNotEmpty(fieldMapping.getDefectPriority())) {
-			List<String> priorValue = fieldMapping.getDefectPriority().stream().map(String::toUpperCase)
+			Map<String, List<String>> configPriority, Node leaf, List<String> defectPriority) {
+		if (CollectionUtils.isNotEmpty(defectPriority)) {
+			List<String> priorValue = defectPriority.stream().map(String::toUpperCase)
 					.collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(priorValue)) {
 				List<String> priorityValues = new ArrayList<>();
@@ -377,15 +373,15 @@ public class KpiHelperService { // NOPMD
 			sprintList.add(leaf.getSprintFilter().getId());
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
-			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping);
-			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping);
+			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityDIR());
+			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromDIR());
 
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 					leaf.getProjectFilter().getBasicProjectConfigId());
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueType()));
 			mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
-					CommonUtils.convertToPatternList(fieldMapping.getJiraDod()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraDodDIR()));
 			mapOfProjectFiltersFH.put("statusUpdationLog.defect.changedTo", fieldMapping.getJiraDefectCreatedStatus());
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
@@ -468,10 +464,10 @@ public class KpiHelperService { // NOPMD
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraQADefectDensityIssueType()));
 
-			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping);
-			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping);
+			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityQADD());
+			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromQADD());
 
-			List<String> dodList = fieldMapping.getJiraDod();
+			List<String> dodList = fieldMapping.getJiraDodQADD();
 			if (CollectionUtils.isNotEmpty(dodList)) {
 				mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
 						CommonUtils.convertToPatternList(dodList));

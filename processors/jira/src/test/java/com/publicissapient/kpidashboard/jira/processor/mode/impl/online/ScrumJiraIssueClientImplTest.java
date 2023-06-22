@@ -236,10 +236,10 @@ public class ScrumJiraIssueClientImplTest {
 		fieldMapping.setJiraDefectInjectionIssueType(jiraType);
 		fieldMapping.setJiraTechDebtIssueType(jiraType);
 		fieldMapping.setJiraDefectSeepageIssueType(jiraType);
-		fieldMapping.setJiraDefectRemovalStatusDRE(jiraType);
-		fieldMapping.setJiraDefectRejectionlIssueTypeDRR(jiraType);
+		fieldMapping.setJiraDefectRemovalStatus(jiraType);
+		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
 		fieldMapping.setJiraTestAutomationIssueType(jiraType);
-		fieldMapping.setJiraDefectRejectionlIssueTypeDRR(jiraType);
+		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
 		fieldMapping.setJiraDefectCountlIssueType(jiraType);
 		fieldMapping.setJiraIntakeToDorIssueTypeLT(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
@@ -259,7 +259,7 @@ public class ScrumJiraIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraDefectRemovalStatusDRE(jiraType);
+		fieldMapping.setJiraDefectRemovalStatus(jiraType);
 
 		fieldMapping.setJiraStoryPointsCustomField("customfield_56789");
 
@@ -341,7 +341,7 @@ public class ScrumJiraIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraDefectRemovalStatusDRE(jiraType);
+		fieldMapping.setJiraDefectRemovalStatus(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("40");

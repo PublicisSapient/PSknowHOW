@@ -334,8 +334,8 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraQADefectDensityIssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraDefectCountlIssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraSprintVelocityIssueTypeSV(Arrays.asList("Story", "Defect"));
-		fieldMapping.setJiraDefectRemovalIssueTypeDRE(Arrays.asList("Story"));
-		fieldMapping.setJiraDefectRejectionlIssueTypeDRR(Arrays.asList("Story"));
+		fieldMapping.setJiraDefectRemovalIssueType(Arrays.asList("Story"));
+		fieldMapping.setJiraDefectRejectionlIssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraDefectInjectionIssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraTestAutomationIssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraIntakeToDorIssueTypeLT(Arrays.asList("Story", "Defect"));
@@ -350,7 +350,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraDefectRejectionStatusQS("Closed");
 		fieldMapping.setJiraDod(Arrays.asList("Ready for Sign-Off"));
 		fieldMapping.setJiraIssueDeliverdStatusFTPR(Arrays.asList("Closed", "Ready for Delivery"));
-		fieldMapping.setJiraDefectRemovalStatusDRE(Arrays.asList("Closed"));
+		fieldMapping.setJiraDefectRemovalStatus(Arrays.asList("Closed"));
 		fieldMapping.setResolutionTypeForRejectionIFTPR(
 				Arrays.asList("Duplicate", "Cannot Reproduce", "Invalid", "Declined", "Dropped"));
 		fieldMapping.setJiraStatusForDevelopmentAVR(Arrays.asList("In Development"));

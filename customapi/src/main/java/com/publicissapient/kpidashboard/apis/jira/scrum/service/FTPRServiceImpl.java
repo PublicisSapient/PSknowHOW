@@ -276,8 +276,8 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			// Total stories from issues completed collection in a sprint
 			totalStoryList = getTotalStoryList(fieldMapping, allIssues, totalStoryList);
 
-			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint, fieldMapping);
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping);
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint, fieldMapping.getDefectPriorityIFTPR());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getExcludeRCAFromIFTPR());
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionIFTPR(), fieldMapping.getJiraDefectRejectionStatusIFTPR());
 			KpiHelperService.getDefectsWithoutDrop(droppedDefects, allIssues, totalJiraIssues);
 

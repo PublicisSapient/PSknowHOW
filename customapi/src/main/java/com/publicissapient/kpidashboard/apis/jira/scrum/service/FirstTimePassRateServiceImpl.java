@@ -274,8 +274,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					Pair.of(leaf.getSprintFilter().getStartDate(), leaf.getSprintFilter().getEndDate()));
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping);
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping);
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityFTPR());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromFTPR());
 
 			if (Optional.ofNullable(fieldMapping.getJiraFTPRStoryIdentification()).isPresent()) {
 				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
@@ -318,11 +318,11 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		List<JiraIssueCustomHistory> storiesHistory = jiraIssueCustomHistoryRepository.findByStoryIDIn(storyIds);
 
 		defectListWoDrop.removeIf(issue -> {
-					Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
-					FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
-					return kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory, fieldMapping.getJiraStatusForDevelopmentFTPR());
-				}
-		);
+			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
+			FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
+			return kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory,
+					fieldMapping.getJiraStatusForDevelopmentFTPR());
+		});
 
 		List<String> storyIdList = new ArrayList<>();
 		sprintWiseStories.forEach(s -> storyIdList.addAll(s.getStoryList()));

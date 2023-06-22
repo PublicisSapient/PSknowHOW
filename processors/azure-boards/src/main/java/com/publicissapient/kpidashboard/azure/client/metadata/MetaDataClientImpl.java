@@ -269,17 +269,21 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDorLT(null);
 		}
 		fieldMapping.setJiraDod(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodDIR(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodQADD(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodLT(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodPDA(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusCustomField(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraDefectSeepageIssueType(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraDefectRemovalStatusDRE(workflowMap.get(CommonConstant.DELIVERED));
-		fieldMapping.setJiraDefectRemovalIssueTypeDRE(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraDefectRemovalStatus(workflowMap.get(CommonConstant.DELIVERED));
+		fieldMapping.setJiraDefectRemovalIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraStoryPointsCustomField(customField.get(CommonConstant.STORYPOINT));
 		fieldMapping.setJiraTestAutomationIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraSprintVelocityIssueTypeSV(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraSprintVelocityIssueTypeBR(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraSprintCapacityIssueType(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraDefectRejectionlIssueTypeDRR(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraDefectRejectionlIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraDefectCountlIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraDefectCountlIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraIssueDeliverdStatusSV(workflowMap.get(CommonConstant.DELIVERED));
