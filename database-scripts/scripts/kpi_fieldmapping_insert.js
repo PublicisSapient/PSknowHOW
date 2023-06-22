@@ -1262,7 +1262,36 @@ db.getCollection('field_mapping_structure').insert(
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "Status from workflow on which defect is considered as removed. <br> Example: Closed<hr>"
-    }
+    },
+    {
+    "fieldName": "jiraIssueDeliverdStatusCVR",
+    "fieldLabel": "Issue Delivered Status",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Status from workflow on which issue is delivered. <br> Example: Closed<hr>",
+      "kpiImpacted": "Sprint Velocity"
+    },
+     {
+        "fieldName": "resolutionTypeForRejectionDSR",
+        "fieldLabel": "Defect Seepage Rate - Issue Types with Linked Defect",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+               "definition": "Resolution type to identify rejected defects. <br>"        }
+      },
+       {
+          "fieldName": "jiraDefectRejectionStatusDSR",
+          "fieldLabel": "Defect Rejection Status",
+          "fieldType": "chips",
+          "fieldCategory": "workflow",
+          "section": "WorkFlow Status Mapping",
+          "tooltip": {
+                "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
+          }
+        },
   }
 
 

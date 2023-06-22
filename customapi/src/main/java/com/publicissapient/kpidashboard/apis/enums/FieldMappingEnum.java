@@ -92,12 +92,12 @@ public enum FieldMappingEnum {
 
 	KPI127("Production Defects Ageing", Arrays.asList("jiraDodPDA")),
 
-	KPI35("Defect Seepage", Arrays.asList("jiraDefectSeepageIssueType","resolutionTypeForRejectionDSR","jiraDefectRejectionStatusDSR")),
+	KPI35("Defect Seepage Rate", Arrays.asList("jiraDefectSeepageIssueType","resolutionTypeForRejectionDSR","jiraDefectRejectionStatusDSR","jiraBugRaisedByIdentification","jiraBugRaisedByValue")),
 
 	KPI133("Quality Status", Arrays.asList("resolutionTypeForRejectionQS", "jiraDefectRejectionStatusQS",
 			"defectPriorityQS", "excludeRCAFromQS")),
 
-	KPI126("Created vs Resolved defects", Arrays.asList());
+	KPI126("Created vs Resolved defects", Arrays.asList("jiradefecttype","jiraIssueDeliverdStatusCVR"));
 
 	// @formatter:on
 
