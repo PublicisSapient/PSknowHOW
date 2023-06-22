@@ -156,7 +156,7 @@ db.getCollection('kpi_fieldmapping').insert(
         type: ['Scrum'],
         fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejectionAVR','jiraIssueDeliverdStatusAVR','jiraStatusForDevelopment','jiraDefectRejectionStatusAVR'], 'Issue Types Mapping' : ['jiraIssueTypeNames'], 'Defects Mapping' : ['jiradefecttype'] }
       },
-      {f
+      {
         kpiId: 'kpi84',
         type: ['Scrum'],
         kpiName: 'Mean Time To Merge',

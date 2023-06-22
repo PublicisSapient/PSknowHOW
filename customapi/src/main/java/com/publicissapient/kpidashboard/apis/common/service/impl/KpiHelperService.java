@@ -36,8 +36,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPIFieldMapping;
+import com.publicissapient.kpidashboard.apis.enums.FieldMappingEnum;
 import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.common.model.application.*;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,10 +62,6 @@ import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
-import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
@@ -1406,15 +1403,23 @@ public class KpiHelperService { // NOPMD
 		return fieldWiseIssuesLatestMap;
 	}
 
-	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiFieldMappingData(String kpiId) {
-
-		List<String> fieldList=KPIFieldMapping.valueOf(kpiId).getFields();
-		List<FieldMappingStructure> fieldMappingStructureList= (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
-		List<FieldMappingStructure> fieldMappingStructures=fieldMappingStructureList.stream().filter(fieldList::contains).collect(Collectors.toList());
-		FieldMappingStructureResponse kpiFieldMappingResponse = new FieldMappingStructureResponse();
-
-		kpiFieldMappingResponse.setFieldMappingStructureList(fieldMappingStructures);
+	/**
+	 * Fetchs kpi fieldmapping list KpiFieldMapping response.
+	 *
+	 * @return the KpiFieldMapping response
+	 */
+	public KPIFieldMappingResponse fetchKpiFieldMappingList() {
+		List<KPIFieldMapping> lisOfKpiFieldMapping = (List<KPIFieldMapping>) configHelperService.loadKpiFieldMapping();
+		KPIFieldMappingResponse kpiFieldMappingResponse = new KPIFieldMappingResponse();
+		kpiFieldMappingResponse.setKpiFieldMappingList(lisOfKpiFieldMapping);
 		return kpiFieldMappingResponse;
+	}
+
+	public List<FieldMappingStructure> fetchFieldMappingStructureByKpiFieldMappingData(String kpiId) {
+		List<String> fieldList= FieldMappingEnum.valueOf(kpiId.toUpperCase()).getFields();
+		List<FieldMappingStructure> fieldMappingStructureList= (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
+		List<FieldMappingStructure> fieldMappingStructures=fieldMappingStructureList.stream().filter(f->fieldList.contains(f.getFieldName())).collect(Collectors.toList());
+		return fieldMappingStructures;
 	}
 
 	public boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue,

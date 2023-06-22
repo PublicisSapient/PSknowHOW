@@ -61,6 +61,7 @@ public class FieldMapping extends BasicModel {
 	private String storyFirstStatus;
 	private String envImpacted;
 	private String rootCause;
+	private List<String> jiraStatusForDevelopment;// TODO: Extra field
 	private List<String> jiraStatusForDevelopmentAVR;
 	private List<String> jiraStatusForDevelopmentFTPR;
 	private List<String> jiraStatusForDevelopmentIFTPR;
@@ -74,6 +75,7 @@ public class FieldMapping extends BasicModel {
 	private String jiraTechDebtIdentification;
 	private String jiraTechDebtCustomField;
 	private List<String> jiraTechDebtValue;
+	private String jiraDefectRejectionStatus;// TODO: Extra field
 	private String jiraDefectRejectionStatusAVR;
 	private String jiraDefectRejectionStatusDC;
 	private String jiraDefectRejectionStatusDRE;
@@ -89,7 +91,9 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraBugRaisedByValue;
 	private List<String> jiraDefectSeepageIssueType;
 	private String jiraBugRaisedByCustomField;
+	private List<String> jiraDefectRemovalStatus;// TODO: Extra field
 	private List<String> jiraDefectRemovalStatusDRE;
+	private List<String> jiraDefectRemovalIssueType;// TODO: Extra field
 	private List<String> jiraDefectRemovalIssueTypeDRE;
 	// Added for Defect Reopen Rate KPI.
 	private List<String> jiraDefectClosedStatus;
@@ -102,14 +106,19 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraTestAutomationIssueType;
 	// value of the automated test case Eg. Yes, Cannot Automate, No
 
+	private List<String> jiraSprintVelocityIssueType;// TODO: Extra field
 	private List<String> jiraSprintVelocityIssueTypeSV;
 	private List<String> jiraSprintVelocityIssueTypeBR;
 
 	private List<String> jiraSprintCapacityIssueType;
 
+	private List<String> jiraDefectRejectionlIssueType;// TODO: Extra field
 	private List<String> jiraDefectRejectionlIssueTypeDRR;
 	private List<String> jiraDefectCountlIssueType;
+	private List<String> jiraDefectCountlIssueTypeDC;
+	private List<String> jiraDefectCountlIssueTypeRCA;
 
+	private List<String> jiraIssueDeliverdStatus;// TODO: Extra field
 	private List<String> jiraIssueDeliverdStatusBR;
 	private List<String> jiraIssueDeliverdStatusSV;
 	private List<String> jiraIssueDeliverdStatusAVR;
@@ -117,7 +126,10 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueDeliverdStatusFTPR;
 	private String readyForDevelopmentStatus;
 
+	private String jiraDor;// TODO: Extra field
 	private String jiraDorLT;
+
+	private List<String> jiraIntakeToDorIssueType;// TODO: Extra field
 	private List<String> jiraIntakeToDorIssueTypeLT;
 
 	private List<String> jiraStoryIdentification;
@@ -154,6 +166,8 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraProductiveStatus;
 
 	private List<String> jiraCommitmentReliabilityIssueType;
+
+	private List<String> resolutionTypeForRejection;// TODO: Extra field
 	private List<String> resolutionTypeForRejectionAVR;
 	private List<String> resolutionTypeForRejectionDC;
 	private List<String> resolutionTypeForRejectionDRE;
