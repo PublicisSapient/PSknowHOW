@@ -38,7 +38,7 @@
     </div>
 
 
-    <div class="p-d-flex p-justify-center" *ngIf="cols?.length>0">
+    <div class="p-d-flex p-justify-center w-100" *ngIf="cols?.length>0">
         <div *ngFor="let col of cols; let i = index;">
             <div *ngIf="i != 0">
                 <div class="p-text-center" [ngClass]="{'p-pr-3': i != cols.length - 1}">

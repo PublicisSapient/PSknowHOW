@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,6 @@ import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -314,13 +312,9 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 				basicProjectConfigIds.stream().map(ObjectId::toString).distinct().collect(Collectors.toList()));
 		List<JiraIssue> jiraIssues = jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters,
 				uniqueProjectMap);
-		List<IssueBacklog> issueBacklogs = issueBacklogRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters,
-				uniqueProjectMap);
-		List<JiraIssue> jiraIssueList = ListUtils.union(jiraIssues,
-				kpiHelperService.convertBacklogToJiraIssue(issueBacklogs));
-		resultMap.put(TOTAL_JIRA_ISSUE, jiraIssueList);
+		resultMap.put(TOTAL_JIRA_ISSUE, jiraIssues);
 
-		List<String> notClosedJiraIssueNumbers = jiraIssueList.stream().map(JiraIssue::getNumber)
+		List<String> notClosedJiraIssueNumbers = jiraIssues.stream().map(JiraIssue::getNumber)
 				.collect(Collectors.toList());
 		basicProjectConfigIds.forEach(basicProjectConfigObjectId -> {
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
@@ -338,12 +332,9 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		// we get all the data that are once closed and now in open state.
 		List<JiraIssueCustomHistory> jiraReopenIssueCustomHistories = jiraIssueCustomHistoryRepository
 				.findByFilterAndFromStatusMap(mapOfFiltersForHistory, uniqueProjectMap);
-		List<IssueBacklogCustomHistory> backlogReopenIssueCustomHistories = issueBacklogCustomHistoryQueryRepository
-				.findByFilterAndFromStatusMap(mapOfFiltersForHistory, uniqueProjectMap);
-		List<JiraIssueCustomHistory> reopenIssueCustomHistories = ListUtils.union(jiraReopenIssueCustomHistories,
-				kpiHelperService.convertBacklogHistoryToJiraHistory(backlogReopenIssueCustomHistories));
+
 		resultMap.put(PROJECT_CLOSED_STATUS_MAP, closedStatusListBasicConfigMap);
-		resultMap.put(JIRA_REOPEN_HISTORY, reopenIssueCustomHistories);
+		resultMap.put(JIRA_REOPEN_HISTORY, jiraReopenIssueCustomHistories);
 		return resultMap;
 	}
 
