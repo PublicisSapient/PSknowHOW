@@ -284,8 +284,8 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraSprintVelocityIssueTypeBR(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraSprintCapacityIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraDefectRejectionlIssueType(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraDefectCountlIssueType(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraDefectCountlIssueType(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraDefectCountlIssueTypeDC(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraDefectCountlIssueTypeRCA(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraIssueDeliverdStatusSV(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIssueDeliverdStatusBR(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIssueDeliverdStatusAVR(workflowMap.get(CommonConstant.DELIVERED));

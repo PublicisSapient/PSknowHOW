@@ -74,11 +74,13 @@ public enum FieldMappingEnum {
 	KPI37("Defect Rejection Rate", Arrays.asList("resolutionTypeForRejectionDRR", "jiraDefectRejectionStatusDRR",
 			"jiraDefectRejectionlIssueType")),
 
-	KPI28("Defect Count By Priority(Scrum)", Arrays.asList("jiradefecttype", "estimationCriteria")),
+	KPI28("Defect Count By Priority(Scrum)", Arrays.asList("jiraDefectCountlIssueTypeDC","resolutionTypeForRejectionDC","jiraDefectRejectionStatusDC")),
 
 	KPI140("Defect Count by Priority (Iteration)", Arrays.asList("jiradefecttype")),
 
 	KPI144("Defect Count by Priority (Release)", Arrays.asList("jiradefecttype")),
+
+	KPI36("Defect Count by RCA (Scrum)",Arrays.asList("jiraDefectCountlIssueTypeRCA","resolutionTypeForRejectionRCA","jiraDefectRejectionStatusRCA")),
 
 	KPI14("Defect Injection Rate",
 			Arrays.asList("jiradefecttype", "estimationCriteria", "excludeRCAFromDIR", "resolutionTypeForRejectionDIR",
@@ -93,7 +95,9 @@ public enum FieldMappingEnum {
 	KPI35("Defect Seepage", Arrays.asList("jiraDefectSeepageIssueType","resolutionTypeForRejectionDSR","jiraDefectRejectionStatusDSR")),
 
 	KPI133("Quality Status", Arrays.asList("resolutionTypeForRejectionQS", "jiraDefectRejectionStatusQS",
-			"defectPriorityQS", "excludeRCAFromQS"));
+			"defectPriorityQS", "excludeRCAFromQS")),
+
+	KPI126("Created vs Resolved defects", Arrays.asList());
 
 	// @formatter:on
 

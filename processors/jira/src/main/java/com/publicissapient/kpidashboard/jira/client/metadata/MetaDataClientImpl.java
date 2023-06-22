@@ -339,9 +339,9 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDefectRejectionlIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping
-					.setJiraDefectCountlIssueType(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+					.setJiraDefectCountlIssueTypeDC(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping
-					.setJiraDefectCountlIssueType(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+					.setJiraDefectCountlIssueTypeRCA(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping
 					.setJiraIssueDeliverdStatusSV(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping
@@ -410,7 +410,9 @@ public class MetaDataClientImpl implements MetadataClient {
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setJiraDefectRejectionlIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraDefectCountlIssueType(
+			fieldMapping.setJiraDefectCountlIssueTypeDC(
+					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping.setJiraDefectCountlIssueTypeRCA(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setJiraDefectInjectionIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));

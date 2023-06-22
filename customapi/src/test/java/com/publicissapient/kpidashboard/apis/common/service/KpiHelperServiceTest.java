@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.common.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -146,6 +148,11 @@ public class KpiHelperServiceTest {
 
 	private KpiRequestFactory kanbanKpiRequestFactory;
 
+	@Mock
+	private FieldMappingStructure fieldMappingStructure= FieldMappingStructure.builder().build();
+
+	private List<FieldMappingStructure> fieldMappingStructureList = new ArrayList<>();
+
 	@Before
 	public void setup() {
 		AccountHierarchyFilterDataFactory factory = AccountHierarchyFilterDataFactory.newInstance();
@@ -184,6 +191,12 @@ public class KpiHelperServiceTest {
 
 		CapacityKpiDataDataFactory capacityKpiDataDataFactory = CapacityKpiDataDataFactory.newInstance();
 		capacityKpiDataList = capacityKpiDataDataFactory.getCapacityKpiDataList();
+
+//		fieldMappingStructure.setFieldName("acb");
+//		fieldMappingStructure.setFieldCategory("asd");
+//		fieldMappingStructure.setFieldLabel("asd");
+//		fieldMappingStructure.setFieldType("ahd");
+		fieldMappingStructureList.add(fieldMappingStructure);
 	}
 
 	@After
@@ -372,6 +385,12 @@ public class KpiHelperServiceTest {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.AVERAGE_RESOLUTION_TIME.getKpiId());
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
+	}
+
+	@Test
+	public void fetchFieldMappingStructureByKpiFieldMappingData(){
+		when(configHelperService.loadFieldMappingStructure()).thenReturn(fieldMappingStructureList);
+		assertNotNull(kpiHelperService.fetchFieldMappingStructureByKpiFieldMappingData("kpi0"));
 	}
 
 }

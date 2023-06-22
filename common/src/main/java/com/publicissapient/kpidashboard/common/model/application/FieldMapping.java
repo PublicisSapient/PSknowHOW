@@ -121,7 +121,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraSprintCapacityIssueType;
 
 	private List<String> jiraDefectRejectionlIssueType;
-	private List<String> jiraDefectCountlIssueType;
+	private List<String> jiraDefectCountlIssueType;// TODO: Extra field
 	private List<String> jiraDefectCountlIssueTypeDC;
 	private List<String> jiraDefectCountlIssueTypeRCA;
 
