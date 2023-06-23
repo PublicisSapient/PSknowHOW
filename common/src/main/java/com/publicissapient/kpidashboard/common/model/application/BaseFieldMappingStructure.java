@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,12 +36,36 @@ import lombok.Setter;
  */
 @SuppressWarnings("PMD.TooManyFields")
 @Data
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "field_mapping_structure")
-public class FieldMappingStructure extends BaseFieldMappingStructure {
-	private List<BaseFieldMappingStructure> nestedFields;
+public class BaseFieldMappingStructure extends BasicModel {
+	private String fieldName;
+	private String fieldLabel;
+	private String fieldType;
+	private String fieldCategory;
+	private String section;
+	private boolean processorCommon;
+	private MappingToolTip tooltip;
+	private List<Options> options;
+	private List<String> filterGroup;
+
+	@Data
+	@Getter
+	@Setter
+	class MappingToolTip {
+		String definition;
+		String kpiImpacted;
+	}
+
+	@Data
+	@Getter
+	@Setter
+	class Options {
+		String label;
+		String value;
+	}
 
 }

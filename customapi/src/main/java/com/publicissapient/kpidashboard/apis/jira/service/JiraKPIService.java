@@ -271,6 +271,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public SprintDetails getSprintDetailsFromBaseClass() {
+
 		return jiraService.getCurrentSprintDetails();
 	}
 

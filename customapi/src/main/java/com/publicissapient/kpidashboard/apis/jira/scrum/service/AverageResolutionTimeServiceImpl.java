@@ -195,8 +195,8 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 			String basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId().toString();
 			Set<String> issueTypes = new HashSet<>();
 			FieldMapping fieldMapping = fieldMappingMap.get(basicProjectConfigId);
-			if (null != fieldMapping && null != fieldMapping.getJiraIssueTypeNames()) {
-				issueTypes = Arrays.stream(fieldMapping.getJiraIssueTypeNames()).collect(Collectors.toSet());
+			if (null != fieldMapping && null != fieldMapping.getJiraIssueTypeNamesAVR()) {
+				issueTypes = Arrays.stream(fieldMapping.getJiraIssueTypeNamesAVR()).collect(Collectors.toSet());
 				if (CollectionUtils.containsAny(issueTypes, fieldMapping.getJiradefecttypeAVR())) {
 					issueTypes.removeIf(x -> fieldMapping.getJiradefecttypeAVR().contains(x));
 					issueTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
@@ -333,7 +333,7 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 				projectFieldMapping.put(basicProjectConfigId.toString(), fieldMapping);
 				KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,
 						fieldMapping.getResolutionTypeForRejectionAVR(),fieldMapping.getJiraDefectRejectionStatusAVR());
-				List<String> jiraIssueTypes = new ArrayList<>(Arrays.asList(fieldMapping.getJiraIssueTypeNames()));
+				List<String> jiraIssueTypes = new ArrayList<>(Arrays.asList(fieldMapping.getJiraIssueTypeNamesAVR()));
 				if (CollectionUtils.containsAny(jiraIssueTypes, fieldMapping.getJiradefecttypeAVR())) {
 					jiraIssueTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
 				}
