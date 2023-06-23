@@ -1412,13 +1412,21 @@ public class KpiHelperService { // NOPMD
 	}
 
 	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiFieldMappingData(String kpiId) {
-		FieldMappingStructureResponse fieldMappingStructureResponse = new FieldMappingStructureResponse();
+		FieldMappingStructureResponse fieldMappingStructureResponse = null;
 		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
 		if(CollectionUtils.isNotEmpty(fieldMappingStructureList)) {
-			List<String> fieldList= FieldMappingEnum.valueOf(kpiId.toUpperCase()).getFields();
-			String kpiSource = FieldMappingEnum.valueOf(kpiId.toUpperCase()).getKpiSource();
-			fieldMappingStructureResponse.setFieldConfiguration(fieldMappingStructureList.stream().filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList()));
-			fieldMappingStructureResponse.setKpiSource(kpiSource);
+			fieldMappingStructureResponse=new FieldMappingStructureResponse();
+			try {
+				List<String> fieldList = FieldMappingEnum.valueOf(kpiId.toUpperCase()).getFields();
+				String kpiSource = FieldMappingEnum.valueOf(kpiId.toUpperCase()).getKpiSource();
+				fieldMappingStructureResponse.setFieldConfiguration(fieldMappingStructureList.stream().filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList()));
+				fieldMappingStructureResponse.setKpiSource(kpiSource);
+			}
+			catch (Exception ex){
+				fieldMappingStructureResponse.setFieldConfiguration(new ArrayList<>());
+				fieldMappingStructureResponse.setKpiSource(null);
+			}
+
 		}
 		return fieldMappingStructureResponse;
 	}
