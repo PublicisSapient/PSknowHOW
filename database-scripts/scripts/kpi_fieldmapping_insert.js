@@ -1091,7 +1091,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "excludeRCAFromFTPR",
     "fieldLabel": "Defect RCA exclusion from Quality KPIs",
-    "fieldType": "text",
+    "fieldType": "chips",
     "section": "Defects Mapping",
     "tooltip": {
       "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
@@ -1100,7 +1100,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "excludeRCAFromIFTPR",
     "fieldLabel": "Defect RCA exclusion from Quality KPIs",
-    "fieldType": "text",
+    "fieldType": "chips",
     "section": "Defects Mapping",
     "tooltip": {
       "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
@@ -1109,7 +1109,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "excludeRCAFromDIR",
     "fieldLabel": "Defect RCA exclusion from Quality KPIs",
-    "fieldType": "text",
+    "fieldType": "chips",
     "section": "Defects Mapping",
     "tooltip": {
       "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
@@ -1118,7 +1118,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "excludeRCAFromQADD",
     "fieldLabel": "Defect RCA exclusion from Quality KPIs",
-    "fieldType": "text",
+    "fieldType": "chips",
     "section": "Defects Mapping",
     "tooltip": {
       "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
@@ -1127,7 +1127,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "excludeRCAFromQS",
     "fieldLabel": "Defect RCA exclusion from Quality KPIs",
-    "fieldType": "text",
+    "fieldType": "chips",
     "section": "Defects Mapping",
     "tooltip": {
       "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
