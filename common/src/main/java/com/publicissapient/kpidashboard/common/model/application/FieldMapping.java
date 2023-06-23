@@ -52,7 +52,25 @@ public class FieldMapping extends BasicModel {
 	private String projectId;
 	private String sprintName;
 	private String epicName;
-	private List<String> jiradefecttype;
+	private List<String> jiradefecttype;//TODO: duplicate
+	private List<String> jiradefecttypeSWE;
+	private List<String> jiradefecttypeIDCR;
+	private List<String> jiradefecttypeIDCS;
+	private List<String> jiradefecttypeIDCP;
+	private List<String> jiradefecttypeRDCA;
+	private List<String> jiradefecttypeRDCP;
+	private List<String> jiradefecttypeRDCR;
+	private List<String> jiradefecttypeRDCS;
+	private List<String> jiradefecttypeQS;
+	private List<String> jiradefecttypeIWS;
+	private List<String> jiradefecttypeLT;
+	private List<String> jiradefecttypeMW;
+	private List<String> jiradefecttypeFTPR;
+	private List<String> jiradefecttypeIFTPR;
+	private List<String> jiradefecttypeIC;
+	private List<String> jiradefecttypeAVR;
+	private List<String> jiradefecttypeCVR;
+	private List<String> jiradefecttypeBDRR;
 
 	// defectPriority
 	private List<String> defectPriority;//TODO: Extra field

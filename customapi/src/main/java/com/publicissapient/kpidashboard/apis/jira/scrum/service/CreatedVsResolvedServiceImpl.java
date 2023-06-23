@@ -219,7 +219,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetail.getBasicProjectConfigId());
 				totalNonBugIssues.addAll(sprintDetail.getTotalIssues().stream()
-						.filter(sprintIssue -> !fieldMapping.getJiradefecttype().contains(sprintIssue.getTypeName()))
+						.filter(sprintIssue -> !fieldMapping.getJiradefecttypeCVR().contains(sprintIssue.getTypeName()))
 						.map(SprintIssue::getNumber).collect(Collectors.toSet()));
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));

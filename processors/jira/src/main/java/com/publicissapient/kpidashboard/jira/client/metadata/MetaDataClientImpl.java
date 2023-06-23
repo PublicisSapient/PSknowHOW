@@ -282,6 +282,26 @@ public class MetaDataClientImpl implements MetadataClient {
 
 		} else {
 			fieldMapping.setJiradefecttype(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeSWE(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeIDCR(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeIDCS(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeIDCP(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeRDCA(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeRDCP(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeRDCR(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeRDCS(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeQS(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeIWS(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeLT(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeMW(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeFTPR(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeIFTPR(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeAVR(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeIC(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeCVR(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeBDRR(issueTypeMap.get(CommonConstant.BUG));
+
+
 			fieldMapping
 					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 			fieldMapping
@@ -500,6 +520,24 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDefectRejectionStatusDIR(CommonConstant.REJECTED);
 			fieldMapping.setJiraDefectRejectionStatusQADD(CommonConstant.REJECTED);
 			fieldMapping.setJiradefecttype(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeSWE(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeIDCR(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeIDCS(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeIDCP(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeRDCA(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeRDCP(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeRDCR(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeRDCS(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeQS(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeIWS(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeLT(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeMW(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeFTPR(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeIFTPR(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeAVR(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeIC(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeCVR(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setJiradefecttypeBDRR(issueTypeMap.get(CommonConstant.BUG));
 
 		}
 	}
