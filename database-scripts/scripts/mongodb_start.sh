@@ -131,7 +131,6 @@ function running_js()
   echo "########## Field mapping configuration compatibility ############"
     mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/field_mapping_configuration.js
 
-
 }
 
 function cron_service()

@@ -1,3 +1,4 @@
+
 const fieldMappings = db.field_mapping.find({});
 fieldMappings.forEach(function(fm) {
     if (!fm.createdDate) {
