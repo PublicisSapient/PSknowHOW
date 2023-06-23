@@ -24,6 +24,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.debbie.service.DebbieConfigServiceImpl;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -65,6 +68,13 @@ public class ProcessorServiceImpl implements ProcessorService {
 	@Autowired
 	private ProcessorUrlConfig processorUrlConfig;
 
+	@Autowired
+	private CustomApiConfig customApiConfig;
+
+	@Autowired
+	private DebbieConfigServiceImpl debbieConfigService;
+
+
 	@Override
 	public ServiceResponse getAllProcessorDetails() {
 		List<Processor> listProcessor = new ArrayList<>();
@@ -78,34 +88,37 @@ public class ProcessorServiceImpl implements ProcessorService {
 	}
 
 	@Override
-	public ServiceResponse runProcessor(String processorName,
-			ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
+	public ServiceResponse runProcessor(String processorName, ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
 
 		String url = processorUrlConfig.getProcessorUrl(processorName);
 		boolean isSuccess = true;
-
-		httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-		String token = httpServletRequest.getHeader("Authorization");
-		token = CommonUtils.handleCrossScriptingTaintedValue(token);
 		int statuscode = HttpStatus.NOT_FOUND.value();
-		if (StringUtils.isNotEmpty(url)) {
-			try {
-				HttpHeaders headers = new HttpHeaders();
-				headers.add("Authorization", token);
+		if (processorName.equalsIgnoreCase(ProcessorConstants.BITBUCKET)
+				&& processorName.equalsIgnoreCase(ProcessorConstants.BITBUCKET)) {
+			statuscode = debbieConfigService
+					.triggerScanDebbieProject(processorExecutionBasicConfig.getProjectBasicConfigIds());
+		} else {
+			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+			String token = httpServletRequest.getHeader("Authorization");
+			token = CommonUtils.handleCrossScriptingTaintedValue(token);
+			if (StringUtils.isNotEmpty(url)) {
+				try {
+					HttpHeaders headers = new HttpHeaders();
+					headers.add("Authorization", token);
 
-				HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(
-						processorExecutionBasicConfig, headers);
-				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-				statuscode = resp.getStatusCode().value();
-			} catch (HttpClientErrorException ex) {
-				statuscode = ex.getStatusCode().value();
-				isSuccess = false;
-			} catch (ResourceAccessException ex) {
+					HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(processorExecutionBasicConfig, headers);
+					ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+					statuscode = resp.getStatusCode().value();
+				} catch (HttpClientErrorException ex) {
+					statuscode = ex.getStatusCode().value();
+					isSuccess = false;
+				} catch (ResourceAccessException ex) {
+					isSuccess = false;
+				}
+			}
+			if (HttpStatus.NOT_FOUND.value() == statuscode || HttpStatus.INTERNAL_SERVER_ERROR.value() == statuscode) {
 				isSuccess = false;
 			}
-		}
-		if (HttpStatus.NOT_FOUND.value() == statuscode || HttpStatus.INTERNAL_SERVER_ERROR.value() == statuscode) {
-			isSuccess = false;
 		}
 		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);
 	}

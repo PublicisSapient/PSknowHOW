@@ -106,4 +106,7 @@ public class ProjectToolConfig extends BasicModel {
 	// jiraIterationCompletionStatusCustomField field mapping update identifier
 	private boolean azureIterationStatusFieldUpdate;
 
+	private Boolean isNew;
+	private String repoCloningEnabled;
+
 }

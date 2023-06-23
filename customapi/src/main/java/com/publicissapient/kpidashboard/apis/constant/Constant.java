@@ -137,6 +137,8 @@ public final class Constant {
 	public static final String AMBER = "#FFBF00";
 	public static final String GREEN = "#00ff00";
 
+	public static final String DEBBIE_TOOLS = "Debbie";
+
 	private Constant() {
 	}
 

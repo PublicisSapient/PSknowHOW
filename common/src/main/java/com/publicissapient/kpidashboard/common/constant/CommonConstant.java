@@ -182,6 +182,7 @@ public final class CommonConstant {
 
 	public static final String RELEASED = "Released";
 	public static final String UNRELEASED = "Unreleased";
+	public static final String DEBBIE_TOOLS = "Debbie";
 
 	private CommonConstant() {
 
