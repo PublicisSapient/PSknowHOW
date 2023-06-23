@@ -25,10 +25,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.debbie.service.DebbieConfigServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpService;
@@ -73,6 +75,9 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	private ToolDataCleanUpServiceFactory dataCleanUpServiceFactory;
 	@Autowired
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
+
+	@Autowired
+	private DebbieConfigServiceImpl debbieConfigService;
 
 	/**
 	 * make a copy of the list so the original list is not changed, and remove() is
@@ -162,6 +167,20 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)
 				&& hasTool(projectToolConfig.getBasicProjectConfigId(), ProcessorConstants.JIRA)) {
 			return new ServiceResponse(false, "Jira already configured for this project", null);
+		}
+				if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.GITHUB)
+				|| projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.BITBUCKET)) {
+			Connection connection = getConnection(projectToolConfig.getConnectionId());
+			projectToolConfig.setToolName(CommonConstant.DEBBIE_TOOLS);
+			List<ProjectToolConfig> repoConfigList = hasDebbieTool(projectToolConfig.getBasicProjectConfigId(), connection,
+					CommonConstant.DEBBIE_TOOLS);
+			List<String> branchList = repoConfigList.stream().map(ProjectToolConfig::getBranch).collect(Collectors.toList());
+			projectToolConfig.setIsNew(CollectionUtils.isEmpty(repoConfigList));
+			branchList.add(projectToolConfig.getBranch());
+			int response = debbieConfigService.configureDebbieProject(projectToolConfig, connection, branchList);
+			if (response == HttpStatus.NOT_FOUND.value()) {
+				return new ServiceResponse(false, "", null);
+			}
 		}
 
 		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA_TEST)
@@ -387,7 +406,6 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setDeploymentProjectId(e.getDeploymentProjectId());
 			projectConfToolDto.setDeploymentProjectName(e.getDeploymentProjectName());
 			projectConfToolDto.setParameterNameForEnvironment(e.getParameterNameForEnvironment());
-			projectConfToolDto.setConnectionName(checkConnectionName(e.getConnectionId()));
 			projectConfToolDtoList.add(projectConfToolDto);
 			projectConfToolDto.setJiraTestCaseType(e.getJiraTestCaseType());
 			projectConfToolDto.setTestAutomatedIdentification(e.getTestAutomatedIdentification());
@@ -401,17 +419,19 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setTestCaseStatus(e.getTestCaseStatus());
 			projectConfToolDto.setGitLabSdmID(e.getGitLabSdmID());
 			projectConfToolDto.setAzureIterationStatusFieldUpdate(e.isAzureIterationStatusFieldUpdate());
+			projectConfToolDto.setIsNew(e.getIsNew());
+			projectConfToolDto.setRepoCloningEnabled(e.getRepoCloningEnabled());
+			projectConfToolDto.setConnectionName(getConnection(e.getConnectionId()).getConnectionName());
 			projectConfToolDto.setProjectComponent(e.getProjectComponent());
 		});
 
 		return projectConfToolDtoList;
 	}
 
-	private String checkConnectionName(ObjectId connectionId) {
+	private Connection getConnection(ObjectId connectionId) {
 		Optional<Connection> optConnection = connectionRepository.findById(connectionId);
 		if (optConnection.isPresent()) {
-			Connection connection = optConnection.get();
-			return connection.getConnectionName();
+			return optConnection.get();
 		}
 		return null;
 	}
@@ -420,6 +440,13 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		List<ProjectToolConfig> tools = toolRepository.findByToolNameAndBasicProjectConfigId(type,
 				basicProjectConfigId);
 		return CollectionUtils.isNotEmpty(tools);
+	}
+
+	private List<ProjectToolConfig> hasDebbieTool(ObjectId basicProjectConfigId, Connection connection, String type) {
+		List<ProjectToolConfig> tools = toolRepository.findByToolNameAndBasicProjectConfigId(type,
+				basicProjectConfigId);
+		return tools.stream().filter(projectToolConfig -> projectToolConfig.getConnectionId() == connection.getId())
+						.collect(Collectors.toList());
 	}
 
 	@Override

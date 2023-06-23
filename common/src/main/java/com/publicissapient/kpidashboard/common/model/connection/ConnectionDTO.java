@@ -76,6 +76,9 @@ public class ConnectionDTO {
 	private String jaasUser;
 	private String userPrincipal;
 	private String samlEndPoint;
+	private String sshUrl;
+	private String httpUrl;
+	private String email;
 
 	public boolean getIsOAuth() {
 		return this.isOAuth;

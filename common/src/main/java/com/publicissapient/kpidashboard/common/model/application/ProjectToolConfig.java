@@ -107,4 +107,7 @@ public class ProjectToolConfig extends BasicModel {
 	private boolean azureIterationStatusFieldUpdate;
 	private String projectComponent;
 
+	private Boolean isNew;
+	private String repoCloningEnabled;
+
 }

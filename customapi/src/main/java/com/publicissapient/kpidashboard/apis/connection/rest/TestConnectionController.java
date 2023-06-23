@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.connection.rest;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -206,6 +207,15 @@ public class TestConnectionController {
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(testConnectionService.validateConnection(connection, Constant.TOOL_GITHUB));
+
+	}
+
+	@PostMapping("/debbie")
+	public ResponseEntity<ServiceResponse> validateDebbieConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
+		log.info("validating Sonar connections credentials");
+		final ModelMapper modelMapper = new ModelMapper();
+		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
+		return ResponseEntity.status(HttpStatus.OK).body(testConnectionService.validateConnection(connection, CommonConstant.DEBBIE_TOOLS));
 
 	}
 

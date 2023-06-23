@@ -23,6 +23,9 @@ import java.net.URI;
 import java.util.Base64;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.debbie.model.DebbieTools;
+import com.publicissapient.kpidashboard.apis.debbie.repository.DebbieToolsRepository;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -63,6 +66,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	private RestTemplate restTemplate;
+	@Autowired
+	private DebbieToolsRepository debbieToolsRepository;
+
 
 	@Override
 	public ServiceResponse validateConnection(Connection connection, String toolName) {
@@ -125,6 +131,10 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				statusCode = validateTestConn(connection, apiUrl, password, toolName);
 			}
 			break;
+			case Constant.DEBBIE_TOOLS:
+				apiUrl = getApiForDebbieTool(connection, toolName);
+				statusCode = validateTestConn(connection, apiUrl, password, toolName);
+			break;
 		default:
 			return new ServiceResponse(false, "Invalid Toolname", HttpStatus.NOT_FOUND);
 		}
@@ -138,6 +148,11 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		}
 
 		return new ServiceResponse(false, "Password/API token missing", HttpStatus.NOT_FOUND);
+	}
+
+	private String getApiForDebbieTool(Connection connection, String toolName) {
+		DebbieTools debbieTools = debbieToolsRepository.findByToolName(connection.getType());
+		return debbieTools.getTestApiUrl();
 	}
 
 	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password,
@@ -219,13 +234,39 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			if (connection.isBearerToken()) {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-			} else {
-				isValid = testConnection(connection, toolName, apiUrl, password, false);
+		} else if (toolName.equalsIgnoreCase(CommonConstant.DEBBIE_TOOLS)) {
+				isValid = testConnectionForDebbie(apiUrl, connection.getUsername(), password, toolName);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 			}
+		else {
+			isValid = testConnection(connection, toolName, apiUrl, password, false);
+			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
+		}
 
 		}
 		return statusCode;
+	}
+
+	private boolean testConnectionForDebbie(String apiUrl, String username, String password, String toolname) {
+
+		try {
+			HttpHeaders httpHeaders = createHeadersWithAuthentication(username, password, false);
+			HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
+			ResponseEntity<String> response = restTemplate.exchange(URI.create(apiUrl),
+					HttpMethod.GET, requestEntity, String.class);
+			if (response.getStatusCode().is2xxSuccessful() && toolname.equalsIgnoreCase(Constant.TOOL_GITHUB)) {
+				HttpHeaders headers = response.getHeaders();
+				List<String> rateLimits = headers.get("X-RateLimit-Limit");
+				return CollectionUtils.isNotEmpty(rateLimits)
+						&& Integer.valueOf(rateLimits.get(0)) > GITHUB_RATE_LIMIT_PER_HOUR;
+			} else {
+				return response.getStatusCode() == HttpStatus.OK;
+			}
+		} catch (HttpClientErrorException e) {
+			log.error(INVALID_MSG);
+			return e.getStatusCode().is5xxServerError();
+		}
+
 	}
 
 	private boolean testConnectionForGitHub(String apiUrl, String username, String password) {
@@ -510,6 +551,10 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		}
 		if (Constant.TOOL_JIRA.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
 			return connection.getPatOAuthToken();
+		}
+		if (Constant.DEBBIE_TOOLS.equalsIgnoreCase(toolName) &&
+				StringUtils.isNotEmpty(connection.getAccessToken())) {
+			return connection.getAccessToken();
 		}
 		return connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();
 	}
