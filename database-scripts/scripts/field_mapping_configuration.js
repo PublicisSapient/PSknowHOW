@@ -109,6 +109,7 @@ fieldMappings.forEach(function(fm) {
                 "jiraSprintVelocityIssueType": "",
                 "jiraDefectRejectionStatus": "",
                 "jiraIssueTypeNames": ""
+
             }
         })
     }
