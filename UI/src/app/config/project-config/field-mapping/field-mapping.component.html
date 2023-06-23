@@ -31,6 +31,12 @@
             <span class="p-pl-3">{{uploadedFileName}}</span>
         </div>
     </div>
-    <app-field-mapping-form [disableSave]="disableSave" [fieldMappingMetaData]="fieldMappingMetaData"></app-field-mapping-form>
+    <app-field-mapping-form *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0" 
+        [disableSave]="disableSave" 
+        [fieldMappingMetaData]="fieldMappingMetaData" 
+        [fieldMappingConfig]="fieldMappingConfig" 
+        [formData]="selectedFieldMapping"
+        [selectedConfig]="selectedConfig"
+        [selectedToolConfig]="selectedToolConfig"></app-field-mapping-form>
 </div>
 

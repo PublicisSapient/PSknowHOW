@@ -24,26 +24,22 @@ import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { ChangeDetectionStrategy } from '@angular/core';
-import { Accordion } from 'primeng/accordion';
 declare const require: any;
 
 @Component({
   selector: 'app-field-mapping',
   templateUrl: './field-mapping.component.html',
   styleUrls: ['./field-mapping.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  //changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FieldMappingComponent implements OnInit {
-  @ViewChild('accordion') accordion: Accordion;
   fieldMappingForm: UntypedFormGroup;
   fieldMappingFormObj: any;
   selectedConfig: any = {};
-  
   selectedPriority: any = [];
   fieldMappingSubmitted = false;
   singleSelectionDropdown = false;
-  fieldMappingMetaData: any = [];
- 
+  fieldMappingMetaData: any[];
   selectedField = '';
   bodyScrollPosition = 0;
   selectedToolConfig: any = {};
@@ -51,6 +47,7 @@ export class FieldMappingComponent implements OnInit {
   disableSave = false;
   populateDropdowns = true;
   uploadedFileName = '';
+  fieldMappingConfig = [];
  
 
   // additional filters
@@ -75,7 +72,6 @@ export class FieldMappingComponent implements OnInit {
 
     this.filterHierarchy = JSON.parse(localStorage.getItem('completeHierarchyData')).scrum;
 
-
     if (this.sharedService.getSelectedProject()) {
       this.selectedConfig = this.sharedService.getSelectedProject();
       this.disableSave = this.getAuthorizationService.checkIfViewer(this.selectedConfig);
@@ -83,7 +79,6 @@ export class FieldMappingComponent implements OnInit {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     }
 
-    // this.fieldMappingForm = this.formBuilder.group(this.fieldMappingFormObj);
     if (this.sharedService.getSelectedToolConfig()) {
       this.selectedToolConfig = this.sharedService.getSelectedToolConfig().filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
       if (!this.selectedToolConfig || !this.selectedToolConfig.length) {
@@ -93,6 +88,7 @@ export class FieldMappingComponent implements OnInit {
       }
     }
     this.getMappings();
+    this.getKPIFieldMappingRelationships();
   }
 
   getMappings() {
@@ -103,12 +99,15 @@ export class FieldMappingComponent implements OnInit {
           this.fieldMappingForm.controls[obj].setValue(this.selectedFieldMapping[obj]);
         }
       }
-
-      this.generateAdditionalFilterMappings();
+      // this.generateAdditionalFilterMappings();
     }
   }
 
-  
+  getKPIFieldMappingRelationships() {
+    this.http.getKPIFieldMappingConfig('kpi0').subscribe(response => {
+        this.fieldMappingConfig = response;
+    });
+  }
 
   generateAdditionalFilterMappings() {
     this.addAdditionalFilterOptions();
@@ -331,9 +330,6 @@ export class FieldMappingComponent implements OnInit {
       fileName: 'mappings.json',
       text: JSON.stringify(submitData)
     });
-  }
-  resetRadioButton(fieldName){
-    this.fieldMappingForm.patchValue({[fieldName]: ''});
   }
 
 
