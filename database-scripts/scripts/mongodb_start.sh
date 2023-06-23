@@ -128,6 +128,8 @@ function running_js()
   echo "########## Migrate backlog from jira issue to issue_backlog collection `date`############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/migrate_backlogs_from_jira_issue_collection.js
 
+  echo "########## Field mapping configuration compatibility ############"
+    mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/field_mapping_configuration.js
 
 
 }
