@@ -60,10 +60,10 @@ public enum FieldMappingEnum {
 	KPI135("First Time Pass Rate (Iteration)",
 			Arrays.asList("jiraStatusForDevelopmentIFTPR", "jiraIFTPRStoryIdentification", "jiradefecttypeIFTPR")),
 
-	KPI53("Lead Time (Kanban)", Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDor")),
+	KPI53("Lead Time (Kanban)", Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDor","jiraLiveStatusLTK")),
 
 	KPI3("Lead Time (Scrum)", Arrays.asList("jiradefecttypeLT", "jiraIntakeToDorIssueTypeLT", "jiraDor", "jiraDodLT",
-			"jiraLiveStatus")),
+			"jiraLiveStatusLT")),
 
 	KPI34("Defect Removal Efficiency", Arrays.asList("jiraDefectRemovalStatus", "resolutionTypeForRejectionDRE",
 			"jiraDefectRejectionStatusDRE", "jiraDefectRemovalIssueType")),

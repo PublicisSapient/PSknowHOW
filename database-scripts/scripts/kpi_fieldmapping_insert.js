@@ -1317,9 +1317,40 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
+    "fieldName": "jiraLiveStatus",
+    "fieldLabel": "Live Status - Lead Time",
+    "fieldType": "text",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+    }
+  },
+  {
+      "fieldName": "jiraLiveStatusLT",
+      "fieldLabel": "Live Status - Lead Time",
+      "fieldType": "text",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+      }
+  },
+  {
+      "fieldName": "jiraLiveStatusLTK",
+      "fieldLabel": "Live Status - Lead Time",
+      "fieldType": "text",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+      }
+   },
+  {
     "fieldName": "jiradefecttypeBDRR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1330,6 +1361,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeCVR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1340,6 +1372,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeAVR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1350,6 +1383,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeIC",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1360,6 +1394,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeIFTPR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1370,6 +1405,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeFTPR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1380,6 +1416,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeMW",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1390,6 +1427,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeLT",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1400,6 +1438,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeIWS",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1410,6 +1449,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeQS",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1420,6 +1460,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeRDCS",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1430,6 +1471,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeRDCR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1440,6 +1482,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeRDCP",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1450,6 +1493,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeRDCA",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1460,6 +1504,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeIDCP",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1470,6 +1515,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeIDCS",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1480,6 +1526,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeSWE",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1490,6 +1537,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeIDCR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1500,16 +1548,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttype",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-{
-    "fieldName": "jiradefecttype",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
