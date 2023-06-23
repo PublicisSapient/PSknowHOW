@@ -44,12 +44,9 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryQueryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -73,9 +70,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	private JiraIssueRepository jiraIssueRepository;
 
 	@Autowired
-	private IssueBacklogRepository issueBacklogRepository;
-
-	@Autowired
 	private ConfigHelperService configHelperService;
 
 	@Autowired
@@ -84,8 +78,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	@Autowired
 	private KpiHelperService kpiHelperService;
 
-	@Autowired
-	private IssueBacklogCustomHistoryQueryRepository issueBacklogCustomHistoryQueryRepository;
 
 	/**
 	 * Gets qualifier type

@@ -12,6 +12,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.*;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,12 +30,6 @@ import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.data.IssueBacklogCustomHistoryDataFactory;
-import com.publicissapient.kpidashboard.apis.data.IssueBacklogDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
@@ -43,12 +41,8 @@ import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 
 /**
@@ -75,17 +69,17 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	@Mock
 	private CustomApiConfig customApiConfig;
 	@Mock
-	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Mock
-	private IssueBacklogRepository issueBacklogRepository;
+	private JiraIssueRepository jiraIssueRepository;
 
 	private KpiRequest kpiRequest;
-	private List<IssueBacklog> storyList = new ArrayList<>();
+	private List<JiraIssue> storyList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private SprintDetails sprintDetails = new SprintDetails();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-	private List<IssueBacklogCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+	private List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
 
 	private void setMockProjectConfig() {
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
@@ -117,12 +111,12 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		sprintDetails = SprintDetailsDataFactory.newInstance().getSprintDetails().get(0);
 		List<String> jiraIssueList = sprintDetails.getTotalIssues().stream().filter(Objects::nonNull)
 				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
-		IssueBacklogDataFactory issueBacklogDataFactory = IssueBacklogDataFactory.newInstance();
-		storyList = issueBacklogDataFactory.findIssueByNumberList(jiraIssueList);
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		storyList = jiraIssueDataFactory.findIssueByNumberList(jiraIssueList);
 
-		IssueBacklogCustomHistoryDataFactory issueBacklogCustomHistoryDataFactory = IssueBacklogCustomHistoryDataFactory
+		JiraIssueHistoryDataFactory jiraIssueCustomHistoryDataFactory = JiraIssueHistoryDataFactory
 				.newInstance();
-		jiraIssueCustomHistories = issueBacklogCustomHistoryDataFactory.getIssueBacklogCustomHistory();
+		jiraIssueCustomHistories = jiraIssueCustomHistoryDataFactory.getJiraIssueCustomHistory();
 	}
 
 	@Test
@@ -135,9 +129,9 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 
 		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any())).thenReturn(sprintVelocityStoryMap);
 
-		when(issueBacklogCustomHistoryRepository.findByStoryIDIn(any())).thenReturn(jiraIssueCustomHistories);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDIn(any())).thenReturn(jiraIssueCustomHistories);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(issueBacklogRepository.findIssuesBySprintAndType(any(), any())).thenReturn(storyList);
+		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(storyList);
 		when(backlogReadinessEfficiencyServiceImpl.getBackLogStory(new ObjectId("6335363749794a18e8a4479b")))
 				.thenReturn(storyList);
 
@@ -168,8 +162,8 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	@Test
 	public void testGetBackLogStory() {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(issueBacklogRepository.findIssuesBySprintAndType(any(), any())).thenReturn(storyList);
-		List<IssueBacklog> backLogStory = backlogReadinessEfficiencyServiceImpl
+		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(storyList);
+		List<JiraIssue> backLogStory = backlogReadinessEfficiencyServiceImpl
 				.getBackLogStory(new ObjectId("6335363749794a18e8a4479b"));
 		Assert.assertEquals(backLogStory.size(), storyList.size());
 	}

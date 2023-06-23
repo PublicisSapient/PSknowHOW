@@ -26,6 +26,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -40,7 +43,6 @@ import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.IssueBacklogCustomHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -50,8 +52,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FlowDistributionServiceImplTest {
@@ -59,11 +59,11 @@ public class FlowDistributionServiceImplTest {
 	CustomApiConfig customApiConfig;
 	@Mock
 	CacheService cacheService;
-	List<IssueBacklogCustomHistory> customHistoryList = new ArrayList<>();
+	List<JiraIssueCustomHistory> customHistoryList = new ArrayList<>();
 	@InjectMocks
 	private FlowDistributionServiceImpl flowDistributionService;
 	@Mock
-	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 
@@ -77,7 +77,7 @@ public class FlowDistributionServiceImplTest {
 				.newInstance();
 
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
-		customHistoryList = IssueBacklogCustomHistoryDataFactory.newInstance().getIssueBacklogCustomHistory();
+		customHistoryList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class FlowDistributionServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(issueBacklogCustomHistoryRepository.findByBasicProjectConfigIdIn(Mockito.any()))
+		when(jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(Mockito.any()))
 				.thenReturn(customHistoryList);
 		customHistoryList.get(0).setCreatedDate(DateTime.now());
 		try {
@@ -113,7 +113,7 @@ public class FlowDistributionServiceImplTest {
 
 	@After
 	public void cleanup() {
-		issueBacklogCustomHistoryRepository.deleteAll();
+		jiraIssueCustomHistoryRepository.deleteAll();
 
 	}
 }

@@ -3,8 +3,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -13,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,6 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.data.IssueBacklogDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -45,10 +44,8 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -61,7 +58,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 	private static final String RANGE_TICKET_LIST = "rangeTickets";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-	List<IssueBacklog> totalIssueBacklogList = new ArrayList<>();
+	List<JiraIssue> totalIssueBacklogList = new ArrayList<>();
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
 	@Mock
@@ -112,7 +109,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
-		totalIssueBacklogList = IssueBacklogDataFactory.newInstance().getIssueBacklogs();
+		totalIssueBacklogList = JiraIssueDataFactory.newInstance().getJiraIssues();
 	}
 
 	@Test
@@ -185,7 +182,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 		Map<String, Object> defectDataListMap = productionIssuesByPriorityAndAgingService
 				.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
 
-		assertThat("Total Defects issue list :", ((List<IssueBacklog>) defectDataListMap.get(RANGE_TICKET_LIST)).size(),
+		assertThat("Total Defects issue list :", ((List<JiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(),
 				equalTo(0));
 	}
 

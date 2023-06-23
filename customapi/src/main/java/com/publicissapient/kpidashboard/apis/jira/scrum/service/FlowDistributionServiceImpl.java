@@ -29,6 +29,8 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +53,6 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,7 +65,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
-	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	// storyType have more than two word the stackChart hover fn break
 	private static String combineType(String storyType) {
@@ -107,9 +107,9 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 		if (leafNode != null) {
 			LOGGER.info("Flow Distribution kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			List<IssueBacklogCustomHistory> issueBacklogCustomHistoryList = issueBacklogCustomHistoryRepository
+			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
 					.findByBasicProjectConfigIdIn(basicProjectConfigId);
-			resultListMap.put(BACKLOG_CUSTOM_HISTORY, new ArrayList<>(issueBacklogCustomHistoryList));
+			resultListMap.put(BACKLOG_CUSTOM_HISTORY, new ArrayList<>(jiraIssueCustomHistoryList));
 		}
 		return resultListMap;
 	}
@@ -139,12 +139,12 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, startDate, endDate, kpiRequest);
 
-		List<IssueBacklogCustomHistory> issueBacklogCustomHistories = (List<IssueBacklogCustomHistory>) resultMap
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = (List<JiraIssueCustomHistory>) resultMap
 				.get(BACKLOG_CUSTOM_HISTORY);
 
-		if (CollectionUtils.isNotEmpty(issueBacklogCustomHistories)) {
+		if (CollectionUtils.isNotEmpty(jiraIssueCustomHistories)) {
 
-			Map<String, Map<String, Integer>> groupByDateAndTypeCount = issueBacklogCustomHistories.stream()
+			Map<String, Map<String, Integer>> groupByDateAndTypeCount = jiraIssueCustomHistories.stream()
 					.collect(Collectors.groupingBy(issue -> issue.getCreatedDate().toString().split("T")[0],
 							Collectors.groupingBy(issue -> combineType(issue.getStoryType()),
 									Collectors.summingInt(issue -> 1))));

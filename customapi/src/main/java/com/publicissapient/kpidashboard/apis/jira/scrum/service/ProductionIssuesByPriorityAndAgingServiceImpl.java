@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -48,7 +49,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 /**
@@ -117,8 +117,8 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		resultListMap.put(RANGE_TICKET_LIST, kpiHelperService.convertJiraIssueToBacklog(jiraIssueRepository.findIssuesByDateAndTypeAndStatus(
-				mapOfFilters, uniqueProjectMap, startDate, endDate, RANGE, NIN, true)));
+		resultListMap.put(RANGE_TICKET_LIST, jiraIssueRepository.findIssuesByDateAndTypeAndStatus(
+				mapOfFilters, uniqueProjectMap, startDate, endDate, RANGE, NIN, true));
 
 		return resultListMap;
 	}
@@ -195,14 +195,14 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 		// past all tickets and given range ticket data fetch from db
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, startDate, endDate, kpiRequest);
 
-		List<IssueBacklog> issueBacklogList = (List<IssueBacklog>) resultMap.get(RANGE_TICKET_LIST);
-		Map<String, List<IssueBacklog>> projectWiseIssueBacklog = issueBacklogList.stream()
-				.collect(Collectors.groupingBy(IssueBacklog::getBasicProjectConfigId));
+		List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(RANGE_TICKET_LIST);
+		Map<String, List<JiraIssue>> projectWiseJiraIssue = jiraIssueList.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
 
-		kpiWithFilter(projectWiseIssueBacklog, mapTmp, leafNodeList, kpiElement);
+		kpiWithFilter(projectWiseJiraIssue, mapTmp, leafNodeList, kpiElement);
 	}
 
-	private void kpiWithFilter(Map<String, List<IssueBacklog>> projectWiseIssueBacklogMap, Map<String, Node> mapTmp,
+	private void kpiWithFilter(Map<String, List<JiraIssue>> projectWiseJiraIssueMap, Map<String, Node> mapTmp,
 			List<Node> leafNodeList, KpiElement kpiElement) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
@@ -213,20 +213,20 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 			Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 			String projectNodeId = node.getProjectFilter().getBasicProjectConfigId().toString();
 			String projectName = node.getProjectFilter().getName();
-			List<IssueBacklog> projectWiseIssueBacklogList = projectWiseIssueBacklogMap.getOrDefault(projectNodeId,
+			List<JiraIssue> projectWiseJiraIssueList = projectWiseJiraIssueMap.getOrDefault(projectNodeId,
 					new ArrayList<>());
 
-			if (CollectionUtils.isNotEmpty(projectWiseIssueBacklogList)) {
+			if (CollectionUtils.isNotEmpty(projectWiseJiraIssueList)) {
 
-				Set<String> priorityList = projectWiseIssueBacklogList.stream()
+				Set<String> priorityList = projectWiseJiraIssueList.stream()
 						.map(issue -> KPIHelperUtil.mappingPriority(issue.getPriority(), customApiConfig))
 						.collect(Collectors.toSet());
 
-				Map<String, List<IssueBacklog>> rangeWiseIssueBacklogsMap = new LinkedHashMap<>();
-				filterDataBasedOnXAxisRangeWise(xAxisRange, projectWiseIssueBacklogList, rangeWiseIssueBacklogsMap);
+				Map<String, List<JiraIssue>> rangeWiseJiraIssuesMap = new LinkedHashMap<>();
+				filterDataBasedOnXAxisRangeWise(xAxisRange, projectWiseJiraIssueList, rangeWiseJiraIssuesMap);
 
 				Map<String, Map<String, Long>> rangeWisePriorityCountMap = new LinkedHashMap<>();
-				rangeWiseIssueBacklogsMap.forEach((range, issueList) -> {
+				rangeWiseJiraIssuesMap.forEach((range, issueList) -> {
 					Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrumForBacklog(issueList,
 							customApiConfig);
 					rangeWisePriorityCountMap.put(range, priorityCountMap);
@@ -239,7 +239,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 				// Populates data in Excel for validation for tickets created
 				// before
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateProductionDefectAgingExcelData(projectName, projectWiseIssueBacklogList,
+					KPIExcelUtility.populateProductionDefectAgingExcelData(projectName, projectWiseJiraIssueList,
 							excelData);
 				}
 			}
@@ -255,17 +255,17 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 	 * months bucket follows
 	 *
 	 * @param xAxisRange
-	 * @param projectWiseIssueBacklogList
-	 * @param rangeWiseIssueBacklogsMap
+	 * @param projectWiseJiraIssueList
+	 * @param rangeWiseJiraIssuesMap
 	 */
 	private void filterDataBasedOnXAxisRangeWise(List<String> xAxisRange,
-			List<IssueBacklog> projectWiseIssueBacklogList, Map<String, List<IssueBacklog>> rangeWiseIssueBacklogsMap) {
+			List<JiraIssue> projectWiseJiraIssueList, Map<String, List<JiraIssue>> rangeWiseJiraIssuesMap) {
 		String highestRange = xAxisRange.get(xAxisRange.size() - 1);
 		Map<Integer, String> monthRangeMap = new HashMap<>();
 
-		initializeRangeMapForProjects(rangeWiseIssueBacklogsMap, xAxisRange, monthRangeMap);
+		initializeRangeMapForProjects(rangeWiseJiraIssuesMap, xAxisRange, monthRangeMap);
 
-		projectWiseIssueBacklogList.forEach(issue -> {
+		projectWiseJiraIssueList.forEach(issue -> {
 			long daysBetween = DAYS.between(KpiDataHelper.convertStringToDate(issue.getCreatedDate()), LocalDate.now());
 			Integer monthsBetween = (int) Math.ceil((double) daysBetween / Constant.DAYS_IN_MONTHS);
 			String range;
@@ -274,12 +274,12 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 			} else {
 				range = monthRangeMap.get(monthsBetween);
 			}
-			if (CollectionUtils.isEmpty(rangeWiseIssueBacklogsMap.get(range))) {
-				List<IssueBacklog> issueBacklogList = new ArrayList<>();
-				issueBacklogList.add(issue);
-				rangeWiseIssueBacklogsMap.put(range, issueBacklogList);
+			if (CollectionUtils.isEmpty(rangeWiseJiraIssuesMap.get(range))) {
+				List<JiraIssue> jiraIssueList = new ArrayList<>();
+				jiraIssueList.add(issue);
+				rangeWiseJiraIssuesMap.put(range, jiraIssueList);
 			} else {
-				rangeWiseIssueBacklogsMap.get(range).add(issue);
+				rangeWiseJiraIssuesMap.get(range).add(issue);
 			}
 		});
 	}
@@ -349,19 +349,19 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 	 * @param kpiElement
 	 * @param requestTrackerId
 	 * @param validationDataMap
-	 * @param projectWiseIssueBacklogList
+	 * @param projectWiseJiraIssueList
 	 */
 	public void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, String projectName,
-			Map<String, ValidationData> validationDataMap, List<IssueBacklog> projectWiseIssueBacklogList) {
+			Map<String, ValidationData> validationDataMap, List<JiraIssue> projectWiseJiraIssueList) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			ValidationData validationData = new ValidationData();
 			validationData.setStoryKeyList(
-					projectWiseIssueBacklogList.stream().map(IssueBacklog::getNumber).collect(Collectors.toList()));
+					projectWiseJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
 			validationData.setDefectPriorityList(
-					projectWiseIssueBacklogList.stream().map(IssueBacklog::getPriority).collect(Collectors.toList()));
+					projectWiseJiraIssueList.stream().map(JiraIssue::getPriority).collect(Collectors.toList()));
 			validationData.setStatus(
-					projectWiseIssueBacklogList.stream().map(IssueBacklog::getJiraStatus).collect(Collectors.toList()));
-			validationData.setDateList(projectWiseIssueBacklogList.stream()
+					projectWiseJiraIssueList.stream().map(JiraIssue::getJiraStatus).collect(Collectors.toList()));
+			validationData.setDateList(projectWiseJiraIssueList.stream()
 					.map(issue -> KpiDataHelper.convertStringToDate(issue.getCreatedDate()).toString())
 					.collect(Collectors.toList()));
 			validationDataMap.put(projectName, validationData);
@@ -372,11 +372,11 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 	/**
 	 * As per x Axis range list puts months wise range map
 	 *
-	 * @param rangeWiseIssueBacklogsMap
+	 * @param rangeWiseJiraIssuesMap
 	 * @param xAxisRange
 	 * @param monthRangeMap
 	 */
-	private void initializeRangeMapForProjects(Map<String, List<IssueBacklog>> rangeWiseIssueBacklogsMap,
+	private void initializeRangeMapForProjects(Map<String, List<JiraIssue>> rangeWiseJiraIssuesMap,
 			List<String> xAxisRange, Map<Integer, String> monthRangeMap) {
 		xAxisRange.forEach(range -> {
 			String[] rangeSplitted = range.trim().split("-");
@@ -387,7 +387,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 					}
 				}
 			}
-			rangeWiseIssueBacklogsMap.put(range, new ArrayList<>());
+			rangeWiseJiraIssuesMap.put(range, new ArrayList<>());
 		});
 	}
 
