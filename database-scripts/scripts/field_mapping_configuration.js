@@ -14,6 +14,7 @@ fieldMappings.forEach(function(fm) {
         const jiraIssueTypeNames=fm.jiraIssueTypeNames;
         const resolutionTypeForRejection = fm.resolutionTypeForRejection;
         const jiraLiveStatus=fm.jiraLiveStatus;
+        const jiraFTPRStoryIdentification=fm.jiraFTPRStoryIdentification;
         db.field_mapping.updateOne({ "_id": fm._id }, {
             $set: {
                 "defectPriorityIFTPR": defectPriority,
@@ -94,7 +95,9 @@ fieldMappings.forEach(function(fm) {
                 "jiraIssueTypeNamesAVR":jiraIssueTypeNames,
 
                 "jiraLiveStatusLT":jiraLiveStatus,
-                "jiraLiveStatusLTK":jiraLiveStatus
+                "jiraLiveStatusLTK":jiraLiveStatus,
+
+                "jiraIFTPRStoryIdentification":jiraFTPRStoryIdentification
 
             },
 
