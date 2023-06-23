@@ -136,6 +136,11 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 
 			if (null != sprintDetails) {
+				// to modify sprintdetails on the basis of configuration for the project
+				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
+						fieldMapping.getJiraIterationCompletionTypeQS(),
+						fieldMapping.getJiraIterationCompletionStatusQS());
+
 				List<String> totalIssue = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				List<String> completedIssue = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,

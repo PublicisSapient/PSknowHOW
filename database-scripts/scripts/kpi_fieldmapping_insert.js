@@ -584,6 +584,206 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
+    "fieldName": "jiraIterationCompletionTypeCustomField",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeCPT",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeBRE",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeQS",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeIW",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypePWS",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeUPWS",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeDCS",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeIFTPR",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeIDCP",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeIDCR",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeIDCS",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeIC",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeCR",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeSV",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeWR",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeEVA",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeILS",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeIBU",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
+    "fieldName": "jiraIterationCompletionTypeICO",
+    "fieldLabel": "Iteration Board Issue types",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Types to be considered Completed"
+    }
+  },
+  {
     "fieldName": "jiraSprintVelocityIssueTypeBR",
     "fieldLabel": "Sprint Velocity - Issue Types with Linked Defect",
     "fieldType": "chips",
@@ -1305,6 +1505,227 @@ db.getCollection('field_mapping_structure').insert(
       "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
     }
   },
+  {
+      "fieldName": "jiraIterationCompletionStatusIFTPR",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusCustomField",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusCPT",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusEVA",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusDCS",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusIDCP",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusIDCR",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusIDCS",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusIC",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusCR",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusSV",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusSP",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusEH",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusILS",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusIBU",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusICO",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusPWS",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusUWS",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusQS",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusWR",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusIW",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusBRE",
+      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Status to identify as closed"
+      }
+    },
+
   {
     "fieldName": "jiraLiveStatus",
     "fieldLabel": "Live Status - Lead Time",

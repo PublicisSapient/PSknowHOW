@@ -23,6 +23,7 @@ import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWis
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -110,17 +111,23 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Closure Possible Today -> Requested sprint : {}", leafNode.getName());
-			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
-			if (null != sprintDetails) {
-				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
-						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);
+			SprintDetails sprintDetail = getSprintDetailsFromBaseClass();
+			if (null != sprintDetail) {
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(sprintDetail.getBasicProjectConfigId());
+				// to modify sprintdetails on the basis of configuration for the project
+				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
+						fieldMapping.getJiraIterationCompletionTypeCPT(),
+						fieldMapping.getJiraIterationCompletionStatusCPT());
+				List<String> notCompletedIssues = KpiDataHelper
+						.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
 					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(notCompletedIssues);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getNotCompletedIssues(), issueList);
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetail,
+									sprintDetail.getNotCompletedIssues(), issueList);
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
-					resultListMap.put(SPRINT_DETAILS, sprintDetails);
+					resultListMap.put(SPRINT_DETAILS, sprintDetail);
 				}
 			}
 		}

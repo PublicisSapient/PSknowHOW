@@ -15,6 +15,8 @@ fieldMappings.forEach(function(fm) {
         const resolutionTypeForRejection = fm.resolutionTypeForRejection;
         const jiraLiveStatus=fm.jiraLiveStatus;
         const jiraFTPRStoryIdentification=fm.jiraFTPRStoryIdentification;
+        const jiraIterationCompletionStatusCustomField=fm.jiraIterationCompletionStatusCustomField;
+        const jiraIterationCompletionTypeCustomField=fm.jiraIterationCompletionTypeCustomField;
         db.field_mapping.updateOne({ "_id": fm._id }, {
             $set: {
                 "defectPriorityIFTPR": defectPriority,
@@ -97,7 +99,53 @@ fieldMappings.forEach(function(fm) {
                 "jiraLiveStatusLT":jiraLiveStatus,
                 "jiraLiveStatusLTK":jiraLiveStatus,
 
-                "jiraIFTPRStoryIdentification":jiraFTPRStoryIdentification
+                "jiraIFTPRStoryIdentification":jiraFTPRStoryIdentification,
+
+                "jiraIterationCompletionStatusIFTPR" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusCPT" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusEVA" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusDCS" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusIDCP" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusIDCR" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusIDCS" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusIC" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusCR" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusSV" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusSP" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusEH" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusILS" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusIBU" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusICO" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusPWS" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusUWS" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusQS" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusWR" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusIW" : jiraIterationCompletionStatusCustomField,
+                "jiraIterationCompletionStatusBRE" : jiraIterationCompletionStatusCustomField,
+
+                "jiraIterationCompletionTypeCPT" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeBRE" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeQS" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeIW" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypePWS" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeUPWS" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeDCS" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeIFTPR" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeIDCP" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeIDCR" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeIDCS" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeIC" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeCR" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeSV" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeWR" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeSP" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeEVA" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeILS" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeIBU" : jiraIterationCompletionTypeCustomField,
+                "jiraIterationCompletionTypeICO" : jiraIterationCompletionTypeCustomField
+
+
+
 
             },
             $unset: {

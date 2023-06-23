@@ -271,8 +271,8 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public SprintDetails getSprintDetailsFromBaseClass() {
-
 		return jiraService.getCurrentSprintDetails();
+
 	}
 
 	public List<JiraIssue> getJiraIssuesFromBaseClass(List<String> numbersList) {
@@ -308,11 +308,6 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 	public JiraIssueReleaseStatus getJiraIssueReleaseStatus(String basicProjectConfigId) {
 		return jiraService.getJiraIssueReleaseForProject(basicProjectConfigId);
-	}
-
-	public void getModifiedSprintDetailsFromBaseClass(List<SprintDetails> sprintDetails,
-			ConfigHelperService configHelperService) {
-		jiraService.processSprintBasedOnFieldMapping(sprintDetails, configHelperService);
 	}
 
 	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,

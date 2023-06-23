@@ -56,6 +56,7 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 	public static final String UNCHECKED = "unchecked";
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByPriorityServiceImpl.class);
 	private static final String TOTAL_ISSUES = "Total Issues";
+	private static final String SPRINT_DETAILS = "SprintDetails";
 	private static final String CREATED_DURING_ITERATION = "Created during Iteration";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	@Autowired
@@ -109,6 +110,11 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 
 			if (null != sprintDetails) {
+				// to modify sprintdetails on the basis of configuration for the project
+				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
+						fieldMapping.getJiraIterationCompletionTypeIDCP(),
+						fieldMapping.getJiraIterationCompletionStatusIDCP());
+
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttypeIDCP)
@@ -159,6 +165,7 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 
 					resultListMap.put(CommonConstant.TOTAL_ISSUES, new ArrayList<>(allIssues));
 				}
+				resultListMap.put(SPRINT_DETAILS, sprintDetails);
 			}
 		}
 		return resultListMap;
@@ -194,7 +201,7 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 			if (fieldMapping != null) {
-				SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
+				SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT_DETAILS);
 				List<JiraIssue> allCompletedDefects = filterDefects(resultMap, fieldMapping);
 				List<JiraIssue> createDuringIteration = allCompletedDefects.stream()
 						.filter(jiraIssue -> DateUtil.isWithinDateRange(

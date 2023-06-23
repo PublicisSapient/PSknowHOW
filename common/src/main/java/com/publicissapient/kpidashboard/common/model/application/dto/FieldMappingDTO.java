@@ -297,8 +297,51 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraReadyForRefinement;
 	private List<String> jiraFtprRejectStatus;
 
-	private List<String> jiraIterationCompletionStatusCustomField;
-	private List<String> jiraIterationCompletionTypeCustomField;
+	private List<String> jiraIterationCompletionStatusCustomField;// TODO: Extra field
+	private List<String> jiraIterationCompletionStatusIFTPR;
+	private List<String> jiraIterationCompletionStatusCPT;
+	private List<String> jiraIterationCompletionStatusEVA;
+	private List<String> jiraIterationCompletionStatusDCS;
+	private List<String> jiraIterationCompletionStatusIDCP;
+	private List<String> jiraIterationCompletionStatusIDCR;
+	private List<String> jiraIterationCompletionStatusIDCS;
+	private List<String> jiraIterationCompletionStatusIC;
+	private List<String> jiraIterationCompletionStatusCR;
+	private List<String> jiraIterationCompletionStatusSV;
+	private List<String> jiraIterationCompletionStatusSP;
+	private List<String> jiraIterationCompletionStatusEH;
+	private List<String> jiraIterationCompletionStatusILS;
+	private List<String> jiraIterationCompletionStatusIBU;
+	private List<String> jiraIterationCompletionStatusICO;
+	private List<String> jiraIterationCompletionStatusPWS;
+	private List<String> jiraIterationCompletionStatusUWS;
+	private List<String> jiraIterationCompletionStatusQS;
+	private List<String> jiraIterationCompletionStatusWR;
+	private List<String> jiraIterationCompletionStatusIW;
+	private List<String> jiraIterationCompletionStatusBRE;
+
+	private List<String> jiraIterationCompletionTypeCustomField;// TODO: Extra field
+	private List<String> jiraIterationCompletionTypeCPT;
+	private List<String> jiraIterationCompletionTypeBRE;
+	private List<String> jiraIterationCompletionTypeQS;
+	private List<String> jiraIterationCompletionTypeIW;
+	private List<String> jiraIterationCompletionTypePWS;
+	private List<String> jiraIterationCompletionTypeUPWS;
+	private List<String> jiraIterationCompletionTypeDCS;
+	private List<String> jiraIterationCompletionTypeIFTPR;
+	private List<String> jiraIterationCompletionTypeIDCP;
+	private List<String> jiraIterationCompletionTypeIDCR;
+	private List<String> jiraIterationCompletionTypeIDCS;
+	private List<String> jiraIterationCompletionTypeIC;
+	private List<String> jiraIterationCompletionTypeCR;
+	private List<String> jiraIterationCompletionTypeSV;
+	private List<String> jiraIterationCompletionTypeWR;
+	private List<String> jiraIterationCompletionTypeSP;
+	private List<String> jiraIterationCompletionTypeEVA;
+	private List<String> jiraIterationCompletionTypeILS;
+	private List<String> jiraIterationCompletionTypeIBU;
+	private List<String> jiraIterationCompletionTypeICO;
+
 
 	/**
 	 * Get jira issue type names string [ ].

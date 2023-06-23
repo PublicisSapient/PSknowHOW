@@ -518,7 +518,7 @@ public final class KpiDataHelper {
 	 */
 	private static Map<LocalDate, List<JiraIssue>> createDueDateWiseMap(List<JiraIssue> arrangeJiraIssueList) {
 		TreeMap<LocalDate, List<JiraIssue>> localDateListMap = new TreeMap<>();
-		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(arrangeJiraIssueList)) {
+		if (CollectionUtils.isNotEmpty(arrangeJiraIssueList)) {
 			arrangeJiraIssueList.forEach(jiraIssue -> {
 				LocalDate dueDate = DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC);
 				localDateListMap.computeIfPresent(dueDate, (date, issue) -> {
@@ -575,7 +575,7 @@ public final class KpiDataHelper {
 			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
 		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
 				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping.getJiraStatusForInProgress() && org.apache.commons.collections.CollectionUtils
+		if (null != fieldMapping.getJiraStatusForInProgress() && CollectionUtils
 				.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
 			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
 					.filter(jiraIssue -> fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
@@ -658,6 +658,78 @@ public final class KpiDataHelper {
 	public static Map<String, IterationKpiModalValue> createMapOfModalObject(List<JiraIssue> jiraIssueList) {
 		return jiraIssueList.stream()
 				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IterationKpiModalValue()));
+	}
+
+	public static void processSprintBasedOnFieldMapping(List<SprintDetails> dbSprintDetails,
+			List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus) {
+		if (CollectionUtils.isNotEmpty(fieldMappingCompletionType)
+				|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
+			dbSprintDetails.forEach(dbSprintDetail -> {
+				if ((CollectionUtils.isNotEmpty(fieldMappingCompletionType)
+						|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus))) {
+					dbSprintDetail.setCompletedIssues(
+							CollectionUtils.isEmpty(dbSprintDetail.getCompletedIssues()) ? new HashSet<>()
+									: dbSprintDetail.getCompletedIssues());
+					dbSprintDetail.setNotCompletedIssues(
+							CollectionUtils.isEmpty(dbSprintDetail.getNotCompletedIssues()) ? new HashSet<>()
+									: dbSprintDetail.getNotCompletedIssues());
+					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
+							fieldMappingCompletionType, fieldMappingCompletionStatus);
+					dbSprintDetail.setCompletedIssues(newCompletedSet);
+					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
+					Set<SprintIssue> totalIssue = new HashSet<>();
+					totalIssue.addAll(dbSprintDetail.getCompletedIssues());
+					totalIssue.addAll(dbSprintDetail.getNotCompletedIssues());
+					dbSprintDetail.setTotalIssues(totalIssue);
+				}
+			});
+		}
+	}
+
+	private static Set<SprintIssue> getCombinationalCompletedSet(Set<SprintIssue> typeWiseIssues,
+			Set<SprintIssue> statusWiseIssues) {
+		Set<SprintIssue> newCompletedSet;
+		if (CollectionUtils.isNotEmpty(typeWiseIssues) && CollectionUtils.isNotEmpty(statusWiseIssues)) {
+			newCompletedSet = new HashSet<>(CollectionUtils.intersection(typeWiseIssues, statusWiseIssues));
+		} else if (CollectionUtils.isNotEmpty(typeWiseIssues)) {
+			newCompletedSet = typeWiseIssues;
+		} else {
+			newCompletedSet = statusWiseIssues;
+		}
+		return newCompletedSet;
+	}
+
+	private static Set<SprintIssue> filteringByFieldMapping(SprintDetails dbSprintDetail,
+			List<String> fieldMapingCompletionType, List<String> fieldMappingCompletionStatus) {
+		Set<SprintIssue> typeWiseIssues = new HashSet<>();
+		Set<SprintIssue> statusWiseIssues = new HashSet<>();
+		if (CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)
+				&& CollectionUtils.isNotEmpty(fieldMapingCompletionType)) {
+			statusWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
+					.filter(issue -> fieldMappingCompletionStatus.contains(issue.getStatus()))
+					.collect(Collectors.toSet()));
+			statusWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
+					.filter(issue -> fieldMappingCompletionStatus.contains(issue.getStatus()))
+					.collect(Collectors.toSet()));
+			typeWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
+					.filter(issue -> fieldMapingCompletionType.contains(issue.getTypeName()))
+					.collect(Collectors.toSet()));
+			typeWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
+					.filter(issue -> fieldMapingCompletionType.contains(issue.getTypeName()))
+					.collect(Collectors.toSet()));
+		} else if (CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
+			statusWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
+					.filter(issue -> fieldMappingCompletionStatus.contains(issue.getStatus()))
+					.collect(Collectors.toSet()));
+			statusWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
+					.filter(issue -> fieldMappingCompletionStatus.contains(issue.getStatus()))
+					.collect(Collectors.toSet()));
+		} else if (CollectionUtils.isNotEmpty(fieldMapingCompletionType)) {
+			typeWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
+					.filter(issue -> fieldMapingCompletionType.contains(issue.getTypeName()))
+					.collect(Collectors.toSet()));
+		}
+		return getCombinationalCompletedSet(typeWiseIssues, statusWiseIssues);
 	}
 
 }

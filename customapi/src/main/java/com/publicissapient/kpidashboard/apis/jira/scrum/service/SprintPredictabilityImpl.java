@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -174,8 +175,13 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				List<SprintDetails> sprintDetails = sprintDetailsList.stream()
 						.limit(Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT)
 						.collect(Collectors.toList());
-				getModifiedSprintDetailsFromBaseClass(sprintDetails, configHelperService);
 				sprintDetails.stream().forEach(sprintDetail -> {
+					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+							.get(sprintDetail.getBasicProjectConfigId());
+					// to modify sprintdetails on the basis of configuration for the project
+					KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
+							fieldMapping.getJiraIterationCompletionTypeSP(),
+							fieldMapping.getJiraIterationCompletionStatusSP());
 					if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 						List<String> sprintWiseIssueIds = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 								sprintDetail, CommonConstant.COMPLETED_ISSUES);

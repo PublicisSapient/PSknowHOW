@@ -191,6 +191,11 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 
 			if (null != sprintDetails) {
+				// to modify sprintdetails on the basis of configuration for the project
+				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
+						fieldMapping.getJiraIterationCompletionTypeIFTPR(),
+						fieldMapping.getJiraIterationCompletionStatusIFTPR());
+
 				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(completedIssues)) {
