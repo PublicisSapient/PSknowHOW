@@ -27,104 +27,116 @@ import java.util.List;
 @SuppressWarnings("java:S1192")
 public enum FieldMappingEnum {
 
-	KPI0("Processor",
+	KPI0("Processor", "",
 			Arrays.asList("jiradefecttype", "jiraIssueTypeNames", "jiraIterationCompletionTypeCustomField",
-					"jiraIterationCompletionStatusCustomField", "estimationCriteria",
-					"jiraStoryPointsCustomField", "jiraDod", "jiraBugRaisedByQACustomField",
-					"jiraBugRaisedByQAIdentification", "jiraBugRaisedByQAValue", "jiraBugRaisedByCustomField",
-					"jiraBugRaisedByValue", "jiraBugRaisedByIdentification","jiraLiveStatus",
-					"epicCostOfDelay","epicRiskReduction",
-					"epicUserBusinessValue","epicWsjf","epicTimeCriticality","epicJobSize"
-			)),
+					"jiraIterationCompletionStatusCustomField", "estimationCriteria", "jiraStoryPointsCustomField",
+					"jiraDod", "jiraBugRaisedByQACustomField", "jiraBugRaisedByQAIdentification",
+					"jiraBugRaisedByQAValue", "jiraBugRaisedByCustomField", "jiraBugRaisedByValue",
+					"jiraBugRaisedByIdentification", "jiraLiveStatus", "epicCostOfDelay", "epicRiskReduction",
+					"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize")),
 
-	KPI40("Issue Count", Arrays.asList("jiraStoryIdentificationIC", "jiraIterationCompletionTypeCustomField",
-			"jiraIterationCompletionStatusCustomField", "jiradefecttypeIC")),
+	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationIC",
+			"jiraIterationCompletionTypeCustomField", "jiraIterationCompletionStatusCustomField", "jiradefecttypeIC")),
 
-	KPI39("Sprint Velocity",
+	KPI39("Sprint Velocity", KPISource.JIRA.name(),
 			Arrays.asList("jiraSprintVelocityIssueTypeSV", "jiraIterationCompletionTypeCustomField",
 					"jiraIssueDeliverdStatusSV", "jiraIterationCompletionStatusCustomField")),
 
-	KPI72("Commitment Reliability",
+	KPI72("Commitment Reliability", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionTypeCustomField", "jiraIterationCompletionStatusCustomField")),
 
-	KPI5("Sprint Predictability",
+	KPI5("Sprint Predictability", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionTypeCustomField", "jiraIterationCompletionStatusCustomField")),
 
-	KPI46("Sprint Capacity Utilization", Arrays.asList("jiraSprintCapacityIssueType")),
+	KPI46("Sprint Capacity Utilization", KPISource.JIRA.name(), Arrays.asList("jiraSprintCapacityIssueType")),
 
-	KPI83("Average Resolution Time", Arrays.asList("resolutionTypeForRejectionAVR", "jiraIssueDeliverdStatusAVR",
-			"jiraDefectRejectionStatusAVR", "jiradefecttypeAVR", "jiraStatusForDevelopmentAVR","jiraIssueTypeNamesAVR")),
+	KPI83("Average Resolution Time", KPISource.JIRA.name(),
+			Arrays.asList("resolutionTypeForRejectionAVR", "jiraIssueDeliverdStatusAVR", "jiraDefectRejectionStatusAVR",
+					"jiradefecttypeAVR", "jiraStatusForDevelopmentAVR", "jiraIssueTypeNamesAVR")),
 
-	KPI82("First Time Pass Rate",
+	KPI82("First Time Pass Rate", KPISource.JIRA.name(),
 			Arrays.asList("jiraStatusForDevelopmentFTPR", "jiraFTPRStoryIdentification", "jiraIssueDeliverdStatusFTPR",
 					"resolutionTypeForRejectionFTPR", "jiraDefectRejectionStatusFTPR", "defectPriorityFTPR",
 					"excludeRCAFromFTPR", "jiradefecttypeFTPR")),
 
-	KPI135("First Time Pass Rate (Iteration)",
+	KPI135("First Time Pass Rate (Iteration)", KPISource.JIRA.name(),
 			Arrays.asList("jiraStatusForDevelopmentIFTPR", "jiraIFTPRStoryIdentification", "jiradefecttypeIFTPR")),
 
-	KPI53("Lead Time (Kanban)", Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDor","jiraLiveStatusLTK")),
+	KPI53("Lead Time (Kanban)", KPISource.JIRA.name(),
+			Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDor", "jiraLiveStatusLTK")),
 
-	KPI3("Lead Time (Scrum)", Arrays.asList("jiradefecttypeLT", "jiraIntakeToDorIssueTypeLT", "jiraDor", "jiraDodLT",
-			"jiraLiveStatusLT")),
+	KPI3("Lead Time (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeLT", "jiraIntakeToDorIssueTypeLT",
+			"jiraDor", "jiraDodLT", "jiraLiveStatusLT")),
 
-	KPI34("Defect Removal Efficiency", Arrays.asList("jiraDefectRemovalStatus", "resolutionTypeForRejectionDRE",
-			"jiraDefectRejectionStatusDRE", "jiraDefectRemovalIssueType")),
+	KPI34("Defect Removal Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraDefectRemovalStatus",
+			"resolutionTypeForRejectionDRE", "jiraDefectRejectionStatusDRE", "jiraDefectRemovalIssueType")),
 
-	KPI37("Defect Rejection Rate", Arrays.asList("resolutionTypeForRejectionDRR", "jiraDefectRejectionStatusDRR",
-			"jiraDefectRejectionlIssueType")),
+	KPI37("Defect Rejection Rate", KPISource.JIRA.name(), Arrays.asList("resolutionTypeForRejectionDRR",
+			"jiraDefectRejectionStatusDRR", "jiraDefectRejectionlIssueType")),
 
-	KPI28("Defect Count By Priority(Scrum)", Arrays.asList("jiraDefectCountlIssueTypeDC",
+	KPI28("Defect Count By Priority(Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraDefectCountlIssueTypeDC",
 			"resolutionTypeForRejectionDC", "jiraDefectRejectionStatusDC")),
 
-	KPI140("Defect Count by Priority (Iteration)", Arrays.asList("jiradefecttypeIDCP")),
+	KPI140("Defect Count by Priority (Iteration)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeIDCP")),
 
-	KPI144("Defect Count by Priority (Release)", Arrays.asList("jiradefecttypeRDCP")),
+	KPI144("Defect Count by Priority (Release)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeRDCP")),
 
-	KPI143("Defect Count by Assignee (Release)", Arrays.asList("jiradefecttypeRDCA")),
+	KPI143("Defect Count by Assignee (Release)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeRDCA")),
 
-	KPI142("Defect Count by RCA (Release)", Arrays.asList("jiradefecttypeRDCR")),
+	KPI142("Defect Count by RCA (Release)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeRDCR")),
 
-	KPI141("Defect Count by Status (Release)", Arrays.asList("jiradefecttypeRDCS")),
+	KPI141("Defect Count by Status (Release)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeRDCS")),
 
-	KPI36("Defect Count by RCA (Scrum)", Arrays.asList("jiraDefectCountlIssueTypeRCA", "resolutionTypeForRejectionRCA",
-			"jiraDefectRejectionStatusRCA")),
+	KPI36("Defect Count by RCA (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraDefectCountlIssueTypeRCA",
+			"resolutionTypeForRejectionRCA", "jiraDefectRejectionStatusRCA")),
 
-	KPI132("Defect Count by RCA (Iteration)", Arrays.asList("jiradefecttypeIDCR")),
+	KPI132("Defect Count by RCA (Iteration)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeIDCR")),
 
-	KPI136("Defect Count by Status (Iteration)", Arrays.asList("jiradefecttypeIDCS")),
+	KPI136("Defect Count by Status (Iteration)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeIDCS")),
 
-	KPI14("Defect Injection Rate",
+	KPI14("Defect Injection Rate", KPISource.JIRA.name(),
 			Arrays.asList("jiradefecttype", "estimationCriteria", "excludeRCAFromDIR", "resolutionTypeForRejectionDIR",
 					"jiraDefectRejectionStatusDIR", "defectPriorityDIR", "jiraDefectInjectionIssueType",
 					"jiraDefectCreatedStatus", "jiraDodDIR")),
 
-	KPI111("Defect Density", Arrays.asList("jiraDodQADD", "jiraQADefectDensityIssueType", "defectPriorityQADD",
-			"excludeRCAFromQADD", "resolutionTypeForRejectionQADD", "jiraDefectRejectionStatusQADD")),
+	KPI111("Defect Density", KPISource.JIRA.name(),
+			Arrays.asList("jiraDodQADD", "jiraQADefectDensityIssueType", "defectPriorityQADD", "excludeRCAFromQADD",
+					"resolutionTypeForRejectionQADD", "jiraDefectRejectionStatusQADD")),
 
-	KPI127("Production Defects Ageing", Arrays.asList("jiraDodPDA")),
+	KPI127("Production Defects Ageing", KPISource.JIRA.name(), Arrays.asList("jiraDodPDA")),
 
-	KPI35("Defect Seepage Rate", Arrays.asList("jiraDefectSeepageIssueType", "resolutionTypeForRejectionDSR",
-			"jiraDefectRejectionStatusDSR")),
+	KPI35("Defect Seepage Rate", KPISource.JIRA.name(), Arrays.asList("jiraDefectSeepageIssueType",
+			"resolutionTypeForRejectionDSR", "jiraDefectRejectionStatusDSR")),
 
-	KPI133("Quality Status", Arrays.asList("resolutionTypeForRejectionQS", "jiraDefectRejectionStatusQS",
-			"jiradefecttypeQS", "defectPriorityQS", "excludeRCAFromQS")),
+	KPI133("Quality Status", KPISource.JIRA.name(), Arrays.asList("resolutionTypeForRejectionQS",
+			"jiraDefectRejectionStatusQS", "jiradefecttypeQS", "defectPriorityQS", "excludeRCAFromQS")),
 
-	KPI126("Created vs Resolved defects", Arrays.asList("jiradefecttypeCVR", "jiraIssueDeliverdStatusCVR")),
+	KPI126("Created vs Resolved defects", KPISource.JIRA.name(),
+			Arrays.asList("jiradefecttypeCVR", "jiraIssueDeliverdStatusCVR")),
 
-	KPI137("Defect Reopen Rate (Backlog)", Arrays.asList("jiradefecttypeBDRR")),
+	KPI137("Defect Reopen Rate (Backlog)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeBDRR")),
 
-	KPI129("Issues Without Story Link", Arrays.asList("jiradefecttypeIWS"));
+	KPI129("Issues Without Story Link", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeIWS"));
 
 	// @formatter:on
 
 	private List<String> fields;
 	private String kpiName;
+	private String kpiSource;
 
-	FieldMappingEnum(String kpiName, List<String> fields) {
+	FieldMappingEnum(String kpiName, String kpiSource, List<String> fields) {
 		this.kpiName = kpiName;
 		this.fields = fields;
+		this.kpiSource = kpiSource;
 
+	}
+
+	public String getKpiSource() {
+		return kpiSource;
+	}
+
+	public void setKpiSource(String kpiSource) {
+		this.kpiSource = kpiSource;
 	}
 
 	public List<String> getFields() {

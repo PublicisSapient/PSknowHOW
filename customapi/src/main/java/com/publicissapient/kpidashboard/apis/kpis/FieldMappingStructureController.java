@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.kpis;
 
+import com.publicissapient.kpidashboard.apis.model.FieldMappingStructureResponse;
 import com.publicissapient.kpidashboard.apis.model.KPIFieldMappingResponse;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class FieldMappingStructureController {
 	}
 
 	@RequestMapping(value = "/{kpiId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<FieldMappingStructure> fetchFieldMappingStructureByKpiFieldMappingData(@PathVariable String kpiId) {
+	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiFieldMappingData(@PathVariable String kpiId) {
 		return kPIHelperService.fetchFieldMappingStructureByKpiFieldMappingData(kpiId);
 	}
 }
