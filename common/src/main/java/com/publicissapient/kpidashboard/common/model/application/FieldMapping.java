@@ -79,7 +79,8 @@ public class FieldMapping extends BasicModel {
 	private List<String> defectPriorityQADD;
 	private List<String> defectPriorityFTPR;
 	private List<String> defectPriorityQS;
-	private String[] jiraIssueTypeNames;
+	private String[] jiraIssueTypeNames;//TODO: duplicate
+	private String[] jiraIssueTypeNamesAVR;
 	private List<String> jiraIssueEpicType;
 	private String storyFirstStatus;
 	private String envImpacted;
@@ -211,6 +212,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> resolutionTypeForRejectionQADD;
 	private List<String> qaRootCauseValue;
 	private List<String> jiraQADefectDensityIssueType;
+
 	private String jiraBugRaisedByQACustomField;
 	private String jiraBugRaisedByQAIdentification;
 	private List<String> jiraBugRaisedByQAValue;

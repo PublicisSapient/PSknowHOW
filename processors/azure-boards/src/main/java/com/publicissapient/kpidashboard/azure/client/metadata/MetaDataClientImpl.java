@@ -262,6 +262,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiradefecttypeBDRR(issueTypeMap.get(CommonConstant.BUG));
 
 		fieldMapping.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
+		fieldMapping.setJiraIssueTypeNamesAVR(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 		List<String> firstStatusList = workflowMap.get(CommonConstant.FIRST_STATUS);
 		fieldMapping.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
 		fieldMapping.setEpicJobSize(customField.get(CommonConstant.JOB_SIZE));

@@ -1255,6 +1255,28 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
+    "fieldName": "jiraIssueTypeNames",
+    "fieldLabel": "Issue Types to be fetched from Jira",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon":true,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Type in Jira. These issue type are fetched in PsKnowHow dashboard. <br> Example : Story, Defect, Risk, Change Request, Test<hr>"
+    }
+  },
+  {
+    "fieldName": "jiraIssueTypeNamesAVR",
+    "fieldLabel": "Issue Types to be fetched from Jira",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon":true,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "Issue Type in Jira. These issue type are fetched in PsKnowHow dashboard. <br> Example : Story, Defect, Risk, Change Request, Test<hr>"
+    }
+  },
+  {
     "fieldName": "jiraDefectRemovalStatus",
     "fieldLabel": "Defect Removal Status",
     "fieldType": "chips",
@@ -1299,6 +1321,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1308,6 +1331,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1317,6 +1341,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1326,6 +1351,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1335,6 +1361,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1344,6 +1371,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1353,6 +1381,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1362,6 +1391,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1371,6 +1401,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1380,6 +1411,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1389,6 +1421,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1398,6 +1431,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1407,6 +1441,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1416,6 +1451,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1425,6 +1461,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1434,16 +1471,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "section": "Defects Mapping",
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-  {
-    "fieldName": "jiradefecttype",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "section": "Defects Mapping",
-
+    "processorCommon":true,
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
@@ -1477,6 +1505,146 @@ db.getCollection('field_mapping_structure').insert(
     "tooltip": {
       "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
     }
-  }
+  },
+{
+    "fieldName": "jiradefecttype",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "processorCommon":true,
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+{
+    "fieldName": "jiraStoryPointsCustomField",
+    "fieldLabel": "Estimation",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Story Point is a custom field in JIRA. So User need to provide that custom field which is associated with Story point in Users JIRA/AZURE Installation. <br>Example : customfield_20803."
+    }
+},
+{
+    "fieldName": "workingHoursDayCPT",
+    "fieldLabel": "Working Hours in a Day",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Working hours in a day"
+    }
+},
+{
+    "fieldName": "estimationCriteria",
+    "fieldLabel": "Estimation Criteria",
+    "fieldType": "radiobutton",
+     "tooltip": {
+          "definition": "Estimation criteria for stories. <br> Example: Buffered Estimation."
+        },
+     "options": [
+          {
+            "label": "Story Point",
+            "value": "Story Point"
+          },
+          {
+            "label": "Actual (Original Estimation)",
+            "value": "Actual Estimation"
+          }
+        ],
+     "nestedFields": [
+          {
+            "fieldName": "storyPointToHourMapping",
+            "fieldLabel": "Story Point to Hour Conversion",
+            "fieldType": "text",
+            "filterGroup": ["Story Point"],
+            "tooltip": {
+              "definition": "Conversion factor for Story Point to Hour Conversion. <br>Example: If 1 Story Point is 8 hrs, enter 8."
+            }
+          }
+        ]
+},
+{
+    "fieldName": "jiraBugRaisedByQAIdentification",
+    "fieldLabel": "QA Defect Identification",
+    "fieldType": "radiobutton",
+     "tooltip": {
+          "definition": "This field is used to identify if a defect is raised by QA<br>1. CustomField : If a separate custom field is used.<br>2. Labels : If a label is used to identify. Example: QA Defect <hr>"
+        },
+     "options": [
+          {
+            "label": "CustomField",
+            "value": "CustomField"
+          },
+          {
+            "label": "Labels",
+            "value": "Labels"
+          }
+        ],
+     "nestedFields": [
+          {
+            "fieldName": "jiraBugRaisedByQAValue",
+            "fieldLabel": "QA Defect Values",
+            "fieldType": "text",
+            "filterGroup": ["CustomField","Labels"],
+            "tooltip": {
+              "definition": "Provide label name to identify QA raised defects."
+            }
+          },
+          {
+            "fieldName": "jiraBugRaisedByQACustomField",
+            "fieldLabel": "QA Defect Custom Field",
+            "fieldType": "text",
+            "fieldCategory": "custom",
+            "filterGroup": ["CustomField"],
+            "tooltip": {
+              "definition": "Provide customfield name to identify QA raised defects. <br>Example: customfield_13907"
+            }
+          }
+        ]
+},
+{
+    "fieldName": "jiraBugRaisedByIdentification",
+    "fieldLabel": "UAT Defect Identification",
+    "fieldType": "radiobutton",
+     "tooltip": {
+          "definition": "This field is used to identify if a defect is raised by third party or client:<br>1. CustomField : If a separate custom field is used<br>2. Labels : If a label is used to identify. Example: TECH_DEBT (This has to be one value).<hr>"
+        },
+     "options": [
+          {
+            "label": "CustomField",
+            "value": "CustomField"
+          },
+          {
+            "label": "Labels",
+            "value": "Labels"
+          }
+        ],
+     "nestedFields": [
+          {
+            "fieldName": "jiraBugRaisedByValue",
+            "fieldLabel": "UAT Defect Values",
+            "fieldType": "text",
+            "filterGroup": ["CustomField","Labels"],
+            "tooltip": {
+              "definition": "Provide label name to identify UAT or client raised defects.<br /> Example: Clone_by_QA <hr>"
+            }
+          },
+          {
+            "fieldName": "jiraBugRaisedByCustomField",
+            "fieldLabel": "UAT Defect Custom Field",
+            "fieldType": "text",
+            "fieldCategory": "custom",
+            "filterGroup": ["CustomField"],
+            "tooltip": {
+              "definition": "Provide customfield name to identify UAT or client raised defects. <br> Example: customfield_13907<hr>"
+            }
+          }
+        ]
+}
+
+
+
 ]
 );

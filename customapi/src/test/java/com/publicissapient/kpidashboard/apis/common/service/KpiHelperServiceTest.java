@@ -149,7 +149,7 @@ public class KpiHelperServiceTest {
 	private KpiRequestFactory kanbanKpiRequestFactory;
 
 	@Mock
-	private FieldMappingStructure fieldMappingStructure= FieldMappingStructure.builder().build();
+	private FieldMappingStructure fieldMappingStructure= new FieldMappingStructure();
 
 	private List<FieldMappingStructure> fieldMappingStructureList = new ArrayList<>();
 
