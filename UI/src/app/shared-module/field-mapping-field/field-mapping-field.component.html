@@ -7,7 +7,7 @@
         (click)="showDialogToAddValue(true, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"></button>
     </div>
 
-    <div class="p-inputgroup" *ngSwitchCase="'multiValue'">
+    <div class="p-inputgroup" *ngSwitchCase="'chips'">
         <p-chips [style]="{'max-width':'initial','width':'60vw'}" inputId="fieldConfig?.fieldName"
             placeholder="Enter {{fieldConfig?.fieldLabel}}" addOnBlur="true" [(ngModel)]="value" (onAdd)="setValue()" (onRemove)="setValue()">
         </p-chips>
@@ -15,7 +15,7 @@
         (click)="showDialogToAddValue(false, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"></button>
     </div>
 
-    <div class="p-d-flex p-justify-between" *ngSwitchCase="'radio'">
+    <div class="p-d-flex p-justify-between" *ngSwitchCase="'radiobutton'">
         <div class="p-inputgroup">
             <ng-container *ngFor="let opt of fieldConfig.options">
                 <p-radioButton placeholder="Select" value="{{opt.value}}" label="{{opt.value}}" class="p-m-2"

@@ -544,17 +544,6 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiradefecttype",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defect Mapping",
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as or any other value. So user need to provide value with which defect is identified in JIRA/AZURE",
-      "kpiImpacted": "Jira/Azure Collector and KPIs"
-    }
-  },
-  {
     "fieldName": "jiraIterationCompletionTypeCustomField",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
@@ -1317,9 +1306,40 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
+    "fieldName": "jiraLiveStatus",
+    "fieldLabel": "Live Status - Lead Time",
+    "fieldType": "text",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+    }
+  },
+  {
+      "fieldName": "jiraLiveStatusLT",
+      "fieldLabel": "Live Status - Lead Time",
+      "fieldType": "text",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+      }
+  },
+  {
+      "fieldName": "jiraLiveStatusLTK",
+      "fieldLabel": "Live Status - Lead Time",
+      "fieldType": "text",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+      }
+   },
+  {
     "fieldName": "jiradefecttypeBDRR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1330,6 +1350,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeCVR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1340,6 +1361,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeAVR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1350,6 +1372,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeIC",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1360,6 +1383,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeIFTPR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1370,6 +1394,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeFTPR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1380,6 +1405,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeMW",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1390,6 +1416,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeLT",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1400,6 +1427,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeIWS",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1410,6 +1438,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeQS",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1420,6 +1449,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeRDCS",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1430,6 +1460,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeRDCR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1440,6 +1471,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeRDCP",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1450,6 +1482,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeRDCA",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1460,6 +1493,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeIDCP",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1470,6 +1504,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeIDCS",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1480,6 +1515,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeSWE",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1490,6 +1526,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttypeIDCR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1500,16 +1537,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiradefecttype",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-{
-    "fieldName": "jiradefecttype",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
@@ -1537,9 +1565,76 @@ db.getCollection('field_mapping_structure').insert(
     }
 },
 {
+    "fieldName": "epicCostOfDelay",
+    "fieldLabel": "Epic Cost of Delay",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Provide value of Cost Of delay field for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+      "kpiImpacted":"Cost of delay"
+    }
+},
+{
+    "fieldName": "epicRiskReduction",
+    "fieldLabel": "Epic Risk Reduction",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Risk reduction/ Enablement value for Epic that is required to calculated Cost of delay <br> Example: customfield_11111<hr>",
+      "kpiImpacted":"Cost of delay"
+    }
+},
+{
+    "fieldName": "epicUserBusinessValue",
+    "fieldLabel": "Epic Business Value",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of User-Business Value for Epic that is required to calculated Cost of delay. <br>Example:customfield_11111<hr>",
+      "kpiImpacted":"Cost of delay"
+    }
+},
+{
+    "fieldName": "epicWsjf",
+    "fieldLabel": "Epic WSJF",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of WSJF value that is required to calculated Cost of delay <br />Example:customfield_11111<hr>",
+      "kpiImpacted":"Cost of delay"
+    }
+},
+{
+    "fieldName": "epicTimeCriticality",
+    "fieldLabel": "Epic Time Criticality",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Time Criticality value on Epic that is required to calculated Cost of delay .<br />Example:customfield_11111<hr>",
+      "kpiImpacted":"Cost of delay"
+    }
+},
+{
+    "fieldName": "epicJobSize",
+    "fieldLabel": "Epic Job Size",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Job size on EPIC that is required to calculated WSJF. <br>Example:customfield_11111<hr>",
+      "kpiImpacted":"Cost of delay"
+    }
+},
+{
     "fieldName": "estimationCriteria",
     "fieldLabel": "Estimation Criteria",
     "fieldType": "radiobutton",
+    "section": "Custom Fields Mapping",
      "tooltip": {
           "definition": "Estimation criteria for stories. <br> Example: Buffered Estimation."
         },
@@ -1569,6 +1664,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiraBugRaisedByQAIdentification",
     "fieldLabel": "QA Defect Identification",
     "fieldType": "radiobutton",
+    "section": "Defects Mapping",
      "tooltip": {
           "definition": "This field is used to identify if a defect is raised by QA<br>1. CustomField : If a separate custom field is used.<br>2. Labels : If a label is used to identify. Example: QA Defect <hr>"
         },
@@ -1608,6 +1704,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiraBugRaisedByIdentification",
     "fieldLabel": "UAT Defect Identification",
     "fieldType": "radiobutton",
+    "section": "Defects Mapping",
      "tooltip": {
           "definition": "This field is used to identify if a defect is raised by third party or client:<br>1. CustomField : If a separate custom field is used<br>2. Labels : If a label is used to identify. Example: TECH_DEBT (This has to be one value).<hr>"
         },
@@ -1642,6 +1739,17 @@ db.getCollection('field_mapping_structure').insert(
             }
           }
         ]
+},
+{
+    "fieldName": "filterId",
+    "fieldLabel": "Additional Filter Identifier",
+    "section": "Additional Filter Identifier",
+    "fieldType": "dropdown",
+     "tooltip": {
+          "definition": "This field is used to identify Additional Filters. <br> Example: SQUAD<br>,
+          "kpiImpacted":"Filters"
+          }
+},
 }
 
 

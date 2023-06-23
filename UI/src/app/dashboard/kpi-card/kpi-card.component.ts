@@ -1,6 +1,8 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy,OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy,OnChanges, SimpleChanges} from '@angular/core';
 import { faShareSquare } from '@fortawesome/free-solid-svg-icons';
 import { SharedService } from 'src/app/services/shared.service';
+import { HttpService } from 'src/app/services/http.service';
+
 @Component({
   selector: 'app-kpi-card',
   templateUrl: './kpi-card.component.html',
@@ -44,8 +46,14 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
  sprintDetailsList : Array<any>;
  colorCssClassArray = ['sprint-hover-project1','sprint-hover-project2','sprint-hover-project3','sprint-hover-project4','sprint-hover-project5','sprint-hover-project6'];
  displayConfigModel = false;
+ displayFormComponent = false;
+ fieldMappingMetaData = {};
+ disableSave = false
+ fieldMappingConfig = [];
+ selectedFieldMapping = []
 
-  constructor(private service: SharedService) {
+  constructor(private service: SharedService,
+    private http : HttpService) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -193,4 +201,19 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     this.trendData = [];
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
+
+  /** This method is responsible for getting field mapping configuration for specfic KPI */
+  getKPIFieldMappingConfig(){
+   this.http.getKPIFieldMappingConfig(this.kpiData?.kpiId).subscribe(data=>{
+    this.fieldMappingConfig = data
+    this.displayFormComponent = true;
+    this.displayConfigModel = true;
+  console.log("came : ",data);
+   })
+  }
+
+  onOpenFieldMappingDialog(){
+    this.getKPIFieldMappingConfig();
+  }
+
 }

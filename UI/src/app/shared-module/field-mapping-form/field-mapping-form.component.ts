@@ -14,9 +14,10 @@ import { MessageService,ConfirmationService } from 'primeng/api';
 export class FieldMappingFormComponent implements OnInit {
   @Input() fieldMappingMetaData;
   @Input() disableSave= false;
-
-  selectedConfig: any = {};
-  selectedToolConfig: any = {};
+  @Input() fieldMappingConfig;
+  @Input() formData;
+  @Input() selectedConfig;
+  @Input() selectedToolConfig;
   populateDropdowns = true;
   selectedField = '';
   singleSelectionDropdown = false;
@@ -28,272 +29,16 @@ export class FieldMappingFormComponent implements OnInit {
   bodyScrollPosition = 0;
   uploadedFileName = '';
 
+  filterHierarchy: any = [];
   form: FormGroup;
-  fieldMappingSectionList = ['Workflow Status Mapping','Issue Types Mapping','Custom field Mapping'];
-  formData ={
-    "id": "648cf9c00533dd4339d3ec3f",
-    "projectToolConfigId": "648c7fc81acbd04b0407db70",
-    "basicProjectConfigId": "648c7f941acbd04b0407db6e",
-    "sprintName": "customfield_12700",
-    "jiradefecttype": [
-        "Defect"
-    ],
-    "defectPriority": [],
-    "jiraIssueTypeNames": [
-        "Story",
-        "Enabler Story",
-        "Change request",
-        "Defect"
-    ],
-    "storyFirstStatus": "Open",
-    "rootCause": "customfield_19121",
-    "jiraStatusForDevelopment": [
-        "In Development"
-    ],
-    "jiraIssueEpicType": [
-        "Epic"
-    ],
-    "jiraStatusForQa": [
-        "In Testing"
-    ],
-    "jiraDefectInjectionIssueType": [
-        "Story",
-        "Enabler Story",
-        "Change request",
-        "Defect"
-    ],
-    "jiraDod": [
-        "Closed"
-    ],
-    "jiraDefectCreatedStatus": "Open",
-    "jiraDefectRejectionStatus": "Rejected",
-    "jiraBugRaisedByIdentification": "customfield",
-    "jiraBugRaisedByValue": ['open'],
-    "jiraDefectSeepageIssueType": [
-        "Story",
-        "Enabler Story",
-        "Change request",
-        "Defect"
-    ],
-    "jiraBugRaisedByCustomField": "",
-    "jiraDefectRemovalStatus": [],
-    "jiraDefectRemovalIssueType": [
-        "Story",
-        "Enabler Story",
-        "Change request",
-        "Defect"
-    ],
-    "jiraStoryPointsCustomField": "customfield_20803",
-    "jiraTestAutomationIssueType": [
-        "Story",
-        "Enabler Story",
-        "Change request",
-        "Defect"
-    ],
-    "jiraSprintVelocityIssueType": [
-        "Story",
-        "Enabler Story",
-        "Change request",
-        "Defect"
-    ],
-    "jiraSprintCapacityIssueType": [
-        "Story",
-        "Enabler Story",
-        "Change request",
-        "Defect"
-    ],
-    "jiraDefectRejectionlIssueType": [
-        "Story",
-        "Enabler Story",
-        "Change request",
-        "Defect"
-    ],
-    "jiraDefectCountlIssueType": [
-        "Story",
-        "Enabler Story",
-        "Change request",
-        "Defect"
-    ],
-    "jiraIssueDeliverdStatus": [
-        "Closed"
-    ],
-    "readyForDevelopmentStatus": "",
-    "jiraDor": "Open",
-    "jiraIntakeToDorIssueType": [
-        "Story",
-        "Enabler Story",
-        "Change request",
-        "Defect"
-    ],
-    "jiraStoryIdentification": [
-        "Story",
-        "Enabler Story"
-    ],
-    "jiraLiveStatus": "Closed",
-    "excludeRCAFromFTPR": [],
-    "resolutionTypeForRejection": [
-        "Dropped",
-        "Rejected"
-    ],
-    "jiraQADefectDensityIssueType": [
-        "Story",
-        "Enabler Story",
-        "Change request",
-        "Defect"
-    ],
-    "jiraBugRaisedByQACustomField": "",
-    "jiraBugRaisedByQAIdentification": "",
-    "jiraBugRaisedByQAValue": [],
-    "jiraDefectDroppedStatus": [
-        "Dropped",
-        "Rejected"
-    ],
-    "jiraDefectClosedStatus": [],
-    "epicCostOfDelay": "customfield_58102",
-    "epicRiskReduction": "customfield_58101",
-    "epicUserBusinessValue": "customfield_58100",
-    "epicWsjf": "customfield_58104",
-    "epicTimeCriticality": "customfield_51002",
-    "epicJobSize": "customfield_61041",
-    "productionDefectCustomField": "",
-    "productionDefectIdentifier": "",
-    "productionDefectValue": [],
-    "productionDefectComponentValue": "",
-    "jiraFTPRStoryIdentification": [],
-    "estimationCriteria": "Actual Estimation",
-    "storyPointToHourMapping": 8,
-    "workingHoursDayCPT": 6,
-    "additionalFilterConfig": [],
-    "jiraBlockedStatus": [],
-    "jiraDueDateField": "Due Date",
-    "jiraDueDateCustomField": "",
-    "jiraDevDueDateCustomField": "",
-    "jiraRejectedInRefinement": [],
-    "jiraAcceptedInRefinement": [],
-    "jiraReadyForRefinement": [],
-    "jiraFtprRejectStatus": [],
-    "jiraIterationCompletionStatusCustomField": [],
-    "jiraIterationCompletionTypeCustomField": []
-};
-  formConfig = {
-    "Workflow Status Mapping": [
-      {
-        "fieldLabel": "Story First Status",
-        "fieldName": "storyFirstStatus",
-        "fieldType": "text",
-        "searchBtn": true,
-        "fieldCategory": "workflow",
-        "tooltip": {
-          "definition": "Default status when a Story is opened.<br>  Example: Open",
-          "kpiImpacted": "Jira Processor history"
-        },
-      },
-      {
-        "fieldLabel": "Defect priority exclusion from Quality KPIs",
-        "fieldName": "defectPriority",
-        "fieldType": "multiSelect",
-        "fieldCategory": "workflow",
-        "options": [
-          {
-            label: 'p1',
-            value: 'p1'
-          },
-          {
-            label: 'p2',
-            value: 'p2'
-          },
-          {
-            label: 'p3',
-            value: 'p3'
-          },
-          {
-            label: 'p4',
-            value: 'p4'
-          },
-          {
-            label: 'p5',
-            value: 'p5'
-          }
-        ],
-        "tooltip": {
-          "definition": "Default status when a Story is opened.<br>  Example: Open",
-          "kpiImpacted": "Jira Processor history"
-        },
-      },
-      {
-        "fieldLabel": "Issue Delivered Status",
-        "fieldName": "jiraIssueDeliverdStatus",
-        "fieldType": "multiValue",
-        "searchBtn": true,
-        "fieldCategory": "workiflow",
-        "tooltip": {
-          "definition": " Status from workflow on which issue is delivered. Example: Closed",
-          "kpiImpacted": "Jira Processor history"
-        },
-      }
-    ],
-    "Issue Types Mapping": [
-      {
-        "fieldLabel": "UAT Defect Identification",
-        "fieldName": "jiraBugRaisedByIdentification",
-        "fieldType": "radio",
-        "tooltip": {
-          "definition": "Default status when a story is opened",
-          "kpiImpacted": "Jira Processor history"
-        },
-        "options": [
-          {
-            "label": "Custom Field",
-            "value": "customfield"
-          },
-          {
-            "label": "Labels",
-            "value": "labels"
-          }
-        ],
-        "nestedFields": [
-          {
-            "fieldLabel": "UAT Defect Custom Field",
-            "fieldName": "jiraBugRaisedByCustomField",
-            "fieldType": "text",
-            "searchBtn": true,
-            "filterGroup": ["customfield","labels"],
-            "fieldCategory" : "Issuetype",
-            "tooltip": {
-              "definition": "Default status when a story is opened",
-              "kpiImpacted": "Jira Processor history"
-            }
-          },
-          {
-            "fieldLabel": "UAT Defect Values",
-            "fieldName": "jiraBugRaisedByValue",
-            "fieldType": "multiValue",
-            "searchBtn": false,
-            "filterGroup": ["labels"],
-            "fieldCategory" : "Issuetype",
-            "tooltip": {
-              "definition": "Default status when a story is opened",
-              "kpiImpacted": "Jira Processor history"
-            }
-          }
-        ]
-      }
-    ],
-    "Custom field Mapping":[
-      {
-        "fieldLabel": "Estimation",
-        "fieldName": "jiraStoryPointsCustomField",
-        "fieldType": "text",
-        "searchBtn": true,
-        "fieldCategory": "fields",
-        "tooltip": {
-          "definition": "Default status when a Story is opened.  Example: Open",
-          "kpiImpacted": "Jira Processor history"
-        },
-      },
-    ]
+  fieldMappingSectionList = [];
+  formConfig: any;
 
-  };
+private setting = {
+  element: {
+    dynamicDownload: null as HTMLElement
+  }
+};
 
   constructor(private sharedService : SharedService,
     private getAuthorizationService : GetAuthorizationService,
@@ -303,9 +48,27 @@ export class FieldMappingFormComponent implements OnInit {
     private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
+    this.filterHierarchy = JSON.parse(localStorage.getItem('completeHierarchyData')).scrum;
     this.initializeForm();
+    this.generateFieldMappingConfiguration();
   }
 
+  generateFieldMappingConfiguration(){
+    const fieldMappingSections = [];
+    const fieldMappingConfigration = {};
+    this.fieldMappingConfig.forEach(field => {
+      fieldMappingSections.push(field.section);
+      if(!fieldMappingConfigration[field.section]){
+        fieldMappingConfigration[field.section] = [field];
+      }else{
+        fieldMappingConfigration[field.section].push(field);
+      }
+    });
+    this.fieldMappingSectionList = [...new Set(fieldMappingSections)];
+    this.formConfig = fieldMappingConfigration;
+    console.log(fieldMappingSections,fieldMappingConfigration);
+    
+  }
 
   initializeForm(){
     const formObj ={};
@@ -316,10 +79,6 @@ export class FieldMappingFormComponent implements OnInit {
     console.log(this.form);
   }
 
-  showForm(){
-    console.log(this.form.value);
-    
-  }
 
 
   /** once user willl click on search btn, assign the search options based on field category */
@@ -438,9 +197,11 @@ export class FieldMappingFormComponent implements OnInit {
 
   /** Responsible for handle template popup */
   save() {
-    const submitData = {};
+    const submitData = {...this.form.value};
     submitData['basicProjectConfigId'] = this.selectedConfig.id;
-
+    delete submitData.id;
+    console.log(submitData);
+    
     if(this.selectedToolConfig[0].toolName === 'Jira'){
       this.http.getMappingTemplateFlag(this.selectedToolConfig[0].id, submitData).subscribe(response => {
         if (response && response['success']) {
@@ -475,8 +236,10 @@ export class FieldMappingFormComponent implements OnInit {
 
   /** Responsible for handle save */
   saveFieldMapping(mappingData) {
-    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingData).subscribe(Response => {
-      if (Response && Response['success']) {
+    console.log(this.selectedToolConfig, mappingData);
+    
+    this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingData).subscribe(response => {
+      if (response && response['success']) {
         this.messenger.add({
           severity: 'success',
           summary: 'Field Mappings submitted!!',
@@ -491,4 +254,66 @@ export class FieldMappingFormComponent implements OnInit {
     });
   }
 
+  export() {
+    // this.fieldMappingSubmitted = true;
+    // return if form is invalid
+    if (this.form.invalid) {
+      return;
+    }
+
+    const submitData = {};
+    for (const obj in this.form.value) {
+      submitData[obj] = this.form[obj];
+    }
+
+    this.handleAdditionalFilters(submitData);
+
+    this.dyanmicDownloadByHtmlTag({
+      fileName: 'mappings.json',
+      text: JSON.stringify(submitData)
+    });
+  }
+
+  handleAdditionalFilters(submitData: any): any {
+    /** addiitional filters start*/
+    const additionalFilters = this.filterHierarchy.filter((filter) => filter.level > this.filterHierarchy.filter(f => f.hierarchyLevelId === 'sprint')[0].level);
+    // modify submitData
+    submitData['additionalFilterConfig'] = [];
+    additionalFilters.forEach(element => {
+      if (submitData[element.hierarchyLevelId + 'Identifier'] && submitData[element.hierarchyLevelId + 'Identifier'].length) {
+        const additionalFilterObj = {};
+        additionalFilterObj['filterId'] = element.hierarchyLevelId;
+        additionalFilterObj['identifyFrom'] = submitData[element.hierarchyLevelId + 'Identifier'];
+        if (additionalFilterObj['identifyFrom'] === 'CustomField') {
+          additionalFilterObj['identificationField'] = submitData[element.hierarchyLevelId + 'IdentSingleValue'];
+          additionalFilterObj['values'] = [];
+        } else {
+          additionalFilterObj['identificationField'] = '';
+          additionalFilterObj['values'] = submitData[element.hierarchyLevelId + 'IdentMultiValue'] ? submitData[element.hierarchyLevelId + 'IdentMultiValue'] : [];
+        }
+        submitData['additionalFilterConfig'].push(additionalFilterObj);
+      }
+      delete submitData[element.hierarchyLevelId + 'Identifier'];
+      delete submitData[element.hierarchyLevelId + 'IdentSingleValue'];
+      delete submitData[element.hierarchyLevelId + 'IdentMultiValue'];
+    });
+    return submitData;
+  }
+
+  
+  private dyanmicDownloadByHtmlTag(arg: {
+    fileName: string;
+    text: string;
+  }) {
+    if (!this.setting.element.dynamicDownload) {
+      this.setting.element.dynamicDownload = document.createElement('a');
+    }
+    const element = this.setting.element.dynamicDownload;
+    const fileType = arg.fileName.indexOf('.json') > -1 ? 'text/json' : 'text/plain';
+    element.setAttribute('href', `data:${fileType};charset=utf-8,${encodeURIComponent(arg.text)}`);
+    element.setAttribute('download', arg.fileName);
+
+    const event = new MouseEvent('click');
+    element.dispatchEvent(event);
+  }
 }

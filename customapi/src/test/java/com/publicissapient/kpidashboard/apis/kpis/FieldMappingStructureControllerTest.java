@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.apis.kpis;
 
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.model.FieldMappingStructureResponse;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import org.junit.After;
 import org.junit.Before;
@@ -35,11 +36,14 @@ public class FieldMappingStructureControllerTest {
     private FieldMappingStructure fieldMappingStructure= new FieldMappingStructure();
 
     private List<FieldMappingStructure> fieldMappingStructureList = new ArrayList<>();
+    private FieldMappingStructureResponse fieldMappingStructureResponse= new FieldMappingStructureResponse();
 
     @Before
     public void before() {
         mockMvc = MockMvcBuilders.standaloneSetup(fieldMappingStructureController).build();
         fieldMappingStructureList.add(fieldMappingStructure);
+        fieldMappingStructureResponse.setFieldConfiguration(fieldMappingStructureList);
+        fieldMappingStructureResponse.setKpiSource("kpidId");
     }
 
     @After
@@ -49,7 +53,7 @@ public class FieldMappingStructureControllerTest {
 
     @Test
     public void fetchFieldMappingStructureByKpiFieldMappingData() throws Exception {
-        when(kpiHelperService.fetchFieldMappingStructureByKpiFieldMappingData("kpi0")).thenReturn(fieldMappingStructureList);
+        when(kpiHelperService.fetchFieldMappingStructureByKpiFieldMappingData("kpi0")).thenReturn(fieldMappingStructureResponse);
         mockMvc.perform(get("/kpiFieldMapping/kpi0")).andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType("application/json"));
     }

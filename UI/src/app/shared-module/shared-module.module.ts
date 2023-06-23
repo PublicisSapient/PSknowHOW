@@ -79,6 +79,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     KpiFilterComponent,
     FieldMappingFormComponent,
     FieldMappingFieldComponent
-  ]
+  ],
+  providers : [ConfirmationService]
 })
 export class SharedModuleModule { }

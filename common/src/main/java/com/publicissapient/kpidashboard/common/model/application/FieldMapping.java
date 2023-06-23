@@ -161,7 +161,9 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStoryIdentification;
 	private List<String> jiraStoryIdentificationIC;
 
-	private String jiraLiveStatus;
+	private String jiraLiveStatus;//TODO: duplicate
+	private String jiraLiveStatusLT;
+	private String jiraLiveStatusLTK;
 
 	private List<String> ticketCountIssueType;
 

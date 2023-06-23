@@ -484,6 +484,8 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDodLT(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodPDA(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraLiveStatus(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusLT(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusLTK(CommonConstant.CLOSED);
 			fieldMapping.setJiraDefectRemovalStatus(null);
 			fieldMapping.setJiraDor(CommonConstant.OPEN);
 			fieldMapping.setResolutionTypeForRejectionAVR(
@@ -566,6 +568,8 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraTicketClosedStatus(
 					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraLiveStatus(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusLT(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusLTK(CommonConstant.CLOSED);
 
 			fieldMapping
 					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));

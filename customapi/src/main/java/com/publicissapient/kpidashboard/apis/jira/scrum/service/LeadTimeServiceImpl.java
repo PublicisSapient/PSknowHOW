@@ -333,7 +333,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistories) {
 				String dor = fieldMapping.getJiraDor();
 				List<String> dod = fieldMapping.getJiraDodLT();
-				String live = fieldMapping.getJiraLiveStatus();
+				String live = fieldMapping.getJiraLiveStatusLT();
 				CycleTimeValidationData cycleTimeValidationData = new CycleTimeValidationData();
 				cycleTimeValidationData.setIssueNumber(jiraIssueCustomHistory.getStoryID());
 				cycleTimeValidationData.setUrl(jiraIssueCustomHistory.getUrl());
