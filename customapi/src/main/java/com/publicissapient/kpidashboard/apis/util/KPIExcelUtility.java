@@ -457,16 +457,6 @@ public class KPIExcelUtility {
 			IssueDetails issueDetails = (IssueDetails) object;
 			url = StringUtils.isEmpty(issueDetails.getUrl()) ? Constant.EMPTY_STRING : issueDetails.getUrl();
 		}
-		if (object instanceof JiraIssue) {
-			JiraIssue jiraIssue = (JiraIssue) object;
-			url = StringUtils.isEmpty(jiraIssue.getUrl()) ? Constant.EMPTY_STRING : jiraIssue.getUrl();
-		}
-		if (object instanceof JiraIssueCustomHistory) {
-			JiraIssueCustomHistory jiraIssueCustomHistory = (JiraIssueCustomHistory) object;
-			url = StringUtils.isEmpty(jiraIssueCustomHistory.getUrl()) ? Constant.EMPTY_STRING
-					: jiraIssueCustomHistory.getUrl();
-		}
-
 		return url;
 
 	}
