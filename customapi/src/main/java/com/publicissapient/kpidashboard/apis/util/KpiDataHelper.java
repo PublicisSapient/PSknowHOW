@@ -351,10 +351,10 @@ public final class KpiDataHelper {
 	}
 
 	public static void prepareFieldMappingDefectTypeTransformation(Map<String, Object> mapOfProjectFilters,
-			FieldMapping fieldMapping, List<String> kpiWiseDefectsFieldMapping, String key) {
-		if (Optional.ofNullable(fieldMapping.getJiradefecttype()).isPresent()
-				&& CollectionUtils.containsAny(kpiWiseDefectsFieldMapping, fieldMapping.getJiradefecttype())) {
-			kpiWiseDefectsFieldMapping.removeIf(x -> fieldMapping.getJiradefecttype().contains(x));
+			List<String> defectType, List<String> kpiWiseDefectsFieldMapping, String key) {
+		if (Optional.ofNullable(defectType).isPresent()
+				&& CollectionUtils.containsAny(kpiWiseDefectsFieldMapping, defectType)) {
+			kpiWiseDefectsFieldMapping.removeIf(x -> defectType.contains(x));
 			kpiWiseDefectsFieldMapping.add(NormalizedJira.DEFECT_TYPE.getValue());
 		}
 		mapOfProjectFilters.put(key, CommonUtils.convertToPatternList(kpiWiseDefectsFieldMapping));

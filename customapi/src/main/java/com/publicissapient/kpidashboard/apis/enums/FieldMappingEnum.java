@@ -35,7 +35,7 @@ public enum FieldMappingEnum {
 					"jiraBugRaisedByValue", "jiraBugRaisedByIdentification")),
 
 	KPI40("Issue Count", Arrays.asList("jiraStoryIdentificationIC", "jiraIterationCompletionTypeCustomField",
-			"jiraIterationCompletionStatusCustomField", "jiradefecttype")),
+			"jiraIterationCompletionStatusCustomField", "jiradefecttypeIC")),
 
 	KPI39("Sprint Velocity",
 			Arrays.asList("jiraSprintVelocityIssueTypeSV", "jiraIterationCompletionTypeCustomField",
@@ -53,20 +53,20 @@ public enum FieldMappingEnum {
 	KPI46("Sprint Capacity Utilization", Arrays.asList("jiraSprintCapacityIssueType")),
 
 	KPI83("Average Resolution Time", Arrays.asList("resolutionTypeForRejectionAVR", "jiraIssueDeliverdStatusAVR",
-			"jiraDefectRejectionStatusAVR", "jiraIssueTypeNames", "jiradefecttype", "jiraStatusForDevelopmentAVR")),
+			"jiraDefectRejectionStatusAVR", "jiradefecttypeAVR", "jiraStatusForDevelopmentAVR")),
 
 	KPI82("First Time Pass Rate",
 			Arrays.asList("jiraStatusForDevelopmentFTPR", "jiraFTPRStoryIdentification", "jiraIssueDeliverdStatusFTPR",
 					"resolutionTypeForRejectionFTPR", "jiraDefectRejectionStatusFTPR", "defectPriorityFTPR",
-					"excludeRCAFromFTPR")),
+					"excludeRCAFromFTPR", "jiradefecttypeFTPR")),
 
 	KPI135("First Time Pass Rate (Iteration)",
-			Arrays.asList("jiraStatusForDevelopmentIFTPR", "jiraIFTPRStoryIdentification")),
+			Arrays.asList("jiraStatusForDevelopmentIFTPR", "jiraIFTPRStoryIdentification", "jiradefecttypeIFTPR")),
 
-	KPI53("Lead Time (Kanban)",
-			Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT", "Issue Description", "First Time Pass")),
+	KPI53("Lead Time (Kanban)", Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT")),
 
-	KPI3("Lead Time (Scrum)", Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT", "jiraDodLT", "jiraLiveStatus")),
+	KPI3("Lead Time (Scrum)", Arrays.asList("jiradefecttypeLT", "jiraIntakeToDorIssueTypeLT", "jiraDorLT", "jiraDodLT",
+			"jiraLiveStatus")),
 
 	KPI34("Defect Removal Efficiency", Arrays.asList("jiraDefectRemovalStatus", "resolutionTypeForRejectionDRE",
 			"jiraDefectRejectionStatusDRE", "jiraDefectRemovalIssueType")),
@@ -74,13 +74,20 @@ public enum FieldMappingEnum {
 	KPI37("Defect Rejection Rate", Arrays.asList("resolutionTypeForRejectionDRR", "jiraDefectRejectionStatusDRR",
 			"jiraDefectRejectionlIssueType")),
 
-	KPI28("Defect Count By Priority(Scrum)", Arrays.asList("jiraDefectCountlIssueTypeDC","resolutionTypeForRejectionDC","jiraDefectRejectionStatusDC")),
+	KPI28("Defect Count By Priority(Scrum)", Arrays.asList("jiraDefectCountlIssueTypeDC",
+			"resolutionTypeForRejectionDC", "jiraDefectRejectionStatusDC")),
 
-	KPI140("Defect Count by Priority (Iteration)", Arrays.asList("jiradefecttype")),
+	KPI140("Defect Count by Priority (Iteration)", Arrays.asList("jiradefecttypeIDCP")),
+	KPI144("Defect Count by Priority (Release)", Arrays.asList("jiradefecttypeRDCP")), KPI143(
+			"Defect Count by Assignee (Release)", Arrays.asList("jiradefecttypeRDCA")), KPI142(
+					"Defect Count by RCA (Release)", Arrays.asList("jiradefecttypeRDCR")), KPI141(
+							"Defect Count by Status (Release)", Arrays.asList("jiradefecttypeRDCS")),
 
-	KPI144("Defect Count by Priority (Release)", Arrays.asList("jiradefecttype")),
+	KPI36("Defect Count by RCA (Scrum)", Arrays.asList("jiraDefectCountlIssueTypeRCA", "resolutionTypeForRejectionRCA",
+			"jiraDefectRejectionStatusRCA")),
+	KPI132("Defect Count by RCA (Iteration)", Arrays.asList("jiradefecttypeIDCR")),
 
-	KPI36("Defect Count by RCA (Scrum)",Arrays.asList("jiraDefectCountlIssueTypeRCA","resolutionTypeForRejectionRCA","jiraDefectRejectionStatusRCA")),
+	KPI136("Defect Count by Status (Iteration)", Arrays.asList("jiradefecttypeIDCS")),
 
 	KPI14("Defect Injection Rate",
 			Arrays.asList("jiradefecttype", "estimationCriteria", "excludeRCAFromDIR", "resolutionTypeForRejectionDIR",
@@ -92,12 +99,18 @@ public enum FieldMappingEnum {
 
 	KPI127("Production Defects Ageing", Arrays.asList("jiraDodPDA")),
 
-	KPI35("Defect Seepage Rate", Arrays.asList("jiraDefectSeepageIssueType","resolutionTypeForRejectionDSR","jiraDefectRejectionStatusDSR","jiraBugRaisedByIdentification","jiraBugRaisedByValue")),
+	KPI35("Defect Seepage Rate", Arrays.asList("jiraDefectSeepageIssueType","resolutionTypeForRejectionDSR","jiraDefectRejectionStatusDSR")),
 
 	KPI133("Quality Status", Arrays.asList("resolutionTypeForRejectionQS", "jiraDefectRejectionStatusQS",
-			"defectPriorityQS", "excludeRCAFromQS")),
+			"jiradefecttypeQS", "defectPriorityQS", "excludeRCAFromQS")),
 
-	KPI126("Created vs Resolved defects", Arrays.asList("jiradefecttype","jiraIssueDeliverdStatusCVR"));
+	KPI126("Created vs Resolved defects", Arrays.asList("jiradefecttypeCVR","jiraIssueDeliverdStatusCVR")),
+
+	KPI137("Defect Reopen Rate (Backlog)",
+		   Arrays.asList("jiradefecttypeBDRR")),
+
+	KPI129("Issues Without Story Link",
+														Arrays.asList("jiradefecttypeIWS"));
 
 	// @formatter:on
 
