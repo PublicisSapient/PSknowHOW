@@ -1411,11 +1411,16 @@ public class KpiHelperService { // NOPMD
 		return kpiFieldMappingResponse;
 	}
 
-	public List<FieldMappingStructure> fetchFieldMappingStructureByKpiFieldMappingData(String kpiId) {
-		List<String> fieldList= FieldMappingEnum.valueOf(kpiId.toUpperCase()).getFields();
-		List<FieldMappingStructure> fieldMappingStructureList= (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
-		List<FieldMappingStructure> fieldMappingStructures=fieldMappingStructureList.stream().filter(f->fieldList.contains(f.getFieldName())).collect(Collectors.toList());
-		return fieldMappingStructures;
+	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiFieldMappingData(String kpiId) {
+		FieldMappingStructureResponse fieldMappingStructureResponse = new FieldMappingStructureResponse();
+		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
+		if(CollectionUtils.isNotEmpty(fieldMappingStructureList)) {
+			List<String> fieldList= FieldMappingEnum.valueOf(kpiId.toUpperCase()).getFields();
+			String kpiSource = FieldMappingEnum.valueOf(kpiId.toUpperCase()).getKpiSource();
+			fieldMappingStructureResponse.setFieldConfiguration(fieldMappingStructureList.stream().filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList()));
+			fieldMappingStructureResponse.setKpiSource(kpiSource);
+		}
+		return fieldMappingStructureResponse;
 	}
 
 	public boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue,
