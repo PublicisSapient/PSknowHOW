@@ -1,0 +1,35 @@
+<div [ngSwitch]="fieldConfig?.fieldType">
+
+    <div class="p-inputgroup" *ngSwitchCase="'text'">
+        <input type="text" pInputText id="fieldConfig?.fieldName" placeholder="Enter {{fieldConfig?.fieldLabel}}"
+            [style]="{'max-width':'initial','width':'60vw'}" [(ngModel)]="value" (change)="setValue()">
+        <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
+        (click)="showDialogToAddValue(true, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"></button>
+    </div>
+
+    <div class="p-inputgroup" *ngSwitchCase="'multiValue'">
+        <p-chips [style]="{'max-width':'initial','width':'60vw'}" inputId="fieldConfig?.fieldName"
+            placeholder="Enter {{fieldConfig?.fieldLabel}}" addOnBlur="true" [(ngModel)]="value" (onAdd)="setValue()" (onRemove)="setValue()">
+        </p-chips>
+        <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
+        (click)="showDialogToAddValue(false, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"></button>
+    </div>
+
+    <div class="p-d-flex p-justify-between" *ngSwitchCase="'radio'">
+        <div class="p-inputgroup">
+            <ng-container *ngFor="let opt of fieldConfig.options">
+                <p-radioButton placeholder="Select" value="{{opt.value}}" label="{{opt.value}}" class="p-m-2"
+                    [name]="fieldConfig?.fieldName" [(ngModel)]="value" (onClick)="setValue()">
+                </p-radioButton>
+            </ng-container>
+        </div>
+        <button pButton pRipple type="button" label="Reset" class="p-button-raised" (click)="resetRadioButton()"></button>
+    </div>
+
+    <div *ngSwitchCase="'multiSelect'">
+        <p-multiSelect id="fieldConfig?.fieldName" [options]="fieldConfig.options" placeholder="Select Priority"
+            [style]="{'max-width':'initial','width':'calc(60vw + 42px)'}" [showHeader]="false" [(ngModel)]="value" (onChange)="setValue()">
+        </p-multiSelect>
+    </div>
+
+</div>

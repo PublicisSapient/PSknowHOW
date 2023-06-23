@@ -31,13 +31,6 @@
             <span class="p-pl-3">{{uploadedFileName}}</span>
         </div>
     </div>
-
+    <app-field-mapping-form [disableSave]="disableSave" [fieldMappingMetaData]="fieldMappingMetaData"></app-field-mapping-form>
 </div>
 
-
-<p-confirmDialog #templateInfoDialog key="templateInfoDialog" [style]="{width: '50vw'}">
-    <p-footer>
-        <button type="button" (click)="templateInfoDialog.reject()" pButton label="Cancel" class="enable-dialog-btn"></button>
-        <button type="button" (click)="templateInfoDialog.accept()" pButton label="Proceed"></button>
-    </p-footer>
-</p-confirmDialog>

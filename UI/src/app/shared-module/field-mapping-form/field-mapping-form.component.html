@@ -1,7 +1,47 @@
-<p>field-mapping-form works!</p>
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
+<form [formGroup]="form" autocomplete="off">
+    <p-accordion [multiple]="true" [style]="{'width':'100%'}" #accordion>
+        <p-accordionTab *ngFor="let section of fieldMappingSectionList" [header]="section">
+            <div class="p-p-0">
+                <div class="p-mb-3 p-d-flex p-align-center" *ngFor="let field of formConfig[section]">
+                    <label class="field-title">{{field['fieldLabel']}}&nbsp;<span class="fa fa-info-circle"
+                            aria-hidden="true" pTooltip='<span>
+                                            Definition:
+                                            {{field.tooltip.definition}} <br><hr>
+                                            KPI Impacted:
+                                            {{field.tooltip.kpiImpacted}}
+                                            </span>' tooltipPosition="top" tooltipEvent="hover"
+                            tooltipStyleClass="tooltiptext" [escape]="false"></span>
+                    </label>
+                    <ng-container *ngIf="!field?.nestedFields else nestedFieldContainer">
+                        <app-field-mapping-field [fieldConfig]="field" [formControlName]="field['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
+                    </ng-container>
+                    <ng-template #nestedFieldContainer>
+                        <div class="fields-container p-p-2">
+                            <div class="p-d-flex p-justify-between">
+                                <app-field-mapping-field [fieldConfig]="field" [formControlName]="field['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
+                            </div>
+                            <div class="p-m-2" *ngFor="let nestedField of field['nestedFields']">
+                                <ng-container *ngIf="!nestedField['filterGroup'] || (nestedField['filterGroup'] && nestedField['filterGroup'].includes(form.value[field['fieldName']]))">
+                                    <label class="field-title">{{nestedField['fieldLabel']}} <span class="fa fa-info-circle"
+                                        aria-hidden="true" pTooltip='<span>
+                                        Definition:
+                                        {{nestedField?.tooltip?.definition}}
+                                      <hr *ngIf="nestedField?.tooltip?.kpiImpacted">
+                                        </span>' tooltipPosition="top" tooltipEvent="hover"
+                                        tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                                <app-field-mapping-field [fieldConfig]="nestedField" [formControlName]="nestedField['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </ng-template>
 
-
+                </div>
+            </div>
+        </p-accordionTab>
+    </p-accordion>
+</form>
+<button (click)="showForm()">Show val</button>
 
 <!-- Search Dialog -->
 <p-dialog header="Add Value(s)" [(visible)]="displayDialog" showEffect="fade" [modal]="true" [style]="{width: '500px'}"
