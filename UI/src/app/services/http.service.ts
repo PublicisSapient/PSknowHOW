@@ -1101,4 +1101,10 @@ export class HttpService {
       data,
     );
   }
+
+  /** This method is responsible for getting field mapping configuration for specfic KPI and processor */
+  getKPIFieldMappingConfig(KPIID) {
+    return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
+  }
+  
 }
