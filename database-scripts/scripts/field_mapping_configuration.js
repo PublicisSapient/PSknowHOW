@@ -100,7 +100,6 @@ fieldMappings.forEach(function(fm) {
                 "jiraIFTPRStoryIdentification":jiraFTPRStoryIdentification
 
             },
-
             $unset: {
                 "defectPriority": "",
                 "jiraStatusForDevelopment": "",
