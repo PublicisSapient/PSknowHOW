@@ -13,6 +13,7 @@ fieldMappings.forEach(function(fm) {
         const excludeRCAFromFTPR = fm.excludeRCAFromFTPR;
         const jiraIssueTypeNames=fm.jiraIssueTypeNames;
         const resolutionTypeForRejection = fm.resolutionTypeForRejection;
+        const jiraLiveStatus=fm.jiraLiveStatus;
         db.field_mapping.updateOne({ "_id": fm._id }, {
             $set: {
                 "defectPriorityIFTPR": defectPriority,
@@ -90,13 +91,15 @@ fieldMappings.forEach(function(fm) {
                 "resolutionTypeForRejectionDIR": resolutionTypeForRejection,
                 "resolutionTypeForRejectionQADD": resolutionTypeForRejection,
 
-                "jiraIssueTypeNamesAVR":jiraIssueTypeNames
+                "jiraIssueTypeNamesAVR":jiraIssueTypeNames,
+
+                "jiraLiveStatusLT":jiraLiveStatus,
+                "jiraLiveStatusLTK":jiraLiveStatus
 
             },
 
             $unset: {
                 "defectPriority": "",
-                "jiradefecttype": "",
                 "jiraStatusForDevelopment": "",
                 "resolutionTypeForRejection": "",
                 "jiraIntakeToDorIssueType": "",
@@ -105,7 +108,6 @@ fieldMappings.forEach(function(fm) {
                 "jiraDefectCountlIssueType": "",
                 "jiraSprintVelocityIssueType": "",
                 "jiraDefectRejectionStatus": "",
-                "jiraDod": "",
                 "jiraIssueTypeNames": ""
             }
         })
