@@ -95,8 +95,8 @@ public class ReleaseDefectCountByPriorityServiceImpl
 
 			if (null != fieldMapping) {
 				Map<String, Set<String>> mapOfProjectFilters = new LinkedHashMap<>();
-				if (fieldMapping.getJiradefecttype() != null) {
-					defectType.addAll(fieldMapping.getJiradefecttype());
+				if (fieldMapping.getJiradefecttypeRDCP() != null) {
+					defectType.addAll(fieldMapping.getJiradefecttypeRDCP());
 				}
 				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 				mapOfProjectFilters.put(basicProjectConfigId, defectType);

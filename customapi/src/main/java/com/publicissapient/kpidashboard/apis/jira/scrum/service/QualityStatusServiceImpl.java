@@ -140,7 +140,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 						CommonConstant.TOTAL_ISSUES);
 				List<String> completedIssue = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
-				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
+				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttypeQS)
 						.orElse(Collections.emptyList());
 				Set<String> totalSprintReportDefects = new HashSet<>();
 				Set<String> totalSprintReportStories = new HashSet<>();
@@ -249,7 +249,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects, latestSprint.getProjectFilter().getBasicProjectConfigId(),fieldMapping.getResolutionTypeForRejectionQS(), fieldMapping.getJiraDefectRejectionStatusQS());
 			KpiHelperService.getDefectsWithoutDrop(droppedDefects, jiraIssueList, totalJiraIssues);
 
-			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
+			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttypeQS)
 					.orElse(Collections.emptyList());
 			defectTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<JiraIssue> allDefects = totalJiraIssues.stream()
@@ -430,7 +430,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			Map<String, IterationKpiModalValue> modalObjectMap, Map<String, JiraIssue> linkedIssueMap) {
 		jiraIssue.getDefectStoryID().forEach(storyNumber -> {
 			totalStoriesMap.computeIfPresent(storyNumber, (k, linkedJiraIssueStory) -> {
-				if (fieldMapping.getJiradefecttype().contains(linkedJiraIssueStory.getTypeName())) {
+				if (fieldMapping.getJiradefecttypeQS().contains(linkedJiraIssueStory.getTypeName())) {
 					if (!unlinkedDefect.contains(jiraIssue)) {
 						unlinkedDefect.add(jiraIssue);
 						KPIExcelUtility.populateIterationKPI(overAllUnlinkedmodalValues, new ArrayList<>(), jiraIssue,
@@ -445,7 +445,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			// fix for DTS-24813
 			totalStoriesMap.computeIfAbsent(storyNumber, k -> {
 				JiraIssue linkedIssue = linkedIssueMap.get(storyNumber);
-				if (linkedIssue != null && fieldMapping.getJiradefecttype().contains(linkedIssue.getTypeName())
+				if (linkedIssue != null && fieldMapping.getJiradefecttypeQS().contains(linkedIssue.getTypeName())
 						&& (!unlinkedDefect.contains(jiraIssue))) {
 					unlinkedDefect.add(jiraIssue);
 					KPIExcelUtility.populateIterationKPI(overAllUnlinkedmodalValues, new ArrayList<>(), jiraIssue,

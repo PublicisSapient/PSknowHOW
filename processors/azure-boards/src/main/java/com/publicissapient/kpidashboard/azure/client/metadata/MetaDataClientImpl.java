@@ -242,6 +242,25 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 		fieldMapping.setSprintName(customField.get(CommonConstant.SPRINT));
 		fieldMapping.setJiradefecttype(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeSWE(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeIDCR(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeIDCS(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeIDCP(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeRDCA(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeRDCP(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeRDCR(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeRDCS(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeQS(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeIWS(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeLT(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeMW(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeFTPR(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeIFTPR(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeAVR(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeIC(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeCVR(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeBDRR(issueTypeMap.get(CommonConstant.BUG));
+
 		fieldMapping.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 		List<String> firstStatusList = workflowMap.get(CommonConstant.FIRST_STATUS);
 		fieldMapping.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));

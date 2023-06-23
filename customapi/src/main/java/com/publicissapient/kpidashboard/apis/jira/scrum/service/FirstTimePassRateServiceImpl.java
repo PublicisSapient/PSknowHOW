@@ -278,7 +278,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromFTPR());
 
 			if (Optional.ofNullable(fieldMapping.getJiraFTPRStoryIdentification()).isPresent()) {
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeFTPR(),
 						fieldMapping.getJiraFTPRStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			}
 

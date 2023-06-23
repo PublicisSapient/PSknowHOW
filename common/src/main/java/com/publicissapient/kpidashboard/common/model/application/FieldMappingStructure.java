@@ -49,6 +49,7 @@ public class FieldMappingStructure extends BasicModel {
 	private String fieldType;
 	private String fieldCategory;
 	private String section;
+	private boolean processorCommon;
 	private MappingToolTip tooltip;
 	private List<Options> options;
 

@@ -52,7 +52,14 @@ public class FieldMappingDTO extends BasicModel {
 	private String sprintName;
 	private String epicName;
 	private List<String> jiradefecttype;
-	private List<String> defectPriority;
+
+	// defectPriority
+	private List<String> defectPriority;//TODO: Extra field
+	private List<String> defectPriorityIFTPR;
+	private List<String> defectPriorityDIR;
+	private List<String> defectPriorityQADD;
+	private List<String> defectPriorityFTPR;
+	private List<String> defectPriorityQS;
 	private String[] jiraIssueTypeNames;
 	private String storyFirstStatus;
 	private String[] linkDefectToStoryField;
@@ -69,7 +76,11 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraStatusForQa;
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
-	private List<String> jiraDod;
+	private List<String> jiraDod;//TODO: Extra field
+	private List<String> jiraDodDIR;
+	private List<String> jiraDodQADD;
+	private List<String> jiraDodLT;
+	private List<String> jiraDodPDA;
 	private String jiraDefectCreatedStatus;
 	private List<String> jiraTechDebtIssueType;
 	private String jiraTechDebtIdentification;
@@ -91,10 +102,8 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraBugRaisedByValue;
 	private List<String> jiraDefectSeepageIssueType;
 	private String jiraBugRaisedByCustomField;
-	private List<String> jiraDefectRemovalStatus;// TODO: Extra field
-	private List<String> jiraDefectRemovalStatusDRE;
-	private List<String> jiraDefectRemovalIssueType;// TODO: Extra field
-	private List<String> jiraDefectRemovalIssueTypeDRE;
+	private List<String> jiraDefectRemovalStatus;
+	private List<String> jiraDefectRemovalIssueType;
 	/**
 	 * Device Platform (iOS/Android/Desktop)
 	 */
@@ -110,9 +119,10 @@ public class FieldMappingDTO extends BasicModel {
 
 	private List<String> jiraSprintCapacityIssueType;
 
-	private List<String> jiraDefectRejectionlIssueType;// TODO: Extra field
-	private List<String> jiraDefectRejectionlIssueTypeDRR;
-	private List<String> jiraDefectCountlIssueType;
+	private List<String> jiraDefectRejectionlIssueType;
+	private List<String> jiraDefectCountlIssueType;// TODO: Extra field
+	private List<String> jiraDefectCountlIssueTypeDC;
+	private List<String> jiraDefectCountlIssueTypeRCA;
 
 	private List<String> jiraIssueDeliverdStatus;// TODO: Extra field
 	private List<String> jiraIssueDeliverdStatusBR;
@@ -155,7 +165,12 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraStatusMappingCustomField;
 
 	private List<String> rootCauseValue;
+	//TODO: Extra field
 	private List<String> excludeRCAFromFTPR;
+	private List<String> excludeRCAFromIFTPR;
+	private List<String> excludeRCAFromDIR;
+	private List<String> excludeRCAFromQADD;
+	private List<String> excludeRCAFromQS;
 
 	private Boolean pickNewATMJIRADetails;
 
@@ -208,8 +223,7 @@ public class FieldMappingDTO extends BasicModel {
 
 	// issue status to exclude missing worklogs
 	private List<String> issueStatusToBeExcludedFromMissingWorklogs;
-	// field for FTPR
-	private List<String> jiraFTPRStoryIdentification;
+
 
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
@@ -228,6 +242,10 @@ public class FieldMappingDTO extends BasicModel {
 
 	// issue On Hold status to exclude Closure possible
 	private List<String> jiraOnHoldStatus;
+
+	// field for FTPR
+	private List<String> jiraFTPRStoryIdentification;
+	private List<String> jiraIFTPRStoryIdentification;
 
 	// field for Wasting - wait status
 	private List<String> jiraWaitStatus;

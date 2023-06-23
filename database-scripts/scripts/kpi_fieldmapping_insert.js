@@ -1263,8 +1263,220 @@ db.getCollection('field_mapping_structure').insert(
     "tooltip": {
       "definition": "Status from workflow on which defect is considered as removed. <br> Example: Closed<hr>"
     }
+  },
+  {
+    "fieldName": "jiraIssueDeliverdStatusCVR",
+    "fieldLabel": "Issue Delivered Status",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
+    }
+  },
+  {
+    "fieldName": "resolutionTypeForRejectionDSR",
+    "fieldLabel": "Defect Seepage Rate - Issue Types with Linked Defect",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Resolution type to identify rejected defects. <br>"
+    }
+  },
+  {
+    "fieldName": "jiraDefectRejectionStatusDSR",
+    "fieldLabel": "Defect Rejection Status",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeBDRR",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeCVR",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeAVR",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeIC",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeIFTPR",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeFTPR",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeMW",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeLT",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeIWS",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeQS",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeRDCS",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeRDCR",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeRDCP",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeRDCA",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeIDCP",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeIDCS",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttype",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeSWE",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "processorCommon":true,
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttypeIDCR",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "processorCommon":true,
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
+  },
+  {
+    "fieldName": "jiradefecttype",
+    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "processorCommon":true,
+    "tooltip": {
+      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+    }
   }
-
-
 ]
 );
