@@ -32,7 +32,10 @@ public enum FieldMappingEnum {
 					"jiraIterationCompletionStatusCustomField", "estimationCriteria",
 					"jiraStoryPointsCustomField", "jiraDod", "jiraBugRaisedByQACustomField",
 					"jiraBugRaisedByQAIdentification", "jiraBugRaisedByQAValue", "jiraBugRaisedByCustomField",
-					"jiraBugRaisedByValue", "jiraBugRaisedByIdentification","jiraLiveStatus")),
+					"jiraBugRaisedByValue", "jiraBugRaisedByIdentification","jiraLiveStatus",
+					"epicCostOfDelay","epicRiskReduction",
+					"epicUserBusinessValue","epicWsjf","epicTimeCriticality","epicJobSize"
+			)),
 
 	KPI40("Issue Count", Arrays.asList("jiraStoryIdentificationIC", "jiraIterationCompletionTypeCustomField",
 			"jiraIterationCompletionStatusCustomField", "jiradefecttypeIC")),

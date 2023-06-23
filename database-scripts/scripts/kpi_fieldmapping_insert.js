@@ -1565,9 +1565,76 @@ db.getCollection('field_mapping_structure').insert(
     }
 },
 {
+    "fieldName": "epicCostOfDelay",
+    "fieldLabel": "Epic Cost of Delay",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Provide value of Cost Of delay field for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+      "kpiImpacted":"Cost of delay"
+    }
+},
+{
+    "fieldName": "epicRiskReduction",
+    "fieldLabel": "Epic Risk Reduction",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Risk reduction/ Enablement value for Epic that is required to calculated Cost of delay <br> Example: customfield_11111<hr>",
+      "kpiImpacted":"Cost of delay"
+    }
+},
+{
+    "fieldName": "epicUserBusinessValue",
+    "fieldLabel": "Epic Business Value",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of User-Business Value for Epic that is required to calculated Cost of delay. <br>Example:customfield_11111<hr>",
+      "kpiImpacted":"Cost of delay"
+    }
+},
+{
+    "fieldName": "epicWsjf",
+    "fieldLabel": "Epic WSJF",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of WSJF value that is required to calculated Cost of delay <br />Example:customfield_11111<hr>",
+      "kpiImpacted":"Cost of delay"
+    }
+},
+{
+    "fieldName": "epicTimeCriticality",
+    "fieldLabel": "Epic Time Criticality",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Time Criticality value on Epic that is required to calculated Cost of delay .<br />Example:customfield_11111<hr>",
+      "kpiImpacted":"Cost of delay"
+    }
+},
+{
+    "fieldName": "epicJobSize",
+    "fieldLabel": "Epic Job Size",
+    "fieldType": "text",
+    "fieldCategory": "custom",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Job size on EPIC that is required to calculated WSJF. <br>Example:customfield_11111<hr>",
+      "kpiImpacted":"Cost of delay"
+    }
+},
+{
     "fieldName": "estimationCriteria",
     "fieldLabel": "Estimation Criteria",
     "fieldType": "radiobutton",
+    "section": "Custom Fields Mapping",
      "tooltip": {
           "definition": "Estimation criteria for stories. <br> Example: Buffered Estimation."
         },
@@ -1597,6 +1664,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiraBugRaisedByQAIdentification",
     "fieldLabel": "QA Defect Identification",
     "fieldType": "radiobutton",
+    "section": "Defects Mapping",
      "tooltip": {
           "definition": "This field is used to identify if a defect is raised by QA<br>1. CustomField : If a separate custom field is used.<br>2. Labels : If a label is used to identify. Example: QA Defect <hr>"
         },
@@ -1636,6 +1704,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiraBugRaisedByIdentification",
     "fieldLabel": "UAT Defect Identification",
     "fieldType": "radiobutton",
+    "section": "Defects Mapping",
      "tooltip": {
           "definition": "This field is used to identify if a defect is raised by third party or client:<br>1. CustomField : If a separate custom field is used<br>2. Labels : If a label is used to identify. Example: TECH_DEBT (This has to be one value).<hr>"
         },
@@ -1670,6 +1739,17 @@ db.getCollection('field_mapping_structure').insert(
             }
           }
         ]
+},
+{
+    "fieldName": "filterId",
+    "fieldLabel": "Additional Filter Identifier",
+    "section": "Additional Filter Identifier",
+    "fieldType": "dropdown",
+     "tooltip": {
+          "definition": "This field is used to identify Additional Filters. <br> Example: SQUAD<br>,
+          "kpiImpacted":"Filters"
+          }
+},
 }
 
 
