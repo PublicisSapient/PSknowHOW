@@ -284,9 +284,9 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraStatusForQa(workflowMap.get(CommonConstant.QA));
 		fieldMapping.setJiraDefectInjectionIssueType(issueTypeMap.get(CommonConstant.STORY));
 		if (CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.DOR))) {
-			fieldMapping.setJiraDorLT(workflowMap.get(CommonConstant.DOR).get(0));
+			fieldMapping.setJiraDor(workflowMap.get(CommonConstant.DOR).get(0));
 		} else {
-			fieldMapping.setJiraDorLT(null);
+			fieldMapping.setJiraDor(null);
 		}
 		fieldMapping.setJiraDod(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodDIR(workflowMap.get(CommonConstant.DOD));
@@ -312,7 +312,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraIssueDeliverdStatusCVR(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIssueDeliverdStatusFTPR(workflowMap.get(CommonConstant.DELIVERED));
 
-		fieldMapping.setJiraIntakeToDorIssueTypeLT(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraIntakeToDorIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraStoryIdentification(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraFTPRStoryIdentification(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraIFTPRStoryIdentification(issueTypeMap.get(CommonConstant.STORY));

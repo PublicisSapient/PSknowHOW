@@ -224,7 +224,7 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setJiraTestAutomationIssueType(jiraType);
 		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
 		fieldMapping.setJiraDefectCountlIssueType(jiraType);
-		fieldMapping.setJiraIntakeToDorIssueTypeLT(jiraType);
+		fieldMapping.setJiraIntakeToDorIssueType(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
 		fieldMapping.setJiradefecttype(jiraType);
 		fieldMapping.setJiraIssueEpicType(jiraType);
@@ -272,7 +272,7 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setJiraIssueDeliverdStatusFTPR(jiraType);
 		fieldMapping.setJiraIssueDeliverdStatusSV(jiraType);
 
-		fieldMapping.setJiraDorLT("In Progress");
+		fieldMapping.setJiraDor("In Progress");
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 

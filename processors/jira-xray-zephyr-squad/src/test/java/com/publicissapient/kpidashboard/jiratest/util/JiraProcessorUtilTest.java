@@ -74,8 +74,8 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void deodeUTF8StringEmpty() throws URISyntaxException {
 		FieldMapping fieldMapping = new FieldMapping();
-		fieldMapping.setJiraDorLT("");
-		Object jiraResponse = fieldMapping.getJiraDorLT();
+		fieldMapping.setJiraDor("");
+		Object jiraResponse = fieldMapping.getJiraDor();
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
 
 	}
@@ -83,8 +83,8 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void deodeUTF8StringEmptyNull() throws URISyntaxException {
 		FieldMapping fieldMapping = new FieldMapping();
-		fieldMapping.setJiraDorLT(null);
-		Object jiraResponse = fieldMapping.getJiraDorLT();
+		fieldMapping.setJiraDor(null);
+		Object jiraResponse = fieldMapping.getJiraDor();
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
 
 	}

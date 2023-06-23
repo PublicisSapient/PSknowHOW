@@ -22,6 +22,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -274,6 +275,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping
 				.setJiraStoryPointsCustomField(customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));
+		fieldMapping.setCreatedDate(LocalDate.now());
 
 		if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE) || templateName.equalsIgnoreCase(DOJO_SAFE_TEMPLATE)
 				|| templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
@@ -327,9 +329,9 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraStatusForQa(workflowMap.get(CommonConstant.QA));
 			fieldMapping.setJiraDefectInjectionIssueType(issueTypeMap.get(CommonConstant.STORY));
 			if (CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.DOR))) {
-				fieldMapping.setJiraDorLT(workflowMap.get(CommonConstant.DOR).get(0));
+				fieldMapping.setJiraDor(workflowMap.get(CommonConstant.DOR).get(0));
 			} else {
-				fieldMapping.setJiraDorLT(null);
+				fieldMapping.setJiraDor(null);
 			}
 			fieldMapping.setJiraDod(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodDIR(workflowMap.get(CommonConstant.DOD));
@@ -376,7 +378,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping
 					.setJiraIssueDeliverdStatusFTPR(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping
-					.setJiraIntakeToDorIssueTypeLT(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+					.setJiraIntakeToDorIssueType(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationIC(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping
@@ -462,7 +464,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			} else {
 				fieldMapping.setJiraTechDebtIssueType(null);
 			}
-			fieldMapping.setJiraIntakeToDorIssueTypeLT(
+			fieldMapping.setJiraIntakeToDorIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 			fieldMapping
@@ -483,7 +485,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDodPDA(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraLiveStatus(CommonConstant.CLOSED);
 			fieldMapping.setJiraDefectRemovalStatus(null);
-			fieldMapping.setJiraDorLT(CommonConstant.OPEN);
+			fieldMapping.setJiraDor(CommonConstant.OPEN);
 			fieldMapping.setResolutionTypeForRejectionAVR(
 					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionDC(
@@ -542,7 +544,6 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiradefecttypeIC(issueTypeMap.get(CommonConstant.BUG));
 			fieldMapping.setJiradefecttypeCVR(issueTypeMap.get(CommonConstant.BUG));
 			fieldMapping.setJiradefecttypeBDRR(issueTypeMap.get(CommonConstant.BUG));
-
 		}
 	}
 

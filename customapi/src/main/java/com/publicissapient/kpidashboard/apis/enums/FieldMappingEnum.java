@@ -32,7 +32,7 @@ public enum FieldMappingEnum {
 					"jiraIterationCompletionStatusCustomField", "estimationCriteria",
 					"jiraStoryPointsCustomField", "jiraDod", "jiraBugRaisedByQACustomField",
 					"jiraBugRaisedByQAIdentification", "jiraBugRaisedByQAValue", "jiraBugRaisedByCustomField",
-					"jiraBugRaisedByValue", "jiraBugRaisedByIdentification")),
+					"jiraBugRaisedByValue", "jiraBugRaisedByIdentification","jiraLiveStatus")),
 
 	KPI40("Issue Count", Arrays.asList("jiraStoryIdentificationIC", "jiraIterationCompletionTypeCustomField",
 			"jiraIterationCompletionStatusCustomField", "jiradefecttypeIC")),
@@ -60,9 +60,9 @@ public enum FieldMappingEnum {
 	KPI135("First Time Pass Rate (Iteration)",
 			Arrays.asList("jiraStatusForDevelopmentIFTPR", "jiraIFTPRStoryIdentification", "jiradefecttypeIFTPR")),
 
-	KPI53("Lead Time (Kanban)", Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT")),
+	KPI53("Lead Time (Kanban)", Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDor")),
 
-	KPI3("Lead Time (Scrum)", Arrays.asList("jiradefecttypeLT", "jiraIntakeToDorIssueTypeLT", "jiraDorLT", "jiraDodLT",
+	KPI3("Lead Time (Scrum)", Arrays.asList("jiradefecttypeLT", "jiraIntakeToDorIssueTypeLT", "jiraDor", "jiraDodLT",
 			"jiraLiveStatus")),
 
 	KPI34("Defect Removal Efficiency", Arrays.asList("jiraDefectRemovalStatus", "resolutionTypeForRejectionDRE",

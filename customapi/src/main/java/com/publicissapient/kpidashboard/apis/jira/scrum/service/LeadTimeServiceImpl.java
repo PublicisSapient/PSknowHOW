@@ -91,10 +91,10 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			if (Optional.ofNullable(fieldMapping.getJiraIntakeToDorIssueTypeLT()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getJiraIntakeToDorIssueType()).isPresent()) {
 
 				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeLT(),
-						fieldMapping.getJiraIntakeToDorIssueTypeLT(),
+						fieldMapping.getJiraIntakeToDorIssueType(),
 						JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
@@ -331,7 +331,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			// in below loop create list of day difference between Intake and
 			// DOR. Here Intake is created date of issue.
 			for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistories) {
-				String dor = fieldMapping.getJiraDorLT();
+				String dor = fieldMapping.getJiraDor();
 				List<String> dod = fieldMapping.getJiraDodLT();
 				String live = fieldMapping.getJiraLiveStatus();
 				CycleTimeValidationData cycleTimeValidationData = new CycleTimeValidationData();

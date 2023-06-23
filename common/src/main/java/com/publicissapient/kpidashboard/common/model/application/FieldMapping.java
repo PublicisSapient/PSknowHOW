@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -152,11 +153,10 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueDeliverdStatusFTPR;
 	private String readyForDevelopmentStatus;
 
-	private String jiraDor;// TODO: Extra field
-	private String jiraDorLT;
 
-	private List<String> jiraIntakeToDorIssueType;// TODO: Extra field
-	private List<String> jiraIntakeToDorIssueTypeLT;
+	private String jiraDor;
+
+	private List<String> jiraIntakeToDorIssueType;
 
 	private List<String> jiraStoryIdentification;
 	private List<String> jiraStoryIdentificationIC;
@@ -186,7 +186,7 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> rootCauseValue;
 	//TODO: Extra field
-	private List<String> excludeRCAFromFTPR;
+	private List<String> excludeRCAFromFTPR;//TODO: Extra field
 	private List<String> excludeRCAFromIFTPR;
 	private List<String> excludeRCAFromDIR;
 	private List<String> excludeRCAFromQADD;
@@ -290,6 +290,7 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> jiraIterationCompletionStatusCustomField;
 	private List<String> jiraIterationCompletionTypeCustomField;
+	private LocalDate createdDate;
 
 	/**
 	 * Get jira issue type names string [ ].

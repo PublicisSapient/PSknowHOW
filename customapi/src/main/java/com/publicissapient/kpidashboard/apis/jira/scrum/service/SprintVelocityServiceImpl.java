@@ -92,9 +92,6 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	@Autowired
 	private SprintVelocityServiceHelper velocityHelper;
 
-	@Autowired
-	private SprintVelocityServiceHelper velocityServiceHelper;
-
 	/**
 	 * Gets Qualifier Type
 	 *
