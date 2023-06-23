@@ -544,17 +544,6 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiradefecttype",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defect Mapping",
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as or any other value. So user need to provide value with which defect is identified in JIRA/AZURE",
-      "kpiImpacted": "Jira/Azure Collector and KPIs"
-    }
-  },
-  {
     "fieldName": "jiraIterationCompletionTypeCustomField",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
