@@ -102,8 +102,6 @@ fieldMappings.forEach(function(fm) {
                 "defectPriority": "",
                 "jiraStatusForDevelopment": "",
                 "resolutionTypeForRejection": "",
-                "jiraIntakeToDorIssueType": "",
-                "jiraDor": "",
                 "jiraIssueDeliverdStatus": "",
                 "jiraDefectCountlIssueType": "",
                 "jiraSprintVelocityIssueType": "",
