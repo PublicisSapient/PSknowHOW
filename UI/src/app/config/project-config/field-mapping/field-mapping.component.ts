@@ -83,7 +83,7 @@ export class FieldMappingComponent implements OnInit {
       this.router.navigate(['./dashboard/Config/ProjectList']);
     }
 
-    this.fieldMappingForm = this.formBuilder.group(this.fieldMappingFormObj);
+    // this.fieldMappingForm = this.formBuilder.group(this.fieldMappingFormObj);
     if (this.sharedService.getSelectedToolConfig()) {
       this.selectedToolConfig = this.sharedService.getSelectedToolConfig().filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
       if (!this.selectedToolConfig || !this.selectedToolConfig.length) {

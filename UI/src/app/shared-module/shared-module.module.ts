@@ -19,7 +19,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
@@ -33,6 +33,13 @@ import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
+import { FieldMappingFieldComponent } from './field-mapping-field/field-mapping-field.component';
+import { AccordionModule } from 'primeng/accordion';
+import { TooltipModule } from 'primeng/tooltip';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { ChipsModule } from 'primeng/chips';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @NgModule({
   imports: [
@@ -44,7 +51,15 @@ import { ConfirmationService } from 'primeng/api';
     DropdownModule,
     DialogModule,
     ToastModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    AccordionModule,
+    ReactiveFormsModule,
+    ToastModule,
+    TooltipModule,
+    InputTextModule,
+    ButtonModule,
+    ChipsModule,
+    RadioButtonModule
   ],
   exports: [
     NgSelectModule,
@@ -62,8 +77,8 @@ import { ConfirmationService } from 'primeng/api';
     PageLoaderComponent,
     FooterComponent,
     KpiFilterComponent,
-    FieldMappingFormComponent
-  ],
-  providers: [ConfirmationService]
+    FieldMappingFormComponent,
+    FieldMappingFieldComponent
+  ]
 })
 export class SharedModuleModule { }
