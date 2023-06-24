@@ -334,6 +334,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationCompletionTypeILS;
 	private List<String> jiraIterationCompletionTypeIBU;
 	private List<String> jiraIterationCompletionTypeICO;
+	private List<String> jiraIterationCompletionTypeEH;
 	private LocalDate createdDate;
 
 	/**

@@ -143,6 +143,7 @@ fieldMappings.forEach(function(fm) {
                 "jiraIterationCompletionTypeILS" : jiraIterationCompletionTypeCustomField,
                 "jiraIterationCompletionTypeIBU" : jiraIterationCompletionTypeCustomField,
                 "jiraIterationCompletionTypeICO" : jiraIterationCompletionTypeCustomField
+                "jiraIterationCompletionTypeEH" : jiraIterationCompletionTypeCustomField
 
 
 

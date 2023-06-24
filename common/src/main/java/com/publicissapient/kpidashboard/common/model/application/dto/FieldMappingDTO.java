@@ -341,6 +341,8 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraIterationCompletionTypeILS;
 	private List<String> jiraIterationCompletionTypeIBU;
 	private List<String> jiraIterationCompletionTypeICO;
+	private List<String> jiraIterationCompletionTypeEH;
+
 
 
 	/**

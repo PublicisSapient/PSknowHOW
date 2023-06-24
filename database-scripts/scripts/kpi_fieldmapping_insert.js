@@ -794,6 +794,16 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
+    "fieldName": "jiraSprintVelocityIssueTypeEH",
+    "fieldLabel": "Sprint Velocity - Issue Types with Linked Defect",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "All issue types with which defect is linked. <br>  Example: Story, Change Request .<hr>"
+    }
+  },
+  {
     "fieldName": "jiraIssueDeliverdStatusSV",
     "fieldLabel": "Issue Delivered Status",
     "fieldType": "chips",
