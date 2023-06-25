@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,7 +47,6 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
@@ -87,7 +85,6 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 	private static final String DEFECT_LIST = "Total Defects";
 	private static final String OVERALL = "Overall";
 	private static final String PROJECT = "project";
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -306,8 +303,8 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 
 		resultListMap.put(STORY_LIST, storyIssueNumberList);
 		defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
-		List<JiraIssue> defectList = jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn);
 		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
+		List<JiraIssue> defectList = jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn);
 		defectList = defectList.stream().filter(issue -> !LocalDate.parse(issue.getUpdateDate().split("T")[0])
 				.isBefore(LocalDate.now().minusMonths(12))).collect(Collectors.toList());
 		resultListMap.put(DEFECT_LIST, defectList);
