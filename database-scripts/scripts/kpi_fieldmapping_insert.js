@@ -2177,11 +2177,10 @@ db.getCollection('field_mapping_structure').insert(
     "section": "Additional Filter Identifier",
     "fieldType": "dropdown",
      "tooltip": {
-          "definition": "This field is used to identify Additional Filters. <br> Example: SQUAD<br>,
+          "definition": "This field is used to identify Additional Filters. <br> Example: SQUAD<br>",
           "kpiImpacted":"Filters"
           }
 },
-}
 
 
 
