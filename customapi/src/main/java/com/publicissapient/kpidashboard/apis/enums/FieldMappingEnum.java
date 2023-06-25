@@ -103,7 +103,7 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraDodQADD", "jiraQADefectDensityIssueType", "defectPriorityQADD", "excludeRCAFromQADD",
 					"resolutionTypeForRejectionQADD", "jiraDefectRejectionStatusQADD")),
 
-	KPI127("Production Defects Ageing", KPISource.JIRA.name(), Arrays.asList("jiraDodPDA")),
+	KPI127("Production Defects Ageing", KPISource.JIRA.name(), Arrays.asList("jiraDodPDA", "jiraLiveStatusPDA")),
 
 	KPI35("Defect Seepage Rate", KPISource.JIRA.name(), Arrays.asList("jiraDefectSeepageIssueType",
 			"resolutionTypeForRejectionDSR", "jiraDefectRejectionStatusDSR")),
@@ -156,6 +156,14 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraIterationCompletionStatusBRE", "jiraIterationCompletionTypeBRE")),
 
 	KPI137("Defect Reopen Rate (Backlog)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeBDRR")),
+
+	KPI997("Open Ticket Ageing By Priority (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusOTA")),
+
+	KPI51("Net Open Ticket Count By RCA (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusNORK")),
+
+	KPI48("Net Open Ticket Count By Status (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusNOSK")),
+
+	KPI50("Net Open Ticket Count by Priority (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusNOPK")),
 
 	KPI129("Issues Without Story Link", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeIWS"));
 

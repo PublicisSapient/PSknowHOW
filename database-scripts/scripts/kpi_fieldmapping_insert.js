@@ -1767,6 +1767,56 @@ db.getCollection('field_mapping_structure').insert(
       }
    },
   {
+      "fieldName": "jiraLiveStatusNOPK",
+      "fieldLabel": "Live Status - Lead Time",
+      "fieldType": "text",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+      }
+   },
+  {
+      "fieldName": "jiraLiveStatusNOSK",
+      "fieldLabel": "Live Status - Lead Time",
+      "fieldType": "text",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+      }
+   },
+  {
+      "fieldName": "jiraLiveStatusNORK",
+      "fieldLabel": "Live Status - Lead Time",
+      "fieldType": "text",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+      }
+   },
+  {
+      "fieldName": "jiraLiveStatusOTA",
+      "fieldLabel": "Live Status - Lead Time",
+      "fieldType": "text",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+      }
+   },
+  {
+      "fieldName": "jiraLiveStatusPDA",
+      "fieldLabel": "Live Status - Lead Time",
+      "fieldType": "text",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+      }
+   },
+  {
     "fieldName": "jiradefecttypeBDRR",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",

@@ -110,8 +110,8 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 			if (Optional.ofNullable(fieldMapping.getJiraTicketClosedStatus()).isPresent()) {
 				List<String> closedStatusList = new ArrayList<>();
 				closedStatusList.addAll(fieldMapping.getJiraTicketClosedStatus());
-				if (Optional.ofNullable(fieldMapping.getJiraLiveStatus()).isPresent()) {
-					closedStatusList.add(fieldMapping.getJiraLiveStatus());
+				if (Optional.ofNullable(fieldMapping.getJiraLiveStatusOTA()).isPresent()) {
+					closedStatusList.add(fieldMapping.getJiraLiveStatusOTA());
 				}
 				if (Optional.ofNullable(fieldMapping.getJiraTicketRejectedStatus()).isPresent()) {
 					closedStatusList.addAll(fieldMapping.getJiraTicketRejectedStatus());

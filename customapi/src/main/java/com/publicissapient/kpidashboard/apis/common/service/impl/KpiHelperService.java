@@ -860,10 +860,11 @@ public class KpiHelperService { // NOPMD
 	 * @param startDate
 	 * @param endDate
 	 * @param kpiRequest
+	 * @param projectWiseMapping
 	 * @return
 	 */
 	public Map<String, Object> fetchJiraCustomHistoryDataFromDbForKanban(List<Node> leafNodeList, String startDate,
-			String endDate, KpiRequest kpiRequest, String fieldName) {
+																		 String endDate, KpiRequest kpiRequest, String fieldName, Map<ObjectId, Map<String, Object>> projectWiseMapping) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
@@ -875,15 +876,14 @@ public class KpiHelperService { // NOPMD
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+			Map<String, Object> fieldWiseMapping = projectWiseMapping.get(basicProjectConfigId);
 			projectList.add(basicProjectConfigId.toString());
 
-			setJiraIssueType(fieldName, projectWiseIssueTypeMap, leaf, mapOfProjectFilters, fieldMapping);
+			setJiraIssueType(fieldName, projectWiseIssueTypeMap, leaf, mapOfProjectFilters, fieldWiseMapping);
+			setJiraClosedStatusMap(projectWiseClosedStatusMap, leaf, fieldWiseMapping);
 
-			setJiraClosedStatusMap(projectWiseClosedStatusMap, leaf, fieldMapping);
-
-			if (Optional.ofNullable(fieldMapping.getStoryFirstStatus()).isPresent()) {
-				projectWiseOpenStatusMap.put(basicProjectConfigId.toString(), fieldMapping.getStoryFirstStatus());
+			if (Optional.ofNullable(fieldWiseMapping.get("StoryFirstStatus")).isPresent()) {
+				projectWiseOpenStatusMap.put(basicProjectConfigId.toString(), (String)fieldWiseMapping.get("StoryFirstStatus"));
 			}
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
@@ -904,34 +904,36 @@ public class KpiHelperService { // NOPMD
 	}
 
 	private void setJiraIssueType(String fieldName, Map<String, List<String>> projectWiseIssueTypeMap, Node leaf,
-			Map<String, Object> mapOfProjectFilters, FieldMapping fieldMapping) {
+								  Map<String, Object> mapOfProjectFilters, Map<String, Object> fieldWiseMapping) {
 		if (FIELD_RCA.equals(fieldName)) {
-			if (Optional.ofNullable(fieldMapping.getKanbanRCACountIssueType()).isPresent()) {
+			if (Optional.ofNullable(fieldWiseMapping.get("RCA_Count_IssueType")).isPresent()) {
+				List<String> rcaFieldMappingIssueType = (List<String>) fieldWiseMapping.get("RCA_Count_IssueType");
 				mapOfProjectFilters.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getKanbanRCACountIssueType()));
+						CommonUtils.convertToPatternList(rcaFieldMappingIssueType));
 				projectWiseIssueTypeMap.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(),
-						fieldMapping.getKanbanRCACountIssueType().stream().distinct().collect(Collectors.toList()));
+						rcaFieldMappingIssueType.stream().distinct().collect(Collectors.toList()));
 			}
 		} else {
-			if (Optional.ofNullable(fieldMapping.getTicketCountIssueType()).isPresent()) {
+			if (Optional.ofNullable(fieldWiseMapping.get("Ticket_Count_IssueType")).isPresent()) {
+				List<String> ticketCountIssueType = (List<String>) fieldWiseMapping.get("Ticket_Count_IssueType");
 				mapOfProjectFilters.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueType()));
+						CommonUtils.convertToPatternList(ticketCountIssueType));
 				projectWiseIssueTypeMap.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(),
-						fieldMapping.getTicketCountIssueType().stream().distinct().collect(Collectors.toList()));
+						ticketCountIssueType.stream().distinct().collect(Collectors.toList()));
 			}
 		}
 	}
 
 	private void setJiraClosedStatusMap(Map<String, List<String>> projectWiseClosedStatusMap, Node leaf,
-			FieldMapping fieldMapping) {
-		if (Optional.ofNullable(fieldMapping.getJiraTicketClosedStatus()).isPresent()) {
+										Map<String, Object> fieldWiseMapping) {
+		if (Optional.ofNullable(fieldWiseMapping.get("ClosedStatus")).isPresent()) {
 			List<String> closedStatusList = new ArrayList<>();
-			closedStatusList.addAll(fieldMapping.getJiraTicketClosedStatus());
-			if (Optional.ofNullable(fieldMapping.getJiraLiveStatus()).isPresent()) {
-				closedStatusList.add(fieldMapping.getJiraLiveStatus());
+			closedStatusList.addAll((List<String>) fieldWiseMapping.get("ClosedStatus"));
+			if (Optional.ofNullable(fieldWiseMapping.get("LiveStatus")).isPresent()) {
+				closedStatusList.add((String) fieldWiseMapping.get("LiveStatus"));
 			}
-			if (Optional.ofNullable(fieldMapping.getJiraTicketRejectedStatus()).isPresent()) {
-				closedStatusList.addAll(fieldMapping.getJiraTicketRejectedStatus());
+			if (Optional.ofNullable(fieldWiseMapping.get("RejectedStatus")).isPresent()) {
+				closedStatusList.addAll((List<String>) fieldWiseMapping.get("RejectedStatus"));
 			}
 			projectWiseClosedStatusMap.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(),
 					closedStatusList.stream().distinct().collect(Collectors.toList()));

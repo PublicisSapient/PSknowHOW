@@ -181,7 +181,7 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("JiraIssueHistoryData", kanbanIssueCustomHistoryDataList);
 		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(), any(),
-				anyString())).thenReturn(resultMap);
+				anyString(), anyMap())).thenReturn(resultMap);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))

@@ -98,6 +98,11 @@ fieldMappings.forEach(function(fm) {
 
                 "jiraLiveStatusLT":jiraLiveStatus,
                 "jiraLiveStatusLTK":jiraLiveStatus,
+                "jiraLiveStatusNOPK":jiraLiveStatus,
+                "jiraLiveStatusNOSK":jiraLiveStatus,
+                "jiraLiveStatusNORK":jiraLiveStatus,
+                "jiraLiveStatusOTA":jiraLiveStatus,
+                "jiraLiveStatusPDA":jiraLiveStatus,
 
                 "jiraIFTPRStoryIdentification":jiraFTPRStoryIdentification,
 

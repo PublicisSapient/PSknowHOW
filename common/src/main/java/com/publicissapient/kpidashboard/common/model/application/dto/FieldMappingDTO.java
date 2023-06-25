@@ -163,6 +163,11 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraLiveStatus;//TODO: duplicate
 	private String jiraLiveStatusLT;
 	private String jiraLiveStatusLTK;
+	private String jiraLiveStatusNOPK;
+	private String jiraLiveStatusNOSK;
+	private String jiraLiveStatusNORK;
+	private String jiraLiveStatusOTA;//openticketaging
+	private String jiraLiveStatusPIA;//productionissueaging
 
 	private List<String> ticketCountIssueType;
 

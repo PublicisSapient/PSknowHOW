@@ -486,6 +486,11 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraLiveStatus(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusLT(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusLTK(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusNOPK(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusNORK(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusNOSK(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusOTA(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusPDA(CommonConstant.CLOSED);
 			fieldMapping.setJiraDefectRemovalStatus(null);
 			fieldMapping.setJiraDor(CommonConstant.OPEN);
 			fieldMapping.setResolutionTypeForRejectionAVR(
@@ -570,6 +575,11 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraLiveStatus(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusLT(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusLTK(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusNOPK(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusNORK(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusNOSK(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusOTA(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusPDA(CommonConstant.CLOSED);
 
 			fieldMapping
 					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));

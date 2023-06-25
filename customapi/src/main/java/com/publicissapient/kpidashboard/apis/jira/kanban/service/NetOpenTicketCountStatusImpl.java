@@ -14,10 +14,12 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,8 +160,21 @@ public class NetOpenTicketCountStatusImpl
 	public Map<String, Map<String, Map<String, Set<String>>>> fetchKPIDataFromDb(List<Node> leafNodeList,
 			String startDate, String endDate, KpiRequest kpiRequest) {
 
+		Map<ObjectId,Map<String,Object>> projectWiseMapping=new HashMap<>();
+		leafNodeList.forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+			Map<String, Object> fieldWise = new HashMap<>();
+			fieldWise.put("LiveStatus", fieldMapping.getJiraLiveStatusNOSK());
+			fieldWise.put("ClosedStatus", fieldMapping.getJiraTicketClosedStatus());
+			fieldWise.put("RejectedStatus", fieldMapping.getJiraTicketRejectedStatus());
+			fieldWise.put("RCA_Count_IssueType", fieldMapping.getKanbanRCACountIssueType());
+			fieldWise.put("Ticket_Count_IssueType", fieldMapping.getTicketCountIssueType());
+			fieldWise.put("StoryFirstStatus", fieldMapping.getStoryFirstStatus());
+			projectWiseMapping.put(basicProjectConfigId, fieldWise);
+		});
 		historyDataResultMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList, startDate,
-				endDate, kpiRequest, FIELD_STATUS);
+				endDate, kpiRequest, FIELD_STATUS, projectWiseMapping);
 		CustomDateRange dateRangeForCumulative = KpiDataHelper.getStartAndEndDatesForCumulative(kpiRequest);
 		// get start and end date in yyyy-mm-dd format
 		String cumulativeStartDate = dateRangeForCumulative.getStartDate().format(DATE_FORMATTER);

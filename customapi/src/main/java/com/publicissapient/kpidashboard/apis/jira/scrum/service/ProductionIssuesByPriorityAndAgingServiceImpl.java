@@ -102,8 +102,8 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 			if (Optional.ofNullable(fieldMapping.getJiraDodPDA()).isPresent()) {
 				List<String> closedStatusList = new ArrayList<>();
 				closedStatusList.addAll(fieldMapping.getJiraDodPDA());
-				if (Optional.ofNullable(fieldMapping.getJiraLiveStatus()).isPresent()) {
-					closedStatusList.add(fieldMapping.getJiraLiveStatus());
+				if (Optional.ofNullable(fieldMapping.getJiraLiveStatusPDA()).isPresent()) {
+					closedStatusList.add(fieldMapping.getJiraLiveStatusPDA());
 				}
 				if (Optional.ofNullable(fieldMapping.getJiraDefectDroppedStatus()).isPresent()) {
 					closedStatusList.addAll(fieldMapping.getJiraDefectDroppedStatus());
