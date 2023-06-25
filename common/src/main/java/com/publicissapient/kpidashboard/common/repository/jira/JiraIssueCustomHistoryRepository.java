@@ -74,8 +74,6 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 	 */
 	List<JiraIssueCustomHistory> findByStoryIDInAndBasicProjectConfigIdIn(List<String> storyID,
 			List<String> basicProjectConfigId);
-	@Query(value = "{ 'basicProjectConfigId' : ?0 , 'storyID':?0 }", fields = "{ 'storyType' : 1, 'createdDate' : 1,'statusUpdationLog':1}")
-    List<JiraIssueCustomHistory> findByBasicProjectConfigIdAndStoryIDIn(String basicProjectConfigId, List<String> allIssueUpdateInLast365Days);
 
 	List<JiraIssueCustomHistory> findByBasicProjectConfigIdIn(String basicProjectConfigId);
 }
