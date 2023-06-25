@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -140,6 +141,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		Map<String, Object> resultListMap = new HashMap<>();
 
 		List<JiraIssue> issues = getBackLogStory(leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
+		issues = issues.stream().filter(issue -> !LocalDate.parse(issue.getUpdateDate().split("T")[0]).isBefore(LocalDate.now().minusMonths(12))).collect(Collectors.toList());
 		resultListMap.put(ISSUES, issues);
 
 		List<String> issueNumbers = issues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());

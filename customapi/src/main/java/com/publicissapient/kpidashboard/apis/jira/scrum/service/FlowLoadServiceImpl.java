@@ -60,7 +60,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
-	private static final String ISSUE_BACKLOG_HISTORY = "Issue Backlog History";
+	private static final String ISSUE_HISTORY = "Issue History";
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -87,9 +87,9 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		if (leafNode != null) {
 			log.info("Flow Load kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			List<JiraIssueCustomHistory> typeCountByDateRange = jiraIssueCustomHistoryRepository
+			List<JiraIssueCustomHistory> issuesHistory = jiraIssueCustomHistoryRepository
 					.findByBasicProjectConfigIdIn(basicProjectConfigId);
-			resultListMap.put(ISSUE_BACKLOG_HISTORY, typeCountByDateRange);
+			resultListMap.put(ISSUE_HISTORY, issuesHistory);
 		}
 
 		return resultListMap;
@@ -119,10 +119,10 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
 
-		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, "", "", kpiRequest);
+		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, startDate.toString(), endDate.toString(), kpiRequest);
 
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = (List<JiraIssueCustomHistory>) resultMap
-				.get(ISSUE_BACKLOG_HISTORY);
+				.get(ISSUE_HISTORY);
 
 		leafNode.forEach(node -> {
 			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate = new HashMap<>();

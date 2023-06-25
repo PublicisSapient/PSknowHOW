@@ -76,6 +76,8 @@ public class JiraIssueCustomHistory extends BasicModel {
 
 	private String projectName;
 	private String basicProjectConfigId;
+	@Indexed
+	private String updateDate;
 
 	private List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
 	private List<JiraHistoryChangeLog> assigneeUpdationLog = new ArrayList<>();

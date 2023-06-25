@@ -62,6 +62,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	private static final String BASIC_PROJ_CONF_ID = "basicProjectConfigId";
 	private static final String FIXVERSION_CHANGEDTO = "fixVersionUpdationLog.changedTo";
 	private static final String FIXVERSION_CHANGEDFROM = "fixVersionUpdationLog.changedFrom";
+	private static final String UPDATE_DATE = "updateDate";
 	/** The operations. */
 	@Autowired
 	private MongoOperations operations;
@@ -236,6 +237,17 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		query.fields().include(VERSION_CHANGE_LOG);
 		return operations.find(query, JiraIssueCustomHistory.class);
 
+	}
+
+	@Override
+	public List<JiraIssueCustomHistory> findByBasicProjectConfigIdAndUpdateDateGte(String basicProjectConfigId, String startDate) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where(UPDATE_DATE).gte(startDate));
+		query.addCriteria(Criteria.where(BASIC_PROJ_CONF_ID).in(basicProjectConfigId));
+		query.fields().include(STATUS_CHANGE_LOG);
+		query.fields().include(STORY_TYPE);
+		query.fields().include(TICKET_CREATED_DATE_FIELD);
+		return operations.find(query, JiraIssueCustomHistory.class);
 	}
 
 }

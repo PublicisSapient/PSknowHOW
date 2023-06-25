@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.repository.jira;//NOPMD
 
 //Do not remove NOPMD comment. This is for ignoring ExcessivePublicCount violation
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -171,7 +172,6 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	public List<JiraIssue> findIssuesBySprintAndType(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
-
 		// map of common filters Project and Sprint
 		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
 		// Project level storyType filters
@@ -188,7 +188,6 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
 					.orOperator(projectCriteriaList.toArray(new Criteria[0]));
 			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
-
 			query = new Query(criteriaProjectLevelAdded);
 		}
 		query.fields().include(CONFIG_ID);
@@ -199,6 +198,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(SPRINT_ID);
 		query.fields().include(SPRINT_NAME);
 		query.fields().include(STORY_POINTS);
+		query.fields().include(JIRA_UPDATED_DATE);
 		query.fields().include(JIRA_ISSUE_STATUS);
 		query.fields().include(DEFECT_STORY_ID);
 		query.fields().include(ORIGINAL_ESTIMATE_MINUTES);

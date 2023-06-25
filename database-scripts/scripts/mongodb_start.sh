@@ -125,6 +125,9 @@ function running_js()
   echo "########## create release hierarchy with project version `date`############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/create_release_hierarchy.js
 
+    echo "########## Adding update date for jira history `date`############"
+    mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/AddingUpdateDateInJiraHistory.js
+
 
 
 }

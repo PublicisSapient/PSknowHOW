@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -304,6 +305,8 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 				basicProjectConfigIds.stream().map(ObjectId::toString).distinct().collect(Collectors.toList()));
 		List<JiraIssue> jiraIssues = jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters,
 				uniqueProjectMap);
+		jiraIssues = jiraIssues.stream().filter(issue -> !LocalDate.parse(issue.getUpdateDate().split("T")[0])
+				.isBefore(LocalDate.now().minusMonths(12))).collect(Collectors.toList());
 		resultMap.put(TOTAL_JIRA_ISSUE, jiraIssues);
 
 		List<String> notClosedJiraIssueNumbers = jiraIssues.stream().map(JiraIssue::getNumber)

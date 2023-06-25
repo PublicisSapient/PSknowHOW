@@ -29,8 +29,10 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +66,8 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 	private static final Logger LOGGER = LoggerFactory.getLogger(FlowDistributionServiceImpl.class);
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
@@ -108,7 +112,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 			LOGGER.info("Flow Distribution kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
-					.findByBasicProjectConfigIdIn(basicProjectConfigId);
+					.findByBasicProjectConfigIdAndUpdateDateGte(basicProjectConfigId, startDate);
 			resultListMap.put(BACKLOG_CUSTOM_HISTORY, new ArrayList<>(jiraIssueCustomHistoryList));
 		}
 		return resultListMap;

@@ -69,4 +69,5 @@ public interface JiraIssueHistoryCustomQueryRepository {
 	List<JiraIssueCustomHistory> findByFilterAndFromReleaseMap(List<String> basicProjectConfigId,
 			List<String> releaseList);
 
+    List<JiraIssueCustomHistory> findByBasicProjectConfigIdAndUpdateDateGte(String basicProjectConfigId, String startDate);
 }

@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -191,6 +192,8 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 
 		List<JiraIssue> storyList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 				uniqueProjectMapForStories);
+		storyList = storyList.stream().filter(issue -> !LocalDate.parse(issue.getUpdateDate().split("T")[0])
+				.isBefore(LocalDate.now().minusMonths(12))).collect(Collectors.toList());
 		List<String> storyIssueNumberList = storyList.stream().map(JiraIssue::getNumber)
 				.collect(Collectors.toList());
 
@@ -296,15 +299,18 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 		List<JiraIssue> jiraStoryList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
+		jiraStoryList= jiraStoryList.stream().filter(issue -> !LocalDate.parse(issue.getUpdateDate().split("T")[0])
+				.isBefore(LocalDate.now().minusMonths(12))).collect(Collectors.toList());
 		List<String> storyIssueNumberList = jiraStoryList.stream().map(JiraIssue::getNumber)
 				.collect(Collectors.toList());
 
 		resultListMap.put(STORY_LIST, storyIssueNumberList);
 		defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
+		List<JiraIssue> defectList = jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn);
 		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
-
-		resultListMap.put(DEFECT_LIST,
-						jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn));
+		defectList = defectList.stream().filter(issue -> !LocalDate.parse(issue.getUpdateDate().split("T")[0])
+				.isBefore(LocalDate.now().minusMonths(12))).collect(Collectors.toList());
+		resultListMap.put(DEFECT_LIST, defectList);
 		return resultListMap;
 
 	}
@@ -323,9 +329,8 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		List<KPIExcelData> excelDataDefectsWithoutStoryLink = new ArrayList<>();
 		List<IterationKpiModalValue> testCasesWithoutStoryLinkModals = new ArrayList<>();
 		List<IterationKpiModalValue> defectWithoutStoryLinkModals = new ArrayList<>();
-		CustomDateRange dateRange = KpiDataHelper.getMonthsForPastDataHistory(15);
-		String startDate = dateRange.getStartDate().format(DATE_FORMATTER);
-		String endDate = dateRange.getEndDate().format(DATE_FORMATTER);
+		String endDate = LocalDate.now().toString();
+		String startDate = LocalDate.now().minusMonths(12).toString();
 		Node latestNode = leafNodeList.get(0);
 		Map<String, Object> returnMap = fetchKPIDataFromDb(leafNodeList, startDate, endDate, kpiRequest);
 
