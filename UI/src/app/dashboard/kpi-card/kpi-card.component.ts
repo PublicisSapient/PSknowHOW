@@ -52,6 +52,8 @@ export class KpiCardComponent implements OnInit, OnDestroy {
  selectedFieldMapping = []
  selectedConfig: any = {}; 
  selectedToolConfig: any = [];
+ loading : boolean = false
+ noData : boolean = false
 
   constructor(private service: SharedService,
     private http : HttpService) {
@@ -204,7 +206,9 @@ export class KpiCardComponent implements OnInit, OnDestroy {
     const selectedTab = this.service.getSelectedTab().toLowerCase();
     const selectedType = this.service.getSelectedType().toLowerCase();
     const selectedTrend = this.service.getSelectedTrends();
-   if(selectedType === 'scrum' && selectedTrend.length == 1 && selectedTab !== 'iteration' && selectedTab !== 'backlog' && selectedTab !== 'release')
+   if(selectedType === 'scrum' && selectedTrend.length == 1 && selectedTab !== 'iteration' && selectedTab !== 'backlog' && selectedTab !== 'release'){
+    this.loading = true;
+    this.displayConfigModel = true;
    this.http.getKPIFieldMappingConfig(this.kpiData?.kpiId).subscribe(data=>{
     this.fieldMappingConfig = data['fieldConfiguration'];
     const kpiSource = data['kpiSource']
@@ -216,9 +220,13 @@ export class KpiCardComponent implements OnInit, OnDestroy {
           this.http.getFieldMappings(this.selectedToolConfig[0]?.id).subscribe(mappings => {
             if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 2) {
               this.selectedFieldMapping = mappings['data'];
+              this.noData = false;
               this.displayConfigModel = true;
+              this.loading = false;
+
             } else {
-              alert("NO mapping found")
+              this.loading = false;
+              this.noData = true;
             }
           });
           this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id).subscribe(Response => {
@@ -229,13 +237,16 @@ export class KpiCardComponent implements OnInit, OnDestroy {
             }
           });
         } else {
-          alert("NO tool found")
+          this.loading = false;
+          this.noData = true;
         }
       });
     }else{
-      alert("NO Mapping Configuration found.")
+      this.loading = false;
+      this.noData = true;
     }
    })
+  }
   }
 
   ngOnDestroy() {

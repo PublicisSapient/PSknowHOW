@@ -182,8 +182,10 @@
 
 :host::ng-deep .p-dialog.field-mapping {
     min-width: 90vw !important;
-    min-height: 70vh !important;
-    height: auto !important;
+    width: auto !important;
+    max-width: 90vw;
+    min-height: 20vh !important;
+
 }
 
 
