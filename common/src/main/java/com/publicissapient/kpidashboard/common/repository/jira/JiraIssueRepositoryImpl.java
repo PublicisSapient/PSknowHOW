@@ -198,7 +198,6 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(SPRINT_ID);
 		query.fields().include(SPRINT_NAME);
 		query.fields().include(STORY_POINTS);
-		query.fields().include(JIRA_UPDATED_DATE);
 		query.fields().include(JIRA_ISSUE_STATUS);
 		query.fields().include(DEFECT_STORY_ID);
 		query.fields().include(ORIGINAL_ESTIMATE_MINUTES);
