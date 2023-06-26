@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.common.repository.scm;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -34,5 +35,13 @@ public interface MergeRequestRepository extends CrudRepository<MergeRequests, Ob
 	 *            processor item id
 	 */
 	void deleteByProcessorItemIdIn(List<ObjectId> processorItemIds);
+
+	/**
+	 *
+	 * @param processorItemId
+	 * @param revisionNumber
+	 * @return
+	 */
+	List<MergeRequests> findByProcessorItemIdAndRevisionNumberIn(ObjectId processorItemId, Set<String> revisionNumber);
 
 }
