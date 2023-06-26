@@ -112,7 +112,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 			LOGGER.info("Flow Distribution kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
-					.findByBasicProjectConfigIdAndUpdateDateGte(basicProjectConfigId, startDate);
+					.findByBasicProjectConfigIdIn(basicProjectConfigId);
 			resultListMap.put(BACKLOG_CUSTOM_HISTORY, new ArrayList<>(jiraIssueCustomHistoryList));
 		}
 		return resultListMap;

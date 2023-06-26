@@ -441,11 +441,9 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 
 		List<JiraIssue> unAssignedJiraIssues = new ArrayList<>();
 		unAssignedJiraIssues.addAll(issueBacklogRepository.findUnassignedIssues(startDate, endDate, mapOfFilters));
-		unAssignedJiraIssues = unAssignedJiraIssues.stream().filter(issue -> !LocalDate.parse(issue.getUpdateDate().split("T")[0]).isBefore(LocalDate.now().minusMonths(12))).collect(Collectors.toList());
 		List<String> historyData = unAssignedJiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
 		List<JiraIssueCustomHistory> issueBacklogCustomHistories = new ArrayList<>();
 		issueBacklogCustomHistories.addAll(issueBacklogCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(historyData, projectList));
-
 		resultListMap.put(UNASSIGNED_JIRA_ISSUE, unAssignedJiraIssues);
 		resultListMap.put(UNASSIGNED_JIRA_ISSUE_HISTORY, issueBacklogCustomHistories);
         return resultListMap;

@@ -189,8 +189,6 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 
 		List<JiraIssue> storyList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 				uniqueProjectMapForStories);
-		storyList = storyList.stream().filter(issue -> !LocalDate.parse(issue.getUpdateDate().split("T")[0])
-				.isBefore(LocalDate.now().minusMonths(12))).collect(Collectors.toList());
 		List<String> storyIssueNumberList = storyList.stream().map(JiraIssue::getNumber)
 				.collect(Collectors.toList());
 
@@ -296,18 +294,14 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 		List<JiraIssue> jiraStoryList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
-		jiraStoryList= jiraStoryList.stream().filter(issue -> !LocalDate.parse(issue.getUpdateDate().split("T")[0])
-				.isBefore(LocalDate.now().minusMonths(12))).collect(Collectors.toList());
 		List<String> storyIssueNumberList = jiraStoryList.stream().map(JiraIssue::getNumber)
 				.collect(Collectors.toList());
 
 		resultListMap.put(STORY_LIST, storyIssueNumberList);
 		defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
-		List<JiraIssue> defectList = jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn);
-		defectList = defectList.stream().filter(issue -> !LocalDate.parse(issue.getUpdateDate().split("T")[0])
-				.isBefore(LocalDate.now().minusMonths(12))).collect(Collectors.toList());
-		resultListMap.put(DEFECT_LIST, defectList);
+		resultListMap.put(DEFECT_LIST,
+				jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn));
 		return resultListMap;
 
 	}

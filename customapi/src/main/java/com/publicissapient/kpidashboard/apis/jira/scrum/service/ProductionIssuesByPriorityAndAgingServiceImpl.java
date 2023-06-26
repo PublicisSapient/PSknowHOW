@@ -118,7 +118,6 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
         List<JiraIssue> issuesList = jiraIssueRepository.findIssuesByDateAndTypeAndStatus(
 				mapOfFilters, uniqueProjectMap, startDate, endDate, RANGE, NIN, true);
-		issuesList = issuesList.stream().filter(issue -> !LocalDate.parse(issue.getUpdateDate().split("T")[0]).isBefore(LocalDate.now().minusMonths(12))).collect(Collectors.toList());
 		resultListMap.put(RANGE_TICKET_LIST, issuesList);
 
 		return resultListMap;
