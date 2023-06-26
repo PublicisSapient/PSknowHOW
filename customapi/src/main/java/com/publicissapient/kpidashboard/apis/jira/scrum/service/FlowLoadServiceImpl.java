@@ -33,6 +33,8 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -255,7 +257,9 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())
 						&& fieldMapping.getJiraStatusForInProgress().contains(status))
 				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForQa())
-						&& fieldMapping.getJiraStatusForQa().contains(status));
+						&& fieldMapping.getJiraStatusForQa().contains(status))
+				|| (StringUtils.isNotEmpty(fieldMapping.getJiraLiveStatus())
+						&& fieldMapping.getJiraLiveStatus().equalsIgnoreCase(status));
 
 	}
 

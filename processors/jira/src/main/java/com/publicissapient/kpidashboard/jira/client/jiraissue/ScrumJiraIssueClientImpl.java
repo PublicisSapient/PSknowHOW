@@ -728,7 +728,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
-				jiraIssueHistory.setUpdateDate(jiraIssue.getUpdateDate());
 				if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
 					jiraIssuesToSave.add(jiraIssue);
 					jiraIssueHistoryToSave.add(jiraIssueHistory);
