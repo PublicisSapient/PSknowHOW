@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -106,6 +107,9 @@ public class DREServiceImplTest {
 	CustomApiConfig customApiSetting;
 	@Mock
 	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Mock
+	private JiraServiceR jiraKPIService;
+
 
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
