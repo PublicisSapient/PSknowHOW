@@ -92,7 +92,7 @@ export class GoogleAnalyticsService {
     dataLayer.push({
          'event' : 'login',
          'authentication_method' : loginType,
-         'user_id' : data.user_id //this should be replaced with an actual ID
+         'user_id' : data.user_id 
     });
   }
 }
