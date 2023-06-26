@@ -72,11 +72,32 @@ private setting = {
 
   initializeForm(){
     const formObj ={};
-    for(const field in this.formData){
-      formObj[field] = new FormControl(this.formData[field]);
+    for (const field of this.fieldMappingConfig) {
+      formObj[field.fieldName] = this.generateFromControlBasedOnFieldType(field)
+      if (field.hasOwnProperty('nestedFields')) {
+        for (const nField of field.nestedFields) {
+          formObj[nField.fieldName] = this.generateFromControlBasedOnFieldType(nField)
+        }
+      }
     }
     this.form = new FormGroup(formObj);
     console.log(this.form);
+  }
+
+  /** This method is taking config as parameter, creating form control and assigning initial value based on fieldtype */
+  generateFromControlBasedOnFieldType(config){
+    if(this.formData.hasOwnProperty(config.fieldName)){
+      return new FormControl(this.formData[config.fieldName]);
+    }else{
+      switch(config.fieldType){
+        case 'text':
+          return new FormControl('');
+        case 'radiobutton':
+          return new FormControl('');
+        default:
+          return new FormControl([]);
+      }
+    }
   }
 
 
@@ -197,7 +218,7 @@ private setting = {
 
   /** Responsible for handle template popup */
   save() {
-    const submitData = {...this.form.value};
+    const submitData = {...this.formData,...this.form.value};
     submitData['basicProjectConfigId'] = this.selectedConfig.id;
     delete submitData.id;
     console.log(submitData);

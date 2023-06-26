@@ -180,7 +180,7 @@
     justify-content: center;
 }
 
-:host::ng-deep .p-dialog {
+:host::ng-deep .p-dialog.field-mapping {
     min-width: 90vw !important;
     min-height: 70vh !important;
     height: auto !important;

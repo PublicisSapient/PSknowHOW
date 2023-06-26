@@ -148,13 +148,10 @@
     </div>
  </p-overlayPanel>
 
- <p-dialog [(visible)]="displayConfigModel" [modal]="true" [draggable]="true" [resizable]="true">
+ <p-dialog [header]="kpiData?.kpiName"  [(visible)]="displayConfigModel" [modal]="true" [draggable]="true" [resizable]="true" styleClass="field-mapping">
     <ng-template pTemplate="content" >
-        <div class="p-mb-3 overlay-heading">
-            {{kpiData?.kpiName}}
-        </div>
-       <app-field-mapping-form 
-            *ngIf="displayFormComponent" 
+       <app-field-mapping-form #fieldMappingForm
+            *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0 ; else loader"
             [disableSave]="disableSave" 
             [fieldMappingMetaData]="fieldMappingMetaData" 
             [fieldMappingConfig]="fieldMappingConfig" 
@@ -162,4 +159,9 @@
             [selectedConfig]="selectedConfig"
             [selectedToolConfig]="selectedToolConfig"></app-field-mapping-form>
       </ng-template>
+      <ng-template #loader>
+        <div class="overlay">
+            <div class="loading-img"></div>
+        </div>
+    </ng-template>
  </p-dialog>

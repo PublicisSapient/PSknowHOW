@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy,OnChanges, SimpleChanges} from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy,ViewChild} from '@angular/core';
 import { faShareSquare } from '@fortawesome/free-solid-svg-icons';
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
@@ -8,7 +8,7 @@ import { HttpService } from 'src/app/services/http.service';
   templateUrl: './kpi-card.component.html',
   styleUrls: ['./kpi-card.component.css']
 })
-export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
+export class KpiCardComponent implements OnInit, OnDestroy {
   @Input() kpiData: any;
   @Input() trendData: Array<object>;
   @Output() downloadExcel = new EventEmitter<boolean>();
@@ -46,19 +46,17 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
  sprintDetailsList : Array<any>;
  colorCssClassArray = ['sprint-hover-project1','sprint-hover-project2','sprint-hover-project3','sprint-hover-project4','sprint-hover-project5','sprint-hover-project6'];
  displayConfigModel = false;
- displayFormComponent = false;
  fieldMappingMetaData = {};
  disableSave = false
  fieldMappingConfig = [];
  selectedFieldMapping = []
+ selectedConfig: any = {}; 
+ selectedToolConfig: any = [];
 
   constructor(private service: SharedService,
     private http : HttpService) {
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    // changes['dropdownArr']?.currentValue ? true : this.dropdownArr = [];
-  }
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
@@ -196,24 +194,47 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     return this.colorCssClassArray[index];
   }
 
-  ngOnDestroy() {
-    this.kpiData = {};
-    this.trendData = [];
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  /** When field mapping dialog is opening */
+  onOpenFieldMappingDialog(){
+    this.getKPIFieldMappingConfig();
   }
 
   /** This method is responsible for getting field mapping configuration for specfic KPI */
   getKPIFieldMappingConfig(){
+    const selectedTab = this.service.getSelectedTab().toLowerCase();
+    const selectedType = this.service.getSelectedType().toLowerCase();
+    const selectedTrend = this.service.getSelectedTrends();
+   if(selectedType === 'scrum' && selectedTrend.length == 1 && selectedTab !== 'iteration' && selectedTab !== 'backlog' && selectedTab !== 'release')
    this.http.getKPIFieldMappingConfig(this.kpiData?.kpiId).subscribe(data=>{
-    this.fieldMappingConfig = data
-    this.displayFormComponent = true;
-    this.displayConfigModel = true;
-  console.log("came : ",data);
+    this.fieldMappingConfig = data['fieldConfiguration'];
+    const kpiSource = data['kpiSource']
+    if(this.fieldMappingConfig.length > 0 ){
+      this.selectedConfig  =  {...this.service.getSelectedTrends()[0],id : this.service.getSelectedTrends()[0]?.basicProjectConfigId}
+      this.http.getAllToolConfigs(this.selectedConfig.id).subscribe(response => {
+        if (response && response['success'] && response['data'].length > 0) {
+          this.selectedToolConfig = response['data'].filter(tool => tool.toolName.toLowerCase() === kpiSource.toLowerCase());
+          this.http.getFieldMappings(this.selectedToolConfig[0]?.id).subscribe(mappings => {
+            if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 2) {
+              this.selectedFieldMapping = mappings['data'];
+              this.displayConfigModel = true;
+            } else {
+              alert("NO mapping found")
+            }
+          });
+        } else {
+          alert("NO tool found")
+        }
+      });
+    }else{
+      alert("NO Mapping Configuration found.")
+    }
    })
   }
 
-  onOpenFieldMappingDialog(){
-    this.getKPIFieldMappingConfig();
+  ngOnDestroy() {
+    this.kpiData = {};
+    this.trendData = [];
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
 }
