@@ -869,6 +869,23 @@
                                 (click)="showDialogToAddValue(false, 'jiraIterationCompletionTypeCustomField', 'Issue_Type')"></button>
                         </div>
                     </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
+                    *ngIf="fieldstoShow?.includes('productionDefectsAgeingIssueType') || fieldstoShow.length === 0">
+                    <label class="field-title">Production Defects Ageing Issue Type  <span class="fa fa-info-circle" aria-hidden="true"
+                            pTooltip='<span>
+                                Iteration Dashboard
+                                SPEED KPIs - Sprint Velocity, Commitment Reliability, Issue Count, Sprint Predictability
+                          </span>' tooltipPosition="top" tooltipEvent="hover" tooltipStyleClass="tooltiptext"
+                            [escape]="false"></span></label>
+                    <div class="p-inputgroup">
+                        <p-chips [style]="{'max-width':'initial','width':'60vw'}" inputId="productionDefectsAgeingIssueType"
+                            formControlName="productionDefectsAgeingIssueType" placeholder="Enter Custom Completion Types"
+                            addOnBlur="true">
+                        </p-chips>
+                        <button type="button" pButton pRipple icon="pi pi-search"
+                            (click)="showDialogToAddValue(false, 'productionDefectsAgeingIssueType', 'Issue_Type')"></button>
+                    </div>
+                </div>
                 </div>
             </p-accordionTab>
             <p-accordionTab header="Defects Mapping"

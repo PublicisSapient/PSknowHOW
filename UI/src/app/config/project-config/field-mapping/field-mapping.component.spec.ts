@@ -170,6 +170,9 @@ const fakeSelectedFieldMapping = {
   "jiraIssueEpicType": [
     "Epic"
   ],
+  "productionDefectsAgeingIssueType": [
+    "Epic"
+  ],
   "jiraStatusForQa": [
     "In Testing"
   ],
@@ -328,6 +331,9 @@ const successResponse = {
       'In Analysis'
     ],
     jiraIssueEpicType: [
+      'Epic'
+    ],
+    productionDefectsAgeingIssueType: [
       'Epic'
     ],
     jiraStatusForQa: [
@@ -561,6 +567,9 @@ const fakeSelectedFieldMappingWithAdditionalFilters = {
     "Change request"
   ],
   "jiraIssueEpicType": [
+    "Epic"
+  ],
+  "productionDefectsAgeingIssueType": [
     "Epic"
   ],
   "jiraTechDebtIdentification": "",

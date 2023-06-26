@@ -454,6 +454,7 @@ export class FieldMappingComponent implements OnInit {
       jiraSprintCapacityIssueType: [[]],
       jiraIssueEpicType: [[]],
       jiraIterationCompletionTypeCustomField : [[]],
+      productionDefectsAgeingIssueType : [[]],
       // custom field mapping
       sprintName: [''],
       rootCause: [''],
