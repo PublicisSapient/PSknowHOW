@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
