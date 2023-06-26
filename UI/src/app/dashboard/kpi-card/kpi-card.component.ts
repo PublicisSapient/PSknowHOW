@@ -202,51 +202,68 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   }
 
   /** This method is responsible for getting field mapping configuration for specfic KPI */
-  getKPIFieldMappingConfig(){
+  getKPIFieldMappingConfig() {
     const selectedTab = this.service.getSelectedTab().toLowerCase();
     const selectedType = this.service.getSelectedType().toLowerCase();
     const selectedTrend = this.service.getSelectedTrends();
-   if(selectedType === 'scrum' && selectedTrend.length == 1 && selectedTab !== 'iteration' && selectedTab !== 'backlog' && selectedTab !== 'release'){
-    this.loading = true;
-    this.displayConfigModel = true;
-   this.http.getKPIFieldMappingConfig(this.kpiData?.kpiId).subscribe(data=>{
-    this.fieldMappingConfig = data['fieldConfiguration'];
-    const kpiSource = data['kpiSource']
-    if(this.fieldMappingConfig.length > 0 ){
-      this.selectedConfig  =  {...this.service.getSelectedTrends()[0],id : this.service.getSelectedTrends()[0]?.basicProjectConfigId}
-      this.http.getAllToolConfigs(this.selectedConfig.id).subscribe(response => {
-        if (response && response['success'] && response['data'].length > 0) {
-          this.selectedToolConfig = response['data'].filter(tool => tool.toolName.toLowerCase() === kpiSource.toLowerCase());
-          this.http.getFieldMappings(this.selectedToolConfig[0]?.id).subscribe(mappings => {
-            if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 2) {
-              this.selectedFieldMapping = mappings['data'];
-              this.noData = false;
-              this.displayConfigModel = true;
-              this.loading = false;
-
+    if (selectedType === 'scrum' && selectedTrend.length == 1 && selectedTab !== 'iteration' && selectedTab !== 'backlog' && selectedTab !== 'release') {
+      this.loading = true;
+      this.displayConfigModel = true;
+      this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`).subscribe(data => {
+        this.fieldMappingConfig = data['fieldConfiguration'];
+        const kpiSource = data['kpiSource']?.toLowerCase();
+        const toolConfigID = data['projectToolConfigId'];
+        this.selectedToolConfig = [{ id: toolConfigID, toolName: kpiSource }];
+        if (this.fieldMappingConfig.length > 0) {
+          this.selectedConfig = { ...selectedTrend[0], id: selectedTrend[0]?.basicProjectConfigId }
+          this.getFieldMapping();
+          if (this.service.getFieldMappingMetaData().length) {
+            const metaDataList = this.service.getFieldMappingMetaData();
+            const metaData = metaDataList.find(data => data.projectID === selectedTrend[0]?.basicProjectConfigId && data.kpiSource === kpiSource);
+            if (metaData && metaData.metaData) {
+              this.fieldMappingMetaData = metaData.metaData;
             } else {
-              this.loading = false;
-              this.noData = true;
+              this.getFieldMappingMetaData(kpiSource);
             }
-          });
-          this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id).subscribe(Response => {
-            if (Response.success) {
-              this.fieldMappingMetaData = Response.data;
-            } else {
-              this.fieldMappingMetaData = [];
-            }
-          });
+          } else {
+            this.getFieldMappingMetaData(kpiSource);
+          }
         } else {
           this.loading = false;
           this.noData = true;
         }
-      });
-    }else{
-      this.loading = false;
-      this.noData = true;
+      })
     }
-   })
   }
+
+  getFieldMapping() {
+    this.http.getFieldMappings(this.selectedToolConfig[0].id).subscribe(mappings => {
+      if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 2) {
+        this.selectedFieldMapping = mappings['data'];
+        this.noData = false;
+        this.displayConfigModel = true;
+        this.loading = false;
+
+      } else {
+        this.loading = false;
+        this.noData = true;
+      }
+    });
+  }
+
+  getFieldMappingMetaData(kpiSource) {
+    this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id).subscribe(Response => {
+      if (Response.success) {
+        this.fieldMappingMetaData = Response.data;
+        this.service.setFieldMappingMetaData({
+          projectID: this.service.getSelectedTrends()[0]?.basicProjectConfigId,
+          kpiSource: kpiSource,
+          metaData: Response.data
+        })
+      } else {
+        this.fieldMappingMetaData = [];
+      }
+    });
   }
 
   ngOnDestroy() {

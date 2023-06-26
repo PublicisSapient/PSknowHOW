@@ -1,9 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { SharedService } from '../../services/shared.service';
-import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { HttpService } from '../../services/http.service';
-import { Router } from '@angular/router';
 import { MessageService,ConfirmationService } from 'primeng/api';
 
 @Component({
@@ -41,8 +39,6 @@ private setting = {
 };
 
   constructor(private sharedService : SharedService,
-    private getAuthorizationService : GetAuthorizationService,
-    private router : Router,
     private http : HttpService,
     private messenger: MessageService,
     private confirmationService: ConfirmationService) { }
@@ -223,7 +219,7 @@ private setting = {
     delete submitData.id;
     console.log(submitData);
     
-    if(this.selectedToolConfig[0].toolName === 'Jira'){
+    if(this.selectedToolConfig[0].toolName.toLowerCase() === 'jira'){
       this.http.getMappingTemplateFlag(this.selectedToolConfig[0].id, submitData).subscribe(response => {
         if (response && response['success']) {
           if (response['data']) {
