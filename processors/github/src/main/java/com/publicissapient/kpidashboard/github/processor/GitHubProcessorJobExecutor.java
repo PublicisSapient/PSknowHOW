@@ -18,10 +18,11 @@
 
 package com.publicissapient.kpidashboard.github.processor;
 
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -151,42 +152,6 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 	}
 
 	/**
-	 * Checks if is new commitDetails.
-	 *
-	 * @param gitHubProcessorItem
-	 *            the git repo
-	 * @param commitDetails
-	 *            commitDetails
-	 * @return true, if is new commit
-	 */
-	private boolean isNewCommit(GitHubProcessorItem gitHubProcessorItem, CommitDetails commitDetails) {
-		CommitDetails dbCommit = commitsRepo.findByProcessorItemIdAndRevisionNumber(gitHubProcessorItem.getId(),
-				commitDetails.getRevisionNumber());
-		return dbCommit == null;
-	}
-
-	/**
-	 * Checks if is new mergeRequests.
-	 * 
-	 * @param gitHubProcessorItem
-	 *            the git repo
-	 * @param mergeRequests
-	 * @return true, if is new merge Request
-	 */
-	private boolean isNewMergeReq(GitHubProcessorItem gitHubProcessorItem, MergeRequests mergeRequests) {
-		boolean isNewReq = false;
-		MergeRequests mergReq = mergReqRepo.findByProcessorItemIdAndRevisionNumber(gitHubProcessorItem.getId(),
-				mergeRequests.getRevisionNumber());
-		if (mergReq == null) {
-			isNewReq = true;
-		} else if (!mergReq.getState().equals(mergeRequests.getState())) {
-			mergeRequests.setId(mergReq.getId());
-			mergReqRepo.save(mergeRequests);
-		}
-		return isNewReq;
-	}
-
-	/**
 	 * Execute.
 	 *
 	 * @param processor
@@ -222,29 +187,23 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 
 					List<CommitDetails> commitDetailList = gitHubClient.fetchAllCommits(gitHubProcessorItem,
 							firstTimeRun, tool, proBasicConfig);
-					updateAssigneeNameForCommits(proBasicConfig, processorExecutionTraceLog, gitHubProcessorItem,
-							commitDetailList);
-					List<CommitDetails> unsavedCommits = commitDetailList.stream()
-							.filter(commit -> isNewCommit(gitHubProcessorItem, commit)).collect(Collectors.toList());
-					unsavedCommits.forEach(commit -> commit.setProcessorItemId(gitHubProcessorItem.getId()));
+					Set<CommitDetails> unsavedCommits = new HashSet<>();
+					boolean assigneeFlag = checkAssigneeFlag(proBasicConfig, processorExecutionTraceLog);
+					updateAssigneeNameForCommits(assigneeFlag, gitHubProcessorItem, commitDetailList, unsavedCommits);
 					commitsRepo.saveAll(unsavedCommits);
+					log.info("Commits Saved For project {}->{}" ,proBasicConfig.getProjectName(),unsavedCommits.size());
 					commitsCount += unsavedCommits.size();
 					if (!commitDetailList.isEmpty()) {
 						gitHubProcessorItem.setLastUpdatedCommit(commitDetailList.get(0).getRevisionNumber());
 					}
 
+					Set<MergeRequests> unsavedMergeRequests = new HashSet<>();
 					List<MergeRequests> mergeRequestsList = gitHubClient.fetchMergeRequests(gitHubProcessorItem,
 							firstTimeRun, tool, proBasicConfig);
-
-					updateAssigneeForMerge(proBasicConfig, processorExecutionTraceLog, gitHubProcessorItem,
-							mergeRequestsList);
-					List<MergeRequests> unsavedMergeRequests = mergeRequestsList.stream()
-							.filter(mergReq -> isNewMergeReq(gitHubProcessorItem, mergReq))
-							.collect(Collectors.toList());
-					unsavedMergeRequests.forEach(mergReq -> mergReq.setProcessorItemId(gitHubProcessorItem.getId()));
+					updateAssigneeForMerge(assigneeFlag, gitHubProcessorItem, mergeRequestsList, unsavedMergeRequests);
 					mergReqRepo.saveAll(unsavedMergeRequests);
 					mergReqCount += unsavedMergeRequests.size();
-
+					log.info("MRs Saved For project {}->{}" ,proBasicConfig.getProjectName(),unsavedMergeRequests.size());
 					gitHubProcessorItem.setLastUpdatedTime(Calendar.getInstance().getTime());
 					gitHubProcessorItemRepository.save(gitHubProcessorItem);
 					reposCount++;
@@ -266,6 +225,7 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 		MDC.put("RepoCount", String.valueOf(reposCount));
 		MDC.put("CommitCount", String.valueOf(commitsCount));
 
+
 		if (commitsCount > 0) {
 			cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.BITBUCKET_KPI_CACHE);
 		}
@@ -284,39 +244,62 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 		return executionStatus;
 	}
 
-	private void updateAssigneeNameForCommits(ProjectBasicConfig proBasicConfig,
-			ProcessorExecutionTraceLog processorExecutionTraceLog, GitHubProcessorItem gitHubProcessorItem,
-			List<CommitDetails> commitDetailList) {
-		if (proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
-			List<CommitDetails> updateAuthor = new ArrayList<>();
-			commitDetailList.stream().forEach(commit -> {
-				CommitDetails commitDetailsData = commitsRepo.findByProcessorItemIdAndRevisionNumber(
-						gitHubProcessorItem.getId(), commit.getRevisionNumber());
-				if (commitDetailsData != null) {
-					commitDetailsData.setAuthor(commit.getAuthor());
-					updateAuthor.add(commitDetailsData);
-				}
-			});
-			commitsRepo.saveAll(updateAuthor);
+	private void updateAssigneeNameForCommits(boolean assigneeFlag, GitHubProcessorItem gitHubProcessorItem,
+			List<CommitDetails> commitDetailList, Set<CommitDetails> unsavedCommits) {
+		List<String> revisionNumbers = commitDetailList.stream().map(CommitDetails::getRevisionNumber)
+				.collect(Collectors.toList());
+		List<CommitDetails> byProcessorItemIdAndRevisionNumberIn = commitsRepo
+				.findByProcessorItemIdAndRevisionNumberIn(gitHubProcessorItem.getId(), revisionNumbers);
+		log.info("Found Records of Commits in db ->{}" ,byProcessorItemIdAndRevisionNumberIn.size());
+		commitDetailList.stream().forEach(commit -> {
+			Optional<CommitDetails> commitDetailsData = byProcessorItemIdAndRevisionNumberIn.stream()
+					.filter(existing -> existing.getRevisionNumber().equalsIgnoreCase(commit.getRevisionNumber()))
+					.findFirst();
+			if (assigneeFlag && commitDetailsData.isPresent()) {
+				CommitDetails existingCommit = commitDetailsData.get();
+				existingCommit.setAuthor(commit.getAuthor());
+				unsavedCommits.add(existingCommit);
 
-		}
+			} else if (!commitDetailsData.isPresent()) {
+				commit.setProcessorItemId(gitHubProcessorItem.getId());
+				unsavedCommits.add(commit);
+			}
+		});
 	}
 
-	private void updateAssigneeForMerge(ProjectBasicConfig proBasicConfig,
-			ProcessorExecutionTraceLog processorExecutionTraceLog, GitHubProcessorItem gitHubProcessorItem,
-			List<MergeRequests> mergeRequestsList) {
-		if (proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
-			List<MergeRequests> updateAuthor = new ArrayList<>();
-			mergeRequestsList.stream().forEach(mergeRequests -> {
-				MergeRequests mergeRequestData = mergReqRepo.findByProcessorItemIdAndRevisionNumber(
-						gitHubProcessorItem.getId(), mergeRequests.getRevisionNumber());
-				if (mergeRequestData != null) {
-					mergeRequestData.setAuthor(mergeRequests.getAuthor());
-					updateAuthor.add(mergeRequestData);
+	private boolean checkAssigneeFlag(ProjectBasicConfig proBasicConfig,
+			ProcessorExecutionTraceLog processorExecutionTraceLog) {
+		return proBasicConfig.isSaveAssigneeDetails() && !processorExecutionTraceLog.isLastEnableAssigneeToggleState();
+	}
+
+	private void updateAssigneeForMerge(boolean assigneeFlag, GitHubProcessorItem gitHubProcessorItem,
+			List<MergeRequests> mergeRequestsList, Set<MergeRequests> unsavedMerges) {
+		Set<String> revisionNumbers = mergeRequestsList.stream().map(MergeRequests::getRevisionNumber)
+				.collect(Collectors.toSet());
+		List<MergeRequests> byProcessorItemIdAndRevisionNumberIn = mergReqRepo
+				.findByProcessorItemIdAndRevisionNumberIn(gitHubProcessorItem.getId(), revisionNumbers);
+		log.info("Found Records of Merge in db ->{}" ,byProcessorItemIdAndRevisionNumberIn.size());
+		mergeRequestsList.stream().forEach(mergeRequests -> {
+			Optional<MergeRequests> mergeRequestData = byProcessorItemIdAndRevisionNumberIn.stream().filter(
+					existing -> existing.getRevisionNumber().equalsIgnoreCase(mergeRequests.getRevisionNumber()))
+					.findFirst();
+			if (mergeRequestData.isPresent()) {
+				MergeRequests existingMR = mergeRequestData.get();
+				if (!existingMR.getState().equals(mergeRequests.getState())) {
+					mergeRequests.setId(existingMR.getId());
+					mergeRequests.setProcessorItemId(gitHubProcessorItem.getId());
+					unsavedMerges.add(mergeRequests);
 				}
-			});
-			mergReqRepo.saveAll(updateAuthor);
-		}
+				if (assigneeFlag) {
+					existingMR.setAuthor(mergeRequests.getAuthor());
+					unsavedMerges.add(existingMR);
+				}
+			} else {
+				mergeRequests.setProcessorItemId(gitHubProcessorItem.getId());
+				unsavedMerges.add(mergeRequests);
+			}
+		});
+
 	}
 
 	private GitHubProcessorItem getGitHubProcessorItem(ProcessorToolConnection tool, ObjectId processorId) {

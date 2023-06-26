@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-slim-buster
+FROM amazoncorretto:8
 
 # There are environment variables with periods in the names so change bash as default
 RUN ln -sf /bin/bash /bin/sh 
