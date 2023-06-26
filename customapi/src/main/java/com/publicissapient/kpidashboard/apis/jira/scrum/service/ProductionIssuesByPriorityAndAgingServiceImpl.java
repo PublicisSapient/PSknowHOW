@@ -116,9 +116,8 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 		});
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-        List<JiraIssue> issuesList = jiraIssueRepository.findIssuesByDateAndTypeAndStatus(
-				mapOfFilters, uniqueProjectMap, startDate, endDate, RANGE, NIN, true);
-		resultListMap.put(RANGE_TICKET_LIST, issuesList);
+		resultListMap.put(RANGE_TICKET_LIST, jiraIssueRepository.findIssuesByDateAndTypeAndStatus(
+				mapOfFilters, uniqueProjectMap, startDate, endDate, RANGE, NIN, true));
 
 		return resultListMap;
 	}

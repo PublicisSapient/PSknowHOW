@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,14 +49,6 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -85,6 +79,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 	private static final String DEFECT_LIST = "Total Defects";
 	private static final String OVERALL = "Overall";
 	private static final String PROJECT = "project";
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -320,8 +315,9 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		List<KPIExcelData> excelDataDefectsWithoutStoryLink = new ArrayList<>();
 		List<IterationKpiModalValue> testCasesWithoutStoryLinkModals = new ArrayList<>();
 		List<IterationKpiModalValue> defectWithoutStoryLinkModals = new ArrayList<>();
-		String endDate = LocalDate.now().toString();
-		String startDate = LocalDate.now().minusMonths(12).toString();
+		CustomDateRange dateRange = KpiDataHelper.getMonthsForPastDataHistory(15);
+		String startDate = dateRange.getStartDate().format(DATE_FORMATTER);
+		String endDate = dateRange.getEndDate().format(DATE_FORMATTER);
 		Node latestNode = leafNodeList.get(0);
 		Map<String, Object> returnMap = fetchKPIDataFromDb(leafNodeList, startDate, endDate, kpiRequest);
 
