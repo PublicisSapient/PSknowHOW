@@ -1481,15 +1481,19 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			Set<String> defectStorySet = new HashSet<>();
-			for (IssueLink issueLink : issue.getIssueLinks()) {
-				if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())
-						&& jiraProcessorConfig.getExcludeLinks().stream()
-								.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
-					break;
-				}
-				defectStorySet.add(issueLink.getTargetIssueKey());
-			}
+			excludeLinks(issue, defectStorySet);
 			jiraIssue.setDefectStoryID(defectStorySet);
+		}
+	}
+
+	private void excludeLinks(Issue issue, Set<String> defectStorySet) {
+		if(CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())) {
+			for (IssueLink issueLink : issue.getIssueLinks()) {
+				if (!jiraProcessorConfig.getExcludeLinks().stream()
+						.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
+					defectStorySet.add(issueLink.getTargetIssueKey());
+				}
+			}
 		}
 	}
 
