@@ -172,7 +172,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 				|| projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.BITBUCKET)) {
 			Connection connection = getConnection(projectToolConfig.getConnectionId());
 			projectToolConfig.setToolName(CommonConstant.DEBBIE_TOOLS);
-			List<ProjectToolConfig> repoConfigList = hasDebbieTool(projectToolConfig.getBasicProjectConfigId(), connection,
+			List<ProjectToolConfig> repoConfigList = getDebbieTool(projectToolConfig.getBasicProjectConfigId(), connection,
 					CommonConstant.DEBBIE_TOOLS);
 			List<String> branchList = repoConfigList.stream().map(ProjectToolConfig::getBranch).collect(Collectors.toList());
 			projectToolConfig.setIsNew(CollectionUtils.isEmpty(repoConfigList));
@@ -442,7 +442,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		return CollectionUtils.isNotEmpty(tools);
 	}
 
-	private List<ProjectToolConfig> hasDebbieTool(ObjectId basicProjectConfigId, Connection connection, String type) {
+	private List<ProjectToolConfig> getDebbieTool(ObjectId basicProjectConfigId, Connection connection, String type) {
 		List<ProjectToolConfig> tools = toolRepository.findByToolNameAndBasicProjectConfigId(type,
 				basicProjectConfigId);
 		return tools.stream().filter(projectToolConfig -> projectToolConfig.getConnectionId() == connection.getId())
