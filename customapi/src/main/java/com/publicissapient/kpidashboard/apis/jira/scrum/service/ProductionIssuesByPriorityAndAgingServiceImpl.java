@@ -99,7 +99,6 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			List<String> defectList = new ArrayList<>();
 			List<String> productionDefectAgeingTypeList = new ArrayList<>();
 
 			if (null != fieldMapping) {
