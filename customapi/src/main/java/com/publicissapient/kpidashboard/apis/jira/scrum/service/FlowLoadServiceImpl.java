@@ -119,7 +119,7 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
 
-		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, startDate.toString(), endDate.toString(), kpiRequest);
+		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, "","", kpiRequest);
 
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = (List<JiraIssueCustomHistory>) resultMap
 				.get(ISSUE_HISTORY);

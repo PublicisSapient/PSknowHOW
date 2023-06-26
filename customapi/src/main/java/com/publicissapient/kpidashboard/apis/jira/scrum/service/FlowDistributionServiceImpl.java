@@ -67,8 +67,6 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	// storyType have more than two word the stackChart hover fn break
