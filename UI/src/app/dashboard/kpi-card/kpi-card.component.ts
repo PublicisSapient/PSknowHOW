@@ -46,7 +46,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
  sprintDetailsList : Array<any>;
  colorCssClassArray = ['sprint-hover-project1','sprint-hover-project2','sprint-hover-project3','sprint-hover-project4','sprint-hover-project5','sprint-hover-project6'];
  displayConfigModel = false;
- fieldMappingMetaData = {};
+ fieldMappingMetaData = [];
  disableSave = false
  fieldMappingConfig = [];
  selectedFieldMapping = []
@@ -219,6 +219,13 @@ export class KpiCardComponent implements OnInit, OnDestroy {
               this.displayConfigModel = true;
             } else {
               alert("NO mapping found")
+            }
+          });
+          this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id).subscribe(Response => {
+            if (Response.success) {
+              this.fieldMappingMetaData = Response.data;
+            } else {
+              this.fieldMappingMetaData = [];
             }
           });
         } else {
