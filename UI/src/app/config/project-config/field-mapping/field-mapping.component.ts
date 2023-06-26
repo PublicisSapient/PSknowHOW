@@ -105,7 +105,9 @@ export class FieldMappingComponent implements OnInit {
 
   getKPIFieldMappingRelationships() {
     this.http.getKPIFieldMappingConfig('kpi0').subscribe(response => {
-        this.fieldMappingConfig = response;
+      if(response?.fieldConfiguration){
+        this.fieldMappingConfig = response.fieldConfiguration;
+      }
     });
   }
 
