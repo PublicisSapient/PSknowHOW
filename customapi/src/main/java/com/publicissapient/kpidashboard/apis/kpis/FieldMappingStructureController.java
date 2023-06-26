@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.kpis;
 
 import com.publicissapient.kpidashboard.apis.model.FieldMappingStructureResponse;
 import com.publicissapient.kpidashboard.apis.model.KPIFieldMappingResponse;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -47,8 +48,9 @@ public class FieldMappingStructureController {
 		return kPIHelperService.fetchKpiFieldMappingList();
 	}
 
-	@RequestMapping(value = "/{kpiId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiFieldMappingData(@PathVariable String kpiId) {
-		return kPIHelperService.fetchFieldMappingStructureByKpiFieldMappingData(kpiId);
+	@RequestMapping(value = "{projectBasicConfigId}/{kpiId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiFieldMappingData(@PathVariable String projectBasicConfigId,@PathVariable String kpiId) {
+		projectBasicConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectBasicConfigId);
+		return kPIHelperService.fetchFieldMappingStructureByKpiFieldMappingData(projectBasicConfigId,kpiId);
 	}
 }

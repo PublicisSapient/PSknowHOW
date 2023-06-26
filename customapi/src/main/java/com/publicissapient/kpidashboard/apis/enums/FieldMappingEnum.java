@@ -27,7 +27,7 @@ import java.util.List;
 @SuppressWarnings("java:S1192")
 public enum FieldMappingEnum {
 
-	KPI0("Processor", "",
+	KPI0("Processor", KPISource.JIRA.name(),
 			Arrays.asList("jiradefecttype", "jiraIssueTypeNames", "jiraIterationCompletionTypeCustomField",
 					"jiraIterationCompletionStatusCustomField", "estimationCriteria", "jiraStoryPointsCustomField",
 					"jiraDod", "jiraBugRaisedByQACustomField", "jiraBugRaisedByQAIdentification",

@@ -966,7 +966,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "jiraDefectRejectionStatusAVR",
     "fieldLabel": "Defect Rejection Status",
-    "fieldType": "chips",
+    "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
@@ -976,7 +976,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "jiraDefectRejectionStatusDC",
     "fieldLabel": "Defect Rejection Status",
-    "fieldType": "chips",
+    "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
@@ -986,7 +986,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "jiraDefectRejectionStatusDRE",
     "fieldLabel": "Defect Rejection Status",
-    "fieldType": "chips",
+    "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
@@ -996,7 +996,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "jiraDefectRejectionStatusDRR",
     "fieldLabel": "Defect Rejection Status",
-    "fieldType": "chips",
+    "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
@@ -1006,7 +1006,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "jiraDefectRejectionStatusDSR",
     "fieldLabel": "Defect Rejection Status",
-    "fieldType": "chips",
+    "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
@@ -1016,7 +1016,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "jiraDefectRejectionStatusFTPR",
     "fieldLabel": "Defect Rejection Status",
-    "fieldType": "chips",
+    "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
@@ -1026,7 +1026,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "jiraDefectRejectionStatusIFTPR",
     "fieldLabel": "Defect Rejection Status",
-    "fieldType": "chips",
+    "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
@@ -1036,7 +1036,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "jiraDefectRejectionStatusQS",
     "fieldLabel": "Defect Rejection Status",
-    "fieldType": "chips",
+    "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
@@ -1046,7 +1046,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "jiraDefectRejectionStatusRCA",
     "fieldLabel": "Defect Rejection Status",
-    "fieldType": "chips",
+    "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
@@ -1056,7 +1056,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "jiraDefectRejectionStatusDIR",
     "fieldLabel": "Defect Rejection Status",
-    "fieldType": "chips",
+    "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
@@ -1066,7 +1066,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "jiraDefectRejectionStatusQADD",
     "fieldLabel": "Defect Rejection Status",
-    "fieldType": "chips",
+    "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
@@ -1356,7 +1356,7 @@ db.getCollection('field_mapping_structure').insert(
   {
     "fieldName": "jiraDefectCreatedStatus",
     "fieldLabel": "Defect Created Status",
-    "fieldType": "chips",
+    "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {

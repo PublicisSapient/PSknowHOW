@@ -126,7 +126,7 @@ public class FTPRServiceImplTest {
 		fieldMapping.setJiraDefectRejectionStatusIFTPR("");
 		fieldMapping.setResolutionTypeForRejectionIFTPR(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
 		fieldMapping.setJiraIssueDeliverdStatusFTPR(Arrays.asList("Closed"));
-		fieldMapping.setDefectPriority(Arrays.asList("p2", "p1"));
+		fieldMapping.setDefectPriorityIFTPR(Arrays.asList("p2", "p1"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 

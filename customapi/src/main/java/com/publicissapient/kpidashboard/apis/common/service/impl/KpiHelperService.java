@@ -36,6 +36,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -118,6 +120,9 @@ public class KpiHelperService { // NOPMD
 	private static final String ISSUE_DATA = "issueData";
 	private static final String FIELD_STATUS = "status";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+	private static final String TOOL_JIRA = ProcessorConstants.JIRA;
+
 	@Autowired
 	JiraServiceR jiraKPIService;
 	@Autowired
@@ -1428,7 +1433,7 @@ public class KpiHelperService { // NOPMD
 		return kpiFieldMappingResponse;
 	}
 
-	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiFieldMappingData(String kpiId) {
+	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiFieldMappingData(String projectBasicConfigId,String kpiId) {
 		FieldMappingStructureResponse fieldMappingStructureResponse = null;
 		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
 		if(CollectionUtils.isNotEmpty(fieldMappingStructureList)) {
@@ -1436,17 +1441,42 @@ public class KpiHelperService { // NOPMD
 			try {
 				List<String> fieldList = FieldMappingEnum.valueOf(kpiId.toUpperCase()).getFields();
 				String kpiSource = FieldMappingEnum.valueOf(kpiId.toUpperCase()).getKpiSource();
+				String toolName = capitalizeWords(kpiSource);
+				List<ProjectToolConfig> projectToolConfig=configHelperService.getProjectToolConfigMap().get(new ObjectId(projectBasicConfigId)).get(toolName);
+				ObjectId projectToolConfigId=projectToolConfig.stream().filter(t->t.getBasicProjectConfigId().toString().equals(projectBasicConfigId)).findFirst().get().getId();
 				fieldMappingStructureResponse.setFieldConfiguration(fieldMappingStructureList.stream().filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList()));
 				fieldMappingStructureResponse.setKpiSource(kpiSource);
+				fieldMappingStructureResponse.setProjectToolConfigId(projectToolConfigId.toString());
 			}
 			catch (Exception ex){
 				fieldMappingStructureResponse.setFieldConfiguration(new ArrayList<>());
 				fieldMappingStructureResponse.setKpiSource(null);
+				fieldMappingStructureResponse.setProjectToolConfigId(null);
 			}
 
 		}
 		return fieldMappingStructureResponse;
 	}
+
+	public static String capitalizeWords(String input) {
+		if (input == null || input.isEmpty()) {
+			return input;
+		}
+
+		StringBuilder result = new StringBuilder();
+		String[] words = input.trim().split("\\s+");
+
+		for (String word : words) {
+			if (!word.isEmpty()) {
+				String firstLetter = word.substring(0, 1).toUpperCase();
+				String restOfWord = word.substring(1).toLowerCase();
+				result.append(firstLetter).append(restOfWord).append(" ");
+			}
+		}
+
+		return result.toString().trim();
+	}
+
 
 	public boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue,
 			List<JiraIssueCustomHistory> storiesHistory,List<String> statusForDevelopemnt) {
