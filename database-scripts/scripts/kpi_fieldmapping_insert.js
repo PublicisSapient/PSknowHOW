@@ -143,13 +143,6 @@ db.getCollection('kpi_fieldmapping').insert(
         fieldNames : {'Issue Types Mapping' : ['jiraSprintCapacityIssueType'] }
       },
       {
-        kpiId: 'kpi83',
-        kpiName: 'Average Resolution Time',
-		kpiSource: 'Jira',
-        type: ['Scrum'],
-        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus','jiraStatusForDevelopment'], 'Issue Types Mapping' : ['jiraIssueTypeNames'], 'Defects Mapping' : ['jiradefecttype'] }
-      },
-      {
         kpiId: 'kpi84',
         type: ['Scrum'],
         kpiName: 'Mean Time To Merge',

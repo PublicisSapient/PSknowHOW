@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -38,7 +39,8 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
@@ -48,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
@@ -658,6 +661,71 @@ public final class KpiDataHelper {
 	public static Map<String, IterationKpiModalValue> createMapOfModalObject(List<JiraIssue> jiraIssueList) {
 		return jiraIssueList.stream()
 				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IterationKpiModalValue()));
+	}
+
+	/**
+	 * To create Map of Modal Object
+	 *
+	 * @param jiraIssueCustomHistories
+	 * @param cycleTimeList
+	 * @return
+	 */
+	public static Map<String, IterationKpiModalValue> createMapOfModalObjectFromJiraHistory(
+			List<IssueBacklogCustomHistory> jiraIssueCustomHistories, List<CycleTimeValidationData> cycleTimeList) {
+		Map<String, IterationKpiModalValue> dataMap = new HashMap<>();
+		for (IssueBacklogCustomHistory customHistory : jiraIssueCustomHistories) {
+			Optional<CycleTimeValidationData> cycleTimeValidationDataOptional = cycleTimeList.stream()
+					.filter(cyc -> cyc.getIssueNumber().equalsIgnoreCase(customHistory.getStoryID())).findFirst();
+			if (cycleTimeValidationDataOptional.isPresent()) {
+				CycleTimeValidationData cycleTimeValidationData = cycleTimeValidationDataOptional.get();
+				IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+				iterationKpiModalValue.setIssueId(customHistory.getStoryID());
+				iterationKpiModalValue.setIssueURL(customHistory.getUrl());
+				iterationKpiModalValue.setDescription(customHistory.getDescription());
+				iterationKpiModalValue.setIntakeToDor(getIntakeToDorTime(cycleTimeValidationData));
+				iterationKpiModalValue.setDorToDod(getDorToDodTime(cycleTimeValidationData));
+				iterationKpiModalValue.setDodToLive(getDodToLiveTime(cycleTimeValidationData));
+				iterationKpiModalValue.setLeadTime(getIntakeToLiveTime(cycleTimeValidationData));
+				dataMap.put(customHistory.getStoryID(), iterationKpiModalValue);
+			}
+		}
+		return dataMap;
+	}
+
+	private static String getIntakeToDorTime(CycleTimeValidationData cycleTimeValidationData) {
+		if (cycleTimeValidationData.getIntakeDate() != null && cycleTimeValidationData.getDorDate() != null) {
+			Long diff = cycleTimeValidationData.getDorDate().getMillis()
+					- cycleTimeValidationData.getIntakeDate().getMillis();
+			return String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
+		}
+		return "NA";
+	}
+
+	private static String getDorToDodTime(CycleTimeValidationData cycleTimeValidationData) {
+		if (cycleTimeValidationData.getDorDate() != null && cycleTimeValidationData.getDodDate() != null) {
+			Long diff = cycleTimeValidationData.getDodDate().getMillis()
+					- cycleTimeValidationData.getDorDate().getMillis();
+			return String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
+		}
+		return "NA";
+	}
+
+	private static String getDodToLiveTime(CycleTimeValidationData cycleTimeValidationData) {
+		if (cycleTimeValidationData.getDodDate() != null && cycleTimeValidationData.getLiveDate() != null) {
+			Long diff = cycleTimeValidationData.getLiveDate().getMillis()
+					- cycleTimeValidationData.getDodDate().getMillis();
+			return String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
+		}
+		return "NA";
+	}
+
+	private static String getIntakeToLiveTime(CycleTimeValidationData cycleTimeValidationData) {
+		if (cycleTimeValidationData.getIntakeDate() != null && cycleTimeValidationData.getLiveDate() != null) {
+			Long diff = cycleTimeValidationData.getLiveDate().getMillis()
+					- cycleTimeValidationData.getIntakeDate().getMillis();
+			return String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
+		}
+		return "NA";
 	}
 
 }

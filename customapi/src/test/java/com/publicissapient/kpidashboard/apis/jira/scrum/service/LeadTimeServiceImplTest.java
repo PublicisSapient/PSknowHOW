@@ -15,6 +15,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.data.IssueBacklogCustomHistoryDataFactory;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepositoryImpl;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -50,6 +54,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LeadTimeServiceImplTest {
@@ -62,7 +67,8 @@ public class LeadTimeServiceImplTest {
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
-	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	private IssueBacklogCustomHistoryRepositoryImpl issueBacklogCustomHistoryRepository;
+
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -86,6 +92,7 @@ public class LeadTimeServiceImplTest {
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+	private List<IssueBacklogCustomHistory> issueBacklogCustomHistories = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -117,8 +124,10 @@ public class LeadTimeServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
 		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
+		IssueBacklogCustomHistoryDataFactory issueBacklogCustomHistoryDataFactory = IssueBacklogCustomHistoryDataFactory.newInstance();
 
 		jiraIssueCustomHistories = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
+		issueBacklogCustomHistories = issueBacklogCustomHistoryDataFactory.getIssueBacklogCustomHistory();
 
 		kpiWiseAggregation.put("kpi3", "percentile");
 
@@ -131,11 +140,6 @@ public class LeadTimeServiceImplTest {
 
 		kpiWiseAggregation.put(LEAD_TIME, "average");
 
-	}
-
-	@After
-	public void cleanup() {
-		jiraIssueCustomHistoryRepository.deleteAll();
 	}
 
 	private void setTreadValuesDataCount() {
@@ -183,12 +187,12 @@ public class LeadTimeServiceImplTest {
 				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		String endDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
-				.thenReturn(jiraIssueCustomHistories);
+		when(issueBacklogCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(any(), any(), any(), any()))
+				.thenReturn(issueBacklogCustomHistories);
 
 		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
-		List<JiraIssueCustomHistory> dataMap = (List<JiraIssueCustomHistory>) resultListMap.get(STORY_HISTORY_DATA);
+		List<IssueBacklogCustomHistory> dataMap = (List<IssueBacklogCustomHistory>) resultListMap.get(STORY_HISTORY_DATA);
 		assertThat("Lead Time Data :", dataMap.size(), equalTo(92));
 	}
 
@@ -196,39 +200,38 @@ public class LeadTimeServiceImplTest {
 	public void testGetDorToDod() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
-				.thenReturn(jiraIssueCustomHistories);
-		when(configHelperService.calculateCriteria()).thenReturn(kpiWiseAggregation);
+		when(issueBacklogCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(any(), any(), any(), any()))
+				.thenReturn(issueBacklogCustomHistories);
 		String kpiRequestTrackerId = "Jira-Excel-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(leadTimeService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 
-		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-
 		try {
 			KpiElement kpiElement = leadTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			List<DataCountGroup> dataCountGroups = (List<DataCountGroup>) kpiElement.getTrendValueList();
-			dataCountGroups.stream().forEach(cycle -> {
-				String cycleFilter = cycle.getFilter();
+			DataCount dataCountGroups = (DataCount) kpiElement.getTrendValueList();
+
+//			dataCountGroups.stream().forEach(cycle -> {
+			List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) dataCountGroups.getValue();
+			iterationKpiValues.stream().forEach(iteration -> {
+				String cycleFilter = iteration.getFilter1();
 				switch (cycleFilter) {
-				case LEAD_TIME:
-					assertThat("LeadTime :", cycle.getValue().size(), equalTo(1));
-					break;
-				case INTAKE_TO_DOR:
-					assertThat("Intake to DoR Value :", cycle.getValue().size(), equalTo(1));
-					break;
-				case DOR_TO_DOD:
-					assertThat("DoR to DoD Value :", cycle.getValue().size(), equalTo(1));
-					break;
-				case DOD_TO_LIVE:
-					assertThat("DoD to Live Value :", cycle.getValue().size(), equalTo(1));
-					break;
-				default:
-					break;
+					case LEAD_TIME:
+						assertThat("LeadTime :", iteration.getData().size(), equalTo(2));
+						break;
+					case INTAKE_TO_DOR:
+						assertThat("Intake to DoR Value :", iteration.getData().size(), equalTo(2));
+						break;
+					case DOR_TO_DOD:
+						assertThat("DoR to DoD Value :", iteration.getData().size(), equalTo(2));
+						break;
+					case DOD_TO_LIVE:
+						assertThat("DoD to Live Value :", iteration.getData().size(), equalTo(2));
+						break;
+					default:
+						break;
 				}
 			});
 		} catch (ApplicationException enfe) {
