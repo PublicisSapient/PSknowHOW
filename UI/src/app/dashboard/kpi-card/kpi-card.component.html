@@ -149,9 +149,10 @@
  </p-overlayPanel>
 
  <p-dialog [header]="kpiData?.kpiName"  [(visible)]="displayConfigModel" [modal]="true" [draggable]="true" [resizable]="true" styleClass="field-mapping">
+    <hr>
     <ng-template pTemplate="content" >
        <app-field-mapping-form #fieldMappingForm
-            *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0 ; else loader"
+            *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0 && !loading"
             [disableSave]="disableSave" 
             [fieldMappingMetaData]="fieldMappingMetaData" 
             [fieldMappingConfig]="fieldMappingConfig" 
@@ -159,9 +160,13 @@
             [selectedConfig]="selectedConfig"
             [selectedToolConfig]="selectedToolConfig"></app-field-mapping-form>
       </ng-template>
-      <ng-template #loader>
+      <ng-template pTemplate="footer"></ng-template>
+      <ng-container *ngIf=" noData && !loading">
+        <h2 class="p-text-center">No Configuration Available</h2>
+      </ng-container>
+      <ng-container *ngIf="loading">
         <div class="overlay">
             <div class="loading-img"></div>
         </div>
-    </ng-template>
+    </ng-container>
  </p-dialog>

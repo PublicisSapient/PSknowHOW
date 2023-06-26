@@ -276,18 +276,15 @@ private setting = {
   }
 
   export() {
-    // this.fieldMappingSubmitted = true;
-    // return if form is invalid
     if (this.form.invalid) {
       return;
     }
 
     const submitData = {};
     for (const obj in this.form.value) {
-      submitData[obj] = this.form[obj];
+      submitData[obj] = this.form.value[obj];
     }
-
-    this.handleAdditionalFilters(submitData);
+    // this.handleAdditionalFilters(submitData);
 
     this.dyanmicDownloadByHtmlTag({
       fileName: 'mappings.json',

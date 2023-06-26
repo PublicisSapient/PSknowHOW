@@ -26,7 +26,7 @@
         <button pButton pRipple type="button" label="Reset" class="p-button-raised" (click)="resetRadioButton()"></button>
     </div>
 
-    <div *ngSwitchCase="'multiSelect'">
+    <div *ngSwitchCase="'multiselect'">
         <p-multiSelect id="fieldConfig?.fieldName" [options]="fieldConfig.options" placeholder="Select Priority"
             [style]="{'max-width':'initial','width':'calc(60vw + 42px)'}" [showHeader]="false" [(ngModel)]="value" (onChange)="setValue()">
         </p-multiSelect>
