@@ -150,6 +150,9 @@
     "productionDefectIdentifier": "",
     "productionDefectValue": [],
     "productionDefectComponentValue": "",
+    "productionDefectsAgeingIssueType" : [
+      "Defect"
+    ],
     "jiraTestCaseType": [
       "Defect"
     ],
