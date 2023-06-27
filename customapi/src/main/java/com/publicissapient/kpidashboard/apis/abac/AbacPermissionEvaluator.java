@@ -23,8 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
@@ -34,9 +33,9 @@ import com.publicissapient.kpidashboard.apis.abac.policy.PolicyEnforcement;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 
+@Slf4j
 @Component
 public class AbacPermissionEvaluator implements PermissionEvaluator {
-	private static Logger logger = LoggerFactory.getLogger(AbacPermissionEvaluator.class);
 
 	@Autowired
 	PolicyEnforcement policy;
@@ -56,7 +55,7 @@ public class AbacPermissionEvaluator implements PermissionEvaluator {
 
 		environment.put("time", new Date());
 
-		logger.debug("hasPersmission({}, {}, {})", user, targetDomainObject, permission);
+		log.debug("hasPersmission({}, {}, {})", user, targetDomainObject, permission);
 		return policy.check(projectAccessManager, user, targetDomainObject, permission, environment);
 	}
 
