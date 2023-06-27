@@ -24,7 +24,6 @@ package com.publicissapient.kpidashboard.apis.common.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.common.service.VersionMetadataService;
 import com.publicissapient.kpidashboard.apis.model.VersionDetails;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Rest controller to handle version related requests.

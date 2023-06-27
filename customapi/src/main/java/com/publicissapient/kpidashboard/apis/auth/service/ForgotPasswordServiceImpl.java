@@ -30,7 +30,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,8 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * This class managed all the services for forgot password and reset new
  * password
@@ -55,7 +56,7 @@ import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
 @Slf4j
 @Service
 public class ForgotPasswordServiceImpl implements ForgotPasswordService {
-	
+
 	private static final String FORGOT_PASSWORD_TEMPLATE = "Forgot_Password_Template";
 	/*
 	 * validatePath

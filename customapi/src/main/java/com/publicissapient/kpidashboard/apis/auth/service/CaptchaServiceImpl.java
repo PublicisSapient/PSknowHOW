@@ -30,7 +30,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.imageio.ImageIO;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +41,7 @@ import cn.apiclub.captcha.Captcha;
 import cn.apiclub.captcha.Captcha.Builder;
 import cn.apiclub.captcha.backgrounds.FlatColorBackgroundProducer;
 import cn.apiclub.captcha.text.producer.DefaultTextProducer;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 

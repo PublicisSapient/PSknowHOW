@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +42,8 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Rest Controller to handle bit bucket specific requests.

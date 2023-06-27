@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +52,8 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * This controller class handles Jira KPIs request. It handles all KPIs of Scrum
  * and Kanban.
@@ -64,7 +65,6 @@ import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeRes
 @RestController
 public class JiraController {
 
-	
 	@Autowired
 	private JiraServiceR jiraService;
 

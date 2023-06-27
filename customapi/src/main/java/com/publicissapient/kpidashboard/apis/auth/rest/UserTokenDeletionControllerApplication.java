@@ -23,7 +23,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import javax.servlet.http.HttpServletRequest;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +34,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Rest controller to handle logout requests.
  * 
@@ -43,7 +44,7 @@ import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 @Slf4j
 @RestController
 public class UserTokenDeletionControllerApplication {
-	
+
 	private final UserTokenDeletionService userTokenDeletionService;
 	@Autowired
 	private CookieUtil cookieUtil;

@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +49,8 @@ import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsToolConfigSe
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller for all jenkins related api.

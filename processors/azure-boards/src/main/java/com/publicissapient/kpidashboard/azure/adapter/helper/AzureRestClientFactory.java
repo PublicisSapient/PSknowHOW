@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.azure.adapter.helper;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -30,6 +29,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.azure.config.AzureProcessorConfig;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component

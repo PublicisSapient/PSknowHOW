@@ -142,7 +142,7 @@ public class GitHubClientImpl implements GitHubClient {
 			throw new FetchingCommitException("Failed to fetch commits", ex);
 		}
 		gitHubProcessorItem.setUpdatedTime(System.currentTimeMillis());
-		log.info("Commits Recieved From Server for project {}->{}" ,proBasicConfig.getProjectName(),commits.size() );
+		log.info("Commits Recieved From Server for project {}->{}", proBasicConfig.getProjectName(), commits.size());
 		return commits;
 	}
 
@@ -211,7 +211,8 @@ public class GitHubClientImpl implements GitHubClient {
 			throw new FetchingCommitException("Failed to fetch merge request", ex);
 		}
 		gitHubProcessorItem.setUpdatedTime(System.currentTimeMillis());
-		log.info("Merge Requests From Server for project {}->{}" ,proBasicConfig.getProjectName(),mergeRequests.size());
+		log.info("Merge Requests From Server for project {}->{}", proBasicConfig.getProjectName(),
+				mergeRequests.size());
 		return mergeRequests;
 	}
 

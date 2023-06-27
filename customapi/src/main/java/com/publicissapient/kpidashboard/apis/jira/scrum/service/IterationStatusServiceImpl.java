@@ -75,7 +75,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
-	
+
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 
 	private static final String OPEN_ISSUES = "openIssuesCausingDelay";

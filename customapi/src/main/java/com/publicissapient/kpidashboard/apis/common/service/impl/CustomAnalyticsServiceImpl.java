@@ -57,7 +57,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final Object USER_AUTHORITIES = "authorities";
-	
+
 	@Autowired
 	UserAuthorizedProjectsService userAuthorizedProjectsService;
 	@Autowired

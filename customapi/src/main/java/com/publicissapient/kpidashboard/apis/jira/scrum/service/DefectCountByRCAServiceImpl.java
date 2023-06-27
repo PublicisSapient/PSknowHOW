@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +47,8 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -283,8 +284,8 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 					// filterDataList will consist of iterationKpiValue for all the available
 					// priorities such as P1, P2, P3, P4, Overall etc.
 					kpiElement.setTrendValueList(sortedFilterDataList);
-					log.info("DefectCountByRCAServiceImpl -> request id : {} total jira Issues : {}",
-							requestTrackerId, overAllRCAIssueCount.get(0));
+					log.info("DefectCountByRCAServiceImpl -> request id : {} total jira Issues : {}", requestTrackerId,
+							overAllRCAIssueCount.get(0));
 				}
 			}
 		}

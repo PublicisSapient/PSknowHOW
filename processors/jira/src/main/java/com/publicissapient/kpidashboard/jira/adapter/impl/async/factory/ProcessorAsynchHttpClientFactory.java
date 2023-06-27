@@ -28,8 +28,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
 
-import lombok.extern.slf4j.Slf4j;
-
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.httpclient.apache.httpcomponents.DefaultHttpClientFactory;
 import com.atlassian.httpclient.api.HttpClient;
@@ -42,6 +40,8 @@ import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.sal.api.UrlMode;
 import com.atlassian.sal.api.executor.ThreadLocalContextManager;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFactory {

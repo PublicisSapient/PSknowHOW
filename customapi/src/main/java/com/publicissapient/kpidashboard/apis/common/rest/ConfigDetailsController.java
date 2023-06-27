@@ -23,7 +23,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import javax.servlet.http.HttpServletRequest;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +32,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.apis.common.service.ConfigDetailService;
 import com.publicissapient.kpidashboard.apis.model.ConfigDetails;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Rest controller to handle configuration properties
  */
 @Slf4j
 @RestController
 public class ConfigDetailsController {
-	
+
 	private final ConfigDetailService configDetailService;
 
 	@Autowired

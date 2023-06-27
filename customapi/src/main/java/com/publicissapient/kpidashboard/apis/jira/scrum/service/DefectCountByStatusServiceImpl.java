@@ -34,7 +34,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +65,8 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -222,8 +223,7 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 				Map<String, Map<String, List<JiraIssue>>> priorityWiseStatusList = getPriorityWiseStatusList(
 						allCompletedDefects, createDuringIteration);
 				List<Integer> overAllRCAIssueCount = Arrays.asList(0);
-				log.info("DefectCountByStatusServiceImpl -> priorityWiseStatusList ->  : {}",
-						priorityWiseStatusList);
+				log.info("DefectCountByStatusServiceImpl -> priorityWiseStatusList ->  : {}", priorityWiseStatusList);
 				// filterDataList will consist of IterationKpiValue which will be set for all
 				// priorities
 				List<IterationKpiValue> filterDataList = new ArrayList<>();

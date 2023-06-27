@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
@@ -32,6 +31,8 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.abac.policy.PolicyEnforcement;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component

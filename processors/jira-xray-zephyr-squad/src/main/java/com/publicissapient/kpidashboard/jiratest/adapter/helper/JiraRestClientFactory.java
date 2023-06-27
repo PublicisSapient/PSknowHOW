@@ -33,7 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +52,9 @@ import com.publicissapient.kpidashboard.jiratest.adapter.impl.async.factory.Proc
 import com.publicissapient.kpidashboard.jiratest.config.JiraTestProcessorConfig;
 import com.publicissapient.kpidashboard.jiratest.model.JiraInfo;
 import com.publicissapient.kpidashboard.jiratest.oauth.JiraOAuthClient;
+
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @Component
 public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClient> {

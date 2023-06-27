@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CommentsServiceImpl implements CommentsService {
 
 	public static final String TIME_FORMAT = "dd-MMM-YYYY";
-	
+
 	@Autowired
 	private KpiCommentsRepository kpiCommentsRepository;
 

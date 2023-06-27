@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -50,6 +49,8 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * open tickets till now from past 15 months count based on x Axis values and
  * did not Works any date filters on kanban
@@ -59,7 +60,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
 @Slf4j
 @Component
 public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
-	
+
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private static final String RANGE = "range";

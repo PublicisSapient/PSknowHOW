@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -52,6 +51,8 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectToo
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Helper class for configuration
  * 
@@ -60,7 +61,7 @@ import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBo
 @Slf4j
 @Service
 public class ConfigHelperService {
-	
+
 	private final Map<ObjectId, Map<String, List<Tool>>> toolItemMap = new HashMap<>();
 	@Autowired
 	CacheService cacheService;

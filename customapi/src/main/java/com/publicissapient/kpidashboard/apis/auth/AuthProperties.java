@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -31,6 +30,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class maps authentication properties to object

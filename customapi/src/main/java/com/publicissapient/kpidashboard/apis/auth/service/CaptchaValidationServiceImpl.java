@@ -25,10 +25,11 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.util.AESEncryption;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Thi service validates captcha input text with the actual result
@@ -39,7 +40,6 @@ import com.publicissapient.kpidashboard.apis.util.AESEncryption;
 @Slf4j
 @Service
 public class CaptchaValidationServiceImpl implements CaptchaValidationService {
-
 
 	/*
 	 * (non-Javadoc)

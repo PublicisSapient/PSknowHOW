@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.appsetting.rest;
 import java.util.List;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,6 +34,8 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.EditKpiConfigSer
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataValue;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller for edit KPI Config.

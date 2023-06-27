@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
@@ -37,6 +36,8 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * This class is responsible to send message event to kafka topic
  *
@@ -45,7 +46,7 @@ import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
 @Slf4j
 @Component
 public class NotificationEventProducer {
-	
+
 	private static final String SUCCESS_MESSAGE = "Mail message to topic sent successfully";
 	private static final String FAILURE_MESSAGE = "Error Sending the mail message to topic and the exception is: ";
 	@Autowired

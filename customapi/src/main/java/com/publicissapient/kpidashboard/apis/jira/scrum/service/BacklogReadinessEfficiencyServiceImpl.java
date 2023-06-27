@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -59,6 +58,8 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Jira service class to fetch backlog readiness kpi details
@@ -196,8 +197,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 		List<IssueBacklog> allIssues = (List<IssueBacklog>) resultMap.get(ISSUES);
 		if (CollectionUtils.isNotEmpty(allIssues)) {
-			log.info("Backlog items ready for development -> request id : {} total jira Issues : {}",
-					requestTrackerId, allIssues.size());
+			log.info("Backlog items ready for development -> request id : {} total jira Issues : {}", requestTrackerId,
+					allIssues.size());
 			List<IssueBacklogCustomHistory> historyForIssues = (List<IssueBacklogCustomHistory>) resultMap.get(HISTORY);
 			Map<String, Map<String, List<IssueBacklog>>> typeAndPriorityWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(IssueBacklog::getTypeName, Collectors.groupingBy(IssueBacklog::getPriority)));

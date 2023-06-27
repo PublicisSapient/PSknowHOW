@@ -21,13 +21,14 @@ package com.publicissapient.kpidashboard.apis.auth.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.auth.service.CaptchaService;
 import com.publicissapient.kpidashboard.apis.model.CustomCaptcha;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This controller generates a Captcha in a JSOn response

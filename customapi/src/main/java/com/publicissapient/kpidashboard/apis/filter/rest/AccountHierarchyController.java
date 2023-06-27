@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.filter.rest;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +32,8 @@ import com.publicissapient.kpidashboard.apis.filter.factory.FilterServiceFactory
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyService;
 import com.publicissapient.kpidashboard.apis.model.AccountFilterRequest;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * REST service managing all the aggregated requests.
