@@ -1002,12 +1002,6 @@ db.getCollection('metadata_identifier').remove({});
                                               "value": [
                                                 "UAT Defect"
                                               ]
-                                            },
-                                            {
-                                               "type": "productionDefectsAgeingIssueType",
-                                                "value": [
-                                                   "Defect"
-                                                ]
                                             }
                                           ],
                                           "customfield": [
