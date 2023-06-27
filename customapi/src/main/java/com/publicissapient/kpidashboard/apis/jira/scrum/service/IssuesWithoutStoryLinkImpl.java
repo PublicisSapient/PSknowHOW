@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -114,8 +113,6 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 		DataCount trendValue = new DataCount();
-		Node root = treeAggregatorDetail.getRoot();
-		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(PROJECT);
 		projectWiseLeafNodeValue(trendValue, projectList, kpiElement, kpiRequest);
 		return kpiElement;
@@ -302,22 +299,16 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-		List<IssueBacklog> backlogstoryList = issueBacklogRepository.findIssuesBySprintAndType(mapOfFilters,
-				uniqueProjectMap);
 		List<JiraIssue> jiraStoryList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
-		List<IssueBacklog> storyList = ListUtils.union(backlogstoryList,
-				kpiHelperService.convertJiraIssueToBacklog(jiraStoryList));
-		List<String> storyIssueNumberList = storyList.stream().map(IssueBacklog::getNumber)
+		List<String> storyIssueNumberList = jiraStoryList.stream().map(JiraIssue::getNumber)
 				.collect(Collectors.toList());
 
 		resultListMap.put(STORY_LIST, storyIssueNumberList);
 		defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
 
-		resultListMap.put(DEFECT_LIST, ListUtils.union(
-				issueBacklogRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn),
-				kpiHelperService.convertJiraIssueToBacklog(
-						jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn))));
+		resultListMap.put(DEFECT_LIST, kpiHelperService.convertJiraIssueToBacklog(
+						jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn)));
 		return resultListMap;
 
 	}

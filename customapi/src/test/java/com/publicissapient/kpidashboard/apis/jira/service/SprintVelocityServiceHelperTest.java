@@ -15,7 +15,6 @@ import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
@@ -47,28 +46,25 @@ public class SprintVelocityServiceHelperTest {
 
 	@Test
 	public void testCalculateSprintVelocityValue() {
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
-		Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
-		sprintVelocityServiceHelper.getSprintIssuesForProject(storyList, sprintWiseIssues, sprintDetails,
-				currentSprintLeafVelocityMap);
+		Map<Pair<String, String>, Set<JiraIssue>> currentSprintLeafVelocityMap = new HashMap<>();
+		sprintVelocityServiceHelper.getSprintIssuesForProject(storyList, sprintDetails, currentSprintLeafVelocityMap);
 		Assert.assertTrue(currentSprintLeafVelocityMap.size() > 0);
 
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssue = new HashMap<>();
-		Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocity = new HashMap<>();
-		sprintVelocityServiceHelper.getSprintIssuesForProject(storyList, sprintWiseIssue,
-				new ArrayList<SprintDetails>(), currentSprintLeafVelocity);
-		Assert.assertTrue(sprintWiseIssue.size() > 0);
+		Map<Pair<String, String>, Set<JiraIssue>> currentSprintLeafVelocity = new HashMap<>();
+		sprintVelocityServiceHelper.getSprintIssuesForProject(storyList, new ArrayList<SprintDetails>(),
+				currentSprintLeafVelocity);
+		Assert.assertTrue(currentSprintLeafVelocityMap.size() > 0);
 
 		Pair<String, String> currentNodeIdentifier = Pair.of("6335363749794a18e8a4479b",
 				"40199_Scrum Project_6335363749794a18e8a4479b");
 
-		Assert.assertTrue(sprintVelocityServiceHelper.calculateSprintVelocityValue(currentSprintLeafVelocityMap,
-				currentNodeIdentifier, sprintWiseIssue, fieldMapping) > 0);
+		Assert.assertFalse(sprintVelocityServiceHelper.calculateSprintVelocityValue(currentSprintLeafVelocityMap,
+				currentNodeIdentifier, fieldMapping) > 0);
 
 		Pair<String, String> currentNodeIdent = Pair.of("6335363749794a18e8a4479b",
 				"38294_Scrum Project_6335363749794a18e8a4479b");
 		Assert.assertTrue(sprintVelocityServiceHelper.calculateSprintVelocityValue(currentSprintLeafVelocityMap,
-				currentNodeIdent, new HashMap<Pair<String, String>, List<JiraIssue>>(), fieldMapping) > 0);
+				currentNodeIdent, fieldMapping) > 0);
 	}
 
 }
