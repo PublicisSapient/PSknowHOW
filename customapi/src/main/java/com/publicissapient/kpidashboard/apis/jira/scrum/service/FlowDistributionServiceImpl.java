@@ -61,7 +61,6 @@ import lombok.extern.slf4j.Slf4j;
 public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 	public static final String BACKLOG_CUSTOM_HISTORY = "backlogCustomHistory";
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	private static final Logger LOGGER = LoggerFactory.getLogger(FlowDistributionServiceImpl.class);
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
@@ -89,7 +88,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 				projectWiseLeafNodeValue(v, trendValueList, kpiElement, kpiRequest);
 			}
 		});
-		LOGGER.info("FlowDistributionServiceImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("FlowDistributionServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
@@ -105,7 +104,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 
 		if (leafNode != null) {
-			LOGGER.info("Flow Distribution kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
+			log.info("Flow Distribution kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			List<IssueBacklogCustomHistory> issueBacklogCustomHistoryList = issueBacklogCustomHistoryRepository
 					.findByBasicProjectConfigIdIn(basicProjectConfigId);
@@ -168,7 +167,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 
 			populateTrendValueList(trendValueList, cumulativeAddedCountMap);
 			populateExcelDataObject(requestTrackerId, excelData, mapAfterStartDate);
-			LOGGER.info("FlowDistributionServiceImpl -> request id : {} dateWiseCountMap : {}", requestTrackerId,
+			log.info("FlowDistributionServiceImpl -> request id : {} dateWiseCountMap : {}", requestTrackerId,
 					cumulativeAddedCountMap);
 		}
 		kpiElement.setExcelData(excelData);

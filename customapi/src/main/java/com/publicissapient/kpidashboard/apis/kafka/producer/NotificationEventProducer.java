@@ -22,12 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -43,9 +42,10 @@ import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
  *
  * @author pkum34
  */
+@Slf4j
 @Component
 public class NotificationEventProducer {
-	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationEventProducer.class);
+	
 	private static final String SUCCESS_MESSAGE = "Mail message to topic sent successfully";
 	private static final String FAILURE_MESSAGE = "Error Sending the mail message to topic and the exception is: ";
 	@Autowired
@@ -56,11 +56,11 @@ public class NotificationEventProducer {
 	public void sendNotificationEvent(String key, EmailEvent email, Map<String, String> headerDetails, String topic) {
 		if (customApiConfig.isNotificationSwitch()) {
 			try {
-				LOGGER.info("Notification Switch is on. Sending message now.....");
+				log.info("Notification Switch is on. Sending message now.....");
 				ProducerRecord<String, Object> producerRecord = buildProducerRecord(key, email, headerDetails, topic);
-				LOGGER.info("created producer record.....");
+				log.info("created producer record.....");
 				ListenableFuture<SendResult<String, Object>> listenableFuture = kafkaTemplate.send(producerRecord);
-				LOGGER.info("sent msg.....");
+				log.info("sent msg.....");
 				listenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
 
 					@Override
@@ -78,7 +78,7 @@ public class NotificationEventProducer {
 				ex.printStackTrace();
 			}
 		} else {
-			LOGGER.info(
+			log.info(
 					"Notification Switch is Off. If want to send notification set true for notification.switch in property");
 		}
 
@@ -97,11 +97,11 @@ public class NotificationEventProducer {
 	}
 
 	private void handleFailure(Throwable ex) {
-		LOGGER.error(FAILURE_MESSAGE + ex.getMessage(), ex);
+		log.error(FAILURE_MESSAGE + ex.getMessage(), ex);
 	}
 
 	private void handleSuccess(String key, EmailEvent email, SendResult<String, Object> result) {
-		LOGGER.info(SUCCESS_MESSAGE + " key : {}, value : {}, Partition : {}", key, email.getSubject(),
+		log.info(SUCCESS_MESSAGE + " key : {}, value : {}, Partition : {}", key, email.getSubject(),
 				result.getRecordMetadata().partition());
 	}
 

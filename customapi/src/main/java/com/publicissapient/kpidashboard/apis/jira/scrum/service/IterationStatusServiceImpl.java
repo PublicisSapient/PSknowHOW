@@ -77,9 +77,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(IterationStatusServiceImpl.class);
-
+	
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 
 	private static final String OPEN_ISSUES = "openIssuesCausingDelay";
@@ -144,7 +142,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Iteration Status -> Requested sprint : {}", leafNode.getName());
+			log.info("Iteration Status -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 

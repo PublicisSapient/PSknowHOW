@@ -59,7 +59,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final Object USER_AUTHORITIES = "authorities";
-	private static final Logger LOGGER = LoggerFactory.getLogger(CustomAnalyticsServiceImpl.class);
+	
 	@Autowired
 	UserAuthorizedProjectsService userAuthorizedProjectsService;
 	@Autowired
@@ -101,7 +101,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		}
 		json.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
 
-		LOGGER.info("Successfully added Google Analytics data to Response.");
+		log.info("Successfully added Google Analytics data to Response.");
 		return json;
 
 	}

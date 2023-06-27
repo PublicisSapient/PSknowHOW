@@ -24,9 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,10 +41,9 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 
+@Slf4j
 @Component
 public class CapacityServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(CapacityServiceImpl.class);
 
 	private static final String CAPACITY_DATA = "Capacity";
 
@@ -82,7 +80,7 @@ public class CapacityServiceImpl extends JiraKPIService<Integer, List<Object>, M
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Capacity -> Requested sprint : {}", leafNode.getName());
+			log.info("Capacity -> Requested sprint : {}", leafNode.getName());
 			ObjectId basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
 			String sprintId = leafNode.getSprintFilter().getId();
 			CapacityKpiData capacityKpiData = capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(sprintId,
@@ -98,7 +96,7 @@ public class CapacityServiceImpl extends JiraKPIService<Integer, List<Object>, M
 	 * sprint level.
 	 * 
 	 * @param sprintLeafNodeList
-	 * @param trendValueList
+	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
@@ -115,7 +113,7 @@ public class CapacityServiceImpl extends JiraKPIService<Integer, List<Object>, M
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		CapacityKpiData capacityKpiData = (CapacityKpiData) resultMap.get(CAPACITY_DATA);
 		if (null != capacityKpiData) {
-			LOGGER.info("Capacity -> request id : {} Project Name : {}  Sprint Id : {}", requestTrackerId,
+			log.info("Capacity -> request id : {} Project Name : {}  Sprint Id : {}", requestTrackerId,
 					capacityKpiData.getProjectName(), capacityKpiData.getSprintID());
 			kpiElement.setSprint(latestSprint.getName());
 			trendValue.setValue(capacityKpiData.getCapacityPerSprint());

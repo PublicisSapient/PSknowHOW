@@ -14,13 +14,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -58,11 +57,11 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
  *
  * @author Daya Shankar
  */
+@Slf4j
 @Component
 public class ProductionIssuesByPriorityAndAgingServiceImpl
 		extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ProductionIssuesByPriorityAndAgingServiceImpl.class);
+	
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final String PROJECT = "project";
 	private static final String RANGE = "range";
@@ -151,7 +150,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		LOGGER.info("PRODUCTION-ISSUES-BY-PRIORITY-AND-AGING {}", kpiRequest.getRequestTrackerId());
+		log.info("PRODUCTION-ISSUES-BY-PRIORITY-AND-AGING {}", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(PROJECT);
@@ -185,7 +184,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 		kpiElement.setTrendValueList(dataCountGroups);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 
-		LOGGER.debug(
+		log.debug(
 				"[PRODUCTION-ISSUES-BY-PRIORITY-AND-AGING -AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
 		return kpiElement;

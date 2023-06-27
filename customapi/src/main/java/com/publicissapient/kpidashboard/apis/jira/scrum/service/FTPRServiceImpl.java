@@ -64,7 +64,6 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 	public static final String UNCHECKED = "unchecked";
 	public static final String DEFECT = "Defect";
 	public static final String PERCENTAGE = "percentage";
-	private static final Logger LOGGER = LoggerFactory.getLogger(FTPRServiceImpl.class);
 	private static final String ISSUES = "issues";
 	private static final String FIRST_TIME_PASS_STORIES = "First Time Pass Stories";
 	private static final String TOTAL_STORIES = "Total Stories";
@@ -181,7 +180,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("First Time Pass rate -> Requested sprint : {}", leafNode.getName());
+			log.info("First Time Pass rate -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			List<String> defectType = new ArrayList<>();
@@ -261,7 +260,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 
 		if (CollectionUtils.isNotEmpty(allIssues)) {
-			LOGGER.info("First Time Pass rate -> request id : {} total jira Issues : {}", requestTrackerId,
+			log.info("First Time Pass rate -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
 			// Creating map of modal Objects
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);

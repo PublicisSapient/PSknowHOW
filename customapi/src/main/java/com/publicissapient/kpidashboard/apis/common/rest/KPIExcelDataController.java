@@ -24,8 +24,7 @@ import java.util.Arrays;
 
 import javax.validation.constraints.NotNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,10 +44,9 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
  *
  * @author tauakram
  */
+@Slf4j
 @RestController
 public class KPIExcelDataController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(KPIExcelDataController.class);
 
 	@Autowired
 	private KPIExcelDataService kpiExcelDataService;
@@ -69,7 +67,7 @@ public class KPIExcelDataController {
 		String kpiRequestStr = kpiRequest.toString();
 		kpiID = CommonUtils.handleCrossScriptingTaintedValue(kpiID);
 		kpiRequestStr = CommonUtils.handleCrossScriptingTaintedValue(kpiRequestStr);
-		LOGGER.info("[KPI-EXCEL-DATA][]. Received Specific Excel KPI Data request for {} with kpiRequest {}", kpiID,
+		log.info("[KPI-EXCEL-DATA][]. Received Specific Excel KPI Data request for {} with kpiRequest {}", kpiID,
 				kpiRequestStr);
 
 		KPIExcelValidationDataResponse responseList = (KPIExcelValidationDataResponse) kpiExcelDataService

@@ -21,8 +21,7 @@ package com.publicissapient.kpidashboard.apis.auth.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,10 +35,10 @@ import com.publicissapient.kpidashboard.apis.model.CustomCaptcha;
  * @author sgoe17
  *
  */
+@Slf4j
 @RestController
 public class CustomCaptchaController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CustomCaptchaController.class);
 	private final CaptchaService captchaService;
 
 	/**
@@ -62,7 +61,7 @@ public class CustomCaptchaController {
 	@RequestMapping(value = "/login/captcha", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public CustomCaptcha getCaptcha() {
 
-		LOGGER.info("CustomCaptchaController::getCaptcha start");
+		log.info("CustomCaptchaController::getCaptcha start");
 		return captchaService.getCaptcha();
 	}
 

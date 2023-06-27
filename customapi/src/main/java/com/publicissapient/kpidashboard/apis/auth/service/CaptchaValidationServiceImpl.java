@@ -25,8 +25,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.util.AESEncryption;
@@ -37,10 +36,10 @@ import com.publicissapient.kpidashboard.apis.util.AESEncryption;
  * @author sgoe17
  *
  */
+@Slf4j
 @Service
 public class CaptchaValidationServiceImpl implements CaptchaValidationService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CaptchaValidationServiceImpl.class);
 
 	/*
 	 * (non-Javadoc)
@@ -60,7 +59,7 @@ public class CaptchaValidationServiceImpl implements CaptchaValidationService {
 				resultDecrypted = AESEncryption.decrypt(encryptedString);
 			} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException
 					| IllegalBlockSizeException exception) {
-				LOGGER.error("Error while decryption", exception);
+				log.error("Error while decryption", exception);
 			}
 
 		}

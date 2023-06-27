@@ -30,10 +30,9 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,10 +52,10 @@ import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
  * @author vijmishr1
  *
  */
+@Slf4j
 @Service
 public class ForgotPasswordServiceImpl implements ForgotPasswordService {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ForgotPasswordServiceImpl.class);
+	
 	private static final String FORGOT_PASSWORD_TEMPLATE = "Forgot_Password_Template";
 	/*
 	 * validatePath
@@ -87,13 +86,13 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 */
 	@Override
 	public Authentication processForgotPassword(String email, String url) {
-		LOGGER.info("ForgotPasswordServiceImpl: Requested mail {}", email);
+		log.info("ForgotPasswordServiceImpl: Requested mail {}", email);
 		Authentication authentication = getEmailExistsInDB(email);
 		if (authentication != null) {
 			String token = createForgetPasswordToken(authentication);
 			Map<String, String> customData = createCustomData(authentication.getUsername(), token, url,
 					customApiConfig.getForgotPasswordExpiryInterval());
-			LOGGER.info("Notification message sent to kafka with key : {}", FORGOT_PASSWORD_NOTIFICATION_KEY);
+			log.info("Notification message sent to kafka with key : {}", FORGOT_PASSWORD_NOTIFICATION_KEY);
 			commonService.sendEmailWithoutKafka(Arrays.asList(email), customData, customApiConfig.getEmailSubject(),
 					FORGOT_PASSWORD_NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(), FORGOT_PASSWORD_TEMPLATE);
 			return authentication;
@@ -116,7 +115,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 */
 	@Override
 	public ResetPasswordTokenStatusEnum validateEmailToken(String token) {
-		LOGGER.info("ForgotPasswordServiceImpl: Validate the token {}", token);
+		log.info("ForgotPasswordServiceImpl: Validate the token {}", token);
 		ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository.findByToken(token);
 		return checkTokenValidity(forgotPasswordToken);
 	}
@@ -141,14 +140,14 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 */
 	@Override
 	public Authentication resetPassword(ResetPasswordRequest resetPasswordRequest) throws ApplicationException {
-		LOGGER.info("ForgotPasswordServiceImpl: Reset token is {}", resetPasswordRequest.getResetToken());
+		log.info("ForgotPasswordServiceImpl: Reset token is {}", resetPasswordRequest.getResetToken());
 		ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository
 				.findByToken(resetPasswordRequest.getResetToken());
 		ResetPasswordTokenStatusEnum tokenStatus = checkTokenValidity(forgotPasswordToken);
 		if (tokenStatus.equals(ResetPasswordTokenStatusEnum.VALID)) {
 			Authentication authentication = authenticationRepository.findByUsername(forgotPasswordToken.getUsername());
 			if (null == authentication) {
-				LOGGER.error("User {} Does not Exist", forgotPasswordToken.getUsername());
+				log.error("User {} Does not Exist", forgotPasswordToken.getUsername());
 				throw new ApplicationException("User Does not Exist", ApplicationException.BAD_DATA);
 			} else {
 				validatePasswordRules(forgotPasswordToken.getUsername(), resetPasswordRequest.getPassword(),
@@ -156,7 +155,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				return authentication;
 			}
 		} else {
-			LOGGER.error("Token is {}", resetPasswordRequest.getResetToken());
+			log.error("Token is {}", resetPasswordRequest.getResetToken());
 			throw new ApplicationException("Token is " + tokenStatus.name(), ApplicationException.BAD_DATA);
 		}
 	}

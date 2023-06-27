@@ -33,11 +33,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -65,11 +64,11 @@ import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDela
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
+@Slf4j
 @Component
 public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
 	public static final String UNCHECKED = "unchecked";
-	private static final Logger LOGGER = LoggerFactory.getLogger(ClosurePossibleTodayServiceImpl.class);
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String ISSUES = "issues";
 	private static final String ISSUE_COUNT = "Issue Count";
@@ -109,7 +108,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Closure Possible Today -> Requested sprint : {}", leafNode.getName());
+			log.info("Closure Possible Today -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
@@ -154,7 +153,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT_DETAILS);
 		if (CollectionUtils.isNotEmpty(allIssues)) {
-			LOGGER.info("Closure Possible Today -> request id : {} total jira Issues : {}", requestTrackerId,
+			log.info("Closure Possible Today -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
 			// Creating map of modal Objects
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);

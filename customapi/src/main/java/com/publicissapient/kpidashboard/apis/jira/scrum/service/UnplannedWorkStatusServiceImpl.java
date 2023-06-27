@@ -28,10 +28,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -58,12 +57,12 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
+@Slf4j
 @Component
 public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 	public static final String UNCHECKED = "unchecked";
 	public static final String OVERALL_UNPLANNED = "Overall Unplanned";
 	public static final String COMPLETED = "Completed";
-	private static final Logger LOGGER = LoggerFactory.getLogger(UnplannedWorkStatusServiceImpl.class);
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
 	private static final String ISSUES = "issues";
@@ -101,7 +100,7 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Unplanned Work Status -> Requested sprint : {}", leafNode.getName());
+			log.info("Unplanned Work Status -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
@@ -154,7 +153,7 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 					.filter(jiraIssue -> StringUtils.isBlank(jiraIssue.getDueDate())).collect(Collectors.toList());
 		}
 		if (CollectionUtils.isNotEmpty(allIssuesWithoutDueDate)) {
-			LOGGER.info("Unplanned Work Status -> request id : {} total jira Issues : {}", requestTrackerId,
+			log.info("Unplanned Work Status -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssuesWithoutDueDate.size());
 			// Creating map of modal Objects
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);

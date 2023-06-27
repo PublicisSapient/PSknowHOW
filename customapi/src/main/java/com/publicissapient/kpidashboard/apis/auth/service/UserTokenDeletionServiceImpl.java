@@ -18,8 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.auth.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +29,9 @@ import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReoposit
  * 
  * @author anisingh4
  */
+@Slf4j
 @Service
 public class UserTokenDeletionServiceImpl implements UserTokenDeletionService {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(UserTokenDeletionServiceImpl.class);
 
 	@Autowired
 	private UserTokenReopository userTokenReopository;
@@ -41,17 +39,17 @@ public class UserTokenDeletionServiceImpl implements UserTokenDeletionService {
 	@Override
 	public void deleteUserDetails(String userToken) {
 
-		LOGGER.info("UserTokenDeletionServiceImpl::deleteUserDetails start");
+		log.info("UserTokenDeletionServiceImpl::deleteUserDetails start");
 		userTokenReopository.deleteByUserToken(userToken);
-		LOGGER.info("UserTokenDeletionServiceImpl::deleteUserDetails end");
+		log.info("UserTokenDeletionServiceImpl::deleteUserDetails end");
 
 	}
 
 	public void invalidateSession(String userName) {
 
-		LOGGER.info("UserTokenDeletionServiceImpl::deleteUserToken start");
+		log.info("UserTokenDeletionServiceImpl::deleteUserToken start");
 		userTokenReopository.deleteByuserName(userName);
-		LOGGER.info("UserTokenDeletionServiceImpl::deleteUserToken end");
+		log.info("UserTokenDeletionServiceImpl::deleteUserToken end");
 	}
 
 }

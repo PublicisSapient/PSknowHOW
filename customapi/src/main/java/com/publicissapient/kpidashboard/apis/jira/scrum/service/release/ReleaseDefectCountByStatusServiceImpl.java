@@ -28,11 +28,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -57,10 +56,10 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
+@Slf4j
 @Component
 public class ReleaseDefectCountByStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseDefectCountByStatusServiceImpl.class);
+	
 	private static final String TOTAL_DEFECT = "totalDefects";
 
 	@Autowired
@@ -87,7 +86,7 @@ public class ReleaseDefectCountByStatusServiceImpl extends JiraKPIService<Intege
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Defect count by Status Release -> Requested sprint : {}", leafNode.getName());
+			log.info("Defect count by Status Release -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			Set<String> defectType = new HashSet<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -120,7 +119,7 @@ public class ReleaseDefectCountByStatusServiceImpl extends JiraKPIService<Intege
 				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		LOGGER.info("DefectCountByStatusServiceImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("DefectCountByStatusServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
@@ -142,7 +141,7 @@ public class ReleaseDefectCountByStatusServiceImpl extends JiraKPIService<Intege
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(totalDefects)) {
 				Map<String, List<JiraIssue>> statusWiseList = getStatusWiseList(totalDefects);
-				LOGGER.info("ReleaseDefectCountByStatusServiceImpl -> statusWiseList ->  : {}", statusWiseList);
+				log.info("ReleaseDefectCountByStatusServiceImpl -> statusWiseList ->  : {}", statusWiseList);
 				Map<String, Integer> statusCountMap = new HashMap<>();
 				getStatusWiseCount(statusWiseList, statusCountMap);
 				if (MapUtils.isNotEmpty(statusCountMap)) {
@@ -168,7 +167,7 @@ public class ReleaseDefectCountByStatusServiceImpl extends JiraKPIService<Intege
 					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_RELEASE.getColumns());
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_STATUS_RELEASE.getColumns());
 					kpiElement.setExcelData(excelData);
-					LOGGER.info("ReleaseDefectCountByStatusServiceImpl -> request id : {} total jira Issues : {}",
+					log.info("ReleaseDefectCountByStatusServiceImpl -> request id : {} total jira Issues : {}",
 							requestTrackerId, filterDataList.get(0));
 				}
 			}

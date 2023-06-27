@@ -28,8 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.httpclient.apache.httpcomponents.DefaultHttpClientFactory;
@@ -44,6 +43,7 @@ import com.atlassian.sal.api.UrlMode;
 import com.atlassian.sal.api.executor.ThreadLocalContextManager;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 
+@Slf4j
 public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFactory {
 
 	/**
@@ -183,7 +183,6 @@ public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFact
 	}
 
 	private static final class MavenUtils {
-		private static final Logger logger = LoggerFactory.getLogger(MavenUtils.class);
 
 		private static final String UNKNOWN_VERSION = "unknown";
 
@@ -196,8 +195,8 @@ public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFact
 				props.load(resourceAsStream);
 				return props.getProperty("version", UNKNOWN_VERSION);
 			} catch (Exception e) {
-				logger.debug("Could not find version for maven artifact {}:{}", groupId, artifactId);
-				logger.debug("Got the following exception", e);
+				log.debug("Could not find version for maven artifact {}:{}", groupId, artifactId);
+				log.debug("Got the following exception", e);
 				return UNKNOWN_VERSION;
 			} finally {
 				if (resourceAsStream != null) {

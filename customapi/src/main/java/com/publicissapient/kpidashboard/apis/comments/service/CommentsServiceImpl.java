@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CommentsServiceImpl implements CommentsService {
 
 	public static final String TIME_FORMAT = "dd-MMM-YYYY";
-	private static final Logger LOGGER = LoggerFactory.getLogger(CommentsServiceImpl.class);
+	
 	@Autowired
 	private KpiCommentsRepository kpiCommentsRepository;
 
@@ -63,7 +63,7 @@ public class CommentsServiceImpl implements CommentsService {
 
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
 		if (null != kpiComments) {
-			LOGGER.info("Received all matching comment from DB, comments size: {}", kpiComments);
+			log.info("Received all matching comment from DB, comments size: {}", kpiComments);
 			List<CommentsInfo> finalCommentsInfo = commentMappingOperation(kpiComments);
 			mappedCollection.put("node", node);
 			mappedCollection.put("level", level);
@@ -71,7 +71,7 @@ public class CommentsServiceImpl implements CommentsService {
 			mappedCollection.put("kpiId", kpiId);
 			mappedCollection.put("CommentsInfo", finalCommentsInfo);
 		}
-		LOGGER.info("Final filter comments of matching kpiId {}", mappedCollection);
+		log.info("Final filter comments of matching kpiId {}", mappedCollection);
 		return mappedCollection;
 	}
 
@@ -107,7 +107,7 @@ public class CommentsServiceImpl implements CommentsService {
 	@Override
 	public boolean submitComment(CommentSubmitDTO comment) {
 
-		LOGGER.debug("CommentSubmitDTO info {}", comment);
+		log.debug("CommentSubmitDTO info {}", comment);
 		List<CommentsInfo> commentsInfo = comment.getCommentsInfo();
 		if (CollectionUtils.isNotEmpty(commentsInfo)) {
 			for (CommentsInfo commentInfo : commentsInfo) {
@@ -121,7 +121,7 @@ public class CommentsServiceImpl implements CommentsService {
 
 			return filterCommentsInfo(kpiComments, kpiCommentsHistory);
 		} else {
-			LOGGER.info("No information about commentsInfo");
+			log.info("No information about commentsInfo");
 			return false;
 
 		}
@@ -160,7 +160,7 @@ public class CommentsServiceImpl implements CommentsService {
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			LOGGER.error("Issue occurred while performing operation on comment.");
+			log.error("Issue occurred while performing operation on comment.");
 		}
 		return false;
 	}
@@ -185,7 +185,7 @@ public class CommentsServiceImpl implements CommentsService {
 				newCommentsInfo.addAll(commentsInfo);
 				matchedKpiComment.setCommentsInfo(newCommentsInfo);
 				kpiCommentsRepository.save(matchedKpiComment);
-				LOGGER.debug("Saved new comment & re-arranged existing comments into kpi_comments collection {}",
+				log.debug("Saved new comment & re-arranged existing comments into kpi_comments collection {}",
 						matchedKpiComment);
 
 			} else {
@@ -193,7 +193,7 @@ public class CommentsServiceImpl implements CommentsService {
 				newCommentsInfo.addAll(commentsInfo);
 				matchedKpiComment.setCommentsInfo(newCommentsInfo);
 				kpiCommentsRepository.save(matchedKpiComment);
-				LOGGER.debug(
+				log.debug(
 						"Old comments removed, saved new comment & re-arranged comments into kpi_comments collection {}",
 						matchedKpiComment);
 			}
@@ -214,7 +214,7 @@ public class CommentsServiceImpl implements CommentsService {
 		newCommentsInfoHistory.addAll(commentsInfoHistory);
 		kpiCommentsHistory.setCommentsInfo(newCommentsInfoHistory);
 		kpiCommentsHistoryRepository.save(kpiCommentsHistory);
-		LOGGER.debug("Saved new comment and re-arranged existing comments info into kpi_comments_history collection {}",
+		log.debug("Saved new comment and re-arranged existing comments info into kpi_comments_history collection {}",
 				kpiCommentsHistory);
 	}
 }

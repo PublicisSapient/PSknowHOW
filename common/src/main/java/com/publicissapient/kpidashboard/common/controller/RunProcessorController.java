@@ -25,8 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,12 +43,11 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConf
  *
  * @author swati.lamba
  */
+@Slf4j
 @RestController
 public class RunProcessorController {
 
 	private static final ExecutorService PROCESSOR_EXECUTORS = Executors.newFixedThreadPool(5);
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(RunProcessorController.class);
 
 	@Autowired(required = false)
 	private ProcessorJobExecutor<?> jobExecuter;
@@ -60,7 +58,7 @@ public class RunProcessorController {
 		ExecutionLogContext.set(processorExecutionBasicConfig.getLogContext());
 		MDC.put("Processor Name", jobExecuter.getProcessor().getProcessorName());
 		MDC.put("RequestStartTime", String.valueOf(System.currentTimeMillis()));
-		LOGGER.info("Received request to run the processor: {} for projects {}",
+		log.info("Received request to run the processor: {} for projects {}",
 				jobExecuter.getProcessor().getProcessorName(),
 				processorExecutionBasicConfig.getProjectBasicConfigIds());
 
@@ -69,7 +67,7 @@ public class RunProcessorController {
 		PROCESSOR_EXECUTORS.execute(jobExecuter);
 
 		MDC.put("RequestEndTime", String.valueOf(System.currentTimeMillis()));
-		LOGGER.info("Processor execution called");
+		log.info("Processor execution called");
 		ExecutionLogContext.getContext().destroy();
 		jobExecuter.getExecutionLogContext().destroy();
 		MDC.clear();
