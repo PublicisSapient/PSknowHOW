@@ -171,7 +171,7 @@ const fakeSelectedFieldMapping = {
     "Epic"
   ],
   "productionDefectsAgeingIssueType": [
-    "Epic"
+    "Defect"
   ],
   "jiraStatusForQa": [
     "In Testing"
@@ -334,7 +334,7 @@ const successResponse = {
       'Epic'
     ],
     productionDefectsAgeingIssueType: [
-      'Epic'
+      'Defect'
     ],
     jiraStatusForQa: [
       'In Testing'
