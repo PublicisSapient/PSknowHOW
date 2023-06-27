@@ -95,7 +95,7 @@ public enum FieldMappingEnum {
 			"jiraIterationCompletionStatusIDCS", "jiraIterationCompletionTypeIDCS")),
 
 	KPI14("Defect Injection Rate", KPISource.JIRA.name(),
-			Arrays.asList("jiradefecttype", "estimationCriteria", "excludeRCAFromDIR", "resolutionTypeForRejectionDIR",
+			Arrays.asList("jiradefecttype", "excludeRCAFromDIR", "resolutionTypeForRejectionDIR",
 					"jiraDefectRejectionStatusDIR", "defectPriorityDIR", "jiraDefectInjectionIssueType",
 					"jiraDefectCreatedStatus", "jiraDodDIR")),
 
