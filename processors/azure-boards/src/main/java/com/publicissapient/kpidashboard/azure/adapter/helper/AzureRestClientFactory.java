@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.azure.adapter.helper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,9 +30,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.azure.config.AzureProcessorConfig;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class AzureRestClientFactory {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AzureRestClientFactory.class);
 	@Autowired
 	private AzureProcessorConfig azureProcessorConfig;
 
@@ -63,13 +63,13 @@ public class AzureRestClientFactory {
 		try {
 			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
 		} catch (RuntimeException e) {
-			LOGGER.error("[AZURE-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e.getMessage());
+			log.error("[AZURE-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e.getMessage());
 		}
 
 		if (null != response && response.getStatusCode().is2xxSuccessful()) {
-			LOGGER.info("[AZURE-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache {}", cacheName);
+			log.info("[AZURE-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache {}", cacheName);
 		} else {
-			LOGGER.error("[AZURE-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache {}", cacheName);
+			log.error("[AZURE-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache {}", cacheName);
 		}
 	}
 }

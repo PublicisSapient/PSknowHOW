@@ -30,8 +30,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.imageio.ImageIO;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +41,7 @@ import cn.apiclub.captcha.Captcha;
 import cn.apiclub.captcha.Captcha.Builder;
 import cn.apiclub.captcha.backgrounds.FlatColorBackgroundProducer;
 import cn.apiclub.captcha.text.producer.DefaultTextProducer;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -51,11 +50,9 @@ import cn.apiclub.captcha.text.producer.DefaultTextProducer;
  * @author sgoe17
  *
  */
-
+@Slf4j
 @Service
 public class CaptchaServiceImpl implements CaptchaService {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(CaptchaServiceImpl.class);
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -92,7 +89,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 			imageInByte = baos.toByteArray();
 			baos.close();
 		} catch (IOException ioException) {
-			LOGGER.error("Error while encryption", ioException);
+			log.error("Error while encryption", ioException);
 		}
 
 		responseCaptcha.setImage(imageInByte);
@@ -104,7 +101,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 		} catch (IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
 				| BadPaddingException exception) {
 
-			LOGGER.error("Error while encryption", exception);
+			log.error("Error while encryption", exception);
 		}
 
 		responseCaptcha.setResult(encryptedResult);
