@@ -88,6 +88,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String ESTIMATE = "estimate";
 	private static final String AGGREGATE_TIME_REMAINING_ESTIMATE_MINUTES = "aggregateTimeRemainingEstimateMinutes";
 	private static final String AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES = "aggregateTimeOriginalEstimateMinutes";
+	private static final String LOGGED_WORK_MINUTES = "timeSpentInMinutes";
 
 	@Autowired
 	private MongoTemplate operations;
@@ -209,6 +210,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(PRIORITY);
 		query.fields().include(AGGREGATE_TIME_REMAINING_ESTIMATE_MINUTES);
 		query.fields().include(AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES);
+		query.fields().include(LOGGED_WORK_MINUTES);
 		return operations.find(query, JiraIssue.class);
 
 	}
