@@ -570,7 +570,7 @@ const fakeSelectedFieldMappingWithAdditionalFilters = {
     "Epic"
   ],
   "productionDefectsAgeingIssueType": [
-    "Epic"
+    "Defect"
   ],
   "jiraTechDebtIdentification": "",
   "jiraTechDebtValue": [],
