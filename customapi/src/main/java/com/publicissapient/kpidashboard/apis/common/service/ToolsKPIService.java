@@ -667,6 +667,8 @@ public abstract class ToolsKPIService<R, S> {
 			calculatedValue = AggregationUtils.average(valueList);
 		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
 			calculatedValue = valueList.stream().mapToDouble(i -> i).sum();
+		} else if (Constant.PERCENTAGE_TYPE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
+			calculatedValue = AggregationUtils.average(valueList); // need to change
 		}
 		return round(calculatedValue);
 	}

@@ -530,4 +530,19 @@ public final class KPIHelperUtil {
 		}
 	}
 
+	public static String getPriorityValue(String priority, CustomApiConfig customApiConfig) {
+		String priorityValue = Constant.MISC;
+		priority = priority.replaceAll(Constant.WHITESPACE, "").toLowerCase().trim();
+		if (StringUtils.containsIgnoreCase(customApiConfig.getpriorityP1().replaceAll(Constant.WHITESPACE, "").trim(), priority)) {
+			priorityValue = Constant.P1;
+		} else if (StringUtils.containsIgnoreCase(customApiConfig.getpriorityP2().replaceAll(Constant.WHITESPACE, "").trim(), priority)) {
+			priorityValue = Constant.P2;
+		} else if (StringUtils.containsIgnoreCase(customApiConfig.getpriorityP3().replaceAll(Constant.WHITESPACE, "").trim(), priority)) {
+			priorityValue = Constant.P3;
+		} else if (StringUtils.containsIgnoreCase(customApiConfig.getpriorityP4().replaceAll(Constant.WHITESPACE, "").trim(), priority)) {
+			priorityValue = Constant.P4;
+		}
+		return priorityValue;
+	}
+
 }

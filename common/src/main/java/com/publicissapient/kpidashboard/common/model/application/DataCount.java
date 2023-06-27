@@ -48,6 +48,7 @@ public class DataCount implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String data;
+	private transient Map<String, Object> dataValues;
 	private Integer count;
 	private String priority;
 	private String sProjectName;

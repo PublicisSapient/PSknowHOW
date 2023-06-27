@@ -379,24 +379,26 @@ export class HelperService {
     }
 
     /** logic to apply multiselect filter */
-    applyAggregationLogic(obj, aggregationType, percentile) {
+    applyAggregationLogic(obj, aggregationType, percentile, maturityRange) {
         const arr = JSON.parse(JSON.stringify(obj[Object.keys(obj)[0]]));
         for (let i = 0; i < Object.keys(obj).length; i++) {
             for (let j = 0; j < obj[Object.keys(obj)[i]].length; j++) {
-                if (arr.findIndex(x => x.data == obj[Object.keys(obj)[i]][j]['data']) == -1) {
+               if (arr.findIndex(x => x.data == obj[Object.keys(obj)[i]][j]['data']) == -1) {
                     arr.push(obj[Object.keys(obj)[i]][j]);
                 }
             }
         }
         let aggArr = [];
         aggArr = arr?.map(item => ({
-                ...item,
-                value: item.value.map(x => ({
-                        ...x,
-                        value: (typeof x.value === 'object') ? {} : [],
-                        lineValue: x?.hasOwnProperty('lineValue') ? (typeof x.lineValue === 'object') ? {} : [] : null
-                    }))
-            }));
+            ...item,
+            value: item.value.map(x => ({
+                ...x,
+                value: (typeof x.value === 'object') ? {} : [],
+                dataValues: x.hasOwnProperty('dataValues') ? [] : {},
+                hoverValue: x.hasOwnProperty('dataValues') ? [] : x.hoverValue,
+                lineValue: x?.hasOwnProperty('lineValue') ? (typeof x.lineValue === 'object') ? {} : [] : null
+            }))
+        }));
 
         aggArr = this.sortAlphabetically(aggArr);
 
@@ -417,8 +419,11 @@ export class HelperService {
                                 aggArr[idx].value[j].lineValue.push(obj[key][i]?.value[j]?.lineValue);
                                 aggArr[idx].value[j].lineValue.sort();
                             }
-                            if (aggArr[idx]?.value[j]?.hasOwnProperty('hoverValue') && aggArr[idx]?.value[j]?.hoverValue != null && Object.keys(aggArr[idx]?.value[j]?.hoverValue).length > 0) {
+                            if (aggArr[idx]?.value[j]?.hasOwnProperty('hoverValue') && aggArr[idx]?.value[j]?.hoverValue != null && Object.keys(aggArr[idx]?.value[j]?.hoverValue).length > 0 && !Array.isArray(aggArr[idx]?.value[j]?.hoverValue)) {
                                 aggArr[idx].value[j].hoverValue = { ...aggArr[idx]?.value[j]?.hoverValue, ...obj[key][i]?.value[j]?.hoverValue };
+                            } else {
+                                aggArr[idx].value[j].hoverValue.push(obj[key][i]?.value[j]?.hoverValue);
+                                aggArr[idx].value[j].dataValues.push(obj[key][i]?.value[j]?.dataValues);
                             }
                         }
                     }
@@ -454,6 +459,45 @@ export class HelperService {
                 }
             }
 
+            if (aggregationType?.toLowerCase() == 'percentage') {
+                for (let i = 0; i < aggArr?.length; i++) {
+                    aggArr[i]?.value.forEach(val => {
+                        const tempValues = val.dataValues.reduce((acc, dataVal) => {
+                            for (const key in dataVal) {
+                                acc[key] = (acc[key] ? acc[key] : 0) + dataVal[key];
+                            }
+                            return acc;
+                        }, {});
+                        const tempHoverValue = val.hoverValue.reduce((acc, hoverVal) => {
+                            for (const key in hoverVal) {
+                                acc[key] = hoverVal[key]
+                            }
+                            return acc;
+                        }, {});
+                        val.hoverValue = tempHoverValue;
+                        val.data = (tempValues['actualValue'] / ((tempValues['totalValue']===0) ? 1 : tempValues['totalValue']) * 100).toFixed(0);
+                        val.value = val.data;
+                    });
+                }
+                let count = 0;
+                for(const key in obj){
+                    count++
+                    for(let i = 0; i<obj[key]?.length;i++){
+                        const idx = aggArr?.findIndex(x => x?.data == obj[key][i]?.data);
+                        if(idx != -1){
+                            aggArr[idx].maturityValue = parseFloat(aggArr[idx].maturityValue);
+                            aggArr[idx].maturityValue = ((aggArr[idx].maturityValue * (count -1) + parseFloat(obj[key][i]?.maturityValue))/count).toFixed(1);
+                            maturityRange.forEach((value, index)=>{
+                                let lowerVal = (value.split('-')[0]) ? parseFloat(value.split('-')[0]) : 0;
+                                let higherVal = (value.split('-')[1]) ? parseFloat(value.split('-')[1]) : 101;
+                                if(parseFloat(aggArr[idx].maturityValue) >= lowerVal && parseFloat(aggArr[idx].maturityValue) < higherVal){
+                                    aggArr[idx].maturity = (index + 1).toString();
+                                }
+                            })
+                        }
+                    }
+                }
+            }
             if (aggregationType?.toLowerCase() == 'median') {
                 for (let i = 0; i < aggArr?.length; i++) {
                     aggArr[i].value?.map(x => {

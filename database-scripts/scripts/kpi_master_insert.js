@@ -236,7 +236,8 @@ db.getCollection('kpi_master').insert(
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
     "showTrend": true,
-    "aggregationCriteria": "average",
+    "kpiFilter": "multiSelectDropDown",
+    "aggregationCriteria": "percentage",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
     "maturityRange": [

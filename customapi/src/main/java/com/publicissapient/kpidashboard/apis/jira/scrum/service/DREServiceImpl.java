@@ -17,19 +17,22 @@
  ******************************************************************************/
 
 /**
- * 
+ *
  */
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +57,12 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
@@ -66,7 +72,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculated KPI value for DRE and its trend analysis.
- * 
+ *
  * @author pkum34
  *
  */
@@ -114,10 +120,27 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				kpiRequest.getRequestTrackerId(), root);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_REMOVAL_EFFICIENCY);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.DEFECT_REMOVAL_EFFICIENCY);
-		kpiElement.setTrendValueList(trendValues);
+		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.DEFECT_REMOVAL_EFFICIENCY);
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+				KPICode.DEFECT_REMOVAL_EFFICIENCY);
+		trendValuesMap = sortTrendValueMap(trendValuesMap, priorityTypes(true));
+		Map<String, Map<String, List<DataCount>>> issueTypeProjectWiseDc = new LinkedHashMap<>();
+		trendValuesMap.forEach((issueType, dataCounts) -> {
+			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
+					.collect(Collectors.groupingBy(DataCount::getData));
+			issueTypeProjectWiseDc.put(issueType, projectWiseDc);
+		});
 
+		List<DataCountGroup> dataCountGroups = new ArrayList<>();
+		issueTypeProjectWiseDc.forEach((issueType, projectWiseDc) -> {
+			DataCountGroup dataCountGroup = new DataCountGroup();
+			List<DataCount> dataList = new ArrayList<>();
+			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
+			dataCountGroup.setFilter(issueType);
+			dataCountGroup.setValue(dataList);
+			dataCountGroups.add(dataCountGroup);
+		});
+		kpiElement.setTrendValueList(dataCountGroups);
 		log.debug("[DRE-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
 		return kpiElement;
@@ -207,13 +230,32 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	public Double calculateKPIMetrics(Map<String, Object> closedAndTotalDefectDataMap) {
 		int closedDefectCount = ((List<JiraIssue>) closedAndTotalDefectDataMap.get(CLOSED_DEFECT_DATA)).size();
 		int totalDefectCount = ((List<JiraIssue>) closedAndTotalDefectDataMap.get(TOTAL_DEFECT_DATA)).size();
-		return (double) Math.round((100.0 * closedDefectCount) / (totalDefectCount));
+		return calculateDREValue(closedDefectCount, totalDefectCount);
+	}
+
+	public Map<String, Double> calculateKPIMetrics(Map<String, List<JiraIssue>> priorityWiseTotalDefectListMap,
+			Map<String, List<JiraIssue>> priorityWiseClosedDefectListMap) {
+		Map<String, Double> priorityValueMap = new HashMap<>();
+		Set<String> priorities = priorityWiseTotalDefectListMap.keySet();
+		if (CollectionUtils.isNotEmpty(priorities)) {
+			for (String priority : priorities) {
+				int priorityClosedDefectCount = CollectionUtils
+						.isNotEmpty(priorityWiseClosedDefectListMap.get(priority))
+								? priorityWiseClosedDefectListMap.get(priority).size()
+								: 0;
+				int priorityTotalDefectCount = CollectionUtils.isNotEmpty(priorityWiseTotalDefectListMap.get(priority))
+						? priorityWiseTotalDefectListMap.get(priority).size()
+						: 0;
+				priorityValueMap.put(priority, calculateDREValue(priorityClosedDefectCount, priorityTotalDefectCount));
+			}
+		}
+		return priorityValueMap;
 	}
 
 	/**
 	 * This method populates KPI value to sprint leaf nodes. It also gives the trend
 	 * analysis at sprint wise.
-	 * 
+	 *
 	 * @param mapTmp
 	 * @param sprintLeafNodeList
 	 * @param trendValueList
@@ -240,58 +282,50 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
 				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
-		Map<Pair<String, String>, Double> sprintWiseDREMap = new HashMap<>();
 		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseTotaldDefectListMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseCloseddDefectListMap = new HashMap<>();
+
+		Map<Pair<String, String>, Map<String, Double>> sprintWiseDREPriorityMap = new HashMap<>();
+		Map<Pair<String, String>, Map<String, List<JiraIssue>>> sprintPriorityWiseTotalDefectListMap = new HashMap<>();
+		Map<Pair<String, String>, Map<String, List<JiraIssue>>> sprintPriorityWiseClosedDefectListMap = new HashMap<>();
+
 		List<KPIExcelData> excelData = new ArrayList<>();
 
+		Set<String> projectWisePriorityList = new HashSet<>();
 		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
 
 			List<JiraIssue> sprintWiseClosedDefectList = new ArrayList<>();
 			List<JiraIssue> sprintWiseTotaldDefectList = new ArrayList<>();
-			List<Double> subCategoryWiseDREList = new ArrayList<>();
+
 			List<String> totalStoryIdList = new ArrayList<>();
 
 			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
 					.forEach(totalStoryIdList::addAll);
 
-			Map<String, Object> subCategoryWiseClosedAndTotalDefectList = new HashMap<>();
-			List<JiraIssue> subCategoryWiseClosedDefectList = ((List<JiraIssue>) storyDefectDataListMap
-					.get(CLOSED_DEFECT_DATA))
-							.stream()
-							.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
-									&& CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
-							.collect(Collectors.toList());
-			List<JiraIssue> subCategoryWiseTotaldDefectList = ((List<JiraIssue>) storyDefectDataListMap
-					.get(TOTAL_DEFECT_DATA))
-							.stream()
-							.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
-									&& CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
-							.collect(Collectors.toList());
+			List<JiraIssue> subCategoryWiseClosedDefectList = getFilteredDefects(
+					(List<JiraIssue>) storyDefectDataListMap.get(CLOSED_DEFECT_DATA), sprint, totalStoryIdList);
+			List<JiraIssue> subCategoryWiseTotaldDefectList = getFilteredDefects(
+					(List<JiraIssue>) storyDefectDataListMap.get(TOTAL_DEFECT_DATA), sprint, totalStoryIdList);
 
-			double dreForCurrentLeaf = 0.0d;
-			subCategoryWiseClosedAndTotalDefectList.put(CLOSED_DEFECT_DATA, subCategoryWiseClosedDefectList);
-			subCategoryWiseClosedAndTotalDefectList.put(TOTAL_DEFECT_DATA, subCategoryWiseTotaldDefectList);
-			if (CollectionUtils.isNotEmpty(subCategoryWiseClosedDefectList)
-					&& CollectionUtils.isNotEmpty(subCategoryWiseTotaldDefectList)) {
+			Map<String, List<JiraIssue>> priorityWiseTotalDefectListMap = getPriorityWiseDefectListMap(
+					subCategoryWiseTotaldDefectList, sprint, totalStoryIdList);
+			Map<String, List<JiraIssue>> priorityWiseClosedDefectListMap = getPriorityWiseDefectListMap(
+					subCategoryWiseClosedDefectList, sprint, totalStoryIdList);
 
-				dreForCurrentLeaf = calculateKPIMetrics(subCategoryWiseClosedAndTotalDefectList);
-			} else if (CollectionUtils.isEmpty(subCategoryWiseTotaldDefectList)) {
-				// Adding check when total defects injected is 0n, DRE will be
-				// 100.0 in this case
-				dreForCurrentLeaf = 100.0d;
-			}
-			subCategoryWiseDREList.add(dreForCurrentLeaf);
 			sprintWiseClosedDefectList.addAll(subCategoryWiseClosedDefectList);
 			sprintWiseTotaldDefectList.addAll(subCategoryWiseTotaldDefectList);
-			sprintWiseCloseddDefectListMap.put(sprint, sprintWiseClosedDefectList);
 			sprintWiseTotaldDefectListMap.put(sprint, sprintWiseTotaldDefectList);
+			sprintWiseCloseddDefectListMap.put(sprint, sprintWiseClosedDefectList);
+
+			projectWisePriorityList.addAll(priorityWiseTotalDefectListMap.keySet());
+			sprintPriorityWiseTotalDefectListMap.put(sprint, priorityWiseTotalDefectListMap);
+			sprintPriorityWiseClosedDefectListMap.put(sprint, priorityWiseClosedDefectListMap);
 
 			setSprintWiseLogger(sprint, totalStoryIdList, sprintWiseTotaldDefectList, sprintWiseClosedDefectList);
-
-			sprintWiseDREMap.put(sprint, dreForCurrentLeaf);
-			setHowerMap(sprintWiseHowerMap, sprint, sprintWiseClosedDefectList, sprintWiseTotaldDefectList);
+			setHowerMap(sprintWiseHowerMap, sprint, priorityWiseClosedDefectListMap, priorityWiseTotalDefectListMap);
+			sprintWiseDREPriorityMap.put(sprint,
+					calculateKPIMetrics(priorityWiseTotalDefectListMap, priorityWiseClosedDefectListMap));
 		});
 
 		sprintLeafNodeList.forEach(node -> {
@@ -301,45 +335,152 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
 
-			double dreForCurrentLeaf;
-
-			if (sprintWiseDREMap.containsKey(currentNodeIdentifier)) {
-				dreForCurrentLeaf = sprintWiseDREMap.get(currentNodeIdentifier);
-				List<JiraIssue> sprintWiseClosedDefectList = sprintWiseCloseddDefectListMap.get(currentNodeIdentifier);
-				List<JiraIssue> sprintWiseTotaldDefectList = sprintWiseTotaldDefectListMap.get(currentNodeIdentifier);
-				populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
-						sprintWiseClosedDefectList, sprintWiseTotaldDefectList);
-
-			} else {
-				dreForCurrentLeaf = 0.0d;
+			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
+			Map<String, Double> priorityMap = sprintWiseDREPriorityMap.getOrDefault(currentNodeIdentifier,
+					new HashMap<>());
+			Map<String, Double> finalMap = new HashMap<>();
+			Map<String, Object> overAllHoverValueMap = new HashMap<>();
+			if (CollectionUtils.isNotEmpty(projectWisePriorityList)) {
+				projectWisePriorityList.forEach(priority -> {
+					Double priorityWiseCount = priorityMap.getOrDefault(priority, 100.0D);
+					finalMap.put(StringUtils.capitalize(priority), priorityWiseCount);
+					overAllHoverValueMap.put(StringUtils.capitalize(priority), priorityWiseCount);
+				});
+				projectWisePriorityList.forEach(priority -> finalMap.computeIfAbsent(priority, val -> 100.0D));
+				int sprintClosedDefectCount = CollectionUtils
+						.isNotEmpty(sprintWiseCloseddDefectListMap.get(currentNodeIdentifier))
+								? sprintWiseCloseddDefectListMap.get(currentNodeIdentifier).size()
+								: 0;
+				int sprintTotalDefectCount = CollectionUtils
+						.isNotEmpty(sprintWiseTotaldDefectListMap.get(currentNodeIdentifier))
+								? sprintWiseTotaldDefectListMap.get(currentNodeIdentifier).size()
+								: 0;
+				finalMap.put(CommonConstant.OVERALL,
+						calculateDREValue(sprintClosedDefectCount, sprintTotalDefectCount));
 			}
-			log.debug("[DRE-SPRINT-WISE][{}]. DRE for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), dreForCurrentLeaf);
+			String finalTrendLineName = trendLineName;
+			finalMap.forEach((priority, value) -> {
+				DataCount dataCount = getDataCountObject(node, finalTrendLineName, sprintWiseHowerMap, priority, value,
+						currentNodeIdentifier);
+				populateDataValues(dataCount, priority, currentNodeIdentifier, sprintPriorityWiseTotalDefectListMap,
+						sprintPriorityWiseClosedDefectListMap, sprintWiseTotaldDefectListMap,
+						sprintWiseCloseddDefectListMap);
+				trendValueList.add(dataCount);
+				dataCountMap.computeIfAbsent(priority, k -> new ArrayList<>()).add(dataCount);
+			});
 
-			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(Math.round(dreForCurrentLeaf)));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setValue(dreForCurrentLeaf);
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
-			trendValueList.add(dataCount);
-
+			populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
+					currentNodeIdentifier, sprintWiseCloseddDefectListMap, sprintWiseTotaldDefectListMap);
+			log.debug("[DRE-SPRINT-WISE][{}]. DRE for sprint {} is {}", requestTrackerId,
+					node.getSprintFilter().getName());
+			mapTmp.get(node.getId()).setValue(dataCountMap);
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_REMOVAL_EFFICIENCY.getColumns());
 	}
 
-	private void populateExcelDataObject(String requestTrackerId, String sprintName, List<KPIExcelData> excelData,
-			List<JiraIssue> sprintWiseClosedDefectList, List<JiraIssue> sprintWiseTotaldDefectList) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+	private List<JiraIssue> getFilteredDefects(List<JiraIssue> subCategoryWiseClosedDefectList,
+			Pair<String, String> sprint, List<String> totalStoryIdList) {
+		return subCategoryWiseClosedDefectList.stream()
+				.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
+						&& CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
+				.collect(Collectors.toList());
+	}
 
+	private Map<String, List<JiraIssue>> getPriorityWiseDefectListMap(List<JiraIssue> subCategoryWiseTotaldDefectList,
+			Pair<String, String> sprint, List<String> totalStoryIdList) {
+		Map<String, List<JiraIssue>> priorityWiseTotalDefectListMap = new HashMap<>();
+		for (JiraIssue defect : subCategoryWiseTotaldDefectList) {
+			if (sprint.getKey().equals(defect.getBasicProjectConfigId())
+					&& CollectionUtils.containsAny(defect.getDefectStoryID(), totalStoryIdList)) {
+				String priorityValue = KPIHelperUtil.getPriorityValue(defect.getPriority(), customApiConfig);
+				if (CollectionUtils.isEmpty(priorityWiseTotalDefectListMap.get(priorityValue)))
+					priorityWiseTotalDefectListMap.put(priorityValue, new ArrayList<>());
+				priorityWiseTotalDefectListMap.get(priorityValue).add(defect);
+			}
+		}
+		return priorityWiseTotalDefectListMap;
+	}
+
+	private DataCount getDataCountObject(Node node, String trendLineName,
+			Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap, String priority, Double value,
+			Pair<String, String> currentNodeIdentifier) {
+		DataCount dataCount = new DataCount();
+		dataCount.setData(String.valueOf(Math.round(value)));
+		dataCount.setSProjectName(trendLineName);
+		dataCount.setSSprintID(node.getSprintFilter().getId());
+		dataCount.setSSprintName(node.getSprintFilter().getName());
+		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+		dataCount.setValue(value);
+		dataCount.setKpiGroup(priority);
+		if (sprintWiseHowerMap != null && sprintWiseHowerMap.get(currentNodeIdentifier) != null) {
+			Map<String, Object> howerMap = new LinkedHashMap<>();
+			if (CommonConstant.OVERALL.equalsIgnoreCase(priority)) {
+				howerMap = sprintWiseHowerMap.get(currentNodeIdentifier);
+			} else if (sprintWiseHowerMap.get(currentNodeIdentifier).get(priority) != null) {
+				howerMap.put(priority, sprintWiseHowerMap.get(currentNodeIdentifier).get(priority));
+			} else {
+				howerMap.put(priority, getHoverString(0, 0));
+			}
+			dataCount.setHoverValue(howerMap);
+		}
+		return dataCount;
+	}
+
+	private void populateDataValues(DataCount dataCount, String priority, Pair<String, String> currentNodeIdentifier,
+			Map<Pair<String, String>, Map<String, List<JiraIssue>>> sprintPriorityWiseTotalDefectListMap,
+			Map<Pair<String, String>, Map<String, List<JiraIssue>>> sprintPriorityWiseClosedDefectListMap,
+			Map<Pair<String, String>, List<JiraIssue>> sprintWiseTotaldDefectListMap,
+			Map<Pair<String, String>, List<JiraIssue>> sprintWiseCloseddDefectListMap) {
+		Integer sprintPriorityTotalDefectCount = sprintPriorityWiseTotalDefectListMap.get(currentNodeIdentifier) != null
+				&& CollectionUtils
+						.isNotEmpty(sprintPriorityWiseTotalDefectListMap.get(currentNodeIdentifier).get(priority))
+								? sprintPriorityWiseTotalDefectListMap.get(currentNodeIdentifier).get(priority).size()
+								: 0;
+		Integer sprintPriorityClosedDefectCount = sprintPriorityWiseClosedDefectListMap
+				.get(currentNodeIdentifier) != null
+				&& CollectionUtils
+						.isNotEmpty(sprintPriorityWiseClosedDefectListMap.get(currentNodeIdentifier).get(priority))
+								? sprintPriorityWiseClosedDefectListMap.get(currentNodeIdentifier).get(priority).size()
+								: 0;
+		if (CommonConstant.OVERALL.equalsIgnoreCase(priority)) {
+			sprintPriorityTotalDefectCount = CollectionUtils
+					.isNotEmpty(sprintWiseTotaldDefectListMap.get(currentNodeIdentifier))
+							? sprintWiseTotaldDefectListMap.get(currentNodeIdentifier).size()
+							: 0;
+			sprintPriorityClosedDefectCount = CollectionUtils
+					.isNotEmpty(sprintWiseCloseddDefectListMap.get(currentNodeIdentifier))
+							? sprintWiseCloseddDefectListMap.get(currentNodeIdentifier).size()
+							: 0;
+		}
+		Map<String, Object> dataValues = new HashMap<>();
+		dataValues.put("totalValue", sprintPriorityTotalDefectCount);
+		dataValues.put("actualValue", sprintPriorityClosedDefectCount);
+		dataCount.setDataValues(dataValues);
+	}
+
+	private String getHoverString(int closedDefectCount, int totalDefectCount) {
+		return REMOVED + ":" + closedDefectCount + ", " + TOTAL + ":" + totalDefectCount;
+	}
+
+	private Double calculateDREValue(int closedDefectCount, int totalDefectCount) {
+		Double dreValue = 100D;
+		if (totalDefectCount > 0) {
+			dreValue = (double) Math.round((100.0 * closedDefectCount) / (totalDefectCount));
+		}
+		return dreValue;
+	}
+
+	private void populateExcelDataObject(String requestTrackerId, String sprintName, List<KPIExcelData> excelData,
+			Pair<String, String> currentNodeIdentifier,
+			Map<Pair<String, String>, List<JiraIssue>> sprintWiseCloseddDefectListMap,
+			Map<Pair<String, String>, List<JiraIssue>> sprintWiseTotaldDefectListMap) {
+		List<JiraIssue> sprintWiseClosedDefectList = sprintWiseCloseddDefectListMap.get(currentNodeIdentifier);
+		List<JiraIssue> sprintWiseTotaldDefectList = sprintWiseTotaldDefectListMap.get(currentNodeIdentifier);
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			Map<String, JiraIssue> totalDefectList = new HashMap<>();
 			sprintWiseTotaldDefectList.stream().forEach(bugs -> totalDefectList.putIfAbsent(bugs.getNumber(), bugs));
-
 			KPIExcelUtility.populateDefectRelatedExcelData(sprintName, totalDefectList, sprintWiseClosedDefectList,
 					excelData, KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId());
 
@@ -348,7 +489,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 	/**
 	 * Sets logger for DB data.
-	 * 
+	 *
 	 * @param storyIdList
 	 * @param totalDefectList
 	 * @param closedDefectList
@@ -371,7 +512,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 	/**
 	 * Sets logger for sprint level KPI data.
-	 * 
+	 *
 	 * @param sprint
 	 * @param storyIdList
 	 * @param sprintWiseTotaldDefectList
@@ -396,24 +537,27 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 	/**
 	 * Sets map to show on hover of sprint node.
-	 * 
+	 *
 	 * @param sprintWiseHowerMap
 	 * @param sprint
-	 * @param closed
-	 * @param total
+	 * @param closedDefects
+	 * @param totalDefects
 	 */
 	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
-			Pair<String, String> sprint, List<JiraIssue> closed, List<JiraIssue> total) {
+			Pair<String, String> sprint, Map<String, List<JiraIssue>> closedDefects,
+			Map<String, List<JiraIssue>> totalDefects) {
 		Map<String, Object> howerMap = new LinkedHashMap<>();
-		if (CollectionUtils.isNotEmpty(closed)) {
-			howerMap.put(REMOVED, closed.size());
-		} else {
-			howerMap.put(REMOVED, 0);
-		}
-		if (CollectionUtils.isNotEmpty(total)) {
-			howerMap.put(TOTAL, total.size());
-		} else {
-			howerMap.put(TOTAL, 0);
+		if (closedDefects != null && totalDefects != null && CollectionUtils.isNotEmpty(totalDefects.keySet())) {
+			Set<String> priorities = totalDefects.keySet();
+			for (String priority : priorities) {
+				int closedDefectCount = CollectionUtils.isNotEmpty(closedDefects.get(priority))
+						? closedDefects.get(priority).size()
+						: 0;
+				int totalDefectCount = CollectionUtils.isNotEmpty(totalDefects.get(priority))
+						? totalDefects.get(priority).size()
+						: 0;
+				howerMap.put(priority, getHoverString(closedDefectCount, totalDefectCount));
+			}
 		}
 		sprintWiseHowerMap.put(sprint, howerMap);
 	}
@@ -421,6 +565,26 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
 		return calculateKpiValueForDouble(valueList, kpiName);
+	}
+
+	private Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap,
+			List<String> keyOrder) {
+		Map<String, List<DataCount>> sortedMap = new LinkedHashMap<>();
+		keyOrder.forEach(order -> {
+			if (null != trendMap.get(order)) {
+				sortedMap.put(order, trendMap.get(order));
+			}
+		});
+		return sortedMap;
+	}
+
+	private List<String> priorityTypes(boolean addOverall) {
+		if (addOverall) {
+			return Arrays.asList(CommonConstant.OVERALL, Constant.P1, Constant.P2, Constant.P3, Constant.P4,
+					Constant.MISC);
+		} else {
+			return Arrays.asList(Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
+		}
 	}
 
 }

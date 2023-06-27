@@ -309,7 +309,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
         if (this.getChartType(kpiId) === 'progress-bar') {
           this.kpiChartData[kpiId] = this.applyAggregationLogicForProgressBar(tempArr);
         } else {
-          this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
+          this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile, this.allKpiArray[idx]?.maturityRange);
         }
       } else {
         if(this.kpiSelectedFilterObj[kpiId]?.length > 0){

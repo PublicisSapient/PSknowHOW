@@ -74,40 +74,59 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 @RunWith(MockitoJUnitRunner.class)
 public class DREServiceImplTest {
-	private final static String CLOSEDBUGKEY = "closedBugKey";
-	private final static String TOTALBUGKEY = "totalBugKey";
+	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private KpiRequest kpiRequest;
+	private Map<String, Object> filterLevelMap;
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	List<JiraIssue> closedBugList = new ArrayList<>();
 	List<JiraIssue> totalBugList = new ArrayList<>();
-	@Mock
-	JiraIssueRepository jiraIssueRepository;
-	@Mock
-	CacheService cacheService;
-	@Mock
-	ConfigHelperService configHelperService;
-	@Mock
-	KpiHelperService kpiHelperService;
-	@InjectMocks
-	DREServiceImpl dreServiceImpl;
-	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
-	@Mock
-	FieldMappingRepository fieldMappingRepository;
-	@Mock
-	CustomApiConfig customApiSetting;
-	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
-	private KpiRequest kpiRequest;
-	private Map<String, Object> filterLevelMap;
+	private final static String CLOSEDBUGKEY = "closedBugKey";
+	private final static String TOTALBUGKEY = "totalBugKey";
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private List<DataCount> dataCountList = new ArrayList<>();
+
+	private List<DataCount> trendValues = new ArrayList<>();
+
+	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
+	String P1 = "p1,p1-blocker,blocker, 1, 0, p0";
+	String P2 = "p2, critical, p2-critical, 2";
+	String P3 = "p3, p3-major, major, 3";
+	String P4 = "p4, p4-minor, minor, 4, p5-trivial, 5,trivial";
+
+	@Mock
+	JiraIssueRepository jiraIssueRepository;
+
+	@Mock
+	CacheService cacheService;
+
+	@Mock
+	ConfigHelperService configHelperService;
+
 	@Mock
 	private FilterHelperService filterHelperService;
+
+	@Mock
+	KpiHelperService kpiHelperService;
+
+	@InjectMocks
+	DREServiceImpl dreServiceImpl;
+
+	@Mock
+	ProjectBasicConfigRepository projectConfigRepository;
+
+	@Mock
+	FieldMappingRepository fieldMappingRepository;
+
+	@Mock
+	CustomApiConfig customApiSetting;
+
 	@Mock
 	private CommonService commonService;
 
 	@Before
 	public void setup() {
+
 
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId());
@@ -142,6 +161,8 @@ public class DREServiceImplTest {
 
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("defectRemovalEfficiency", "percentile");
+
+		setTreadValuesDataCount();
 
 	}
 
@@ -214,7 +235,7 @@ public class DREServiceImplTest {
 		try {
 			KpiElement kpiElement = dreServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("DRE Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
+			assertThat("DRE Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
 		} catch (Exception exception) {
 		}
 	}
@@ -224,5 +245,29 @@ public class DREServiceImplTest {
 		String kpiName = KPICode.DEFECT_REMOVAL_EFFICIENCY.name();
 		String type = dreServiceImpl.getQualifierType();
 		assertThat("KPI NAME: ", type, equalTo(kpiName));
+	}
+
+	private void setTreadValuesDataCount() {
+		List<DataCount> dataCountList = new ArrayList<>();
+		DataCount dataCountValue = new DataCount();
+		dataCountValue.setData(String.valueOf(new HashMap()));
+		dataCountValue.setValue(new HashMap());
+		dataCountList.add(dataCountValue);
+		DataCount dataCount = setDataCountValues("Scrum Project", "3", "4", dataCountList);
+		trendValues.add(dataCount);
+		trendValueMap.put("Overall", trendValues);
+		trendValueMap.put("P1", trendValues);
+		trendValueMap.put("P2", trendValues);
+		trendValueMap.put("P3", trendValues);
+		trendValueMap.put("P4", trendValues);
+	}
+
+	private DataCount setDataCountValues(String data, String maturity, Object maturityValue, Object value) {
+		DataCount dataCount = new DataCount();
+		dataCount.setData(data);
+		dataCount.setMaturity(maturity);
+		dataCount.setMaturityValue(maturityValue);
+		dataCount.setValue(value);
+		return dataCount;
 	}
 }

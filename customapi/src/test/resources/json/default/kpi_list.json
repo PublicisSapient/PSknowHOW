@@ -394,7 +394,8 @@
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
     "showTrend": true,
-    "aggregationCriteria": "average",
+    "kpiFilter": "multiSelectDropDown",
+    "aggregationCriteria": "percentage",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
     "maturityRange": ["-25","25-50","50-75","75-90","90-"]

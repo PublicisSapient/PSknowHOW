@@ -46,6 +46,8 @@ public final class Constant {
 
 	public static final String MEDIAN = "median";
 	public static final String PERCENTILE = "percentile";
+
+	public static final String PERCENTAGE_TYPE = "percentage";
 	public static final String SUM = "sum";
 	public static final String AVERAGE = "average";
 
