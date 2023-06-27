@@ -179,6 +179,7 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 		processorToolConnection.setTestCaseStatus(toolConfig.getTestCaseStatus());
 		processorToolConnection.setPatOAuthToken(connection.getPatOAuthToken());
 		processorToolConnection.setAzureIterationStatusFieldUpdate(toolConfig.isAzureIterationStatusFieldUpdate());
+		processorToolConnection.setProjectComponent(toolConfig.getProjectComponent());
 		return processorToolConnection;
 	}
 
