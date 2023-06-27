@@ -191,8 +191,8 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 		leafNode.forEach(node -> {
 
 			Map<String, LocalDateTime> jiraDateMap = validateUnAssignedJiraIssues(unAssignedJiraIssues,
-					readyForRefinementJiraIssues, acceptedInRefinementJiraIssues,
-					rejectedInRefinementJiraIssues, jiraIssueCustomHistories,
+					readyForRefinementJiraIssues, acceptedInRefinementJiraIssues, rejectedInRefinementJiraIssues,
+					jiraIssueCustomHistories,
 					configHelperService.getFieldMappingMap().get(node.getProjectFilter().getBasicProjectConfigId()));
 
 			Map<String, Object> defaultMap = new HashMap<>();
@@ -249,8 +249,8 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	 */
 	public Map<String, LocalDateTime> validateUnAssignedJiraIssues(List<JiraIssue> unAssignedJiraIssues,
 			List<JiraIssue> readyForRefinementJiraIssues, List<JiraIssue> acceptedInRefinementJiraIssues,
-			List<JiraIssue> rejectedInRefinementJiraIssues,
-			List<JiraIssueCustomHistory> jiraIssueCustomHistories, FieldMapping fieldMapping) {
+			List<JiraIssue> rejectedInRefinementJiraIssues, List<JiraIssueCustomHistory> jiraIssueCustomHistories,
+			FieldMapping fieldMapping) {
 		Map<String, LocalDateTime> jiraDateMap = new HashMap<>();
 		for (JiraIssueCustomHistory hist : jiraIssueCustomHistories) {
 			List<JiraIssue> jiraIssue = unAssignedJiraIssues.stream()
@@ -288,16 +288,16 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 				changeDate = story.getUpdatedOn();
 			} else {
 				fromStatus = story.getChangedTo();
-				if (CollectionUtils.isNotEmpty(fieldMapping.getJiraReadyForRefinement()) &&
-						fieldMapping.getJiraReadyForRefinement().contains(fromStatus)) {
+				if (CollectionUtils.isNotEmpty(fieldMapping.getJiraReadyForRefinement())
+						&& fieldMapping.getJiraReadyForRefinement().contains(fromStatus)) {
 					status = READY_FOR_REFINEMENT_ISSUE;
 					changeDate = story.getUpdatedOn();
-				} else if (CollectionUtils.isNotEmpty(fieldMapping.getJiraAcceptedInRefinement()) &&
-						fieldMapping.getJiraAcceptedInRefinement().contains(fromStatus)) {
+				} else if (CollectionUtils.isNotEmpty(fieldMapping.getJiraAcceptedInRefinement())
+						&& fieldMapping.getJiraAcceptedInRefinement().contains(fromStatus)) {
 					status = ACCEPTED_IN_REFINEMENT_ISSUE;
 					changeDate = story.getUpdatedOn();
-				} else if (CollectionUtils.isNotEmpty(fieldMapping.getJiraRejectedInRefinement()) &&
-						fieldMapping.getJiraRejectedInRefinement().contains(fromStatus)) {
+				} else if (CollectionUtils.isNotEmpty(fieldMapping.getJiraRejectedInRefinement())
+						&& fieldMapping.getJiraRejectedInRefinement().contains(fromStatus)) {
 					status = REJECTED_IN_REFINEMENT_ISSUE;
 					changeDate = story.getUpdatedOn();
 				}
@@ -476,8 +476,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 
 		List<JiraIssue> unAssignedJiraIssues = new ArrayList<>();
 		unAssignedJiraIssues.addAll(jiraIssueRepository.findUnassignedIssues(startDate, endDate, mapOfFilters));
-		List<String> historyData = unAssignedJiraIssues.stream().map(JiraIssue::getNumber)
-				.collect(Collectors.toList());
+		List<String> historyData = unAssignedJiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
 		jiraIssueCustomHistories.addAll(
 				jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(historyData, projectList));

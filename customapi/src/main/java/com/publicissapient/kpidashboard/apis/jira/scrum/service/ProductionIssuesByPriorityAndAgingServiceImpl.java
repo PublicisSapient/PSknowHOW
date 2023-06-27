@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -49,6 +48,7 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 /**
@@ -116,8 +116,8 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 		});
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-		resultListMap.put(RANGE_TICKET_LIST, jiraIssueRepository.findIssuesByDateAndTypeAndStatus(
-				mapOfFilters, uniqueProjectMap, startDate, endDate, RANGE, NIN, true));
+		resultListMap.put(RANGE_TICKET_LIST, jiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters,
+				uniqueProjectMap, startDate, endDate, RANGE, NIN, true));
 
 		return resultListMap;
 	}
@@ -257,8 +257,8 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 	 * @param projectWiseJiraIssueList
 	 * @param rangeWiseJiraIssuesMap
 	 */
-	private void filterDataBasedOnXAxisRangeWise(List<String> xAxisRange,
-			List<JiraIssue> projectWiseJiraIssueList, Map<String, List<JiraIssue>> rangeWiseJiraIssuesMap) {
+	private void filterDataBasedOnXAxisRangeWise(List<String> xAxisRange, List<JiraIssue> projectWiseJiraIssueList,
+			Map<String, List<JiraIssue>> rangeWiseJiraIssuesMap) {
 		String highestRange = xAxisRange.get(xAxisRange.size() - 1);
 		Map<Integer, String> monthRangeMap = new HashMap<>();
 

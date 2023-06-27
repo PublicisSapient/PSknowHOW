@@ -15,13 +15,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -59,6 +52,13 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 /**
  * Jira service class to fetch backlog readiness kpi details
@@ -147,8 +147,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		resultListMap.put(ISSUES, issues);
 
 		List<String> issueNumbers = issues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
-		List<JiraIssueCustomHistory> historyForIssues = jiraIssueCustomHistoryRepository
-				.findByStoryIDIn(issueNumbers);
+		List<JiraIssueCustomHistory> historyForIssues = jiraIssueCustomHistoryRepository.findByStoryIDIn(issueNumbers);
 		resultListMap.put(HISTORY, historyForIssues);
 
 		List<Node> sprintForStregthCalculation = leafNodeList.stream()
@@ -190,8 +189,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 		Double avgVelocity = getAverageSprintCapacity(sprintLeafNodeList,
 				(List<SprintDetails>) resultMap.get(SPRINT_WISE_SPRINT_DETAIL_MAP),
-				(List<JiraIssue>) resultMap.get(SPRINT_VELOCITY_KEY),
-				fieldMapping);
+				(List<JiraIssue>) resultMap.get(SPRINT_VELOCITY_KEY), fieldMapping);
 
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		if (CollectionUtils.isNotEmpty(allIssues)) {
@@ -324,15 +322,14 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 						&& DateTime.parse(node.getSprintFilter().getEndDate()).isBefore(DateTime.now()))
 				.limit(sprintCountForBackLogStrength).collect(Collectors.toList());
 
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
 		Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
-		getSprintForProject(allJiraIssue, sprintWiseIssues, sprintDetails, currentSprintLeafVelocityMap);
+		getSprintForProject(allJiraIssue, sprintDetails, currentSprintLeafVelocityMap);
 		AtomicDouble storyPoint = new AtomicDouble();
 		sprintForStregthCalculation.forEach(node -> {
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
 			double sprintVelocityForCurrentLeaf = calculateSprintVelocityValue(currentSprintLeafVelocityMap,
-					currentNodeIdentifier, sprintWiseIssues, fieldMapping);
+					currentNodeIdentifier, fieldMapping);
 			storyPoint.set(storyPoint.doubleValue() + sprintVelocityForCurrentLeaf);
 		});
 		LOGGER.debug("Velocity for {} sprints is {}", sprintCountForBackLogStrength, storyPoint.get());
@@ -341,40 +338,23 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 	public double calculateSprintVelocityValue(
 			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap,
-			Pair<String, String> currentNodeIdentifier, Map<Pair<String, String>, List<JiraIssue>> sprintIssues,
-			FieldMapping fieldMapping) {
+			Pair<String, String> currentNodeIdentifier, FieldMapping fieldMapping) {
 		double sprintVelocityForCurrentLeaf = 0.0d;
-		if (CollectionUtils.isNotEmpty(sprintIssues.get(currentNodeIdentifier))) {
-			LOGGER.debug("Current Node identifier is present in sprintjirsissues map {} ", currentNodeIdentifier);
-			List<JiraIssue> jiraIssueList = sprintIssues.get(currentNodeIdentifier);
+		if (Objects.nonNull(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
+			LOGGER.debug("Current Node identifier is present in currentSprintLeafVelocityMap map {} ",
+					currentNodeIdentifier);
+			Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				sprintVelocityForCurrentLeaf = jiraIssueList.stream()
-						.mapToDouble(ji -> Double.valueOf(ji.getEstimate())).sum();
+				sprintVelocityForCurrentLeaf = issueDetailsSet.stream()
+						.filter(issueDetails -> Objects.nonNull(issueDetails.getSprintIssue().getStoryPoints()))
+						.mapToDouble(issueDetails -> issueDetails.getSprintIssue().getStoryPoints()).sum();
 			} else {
-				double totalOriginalEstimate = jiraIssueList.stream()
-						.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-						.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+				double totalOriginalEstimate = issueDetailsSet.stream()
+						.filter(issueDetails -> Objects.nonNull(issueDetails.getSprintIssue().getOriginalEstimate()))
+						.mapToDouble(issueDetails -> issueDetails.getSprintIssue().getOriginalEstimate()).sum();
 				double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
 				sprintVelocityForCurrentLeaf = totalOriginalEstimateInHours / 60;
-			}
-		} else {
-			if (Objects.nonNull(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
-				LOGGER.debug("Current Node identifier is present in currentSprintLeafVelocityMap map {} ",
-						currentNodeIdentifier);
-				Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
-				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					sprintVelocityForCurrentLeaf = issueDetailsSet.stream()
-							.filter(issueDetails -> Objects.nonNull(issueDetails.getSprintIssue().getStoryPoints()))
-							.mapToDouble(issueDetails -> issueDetails.getSprintIssue().getStoryPoints()).sum();
-				} else {
-					double totalOriginalEstimate = issueDetailsSet.stream().filter(
-							issueDetails -> Objects.nonNull(issueDetails.getSprintIssue().getOriginalEstimate()))
-							.mapToDouble(issueDetails -> issueDetails.getSprintIssue().getOriginalEstimate()).sum();
-					double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
-					sprintVelocityForCurrentLeaf = totalOriginalEstimateInHours / 60;
-				}
 			}
 		}
 		LOGGER.debug("Sprint velocity for the sprint {} is {}", currentNodeIdentifier.getValue(),
@@ -382,8 +362,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		return sprintVelocityForCurrentLeaf;
 	}
 
-	public void getSprintForProject(List<JiraIssue> allJiraIssue,
-			Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues, List<SprintDetails> sprintDetails,
+	public void getSprintForProject(List<JiraIssue> allJiraIssue, List<SprintDetails> sprintDetails,
 			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap) {
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
 			sprintDetails.forEach(sd -> {
@@ -407,24 +386,6 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 					});
 				}
 			});
-		} else {
-			if (CollectionUtils.isNotEmpty(allJiraIssue)) {
-				// start : for azure board sprint details collections empty so
-				// that we have to
-				// prepare data from jira issue
-				Map<String, List<JiraIssue>> projectWiseJiraIssues = allJiraIssue.stream()
-						.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
-				projectWiseJiraIssues.forEach((basicProjectConfigId, projectWiseIssuesList) -> {
-					Map<String, List<JiraIssue>> sprintWiseJiraIssues = projectWiseIssuesList.stream()
-							.filter(jiraIssue -> Objects.nonNull(jiraIssue.getSprintID()))
-							.collect(Collectors.groupingBy(JiraIssue::getSprintID));
-					sprintWiseJiraIssues.forEach((sprintId, sprintWiseIssuesList) -> sprintWiseIssues
-							.put(Pair.of(basicProjectConfigId, sprintId), sprintWiseIssuesList));
-				});
-			}
-			// end : for azure board sprint details collections empty so that we
-			// have to
-			// prepare data from jira issue.
 		}
 	}
 

@@ -78,7 +78,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	@Autowired
 	private KpiHelperService kpiHelperService;
 
-
 	/**
 	 * Gets qualifier type
 	 *

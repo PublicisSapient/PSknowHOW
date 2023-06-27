@@ -191,13 +191,11 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 
 		List<JiraIssue> storyList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 				uniqueProjectMapForStories);
-		List<String> storyIssueNumberList = storyList.stream().map(JiraIssue::getNumber)
-				.collect(Collectors.toList());
+		List<String> storyIssueNumberList = storyList.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
+		resultListMap.put(STORY_LIST, storyIssueNumberList);
 
 		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 				Arrays.asList(NormalizedJira.TEST_TYPE.getValue()));
-		resultListMap.put(STORY_LIST, storyIssueNumberList);
-
 		resultListMap.put(TOTAL_TEST_CASES,
 				testCaseDetailsRepository.findNonRegressionTestDetails(mapOfFilters, uniqueProjectMap, NIN));
 		return resultListMap;
