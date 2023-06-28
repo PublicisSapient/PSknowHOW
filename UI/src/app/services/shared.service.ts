@@ -323,7 +323,8 @@ export class SharedService {
     }else{
       this.currentUserDetails={...this.currentUserDetails,...details};
     }
-
+    console.log('set details: ' , details);
+    console.log('currentUserDetails : ',this.currentUserDetails);
     this.currentUserDetailsSubject.next(this.currentUserDetails);
   }
 
