@@ -419,6 +419,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
           const tempObj = {};
           for (const prop in filters) {
             tempObj[prop] = ['Overall'];
+            if(data[key]?.kpiId === 'kpi3' && filters[prop]?.filterType === 'Lead Time'){
+              tempObj[prop] = filters[prop]['options'][0];
+              break;
+            }
           }
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
           this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
@@ -437,7 +441,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
         && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0
         && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')
-        && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0) {
+        && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0
+        && Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter1'])
+        && Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter2'])) {
         const tempArr = [];
         const preAggregatedValues = [];
         /** tempArr: array with combination of all items of filter1 and filter2 */
@@ -456,8 +462,8 @@ export class BacklogComponent implements OnInit, OnDestroy{
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
-      } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0)
-        || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0)) {
+      } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter1']) && !this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2'))
+        || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter2']) && !this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1'))) {
         const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
         let preAggregatedValues = [];
         for (let i = 0; i < filters?.length; i++) {
@@ -468,6 +474,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
+      }else if(this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && (
+        !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter1']) || !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter2'])
+      )){
+        this.getChartDataForCardWithCombinationFilter(kpiId,idx,trendValueList);
       } else {
         /** when there are no kpi level filters */
         this.kpiChartData[kpiId] = [];
@@ -486,6 +496,30 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
     if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
+    }
+  }
+
+  getChartDataForCardWithCombinationFilter(kpiId, idx,trendValueList){
+    let preAggregatedValues =[];
+    for(const filter in this.kpiSelectedFilterObj[kpiId]){
+      let tempArr = [];
+      if(preAggregatedValues.length > 0){
+        tempArr = preAggregatedValues;
+      }else{
+        tempArr = trendValueList?.value ? trendValueList?.value : [];
+      }
+
+      if(Array.isArray(this.kpiSelectedFilterObj[kpiId][filter])){
+        preAggregatedValues = [ ...tempArr.filter((x) => this.kpiSelectedFilterObj[kpiId][filter].includes(x[filter]))];
+      }else{
+        preAggregatedValues = [ ...tempArr.filter((x) =>  x[filter] === this.kpiSelectedFilterObj[kpiId][filter])];
+      }
+    }
+
+    if (preAggregatedValues?.length > 1) {
+      this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+    } else {
+      this.kpiChartData[kpiId] = [...preAggregatedValues];
     }
   }
 
