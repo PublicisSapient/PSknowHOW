@@ -60,7 +60,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	private static final String DOD_TO_LIVE = "DoD - Live";
 	private static final String PROJECT = "project";
 	private static final String OVERALL = "Overall";
-	private static final String SEARCH_BY_LEAD_TYPE = "Lead Type";
+	private static final String SEARCH_BY_LEAD_TYPE = "Lead Time";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Issue Type";
 	private static final String SEARCH_BY_ISSUE_TIME = "Lead Time";
 	private static final String ISSUE_COUNT = "Issue Count";
@@ -246,12 +246,12 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				intakeToDorIterationKpiValue.setFilter2(type);
 				intakeToDorIterationKpiValue.setFilter1(INTAKE_TO_DOR);
 				List<IterationKpiData> intakeToDorKpiDataList = new ArrayList<>();
+				intakeToDorKpiDataList
+						.add(new IterationKpiData(INTAKE_TO_DOR, ObjectUtils.defaultIfNull(intakeDor, 0L).doubleValue(),
+								null, null, DAYS, null));
 				intakeToDorKpiDataList.add(new IterationKpiData(ISSUE_COUNT,
 						ObjectUtils.defaultIfNull(intakeDorTime.size(), 0L).doubleValue(), null, null, null,
 						getIterationKpiModalValue(intakeDorModalValues, cycleTimeList)));
-				intakeToDorKpiDataList
-						.add(new IterationKpiData(INTAKE_TO_DOR, ObjectUtils.defaultIfNull(intakeDor, 0L).doubleValue(),
-								null, null, DAYS, getIterationKpiModalValue(intakeDorModalValues, cycleTimeList)));
 				intakeToDorIterationKpiValue.setData(intakeToDorKpiDataList);
 				dataList.add(intakeToDorIterationKpiValue);
 
@@ -259,12 +259,12 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				dorToDodIterationKpiValue.setFilter2(type);
 				dorToDodIterationKpiValue.setFilter1(DOR_TO_DOD);
 				List<IterationKpiData> dorToDodKpiDataList = new ArrayList<>();
+				dorToDodKpiDataList
+						.add(new IterationKpiData(DOR_TO_DOD, ObjectUtils.defaultIfNull(dorDod, 0L).doubleValue(), null,
+								null, DAYS, null));
 				dorToDodKpiDataList.add(new IterationKpiData(ISSUE_COUNT,
 						ObjectUtils.defaultIfNull(dorDodTime.size(), 0L).doubleValue(), null, null, null,
 						getIterationKpiModalValue(dorDodModalValues, cycleTimeList)));
-				dorToDodKpiDataList
-						.add(new IterationKpiData(DOR_TO_DOD, ObjectUtils.defaultIfNull(dorDod, 0L).doubleValue(), null,
-								null, DAYS, getIterationKpiModalValue(dorDodModalValues, cycleTimeList)));
 				dorToDodIterationKpiValue.setData(dorToDodKpiDataList);
 				dataList.add(dorToDodIterationKpiValue);
 
@@ -272,12 +272,12 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				dodToLiveIterationKpiValue.setFilter2(type);
 				dodToLiveIterationKpiValue.setFilter1(DOD_TO_LIVE);
 				List<IterationKpiData> dodToLiveKpiDataList = new ArrayList<>();
+				dodToLiveKpiDataList
+						.add(new IterationKpiData(DOD_TO_LIVE, ObjectUtils.defaultIfNull(dodLive, 0L).doubleValue(),
+								null, null, DAYS, null));
 				dodToLiveKpiDataList.add(new IterationKpiData(ISSUE_COUNT,
 						ObjectUtils.defaultIfNull(dodLiveTime.size(), 0L).doubleValue(), null, null, null,
 						getIterationKpiModalValue(dodLiveModalValues, cycleTimeList)));
-				dodToLiveKpiDataList
-						.add(new IterationKpiData(DOD_TO_LIVE, ObjectUtils.defaultIfNull(dodLive, 0L).doubleValue(),
-								null, null, DAYS, getIterationKpiModalValue(dodLiveModalValues, cycleTimeList)));
 				dodToLiveIterationKpiValue.setData(dodToLiveKpiDataList);
 				dataList.add(dodToLiveIterationKpiValue);
 
