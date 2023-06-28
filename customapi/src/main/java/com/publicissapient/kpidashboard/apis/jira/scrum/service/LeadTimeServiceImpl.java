@@ -211,12 +211,14 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				List<Long> dodLiveTime = new ArrayList<>();
 				List<Long> intakeDodTime = new ArrayList<>();
 				List<Long> dorLiveTime = new ArrayList<>();
+				List<Long> leadTimeList = new ArrayList<>();
 
 				Long intakeDor = 0L;
 				Long dorDod = 0L;
 				Long dodLive = 0L;
 				Long intakeDod = 0L;
 				Long dorLive = 0L;
+				Long leadTimeAvg = 0L;
 
 				List<JiraIssueCustomHistory> intakeDorModalValues = new ArrayList<>();
 				List<JiraIssueCustomHistory> dorDodModalValues = new ArrayList<>();
@@ -249,6 +251,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 								cycleTime.getDeliveryTime());
 						String deliverToLive = DateUtil.calTimeDiffInDays(cycleTime.getDeliveryTime(),
 								cycleTime.getLiveTime());
+						String leadTime = DateUtil.calTimeDiffInDays(cycleTime.getIntakeTime(),
+								cycleTime.getLiveTime());
 						if (!readyToIntake.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
 							intakeDorTime.add(Long.parseLong(readyToIntake));
 							intakeDorModalValues.add(jiraIssueCustomHistory);
@@ -259,6 +263,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 						}
 						if (!deliverToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
 							dodLiveTime.add(Long.parseLong(deliverToLive));
+							leadTimeList.add(Long.parseLong(leadTime));
 							dodLiveModalValues.add(jiraIssueCustomHistory);
 						}
 						String intakeToDod = DateUtil.calTimeDiffInDays(cycleTime.getIntakeTime(),
@@ -283,6 +288,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 					dodLive = AggregationUtils.averageLong(dodLiveTime);
 					intakeDod = AggregationUtils.averageLong(intakeDodTime);
 					dorLive = AggregationUtils.averageLong(dorLiveTime);
+					leadTimeAvg = AggregationUtils.averageLong(leadTimeList);
 				}
 				prepareIterationKpiValue(type, INTAKE_TO_DOR, intakeDor, intakeDorTime, intakeDorModalValues,
 						cycleTimeList, dataList);
@@ -294,7 +300,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 						cycleTimeList, dataList);
 				prepareIterationKpiValue(type, DOR_TO_LIVE, dorLive, dorLiveTime, dorLiveModalValues, cycleTimeList,
 						dataList);
-				prepareIterationKpiValue(type, LEAD_TIME, dodLive, dodLiveTime, dodLiveModalValues, cycleTimeList,
+				prepareIterationKpiValue(type, LEAD_TIME, leadTimeAvg, leadTimeList, dodLiveModalValues, cycleTimeList,
 						dataList);
 
 			});

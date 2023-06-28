@@ -681,13 +681,26 @@ public final class KpiDataHelper {
 				iterationKpiModalValue.setIssueId(customHistory.getStoryID());
 				iterationKpiModalValue.setIssueURL(customHistory.getUrl());
 				iterationKpiModalValue.setDescription(customHistory.getDescription());
-				iterationKpiModalValue
-						.setIntakeToDor(DateUtil.calTimeDiffInDays(cycleTimeValidationData.getIntakeDate(),
-								cycleTimeValidationData.getDorDate()));
+				iterationKpiModalValue.setIntakeToDor(DateUtil.calTimeDiffInDays(
+						cycleTimeValidationData.getIntakeDate(), cycleTimeValidationData.getDorDate()));
 				iterationKpiModalValue.setDorToDod(DateUtil.calTimeDiffInDays(cycleTimeValidationData.getDorDate(),
 						cycleTimeValidationData.getDodDate()));
 				iterationKpiModalValue.setDodToLive(DateUtil.calTimeDiffInDays(cycleTimeValidationData.getDodDate(),
 						cycleTimeValidationData.getLiveDate()));
+				String intakeToDod = DateUtil.calTimeDiffInDays(cycleTimeValidationData.getIntakeDate(),
+						cycleTimeValidationData.getDodDate());
+				if (cycleTimeValidationData.getDorDate() != null
+						&& !intakeToDod.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+					iterationKpiModalValue.setIntakeToDod(intakeToDod);
+				} else
+					iterationKpiModalValue.setIntakeToDod(Constant.NOT_AVAILABLE);
+				String dorToLive = DateUtil.calTimeDiffInDays(cycleTimeValidationData.getDorDate(),
+						cycleTimeValidationData.getLiveDate());
+				if (cycleTimeValidationData.getDodDate() != null
+						&& !dorToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+					iterationKpiModalValue.setDorToLive(dorToLive);
+				} else
+					iterationKpiModalValue.setDorToLive(Constant.NOT_AVAILABLE);
 				iterationKpiModalValue.setLeadTime(DateUtil.calTimeDiffInDays(cycleTimeValidationData.getIntakeDate(),
 						cycleTimeValidationData.getLiveDate()));
 				dataMap.put(customHistory.getStoryID(), iterationKpiModalValue);
