@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -35,6 +36,8 @@ public class ZephyrServerImpl implements ZephyrClient {
 	private static final String QUERY_PARAM = "&query=";
 	private static final String START_AT = "startAt";
 	private static final String MAX_RESULTS = "maxResults";
+	private static final String COMPONENT = "component = \"";
+	private static final String AND = " AND ";
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -65,6 +68,12 @@ public class ZephyrServerImpl implements ZephyrClient {
 			queryBuilder.append(QUERY_PARAM).append(PROJECT_KEY);
 			queryBuilder.append(projectConfig.getProjectKey());
 			queryBuilder.append(INVERTED_COMMA);
+			if(ObjectUtils.isNotEmpty(projectConfig.getProcessorToolConnection().getProjectComponent()))
+			{
+				queryBuilder.append(AND);
+				queryBuilder.append(COMPONENT).append(projectConfig.getProcessorToolConnection().getProjectComponent());
+				queryBuilder.append(INVERTED_COMMA);
+			}
 
 			log.info("ZEPHYR query executed {} ....", queryBuilder);
 			if (StringUtils.isNotBlank(queryBuilder)) {

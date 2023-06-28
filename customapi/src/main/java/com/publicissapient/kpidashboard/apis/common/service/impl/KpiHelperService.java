@@ -588,7 +588,7 @@ public class KpiHelperService { // NOPMD
 			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
 
-		} 
+		}
 
 		return resultListMap;
 	}
