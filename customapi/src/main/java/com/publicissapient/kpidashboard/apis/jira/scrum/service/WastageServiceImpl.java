@@ -22,15 +22,7 @@ import static com.publicissapient.kpidashboard.common.constant.CommonConstant.OV
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -167,8 +159,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		List<Node> latestSprintNode = new ArrayList<>();
-		Node latestSprint = sprintLeafNodeList.get(0);
-		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
+			Node latestSprint = sprintLeafNodeList.get(0);
+			Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
@@ -365,22 +357,26 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			} else {
 				// Find fetch the next element of flagStatusUpdationLog
 				JiraHistoryChangeLog nextEntry = flagStatusUpdationLog.get(index + 1);
-				if (!nextEntry.getChangedTo().equalsIgnoreCase(CommonConstant.REQUIRED_ATTENTION_FLAG)) {
-					LocalDateTime nextEntryActivityDate = nextEntry.getUpdatedOn();
-					// Checking if both alternate element are inside the sprint start and end date
-					if (!(entryActivityDate.isBefore(sprintStartDate)
-							&& nextEntryActivityDate.isBefore(sprintStartDate))
-							&& !(entryActivityDate.isAfter(sprintEndDate)
-									&& nextEntryActivityDate.isAfter(sprintEndDate))) {
-						hours = hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
-								nextEntryActivityDate);
-					}
-				}
+				hours = getHours(sprintStartDate, sprintEndDate, entryActivityDate, hours, nextEntry);
 			}
 			if (hours != 0)
 				time += hours;
 		}
 		return time;
+	}
+
+	private long getHours(LocalDateTime sprintStartDate, LocalDateTime sprintEndDate, LocalDateTime entryActivityDate, long hours, JiraHistoryChangeLog nextEntry) {
+		if (!nextEntry.getChangedTo().equalsIgnoreCase(CommonConstant.REQUIRED_ATTENTION_FLAG)) {
+			LocalDateTime nextEntryActivityDate = nextEntry.getUpdatedOn();
+			// Checking if both alternate element are inside the sprint start and end date
+			if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
+					&& !(entryActivityDate.isAfter(sprintEndDate)
+					&& nextEntryActivityDate.isAfter(sprintEndDate)) && !(isWeekEnd(entryActivityDate) && isWeekEnd(nextEntryActivityDate))) {
+					hours = hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
+							nextEntryActivityDate);
+			}
+		}
+		return hours;
 	}
 
 	private int calculateBlockandwaitTimeinDays(int timeInHours) {
@@ -422,14 +418,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			} else {
 				// Find fetch the next element of statusUpdationLog
 				JiraHistoryChangeLog nextEntry = statusUpdationLog.get(index + 1);
-				LocalDateTime nextEntryActivityDate = nextEntry.getUpdatedOn();
-				// Checking if both alternate element are inside the sprint start and end date
-				if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
-						&& !(entryActivityDate.isAfter(sprintEndDate)
-								&& nextEntryActivityDate.isAfter(sprintEndDate))) {
-					hours = hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
-							nextEntryActivityDate);
-				}
+				hours = getHours(sprintStartDate, sprintEndDate, entryActivityDate, hours, nextEntry);
+
 			}
 			if (hours != 0)
 				time += hours;
