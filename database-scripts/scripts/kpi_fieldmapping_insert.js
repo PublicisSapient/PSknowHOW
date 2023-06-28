@@ -520,7 +520,7 @@ db.getCollection('kpi_fieldmapping').insert(
                  'Workflow Status Mapping': [
                     'storyFirstStatus',
                     'jiraStatusForInProgress',
-                    'jiraDod',
+                    'jiraStatusForQa',
                     'jiraLiveStatus'
                 ]
              }
