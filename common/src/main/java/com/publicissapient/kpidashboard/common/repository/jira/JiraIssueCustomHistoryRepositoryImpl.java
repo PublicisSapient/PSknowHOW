@@ -63,6 +63,8 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	private static final String FIXVERSION_CHANGEDTO = "fixVersionUpdationLog.changedTo";
 	private static final String FIXVERSION_CHANGEDFROM = "fixVersionUpdationLog.changedFrom";
 	public static final String STATUS_UPDATION_LOG_STORY_CHANGED_TO = "statusUpdationLog.story.changedTo";
+	public static final String URL = "url";
+	public static final String DESCRIPTION = "description";
 	/** The operations. */
 	@Autowired
 	private MongoOperations operations;
@@ -280,6 +282,13 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 				.andOperator(projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
+		query.fields().include(STORY_ID);
+		query.fields().include(STORY_TYPE);
+		query.fields().include(BASIC_PROJ_CONF_ID);
+		query.fields().include(STATUS_CHANGE_LOG);
+		query.fields().include(TICKET_CREATED_DATE_FIELD);
+		query.fields().include(URL);
+		query.fields().include(DESCRIPTION);
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
 

@@ -218,7 +218,6 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				Long intakeDod = 0L;
 				Long dorLive = 0L;
 
-				issueTypeFilter.add(type);
 				List<JiraIssueCustomHistory> intakeDorModalValues = new ArrayList<>();
 				List<JiraIssueCustomHistory> dorDodModalValues = new ArrayList<>();
 				List<JiraIssueCustomHistory> dodLiveModalValues = new ArrayList<>();
@@ -228,7 +227,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				if (CollectionUtils.isNotEmpty(jiraIssueCustomHistories)) {
 					// in below loop create list of day difference between Intake and
 					// DOR. Here Intake is created date of issue.
-					for (JiraIssueCustomHistory jiraIssueCustomHistory : typeWiseIssues.get(type)) {
+					issueTypeFilter.add(type);
+					for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistories) {
 						String dor = fieldMapping.getJiraDor();
 						List<String> dod = fieldMapping.getJiraDod();
 						String live = fieldMapping.getJiraLiveStatus();
