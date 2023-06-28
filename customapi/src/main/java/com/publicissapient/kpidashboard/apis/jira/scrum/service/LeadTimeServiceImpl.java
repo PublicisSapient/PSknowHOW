@@ -1,17 +1,14 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,12 +20,14 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
@@ -45,9 +44,10 @@ import com.publicissapient.kpidashboard.common.model.application.CycleTime;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepositoryImpl;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,17 +58,16 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	private static final String INTAKE_TO_DOR = "Intake - DoR";
 	private static final String DOR_TO_DOD = "DoR - DoD";
 	private static final String DOD_TO_LIVE = "DoD - Live";
+	private static final String INTAKE_TO_DOD = "Intake - DoD";
+	private static final String DOR_TO_LIVE = "DoR - Live";
 	private static final String PROJECT = "project";
-	private static final String OVERALL = "Overall";
-	private static final String SEARCH_BY_LEAD_TYPE = "Lead Time";
+	private static final String LEAD_TIME = "Lead Time";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Issue Type";
-	private static final String SEARCH_BY_ISSUE_TIME = "Lead Time";
 	private static final String ISSUE_COUNT = "Issue Count";
 	public static final String DAYS = "Days";
-	private static final long DAYS_IN_SPRINT = 14;
-
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	@Autowired
-	private IssueBacklogCustomHistoryRepositoryImpl issueBacklogCustomHistoryRepository;
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -83,7 +82,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-												  KpiRequest kpiRequest) {
+			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
@@ -124,7 +123,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		resultListMap.put(STORY_HISTORY_DATA, issueBacklogCustomHistoryRepository
+		resultListMap.put(STORY_HISTORY_DATA, jiraIssueCustomHistoryRepository
 				.findByFilterAndFromStatusMapWithDateFilter(mapOfFilters, uniqueProjectMap, startDate, endDate));
 
 		return resultListMap;
@@ -137,9 +136,9 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-								 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		log.info("LEAD-TIME", kpiRequest.getRequestTrackerId());
+		log.info("LEAD-TIME -> requestTrackerId[{}]", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(PROJECT);
 		DataCount dataCount = new DataCount();
@@ -147,34 +146,36 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 		log.debug("[LEAD-TIME-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
-		log.debug("[LEAD-TIME-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
-				kpiRequest.getRequestTrackerId(), root);
 		return kpiElement;
 	}
 
-	private void projectWiseLeafNodeValue( List<Node> leafNodeList, KpiElement kpiElement,
-										   KpiRequest kpiRequest, DataCount dataCount) {
-		// calculate days in based on data points in sprints
-		String startDate = LocalDate.now().minusDays(customApiConfig.getSprintCountForFilters() * DAYS_IN_SPRINT)
-				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		String endDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	@SuppressWarnings("unchecked")
+	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest,
+			DataCount dataCount) {
+
+		// this method fetch dates for past history data
+		CustomDateRange dateRange = KpiDataHelper.getMonthsForPastDataHistory(customApiConfig.getLeadTimeMonthCount());
+
+		// get start and end date in yyyy-mm-dd format
+		String startDate = dateRange.getStartDate().format(DATE_FORMATTER);
+		String endDate = dateRange.getEndDate().format(DATE_FORMATTER);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, startDate, endDate, kpiRequest);
 
-		List<IssueBacklogCustomHistory> ticketList = (List<IssueBacklogCustomHistory>) resultMap
-				.get(STORY_HISTORY_DATA);
-		Map<String, List<IssueBacklogCustomHistory>> projectWiseJiraIssue = ticketList.stream()
-				.collect(Collectors.groupingBy(IssueBacklogCustomHistory::getBasicProjectConfigId));
+		List<JiraIssueCustomHistory> ticketList = (List<JiraIssueCustomHistory>) resultMap.get(STORY_HISTORY_DATA);
+
+		Map<String, List<JiraIssueCustomHistory>> projectWiseJiraIssue = ticketList.stream()
+				.collect(Collectors.groupingBy(JiraIssueCustomHistory::getBasicProjectConfigId));
 
 		kpiWithFilter(projectWiseJiraIssue, leafNodeList, kpiElement, dataCount);
 
 	}
 
-	private void kpiWithFilter(Map<String, List<IssueBacklogCustomHistory>> projectWiseJiraIssue,
-							   List<Node> leafNodeList, KpiElement kpiElement, DataCount dataCount) {
+	private void kpiWithFilter(Map<String, List<JiraIssueCustomHistory>> projectWiseJiraIssue, List<Node> leafNodeList,
+			KpiElement kpiElement, DataCount dataCount) {
 
 		leafNodeList.forEach(node -> {
-			List<IssueBacklogCustomHistory> issueCustomHistoryList = projectWiseJiraIssue
+			List<JiraIssueCustomHistory> issueCustomHistoryList = projectWiseJiraIssue
 					.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 			if (CollectionUtils.isNotEmpty(issueCustomHistoryList)) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -186,133 +187,120 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 		kpiElement.setModalHeads(KPIExcelColumn.LEAD_TIME.getColumns());
 	}
 
-	private void getCycleTime(List<IssueBacklogCustomHistory> jiraIssueCustomHistories, FieldMapping fieldMapping,
-							  List<CycleTimeValidationData> cycleTimeList, KpiElement kpiElement, DataCount trendValue) {
+	private void getCycleTime(List<JiraIssueCustomHistory> jiraIssueCustomHistoriesList, FieldMapping fieldMapping,
+			List<CycleTimeValidationData> cycleTimeList, KpiElement kpiElement, DataCount trendValue) {
 
 		Set<String> leadTimeFilter = new LinkedHashSet<>();
+		leadTimeFilter.add(LEAD_TIME);
 		leadTimeFilter.add(INTAKE_TO_DOR);
 		leadTimeFilter.add(DOR_TO_DOD);
 		leadTimeFilter.add(DOD_TO_LIVE);
+		leadTimeFilter.add(INTAKE_TO_DOD);
+		leadTimeFilter.add(DOR_TO_LIVE);
 		Set<String> issueTypeFilter = new LinkedHashSet<>();
 
 		List<IterationKpiValue> dataList = new ArrayList<>();
-		Set<IssueBacklogCustomHistory> overAllModalValues = new HashSet<>();
 
-		if (CollectionUtils.isNotEmpty(jiraIssueCustomHistories)) {
-			Map<String, List<IssueBacklogCustomHistory>> typeWiseIssues = jiraIssueCustomHistories
-					.stream().collect(Collectors.groupingBy(IssueBacklogCustomHistory::getStoryType));
-			typeWiseIssues.forEach((type, issueBacklogCustomHistories) -> {
+		if (CollectionUtils.isNotEmpty(jiraIssueCustomHistoriesList)) {
+			Map<String, List<JiraIssueCustomHistory>> typeWiseIssues = jiraIssueCustomHistoriesList.stream()
+					.collect(Collectors.groupingBy(JiraIssueCustomHistory::getStoryType));
+			typeWiseIssues.forEach((type, jiraIssueCustomHistories) -> {
 
 				List<Long> intakeDorTime = new ArrayList<>();
 				List<Long> dorDodTime = new ArrayList<>();
 				List<Long> dodLiveTime = new ArrayList<>();
+				List<Long> intakeDodTime = new ArrayList<>();
+				List<Long> dorLiveTime = new ArrayList<>();
 
 				Long intakeDor = 0L;
 				Long dorDod = 0L;
 				Long dodLive = 0L;
+				Long intakeDod = 0L;
+				Long dorLive = 0L;
 
 				issueTypeFilter.add(type);
-				List<IssueBacklogCustomHistory> intakeDorModalValues = new ArrayList<>();
-				List<IssueBacklogCustomHistory> dorDodModalValues = new ArrayList<>();
-				List<IssueBacklogCustomHistory> dodLiveModalValues = new ArrayList<>();
+				List<JiraIssueCustomHistory> intakeDorModalValues = new ArrayList<>();
+				List<JiraIssueCustomHistory> dorDodModalValues = new ArrayList<>();
+				List<JiraIssueCustomHistory> dodLiveModalValues = new ArrayList<>();
+				List<JiraIssueCustomHistory> intakeDodModalValues = new ArrayList<>();
+				List<JiraIssueCustomHistory> dorLiveModalValues = new ArrayList<>();
 
-				if (CollectionUtils.isNotEmpty(issueBacklogCustomHistories)) {
+				if (CollectionUtils.isNotEmpty(jiraIssueCustomHistories)) {
 					// in below loop create list of day difference between Intake and
 					// DOR. Here Intake is created date of issue.
-					for (IssueBacklogCustomHistory issueBacklogCustomHistory : typeWiseIssues.get(type)) {
+					for (JiraIssueCustomHistory jiraIssueCustomHistory : typeWiseIssues.get(type)) {
 						String dor = fieldMapping.getJiraDor();
 						List<String> dod = fieldMapping.getJiraDod();
 						String live = fieldMapping.getJiraLiveStatus();
 						CycleTimeValidationData cycleTimeValidationData = new CycleTimeValidationData();
-						cycleTimeValidationData.setIssueNumber(issueBacklogCustomHistory.getStoryID());
-						cycleTimeValidationData.setUrl(issueBacklogCustomHistory.getUrl());
-						cycleTimeValidationData.setIssueDesc(issueBacklogCustomHistory.getDescription());
+						cycleTimeValidationData.setIssueNumber(jiraIssueCustomHistory.getStoryID());
+						cycleTimeValidationData.setUrl(jiraIssueCustomHistory.getUrl());
+						cycleTimeValidationData.setIssueDesc(jiraIssueCustomHistory.getDescription());
 						CycleTime cycleTime = new CycleTime();
-						cycleTime.setIntakeTime(issueBacklogCustomHistory.getCreatedDate());
-						cycleTimeValidationData.setIntakeDate(issueBacklogCustomHistory.getCreatedDate());
-						issueBacklogCustomHistory.getStatusUpdationLog()
-								.forEach(sprintDetail -> updateCycleTimeValidationData(dor, dod, live,
-										cycleTimeValidationData, cycleTime, sprintDetail));
-						setCycleTimeAsPerFilter(intakeDorTime, dorDodTime, dodLiveTime, cycleTime, intakeDorModalValues,
-								dodLiveModalValues, dorDodModalValues, issueBacklogCustomHistory);
+						cycleTime.setIntakeTime(jiraIssueCustomHistory.getCreatedDate());
+						cycleTimeValidationData.setIntakeDate(jiraIssueCustomHistory.getCreatedDate());
+						jiraIssueCustomHistory.getStatusUpdationLog()
+								.forEach(statusUpdateLog -> updateCycleTimeValidationData(dor, dod, live,
+										cycleTimeValidationData, cycleTime, statusUpdateLog));
+
+						String readyToIntake = DateUtil.calTimeDiffInDays(cycleTime.getIntakeTime(),
+								cycleTime.getReadyTime());
+						String readyToDeliver = DateUtil.calTimeDiffInDays(cycleTime.getReadyTime(),
+								cycleTime.getDeliveryTime());
+						String deliverToLive = DateUtil.calTimeDiffInDays(cycleTime.getDeliveryTime(),
+								cycleTime.getLiveTime());
+						if (!readyToIntake.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+							intakeDorTime.add(Long.parseLong(readyToIntake));
+							intakeDorModalValues.add(jiraIssueCustomHistory);
+						}
+						if (!readyToDeliver.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+							dorDodTime.add(Long.parseLong(readyToDeliver));
+							dorDodModalValues.add(jiraIssueCustomHistory);
+						}
+						if (!deliverToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+							dodLiveTime.add(Long.parseLong(deliverToLive));
+							dodLiveModalValues.add(jiraIssueCustomHistory);
+						}
+						String intakeToDod = DateUtil.calTimeDiffInDays(cycleTime.getIntakeTime(),
+								cycleTime.getDeliveryTime());
+						if (cycleTime.getReadyTime() != null && !intakeToDod.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+							intakeDodTime.add(Long.parseLong(intakeToDod));
+							intakeDodModalValues.add(jiraIssueCustomHistory);
+						}
+						String dorToLive = DateUtil.calTimeDiffInDays(cycleTime.getReadyTime(),
+								cycleTime.getLiveTime());
+						if (cycleTime.getDeliveryTime() != null
+								&& !dorToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+							dorLiveTime.add(Long.parseLong(dorToLive));
+							dorLiveModalValues.add(jiraIssueCustomHistory);
+						}
+
 						cycleTimeList.add(cycleTimeValidationData);
 					}
 
 					intakeDor = AggregationUtils.averageLong(intakeDorTime);
 					dorDod = AggregationUtils.averageLong(dorDodTime);
 					dodLive = AggregationUtils.averageLong(dodLiveTime);
+					intakeDod = AggregationUtils.averageLong(intakeDodTime);
+					dorLive = AggregationUtils.averageLong(dorLiveTime);
 				}
-				IterationKpiValue intakeToDorIterationKpiValue = new IterationKpiValue();
-				intakeToDorIterationKpiValue.setFilter2(type);
-				intakeToDorIterationKpiValue.setFilter1(INTAKE_TO_DOR);
-				List<IterationKpiData> intakeToDorKpiDataList = new ArrayList<>();
-				intakeToDorKpiDataList
-						.add(new IterationKpiData(INTAKE_TO_DOR, ObjectUtils.defaultIfNull(intakeDor, 0L).doubleValue(),
-								null, null, DAYS, null));
-				intakeToDorKpiDataList.add(new IterationKpiData(ISSUE_COUNT,
-						ObjectUtils.defaultIfNull(intakeDorTime.size(), 0L).doubleValue(), null, null, null,
-						getIterationKpiModalValue(intakeDorModalValues, cycleTimeList)));
-				intakeToDorIterationKpiValue.setData(intakeToDorKpiDataList);
-				dataList.add(intakeToDorIterationKpiValue);
-
-				IterationKpiValue dorToDodIterationKpiValue = new IterationKpiValue();
-				dorToDodIterationKpiValue.setFilter2(type);
-				dorToDodIterationKpiValue.setFilter1(DOR_TO_DOD);
-				List<IterationKpiData> dorToDodKpiDataList = new ArrayList<>();
-				dorToDodKpiDataList
-						.add(new IterationKpiData(DOR_TO_DOD, ObjectUtils.defaultIfNull(dorDod, 0L).doubleValue(), null,
-								null, DAYS, null));
-				dorToDodKpiDataList.add(new IterationKpiData(ISSUE_COUNT,
-						ObjectUtils.defaultIfNull(dorDodTime.size(), 0L).doubleValue(), null, null, null,
-						getIterationKpiModalValue(dorDodModalValues, cycleTimeList)));
-				dorToDodIterationKpiValue.setData(dorToDodKpiDataList);
-				dataList.add(dorToDodIterationKpiValue);
-
-				IterationKpiValue dodToLiveIterationKpiValue = new IterationKpiValue();
-				dodToLiveIterationKpiValue.setFilter2(type);
-				dodToLiveIterationKpiValue.setFilter1(DOD_TO_LIVE);
-				List<IterationKpiData> dodToLiveKpiDataList = new ArrayList<>();
-				dodToLiveKpiDataList
-						.add(new IterationKpiData(DOD_TO_LIVE, ObjectUtils.defaultIfNull(dodLive, 0L).doubleValue(),
-								null, null, DAYS, null));
-				dodToLiveKpiDataList.add(new IterationKpiData(ISSUE_COUNT,
-						ObjectUtils.defaultIfNull(dodLiveTime.size(), 0L).doubleValue(), null, null, null,
-						getIterationKpiModalValue(dodLiveModalValues, cycleTimeList)));
-				dodToLiveIterationKpiValue.setData(dodToLiveKpiDataList);
-				dataList.add(dodToLiveIterationKpiValue);
-
-				checkAndAddToOverAllModalValueList(overAllModalValues, dodLiveModalValues);
-				checkAndAddToOverAllModalValueList(overAllModalValues, dorDodModalValues);
-				checkAndAddToOverAllModalValueList(overAllModalValues, intakeDorModalValues);
+				prepareIterationKpiValue(type, INTAKE_TO_DOR, intakeDor, intakeDorTime, intakeDorModalValues,
+						cycleTimeList, dataList);
+				prepareIterationKpiValue(type, DOR_TO_DOD, dorDod, dorDodTime, dorDodModalValues, cycleTimeList,
+						dataList);
+				prepareIterationKpiValue(type, DOD_TO_LIVE, dodLive, dodLiveTime, dodLiveModalValues, cycleTimeList,
+						dataList);
+				prepareIterationKpiValue(type, INTAKE_TO_DOD, intakeDod, intakeDodTime, intakeDodModalValues,
+						cycleTimeList, dataList);
+				prepareIterationKpiValue(type, DOR_TO_LIVE, dorLive, dorLiveTime, dorLiveModalValues, cycleTimeList,
+						dataList);
+				prepareIterationKpiValue(type, LEAD_TIME, dodLive, dodLiveTime, dodLiveModalValues, cycleTimeList,
+						dataList);
 
 			});
-			List<Long> intakeLiveTime = new ArrayList<>();
-			List<IterationKpiModalValue> overallKpiModalValues = new ArrayList<>();
-			List<IterationKpiModalValue> iterationKpiModalValues = getIterationKpiModalValue(
-					overAllModalValues.stream().collect(Collectors.toList()), cycleTimeList);
-			iterationKpiModalValues.stream().forEach(itr -> {
-				if (null != itr.getLeadTime() && !"NA".equalsIgnoreCase(itr.getLeadTime()) && null != itr.getDorToDod()
-						&& !"NA".equalsIgnoreCase(itr.getDorToDod()) && null != itr.getDodToLive()
-						&& !"NA".equalsIgnoreCase(itr.getDodToLive()) && null != itr.getIntakeToDor()
-						&& !"NA".equalsIgnoreCase(itr.getIntakeToDor())) {
-					intakeLiveTime.add(Long.valueOf(itr.getLeadTime()));
-					overallKpiModalValues.add(itr);
-				}
-			});
-			List<IterationKpiData> intakeToLiveKpiDataList = new ArrayList<>();
-			intakeToLiveKpiDataList.add(new IterationKpiData(ISSUE_COUNT,
-					ObjectUtils.defaultIfNull(intakeLiveTime.size(), 0L).doubleValue(), null, null, null,
-					overallKpiModalValues));
-			intakeToLiveKpiDataList.add(new IterationKpiData(SEARCH_BY_ISSUE_TIME,
-					ObjectUtils.defaultIfNull(AggregationUtils.averageLong(intakeLiveTime), 0L).doubleValue(), null,
-					null, DAYS, overallKpiModalValues));
-			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL,
-					intakeToLiveKpiDataList, null, null);
-
-			dataList.add(overAllIterationKpiValue);
 		}
 
-		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_LEAD_TYPE, leadTimeFilter);
+		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(LEAD_TIME, leadTimeFilter);
 		IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypeFilter);
 		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
 		// Modal Heads Options
@@ -321,19 +309,24 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 		kpiElement.setTrendValueList(trendValue);
 	}
 
-	private void checkAndAddToOverAllModalValueList(Set<IssueBacklogCustomHistory> overAllsdModalValues,
-													List<IssueBacklogCustomHistory> modalValues) {
-		modalValues.stream().forEach(modalVal -> {
-			Optional<IssueBacklogCustomHistory> issueBacklog = overAllsdModalValues.stream()
-					.filter(f -> f.getStoryID().equalsIgnoreCase(modalVal.getStoryID())).findFirst();
-			if (!issueBacklog.isPresent()) {
-				overAllsdModalValues.add(modalVal);
-			}
-		});
+	private void prepareIterationKpiValue(String issueTypeFilterName, String leadTimeFilterName, Long transitionTime,
+			List<Long> transitionTimeList, List<JiraIssueCustomHistory> transitionModalValues,
+			List<CycleTimeValidationData> cycleTimeList, List<IterationKpiValue> dataList) {
+		IterationKpiValue intakeToDorIterationKpiValue = new IterationKpiValue();
+		intakeToDorIterationKpiValue.setFilter2(issueTypeFilterName);
+		intakeToDorIterationKpiValue.setFilter1(leadTimeFilterName);
+		List<IterationKpiData> intakeToDorKpiDataList = new ArrayList<>();
+		intakeToDorKpiDataList.add(new IterationKpiData(leadTimeFilterName,
+				ObjectUtils.defaultIfNull(transitionTime, 0L).doubleValue(), null, null, DAYS, null));
+		intakeToDorKpiDataList.add(new IterationKpiData(ISSUE_COUNT,
+				ObjectUtils.defaultIfNull(transitionTimeList.size(), 0L).doubleValue(), null, null, null,
+				getIterationKpiModalValue(transitionModalValues, cycleTimeList)));
+		intakeToDorIterationKpiValue.setData(intakeToDorKpiDataList);
+		dataList.add(intakeToDorIterationKpiValue);
 	}
 
-	private List<IterationKpiModalValue> getIterationKpiModalValue(List<IssueBacklogCustomHistory> modalJiraIssues,
-																   List<CycleTimeValidationData> cycleTimeList) {
+	private List<IterationKpiModalValue> getIterationKpiModalValue(List<JiraIssueCustomHistory> modalJiraIssues,
+			List<CycleTimeValidationData> cycleTimeList) {
 		List<IterationKpiModalValue> iterationKpiDataList = new ArrayList<>();
 		Map<String, IterationKpiModalValue> dataMap = KpiDataHelper
 				.createMapOfModalObjectFromJiraHistory(modalJiraIssues, cycleTimeList);
@@ -341,39 +334,6 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			iterationKpiDataList.add(dataMap.get(entry.getKey()));
 		}
 		return iterationKpiDataList;
-	}
-
-	/**
-	 * calculate time as per filter based on cycle status time
-	 *
-	 * @param intakeDorTime
-	 * @param dorDodTime
-	 * @param dodLiveTime
-	 * @param cycleTime
-	 * @param intakeDorModalValues
-	 * @param dodLiveModalValues
-	 * @param dorDodModalValues
-	 * @param issueBacklogCustomHistory
-	 */
-	private void setCycleTimeAsPerFilter(List<Long> intakeDorTime, List<Long> dorDodTime, List<Long> dodLiveTime,
-										 CycleTime cycleTime, List<IssueBacklogCustomHistory> intakeDorModalValues,
-										 List<IssueBacklogCustomHistory> dodLiveModalValues, List<IssueBacklogCustomHistory> dorDodModalValues,
-										 IssueBacklogCustomHistory issueBacklogCustomHistory) {
-		if (cycleTime.getReadyTime() != null && cycleTime.getIntakeTime() != null) {
-			Long diff = cycleTime.getReadyTime().getMillis() - cycleTime.getIntakeTime().getMillis();
-			intakeDorTime.add(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
-			intakeDorModalValues.add(issueBacklogCustomHistory);
-		}
-		if (cycleTime.getDeliveryTime() != null && cycleTime.getReadyTime() != null) {
-			Long diff = cycleTime.getDeliveryTime().getMillis() - cycleTime.getReadyTime().getMillis();
-			dorDodTime.add(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
-			dorDodModalValues.add(issueBacklogCustomHistory);
-		}
-		if (cycleTime.getLiveTime() != null && cycleTime.getDeliveryTime() != null) {
-			Long diff = cycleTime.getLiveTime().getMillis() - cycleTime.getDeliveryTime().getMillis();
-			dodLiveTime.add(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
-			dodLiveModalValues.add(issueBacklogCustomHistory);
-		}
 	}
 
 	/**
@@ -389,24 +349,24 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	 *            CycleTimeValidationData
 	 * @param cycleTime
 	 *            CycleTime
-	 * @param jiraIssueSprint
+	 * @param statusUpdateLog
 	 *            FeatureSprint
 	 */
 	private void updateCycleTimeValidationData(String dor, List<String> dod, String live,
-											   CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
-											   JiraHistoryChangeLog jiraIssueSprint) {
-		if (cycleTime.getReadyTime() == null && null != dor && dor.equalsIgnoreCase(jiraIssueSprint.getChangedTo())) {
-			cycleTime.setReadyTime(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
-			cycleTimeValidationData.setDorDate(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
+			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
+			JiraHistoryChangeLog statusUpdateLog) {
+		if (cycleTime.getReadyTime() == null && null != dor && dor.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
+			cycleTime.setReadyTime(DateTime.parse(statusUpdateLog.getUpdatedOn().toString()));
+			cycleTimeValidationData.setDorDate(DateTime.parse(statusUpdateLog.getUpdatedOn().toString()));
 		}
 		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(dod)
-				&& dod.contains(jiraIssueSprint.getChangedTo())) {
-			cycleTime.setDeliveryTime(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
-			cycleTimeValidationData.setDodDate(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
+				&& dod.contains(statusUpdateLog.getChangedTo())) {
+			cycleTime.setDeliveryTime(DateTime.parse(statusUpdateLog.getUpdatedOn().toString()));
+			cycleTimeValidationData.setDodDate(DateTime.parse(statusUpdateLog.getUpdatedOn().toString()));
 		}
-		if (Optional.ofNullable(live).isPresent() && live.equalsIgnoreCase(jiraIssueSprint.getChangedTo())) {
-			cycleTime.setLiveTime(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
-			cycleTimeValidationData.setLiveDate(DateTime.parse(jiraIssueSprint.getUpdatedOn().toString()));
+		if (Optional.ofNullable(live).isPresent() && live.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
+			cycleTime.setLiveTime(DateTime.parse(statusUpdateLog.getUpdatedOn().toString()));
+			cycleTimeValidationData.setLiveDate(DateTime.parse(statusUpdateLog.getUpdatedOn().toString()));
 		}
 	}
 

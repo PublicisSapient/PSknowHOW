@@ -62,6 +62,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	private static final String BASIC_PROJ_CONF_ID = "basicProjectConfigId";
 	private static final String FIXVERSION_CHANGEDTO = "fixVersionUpdationLog.changedTo";
 	private static final String FIXVERSION_CHANGEDFROM = "fixVersionUpdationLog.changedFrom";
+	public static final String STATUS_UPDATION_LOG_STORY_CHANGED_TO = "statusUpdationLog.story.changedTo";
 	/** The operations. */
 	@Autowired
 	private MongoOperations operations;
@@ -116,7 +117,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		uniqueProjectMap.forEach((project, filterMap) -> {
 			Criteria projectCriteria = new Criteria();
 			projectCriteria.and(BASIC_PROJ_CONF_ID).is(project);
-			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get("statusUpdationLog.story.changedTo"));
+			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get(STATUS_UPDATION_LOG_STORY_CHANGED_TO));
 			storyStatuscriteriaList.add(projectCriteria);
 		});
 
@@ -200,7 +201,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		List<Criteria> projectCriteriaList = new ArrayList<>();
 		uniqueProjectMap.forEach((project, filterMap) -> {
 			Criteria projectCriteria = new Criteria();
-			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get("statusUpdationLog.story.changedTo"));
+			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get(STATUS_UPDATION_LOG_STORY_CHANGED_TO));
 			projectCriteriaList.add(projectCriteria);
 		});
 
@@ -236,6 +237,50 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		query.fields().include(VERSION_CHANGE_LOG);
 		return operations.find(query, JiraIssueCustomHistory.class);
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<JiraIssueCustomHistory> findByFilterAndFromStatusMapWithDateFilter(
+			Map<String, List<String>> mapOfFilters, Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom,
+			String dateTo) {
+		Criteria criteria = new Criteria();
+
+		DateTime startDate = new DateTime(new StringBuilder(dateFrom).append(START_TIME).toString(), DateTimeZone.UTC);
+		DateTime endDate = new DateTime(new StringBuilder(dateTo).append(END_TIME).toString(), DateTimeZone.UTC);
+
+		// map of common filters Project and Sprint
+		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
+			if (CollectionUtils.isNotEmpty(entry.getValue())) {
+				criteria = criteria.and(entry.getKey()).in(entry.getValue());
+			}
+		}
+
+		criteria.and(TICKET_CREATED_DATE_FIELD).gte(startDate).lte(endDate);
+
+		// project level status filter
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			if (null != filterMap.get(STATUS_UPDATION_LOG_STORY_CHANGED_TO)) {
+				projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get(STATUS_UPDATION_LOG_STORY_CHANGED_TO));
+			}
+			projectCriteriaList.add(projectCriteria);
+		});
+
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			if (null != filterMap.get(STORY_TYPE)) {
+				projectCriteria.and(STORY_TYPE).in((List<Pattern>) filterMap.get(STORY_TYPE));
+			}
+			projectCriteriaList.add(projectCriteria);
+		});
+
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+				.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+		Query query = new Query(criteriaProjectLevelAdded);
+		return operations.find(query, JiraIssueCustomHistory.class);
 	}
 
 }

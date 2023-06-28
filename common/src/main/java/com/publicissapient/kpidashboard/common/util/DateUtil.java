@@ -32,6 +32,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -65,6 +66,7 @@ public class DateUtil {
 	public static final String BASIC_DATE_FORMAT = "dd-MM-yyyy";
 
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+	public static final String NOT_APPLICABLE = "NA";
 
 	private DateUtil() {
 		// to prevent creation on object
@@ -234,5 +236,13 @@ public class DateUtil {
 			strDate = dateTimeFormatter(dateTime, DISPLAY_DATE_FORMAT);
 		}
 		return strDate;
+	}
+
+	public static String calTimeDiffInDays(DateTime startDate, DateTime endDate) {
+		if (startDate != null && endDate != null) {
+			Days days = Days.daysBetween(startDate, endDate);
+			return String.valueOf(days.getDays());
+		}
+		return NOT_APPLICABLE;
 	}
 }

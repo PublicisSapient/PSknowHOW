@@ -213,6 +213,8 @@ public class CustomApiConfig {// NOPMD
 	private int backlogWeekCount;
 	@Value("${flowKpiMonthCount}")
 	private int flowKpiMonthCount;
+	@Value("${leadTimeMonthCount}")
+	private int leadTimeMonthCount;
 	private String samlTokenStartString;
 	private String samlTokenEndString;
 	private String samlUrlStartString;
@@ -1033,4 +1035,14 @@ public class CustomApiConfig {// NOPMD
 	public void setFlowKpiMonthCount(int flowKpiMonthCount) {
 		this.flowKpiMonthCount = flowKpiMonthCount;
 	}
+
+	public int getLeadTimeMonthCount() {
+		return leadTimeMonthCount;
+	}
+
+	public void setLeadTimeMonthCount(int leadTimeMonthCount) {
+		this.leadTimeMonthCount = leadTimeMonthCount;
+	}
+
+
 }
