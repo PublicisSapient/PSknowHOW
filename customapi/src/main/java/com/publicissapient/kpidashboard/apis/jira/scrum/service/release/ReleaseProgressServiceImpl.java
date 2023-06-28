@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,10 +39,12 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseProgressServiceImpl.class);
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String RELEASE_JIRA_ISSUE_STATUS = "releaseJiraIssueStatus";
 	private static final String TO_DO = "To Do";
@@ -75,7 +75,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Release Progress -> Requested sprint : {}", leafNode.getName());
+			log.info("Release Progress -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 
 			List<JiraIssue> releaseIssues = getFilteredReleaseJiraIssuesFromBaseClass(null);
@@ -99,7 +99,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		LOGGER.info("ReleaseProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("ReleaseProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 

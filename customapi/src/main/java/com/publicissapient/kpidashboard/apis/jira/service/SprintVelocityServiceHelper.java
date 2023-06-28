@@ -9,8 +9,6 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -19,16 +17,17 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Helper class for the sprint velocity calculation
  * 
  * @author dhachuda
  *
  */
+@Slf4j
 @Service
 public class SprintVelocityServiceHelper {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(SprintVelocityServiceHelper.class);
 
 	/**
 	 * Fetches the issues for each sprint
@@ -47,7 +46,7 @@ public class SprintVelocityServiceHelper {
 
 				Pair<String, String> currentNodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(),
 						sd.getSprintID());
-				LOGGER.debug("Issue count for the sprint {} is {}", sd.getSprintID(),
+				log.debug("Issue count for the sprint {} is {}", sd.getSprintID(),
 						filteredJiraIssuesListBasedOnTypeFromSprintDetails.size());
 				currentSprintLeafVelocityMap.put(currentNodeIdentifier,
 						filteredJiraIssuesListBasedOnTypeFromSprintDetails);
@@ -64,10 +63,10 @@ public class SprintVelocityServiceHelper {
 	 * @return
 	 */
 	public double calculateSprintVelocityValue(Map<Pair<String, String>, Set<JiraIssue>> currentSprintLeafVelocityMap,
-			Pair<String, String> currentNodeIdentifier,FieldMapping fieldMapping) {
+			Pair<String, String> currentNodeIdentifier, FieldMapping fieldMapping) {
 		double sprintVelocityForCurrentLeaf = 0.0d;
 		if (Objects.nonNull(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
-			LOGGER.debug("Current Node identifier is present in currentSprintLeafVelocityMap map {} ",
+			log.debug("Current Node identifier is present in currentSprintLeafVelocityMap map {} ",
 					currentNodeIdentifier);
 			Set<JiraIssue> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
@@ -79,11 +78,11 @@ public class SprintVelocityServiceHelper {
 						.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
 						.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
 				double inHours = totalOriginalEstimate / 60;
-				sprintVelocityForCurrentLeaf=inHours/fieldMapping.getStoryPointToHourMapping();
+				sprintVelocityForCurrentLeaf = inHours / fieldMapping.getStoryPointToHourMapping();
 
 			}
 		}
-		LOGGER.debug("Sprint velocity for the sprint {} is {}", currentNodeIdentifier.getValue(),
+		log.debug("Sprint velocity for the sprint {} is {}", currentNodeIdentifier.getValue(),
 				sprintVelocityForCurrentLeaf);
 		return sprintVelocityForCurrentLeaf;
 	}

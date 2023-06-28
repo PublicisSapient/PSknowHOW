@@ -105,4 +105,5 @@ public class ProjectToolConfigDTO {
 
 	// jiraIterationCompletionStatusCustomField field mapping update identifier
 	private boolean azureIterationStatusFieldUpdate;
+	private String projectComponent;
 }

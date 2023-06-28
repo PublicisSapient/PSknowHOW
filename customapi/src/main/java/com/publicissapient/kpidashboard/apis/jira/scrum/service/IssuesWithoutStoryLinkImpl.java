@@ -308,7 +308,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
 
 		resultListMap.put(DEFECT_LIST, kpiHelperService.convertJiraIssueToBacklog(
-						jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn)));
+				jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn)));
 		return resultListMap;
 
 	}

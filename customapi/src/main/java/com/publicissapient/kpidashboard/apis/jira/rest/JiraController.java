@@ -25,8 +25,6 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,6 +52,8 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * This controller class handles Jira KPIs request. It handles all KPIs of Scrum
  * and Kanban.
@@ -61,10 +61,9 @@ import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeRes
  * @author tauakram
  */
 
+@Slf4j
 @RestController
 public class JiraController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(JiraController.class);
 
 	@Autowired
 	private JiraServiceR jiraService;
@@ -91,7 +90,7 @@ public class JiraController {
 			throws Exception {// NOSONAR
 
 		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
-		LOGGER.info("Received Jira KPI request {}", kpiRequest);
+		log.info("Received Jira KPI request {}", kpiRequest);
 
 		long jiraRequestStartTime = System.currentTimeMillis();
 		MDC.put("JiraRequestStartTime", String.valueOf(jiraRequestStartTime));
@@ -105,7 +104,7 @@ public class JiraController {
 		List<KpiElement> responseList = jiraService.process(kpiRequest);
 		MDC.put("TotalJiraRequestTime", String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
 
-		LOGGER.info("");
+		log.info("");
 		MDC.clear();
 		if (responseList.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
@@ -126,7 +125,7 @@ public class JiraController {
 	public ResponseEntity<List<KpiElement>> getJiraKanbanAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception { // NOSONAR
 		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
-		LOGGER.info("Received Jira Kanban KPI request {}", kpiRequest);
+		log.info("Received Jira Kanban KPI request {}", kpiRequest);
 		long jiraKanbanRequestStartTime = System.currentTimeMillis();
 		MDC.put("JiraKanbanRequestStartTime", String.valueOf(jiraKanbanRequestStartTime));
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name(),
@@ -139,7 +138,7 @@ public class JiraController {
 		List<KpiElement> responseList = jiraServiceKanban.process(kpiRequest);
 		MDC.put("TotalJiraKanbanRequestTime", String.valueOf(System.currentTimeMillis() - jiraKanbanRequestStartTime));
 
-		LOGGER.info("");
+		log.info("");
 		MDC.clear();
 
 		if (responseList.isEmpty()) {

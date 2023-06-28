@@ -28,8 +28,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,10 +50,12 @@ import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(HappinessIndexServiceImpl.class);
 	private static final String SPRINTSDETAILS = "sprints";
 	private static final String HAPPINESS_INDEX_DETAILS = "heppinessIndexDetails";
 	@Autowired
@@ -98,7 +98,7 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 
 		});
 
-		LOGGER.debug("[HAPPINESS-INDEX-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
+		log.debug("[HAPPINESS-INDEX-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
@@ -175,7 +175,7 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 				populateExcelData(requestTrackerId, excelData, node, happinessKpiDataList);
 			}
 
-			LOGGER.debug("[HAPPINESS-INDEX-SPRINT-WISE][{}]. happiness index for sprint {}  is {}", requestTrackerId,
+			log.debug("[HAPPINESS-INDEX-SPRINT-WISE][{}]. happiness index for sprint {}  is {}", requestTrackerId,
 					node.getSprintFilter().getName(), happinessIndexValue);
 
 			DataCount dataCount = new DataCount();
@@ -228,7 +228,7 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 	public Double calculateKPIMetrics(Map<String, Object> stringObjectMap) {
 		String requestTrackerId = getRequestTrackerId();
 
-		LOGGER.debug("[HAPPINESS INDEX VALUE][{}].Total Happiness Index Value: {}", requestTrackerId, stringObjectMap);
+		log.debug("[HAPPINESS INDEX VALUE][{}].Total Happiness Index Value: {}", requestTrackerId, stringObjectMap);
 		return 0.0d;
 	}
 

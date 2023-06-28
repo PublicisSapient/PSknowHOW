@@ -8,10 +8,10 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import javax.validation.constraints.NotNull;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -25,6 +25,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import com.publicissapient.kpidashboard.notification.config.NotificationConsumerConfig;
 import com.publicissapient.kpidashboard.notification.model.EmailEvent;
 
+@Slf4j
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
@@ -33,8 +34,6 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Autowired
 	private NotificationConsumerConfig notificationConsumerConfig;
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
 	public void sendMail(String key, EmailEvent emailEvent) {
 
@@ -56,15 +55,15 @@ public class NotificationServiceImpl implements NotificationService {
 				helper.setSubject(emailEvent.getSubject());
 				helper.setFrom(emailEvent.getFrom());
 				mailSender.send(message);
-				LOGGER.info("Email successfully sent for the key : {}", key);
+				log.info("Email successfully sent for the key : {}", key);
 			}else {
-				LOGGER.error("Email not sent. Template not found for the key : {}", key);
+				log.error("Email not sent. Template not found for the key : {}", key);
 			}
 
 		} catch (MessagingException me) {
-			LOGGER.error("Email not sent for the key : {}", key);
+			log.error("Email not sent for the key : {}", key);
 		}catch (TemplateInputException tie) {
-			LOGGER.error("Template not found for the key : {}", key);
+			log.error("Template not found for the key : {}", key);
 			throw new RecoverableDataAccessException("Template not found for the key :"+ key);
 		} catch(TemplateProcessingException tpe) {
 			throw new RecoverableDataAccessException("Template not parsed for the key :"+ key);
