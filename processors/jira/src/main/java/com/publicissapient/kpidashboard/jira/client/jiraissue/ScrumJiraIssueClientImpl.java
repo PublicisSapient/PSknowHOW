@@ -1276,7 +1276,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	private void excludeLinks(Issue issue, Set<String> defectStorySet) {
-		if(CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())) {
+		if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())) {
 			for (IssueLink issueLink : issue.getIssueLinks()) {
 				if (!jiraProcessorConfig.getExcludeLinks().stream()
 						.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
