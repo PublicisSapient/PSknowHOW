@@ -355,18 +355,19 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	private void updateCycleTimeValidationData(String dor, List<String> dod, String live,
 			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
 			JiraHistoryChangeLog statusUpdateLog) {
+		DateTime updatedOn = DateTime.parse(statusUpdateLog.getUpdatedOn().toString());
 		if (cycleTime.getReadyTime() == null && null != dor && dor.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
-			cycleTime.setReadyTime(DateTime.parse(statusUpdateLog.getUpdatedOn().toString()));
-			cycleTimeValidationData.setDorDate(DateTime.parse(statusUpdateLog.getUpdatedOn().toString()));
+			cycleTime.setReadyTime(updatedOn);
+			cycleTimeValidationData.setDorDate(updatedOn);
 		}
-		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(dod)
-				&& dod.contains(statusUpdateLog.getChangedTo())) {
-			cycleTime.setDeliveryTime(DateTime.parse(statusUpdateLog.getUpdatedOn().toString()));
-			cycleTimeValidationData.setDodDate(DateTime.parse(statusUpdateLog.getUpdatedOn().toString()));
+		if (CollectionUtils.isNotEmpty(dod) && dod.contains(statusUpdateLog.getChangedTo()) &&
+				(cycleTime.getDeliveryTime() == null || updatedOn.isBefore(cycleTime.getDeliveryTime()))) {
+			cycleTime.setDeliveryTime(updatedOn);
+			cycleTimeValidationData.setDodDate(updatedOn);
 		}
 		if (Optional.ofNullable(live).isPresent() && live.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
-			cycleTime.setLiveTime(DateTime.parse(statusUpdateLog.getUpdatedOn().toString()));
-			cycleTimeValidationData.setLiveDate(DateTime.parse(statusUpdateLog.getUpdatedOn().toString()));
+			cycleTime.setLiveTime(updatedOn);
+			cycleTimeValidationData.setLiveDate(updatedOn);
 		}
 	}
 
