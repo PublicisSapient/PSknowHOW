@@ -89,9 +89,9 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	List<SprintDetails> findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(Set<ObjectId> basicProjectConfigIds,
 			String state);
 
-	@Query(value = "{ 'basicProjectConfigId' : { $in: ?0 }, 'state' : ?1 }", fields = "{ 'sprintID' : 1, 'basicProjectConfigId' : 1, 'completedIssues' : 1, 'sprintName' : 1, 'startDate' : 1}", sort = "{ 'startDate' : -1 }")
-	List<SprintDetails> findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(
-			Set<ObjectId> basicProjectConfigIds, String state);
+	@Query(value = "{ 'basicProjectConfigId' : { $in: ?0 }, 'state' : { $in: ?1} }", fields = "{ 'sprintID' : 1, 'basicProjectConfigId' : 1, 'completedIssues' : 1, 'sprintName' : 1, 'startDate' : 1}", sort = "{ 'startDate' : -1 }")
+	List<SprintDetails> findByBasicProjectConfigIdInAndStateInOrderByStartDateDescQuery(
+			Set<ObjectId> basicProjectConfigIds, List<String> sprintStatusList);
 
 	/**
 	 * Find all which matches provided ids
