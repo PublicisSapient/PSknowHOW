@@ -28,8 +28,6 @@ import java.util.function.Consumer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -48,12 +46,15 @@ import com.publicissapient.kpidashboard.apis.model.Logo;
 import com.publicissapient.kpidashboard.apis.model.MultiPartFileDTO;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * class managing all requests to the Excel based MVP on executive dash board.
  *
  * @author pkum34
  *
  */
+@Slf4j
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
 
@@ -63,7 +64,6 @@ public class FileStorageServiceImpl implements FileStorageService {
 	public static final String FILE_NAME = "filename";
 	public static final String UPLOAD_SUCCESS = "File uploaded successfully";
 	public static final String UPLOAD_FAIL = "Upload failed : ";
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageServiceImpl.class);
 	private static final String INVALID_FILE_CODE = "201";
 	private static final String INVALID_UPLOAD_TYPE = "202";
 	private static final String FILE_SAVE_ERROR = "203";
@@ -89,7 +89,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 			writeToFile(multipartFile.getOriginalFilename(), multipartFile.getBytes());
 		} catch (IOException e) {
 
-			LOGGER.error(UPLOAD_FAIL, e);
+			log.error(UPLOAD_FAIL, e);
 		}
 		try (InputStream imageInputStream = Files.newInputStream(Paths.get(multipartFile.getOriginalFilename()))) {
 			DBObject metaData = new BasicDBObject();
@@ -100,10 +100,10 @@ public class FileStorageServiceImpl implements FileStorageService {
 
 			gridOperations.store(imageInputStream, fileName, "image/png", metaData);
 
-			LOGGER.info(UPLOAD_SUCCESS);
+			log.info(UPLOAD_SUCCESS);
 			baseResponse.setMessage(UPLOAD_SUCCESS);
 		} catch (IOException exeption) {
-			LOGGER.error(UPLOAD_FAIL, exeption);
+			log.error(UPLOAD_FAIL, exeption);
 		}
 
 		return baseResponse;
@@ -125,7 +125,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
 			return new ServiceResponse(true, UPLOAD_SUCCESS, null);
 		} catch (IOException e) {
-			LOGGER.error(UPLOAD_FAIL, e);
+			log.error(UPLOAD_FAIL, e);
 			return new ServiceResponse(false, "Error in saving the file on disk", FILE_SAVE_ERROR);
 		}
 	}
@@ -138,7 +138,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 		try {
 			isValidFormat = true;
 		} catch (Exception e) {
-			LOGGER.error("Excel format error ", e);
+			log.error("Excel format error ", e);
 		}
 		return isValidFileExtension && isValidFormat;
 	}
@@ -176,7 +176,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 				logo.setImage(bytes);
 			} catch (IOException ioException) {
 
-				LOGGER.error("Exception while writing logo image:", ioException);
+				log.error("Exception while writing logo image:", ioException);
 
 			}
 

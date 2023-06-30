@@ -104,6 +104,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+
 	@Autowired
 	protected BitBucketProcessorJobExecutor(TaskScheduler taskScheduler) {
 		super(taskScheduler, ProcessorConstants.BITBUCKET);

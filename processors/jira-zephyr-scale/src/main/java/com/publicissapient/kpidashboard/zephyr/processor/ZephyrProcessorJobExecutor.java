@@ -114,34 +114,39 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 		super(taskScheduler, ProcessorConstants.ZEPHYR);
 	}
 
-	private static List<ZephyrTestCaseDTO> filterTestCasesBsdOnFldrPth(String folderPath,
+	private static List<ZephyrTestCaseDTO> filterTestCasesBsdOnFldrPth(Set<String> folderPathList,
 			List<ZephyrTestCaseDTO> totalTestCasesList, boolean cloud) {
 		List<ZephyrTestCaseDTO> filteredTestCasesList = new ArrayList<>();
+		if (CollectionUtils.isEmpty(folderPathList)) {
+			return totalTestCasesList;
+		}
 		totalTestCasesList.stream().forEach(testCases -> {
 			Optional<String> folderName = Optional.ofNullable(testCases.getFolder());
 			Optional<String> createdOnDate = Optional.ofNullable(testCases.getCreatedOn());
 			Optional<String> updatedOnDate = Optional.ofNullable(testCases.getUpdatedOn());
 			LocalDateTime instant = LocalDateTime.now();
 			LocalDateTime currentDateMinus15Months = instant.minusMonths(15);
-			if (cloud) {
-				if ((folderName.isPresent() && folderName.get().contains(folderPath)) && ((updatedOnDate.isPresent()
-						&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
-								.isAfter(currentDateMinus15Months))
-						|| (createdOnDate.isPresent() && DateUtil
-								.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
-								.isAfter(currentDateMinus15Months)))) {
-					filteredTestCasesList.add(testCases);
+			folderPathList.forEach(folderPath -> {
+				if (cloud) {
+					if ((folderName.isPresent() && folderName.get().contains(folderPath)) && ((updatedOnDate.isPresent()
+							&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
+							.isAfter(currentDateMinus15Months))
+							|| (createdOnDate.isPresent() && DateUtil
+							.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_DATE)
+							.isAfter(currentDateMinus15Months)))) {
+						filteredTestCasesList.add(testCases);
+					}
+				} else {
+					if ((folderName.isPresent() && folderName.get().contains(folderPath)) && ((updatedOnDate.isPresent()
+							&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
+							.isAfter(currentDateMinus15Months))
+							|| (createdOnDate.isPresent()
+							&& DateUtil.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
+							.isAfter(currentDateMinus15Months)))) {
+						filteredTestCasesList.add(testCases);
+					}
 				}
-			} else {
-				if ((folderName.isPresent() && folderName.get().contains(folderPath)) && ((updatedOnDate.isPresent()
-						&& DateUtil.stringToLocalDateTime(updatedOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
-								.isAfter(currentDateMinus15Months))
-						|| (createdOnDate.isPresent()
-								&& DateUtil.stringToLocalDateTime(createdOnDate.get(), DateUtil.TIME_FORMAT_WITH_SEC)
-										.isAfter(currentDateMinus15Months)))) {
-					filteredTestCasesList.add(testCases);
-				}
-			}
+			});
 		});
 		return filteredTestCasesList;
 	}
@@ -248,13 +253,12 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 		ZephyrClient zephyrClient = zephyrClientFactory.getClient(processorToolConnection.isCloudEnv());
 		Set<String> folderPathList = getAllFolderPathList(processorToolConnection);
 		if (CollectionUtils.isNotEmpty(folderPathList)) {
-			folderPathList.stream().forEach(folderPath -> {
 				AtomicReference<Integer> testCaseCountFolderWise = new AtomicReference<>(0);
 				// get testCases folder wise
 				getTestCaseAndProcess(projectConfigMap, testCaseCountFolderWise, processorToolConnection, zephyrClient,
-						folderPath);
+						folderPathList);
 				testCaseCountTotal.updateAndGet(test -> test + testCaseCountFolderWise.get());
-			});
+
 		} else {
 			// get all testCases
 			getTestCaseAndProcess(projectConfigMap, testCaseCountTotal, processorToolConnection, zephyrClient, null);
@@ -263,18 +267,18 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 	}
 
 	private void getTestCaseAndProcess(ProjectConfFieldMapping projectConfigMap, AtomicReference<Integer> testCaseCount,
-			ProcessorToolConnection processorToolConnection, ZephyrClient zephyrClient, String folderPath) {
+			ProcessorToolConnection processorToolConnection, ZephyrClient zephyrClient, Set<String> folderPathList) {
 		boolean isTestCaseEmpty = false;
 		do {
 			final List<ZephyrTestCaseDTO> testCase = zephyrClient.getTestCase(testCaseCount.get(), projectConfigMap);
 			if (CollectionUtils.isNotEmpty(testCase)) {
-				List<ZephyrTestCaseDTO> filteredTestCasesList = filterTestCasesBsdOnFldrPth(folderPath, testCase,
+				List<ZephyrTestCaseDTO> filteredTestCasesList = filterTestCasesBsdOnFldrPth(folderPathList, testCase,
 						processorToolConnection.isCloudEnv());
 				zephyrDBService.processTestCaseInfoToDB(filteredTestCasesList, processorToolConnection,
 						projectConfigMap.isKanban(), processorToolConnection.isCloudEnv());
 				testCaseCount.updateAndGet(test -> test + testCase.size());
 				log.info("{} test cases are fetched and {} are matching with the folderPath:{}", testCase.size(),
-						filteredTestCasesList.size(), folderPath);
+						filteredTestCasesList.size(), folderPathList);
 			} else {
 				isTestCaseEmpty = true;
 			}

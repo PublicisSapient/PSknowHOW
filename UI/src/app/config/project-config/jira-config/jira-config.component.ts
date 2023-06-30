@@ -1059,18 +1059,29 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Project Key*',
                 id: 'projectKey',
                 validators: ['required'],
-                containerClass: 'p-sm-6',
+                containerClass: 'p-sm-6 p-mr-6',
                 show: true,
                 tooltip: `User can get this value from JIRA/AZURE.<br />
               Generally all issues name are started with Project key<br /> <i>
               Impacted : Jira/Azure Collector and all Kpi</i>`,
               },
               {
+                type: 'text',
+                label: 'Component',
+                id: 'projectComponent',
+                validators: [],
+                containerClass: 'p-sm-6 p-mr-6',
+                show: true,
+                tooltip: `Component field in Zephyr Server is a categorization tool used to classify specific features or modules within a project.<br />
+                identify the component value to fetch particular project data .<br />
+                <i> impacted: Regression Automation Coverage, In-Sprint Automation Coverage KPI, Sprint Automation</i>`,
+              },
+              {
                 type: 'array',
                 label: 'Label Values to identify Automated Regression Test Cases',
                 id: 'regressionAutomationLabels',
                 validators: [],
-                containerClass: 'p-sm-6',
+                containerClass: 'p-sm-6 p-mr-6',
                 show: true,
                 tooltip: `Specify the list Label Values to identify Automated Regression Test Cases.
                    Example: "Regression Automation" <br />
