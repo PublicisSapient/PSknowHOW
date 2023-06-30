@@ -3,7 +3,7 @@
     <p-accordion [multiple]="true" [style]="{'width':'100%'}" #accordion>
         <p-accordionTab *ngFor="let section of fieldMappingSectionList" [header]="section">
             <div class="p-p-0">
-                <div class="p-mb-3 p-d-flex p-align-center" *ngFor="let field of formConfig[section]">
+                <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of formConfig[section]">
                     <label class="field-title">{{field['fieldLabel']}}&nbsp;<span class="fa fa-info-circle"
                             aria-hidden="true" pTooltip='<span>
                                             Definition:
@@ -14,14 +14,16 @@
                             tooltipStyleClass="tooltiptext" [escape]="false"></span>
                     </label>
                     <ng-container *ngIf="!field?.nestedFields else nestedFieldContainer">
+                    <div class="w-60vw">
                         <app-field-mapping-field [fieldConfig]="field" [formControlName]="field['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
+                    </div>
                     </ng-container>
                     <ng-template #nestedFieldContainer>
-                        <div class="fields-container p-p-2">
-                            <div class="p-d-flex p-justify-between">
+                        <div class="fields-container p-p-2 w-60vw">
+                            <div class="p-d-flex p-justify-between" >
                                 <app-field-mapping-field [fieldConfig]="field" [formControlName]="field['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
                             </div>
-                            <div class="p-m-2" *ngFor="let nestedField of field['nestedFields']">
+                            <div class="p-m-2"  *ngFor="let nestedField of field['nestedFields']">
                                 <ng-container *ngIf="!nestedField['filterGroup'] || (nestedField['filterGroup'] && nestedField['filterGroup'].includes(form.value[field['fieldName']]))">
                                     <label class="field-title">{{nestedField['fieldLabel']}} <span class="fa fa-info-circle"
                                         aria-hidden="true" pTooltip='<span>

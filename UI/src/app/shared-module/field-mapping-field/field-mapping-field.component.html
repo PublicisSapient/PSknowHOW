@@ -2,13 +2,13 @@
 
     <div class="p-inputgroup" *ngSwitchCase="'text'">
         <input type="text" pInputText id="fieldConfig?.fieldName" placeholder="Enter {{fieldConfig?.fieldLabel}}"
-            [style]="{'max-width':'initial','width':'60vw'}" [(ngModel)]="value" (change)="setValue()">
+        styleClass="p-w-100" [(ngModel)]="value" (change)="setValue()">
         <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
         (click)="showDialogToAddValue(true, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"></button>
     </div>
 
     <div class="p-inputgroup" *ngSwitchCase="'chips'">
-        <p-chips [style]="{'max-width':'initial','width':'60vw'}" inputId="fieldConfig?.fieldName"
+        <p-chips styleClass="p-w-100" inputId="fieldConfig?.fieldName"
             placeholder="Enter {{fieldConfig?.fieldLabel}}" addOnBlur="true" [(ngModel)]="value" (onAdd)="setValue()" (onRemove)="setValue()">
         </p-chips>
         <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
@@ -28,7 +28,7 @@
 
     <div *ngSwitchCase="'multiselect'">
         <p-multiSelect id="fieldConfig?.fieldName" [options]="fieldConfig.options" placeholder="Select Priority"
-            [style]="{'max-width':'initial','width':'calc(60vw + 42px)'}" [showHeader]="false" [(ngModel)]="value" (onChange)="setValue()">
+        styleClass="p-w-100" [showHeader]="false" [(ngModel)]="value" (onChange)="setValue()">
         </p-multiSelect>
     </div>
 
