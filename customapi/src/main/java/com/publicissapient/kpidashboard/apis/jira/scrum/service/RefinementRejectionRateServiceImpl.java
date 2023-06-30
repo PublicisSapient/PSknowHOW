@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -287,13 +288,16 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 				changeDate = story.getUpdatedOn();
 			} else {
 				fromStatus = story.getChangedTo();
-				if (fieldMapping.getJiraReadyForRefinement().contains(fromStatus)) {
+				if (CollectionUtils.isNotEmpty(fieldMapping.getJiraReadyForRefinement())
+						&& fieldMapping.getJiraReadyForRefinement().contains(fromStatus)) {
 					status = READY_FOR_REFINEMENT_ISSUE;
 					changeDate = story.getUpdatedOn();
-				} else if (fieldMapping.getJiraAcceptedInRefinement().contains(fromStatus)) {
+				} else if (CollectionUtils.isNotEmpty(fieldMapping.getJiraAcceptedInRefinement())
+						&& fieldMapping.getJiraAcceptedInRefinement().contains(fromStatus)) {
 					status = ACCEPTED_IN_REFINEMENT_ISSUE;
 					changeDate = story.getUpdatedOn();
-				} else if (fieldMapping.getJiraRejectedInRefinement().contains(fromStatus)) {
+				} else if (CollectionUtils.isNotEmpty(fieldMapping.getJiraRejectedInRefinement())
+						&& fieldMapping.getJiraRejectedInRefinement().contains(fromStatus)) {
 					status = REJECTED_IN_REFINEMENT_ISSUE;
 					changeDate = story.getUpdatedOn();
 				}

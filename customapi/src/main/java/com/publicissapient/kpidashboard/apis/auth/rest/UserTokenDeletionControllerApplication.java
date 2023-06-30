@@ -24,8 +24,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -36,15 +34,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Rest controller to handle logout requests.
  * 
  * @author anisingh4
  */
+@Slf4j
 @RestController
 public class UserTokenDeletionControllerApplication {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(UserTokenDeletionControllerApplication.class);
 	private final UserTokenDeletionService userTokenDeletionService;
 	@Autowired
 	private CookieUtil cookieUtil;
@@ -68,11 +68,11 @@ public class UserTokenDeletionControllerApplication {
 	 */
 	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity deleteUserToken(HttpServletRequest request) {
-		LOGGER.info("UserTokenDeletionController::deleteUserToken start");
+		log.info("UserTokenDeletionController::deleteUserToken start");
 		String token = StringUtils.removeStart(request.getHeader("Authorization"), "Bearer ");
 		userTokenDeletionService.deleteUserDetails(token);
 		ResponseCookie authCookie = cookieUtil.deleteAccessTokenCookie();
-		LOGGER.info("UserTokenDeletionController::deleteUserToken end");
+		log.info("UserTokenDeletionController::deleteUserToken end");
 		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, authCookie.toString()).build();
 	}
 

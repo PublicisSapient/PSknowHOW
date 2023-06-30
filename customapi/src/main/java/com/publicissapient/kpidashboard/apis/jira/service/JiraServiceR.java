@@ -367,6 +367,12 @@ public class JiraServiceR {
 				if (null != fieldMapping && (CollectionUtils
 						.isNotEmpty(fieldMapping.getJiraIterationCompletionTypeCustomField())
 						|| CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusCustomField()))) {
+					dbSprintDetail.setCompletedIssues(
+							CollectionUtils.isEmpty(dbSprintDetail.getCompletedIssues()) ? new HashSet<>()
+									: dbSprintDetail.getCompletedIssues());
+					dbSprintDetail.setNotCompletedIssues(
+							CollectionUtils.isEmpty(dbSprintDetail.getNotCompletedIssues()) ? new HashSet<>()
+									: dbSprintDetail.getNotCompletedIssues());
 					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail, fieldMapping);
 					dbSprintDetail.setCompletedIssues(newCompletedSet);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);

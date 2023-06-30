@@ -27,6 +27,7 @@ export class TooltipComponent implements OnInit {
     @Input() data: any = {};
     @Input() showChartView = true;
     @Input() filterNo?: string = '';
+    @Input() kpiName;
 
     constructor() {
 

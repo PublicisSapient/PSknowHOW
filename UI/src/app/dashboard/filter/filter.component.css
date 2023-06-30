@@ -909,6 +909,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   border: none;
   font-size: 0.75rem;
   margin-left: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .last-sync-date-block {

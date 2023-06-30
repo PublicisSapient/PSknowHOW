@@ -32,6 +32,8 @@ import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.config.Lookup;
@@ -124,7 +126,9 @@ public class KerberosClient {
 		BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
 		credentialsProvider.setCredentials(new AuthScope((String) null, -1, (String) null), credentials);
 		builder.setDefaultCredentialsProvider(credentialsProvider);
-		CloseableHttpClient httpClient = builder.setDefaultCookieStore(cookieStore).build();
+		RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
+		CloseableHttpClient httpClient = builder.setDefaultCookieStore(cookieStore)
+				.setDefaultRequestConfig(requestConfig).build();
 		return httpClient;
 	}
 
@@ -134,7 +138,9 @@ public class KerberosClient {
 	 * @return http client
 	 */
 	private HttpClient buildHttpClient() {
-		return HttpClientBuilder.create().setDefaultCookieStore(cookieStore).build();
+		RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
+		return HttpClientBuilder.create().setDefaultCookieStore(cookieStore).setDefaultRequestConfig(requestConfig)
+				.build();
 	}
 
 	/**

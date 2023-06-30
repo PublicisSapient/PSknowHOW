@@ -1981,6 +1981,18 @@ p-dialog .p-button-cancel.p-button-secondary {
 .p-component{
   font-family: inherit;
 }
+.p-radiobutton{
+  justify-content: center;
+  align-items: center;
+}
+.p-radiobutton .p-radiobutton-box{
+  width: 16px;
+  height: 16px;
+}
+.p-radiobutton .p-radiobutton-box .p-radiobutton-icon{
+  width: 8px;
+  height: 8px;
+}
 @media only screen and (max-width:768px){
   .wrapper-w-50{
       width: 100%;

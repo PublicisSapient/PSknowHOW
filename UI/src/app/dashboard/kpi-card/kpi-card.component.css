@@ -81,7 +81,7 @@
 }
 
 ::ng-deep .filter-radioButton {
-    margin-right: 5px;
+    margin: 0 3px 0 0px;
     font-size: 12px;
 }
 

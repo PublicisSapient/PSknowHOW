@@ -45,8 +45,8 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 						new BasicDBObject(ID, new BasicDBObject(DATE,
 								new BasicDBObject("$dateToString",
 										new BasicDBObject("format", "%Y-%m-%d").append(DATE, IDENT_CREATED_DATE)))
-												.append(PROCESSOR_ITEM_ID, "$processorItemId")).append(COUNT,
-														new BasicDBObject("$sum", 1))),
+								.append(PROCESSOR_ITEM_ID, "$processorItemId"))
+								.append(COUNT, new BasicDBObject("$sum", 1))),
 				new BasicDBObject(IDENT_PROJECT,
 						new BasicDBObject(ID, 0).append(DATE, "$_id.date")
 								.append(PROCESSOR_ITEM_ID, "$_id.processorItemId").append(COUNT, 1)),
