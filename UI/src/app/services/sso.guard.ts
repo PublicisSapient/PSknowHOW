@@ -30,8 +30,8 @@ export class SSOGuard implements CanActivate {
       if (response['success']) {
         console.log(response);
         this.sharedService.setCurrentUserDetails({ user_name: response['data']?.username });
-        this.sharedService.setCurrentUserDetails({ projectsAccess: JSON.stringify(response['data']['projectsAccess']) });
-        this.sharedService.setCurrentUserDetails({ authorities: JSON.stringify(response['data']['authorities']) });
+        this.sharedService.setCurrentUserDetails({ projectsAccess: response['data']['projectsAccess'] });
+        this.sharedService.setCurrentUserDetails({ authorities:response['data']['authorities'] });
         this.httpService.getAuthDetails();
         //navigate to profile or dashboard screen
         if (this.redirectToProfile()) {

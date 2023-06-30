@@ -804,6 +804,7 @@ export class HttpService {
   getAuthDetails() {
     console.log('-------getAuthDetails-----------');
     console.log('projectsAccess:',this.sharedService.getCurrentUserDetails('projectsAccess'));
+    console.log(Array.isArray(this.sharedService.getCurrentUserDetails('projectsAccess')));
     const existingRoles = this.sharedService
       .getCurrentUserDetails('projectsAccess')
       ?.map((projectRolesDetails) => projectRolesDetails?.role);
