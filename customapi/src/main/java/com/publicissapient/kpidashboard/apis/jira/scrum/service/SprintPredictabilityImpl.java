@@ -150,6 +150,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 		List<String> sprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
+		List<String> sprintStatusList = new ArrayList<>();
 
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
@@ -159,10 +160,11 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			basicProjectConfigObjectIds.add(basicProjectConfigId);
 
 		});
-
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
+		sprintStatusList.add("closed");
 		List<SprintDetails> totalSprintDetails = sprintRepository
 				.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,
-						SprintDetails.SPRINT_STATE_CLOSED);
+						sprintStatusList);
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
 
