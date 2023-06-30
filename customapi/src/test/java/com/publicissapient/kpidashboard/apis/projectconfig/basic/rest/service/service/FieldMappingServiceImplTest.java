@@ -332,7 +332,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraIssueTypeNames(new String[] { "Story", "Enabler Story" });
 		fieldMapping.setJiraDefectSeepageIssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraQADefectDensityIssueType(Arrays.asList("Story"));
-		fieldMapping.setJiraDefectCountlIssueType(Arrays.asList("Story"));
+		fieldMapping.setJiraDefectCountlIssueTypeRCA(Arrays.asList("Story"));
 		fieldMapping.setJiraSprintVelocityIssueTypeSV(Arrays.asList("Story", "Defect"));
 		fieldMapping.setJiraDefectRemovalIssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraDefectRejectionlIssueType(Arrays.asList("Story"));
@@ -354,6 +354,8 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setResolutionTypeForRejectionIFTPR(
 				Arrays.asList("Duplicate", "Cannot Reproduce", "Invalid", "Declined", "Dropped"));
 		fieldMapping.setJiraStatusForDevelopmentAVR(Arrays.asList("In Development"));
+		fieldMapping.setJiraStatusForDevelopmentFTPR(Arrays.asList("In Development"));
+		fieldMapping.setJiraStatusForDevelopmentIFTPR(Arrays.asList("In Development"));
 		fieldMapping.setJiraStatusForQa(Arrays.asList("In Testing"));
 		// customField
 		fieldMapping.setSprintName("customfield_12700");

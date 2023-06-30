@@ -240,7 +240,8 @@ public class ScrumJiraIssueClientImplTest {
 		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
 		fieldMapping.setJiraTestAutomationIssueType(jiraType);
 		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
-		fieldMapping.setJiraDefectCountlIssueType(jiraType);
+		fieldMapping.setJiraDefectCountlIssueTypeRCA(jiraType);
+		fieldMapping.setJiraDefectCountlIssueTypeDC(jiraType);
 		fieldMapping.setJiraIntakeToDorIssueType(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
 
@@ -251,6 +252,16 @@ public class ScrumJiraIssueClientImplTest {
 		jiraType.add("TECH_DEBT");
 		fieldMapping.setJiraTechDebtValue(jiraType);
 		fieldMapping.setJiraDefectRejectionStatusDRR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusDIR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusAVR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusDC("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusDRE("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusDSR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusFTPR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusIFTPR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusQADD("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusQS("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusRCA("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();
@@ -333,6 +344,16 @@ public class ScrumJiraIssueClientImplTest {
 		fieldMapping.setRootCause("customfield_19121");
 
 		fieldMapping.setJiraDefectRejectionStatusDRR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusDIR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusAVR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusDC("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusDRE("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusDSR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusFTPR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusIFTPR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusQADD("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusQS("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusRCA("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();

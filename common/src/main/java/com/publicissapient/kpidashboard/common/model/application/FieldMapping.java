@@ -80,7 +80,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> defectPriorityQADD;
 	private List<String> defectPriorityFTPR;
 	private List<String> defectPriorityQS;
-	private String[] jiraIssueTypeNames;//TODO: duplicate
+	private String[] jiraIssueTypeNames;//TODO: Extra field
 	private String[] jiraIssueTypeNamesAVR;
 	private List<String> jiraIssueEpicType;
 	private String storyFirstStatus;
@@ -94,7 +94,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
-	private List<String> jiraDod;//TODO: Extra field
+	private List<String> jiraDod;//TODO: Duplicate
 	private List<String> jiraDodDIR;
 	private List<String> jiraDodQADD;
 	private List<String> jiraDodLT;
@@ -104,7 +104,7 @@ public class FieldMapping extends BasicModel {
 	private String jiraTechDebtIdentification;
 	private String jiraTechDebtCustomField;
 	private List<String> jiraTechDebtValue;
-	private String jiraDefectRejectionStatus;// TODO: Extra field
+	private String jiraDefectRejectionStatus;// TODO: Extra field //test done
 	private String jiraDefectRejectionStatusAVR;
 	private String jiraDefectRejectionStatusDC;
 	private String jiraDefectRejectionStatusDRE;
@@ -134,18 +134,18 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraTestAutomationIssueType;
 	// value of the automated test case Eg. Yes, Cannot Automate, No
 
-	private List<String> jiraSprintVelocityIssueType;// TODO: Extra field
+	private List<String> jiraSprintVelocityIssueType;// TODO: Extra field  //test done
 	private List<String> jiraSprintVelocityIssueTypeSV;
 	private List<String> jiraSprintVelocityIssueTypeBR;
 
 	private List<String> jiraSprintCapacityIssueType;
 
 	private List<String> jiraDefectRejectionlIssueType;
-	private List<String> jiraDefectCountlIssueType;// TODO: Extra field
+	private List<String> jiraDefectCountlIssueType;// TODO: Extra field // test done
 	private List<String> jiraDefectCountlIssueTypeDC;
 	private List<String> jiraDefectCountlIssueTypeRCA;
 
-	private List<String> jiraIssueDeliverdStatus;// TODO: Extra field
+	private List<String> jiraIssueDeliverdStatus;// TODO: Extra field //test done
 	private List<String> jiraIssueDeliverdStatusBR;
 	private List<String> jiraIssueDeliverdStatusSV;
 	private List<String> jiraIssueDeliverdStatusAVR;
@@ -192,8 +192,7 @@ public class FieldMapping extends BasicModel {
 	private String jiraStatusMappingCustomField;
 
 	private List<String> rootCauseValue;
-	//TODO: Extra field
-	private List<String> excludeRCAFromFTPR;//TODO: Extra field
+	private List<String> excludeRCAFromFTPR;//TODO: Extra field // test done
 	private List<String> excludeRCAFromIFTPR;
 	private List<String> excludeRCAFromDIR;
 	private List<String> excludeRCAFromQADD;
@@ -205,7 +204,7 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> jiraCommitmentReliabilityIssueType;
 
-	private List<String> resolutionTypeForRejection;// TODO: Extra field
+	private List<String> resolutionTypeForRejection;// TODO: Extra field  //test done
 	private List<String> resolutionTypeForRejectionAVR;
 	private List<String> resolutionTypeForRejectionDC;
 	private List<String> resolutionTypeForRejectionDRE;
@@ -295,7 +294,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraReadyForRefinement;
 	private List<String> jiraFtprRejectStatus;
 
-	private List<String> jiraIterationCompletionStatusCustomField;// TODO: Extra field
+	private List<String> jiraIterationCompletionStatusCustomField;// TODO: Extra field //test done
 	private List<String> jiraIterationCompletionStatusIFTPR;
 	private List<String> jiraIterationCompletionStatusCPT;
 	private List<String> jiraIterationCompletionStatusEVA;
@@ -318,7 +317,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationCompletionStatusIW;
 	private List<String> jiraIterationCompletionStatusBRE;
 
-	private List<String> jiraIterationCompletionTypeCustomField;// TODO: Extra field
+	private List<String> jiraIterationCompletionTypeCustomField;// TODO: Extra field  //test done
 	private List<String> jiraIterationCompletionTypeCPT;
 	private List<String> jiraIterationCompletionTypeBRE;
 	private List<String> jiraIterationCompletionTypeQS;

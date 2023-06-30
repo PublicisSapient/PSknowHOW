@@ -186,15 +186,18 @@ public class JiraServiceKanbanRTest {
 
 		FieldMapping projectOne = new FieldMapping();
 		projectOne.setBasicProjectConfigId(new ObjectId("5b674d58f47cae8935b1b26f"));
-		projectOne.setJiraDefectCountlIssueType(Arrays.asList("Story"));
+		projectOne.setJiraDefectCountlIssueTypeRCA(Arrays.asList("Story"));
+		projectOne.setJiraDefectCountlIssueTypeDC(Arrays.asList("Story"));
 
 		FieldMapping projectTwo = new FieldMapping();
 		projectTwo.setBasicProjectConfigId(new ObjectId("5b719d06a500d00814bfb2b9"));
-		projectTwo.setJiraDefectCountlIssueType(Arrays.asList("Story"));
+		projectTwo.setJiraDefectCountlIssueTypeRCA(Arrays.asList("Story"));
+		projectTwo.setJiraDefectCountlIssueTypeDC(Arrays.asList("Story"));
 
 		FieldMapping projectThree = new FieldMapping();
 		projectThree.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
-		projectThree.setJiraDefectCountlIssueType(Arrays.asList("Story"));
+		projectThree.setJiraDefectCountlIssueTypeRCA(Arrays.asList("Story"));
+		projectThree.setJiraDefectCountlIssueTypeDC(Arrays.asList("Story"));
 
 		fieldMappingList.add(projectOne);
 		fieldMappingList.add(projectTwo);

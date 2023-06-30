@@ -33,7 +33,7 @@ public enum FieldMappingEnum {
 					"jiraDod", "jiraBugRaisedByQACustomField", "jiraBugRaisedByQAIdentification",
 					"jiraBugRaisedByQAValue", "jiraBugRaisedByCustomField", "jiraBugRaisedByValue",
 					"jiraBugRaisedByIdentification", "jiraLiveStatus", "epicCostOfDelay", "epicRiskReduction",
-					"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize")),
+					"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize","filterId")),
 
 	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationIC", "jiradefecttypeIC",
 			"jiraIterationCompletionTypeIC", "jiraIterationCompletionStatusIC")),

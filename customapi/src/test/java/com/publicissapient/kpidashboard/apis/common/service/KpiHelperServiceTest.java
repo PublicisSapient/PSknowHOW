@@ -390,7 +390,7 @@ public class KpiHelperServiceTest {
 	@Test
 	public void fetchFieldMappingStructureByKpiFieldMappingData(){
 		when(configHelperService.loadFieldMappingStructure()).thenReturn(fieldMappingStructureList);
-		assertNotNull(kpiHelperService.fetchFieldMappingStructureByKpiFieldMappingData("kpi0"));
+		assertNotNull(kpiHelperService.fetchFieldMappingStructureByKpiFieldMappingData("1234","kpi0"));
 	}
 
 }

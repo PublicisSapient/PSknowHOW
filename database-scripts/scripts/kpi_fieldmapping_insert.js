@@ -2116,7 +2116,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldLabel": "Estimation Criteria",
     "fieldType": "radiobutton",
     "section": "Custom Fields Mapping",
-     "tooltip": {
+    "tooltip": {
           "definition": "Estimation criteria for stories. <br> Example: Buffered Estimation."
         },
      "options": [

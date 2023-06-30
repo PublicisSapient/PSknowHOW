@@ -200,7 +200,8 @@ public class OfflineDataProcessorImplTest {
 		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
 		fieldMapping.setJiraTestAutomationIssueType(jiraType);
 		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
-		fieldMapping.setJiraDefectCountlIssueType(jiraType);
+		fieldMapping.setJiraDefectCountlIssueTypeRCA(jiraType);
+		fieldMapping.setJiraDefectCountlIssueTypeDC(jiraType);
 		fieldMapping.setJiraIntakeToDorIssueType(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
 
