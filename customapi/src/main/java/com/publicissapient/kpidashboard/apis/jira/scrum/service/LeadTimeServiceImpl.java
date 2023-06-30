@@ -253,7 +253,6 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 						}
 						if (!deliverToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
 							dodLiveTime.add(DateUtil.calculateTimeInDays(Long.parseLong(deliverToLive)));
-							leadTimeList.add(Long.parseLong(leadTime));
 							dodLiveModalValues.add(jiraIssueCustomHistory);
 						}
 						String intakeToDod = DateUtil.calWeekHours(cycleTime.getIntakeTime(),
