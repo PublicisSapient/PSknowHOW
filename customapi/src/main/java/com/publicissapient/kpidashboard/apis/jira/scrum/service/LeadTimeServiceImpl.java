@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -217,6 +216,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				List<JiraIssueCustomHistory> dodLiveModalValues = new ArrayList<>();
 				List<JiraIssueCustomHistory> intakeDodModalValues = new ArrayList<>();
 				List<JiraIssueCustomHistory> dorLiveModalValues = new ArrayList<>();
+				List<JiraIssueCustomHistory> leadTimeModalValues = new ArrayList<>();
 
 				if (CollectionUtils.isNotEmpty(jiraIssueCustomHistories)) {
 					// in below loop create list of day difference between Intake and
@@ -269,6 +269,10 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 							dorLiveTime.add(DateUtil.calculateTimeInDays(Long.parseLong(dorToLive)));
 							dorLiveModalValues.add(jiraIssueCustomHistory);
 						}
+						if (!leadTime.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+							leadTimeList.add(DateUtil.calculateTimeInDays(Long.parseLong(leadTime)));
+							leadTimeModalValues.add(jiraIssueCustomHistory);
+						}
 
 						cycleTimeList.add(cycleTimeValidationData);
 					}
@@ -290,7 +294,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 						cycleTimeList, dataList);
 				prepareIterationKpiValue(type, DOR_TO_LIVE, dorLive, dorLiveTime, dorLiveModalValues, cycleTimeList,
 						dataList);
-				prepareIterationKpiValue(type, LEAD_TIME, leadTimeAvg, leadTimeList, dodLiveModalValues, cycleTimeList,
+				prepareIterationKpiValue(type, LEAD_TIME, leadTimeAvg, leadTimeList, leadTimeModalValues, cycleTimeList,
 						dataList);
 
 			});
