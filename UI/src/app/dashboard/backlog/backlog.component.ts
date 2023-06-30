@@ -518,6 +518,19 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
     if (preAggregatedValues?.length > 1) {
       this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+      if(kpiId === 'kpi3'){
+        let days = 0;
+        const filterName = this.kpiChartData[kpiId][0]['filter1'].split('-').join('to').toLowerCase();
+        const issueDetails = this.kpiChartData[kpiId][0]['data'][1]['modalValues'];
+        if(issueDetails.length > 0){
+          const issueStateName = Object.keys(issueDetails[0]).find(x => x.toLowerCase().includes(filterName));
+          for (const issue of issueDetails) {
+            days += issue[issueStateName] !== 'NA' ? +issue[issueStateName] : 0;
+          }
+          days = Math.round(days/issueDetails.length);
+        }
+        this.kpiChartData[kpiId][0]['data'][0]['value'] = days;
+      }
     } else {
       this.kpiChartData[kpiId] = [...preAggregatedValues];
     }
