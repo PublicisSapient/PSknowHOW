@@ -2222,7 +2222,7 @@ db.getCollection('field_mapping_structure').insert(
         ]
 },
 {
-    "fieldName": "filterId",
+    "fieldName": "additionalFilterConfig",
     "fieldLabel": "Additional Filter Identifier",
     "section": "Additional Filter Identifier",
     "fieldType": "dropdown",

@@ -297,7 +297,7 @@ public class ConfigHelperService {
 	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_FIELD_MAPPING_STUCTURE)
 	public Object loadFieldMappingStructure() {
-		LOGGER.info("loading FieldMappingStucture data");
+		log.info("loading FieldMappingStucture data");
 		return fieldMappingStructureRepository.findAll();
 	}
 
