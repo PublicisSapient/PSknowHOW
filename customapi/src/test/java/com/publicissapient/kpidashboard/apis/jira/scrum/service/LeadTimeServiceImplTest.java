@@ -177,15 +177,11 @@ public class LeadTimeServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-		when(customApiSetting.getLeadTimeMonthCount()).thenReturn(12);
-		String startDate = LocalDate.now().minusDays(customApiSetting.getLeadTimeMonthCount() * 14L)
-				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		String endDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(any(), any(), any(), any()))
+		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMap(any(), any()))
 				.thenReturn(jiraIssueCustomHistories);
 
-		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
+		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
 		List<IssueBacklogCustomHistory> dataMap = (List<IssueBacklogCustomHistory>) resultListMap
 				.get(STORY_HISTORY_DATA);
@@ -197,8 +193,7 @@ public class LeadTimeServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(customApiSetting.getLeadTimeMonthCount()).thenReturn(12);
-		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(any(), any(), any(), any()))
+		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMap(any(), any()))
 				.thenReturn(jiraIssueCustomHistories);
 		String kpiRequestTrackerId = "Jira-Excel-5be544de025de212549176a9";
 

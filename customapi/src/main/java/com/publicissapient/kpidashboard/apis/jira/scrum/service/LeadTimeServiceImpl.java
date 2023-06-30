@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,7 +28,6 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
@@ -67,7 +65,6 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	private static final String SEARCH_BY_ISSUE_TYPE = "Issue Type";
 	private static final String ISSUE_COUNT = "Issue Count";
 	public static final String DAYS = "Days";
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
@@ -126,7 +123,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 		resultListMap.put(STORY_HISTORY_DATA, jiraIssueCustomHistoryRepository
-				.findByFilterAndFromStatusMapWithDateFilter(mapOfFilters, uniqueProjectMap, startDate, endDate));
+				.findByFilterAndFromStatusMap(mapOfFilters, uniqueProjectMap));
 
 		return resultListMap;
 	}
@@ -155,14 +152,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest,
 			DataCount dataCount) {
 
-		// this method fetch dates for past history data
-		CustomDateRange dateRange = KpiDataHelper.getMonthsForPastDataHistory(customApiConfig.getLeadTimeMonthCount());
-
-		// get start and end date in yyyy-mm-dd format
-		String startDate = dateRange.getStartDate().format(DATE_FORMATTER);
-		String endDate = dateRange.getEndDate().format(DATE_FORMATTER);
-
-		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, startDate, endDate, kpiRequest);
+		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
 
 		List<JiraIssueCustomHistory> ticketList = (List<JiraIssueCustomHistory>) resultMap.get(STORY_HISTORY_DATA);
 
@@ -232,9 +222,6 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 					// in below loop create list of day difference between Intake and
 					// DOR. Here Intake is created date of issue.
 					issueTypeFilter.add(type);
-					String dor = fieldMapping.getJiraDor();
-					List<String> dod = fieldMapping.getJiraDod().stream().map(String::toLowerCase).collect(Collectors.toList());
-					String live = fieldMapping.getJiraLiveStatus();
 					for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistories) {
 						CycleTimeValidationData cycleTimeValidationData = new CycleTimeValidationData();
 						cycleTimeValidationData.setIssueNumber(jiraIssueCustomHistory.getStoryID());
@@ -245,7 +232,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 						cycleTimeValidationData.setIntakeDate(jiraIssueCustomHistory.getCreatedDate());
 						Map<String, DateTime> dodStatusDateMap = new HashMap<>();
 						jiraIssueCustomHistory.getStatusUpdationLog()
-								.forEach(statusUpdateLog -> updateCycleTimeValidationData(dor, dod, live,
+								.forEach(statusUpdateLog -> updateCycleTimeValidationData(fieldMapping,
 										cycleTimeValidationData, cycleTime, dodStatusDateMap, statusUpdateLog));
 
 						String readyToIntake = DateUtil.calWeekDays(cycleTime.getIntakeTime(),
@@ -347,29 +334,32 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 	/**
 	 * Updates cycle time data for validation.
-	 *
-	 * @param dor
-	 *            DOR
-	 * @param dod
-	 *            DOD
-	 * @param live
-	 *            Live
+	 * @param fieldMapping
 	 * @param cycleTimeValidationData
-	 *            CycleTimeValidationData
 	 * @param cycleTime
-	 *            CycleTime
+	 * @param dodStatusDateMap
 	 * @param statusUpdateLog
-	 *            FeatureSprint
 	 */
-	private void updateCycleTimeValidationData(String dor, List<String> dod, String live,
-			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime, Map<String, DateTime> dodStatusDateMap,
-			JiraHistoryChangeLog statusUpdateLog) {
+	private void updateCycleTimeValidationData(FieldMapping fieldMapping,
+			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
+			Map<String, DateTime> dodStatusDateMap, JiraHistoryChangeLog statusUpdateLog) {
 		DateTime updatedOn = DateTime.parse(statusUpdateLog.getUpdatedOn().toString());
+		String dor = fieldMapping.getJiraDor();
+		List<String> dod = fieldMapping.getJiraDod().stream().map(String::toLowerCase).collect(Collectors.toList());
+		String live = fieldMapping.getJiraLiveStatus();
+		String storyFirstStatus = fieldMapping.getStoryFirstStatus();
 		if (cycleTime.getReadyTime() == null && null != dor && dor.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
 			cycleTime.setReadyTime(updatedOn);
 			cycleTimeValidationData.setDorDate(updatedOn);
 		}
-		if (CollectionUtils.isNotEmpty(dod) && dod.contains(statusUpdateLog.getChangedTo().toLowerCase())){
+		if (CollectionUtils.isNotEmpty(dod) && statusUpdateLog.getChangedFrom() != null
+				&& dod.contains(statusUpdateLog.getChangedFrom().toLowerCase())
+				&& storyFirstStatus.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
+			dodStatusDateMap.clear();
+			cycleTime.setDeliveryTime(null);
+			cycleTimeValidationData.setDodDate(null);
+		}
+		if (CollectionUtils.isNotEmpty(dod) && dod.contains(statusUpdateLog.getChangedTo().toLowerCase())) {
 			if (dodStatusDateMap.containsKey(statusUpdateLog.getChangedTo().toLowerCase())) {
 				dodStatusDateMap.clear();
 			}

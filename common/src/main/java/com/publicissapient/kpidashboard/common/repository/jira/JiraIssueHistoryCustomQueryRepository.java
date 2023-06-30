@@ -69,15 +69,4 @@ public interface JiraIssueHistoryCustomQueryRepository {
 	List<JiraIssueCustomHistory> findByFilterAndFromReleaseMap(List<String> basicProjectConfigId,
 			List<String> releaseList);
 
-	/**
-	 *  find jira issue based on filter and date
-	 * @param mapOfFilters
-	 * @param uniqueProjectMap
-	 * @param dateFrom
-	 * @param dateTo
-	 * @return
-	 */
-
-	List<JiraIssueCustomHistory> findByFilterAndFromStatusMapWithDateFilter(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo);
 }
