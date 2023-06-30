@@ -238,7 +238,7 @@ public class DateUtil {
 		return strDate;
 	}
 
-	public static String calWeekDays(DateTime startDate, DateTime endDate) {
+	public static String calWeekHours(DateTime startDate, DateTime endDate) {
 		if (startDate != null && endDate != null) {
 			int startW = startDate.getDayOfWeek();
 			int endW = endDate.getDayOfWeek();

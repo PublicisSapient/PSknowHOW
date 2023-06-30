@@ -235,13 +235,13 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 								.forEach(statusUpdateLog -> updateCycleTimeValidationData(fieldMapping,
 										cycleTimeValidationData, cycleTime, dodStatusDateMap, statusUpdateLog));
 
-						String readyToIntake = DateUtil.calWeekDays(cycleTime.getIntakeTime(),
+						String readyToIntake = DateUtil.calWeekHours(cycleTime.getIntakeTime(),
 								cycleTime.getReadyTime());
-						String readyToDeliver = DateUtil.calWeekDays(cycleTime.getReadyTime(),
+						String readyToDeliver = DateUtil.calWeekHours(cycleTime.getReadyTime(),
 								cycleTime.getDeliveryTime());
-						String deliverToLive = DateUtil.calWeekDays(cycleTime.getDeliveryTime(),
+						String deliverToLive = DateUtil.calWeekHours(cycleTime.getDeliveryTime(),
 								cycleTime.getLiveTime());
-						String leadTime = DateUtil.calWeekDays(cycleTime.getIntakeTime(),
+						String leadTime = DateUtil.calWeekHours(cycleTime.getIntakeTime(),
 								cycleTime.getLiveTime());
 						if (!readyToIntake.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
 							intakeDorTime.add(DateUtil.calculateTimeInDays(Long.parseLong(readyToIntake)));
@@ -256,13 +256,13 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 							leadTimeList.add(Long.parseLong(leadTime));
 							dodLiveModalValues.add(jiraIssueCustomHistory);
 						}
-						String intakeToDod = DateUtil.calWeekDays(cycleTime.getIntakeTime(),
+						String intakeToDod = DateUtil.calWeekHours(cycleTime.getIntakeTime(),
 								cycleTime.getDeliveryTime());
 						if (cycleTime.getReadyTime() != null && !intakeToDod.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
 							intakeDodTime.add(DateUtil.calculateTimeInDays(Long.parseLong(intakeToDod)));
 							intakeDodModalValues.add(jiraIssueCustomHistory);
 						}
-						String dorToLive = DateUtil.calWeekDays(cycleTime.getReadyTime(),
+						String dorToLive = DateUtil.calWeekHours(cycleTime.getReadyTime(),
 								cycleTime.getLiveTime());
 						if (cycleTime.getDeliveryTime() != null
 								&& !dorToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
