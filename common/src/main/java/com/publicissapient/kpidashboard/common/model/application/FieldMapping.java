@@ -80,6 +80,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> defectPriorityQADD;
 	private List<String> defectPriorityFTPR;
 	private List<String> defectPriorityQS;
+
 	private String[] jiraIssueTypeNames;//TODO: Extra field
 	private String[] jiraIssueTypeNamesAVR;
 	private List<String> jiraIssueEpicType;
