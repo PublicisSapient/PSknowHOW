@@ -168,7 +168,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Lead Time',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraIntakeToDorIssueType'], 'Workflow Status Mapping' : ['jiraDor', 'jiraDod', 'jiraLiveStatus'] }
+        fieldNames : {'Issue Types Mapping' : ['jiraIntakeToDorIssueType'], 'Workflow Status Mapping' : ['jiraDor', 'jiraDod', 'jiraLiveStatus','storyFirstStatus'] }
       },
       {
         kpiId: 'kpi118',
