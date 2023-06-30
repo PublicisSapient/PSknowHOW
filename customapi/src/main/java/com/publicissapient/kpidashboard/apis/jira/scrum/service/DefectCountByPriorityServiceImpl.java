@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,11 +48,13 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
 	public static final String UNCHECKED = "unchecked";
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCountByPriorityServiceImpl.class);
 	private static final String TOTAL_ISSUES = "Total Issues";
 	private static final String SPRINT_DETAILS = "SprintDetails";
 	private static final String CREATED_DURING_ITERATION = "Created during Iteration";
@@ -101,7 +101,7 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Defect count by Priority -> Requested sprint : {}", leafNode.getName());
+			log.info("Defect count by Priority -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			String sprintId = leafNode.getSprintFilter().getId();
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
@@ -184,7 +184,7 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 				sprintWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		LOGGER.info("DefectCountByPriorityServiceImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("DefectCountByPriorityServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
@@ -212,7 +212,7 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 				Map<String, Map<String, List<JiraIssue>>> priorityWiseList = getPriorityWiseIssueList(
 						allCompletedDefects, createDuringIteration);
 				List<Integer> overAllRCAIssueCount = Arrays.asList(0);
-				LOGGER.info("DefectCountByPriorityServiceImpl -> priorityWiseList ->  : {}", priorityWiseList);
+				log.info("DefectCountByPriorityServiceImpl -> priorityWiseList ->  : {}", priorityWiseList);
 				// filterDataList will consist of IterationKpiValue which will be set for all
 				// priorities
 				List<IterationKpiValue> filterDataList = new ArrayList<>();
@@ -266,7 +266,7 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 					sortListByKey(filterDataList);
 					sortedFilterDataList.addAll(filterDataList);
 					kpiElement.setTrendValueList(sortedFilterDataList);
-					LOGGER.info("DefectCountByPriorityServiceImpl -> request id : {} total jira Issues : {}",
+					log.info("DefectCountByPriorityServiceImpl -> request id : {} total jira Issues : {}",
 							requestTrackerId, overAllRCAIssueCount.get(0));
 				}
 			}

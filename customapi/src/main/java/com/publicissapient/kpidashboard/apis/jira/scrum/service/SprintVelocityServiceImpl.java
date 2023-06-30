@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +54,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -222,15 +220,16 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		Map<String, Object> sprintVelocityStoryMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
 
 		List<JiraIssue> allJiraIssue = (List<JiraIssue>) sprintVelocityStoryMap.get(SPRINTVELOCITYKEY);
-		
+
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
 
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) sprintVelocityStoryMap.get(SPRINT_WISE_SPRINTDETAILS);
 		Map<Pair<String, String>, Set<JiraIssue>> currentSprintLeafVelocityMap = new HashMap<>();
-		velocityHelper.getSprintIssuesForProject(allJiraIssue, sprintDetails,currentSprintLeafVelocityMap);
+		velocityHelper.getSprintIssuesForProject(allJiraIssue, sprintDetails, currentSprintLeafVelocityMap);
 
-		Map<Pair<String, String>, Double> sprintVelocity = getSprintVelocityMap(currentSprintLeafVelocityMap, sprintDetails);
+		Map<Pair<String, String>, Double> sprintVelocity = getSprintVelocityMap(currentSprintLeafVelocityMap,
+				sprintDetails);
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 		Map<String, Integer> avgVelocityCount = new HashMap<>();
@@ -246,8 +245,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 				sprintVelocityForCurrentLeaf = sprintVelocity.get(currentNodeIdentifier);
 			}
 
-			populateExcelDataObject(requestTrackerId, excelData, currentSprintLeafVelocityMap, node,
-					fieldMapping);
+			populateExcelDataObject(requestTrackerId, excelData, currentSprintLeafVelocityMap, node, fieldMapping);
 			setSprintWiseLogger(node.getSprintFilter().getName(),
 					currentSprintLeafVelocityMap.get(currentNodeIdentifier), sprintVelocityForCurrentLeaf);
 
@@ -289,7 +287,8 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	 * @param oldSprintDetails
 	 * @return
 	 */
-	private Map<Pair<String, String>, Double> getSprintVelocityMap(Map<Pair<String, String>, Set<JiraIssue>> currentSprintLeafVelocityMap,
+	private Map<Pair<String, String>, Double> getSprintVelocityMap(
+			Map<Pair<String, String>, Set<JiraIssue>> currentSprintLeafVelocityMap,
 			List<SprintDetails> oldSprintDetails) {
 		log.debug("In the velocity map creation");
 		Map<Pair<String, String>, Double> sprintVelocity = new LinkedHashMap<>();
@@ -298,8 +297,8 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 				FieldMapping fieldMap = configHelperService.getFieldMappingMap().get(sprint.getBasicProjectConfigId());
 				Pair<String, String> currentNodeIdentifier = Pair.of(sprint.getBasicProjectConfigId().toString(),
 						sprint.getSprintID());
-				double sprintVelocityForCurrentLeaf = velocityHelper.calculateSprintVelocityValue(
-						currentSprintLeafVelocityMap, currentNodeIdentifier, fieldMap);
+				double sprintVelocityForCurrentLeaf = velocityHelper
+						.calculateSprintVelocityValue(currentSprintLeafVelocityMap, currentNodeIdentifier, fieldMap);
 				sprintVelocity.put(currentNodeIdentifier, sprintVelocityForCurrentLeaf);
 			});
 		}
@@ -352,8 +351,8 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 				Set<JiraIssue> jiraIssues = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
 				Map<String, JiraIssue> totalSprintStoryMap = new HashMap<>();
 				jiraIssues.stream().forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
-				KPIExcelUtility.populateSprintVelocity(node.getSprintFilter().getName(), totalSprintStoryMap,
-						excelData, fieldMapping);
+				KPIExcelUtility.populateSprintVelocity(node.getSprintFilter().getName(), totalSprintStoryMap, excelData,
+						fieldMapping);
 			}
 		}
 	}
@@ -379,7 +378,8 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 
 	/**
 	 * Sets Sprint wise Logger
-	 *  @param sprint
+	 * 
+	 * @param sprint
 	 * @param issueDetailsSet
 	 * @param sprintVelocity
 	 */
@@ -390,12 +390,11 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			log.info("************* SPRINT WISE Sprint Velocity *******************");
 			log.info("Sprint: {}", sprint);
 			if (CollectionUtils.isNotEmpty(issueDetailsSet)) {
-				List<String> storyIdList = issueDetailsSet.stream()
-						.map(issueDetails -> issueDetails.getNumber()).collect(Collectors.toList());
+				List<String> storyIdList = issueDetailsSet.stream().map(issueDetails -> issueDetails.getNumber())
+						.collect(Collectors.toList());
 				log.info(STORY_LOG, storyIdList.size(), storyIdList);
 				List<Double> storyPointIdList = issueDetailsSet.stream()
-						.map(issueDetails -> issueDetails.getStoryPoints())
-						.collect(Collectors.toList());
+						.map(issueDetails -> issueDetails.getStoryPoints()).collect(Collectors.toList());
 				log.info(STORY_LOG, storyIdList.size(), storyPointIdList);
 			}
 			log.info("Sprint Velocity: {}", sprintVelocity);

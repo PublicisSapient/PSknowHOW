@@ -30,8 +30,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -58,11 +56,13 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
 	public static final String UNCHECKED = "unchecked";
-	private static final Logger LOGGER = LoggerFactory.getLogger(EstimateVsActualServiceImpl.class);
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String ISSUES = "issues";
 	private static final String ORIGINAL_ESTIMATES = "Original Estimates";
@@ -102,7 +102,7 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Estimate Vs Actual -> Requested sprint : {}", leafNode.getName());
+			log.info("Estimate Vs Actual -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -149,7 +149,7 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		if (CollectionUtils.isNotEmpty(allIssues)) {
-			LOGGER.info("Estimate Vs Actual -> request id : {} total jira Issues : {}", requestTrackerId,
+			log.info("Estimate Vs Actual -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());

@@ -24,8 +24,6 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -33,9 +31,12 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * This class maps authentication properties to object
  */
+@Slf4j
 @Component
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "auth")
@@ -43,7 +44,6 @@ public class AuthProperties {// NOPMD
 	// do not remove NOPMD comment. This is for ignoring TooManyFields.
 	// fields are required for standard, LDAP and Crowd sso
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AuthProperties.class);
 	private static final String STANDARD = "STANDARD";
 	private static final String LDAP = "LDAP";
 	private static final String CROWDSSO = "CROWDSSO";
@@ -378,12 +378,12 @@ public class AuthProperties {// NOPMD
 	@PostConstruct
 	public void applyDefaultsIfNeeded() {
 		if (getSecret() == null) {
-			LOGGER.info("No JWT secret found in configuration, generating random secret by default.");
+			log.info("No JWT secret found in configuration, generating random secret by default.");
 			setSecret(UUID.randomUUID().toString().replace("-", ""));
 		}
 
 		if (getExpirationTime() == null) {
-			LOGGER.info("No JWT expiration time found in configuration, setting to one day.");
+			log.info("No JWT expiration time found in configuration, setting to one day.");
 			setExpirationTime((long) 1000 * 60 * 60 * 24);
 		}
 

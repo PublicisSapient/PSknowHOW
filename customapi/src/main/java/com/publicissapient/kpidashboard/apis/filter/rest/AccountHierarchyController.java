@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.apis.filter.rest;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,16 +33,17 @@ import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServ
 import com.publicissapient.kpidashboard.apis.model.AccountFilterRequest;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * REST service managing all the aggregated requests.
  *
  * @author tauakram
  *
  */
+@Slf4j
 @RestController
 public class AccountHierarchyController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(AccountHierarchyController.class);
 
 	/**
 	 * Returns filter options.
@@ -67,7 +66,7 @@ public class AccountHierarchyController {
 				accountHierarchyService = FilterServiceFactory.getFilterService(Constant.SCRUM);
 			}
 		} catch (ApplicationException ae) {
-			LOGGER.error("[Hierarchy ]. Error while creating filter data . No data found");
+			log.error("[Hierarchy ]. Error while creating filter data . No data found");
 			throw ae;
 
 		}

@@ -259,6 +259,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setMetadataTemplateCode(projectToolConfig.getMetadataTemplateCode());
 		projectTool.setGitLabSdmID(projectToolConfig.getGitLabSdmID());
 		projectTool.setAzureIterationStatusFieldUpdate(projectToolConfig.isAzureIterationStatusFieldUpdate());
+		projectTool.setProjectComponent(projectToolConfig.getProjectComponent());
 		log.info("Successfully update project_tools  into db");
 		toolRepository.save(projectTool);
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
@@ -400,6 +401,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setTestCaseStatus(e.getTestCaseStatus());
 			projectConfToolDto.setGitLabSdmID(e.getGitLabSdmID());
 			projectConfToolDto.setAzureIterationStatusFieldUpdate(e.isAzureIterationStatusFieldUpdate());
+			projectConfToolDto.setProjectComponent(e.getProjectComponent());
 		});
 
 		return projectConfToolDtoList;

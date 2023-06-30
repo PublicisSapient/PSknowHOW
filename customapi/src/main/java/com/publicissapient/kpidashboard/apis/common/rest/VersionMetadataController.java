@@ -24,8 +24,6 @@ package com.publicissapient.kpidashboard.apis.common.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,15 +33,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.apis.common.service.VersionMetadataService;
 import com.publicissapient.kpidashboard.apis.model.VersionDetails;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Rest controller to handle version related requests.
  *
  * @author vijmishr1
  */
+@Slf4j
 @RestController
 public class VersionMetadataController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(VersionMetadataController.class);
 
 	@Autowired
 	private VersionMetadataService versionMetadataService;
@@ -55,7 +54,7 @@ public class VersionMetadataController {
 	 */
 	@RequestMapping(value = "/getversionmetadata", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<VersionDetails> getVersionDetails() {
-		LOGGER.debug("VersionMetadataController::getVersionDetails start");
+		log.debug("VersionMetadataController::getVersionDetails start");
 		VersionDetails versionDetails = versionMetadataService.getVersionMetadata();
 		return new ResponseEntity<>(versionDetails, HttpStatus.OK);
 	}

@@ -280,10 +280,10 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			Map<String, Object> sprintWiseRejectedAndTotalDefects = new HashMap<>();
 			List<JiraIssue> sprintWiseRejectedDefects = ((List<JiraIssue>) storyDefectDataListMap
 					.get(REJECTED_DEFECT_DATA))
-							.stream()
-							.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
-									&& CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
-							.collect(Collectors.toList());
+					.stream()
+					.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
+							&& CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
+					.collect(Collectors.toList());
 			List<JiraIssue> sprintWiseTotaldDefects = ((List<JiraIssue>) storyDefectDataListMap.get(TOTAL_DEFECT_DATA))
 					.stream()
 					.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
