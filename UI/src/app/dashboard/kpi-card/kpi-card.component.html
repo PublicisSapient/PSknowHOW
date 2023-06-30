@@ -75,7 +75,7 @@
     [ngStyle]="{'height': showChartView ? '400px' : '150px', 
     'min-height': showChartView ? '330px' : '100px'}">
         <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="isShow && trendData?.length > 0 && showTrendIndicator"
-            >
+            [ngClass]="{'p-d-none':kpiData?.kpiId == 'kpi17' && trendData.length != 1}">
             <div *ngFor="let item of trendData; let i = index;" class="trend-box">
                 <app-trend-indicator
                     [dataTrend]="item" [color]="trendBoxColorObj[item?.hierarchyName]?.color" [kpiData]="kpiData"
