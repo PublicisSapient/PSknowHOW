@@ -2,11 +2,13 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -230,10 +232,10 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 					// in below loop create list of day difference between Intake and
 					// DOR. Here Intake is created date of issue.
 					issueTypeFilter.add(type);
+					String dor = fieldMapping.getJiraDor();
+					List<String> dod = fieldMapping.getJiraDod().stream().map(String::toLowerCase).collect(Collectors.toList());
+					String live = fieldMapping.getJiraLiveStatus();
 					for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistories) {
-						String dor = fieldMapping.getJiraDor();
-						List<String> dod = fieldMapping.getJiraDod();
-						String live = fieldMapping.getJiraLiveStatus();
 						CycleTimeValidationData cycleTimeValidationData = new CycleTimeValidationData();
 						cycleTimeValidationData.setIssueNumber(jiraIssueCustomHistory.getStoryID());
 						cycleTimeValidationData.setUrl(jiraIssueCustomHistory.getUrl());
@@ -241,42 +243,43 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 						CycleTime cycleTime = new CycleTime();
 						cycleTime.setIntakeTime(jiraIssueCustomHistory.getCreatedDate());
 						cycleTimeValidationData.setIntakeDate(jiraIssueCustomHistory.getCreatedDate());
+						Map<String, DateTime> dodStatusDateMap = new HashMap<>();
 						jiraIssueCustomHistory.getStatusUpdationLog()
 								.forEach(statusUpdateLog -> updateCycleTimeValidationData(dor, dod, live,
-										cycleTimeValidationData, cycleTime, statusUpdateLog));
+										cycleTimeValidationData, cycleTime, dodStatusDateMap, statusUpdateLog));
 
-						String readyToIntake = DateUtil.calTimeDiffInDays(cycleTime.getIntakeTime(),
+						String readyToIntake = DateUtil.calWeekDays(cycleTime.getIntakeTime(),
 								cycleTime.getReadyTime());
-						String readyToDeliver = DateUtil.calTimeDiffInDays(cycleTime.getReadyTime(),
+						String readyToDeliver = DateUtil.calWeekDays(cycleTime.getReadyTime(),
 								cycleTime.getDeliveryTime());
-						String deliverToLive = DateUtil.calTimeDiffInDays(cycleTime.getDeliveryTime(),
+						String deliverToLive = DateUtil.calWeekDays(cycleTime.getDeliveryTime(),
 								cycleTime.getLiveTime());
-						String leadTime = DateUtil.calTimeDiffInDays(cycleTime.getIntakeTime(),
+						String leadTime = DateUtil.calWeekDays(cycleTime.getIntakeTime(),
 								cycleTime.getLiveTime());
 						if (!readyToIntake.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-							intakeDorTime.add(Long.parseLong(readyToIntake));
+							intakeDorTime.add(DateUtil.calculateTimeInDays(Long.parseLong(readyToIntake)));
 							intakeDorModalValues.add(jiraIssueCustomHistory);
 						}
 						if (!readyToDeliver.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-							dorDodTime.add(Long.parseLong(readyToDeliver));
+							dorDodTime.add(DateUtil.calculateTimeInDays(Long.parseLong(readyToDeliver)));
 							dorDodModalValues.add(jiraIssueCustomHistory);
 						}
 						if (!deliverToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-							dodLiveTime.add(Long.parseLong(deliverToLive));
+							dodLiveTime.add(DateUtil.calculateTimeInDays(Long.parseLong(deliverToLive)));
 							leadTimeList.add(Long.parseLong(leadTime));
 							dodLiveModalValues.add(jiraIssueCustomHistory);
 						}
-						String intakeToDod = DateUtil.calTimeDiffInDays(cycleTime.getIntakeTime(),
+						String intakeToDod = DateUtil.calWeekDays(cycleTime.getIntakeTime(),
 								cycleTime.getDeliveryTime());
 						if (cycleTime.getReadyTime() != null && !intakeToDod.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-							intakeDodTime.add(Long.parseLong(intakeToDod));
+							intakeDodTime.add(DateUtil.calculateTimeInDays(Long.parseLong(intakeToDod)));
 							intakeDodModalValues.add(jiraIssueCustomHistory);
 						}
-						String dorToLive = DateUtil.calTimeDiffInDays(cycleTime.getReadyTime(),
+						String dorToLive = DateUtil.calWeekDays(cycleTime.getReadyTime(),
 								cycleTime.getLiveTime());
 						if (cycleTime.getDeliveryTime() != null
 								&& !dorToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-							dorLiveTime.add(Long.parseLong(dorToLive));
+							dorLiveTime.add(DateUtil.calculateTimeInDays(Long.parseLong(dorToLive)));
 							dorLiveModalValues.add(jiraIssueCustomHistory);
 						}
 
@@ -359,17 +362,21 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	 *            FeatureSprint
 	 */
 	private void updateCycleTimeValidationData(String dor, List<String> dod, String live,
-			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
+			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime, Map<String, DateTime> dodStatusDateMap,
 			JiraHistoryChangeLog statusUpdateLog) {
 		DateTime updatedOn = DateTime.parse(statusUpdateLog.getUpdatedOn().toString());
 		if (cycleTime.getReadyTime() == null && null != dor && dor.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
 			cycleTime.setReadyTime(updatedOn);
 			cycleTimeValidationData.setDorDate(updatedOn);
 		}
-		if (CollectionUtils.isNotEmpty(dod) && dod.contains(statusUpdateLog.getChangedTo()) &&
-				(cycleTime.getDeliveryTime() == null || updatedOn.isBefore(cycleTime.getDeliveryTime()))) {
-			cycleTime.setDeliveryTime(updatedOn);
-			cycleTimeValidationData.setDodDate(updatedOn);
+		if (CollectionUtils.isNotEmpty(dod) && dod.contains(statusUpdateLog.getChangedTo().toLowerCase())){
+			if (dodStatusDateMap.containsKey(statusUpdateLog.getChangedTo().toLowerCase())) {
+				dodStatusDateMap.clear();
+			}
+			dodStatusDateMap.put(statusUpdateLog.getChangedTo(), updatedOn);
+			DateTime minUpdatedOn = Collections.min(dodStatusDateMap.values());
+			cycleTime.setDeliveryTime(minUpdatedOn);
+			cycleTimeValidationData.setDodDate(minUpdatedOn);
 		}
 		if (Optional.ofNullable(live).isPresent() && live.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
 			cycleTime.setLiveTime(updatedOn);

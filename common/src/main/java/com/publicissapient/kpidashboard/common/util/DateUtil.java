@@ -238,11 +238,31 @@ public class DateUtil {
 		return strDate;
 	}
 
-	public static String calTimeDiffInDays(DateTime startDate, DateTime endDate) {
+	public static String calWeekDays(DateTime startDate, DateTime endDate) {
 		if (startDate != null && endDate != null) {
-			Days days = Days.daysBetween(startDate, endDate);
-			return String.valueOf(days.getDays());
+			int startW = startDate.getDayOfWeek();
+			int endW = endDate.getDayOfWeek();
+
+			long days = Days.daysBetween(startDate, endDate).getDays();
+			long daysWithoutWeekends = days - 2 * ((days + startW) / 7);
+
+			// adjust for starting and ending on a Sunday:
+			long weekDays = daysWithoutWeekends + (startW == 6 ? 1 : 0) + (endW == 6 ? 1 : 0);
+
+			return String.valueOf(weekDays * 24);
 		}
 		return NOT_APPLICABLE;
 	}
+
+	public static long calculateTimeInDays(long timeInHours) {
+		long timeInMin = (timeInHours / 24) * 8 * 60;
+		long remainingTimeInMin = (timeInHours % 24) * 60;
+		if (remainingTimeInMin >= 480) {
+			timeInMin = timeInMin + 480;
+		} else {
+			timeInMin = timeInMin + remainingTimeInMin;
+		}
+		return timeInMin / 480;
+	}
+
 }
