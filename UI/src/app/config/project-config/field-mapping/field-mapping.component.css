@@ -156,3 +156,12 @@ label.btn-import-label {
   color: white !important;
   opacity: 0.6;
 } 
+
+.btn-export{
+  color: #ffffff;
+  background: #06a0ff;
+  padding: 0.8rem 1.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}

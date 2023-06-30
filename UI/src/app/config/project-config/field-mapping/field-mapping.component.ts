@@ -24,6 +24,7 @@ import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { ChangeDetectionStrategy } from '@angular/core';
+import { FieldMappingFormComponent } from 'src/app/shared-module/field-mapping-form/field-mapping-form.component';
 declare const require: any;
 
 @Component({
@@ -55,6 +56,7 @@ export class FieldMappingComponent implements OnInit {
   additionalFilterIdentifier: any = {};
   additionalFiltersArray: any = [];
   additionalFilterOptions: any = [];
+  @ViewChild('fieldMappingFormComp') fieldMappingFormComp : FieldMappingFormComponent;
 
 
   private setting = {
@@ -293,8 +295,9 @@ export class FieldMappingComponent implements OnInit {
     const fileReader = new FileReader();
     fileReader.readAsText(event.target.files[0], 'UTF-8');
     fileReader.onload = () => {
-      this.sharedService.setSelectedFieldMapping(JSON.parse(fileReader.result as string));
-      this.getMappings();
+      const mappingData = JSON.parse(fileReader.result as string);
+      this.sharedService.setSelectedFieldMapping(mappingData);
+      this.fieldMappingFormComp.setControlValueOnImport(mappingData);
     };
     fileReader.onerror = (error) => {
       console.log(error);
@@ -314,25 +317,17 @@ export class FieldMappingComponent implements OnInit {
   //   }
   // }
 
-  // export() {
-  //   this.fieldMappingSubmitted = true;
-  //   // return if form is invalid
-  //   if (this.fieldMappingForm.invalid) {
-  //     return;
-  //   }
+  export() {
+    this.http.getFieldMappings(this.selectedToolConfig[0].id).subscribe(resp=>{
+      this.dyanmicDownloadByHtmlTag({
+        fileName: 'mappings.json',
+        text: JSON.stringify(resp['data'])
+      });
+    })
 
-  //   const submitData = {};
-  //   for (const obj in this.fieldMapping) {
-  //     submitData[obj] = this.fieldMapping[obj].value;
-  //   }
 
-  //   // this.handleAdditionalFilters(submitData);
-
-  //   this.dyanmicDownloadByHtmlTag({
-  //     fileName: 'mappings.json',
-  //     text: JSON.stringify(submitData)
-  //   });
-  // }
+    
+  }
 
 
   // handleAdditionalFilters(submitData: any): any {

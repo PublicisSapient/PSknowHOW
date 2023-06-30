@@ -96,6 +96,17 @@ private setting = {
     }
   }
 
+  /** When user import mapping template this method will set values in form */
+  setControlValueOnImport(values){
+    this.selectedFieldMapping = values;
+     if (this.selectedFieldMapping && Object.keys(this.selectedFieldMapping).length) {
+      for (const obj in this.selectedFieldMapping) {
+        if (this.form && this.form.controls[obj]) {
+          this.form.controls[obj].setValue(this.selectedFieldMapping[obj]);
+        }
+      }
+    }
+  }
 
 
   /** once user willl click on search btn, assign the search options based on field category */

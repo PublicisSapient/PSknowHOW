@@ -25,13 +25,14 @@
             <h5 class="card__primary__title__text p-m-0">Field Mappings (Scrum)</h5>
         </div>
         <div>
-            <input id="file-upload" type="file" class="btn-import" name="fileUpload" accept=".json"
-                (change)="onUpload($event)" />
+            <input type="button" class="btn-export p-mr-3" value="Export" (click)="export()" />
             <label for="file-upload" class="btn-import-label">Import</label>
+            <input style="width:0" id="file-upload" type="file" class="btn-import" name="fileUpload" accept=".json"
+                (change)="onUpload($event)" />
             <span class="p-pl-3">{{uploadedFileName}}</span>
         </div>
     </div>
-    <app-field-mapping-form *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0" 
+    <app-field-mapping-form #fieldMappingFormComp *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0" 
         [disableSave]="disableSave" 
         [fieldMappingMetaData]="fieldMappingMetaData" 
         [fieldMappingConfig]="fieldMappingConfig" 
