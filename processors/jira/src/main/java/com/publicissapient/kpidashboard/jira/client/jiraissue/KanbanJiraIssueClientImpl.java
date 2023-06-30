@@ -1232,7 +1232,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		}
 		setEstimate(jiraIssue, fields, fieldMapping, jiraProcessorConfig);
 		setAggregateTimeEstimates(jiraIssue, fields);
-		setEnvironmentImpacted(jiraIssue, fields, fieldMapping);
 
 		jiraIssue.setChangeDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
 		jiraIssue.setIsDeleted(JiraConstants.FALSE);
@@ -1405,31 +1404,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		}
 		jiraIssue.setEstimate(valueString);
 		jiraIssue.setStoryPoints(value);
-	}
-
-	/**
-	 * Sets the environment impacted custom field.
-	 *
-	 * @param jiraIssue
-	 *            JiraIssue instance
-	 * @param fields
-	 *            Map of Issue Fields
-	 * @param fieldMapping
-	 *            fieldMapping provided by the User
-	 */
-	private void setEnvironmentImpacted(KanbanJiraIssue jiraIssue, Map<String, IssueField> fields,
-			FieldMapping fieldMapping) {
-		if (fields.get(fieldMapping.getEnvImpacted()) != null
-				&& fields.get(fieldMapping.getEnvImpacted()).getValue() != null) {
-			JSONObject customField;
-			try {
-				customField = new JSONObject(fields.get(fieldMapping.getEnvImpacted()).getValue().toString());
-				jiraIssue.setEnvImpacted(JiraProcessorUtil.deodeUTF8String(customField.get(JiraConstants.VALUE)));
-			} catch (JSONException e) {
-				log.error("JIRA Processor | Error while parsing the environment custom field Environment", e);
-			}
-
-		}
 	}
 
 	/**

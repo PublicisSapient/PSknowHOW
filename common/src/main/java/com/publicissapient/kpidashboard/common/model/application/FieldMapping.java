@@ -84,7 +84,6 @@ public class FieldMapping extends BasicModel {
 	private String[] jiraIssueTypeNamesAVR;
 	private List<String> jiraIssueEpicType;
 	private String storyFirstStatus;
-	private String envImpacted;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;// TODO: Extra field
 	private List<String> jiraStatusForDevelopmentAVR;

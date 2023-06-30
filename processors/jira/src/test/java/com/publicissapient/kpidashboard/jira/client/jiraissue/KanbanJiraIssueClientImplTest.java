@@ -384,7 +384,6 @@ public class KanbanJiraIssueClientImplTest {
 		al.add("Bug");
 		al.add("Defect");
 		fieldMapping.setJiraTechDebtValue(al);
-		fieldMapping.setEnvImpacted("yes");
 		fieldMapping.setJiraTechDebtIdentification(JiraConstants.LABELS);
 		Issue issue = new Issue("summary", null, "key", 121L, null, null,
 				new Status(null, null, "TestHOW", null, null, null), "description", null, null, null, null, null,

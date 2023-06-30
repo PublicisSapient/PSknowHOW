@@ -1210,7 +1210,6 @@ public class OnlineDataProcessorImplTest {
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Support Request", "Incident", "Project Request",
 				"Member Account Request", "TEST Consulting Request", "Test Case" }));
 		fieldMapping.setTicketCountIssueType(jiraType);
-		fieldMapping.setEnvImpacted("customfield_13131");
 		fieldMapping.setJiraTicketVelocityIssueType(jiraType);
 		fieldMapping.setKanbanJiraTechDebtIssueType(jiraType);
 		fieldMapping.setKanbanCycleTimeIssueType(jiraType);

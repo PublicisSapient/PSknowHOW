@@ -802,8 +802,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		}
 		azureIssue.setTimeSpentInMinutes(timeSpent);
 
-		setEnvironmentImpacted(azureIssue, fieldsMap, fieldMapping);
-
 		azureIssue.setChangeDate(AzureProcessorUtil.getFormattedDate(AzureProcessorUtil.deodeUTF8String(changeDate)));
 		azureIssue.setIsDeleted(AzureConstants.FALSE);
 
@@ -995,15 +993,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 * @param fieldMapping
 	 *            fieldMapping provided by the User
 	 */
-	private void setEnvironmentImpacted(KanbanJiraIssue azureIssue, Map<String, Object> fieldsMap,
-			FieldMapping fieldMapping) {
-		String envImpacted = fieldMapping.getEnvImpacted();
-		if (StringUtils.isNotEmpty(envImpacted) && fieldsMap.containsKey(envImpacted)
-				&& fieldsMap.get(envImpacted) != null) {
-			azureIssue.setEnvImpacted(AzureProcessorUtil.deodeUTF8String(fieldsMap.get(envImpacted)));
-
-		}
-	}
 
 	/**
 	 * Decrypt key.
