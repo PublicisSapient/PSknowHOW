@@ -122,8 +122,8 @@ function running_js()
   echo "########## add custom template code for existing projects `date` ############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/addCustomizeTemplate.js
 
-  echo "########## create release hierarchy with project version `date`############"
-  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/create_release_hierarchy.js
+  echo "########## delete release hierarchy with project version `date`############"
+  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/delete_release_hierarchy.js
 
   echo "########## Migrate backlog from jira issue to issue_backlog collection `date`############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/migrate_backlogs_from_jira_issue_collection.js

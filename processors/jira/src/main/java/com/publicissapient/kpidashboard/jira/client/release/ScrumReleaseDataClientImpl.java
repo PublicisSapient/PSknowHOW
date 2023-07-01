@@ -22,6 +22,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.jira.adapter.JiraAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
@@ -68,6 +70,8 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 	ProjectReleaseRepo projectReleaseRepo;
 	@Autowired
 	AccountHierarchyRepository accountHierarchyRepository;
+	@Autowired
+	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
 	@Autowired
@@ -162,6 +166,7 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 						setToSave.add(hierarchy);
 					} else if (!exHiery.equals(hierarchy)) {
 						exHiery.setBeginDate(hierarchy.getBeginDate());
+						exHiery.setNodeName(hierarchy.getNodeName());//release name changed
 						exHiery.setEndDate(hierarchy.getEndDate());
 						exHiery.setReleaseState(hierarchy.getReleaseState());
 						setToSave.add(exHiery);
@@ -187,9 +192,24 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		HierarchyLevel hierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
+		// DTS-26153,fetching all the release versions from history whereever an issue
+		// was tagged
+		Set<String> releaseVersions = new HashSet<>();
+		jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(projectBasicConfig.getId().toString()).stream()
+				.flatMap(jiraIssueCustomHistory -> jiraIssueCustomHistory.getFixVersionUpdationLog().stream())
+				.forEach(dbVersion -> {
+					releaseVersions
+							.addAll(Arrays.stream(dbVersion.getChangedFrom().split(",")).collect(Collectors.toSet()));
+					releaseVersions
+							.addAll(Arrays.stream(dbVersion.getChangedTo().split(",")).collect(Collectors.toSet()));
+				});
+
 		List<AccountHierarchy> accountHierarchies = new ArrayList<>();
 		try {
-			projectRelease.getListProjectVersion().stream().forEach(projectVersion -> {
+			//out of all the releases, fetching only those which are required
+			projectRelease.getListProjectVersion().stream().
+			filter(projectVersion -> releaseVersions.contains(projectVersion.getName()))
+			.forEach(projectVersion -> {
 				AccountHierarchy accountHierarchy = new AccountHierarchy();
 				accountHierarchy.setBasicProjectConfigId(projectBasicConfig.getId());
 				accountHierarchy.setIsDeleted(JiraConstants.FALSE);
