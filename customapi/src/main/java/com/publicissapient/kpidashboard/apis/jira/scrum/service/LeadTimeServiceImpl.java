@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
@@ -316,7 +317,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 		intakeToDorIterationKpiValue.setFilter1(leadTimeFilterName);
 		List<IterationKpiData> intakeToDorKpiDataList = new ArrayList<>();
 		intakeToDorKpiDataList.add(new IterationKpiData(leadTimeFilterName,
-				ObjectUtils.defaultIfNull(transitionTime, 0L).doubleValue(), null, null, DAYS, null));
+				(double) (ObjectUtils.defaultIfNull(transitionTime, 0L)/480), null, null, DAYS, null));
 		intakeToDorKpiDataList.add(new IterationKpiData(ISSUE_COUNT,
 				ObjectUtils.defaultIfNull(transitionTimeList.size(), 0L).doubleValue(), null, null, null,
 				getIterationKpiModalValue(transitionModalValues, cycleTimeList)));
