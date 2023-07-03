@@ -338,9 +338,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 			// Add RCA to Issue
 			setRCA(fieldMapping, issue, azureIssue, fieldsMap);
 
-			// Add device platform filed to issue
-			setDevicePlatform(fieldMapping, azureIssue, fieldsMap);
-
 			if (issueTypeNames
 					.contains(AzureProcessorUtil.deodeUTF8String(issueType).toLowerCase(Locale.getDefault()))) {
 
@@ -735,27 +732,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 			azureIssue.setRootCauseList(Lists.newArrayList(AzureConstants.RCA_CAUSE_NONE));
 		}
 
-	}
-
-	/**
-	 * Sets Device Platform.
-	 *
-	 * @param fieldMapping
-	 *            fieldMapping provided by the User
-	 * @param azureIssue
-	 *            KanbanJiraIssue instance
-	 * @param fieldsMap
-	 *            the fields map
-	 */
-	public void setDevicePlatform(FieldMapping fieldMapping, KanbanJiraIssue azureIssue,
-			Map<String, Object> fieldsMap) {
-		String devicePlatformFromFieldMapping = fieldMapping.getDevicePlatform();
-		String devicePlatform = null;
-		if (fieldsMap.containsKey(devicePlatformFromFieldMapping)
-				&& fieldsMap.get(devicePlatformFromFieldMapping) != null) {
-			devicePlatform = fieldsMap.get(devicePlatformFromFieldMapping).toString();
-		}
-		azureIssue.setDevicePlatform(devicePlatform);
 	}
 
 	/**

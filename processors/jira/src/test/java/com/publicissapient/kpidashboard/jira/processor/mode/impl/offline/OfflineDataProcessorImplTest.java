@@ -202,7 +202,7 @@ public class OfflineDataProcessorImplTest {
 		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeRCA(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeDC(jiraType);
-		fieldMapping.setJiraIntakeToDorIssueType(jiraType);
+		fieldMapping.setJiraIntakeToDorIssueTypeLT(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
 
 		fieldMapping.setJiraTechDebtIdentification("Labels");

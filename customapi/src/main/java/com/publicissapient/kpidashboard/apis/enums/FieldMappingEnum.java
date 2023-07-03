@@ -120,22 +120,22 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraIterationCompletionStatusCR", "jiraIterationCompletionTypeCR")),
 
 	KPI122("Closure Possible Today", KPISource.JIRA.name(),
-			Arrays.asList("jiraIterationCompletionStatusCPT", "jiraIterationCompletionTypeCPT")),
+			Arrays.asList("jiraIterationCompletionStatusCPT", "jiraIterationCompletionTypeCPT","jiraStatusForInProgressCPT")),
 
 	KPI145("Dev Completion Status", KPISource.JIRA.name(),
-			Arrays.asList("jiraIterationCompletionStatusDCS", "jiraIterationCompletionTypeDCS")),
+			Arrays.asList("jiraIterationCompletionStatusDCS", "jiraIterationCompletionTypeDCS","jiraStatusForInProgressDCS")),
 
 	KPI75("Estimate vs Actual", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusEVA", "jiraIterationCompletionTypeEVA")),
 
 	KPI124("Estimation Hygiene", KPISource.JIRA.name(),
-			Arrays.asList("jiraIterationCompletionStatusEH", "jiraIterationCompletionTypeEH")),
+			Arrays.asList("jiraIterationCompletionStatusEH", "jiraIterationCompletionTypeEH","issueStatusExcluMissingWorkEH")),
 
 	KPI123("Issue Likely To Spill", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusILS", "jiraIterationCompletionTypeILS")),
 
 	KPI125("Iteration Burnup", KPISource.JIRA.name(),
-			Arrays.asList("jiraIterationCompletionStatusIBU", "jiraIterationCompletionTypeIBU")),
+			Arrays.asList("jiraIterationCompletionStatusIBU", "jiraIterationCompletionTypeIBU","jiraStatusForInProgressIBU")),
 
 	KPI120("Iteration Commitment", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusICO", "jiraIterationCompletionTypeICO")),

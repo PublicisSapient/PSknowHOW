@@ -219,7 +219,7 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeRCA(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeDC(jiraType);
-		fieldMapping.setJiraIntakeToDorIssueType(jiraType);
+		fieldMapping.setJiraIntakeToDorIssueTypeLT(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
 
 		fieldMapping.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
@@ -391,7 +391,6 @@ public class KanbanJiraIssueClientImplTest {
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Ready for Testing");
 		fieldMapping.setJiraStatusForQa(jiraSegData);
-		fieldMapping.setDevicePlatform("customfield_18181");
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("segregationLabel");

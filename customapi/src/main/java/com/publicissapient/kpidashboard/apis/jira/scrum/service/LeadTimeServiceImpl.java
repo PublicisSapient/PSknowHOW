@@ -94,25 +94,25 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			if (Optional.ofNullable(fieldMapping.getJiraIntakeToDorIssueType()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getJiraIntakeToDorIssueTypeLT()).isPresent()) {
 
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
-						fieldMapping.getJiraIntakeToDorIssueType(),
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeLT(),
+						fieldMapping.getJiraIntakeToDorIssueTypeLT(),
 						JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 			}
 			List<String> status = new ArrayList<>();
-			if (Optional.ofNullable(fieldMapping.getJiraDod()).isPresent()) {
-				status.addAll(fieldMapping.getJiraDod());
+			if (Optional.ofNullable(fieldMapping.getJiraDodLT()).isPresent()) {
+				status.addAll(fieldMapping.getJiraDodLT());
 			}
 
 			if (Optional.ofNullable(fieldMapping.getJiraDor()).isPresent()) {
 				status.add(fieldMapping.getJiraDor());
 			}
 
-			if (Optional.ofNullable(fieldMapping.getJiraLiveStatus()).isPresent()) {
-				status.add(fieldMapping.getJiraLiveStatus());
+			if (Optional.ofNullable(fieldMapping.getJiraLiveStatusLT()).isPresent()) {
+				status.add(fieldMapping.getJiraLiveStatusLT());
 			}
 			mapOfProjectFilters.put("statusUpdationLog.story.changedTo", CommonUtils.convertToPatternList(status));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
@@ -348,9 +348,9 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			Map<String, DateTime> dodStatusDateMap, JiraHistoryChangeLog statusUpdateLog) {
 		DateTime updatedOn = DateTime.parse(statusUpdateLog.getUpdatedOn().toString());
 		String dor = fieldMapping.getJiraDor();
-		List<String> dod = fieldMapping.getJiraDod().stream().map(String::toLowerCase).collect(Collectors.toList());
-		String live = fieldMapping.getJiraLiveStatus();
-		String storyFirstStatus = fieldMapping.getStoryFirstStatus();
+		List<String> dod = fieldMapping.getJiraDodLT().stream().map(String::toLowerCase).collect(Collectors.toList());
+		String live = fieldMapping.getJiraLiveStatusLT();
+		String storyFirstStatus = fieldMapping.getStoryFirstStatusLT();
 		if (cycleTime.getReadyTime() == null && null != dor && dor.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
 			cycleTime.setReadyTime(updatedOn);
 			cycleTimeValidationData.setDorDate(updatedOn);

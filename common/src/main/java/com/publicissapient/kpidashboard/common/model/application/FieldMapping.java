@@ -84,7 +84,8 @@ public class FieldMapping extends BasicModel {
 	private String[] jiraIssueTypeNames;//TODO: Extra field
 	private String[] jiraIssueTypeNamesAVR;
 	private List<String> jiraIssueEpicType;
-	private String storyFirstStatus;
+	private String storyFirstStatus;//TODO: Extra field
+	private String storyFirstStatusLT;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;// TODO: Extra field
 	private List<String> jiraStatusForDevelopmentAVR;
@@ -125,10 +126,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDefectRemovalIssueType;
 	// Added for Defect Reopen Rate KPI.
 	private List<String> jiraDefectClosedStatus;
-	/**
-	 * Device Platform (iOS/Android/Desktop)
-	 */
-	private String devicePlatform;
+
 	private String jiraStoryPointsCustomField;
 	// parent issue type for the test
 	private List<String> jiraTestAutomationIssueType;
@@ -156,7 +154,8 @@ public class FieldMapping extends BasicModel {
 
 	private String jiraDor;
 
-	private List<String> jiraIntakeToDorIssueType;
+	private List<String> jiraIntakeToDorIssueType;// TODO: Extra field
+	private List<String> jiraIntakeToDorIssueTypeLT;
 
 	private List<String> jiraStoryIdentification;
 	private List<String> jiraStoryIdentificationIC;
@@ -216,7 +215,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> resolutionTypeForRejectionRCA;
 	private List<String> resolutionTypeForRejectionDIR;
 	private List<String> resolutionTypeForRejectionQADD;
-	private List<String> qaRootCauseValue;
 	private List<String> jiraQADefectDensityIssueType;
 
 	private String jiraBugRaisedByQACustomField;
@@ -244,7 +242,10 @@ public class FieldMapping extends BasicModel {
 	private String productionDefectComponentValue;
 
 	// field for In Progress status
-	private List<String> jiraStatusForInProgress;
+	private List<String> jiraStatusForInProgress;// TODO: Extra field
+	private List<String> jiraStatusForInProgressCPT;
+	private List<String> jiraStatusForInProgressDCS;
+	private List<String> jiraStatusForInProgressIBU;
 
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
@@ -259,7 +260,8 @@ public class FieldMapping extends BasicModel {
 	private List<AdditionalFilterConfig> additionalFilterConfig;
 
 	// issue status to exclude missing worklogs
-	private List<String> issueStatusExcluMissingWork;
+	private List<String> issueStatusExcluMissingWork;// TODO: Extra field
+	private List<String> issueStatusExcluMissingWorkEH;
 
 	// issue On Hold status to exclude Closure possible
 	private List<String> jiraOnHoldStatus;
@@ -294,7 +296,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraReadyForRefinement;
 	private List<String> jiraFtprRejectStatus;
 
-	private List<String> jiraIterationCompletionStatusCustomField;// TODO: Extra field //test done
+	private List<String> jiraIterationCompletionStatusCustomField;// TODO: Duplicate //test done
 	private List<String> jiraIterationCompletionStatusIFTPR;
 	private List<String> jiraIterationCompletionStatusCPT;
 	private List<String> jiraIterationCompletionStatusEVA;

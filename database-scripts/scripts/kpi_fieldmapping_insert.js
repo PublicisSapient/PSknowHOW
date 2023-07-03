@@ -2231,6 +2231,44 @@ db.getCollection('field_mapping_structure').insert(
           "kpiImpacted":"Filters"
           }
 },
+{
+    "fieldName": "issueStatusExcluMissingWorkEH",
+    "fieldLabel": "Issue status to be excluded from Missing Worklogs ",
+     "fieldType": "chips",
+    "fieldCategory": "workflow",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+          "definition": "Statuses selected depict all created status of issue types included in the Project.",
+          }
+},{
+    "fieldName": "jiraStatusForInProgressDCS",
+    "fieldLabel": "Status to identify In Progress",
+     "fieldType": "chips",
+    "fieldCategory": "workflow",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+          "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
+          }
+},
+{
+    "fieldName": "jiraStatusForInProgressCPT",
+    "fieldLabel": "Status to identify In Progress",
+     "fieldType": "chips",
+    "fieldCategory": "workflow",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+          "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
+          }
+},{
+    "fieldName": "jiraStatusForInProgressIBU",
+    "fieldLabel": "Status to identify In Progress",
+     "fieldType": "chips",
+    "fieldCategory": "workflow",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+          "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
+          }
+},
 
 
 

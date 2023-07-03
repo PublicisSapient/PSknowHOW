@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -351,10 +353,10 @@ public final class KpiDataHelper {
 	}
 
 	public static void prepareFieldMappingDefectTypeTransformation(Map<String, Object> mapOfProjectFilters,
-			FieldMapping fieldMapping, List<String> kpiWiseDefectsFieldMapping, String key) {
-		if (Optional.ofNullable(fieldMapping.getJiradefecttype()).isPresent()
-				&& CollectionUtils.containsAny(kpiWiseDefectsFieldMapping, fieldMapping.getJiradefecttype())) {
-			kpiWiseDefectsFieldMapping.removeIf(x -> fieldMapping.getJiradefecttype().contains(x));
+			List<String> defectType, List<String> kpiWiseDefectsFieldMapping, String key) {
+		if (Optional.ofNullable(defectType).isPresent()
+				&& CollectionUtils.containsAny(kpiWiseDefectsFieldMapping, defectType)) {
+			kpiWiseDefectsFieldMapping.removeIf(x -> defectType.contains(x));
 			kpiWiseDefectsFieldMapping.add(NormalizedJira.DEFECT_TYPE.getValue());
 		}
 		mapOfProjectFilters.put(key, CommonUtils.convertToPatternList(kpiWiseDefectsFieldMapping));
@@ -518,7 +520,7 @@ public final class KpiDataHelper {
 	 */
 	private static Map<LocalDate, List<JiraIssue>> createDueDateWiseMap(List<JiraIssue> arrangeJiraIssueList) {
 		TreeMap<LocalDate, List<JiraIssue>> localDateListMap = new TreeMap<>();
-		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(arrangeJiraIssueList)) {
+		if (CollectionUtils.isNotEmpty(arrangeJiraIssueList)) {
 			arrangeJiraIssueList.forEach(jiraIssue -> {
 				LocalDate dueDate = DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC);
 				localDateListMap.computeIfPresent(dueDate, (date, issue) -> {
@@ -575,7 +577,7 @@ public final class KpiDataHelper {
 			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
 		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
 				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping.getJiraStatusForInProgress() && org.apache.commons.collections.CollectionUtils
+		if (null != fieldMapping.getJiraStatusForInProgress() && CollectionUtils
 				.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
 			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
 					.filter(jiraIssue -> fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))

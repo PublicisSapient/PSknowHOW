@@ -312,7 +312,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraIssueDeliverdStatusCVR(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIssueDeliverdStatusFTPR(workflowMap.get(CommonConstant.DELIVERED));
 
-		fieldMapping.setJiraIntakeToDorIssueType(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraIntakeToDorIssueTypeLT(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraStoryIdentification(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraFTPRStoryIdentification(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraIFTPRStoryIdentification(issueTypeMap.get(CommonConstant.STORY));
@@ -328,7 +328,6 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setResolutionTypeForRejectionRCA(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setResolutionTypeForRejectionDIR(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setResolutionTypeForRejectionQADD(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
-		fieldMapping.setQaRootCauseValue(valuesToIdentifyMap.get(CommonConstant.QA_ROOT_CAUSE));
 		fieldMapping.setJiraQADefectDensityIssueType(issueTypeMap.get(CommonConstant.STORY));
 
 		if (projectConfig.isKanban()) {

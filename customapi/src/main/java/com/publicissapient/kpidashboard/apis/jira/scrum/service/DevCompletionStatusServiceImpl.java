@@ -405,8 +405,8 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 		filterStorySprintDetails.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 
 		// Getting inProgress Status
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
-			inProgressStatuses = fieldMapping.getJiraStatusForInProgress();
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressDCS())) {
+			inProgressStatuses = fieldMapping.getJiraStatusForInProgressDCS();
 		}
 		LocalDate startDate = null;
 		LocalDate endDate;

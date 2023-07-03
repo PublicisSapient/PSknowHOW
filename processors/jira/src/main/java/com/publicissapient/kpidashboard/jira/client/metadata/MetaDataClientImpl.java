@@ -321,7 +321,7 @@ public class MetaDataClientImpl implements MetadataClient {
 				fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 				fieldMapping.setJiraDefectCreatedStatus(CommonConstant.OPEN);
 			}
-			fieldMapping.setIssueStatusExcluMissingWork(firstStatusList);
+			fieldMapping.setIssueStatusExcluMissingWorkEH(firstStatusList);
 			fieldMapping.setJiraStatusForDevelopmentAVR(workflowMap.get(CommonConstant.DEVELOPMENT));
 			fieldMapping.setJiraStatusForDevelopmentFTPR(workflowMap.get(CommonConstant.DEVELOPMENT));
 			fieldMapping.setJiraStatusForDevelopmentIFTPR(workflowMap.get(CommonConstant.DEVELOPMENT));
@@ -378,7 +378,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping
 					.setJiraIssueDeliverdStatusFTPR(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping
-					.setJiraIntakeToDorIssueType(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+					.setJiraIntakeToDorIssueTypeLT(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationIC(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping
@@ -408,8 +408,6 @@ public class MetaDataClientImpl implements MetadataClient {
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionDSR(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setQaRootCauseValue(
-					valuesToIdentifyMap.getOrDefault(CommonConstant.QA_ROOT_CAUSE, new ArrayList<>()));
 			fieldMapping.setJiraQADefectDensityIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraDefectClosedStatus(
@@ -464,7 +462,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			} else {
 				fieldMapping.setJiraTechDebtIssueType(null);
 			}
-			fieldMapping.setJiraIntakeToDorIssueType(
+			fieldMapping.setJiraIntakeToDorIssueTypeLT(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 			fieldMapping

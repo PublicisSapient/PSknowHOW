@@ -235,8 +235,8 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 	private boolean checkStatus(JiraIssue jiraIssue, FieldMapping fieldMapping) {
 
 		boolean toDrop = false;
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getIssueStatusExcluMissingWork())) {
-			toDrop = fieldMapping.getIssueStatusExcluMissingWork().stream().map(String::toUpperCase)
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getIssueStatusExcluMissingWorkEH())) {
+			toDrop = fieldMapping.getIssueStatusExcluMissingWorkEH().stream().map(String::toUpperCase)
 					.collect(Collectors.toList()).contains(jiraIssue.getJiraStatus().toUpperCase());
 		}
 		return toDrop;

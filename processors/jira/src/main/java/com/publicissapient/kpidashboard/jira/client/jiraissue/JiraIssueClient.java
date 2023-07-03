@@ -92,31 +92,6 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 	public abstract void purgeJiraIssues(List<Issue> purgeIssuesList, ProjectConfFieldMapping projectConfig);
 
 	/**
-	 * Sets Device Platform
-	 *
-	 * @param fieldMapping
-	 *            fieldMapping provided by the User
-	 * @param jiraIssue
-	 *            JiraIssue instance
-	 * @param fields
-	 *            Map of Issue Fields
-	 */
-	public void setDevicePlatform(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
-
-		try {
-			String devicePlatform = null;
-			if (fields.get(fieldMapping.getDevicePlatform()) != null
-					&& fields.get(fieldMapping.getDevicePlatform()).getValue() != null) {
-				devicePlatform = ((JSONObject) fields.get(fieldMapping.getDevicePlatform()).getValue())
-						.getString(JiraConstants.VALUE);
-			}
-			jiraIssue.setDevicePlatform(devicePlatform);
-		} catch (JSONException e) {
-			log.error("JIRA Processor | Error while parsing Device Platform data", e);
-		}
-	}
-
-	/**
 	 * Sets Issue Tech Story Type after identifying s whether a story is tech story
 	 * or simple feature story. There can be possible 3 ways to identify a tech
 	 * story 1. Specific 'label' is maintained 2. 'Issue type' itself is a 'Tech
