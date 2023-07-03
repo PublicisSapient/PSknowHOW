@@ -30,15 +30,23 @@ export class StackedAreaChartComponent implements OnInit {
     let kpiId = this.kpiId;
     let keys = Object.keys(this.data[0]?.value);
     let yMax = 0;
+    let keyWiseYMax = {};
+    for(let i = 0; i<keys.length;i++){
+      keyWiseYMax[keys[i]] = 0;
+    }
     /** calculating yMax and extracting keys */
     this.data.forEach((x) => {
       for(let item in x.value){
         if(keys.indexOf(item) == -1){
           keys.push(item);
+          keyWiseYMax[item] = 0;
         }
-        if(x.value[item] > yMax) yMax = x.value[item];
+        if(keyWiseYMax[item] < x.value[item]) keyWiseYMax[item] = x.value[item];
       }
     });
+    for(let key in keyWiseYMax){
+      yMax += keyWiseYMax[key];
+    }
     
     /**adding missing issues with value of 0 */
     const data = this.data.map((item) => {
