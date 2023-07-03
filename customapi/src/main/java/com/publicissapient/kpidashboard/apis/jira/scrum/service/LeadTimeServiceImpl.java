@@ -317,7 +317,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 		intakeToDorIterationKpiValue.setFilter1(leadTimeFilterName);
 		List<IterationKpiData> intakeToDorKpiDataList = new ArrayList<>();
 		intakeToDorKpiDataList.add(new IterationKpiData(leadTimeFilterName,
-				(double) (ObjectUtils.defaultIfNull(transitionTime, 0L)/480), null, null, CommonConstant.DAY, null));
+				 (ObjectUtils.defaultIfNull(transitionTime, 0L).doubleValue()/480), null, null, DAYS, null));
 		intakeToDorKpiDataList.add(new IterationKpiData(ISSUE_COUNT,
 				ObjectUtils.defaultIfNull(transitionTimeList.size(), 0L).doubleValue(), null, null, null,
 				getIterationKpiModalValue(transitionModalValues, cycleTimeList)));
