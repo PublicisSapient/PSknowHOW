@@ -694,16 +694,16 @@ public final class KpiDataHelper {
 						cycleTimeValidationData.getDodDate());
 				if (cycleTimeValidationData.getDorDate() != null
 						&& !intakeToDod.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-					iterationKpiModalValue
-							.setIntakeToDod(String.valueOf(DateUtil.calculateTimeInDays(Long.parseLong(intakeToDod))));
+					iterationKpiModalValue.setIntakeToDod(String.valueOf(CommonUtils
+							.convertIntoDays((int) DateUtil.calculateTimeInDays(Long.parseLong(intakeToDod)))));
 				} else
 					iterationKpiModalValue.setIntakeToDod(Constant.NOT_AVAILABLE);
 				String dorToLive = DateUtil.calWeekHours(cycleTimeValidationData.getDorDate(),
 						cycleTimeValidationData.getLiveDate());
 				if (cycleTimeValidationData.getDodDate() != null
 						&& !dorToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-					iterationKpiModalValue
-							.setDorToLive(String.valueOf(DateUtil.calculateTimeInDays(Long.parseLong(dorToLive))));
+					iterationKpiModalValue.setDorToLive(String.valueOf(CommonUtils
+							.convertIntoDays((int) DateUtil.calculateTimeInDays(Long.parseLong(dorToLive)))));
 				} else
 					iterationKpiModalValue.setDorToLive(Constant.NOT_AVAILABLE);
 				String leadTime = DateUtil.calWeekHours(cycleTimeValidationData.getIntakeDate(),
@@ -717,7 +717,8 @@ public final class KpiDataHelper {
 
 	private static String getTimeValue(String time) {
 		if (time != null && !time.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-			return String.valueOf(DateUtil.calculateTimeInDays(Long.parseLong(time)));
+			return String
+					.valueOf(CommonUtils.convertIntoDays((int) DateUtil.calculateTimeInDays(Long.parseLong(time))));
 		} else {
 			return Constant.NOT_AVAILABLE;
 		}

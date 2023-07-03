@@ -32,7 +32,8 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 import org.joda.time.DateTime;
-import org.joda.time.Days;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.Hours;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -238,18 +239,12 @@ public class DateUtil {
 		return strDate;
 	}
 
-	public static String calWeekHours(DateTime startDate, DateTime endDate) {
-		if (startDate != null && endDate != null) {
-			int startW = startDate.getDayOfWeek();
-			int endW = endDate.getDayOfWeek();
-
-			long days = Days.daysBetween(startDate, endDate).getDays();
-			long daysWithoutWeekends = days - 2 * ((days + startW) / 7);
-
-			// adjust for starting and ending on a Sunday:
-			long weekDays = daysWithoutWeekends + (startW == 6 ? 1 : 0) + (endW == 6 ? 1 : 0);
-
-			return String.valueOf(weekDays * 24);
+	public static String calWeekHours(DateTime startDateTime, DateTime endDateTime) {
+		if (startDateTime != null && endDateTime != null) {
+			int hours = Hours.hoursBetween(startDateTime, endDateTime).getHours();
+			int weekendsCount = countSaturdaysAndSundays(startDateTime, endDateTime);
+			int res = hours - weekendsCount * 24;
+			return String.valueOf(res);
 		}
 		return NOT_APPLICABLE;
 	}
@@ -262,7 +257,19 @@ public class DateUtil {
 		} else {
 			timeInMin = timeInMin + remainingTimeInMin;
 		}
-		return timeInMin / 480;
+		return timeInMin;
 	}
 
+	public static int countSaturdaysAndSundays(DateTime startDateTime, DateTime endDateTime) {
+		int count = 0;
+		DateTime current = startDateTime;
+		while (current.isBefore(endDateTime)) {
+			if (current.getDayOfWeek() == DateTimeConstants.SATURDAY
+					|| current.getDayOfWeek() == DateTimeConstants.SUNDAY) {
+				count++;
+			}
+			current = current.plusDays(1);
+		}
+		return count;
+	}
 }
