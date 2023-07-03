@@ -974,63 +974,12 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi83",
-    "kpiName": "Average Resolution Time",
-    "maxValue": "100",
-    "kpiUnit": "Days",
-    "isDeleted": "False",
-    "defaultOrder": 22,
-    "kpiSource": "Jira",
-    "groupId": 1,
-    "thresholdValue": "",
-    "kanban": false,
-    "chartType": "line",
-    "kpiInfo": {
-      "definition": "Measures the average time taken to complete an issue.",
-      "formula": [
-        {
-          "lhs": "Average Resolution Time",
-          "operator": "division",
-          "operands": [
-            "Sum of resolution times of all issues completed in the Sprint",
-            "No. of issues completed within a sprint"
-          ]
-        }
-      ],
-      "details": [
-        {
-          "type": "link",
-          "kpiLinkDetail": {
-            "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Average-Resolution-time"
-          }
-        }
-      ]
-    },
-    "xAxisLabel": "Sprints",
-    "yAxisLabel": "Count(Days)",
-    "isPositiveTrend": false,
-    "showTrend": true,
-    "kpiFilter": "dropDown",
-    "aggregationCriteria": "average",
-    "isAdditionalFilterSupport": true,
-    "calculateMaturity": true,
-    "hideOverallFilter": false,
-    "maturityRange": [
-      "-10",
-      "10-8",
-      "8-5",
-      "5-3",
-      "3-"
-    ]
-  },
-  {
     "kpiId": "kpi84",
     "kpiName": "Mean Time To Merge",
     "maxValue": "10",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 23,
+    "defaultOrder": 22,
     "groupId": 1,
     "kpiSource": "BitBucket",
     "thresholdValue": "55",
@@ -1071,7 +1020,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "10",
     "kpiUnit": "MRs",
     "isDeleted": "False",
-    "defaultOrder": 24,
+    "defaultOrder": 23,
     "kpiSource": "BitBucket",
     "groupId": 1,
     "thresholdValue": "55",
@@ -1114,7 +1063,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "100",
     "kpiUnit": "min",
     "isDeleted": "False",
-    "defaultOrder": 25,
+    "defaultOrder": 24,
     "kpiSource": "Jenkins",
     "groupId": 1,
     "thresholdValue": "",
@@ -1150,115 +1099,12 @@ db.getCollection('kpi_master').insert(
     ]
   },
   {
-    "kpiId": "kpi3",
-    "kpiName": "Lead Time",
-    "isDeleted": "False",
-    "kpiInAggregatedFeed": "True",
-    "kpiOnDashboard": [
-      "Aggregated"
-    ],
-    "kpiBaseLine": "0",
-    "thresholdValue": "",
-    "defaultOrder": 26,
-    "kpiUnit": "Days",
-    "kpiSource": "Jira",
-    "groupId": 3,
-    "kanban": false,
-    "chartType": "table",
-    "kpiInfo": {
-      "definition": "Measures Total time between a request was made and  all work on this item is completed and the request was delivered .",
-      "formula": [
-        {
-          "lhs": "It is calculated as the sum Ideation time, Development time & Release time"
-        }
-      ],
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
-        },
-        {
-          "type": "paragraph",
-          "value": "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
-        },
-        {
-          "type": "paragraph",
-          "value": "Release time (DOD to Live): Time taken between story completion to it going live."
-        },
-        {
-          "type": "link",
-          "kpiLinkDetail": {
-            "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Lead-Time"
-          }
-        }
-      ]
-    },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
-    "isPositiveTrend": false,
-    "showTrend": false,
-    "kpiFilter": "radioButton",
-    "aggregationCriteria": "average",
-    "isAdditionalFilterSupport": false,
-    "calculateMaturity": true,
-    "maturityRange": [
-      "-60",
-      "60-45",
-      "45-30",
-      "30-10",
-      "10-"
-    ],
-    "maturityLevel": [
-      {
-        "level": "LeadTime",
-        "range": [
-          "-60",
-          "60-45",
-          "45-30",
-          "30-10",
-          "10-"
-        ]
-      },
-      {
-        "level": "Intake-DoR",
-        "range": [
-          "-30",
-          "30-20",
-          "20-10",
-          "10-5",
-          "5-"
-        ]
-      },
-      {
-        "level": "DoR-DoD",
-        "range": [
-          "-20",
-          "20-10",
-          "10-7",
-          "7-3",
-          "3-"
-        ]
-      },
-      {
-        "level": "DoD-Live",
-        "range": [
-          "-30",
-          "30-15",
-          "15-5",
-          "5-2",
-          "2-"
-        ]
-      }
-    ]
-  },
-  {
     "kpiId": "kpi118",
     "kpiName": "Deployment Frequency",
     "maxValue": "100",
     "kpiUnit": "Number",
     "isDeleted": "False",
-    "defaultOrder": 27,
+    "defaultOrder": 25,
     "kpiSource": "Jenkins",
     "groupId": 1,
     "thresholdValue": 0,
@@ -1298,7 +1144,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "300",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 28,
+    "defaultOrder": 26,
     "kpiSource": "Jira",
     "groupId": 4,
     "thresholdValue": "",
@@ -1335,7 +1181,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "300",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 29,
+    "defaultOrder": 27,
     "kpiSource": "Jira",
     "groupId": 4,
     "thresholdValue": "",
@@ -2948,6 +2794,107 @@ db.getCollection('kpi_master').insert(
     "calculateMaturity": false
   },
   {
+    "kpiId": "kpi3",
+    "kpiName": "Lead Time",
+    "isDeleted": "False",
+    "kpiCategory": "Backlog",
+    "boxType": "2_column",
+    "kpiBaseLine": "0",
+    "thresholdValue": "",
+    "defaultOrder": 6,
+    "kpiUnit": "Count",
+    "kpiSource": "Jira",
+    "groupId": 10,
+    "kanban": false,
+    "chartType": "",
+    "kpiInfo": {
+      "definition": "Measures Total time between a request was made and  all work on this item is completed and the request was delivered .",
+      "formula": [
+        {
+          "lhs": "It is calculated as the sum Ideation time, Development time & Release time"
+        }
+      ],
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
+        },
+        {
+          "type": "paragraph",
+          "value": "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
+        },
+        {
+          "type": "paragraph",
+          "value": "Release time (DOD to Live): Time taken between story completion to it going live."
+        },
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Lead-time"
+          }
+        }
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": false,
+    "showTrend": false,
+    "kpiFilter": "multiSelectDropDown",
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-60",
+      "60-45",
+      "45-30",
+      "30-10",
+      "10-"
+    ],
+    "maturityLevel": [
+      {
+        "level": "LeadTime",
+        "range": [
+          "-60",
+          "60-45",
+          "45-30",
+          "30-10",
+          "10-"
+        ]
+      },
+      {
+        "level": "Intake-DoR",
+        "range": [
+          "-30",
+          "30-20",
+          "20-10",
+          "10-5",
+          "5-"
+        ]
+      },
+      {
+        "level": "DoR-DoD",
+        "range": [
+          "-20",
+          "20-10",
+          "10-7",
+          "7-3",
+          "3-"
+        ]
+      },
+      {
+        "level": "DoD-Live",
+        "range": [
+          "-30",
+          "30-15",
+          "15-5",
+          "5-2",
+          "2-"
+        ]
+      }
+    ]
+  },
+  {
     "kpiId": "kpi148",
     "kpiName": "Flow Load",
     "kpiUnit": "",
@@ -3003,7 +2950,7 @@ db.getCollection('kpi_master').insert(
     "boxType": "3_column",
     "calculateMaturity": false,
     "chartType": "line",
-    "defaultOrder": 30,
+    "defaultOrder": 28,
     "groupId": 3,
     "isAdditionalFilterSupport": false,
     "isDeleted": "False",
