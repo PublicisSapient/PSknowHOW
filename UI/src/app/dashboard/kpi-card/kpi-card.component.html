@@ -29,7 +29,17 @@
                 </ng-container>
                 <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-justify-between">
                     <ng-container *ngFor="let filter of dropdownArr;let k = index">
-                        <ng-select *ngIf="filter?.options?.length" [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'"
+                        <ng-select *ngIf="filter?.options?.length && filter.filterType === 'Lead Time'"
+                            [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'" (change)="handleChange('multi')"
+                            [placeholder]="filter?.filterType" [clearable]="false" class="p-pb-0 kpi-dropdown" [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}">
+                            <ng-container *ngFor="let item of filter?.options; index as i">
+                                <ng-option [value]="item">
+                                    {{item}}
+                                </ng-option>
+                            </ng-container>
+                        </ng-select>
+
+                        <ng-select *ngIf="filter?.options?.length && filter.filterType !== 'Lead Time'" [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'"
                             (change)="handleChange('multi')" [placeholder]="filter?.filterType"
                             (clear)="handleClearAll('filter'+(k+1))" class="p-pb-0 kpi-dropdown"
                             [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}"
@@ -83,7 +93,7 @@
                 </app-trend-indicator>
             </div>
         </div>
-        <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="!showChartView && (kpiData?.kpiId == 'kpi3' || kpiData?.kpiId == 'kpi53') && !(kpiData?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected)">
+        <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="!showChartView && (kpiData?.kpiId == 'kpi53') && !(kpiData?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected)">
             <div class="trend-box" *ngFor="let item of trendData; let i = index;">
                 <app-trend-indicator
                     [dataTrend]="item" [cols]="cols" [color]="trendBoxColorObj[item?.hierarchyName]?.color" 

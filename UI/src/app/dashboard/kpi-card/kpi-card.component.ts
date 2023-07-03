@@ -67,11 +67,15 @@ export class KpiCardComponent implements OnInit, OnDestroy {
         for (const key in x[this.kpiData?.kpiId]) {
           if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
             this.filterOptions = {};
+            this.filterOptions = {...this.filterOptions};
             this.filterOption = 'Overall';
           } else {
             this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
             if(!this.filterOption){
               this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'] ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+            }
+            if(this.kpiData.kpiId === 'kpi3'){
+              this.filterOptions = {...this.filterOptions, [key]: this.kpiSelectedFilterObj[this.kpiData?.kpiId][key]};
             }
           }
         }

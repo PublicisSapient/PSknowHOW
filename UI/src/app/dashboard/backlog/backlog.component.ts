@@ -419,6 +419,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
           const tempObj = {};
           for (const prop in filters) {
             tempObj[prop] = ['Overall'];
+            if(data[key]?.kpiId === 'kpi3' && filters[prop]?.filterType === 'Lead Time'){
+              tempObj[prop] = filters[prop]['options'][0];
+              break;
+            }
           }
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
           this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
@@ -437,7 +441,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
         && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0
         && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')
-        && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0) {
+        && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0
+        && Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter1'])
+        && Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter2'])) {
         const tempArr = [];
         const preAggregatedValues = [];
         /** tempArr: array with combination of all items of filter1 and filter2 */
@@ -456,8 +462,8 @@ export class BacklogComponent implements OnInit, OnDestroy{
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
-      } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0)
-        || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0)) {
+      } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter1']) && !this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2'))
+        || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter2']) && !this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1'))) {
         const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
         let preAggregatedValues = [];
         for (let i = 0; i < filters?.length; i++) {
@@ -468,6 +474,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
+      }else if(this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && (
+        !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter1']) || !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter2'])
+      )){
+        this.getChartDataForCardWithCombinationFilter(kpiId,idx,trendValueList);
       } else {
         /** when there are no kpi level filters */
         this.kpiChartData[kpiId] = [];
@@ -486,6 +496,54 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
     if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
+    }
+  }
+
+  getChartDataForCardWithCombinationFilter(kpiId, idx,trendValueList){
+    let preAggregatedValues =[];
+    for(const filter in this.kpiSelectedFilterObj[kpiId]){
+      let tempArr = [];
+      if(preAggregatedValues.length > 0){
+        tempArr = preAggregatedValues;
+      }else{
+        tempArr = trendValueList?.value ? trendValueList?.value : [];
+      }
+
+      if(Array.isArray(this.kpiSelectedFilterObj[kpiId][filter])){
+        preAggregatedValues = [ ...tempArr.filter((x) => this.kpiSelectedFilterObj[kpiId][filter].includes(x[filter]))];
+      }else{
+        preAggregatedValues = [ ...tempArr.filter((x) =>  x[filter] === this.kpiSelectedFilterObj[kpiId][filter])];
+      }
+    }
+
+    if (preAggregatedValues?.length > 1) {
+      this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+      if(kpiId === 'kpi3'){
+        let days = 0;
+        const filterName = this.kpiChartData[kpiId][0]['filter1'].split('-').join('to').toLowerCase();
+        const issueDetails = this.kpiChartData[kpiId][0]['data'][1]['modalValues'];
+        if(issueDetails.length > 0){
+          const issueStateName = Object.keys(issueDetails[0]).find(x => x.toLowerCase().includes(filterName));
+          let leadHours = 0;
+          for (const issue of issueDetails) {
+            let timeArr = issue[issueStateName] !== 'NA' ? issue[issueStateName].trim().split(" ") : [];
+            if(timeArr?.length > 0){
+              for(let i = 0; i<timeArr?.length; i++){
+                if(timeArr[i].includes('d')){
+                  days += +timeArr[i].slice(0, timeArr[i].length - 1);  
+                }else if(timeArr[i].includes('h')){
+                  leadHours += +timeArr[i].slice(0, timeArr[i].length - 1);
+                }
+              }
+            }
+          }
+          days = days + Math.round(leadHours/8);
+          days = Math.round(days/issueDetails.length);
+        }
+        this.kpiChartData[kpiId][0]['data'][0]['value'] = days;
+      }
+    } else {
+      this.kpiChartData[kpiId] = [...preAggregatedValues];
     }
   }
 

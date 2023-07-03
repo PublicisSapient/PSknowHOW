@@ -351,10 +351,10 @@ public final class KpiDataHelper {
 	}
 
 	public static void prepareFieldMappingDefectTypeTransformation(Map<String, Object> mapOfProjectFilters,
-			List<String> defectType, List<String> kpiWiseDefectsFieldMapping, String key) {
-		if (Optional.ofNullable(defectType).isPresent()
-				&& CollectionUtils.containsAny(kpiWiseDefectsFieldMapping, defectType)) {
-			kpiWiseDefectsFieldMapping.removeIf(x -> defectType.contains(x));
+			FieldMapping fieldMapping, List<String> kpiWiseDefectsFieldMapping, String key) {
+		if (Optional.ofNullable(fieldMapping.getJiradefecttype()).isPresent()
+				&& CollectionUtils.containsAny(kpiWiseDefectsFieldMapping, fieldMapping.getJiradefecttype())) {
+			kpiWiseDefectsFieldMapping.removeIf(x -> fieldMapping.getJiradefecttype().contains(x));
 			kpiWiseDefectsFieldMapping.add(NormalizedJira.DEFECT_TYPE.getValue());
 		}
 		mapOfProjectFilters.put(key, CommonUtils.convertToPatternList(kpiWiseDefectsFieldMapping));
@@ -518,7 +518,7 @@ public final class KpiDataHelper {
 	 */
 	private static Map<LocalDate, List<JiraIssue>> createDueDateWiseMap(List<JiraIssue> arrangeJiraIssueList) {
 		TreeMap<LocalDate, List<JiraIssue>> localDateListMap = new TreeMap<>();
-		if (CollectionUtils.isNotEmpty(arrangeJiraIssueList)) {
+		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(arrangeJiraIssueList)) {
 			arrangeJiraIssueList.forEach(jiraIssue -> {
 				LocalDate dueDate = DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC);
 				localDateListMap.computeIfPresent(dueDate, (date, issue) -> {
@@ -575,7 +575,7 @@ public final class KpiDataHelper {
 			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
 		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
 				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping.getJiraStatusForInProgress() && CollectionUtils
+		if (null != fieldMapping.getJiraStatusForInProgress() && org.apache.commons.collections.CollectionUtils
 				.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
 			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
 					.filter(jiraIssue -> fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
@@ -730,6 +730,68 @@ public final class KpiDataHelper {
 					.collect(Collectors.toSet()));
 		}
 		return getCombinationalCompletedSet(typeWiseIssues, statusWiseIssues);
+	}
+
+	/**
+	 * To create Map of Modal Object
+	 *
+	 * @param jiraIssueCustomHistories
+	 * @param cycleTimeList
+	 * @return
+	 */
+	public static Map<String, IterationKpiModalValue> createMapOfModalObjectFromJiraHistory(
+			List<JiraIssueCustomHistory> jiraIssueCustomHistories, List<CycleTimeValidationData> cycleTimeList) {
+		Map<String, IterationKpiModalValue> dataMap = new HashMap<>();
+		for (JiraIssueCustomHistory customHistory : jiraIssueCustomHistories) {
+			Optional<CycleTimeValidationData> cycleTimeValidationDataOptional = cycleTimeList.stream()
+					.filter(cyc -> cyc.getIssueNumber().equalsIgnoreCase(customHistory.getStoryID())).findFirst();
+			if (cycleTimeValidationDataOptional.isPresent()) {
+				CycleTimeValidationData cycleTimeValidationData = cycleTimeValidationDataOptional.get();
+				IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+				iterationKpiModalValue.setIssueId(customHistory.getStoryID());
+				iterationKpiModalValue.setIssueURL(customHistory.getUrl());
+				iterationKpiModalValue.setDescription(customHistory.getDescription());
+				String intakeToDor = DateUtil.calWeekHours(cycleTimeValidationData.getIntakeDate(),
+						cycleTimeValidationData.getDorDate());
+				String dorToDod = DateUtil.calWeekHours(cycleTimeValidationData.getDorDate(),
+						cycleTimeValidationData.getDodDate());
+				String dodToLive = DateUtil.calWeekHours(cycleTimeValidationData.getDodDate(),
+						cycleTimeValidationData.getLiveDate());
+				iterationKpiModalValue.setIntakeToDor(getTimeValue(intakeToDor));
+				iterationKpiModalValue.setDorToDod(getTimeValue(dorToDod));
+				iterationKpiModalValue.setDodToLive(getTimeValue(dodToLive));
+				String intakeToDod = DateUtil.calWeekHours(cycleTimeValidationData.getIntakeDate(),
+						cycleTimeValidationData.getDodDate());
+				if (cycleTimeValidationData.getDorDate() != null
+						&& !intakeToDod.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+					iterationKpiModalValue.setIntakeToDod(String.valueOf(CommonUtils
+							.convertIntoDays((int) DateUtil.calculateTimeInDays(Long.parseLong(intakeToDod)))));
+				} else
+					iterationKpiModalValue.setIntakeToDod(Constant.NOT_AVAILABLE);
+				String dorToLive = DateUtil.calWeekHours(cycleTimeValidationData.getDorDate(),
+						cycleTimeValidationData.getLiveDate());
+				if (cycleTimeValidationData.getDodDate() != null
+						&& !dorToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+					iterationKpiModalValue.setDorToLive(String.valueOf(CommonUtils
+							.convertIntoDays((int) DateUtil.calculateTimeInDays(Long.parseLong(dorToLive)))));
+				} else
+					iterationKpiModalValue.setDorToLive(Constant.NOT_AVAILABLE);
+				String leadTime = DateUtil.calWeekHours(cycleTimeValidationData.getIntakeDate(),
+						cycleTimeValidationData.getLiveDate());
+				iterationKpiModalValue.setLeadTime(getTimeValue(leadTime));
+				dataMap.put(customHistory.getStoryID(), iterationKpiModalValue);
+			}
+		}
+		return dataMap;
+	}
+
+	private static String getTimeValue(String time) {
+		if (time != null && !time.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+			return String
+					.valueOf(CommonUtils.convertIntoDays((int) DateUtil.calculateTimeInDays(Long.parseLong(time))));
+		} else {
+			return Constant.NOT_AVAILABLE;
+		}
 	}
 
 }
