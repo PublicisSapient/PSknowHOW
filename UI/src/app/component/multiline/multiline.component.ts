@@ -549,9 +549,9 @@ export class MultilineComponent implements OnChanges {
       .style('stroke', (d, i) => color[i])
       .style('opacity', lineOpacity)
       .style('stroke-dasharray', function (d, i) {
-        // if ((d.data).includes('LogTime') && name === 'Sprint Capacity') {
-        //     return '4, 4';
-        // }
+        if(d['filter']?.toLowerCase() == 'average coverage'){
+          return '4,4';
+        }
       })
       .style('fill', 'none')
       .style('stroke-width', '2')
