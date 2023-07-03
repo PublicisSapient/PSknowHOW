@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
@@ -355,14 +354,14 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 		if (cycleTime.getReadyTime() == null && null != dor && dor.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
 			cycleTime.setReadyTime(updatedOn);
 			cycleTimeValidationData.setDorDate(updatedOn);
-		}
+		} // case of reopening the ticket
 		if (CollectionUtils.isNotEmpty(dod) && statusUpdateLog.getChangedFrom() != null
 				&& dod.contains(statusUpdateLog.getChangedFrom().toLowerCase())
 				&& storyFirstStatus.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
 			dodStatusDateMap.clear();
 			cycleTime.setDeliveryTime(null);
 			cycleTimeValidationData.setDodDate(null);
-		}
+		} // taking the delivery date of first closed status date of last closed cycle
 		if (CollectionUtils.isNotEmpty(dod) && dod.contains(statusUpdateLog.getChangedTo().toLowerCase())) {
 			if (dodStatusDateMap.containsKey(statusUpdateLog.getChangedTo().toLowerCase())) {
 				dodStatusDateMap.clear();
