@@ -524,9 +524,20 @@ export class BacklogComponent implements OnInit, OnDestroy{
         const issueDetails = this.kpiChartData[kpiId][0]['data'][1]['modalValues'];
         if(issueDetails.length > 0){
           const issueStateName = Object.keys(issueDetails[0]).find(x => x.toLowerCase().includes(filterName));
+          let leadHours = 0;
           for (const issue of issueDetails) {
-            days += issue[issueStateName] !== 'NA' ? +issue[issueStateName] : 0;
+            let timeArr = issue[issueStateName] !== 'NA' ? issue[issueStateName].trim().split(" ") : [];
+            if(timeArr?.length > 0){
+              for(let i = 0; i<timeArr?.length; i++){
+                if(timeArr[i].includes('d')){
+                  days += +timeArr[i].slice(0, timeArr[i].length - 1);  
+                }else if(timeArr[i].includes('h')){
+                  leadHours += +timeArr[i].slice(0, timeArr[i].length - 1);
+                }
+              }
+            }
           }
+          days = days + Math.round(leadHours/8);
           days = Math.round(days/issueDetails.length);
         }
         this.kpiChartData[kpiId][0]['data'][0]['value'] = days;
