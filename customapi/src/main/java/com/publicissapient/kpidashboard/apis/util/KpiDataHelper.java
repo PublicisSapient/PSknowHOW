@@ -588,6 +588,7 @@ public final class KpiDataHelper {
 		} else {
 			openIssues.addAll(jiraIssuesWithDueDate);
 		}
+
 	}
 
 	/**
