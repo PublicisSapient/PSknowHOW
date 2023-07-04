@@ -13,8 +13,6 @@ declare let require: any;
 export class HelpComponent implements OnInit {
   selectedValue = '';
   overallSummary: any;
-  area;
-  landingInfo;
   
   verticalArray: Array<string> = [];
   summaryItems: any = [];
@@ -25,7 +23,6 @@ export class HelpComponent implements OnInit {
   totalUsers: any = 0;
   newUsers: any = 0;
   isProducer: Boolean = false;
-  userName : string;
 
   constructor(private httpService: HttpService,private sharedService : SharedService) { }
 

@@ -35,20 +35,6 @@ describe('HelpComponent', () => {
     fixture.detectChanges();
   });
 
-
-  xit('should  return additional information', () => {
-    component.ngOnInit();
-    httpMock.expectOne(fakeLandingInfo).flush();
-    expect(Object.keys(component.landingInfo).length).toBe(Object.keys(fakeLandingInfo.data).length);
-  });
-
-  xit('should  return categories for feedback', () => {
-    component.ngOnInit();
-    httpMock.expectOne(fakeFeedbackAreaList).flush();
-    httpMock.expectOne(baseUrl + '/api/feedback/categories').flush(fakeLandingInfo);
-    expect(component.area.length).toBe(fakeLandingInfo.data.length);
-  });
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });

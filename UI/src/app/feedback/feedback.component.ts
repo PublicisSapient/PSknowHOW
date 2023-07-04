@@ -28,18 +28,18 @@ export class FeedbackComponent implements OnInit {
         this.userName = details['user_name'];
       }
     });
-    this.getCategory();
+    // this.getCategory();
   }
 
-  getCategory() {
-    this.httpService.getFeedbackCategory().subscribe((response) => {
-      if(response.data){
-        this.area = response.data;
-      }
-    }, error => {
-      console.log(error);
-    });
-  }
+  // getCategory() {
+  //   this.httpService.getFeedbackCategory().subscribe((response) => {
+  //     if(response.data){
+  //       this.area = response.data;
+  //     }
+  //   }, error => {
+  //     console.log(error);
+  //   });
+  // }
 
   save() {
     const postObj = this.voiceForm.value;
