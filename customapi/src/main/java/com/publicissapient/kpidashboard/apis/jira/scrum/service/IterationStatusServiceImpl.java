@@ -37,8 +37,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -77,8 +75,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(IterationStatusServiceImpl.class);
 
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 
@@ -144,7 +140,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Iteration Status -> Requested sprint : {}", leafNode.getName());
+			log.info("Iteration Status -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 

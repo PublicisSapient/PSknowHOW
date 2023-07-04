@@ -30,16 +30,25 @@ export class StackedAreaChartComponent implements OnInit {
     let kpiId = this.kpiId;
     let keys = Object.keys(this.data[0]?.value);
     let yMax = 0;
+    let keyWiseYMax = {};
+    for(let i = 0; i<keys.length;i++){
+      keyWiseYMax[keys[i]] = 0;
+    }
     /** calculating yMax and extracting keys */
     this.data.forEach((x) => {
       for(let item in x.value){
         if(keys.indexOf(item) == -1){
           keys.push(item);
+          keyWiseYMax[item] = 0;
         }
-        if(x.value[item] > yMax) yMax = x.value[item];
+        if(keyWiseYMax[item] < x.value[item]) keyWiseYMax[item] = x.value[item];
       }
     });
-    
+    for(let key in keyWiseYMax){
+      yMax += keyWiseYMax[key];
+    }
+    yMax += 200;
+
     /**adding missing issues with value of 0 */
     const data = this.data.map((item) => {
       let dataItems = item?.value ? Object.keys(item?.value) : [];//['story', 'issues', 'change requests']
@@ -131,7 +140,7 @@ export class StackedAreaChartComponent implements OnInit {
 
       // Add Y axis
       const y = d3.scaleLinear()
-        .domain([0, yMax + 200])
+        .domain([0, yMax])
         .range([height, 0]);
       svg.append("g")
         .call(d3.axisLeft(y).ticks(5))

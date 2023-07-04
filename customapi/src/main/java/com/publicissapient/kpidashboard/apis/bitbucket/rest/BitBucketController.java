@@ -25,8 +25,6 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,15 +43,16 @@ import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Rest Controller to handle bit bucket specific requests.
  *
  * @author pkum34
  */
+@Slf4j
 @RestController
 public class BitBucketController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(BitBucketController.class);
 
 	@Autowired
 	private BitBucketServiceR bitbucketService;
@@ -77,7 +76,7 @@ public class BitBucketController {
 	public ResponseEntity<List<KpiElement>> getBitBucketAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception { // NOSONAR
 		MDC.put("BitbucketKpiRequest", kpiRequest.getRequestTrackerId());
-		LOGGER.info("Received BitBucket KPI request {}", kpiRequest);
+		log.info("Received BitBucket KPI request {}", kpiRequest);
 		long bitbucketRequestStartTime = System.currentTimeMillis();
 		MDC.put("BitbucketRequestStartTime", String.valueOf(bitbucketRequestStartTime));
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name(),
@@ -90,7 +89,7 @@ public class BitBucketController {
 		List<KpiElement> responseList = bitbucketService.process(kpiRequest);
 		MDC.put("TotalBitbucketRequestTime", String.valueOf(System.currentTimeMillis() - bitbucketRequestStartTime));
 
-		LOGGER.info("");
+		log.info("");
 		MDC.clear();
 		if (responseList.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
@@ -112,7 +111,7 @@ public class BitBucketController {
 	public ResponseEntity<List<KpiElement>> getBitBucketKanbanAggregatedMetrics(
 			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { // NOSONAR
 		MDC.put("BitbucketKpiRequest", kpiRequest.getRequestTrackerId());
-		LOGGER.info(" Received BitBucket KPI request {}", kpiRequest);
+		log.info(" Received BitBucket KPI request {}", kpiRequest);
 		long bitbucketKanbanRequestStartTime = System.currentTimeMillis();
 		MDC.put("BitbucketKanbanRequestStartTime", String.valueOf(bitbucketKanbanRequestStartTime));
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKETKANBAN.name(),
@@ -126,7 +125,7 @@ public class BitBucketController {
 		MDC.put("TotalBitbucketKanbanRequestTime",
 				String.valueOf(System.currentTimeMillis() - bitbucketKanbanRequestStartTime));
 
-		LOGGER.info("");
+		log.info("");
 		MDC.clear();
 		if (responseList.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);

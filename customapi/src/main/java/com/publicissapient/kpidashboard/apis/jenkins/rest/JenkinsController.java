@@ -27,8 +27,6 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,15 +50,16 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Controller for all jenkins related api.
  *
  * @author pkum34
  */
+@Slf4j
 @RestController
 public class JenkinsController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(JenkinsController.class);
 
 	@Autowired
 	private JenkinsServiceR jenkinsService;
@@ -88,7 +87,7 @@ public class JenkinsController {
 	public ResponseEntity<List<KpiElement>> getJenkinsAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception { // NOSONAR
 		MDC.put("JenkinsKpiRequest", kpiRequest.getRequestTrackerId());
-		LOGGER.info("Received Jenkins KPI request {}", kpiRequest);
+		log.info("Received Jenkins KPI request {}", kpiRequest);
 		long jenkinsRequestStartTime = System.currentTimeMillis();
 		MDC.put("JenkinsRequestStartTime", String.valueOf(jenkinsRequestStartTime));
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name(),
@@ -101,7 +100,7 @@ public class JenkinsController {
 		List<KpiElement> responseList = jenkinsService.process(kpiRequest);
 		MDC.put("TotalJenkinsRequestTime", String.valueOf(System.currentTimeMillis() - jenkinsRequestStartTime));
 
-		LOGGER.info("");
+		log.info("");
 		MDC.clear();
 		if (responseList.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
@@ -124,7 +123,7 @@ public class JenkinsController {
 	public ResponseEntity<List<KpiElement>> getJenkinsKanbanAggregatedMetrics(
 			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { // NOSONAR
 		MDC.put("JenkinsKanbanKpiRequest", kpiRequest.getRequestTrackerId());
-		LOGGER.info("Received Jenkins Kanban KPI request {}", kpiRequest);
+		log.info("Received Jenkins Kanban KPI request {}", kpiRequest);
 		long jenkinsKanbanRequestStartTime = System.currentTimeMillis();
 		MDC.put("JenkinsKanbanRequestStartTime", String.valueOf(jenkinsKanbanRequestStartTime));
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINSKANBAN.name(),
@@ -138,7 +137,7 @@ public class JenkinsController {
 		MDC.put("TotalJenkinsKanbanRequestTime",
 				String.valueOf(System.currentTimeMillis() - jenkinsKanbanRequestStartTime));
 
-		LOGGER.info("");
+		log.info("");
 		MDC.clear();
 		if (responseList.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);

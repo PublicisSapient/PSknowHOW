@@ -259,16 +259,16 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			Map<String, Object> subCategoryWiseClosedAndTotalDefectList = new HashMap<>();
 			List<JiraIssue> subCategoryWiseClosedDefectList = ((List<JiraIssue>) storyDefectDataListMap
 					.get(CLOSED_DEFECT_DATA))
-							.stream()
-							.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
-									&& CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
-							.collect(Collectors.toList());
+					.stream()
+					.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
+							&& CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
+					.collect(Collectors.toList());
 			List<JiraIssue> subCategoryWiseTotaldDefectList = ((List<JiraIssue>) storyDefectDataListMap
 					.get(TOTAL_DEFECT_DATA))
-							.stream()
-							.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
-									&& CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
-							.collect(Collectors.toList());
+					.stream()
+					.filter(f -> sprint.getKey().equals(f.getBasicProjectConfigId())
+							&& CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
+					.collect(Collectors.toList());
 
 			double dreForCurrentLeaf = 0.0d;
 			subCategoryWiseClosedAndTotalDefectList.put(CLOSED_DEFECT_DATA, subCategoryWiseClosedDefectList);

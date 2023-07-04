@@ -23,7 +23,7 @@
   <description>Github processor service</description>
   <packaging>jar</packaging>
   <artifactId>github-processor</artifactId>
-  <version>7.0.1-SNAPSHOT</version>
+  <version>7.0.2-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
