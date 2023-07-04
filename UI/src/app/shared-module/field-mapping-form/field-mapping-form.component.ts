@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { SharedService } from '../../services/shared.service';
@@ -62,7 +79,6 @@ private setting = {
     });
     this.fieldMappingSectionList = [...new Set(fieldMappingSections)];
     this.formConfig = fieldMappingConfigration;
-    console.log(fieldMappingSections,fieldMappingConfigration);
     
   }
 
@@ -77,12 +93,11 @@ private setting = {
       }
     }
     this.form = new FormGroup(formObj);
-    console.log(this.form);
   }
 
   /** This method is taking config as parameter, creating form control and assigning initial value based on fieldtype */
   generateFromControlBasedOnFieldType(config){
-    if(this.formData.hasOwnProperty(config.fieldName)){
+    if(this.formData?.hasOwnProperty(config.fieldName)){
       return new FormControl(this.formData[config.fieldName]);
     }else{
       switch(config.fieldType){
@@ -228,8 +243,6 @@ private setting = {
     const submitData = {...this.formData,...this.form.value};
     submitData['basicProjectConfigId'] = this.selectedConfig.id;
     delete submitData.id;
-    console.log(submitData);
-    
     if(this.selectedToolConfig[0].toolName.toLowerCase() === 'jira'){
       this.http.getMappingTemplateFlag(this.selectedToolConfig[0].id, submitData).subscribe(response => {
         if (response && response['success']) {
@@ -264,8 +277,6 @@ private setting = {
 
   /** Responsible for handle save */
   saveFieldMapping(mappingData) {
-    console.log(this.selectedToolConfig, mappingData);
-    
     this.http.setFieldMappings(this.selectedToolConfig[0].id, mappingData).subscribe(response => {
       if (response && response['success']) {
         this.messenger.add({
