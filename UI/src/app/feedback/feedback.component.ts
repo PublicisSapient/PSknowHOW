@@ -24,8 +24,21 @@ export class FeedbackComponent implements OnInit {
 
   ngOnInit(): void {
     this.sharedService.currentUserDetailsObs.subscribe(details => {
-      this.userName = details['user_name'];
-    })
+      if(details){
+        this.userName = details['user_name'];
+      }
+    });
+    this.getCategory();
+  }
+
+  getCategory() {
+    this.httpService.getFeedbackCategory().subscribe((response) => {
+      if(response.data){
+        this.area = response.data;
+      }
+    }, error => {
+      console.log(error);
+    });
   }
 
   save() {

@@ -30,46 +30,11 @@ export class HelpComponent implements OnInit {
   constructor(private httpService: HttpService,private sharedService : SharedService) { }
 
   ngOnInit(): void {
-
-    // this.getRoles();
-    // this.getImpInfo();
-    this.getCategory();
-    // this.getAccountSummary();
-    // this.getTotalUsersCount();
-    
-
   }
-
-  // handleChange(e) {
-  //   if (e.checked) {
-  //     this.getAccountSummary('29');
-  //   } else {
-  //     this.getAccountSummary();
-  //   }
-  // }
-
-  // getImpInfo(){
-  //   this.httpService.getLandingInfo().subscribe((response) =>  {
-  //     if(response.data){
-  //       this.landingInfo = response.data;
-  //     }
-  //   }, error => {
-  //     this.landingInfo = require('../../../test/resource/fakeLandingInfo.json').data;
-  //   });
-  // }
 
   
 
-  getCategory() {
-    this.httpService.getFeedbackCategory().subscribe((response) => {
-      if(response.data){
-        this.area = response.data;
-      }
-    }, error => {
-      console.log(error);
-    });
-  }
-
+ 
   getTotalUsersCount(){
     this.httpService.getUsersCount().subscribe((response)=>{
       if(response.data){

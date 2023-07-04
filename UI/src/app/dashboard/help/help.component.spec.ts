@@ -53,36 +53,6 @@ describe('HelpComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set landing Info', fakeAsync(() => {
-    const response = {
-      data: 'adLogin: false'
-    };
-    const spy = spyOn(httpService, 'getLandingInfo').and.returnValue(of(response));
-    tick();
-    expect(component.landingInfo).toBe(response.data);
-  }));
-
-
-  it('should set category Info', fakeAsync(() => {
-    const response = {
-      message: 'Found all feedback categories',
-      success: true,
-      data: [
-        'EMM',
-        'Additional KPI',
-        'Tool Integration',
-        'Admin',
-        'UI',
-        'Other'
-      ]
-    };
-    const spy = spyOn(httpService, 'getFeedbackCategory').and.returnValue(of(response));
-    component.getCategory();
-    tick();
-    expect(component.area).toEqual(response.data);
-  }));
-
-
   it('should set TotalUsers Count', fakeAsync(() => {
     const response = {
       message: 'Found TotalUsers count',

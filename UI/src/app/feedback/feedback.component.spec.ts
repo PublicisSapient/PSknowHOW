@@ -10,10 +10,10 @@ describe('FeedbackComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FeedbackComponent ],
+      declarations: [FeedbackComponent],
       providers: [HttpService]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(FeedbackComponent);
     component = fixture.componentInstance;
@@ -27,17 +27,36 @@ describe('FeedbackComponent', () => {
 
   it('should save feedback successfully', fakeAsync(() => {
     component.userName = "dummy name";
-  const obj = {
-    "feedbackType": "feedback",
-    "category": "UI",
-    "feedback": "test",
-    "username": "SUPERADMIN"
-  };
-  const res = { "message": "Your request has been submitted", "success": true, "data": { "username": "SUPERADMIN", "feedback": "test", "category": "UI", "feedbackType": "feedback" } }
-  spyOn(httpService, 'submitFeedbackData').and.returnValue(of(res));
-  component.save();
-  tick(3000);
-  expect(component.isFeedbackSubmitted).toBe(true);
-  expect(component.formMessage).toEqual('');
-}))
+    const obj = {
+      "feedbackType": "feedback",
+      "category": "UI",
+      "feedback": "test",
+      "username": "SUPERADMIN"
+    };
+    const res = { "message": "Your request has been submitted", "success": true, "data": { "username": "SUPERADMIN", "feedback": "test", "category": "UI", "feedbackType": "feedback" } }
+    spyOn(httpService, 'submitFeedbackData').and.returnValue(of(res));
+    component.save();
+    tick(3000);
+    expect(component.isFeedbackSubmitted).toBe(true);
+    expect(component.formMessage).toEqual('');
+  }))
+
+  it('should set category Info', fakeAsync(() => {
+    const response = {
+      message: 'Found all feedback categories',
+      success: true,
+      data: [
+        'EMM',
+        'Additional KPI',
+        'Tool Integration',
+        'Admin',
+        'UI',
+        'Other'
+      ]
+    };
+    const spy = spyOn(httpService, 'getFeedbackCategory').and.returnValue(of(response));
+    component.getCategory();
+    tick();
+    expect(component.area).toEqual(response.data);
+  }));
 });
