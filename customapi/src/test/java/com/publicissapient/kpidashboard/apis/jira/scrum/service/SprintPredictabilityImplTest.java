@@ -171,7 +171,7 @@ public class SprintPredictabilityImplTest {
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
 				sprintStatusList)).thenReturn(sprintDetailsList);
 
 		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
@@ -198,7 +198,7 @@ public class SprintPredictabilityImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
 				sprintStatusList)).thenReturn(sprintDetailsList);
 
 		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
@@ -224,7 +224,7 @@ public class SprintPredictabilityImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
 				sprintStatusList)).thenReturn(sprintDetailsList);
 
 		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
@@ -257,7 +257,7 @@ public class SprintPredictabilityImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
 				sprintStatusList)).thenReturn(sprintDetailsList);
 
 		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
