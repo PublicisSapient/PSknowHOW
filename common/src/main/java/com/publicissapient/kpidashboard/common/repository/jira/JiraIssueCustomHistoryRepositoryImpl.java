@@ -62,6 +62,9 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	private static final String BASIC_PROJ_CONF_ID = "basicProjectConfigId";
 	private static final String FIXVERSION_CHANGEDTO = "fixVersionUpdationLog.changedTo";
 	private static final String FIXVERSION_CHANGEDFROM = "fixVersionUpdationLog.changedFrom";
+	public static final String STATUS_UPDATION_LOG_STORY_CHANGED_TO = "statusUpdationLog.story.changedTo";
+	public static final String URL = "url";
+	public static final String DESCRIPTION = "description";
 	/** The operations. */
 	@Autowired
 	private MongoOperations operations;
@@ -116,7 +119,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		uniqueProjectMap.forEach((project, filterMap) -> {
 			Criteria projectCriteria = new Criteria();
 			projectCriteria.and(BASIC_PROJ_CONF_ID).is(project);
-			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get("statusUpdationLog.story.changedTo"));
+			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get(STATUS_UPDATION_LOG_STORY_CHANGED_TO));
 			storyStatuscriteriaList.add(projectCriteria);
 		});
 
@@ -200,7 +203,10 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		List<Criteria> projectCriteriaList = new ArrayList<>();
 		uniqueProjectMap.forEach((project, filterMap) -> {
 			Criteria projectCriteria = new Criteria();
-			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get("statusUpdationLog.story.changedTo"));
+			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get(STATUS_UPDATION_LOG_STORY_CHANGED_TO));
+			if (null != filterMap.get(STORY_TYPE)) {
+				projectCriteria.and(STORY_TYPE).in((List<Pattern>) filterMap.get(STORY_TYPE));
+			}
 			projectCriteriaList.add(projectCriteria);
 		});
 
