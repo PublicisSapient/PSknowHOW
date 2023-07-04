@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -194,15 +195,14 @@ public class ScrumReleaseDataClientImpl implements ReleaseDataClient {
 		HierarchyLevel hierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
 		// DTS-26153,fetching all the release versions from history whereever an issue
 		// was tagged
-		Set<String> releaseVersions = new HashSet<>();
-		jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(projectBasicConfig.getId().toString()).stream()
+		Set<String> releaseVersions = jiraIssueCustomHistoryRepository
+				.findByBasicProjectConfigIdIn(projectBasicConfig.getId().toString())
+				.stream().filter(history->CollectionUtils.isNotEmpty(history.getFixVersionUpdationLog()))
 				.flatMap(jiraIssueCustomHistory -> jiraIssueCustomHistory.getFixVersionUpdationLog().stream())
-				.forEach(dbVersion -> {
-					releaseVersions
-							.addAll(Arrays.stream(dbVersion.getChangedFrom().split(",")).collect(Collectors.toSet()));
-					releaseVersions
-							.addAll(Arrays.stream(dbVersion.getChangedTo().split(",")).collect(Collectors.toSet()));
-				});
+				.flatMap(dbVersion -> Stream.concat(
+						Arrays.stream(dbVersion.getChangedFrom().split(",")),
+						Arrays.stream(dbVersion.getChangedTo().split(","))))
+				.collect(Collectors.toSet());
 
 		List<AccountHierarchy> accountHierarchies = new ArrayList<>();
 		try {
