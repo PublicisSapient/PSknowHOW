@@ -151,7 +151,7 @@ public class SprintPredictabilityImplTest {
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("defectRemovalEfficiency", "percentile");
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
-		sprintStatusList.add("closed");
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
 
 	}
 

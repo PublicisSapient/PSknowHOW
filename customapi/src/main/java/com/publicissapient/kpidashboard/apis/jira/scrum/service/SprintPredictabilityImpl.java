@@ -161,7 +161,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 		});
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
-		sprintStatusList.add("closed");
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
 		List<SprintDetails> totalSprintDetails = sprintRepository
 				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
 						sprintStatusList);

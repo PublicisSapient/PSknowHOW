@@ -157,7 +157,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		leafNodeList
 				.forEach(leaf -> basicProjectConfigObjectIds.add(leaf.getProjectFilter().getBasicProjectConfigId()));
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
-		sprintStatusList.add("closed");
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
 		List<SprintDetails> totalSprintDetails = sprintRepository
 				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
 						sprintStatusList);
