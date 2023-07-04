@@ -43,7 +43,6 @@ import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
@@ -183,7 +182,7 @@ public class LeadTimeServiceImplTest {
 
 		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
-		List<IssueBacklogCustomHistory> dataMap = (List<IssueBacklogCustomHistory>) resultListMap
+		List<JiraIssueCustomHistory> dataMap = (List<JiraIssueCustomHistory>) resultListMap
 				.get(STORY_HISTORY_DATA);
 		assertThat("Lead Time Data :", dataMap.size(), equalTo(92));
 	}

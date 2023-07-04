@@ -49,8 +49,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
@@ -104,11 +102,6 @@ public class ScrumJiraIssueClientImplTest {
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
-	@Mock
-	private IssueBacklogRepository issueBacklogRepository;
-
-	@Mock
-	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 
 	private static JiraToolConfig getJiraToolConfig(FieldMapping fieldMapping) {
 		JiraToolConfig jiraToolConfig = new JiraToolConfig();
