@@ -20,6 +20,8 @@ package com.publicissapient.kpidashboard.apis.capacity.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Objects;
 
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -58,6 +60,10 @@ public class HappinessKpiCapacityImpl implements HappinessKpiCapacity {
 			return new ServiceResponse(false, "happinessKpiData cannot be empty", null);
 		}
 
+		if (Objects.isNull(happinessKpiData.getUserRatingList())) {
+			happinessKpiData.setUserRatingList(new ArrayList<>());
+		}
+
 		if (!valid(happinessKpiData)) {
 			log.info("happinessKpiData is not valid");
 			return new ServiceResponse(false,
@@ -85,12 +91,6 @@ public class HappinessKpiCapacityImpl implements HappinessKpiCapacity {
 			log.info("projectBasicConfigId is null");
 			return false;
 		}
-
-		if (happinessKpiData.getUserRatingList() == null || happinessKpiData.getUserRatingList().isEmpty()) {
-			log.info("userRatingData list is null or empty");
-			return false;
-		}
-
 		if (happinessKpiData.getSprintID() == null || happinessKpiData.getSprintID().isEmpty()) {
 			log.info("sprintID is null or empty");
 			return false;
