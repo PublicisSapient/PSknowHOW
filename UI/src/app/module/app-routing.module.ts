@@ -27,7 +27,7 @@ import { DashboardComponent } from '../dashboard/dashboard.component';
 import { AuthGuard } from '../services/auth.guard';
 import { Logged } from '../services/logged.guard';
 import { AccessGuard } from '../services/access.guard';
-import { LandingPageComponent } from '../dashboard/landing-page/landing-page.component';
+import { HelpComponent } from '../dashboard/help/help.component';
 import { GuestGuard } from '../services/guest.guard';
 import { BacklogComponent } from '../dashboard/backlog/backlog.component';
 import { SSOGuard } from '../services/sso.guard';
@@ -55,7 +55,7 @@ const routes: Routes = [
     path: 'dashboard', component: DashboardComponent,
     children: [
       { path: '', redirectTo: 'iteration', pathMatch: 'full'},
-      { path: 'Help', component: LandingPageComponent, pathMatch: 'full', canActivate: [AccessGuard] },
+      { path: 'Help', component: HelpComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard] },

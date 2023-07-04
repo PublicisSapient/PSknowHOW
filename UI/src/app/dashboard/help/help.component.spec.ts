@@ -4,14 +4,14 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'src/environments/environment';
 import { HttpService } from '../../services/http.service';
-import { LandingPageComponent } from './landing-page.component';
+import { HelpComponent } from './help.component';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { of } from 'rxjs';
 import { SharedService } from 'src/app/services/shared.service';
 
-describe('LandingPageComponent', () => {
-  let component: LandingPageComponent;
-  let fixture: ComponentFixture<LandingPageComponent>;
+describe('HelpComponent', () => {
+  let component: HelpComponent;
+  let fixture: ComponentFixture<HelpComponent>;
   let httpMock;
   let httpService;
   const baseUrl = environment.baseUrl;  // Servers Env
@@ -20,7 +20,7 @@ describe('LandingPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LandingPageComponent],
+      declarations: [HelpComponent],
       imports: [RouterTestingModule, HttpClientModule, HttpClientTestingModule],
       providers: [HttpService,SharedService, { provide: APP_CONFIG, useValue: AppConfig }]
     })
@@ -28,7 +28,7 @@ describe('LandingPageComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LandingPageComponent);
+    fixture = TestBed.createComponent(HelpComponent);
     component = fixture.componentInstance;
     httpMock = TestBed.inject(HttpTestingController);
     httpService = TestBed.inject(HttpService);
@@ -58,7 +58,6 @@ describe('LandingPageComponent', () => {
       data: 'adLogin: false'
     };
     const spy = spyOn(httpService, 'getLandingInfo').and.returnValue(of(response));
-    component.getImpInfo();
     tick();
     expect(component.landingInfo).toBe(response.data);
   }));
@@ -99,19 +98,5 @@ describe('LandingPageComponent', () => {
     expect(component.totalUsers).toEqual(response.data['Total Users']);
   }));
 
-  it('should save feedback successfully', fakeAsync(() => {
-      component.userName = "dummy name";
-    const obj = {
-      "feedbackType": "feedback",
-      "category": "UI",
-      "feedback": "test",
-      "username": "SUPERADMIN"
-    };
-    const res = { "message": "Your request has been submitted", "success": true, "data": { "username": "SUPERADMIN", "feedback": "test", "category": "UI", "feedbackType": "feedback" } }
-    spyOn(httpService, 'submitFeedbackData').and.returnValue(of(res));
-    component.save();
-    tick(3000);
-    expect(component.isFeedbackSubmitted).toBe(true);
-    expect(component.formMessage).toEqual('');
-  }))
+  
 });

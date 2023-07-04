@@ -1,0 +1,84 @@
+import { Component, OnInit } from '@angular/core';
+import { HttpService } from 'src/app/services/http.service';
+import { SharedService } from 'src/app/services/shared.service';
+
+declare let require: any;
+
+@Component({
+  selector: 'app-help',
+  templateUrl: './help.component.html',
+  styleUrls: ['./help.component.css']
+})
+
+export class HelpComponent implements OnInit {
+  selectedValue = '';
+  overallSummary: any;
+  area;
+  landingInfo;
+  
+  verticalArray: Array<string> = [];
+  summaryItems: any = [];
+  tableHeadingArr: any = [];
+  totalsArray: any = [];
+  totalProjects: any = 0;
+  totalProjects30Days: any = 0;
+  totalUsers: any = 0;
+  newUsers: any = 0;
+  isProducer: Boolean = false;
+  userName : string;
+
+  constructor(private httpService: HttpService,private sharedService : SharedService) { }
+
+  ngOnInit(): void {
+
+    // this.getRoles();
+    // this.getImpInfo();
+    this.getCategory();
+    // this.getAccountSummary();
+    // this.getTotalUsersCount();
+    
+
+  }
+
+  // handleChange(e) {
+  //   if (e.checked) {
+  //     this.getAccountSummary('29');
+  //   } else {
+  //     this.getAccountSummary();
+  //   }
+  // }
+
+  // getImpInfo(){
+  //   this.httpService.getLandingInfo().subscribe((response) =>  {
+  //     if(response.data){
+  //       this.landingInfo = response.data;
+  //     }
+  //   }, error => {
+  //     this.landingInfo = require('../../../test/resource/fakeLandingInfo.json').data;
+  //   });
+  // }
+
+  
+
+  getCategory() {
+    this.httpService.getFeedbackCategory().subscribe((response) => {
+      if(response.data){
+        this.area = response.data;
+      }
+    }, error => {
+      console.log(error);
+    });
+  }
+
+  getTotalUsersCount(){
+    this.httpService.getUsersCount().subscribe((response)=>{
+      if(response.data){
+        this.totalUsers = response.data['Total Users'];
+        this.newUsers = response.data['New Users Added in last 30 days'];
+      }
+    }, error=>{
+      console.log(error);
+    });
+  }
+
+}
