@@ -427,12 +427,12 @@ public abstract class JiraIssueClient {// NOPMD //NOSONAR
 			try {
 				localDateTime = DateUtil.stringToLocalDateTime(jiraProcessorConfig.getStartDate(), QUERYDATEFORMAT);
 			} catch (DateTimeParseException ex) {
-				log.error("exception while parsing start date provided from property file picking last 6 months data.."
+				log.error("exception while parsing start date provided from property file picking last 12 months data.."
 						+ ex.getMessage());
-				localDateTime = LocalDateTime.now().minusMonths(6);
+				localDateTime = LocalDateTime.now().minusMonths(12);
 			}
 		} else {
-			localDateTime = LocalDateTime.now().minusMonths(6);
+			localDateTime = LocalDateTime.now().minusMonths(12);
 		}
 		jiraProcessorConfig.setStartDate(DateUtil.dateTimeFormatter(localDateTime, QUERYDATEFORMAT));
 	}
