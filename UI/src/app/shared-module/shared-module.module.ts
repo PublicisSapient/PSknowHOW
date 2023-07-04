@@ -40,6 +40,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { ChipsModule } from 'primeng/chips';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { AdditionalFilterFieldComponent } from './additional-filter-field/additional-filter-field.component';
 
 @NgModule({
   imports: [
@@ -78,7 +79,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     FooterComponent,
     KpiFilterComponent,
     FieldMappingFormComponent,
-    FieldMappingFieldComponent
+    FieldMappingFieldComponent,
+    AdditionalFilterFieldComponent
   ],
   providers : [ConfirmationService]
 })
