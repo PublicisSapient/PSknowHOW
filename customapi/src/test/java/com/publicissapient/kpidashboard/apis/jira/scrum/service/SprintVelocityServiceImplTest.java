@@ -189,7 +189,7 @@ public class SprintVelocityServiceImplTest {
 		resultListMap.put(PREVIOUS_SPRINT_VELOCITY, previousTotalIssueList);
 		resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, new ArrayList<>());
 		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any())).thenReturn(resultListMap);
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(any(), any()))
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(any(), any()))
 				.thenReturn(sprintDetailsList);
 		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		Map<String, Object> velocityListMap = sprintVelocityServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate,
@@ -226,7 +226,7 @@ public class SprintVelocityServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintVelocityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(any(), any()))
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(any(), any()))
 				.thenReturn(sprintDetailsList);
 		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		try {
@@ -262,7 +262,7 @@ public class SprintVelocityServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintVelocityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(any(), any()))
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(any(), any()))
 				.thenReturn(sprintDetailsList);
 		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		try {

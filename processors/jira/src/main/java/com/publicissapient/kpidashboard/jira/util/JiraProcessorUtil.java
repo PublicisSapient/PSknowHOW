@@ -251,7 +251,7 @@ public final class JiraProcessorUtil {
 			JsonNode jsonNode = objectMapper.readTree(sprintData);
 			sprint.setSprintID(jsonNode.get(ID) == null ? null : jsonNode.get(ID).asText());
 			sprint.setOriginalSprintId(jsonNode.get(ID) == null ? null : jsonNode.get(ID).asText());
-			sprint.setState(jsonNode.get(STATE) == null ? null : jsonNode.get(STATE).asText());
+			sprint.setState(jsonNode.get(STATE) == null ? null : jsonNode.get(STATE).asText().toUpperCase());
 			String boardId = null;
 
 			if (jsonNode.get(RAPIDVIEWID) == null) {
