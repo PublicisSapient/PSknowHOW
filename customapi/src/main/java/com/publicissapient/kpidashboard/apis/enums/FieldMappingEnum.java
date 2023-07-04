@@ -123,7 +123,7 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraIterationCompletionStatusCPT", "jiraIterationCompletionTypeCPT","jiraStatusForInProgressCPT")),
 
 	KPI145("Dev Completion Status", KPISource.JIRA.name(),
-			Arrays.asList("jiraIterationCompletionStatusDCS", "jiraIterationCompletionTypeDCS","jiraStatusForInProgressDCS")),
+			Arrays.asList("jiraIterationCompletionStatusDCS", "jiraIterationCompletionTypeDCS","jiraStatusForInProgressDCS","jiraDevDoneStatusDCS")),
 
 	KPI75("Estimate vs Actual", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusEVA", "jiraIterationCompletionTypeEVA")),
@@ -132,7 +132,7 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraIterationCompletionStatusEH", "jiraIterationCompletionTypeEH","issueStatusExcluMissingWorkEH")),
 
 	KPI123("Issue Likely To Spill", KPISource.JIRA.name(),
-			Arrays.asList("jiraIterationCompletionStatusILS", "jiraIterationCompletionTypeILS")),
+			Arrays.asList("jiraIterationCompletionStatusILS", "jiraIterationCompletionTypeILS","jiraStatusForInProgressILS")),
 
 	KPI125("Iteration Burnup", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusIBU", "jiraIterationCompletionTypeIBU","jiraStatusForInProgressIBU")),
@@ -141,13 +141,13 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraIterationCompletionStatusICO", "jiraIterationCompletionTypeICO")),
 
 	KPI128("Planned Work Status", KPISource.JIRA.name(),
-			Arrays.asList("jiraIterationCompletionStatusPWS", "jiraIterationCompletionTypePWS")),
+			Arrays.asList("jiraIterationCompletionStatusPWS", "jiraIterationCompletionTypePWS","jiraDevDoneStatusPWS","jiraStatusForInProgressPWS")),
 
 	KPI134("Unplanned Work Status", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusUPWS", "jiraIterationCompletionTypeUPWS")),
 
 	KPI119("Work Remaining", KPISource.JIRA.name(),
-			Arrays.asList("jiraIterationCompletionStatusWR", "jiraIterationCompletionTypeWR")),
+			Arrays.asList("jiraIterationCompletionStatusWR", "jiraIterationCompletionTypeWR","jiraDevDoneStatusWR","jiraStatusForInProgressWR")),
 
 	KPI131("Wastage", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusIW", "jiraIterationCompletionTypeIW")),

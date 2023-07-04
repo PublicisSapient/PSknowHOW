@@ -368,7 +368,7 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 				JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream().filter(
 						jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
 						.findFirst().orElse(new JiraIssueCustomHistory());
-				String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping);
+				String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping.getJiraDevDoneStatusDCS());
 				compltedIssues.putIfAbsent(jiraIssue, devCompletionDate);
 			});
 		}

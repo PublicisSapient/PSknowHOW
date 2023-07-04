@@ -573,17 +573,17 @@ public final class KpiDataHelper {
 	 * @param openIssues
 	 * @return
 	 */
-	public static void arrangeJiraIssueList(FieldMapping fieldMapping, List<JiraIssue> allIssues,
+	public static void arrangeJiraIssueList(List<String> fieldMapping, List<JiraIssue> allIssues,
 			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
 		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
 				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping.getJiraStatusForInProgress() && CollectionUtils
-				.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
+		if (null != fieldMapping && CollectionUtils
+				.isNotEmpty(fieldMapping)) {
 			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
+					.filter(jiraIssue -> fieldMapping.contains(jiraIssue.getStatus()))
 					.collect(Collectors.toList()));
 			openIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> !fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
+					.filter(jiraIssue -> !fieldMapping.contains(jiraIssue.getStatus()))
 					.collect(Collectors.toList()));
 		} else {
 			openIssues.addAll(jiraIssuesWithDueDate);

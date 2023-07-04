@@ -2268,6 +2268,63 @@ db.getCollection('field_mapping_structure').insert(
      "tooltip": {
           "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
           }
+},{
+    "fieldName": "jiraStatusForInProgressILS",
+    "fieldLabel": "Status to identify In Progress",
+     "fieldType": "chips",
+    "fieldCategory": "workflow",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+          "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
+          }
+},{
+    "fieldName": "jiraStatusForInProgressWR",
+    "fieldLabel": "Status to identify In Progress",
+     "fieldType": "chips",
+    "fieldCategory": "workflow",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+          "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
+          }
+},{
+    "fieldName": "jiraStatusForInProgressPWS",
+    "fieldLabel": "Status to identify In Progress",
+     "fieldType": "chips",
+    "fieldCategory": "workflow",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+          "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
+          }
+},{
+    "fieldName": "jiraDevDoneStatusWR",
+    "fieldLabel": "Dev Completion Status",
+     "fieldType": "chips",
+    "fieldCategory": "workflow",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+          "definition": "This status identifies when Development is completed for an issue<br>
+                                                                        ",
+          }
+},,{
+    "fieldName": "jiraDevDoneStatusDCS",
+    "fieldLabel": "Dev Completion Status",
+     "fieldType": "chips",
+    "fieldCategory": "workflow",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+          "definition": "This status identifies when Development is completed for an issue<br>
+                                                                        ",
+          }
+},,{
+    "fieldName": "jiraDevDoneStatusPWS",
+    "fieldLabel": "Dev Completion Status",
+     "fieldType": "chips",
+    "fieldCategory": "workflow",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+          "definition": "This status identifies when Development is completed for an issue<br>
+                                                                        ",
+          }
 },
 
 

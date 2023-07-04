@@ -246,6 +246,9 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForInProgressCPT;
 	private List<String> jiraStatusForInProgressDCS;
 	private List<String> jiraStatusForInProgressIBU;
+	private List<String> jiraStatusForInProgressPWS;
+	private List<String> jiraStatusForInProgressILS;
+	private List<String> jiraStatusForInProgressWR;
 
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
@@ -284,7 +287,10 @@ public class FieldMapping extends BasicModel {
 	private String jiraDueDateField = CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
 	private String jiraDevDueDateCustomField;
-	private List<String> jiraDevDoneStatus;
+	private List<String> jiraDevDoneStatus;// TODO: Extra field
+	private List<String> jiraDevDoneStatusWR;
+	private List<String> jiraDevDoneStatusDCS;
+	private List<String> jiraDevDoneStatusPWS;
 
 	// For DTS_21154 - field for Team refinement status
 	private List<String> jiraRejectedInRefinement;
