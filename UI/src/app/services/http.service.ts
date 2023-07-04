@@ -802,14 +802,10 @@ export class HttpService {
   }
 
   getAuthDetails() {
-    console.log('-------getAuthDetails-----------');
-    console.log('projectsAccess:',this.sharedService.getCurrentUserDetails('projectsAccess'));
-    console.log(Array.isArray(this.sharedService.getCurrentUserDetails('projectsAccess')));
     const existingRoles = this.sharedService
       .getCurrentUserDetails('projectsAccess')
       ?.map((projectRolesDetails) => projectRolesDetails?.role);
     this.http.get<any>(this.authDetailsUrl).subscribe((response) => {
-      console.log('authDetails Response: ' , response);
       if (response && response?.success && response?.data) {
         const authDetails = response?.data;
         const newRoles = authDetails['projectsAccess']?.map(
