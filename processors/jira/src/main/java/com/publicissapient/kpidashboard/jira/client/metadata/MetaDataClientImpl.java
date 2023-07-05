@@ -346,8 +346,8 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping
 					.setJiraDefectRemovalStatus(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping
-					.setJiraWaitStatus(workflowMap.getOrDefault(CommonConstant.JIRA_WAIT_STATUS, new ArrayList<>()));
-			fieldMapping.setJiraBlockedStatus(
+					.setJiraWaitStatusIW(workflowMap.getOrDefault(CommonConstant.JIRA_WAIT_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraBlockedStatusIW(
 					workflowMap.getOrDefault(CommonConstant.JIRA_BLOCKED_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraStatusForInProgress(
 					workflowMap.getOrDefault(CommonConstant.JIRA_IN_PROGRESS_STATUS, new ArrayList<>()));

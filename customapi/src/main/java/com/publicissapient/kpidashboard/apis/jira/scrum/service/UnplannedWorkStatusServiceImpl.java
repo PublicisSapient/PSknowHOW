@@ -110,7 +110,7 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
 						fieldMapping.getJiraIterationCompletionTypeUPWS(),
-						fieldMapping.getJiraIterationCompletionStatusUWS());
+						fieldMapping.getJiraIterationCompletionStatusUPWS());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);

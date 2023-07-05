@@ -1686,7 +1686,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusUWS",
+      "fieldName": "jiraIterationCompletionStatusUPWS",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1725,6 +1725,16 @@ db.getCollection('field_mapping_structure').insert(
         "definition": "Status to identify as closed"
       }
     },
+    {
+          "fieldName": "jiraWaitStatusIW",
+          "fieldLabel": "Wastage - Wait Status",
+          "fieldType": "chips",
+          "fieldCategory": "workflow",
+          "section": "WorkFlow Status Mapping",
+          "tooltip": {
+            "definition": "The statuses wherein no activity takes place and signify that the issues needs to move to picked up by a team member like Ready for deployment, Ready for testing etc"
+          }
+        },
   {
       "fieldName": "jiraIterationCompletionStatusBRE",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
@@ -2142,6 +2152,40 @@ db.getCollection('field_mapping_structure').insert(
         ]
 },
 {
+    "fieldName": "jiraIncludeBlockedStatusIW",
+    "fieldLabel": "Wastage - Blocked Issues Criteria ",
+    "fieldType": "radiobutton",
+	"fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+          "definition": "The statuses that signify that team is unable to proceed on an issue due to internal
+          or external dependency like On Hold, Waiting for user response, Blocked etc should be included."
+        },
+     "options": [
+          {
+            "label": "Blocked Status",
+            "value": "Blocked Status"
+          },
+          {
+            "label": "Include Flagged Issue",
+            "value": "Include Flagged Issue"
+          }
+        ],
+     "nestedFields": [
+          {
+            "fieldName": "jiraBlockedStatusIW",
+            "fieldLabel": "Status to Identify 'Blocked' status ",
+            "fieldType": "chips",
+            "filterGroup": ["Blocked Status"],
+            "tooltip": {
+              "definition": "Provide Status to Identify Blocked Issues<br />
+                                        Example: On_Hold <hr>
+                                        KPI Impacted : Iteration Board - Wastage KPI"
+            }
+          }
+        ]
+},
+{
     "fieldName": "jiraBugRaisedByQAIdentification",
     "fieldLabel": "QA Defect Identification",
     "fieldType": "radiobutton",
@@ -2305,7 +2349,7 @@ db.getCollection('field_mapping_structure').insert(
           "definition": "This status identifies when Development is completed for an issue<br>
                                                                         ",
           }
-},,{
+},{
     "fieldName": "jiraDevDoneStatusDCS",
     "fieldLabel": "Dev Completion Status",
      "fieldType": "chips",
@@ -2315,7 +2359,7 @@ db.getCollection('field_mapping_structure').insert(
           "definition": "This status identifies when Development is completed for an issue<br>
                                                                         ",
           }
-},,{
+},{
     "fieldName": "jiraDevDoneStatusPWS",
     "fieldLabel": "Dev Completion Status",
      "fieldType": "chips",

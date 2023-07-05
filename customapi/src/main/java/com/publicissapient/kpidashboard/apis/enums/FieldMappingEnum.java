@@ -111,7 +111,7 @@ public enum FieldMappingEnum {
 	KPI133("Quality Status", KPISource.JIRA.name(),
 			Arrays.asList("resolutionTypeForRejectionQS", "jiraDefectRejectionStatusQS", "jiradefecttypeQS",
 					"defectPriorityQS", "excludeRCAFromQS", "jiraIterationCompletionStatusQS",
-					"jiraIterationCompletionStatusQS")),
+					"jiraIterationCompletionTypeQS")),
 
 	KPI126("Created vs Resolved defects", KPISource.JIRA.name(),
 			Arrays.asList("jiradefecttypeCVR", "jiraIssueDeliverdStatusCVR")),
@@ -150,7 +150,7 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraIterationCompletionStatusWR", "jiraIterationCompletionTypeWR","jiraDevDoneStatusWR","jiraStatusForInProgressWR")),
 
 	KPI131("Wastage", KPISource.JIRA.name(),
-			Arrays.asList("jiraIterationCompletionStatusIW", "jiraIterationCompletionTypeIW")),
+			Arrays.asList("jiraIncludeBlockedStatusIW","jiraIterationCompletionStatusIW", "jiraIterationCompletionTypeIW", "jiraWaitStatusIW")),
 
 	KPI138("Backlog Readiness Efficiency", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusBRE", "jiraIterationCompletionTypeBRE")),

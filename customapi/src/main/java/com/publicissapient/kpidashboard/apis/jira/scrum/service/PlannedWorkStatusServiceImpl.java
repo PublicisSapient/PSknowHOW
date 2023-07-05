@@ -403,8 +403,8 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		filterStatusUpdationLogs.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 
 		// Getting inProgress Status
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
-			inProgressStatuses = fieldMapping.getJiraStatusForInProgress();
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressPWS())) {
+			inProgressStatuses = fieldMapping.getJiraStatusForInProgressPWS();
 		}
 		LocalDate startDate = null;
 		LocalDate endDate;
@@ -558,11 +558,11 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 			});
 		}
 
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressPWS())) {
 			List<JiraIssue> inProgressIssues = allIssues.stream()
 					.filter(jiraIssue -> (jiraIssue.getAssigneeId() == null)
 							&& StringUtils.isNotEmpty(jiraIssue.getDueDate())
-							&& (fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus())))
+							&& (fieldMapping.getJiraStatusForInProgressPWS().contains(jiraIssue.getStatus())))
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();

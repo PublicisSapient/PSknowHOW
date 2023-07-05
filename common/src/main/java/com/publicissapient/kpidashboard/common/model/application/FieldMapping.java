@@ -274,13 +274,16 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIFTPRStoryIdentification;
 
 	// field for Wasting - wait status
-	private List<String> jiraWaitStatus;
+	private List<String> jiraWaitStatus;// TODO: Extra field
+	private List<String> jiraWaitStatusIW;
 
 	// field for Wasting - block status
-	private List<String> jiraBlockedStatus;
+	private List<String> jiraBlockedStatus;// TODO: Extra field
+	private List<String> jiraBlockedStatusIW;
 
 	// field for Wasting - Include Blocked Status
-	private String jiraIncludeBlockedStatus;
+	private String jiraIncludeBlockedStatus; // TODO: Extra field
+	private String jiraIncludeBlockedStatusIW;
 
 	// for for JiraDueDate
 	@Builder.Default
@@ -319,7 +322,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationCompletionStatusIBU;
 	private List<String> jiraIterationCompletionStatusICO;
 	private List<String> jiraIterationCompletionStatusPWS;
-	private List<String> jiraIterationCompletionStatusUWS;
+	private List<String> jiraIterationCompletionStatusUPWS;
 	private List<String> jiraIterationCompletionStatusQS;
 	private List<String> jiraIterationCompletionStatusWR;
 	private List<String> jiraIterationCompletionStatusIW;
