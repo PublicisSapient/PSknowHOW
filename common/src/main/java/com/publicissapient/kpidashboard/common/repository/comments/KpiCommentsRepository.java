@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
 
+import java.util.List;
+
 /**
  * @author mahesh Repository for {@link KPIComments}.
  */
@@ -14,5 +16,8 @@ public interface KpiCommentsRepository extends MongoRepository<KPIComments, Stri
 
 	@Query("{ 'node' : ?0, 'level' : ?1, 'sprintId' : ?2, 'kpiId' : ?3}")
 	KPIComments findCommentsByFilter(String node, String level, String sprintId, String kpiId);
+
+	@Query("{ 'node' : ?0, 'level' : ?1, 'sprintId' : ?2, 'kpiIds' : {$in : ?3 }}")
+	List<KPIComments> findCommentsByBoard(String node , String level, String sprintId , List<String> kpiIds);
 
 }

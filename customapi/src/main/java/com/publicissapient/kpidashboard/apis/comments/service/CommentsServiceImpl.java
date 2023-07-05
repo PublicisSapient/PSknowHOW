@@ -3,12 +3,14 @@ package com.publicissapient.kpidashboard.apis.comments.service;
 import static com.publicissapient.kpidashboard.common.util.DateUtil.dateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
@@ -17,9 +19,10 @@ import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
+import com.publicissapient.kpidashboard.common.model.comments.CommentViewResponseDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
-import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
+import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
 
@@ -33,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CommentsServiceImpl implements CommentsService {
 
-	public static final String TIME_FORMAT = "dd-MMM-YYYY";
+	public static final String TIME_FORMAT = "dd-MMM-YYYY HH:mm";
 
 	@Autowired
 	private KpiCommentsRepository kpiCommentsRepository;
@@ -71,6 +74,31 @@ public class CommentsServiceImpl implements CommentsService {
 		}
 		log.info("Final filter comments of matching kpiId {}", mappedCollection);
 		return mappedCollection;
+	}
+
+	@Override
+	public List<CommentViewResponseDTO> findCommentByBoard(String node, String level, String sprintId,
+			List<String> kpiIds) {
+		List<KPIComments> kpiCommentsList = kpiCommentsRepository.findCommentsByBoard(node, level, sprintId, kpiIds);
+		
+		if (CollectionUtils.isNotEmpty(kpiCommentsList)) {
+			return kpiCommentsList.stream()
+					.flatMap(kpiComment -> kpiComment.getCommentsInfo().stream().map(commentsInfo -> {
+						CommentViewResponseDTO commentViewResponseDTO = new CommentViewResponseDTO();
+						commentViewResponseDTO.setKpiId(kpiComment.getKpiId());
+						commentViewResponseDTO.setNode(kpiComment.getNode());
+						commentViewResponseDTO.setLevel(kpiComment.getLevel());
+						commentViewResponseDTO.setSprintId(kpiComment.getSprintId());
+						commentViewResponseDTO.setComment(commentsInfo.getComment());
+						commentViewResponseDTO.setCommentId(commentsInfo.getCommentId());
+						commentViewResponseDTO.setCommentOn(commentsInfo.getCommentOn());
+						commentViewResponseDTO.setCommentBy(commentsInfo.getCommentBy());
+						return commentViewResponseDTO;
+					})).sorted(Comparator.comparing(CommentViewResponseDTO::getCommentOn))
+					.limit(customApiConfig.getLimitCommentsShownOnKpiDashboardCount()).collect(Collectors.toList());
+		} else {
+			return new ArrayList<>();
+		}
 	}
 
 	/**
@@ -215,4 +243,6 @@ public class CommentsServiceImpl implements CommentsService {
 		log.debug("Saved new comment and re-arranged existing comments info into kpi_comments_history collection {}",
 				kpiCommentsHistory);
 	}
+
+
 }

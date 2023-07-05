@@ -1,9 +1,11 @@
 package com.publicissapient.kpidashboard.apis.comments.rest;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,8 @@ import com.publicissapient.kpidashboard.apis.comments.service.CommentsService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.comments.CommentRequestDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
+import com.publicissapient.kpidashboard.common.model.comments.CommentViewRequestDTO;
+import com.publicissapient.kpidashboard.common.model.comments.CommentViewResponseDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,5 +76,26 @@ public class CommentsController {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(responseStatus, "Issue occurred while saving the comment.", comment));
 		}
+	}
+
+	/**
+	 *
+	 * @param commentViewRequestDTO
+	 * @return
+	 */
+	@PostMapping("/getCommentsBoardWise")
+	public ResponseEntity<ServiceResponse> getCommentsBoardWise(
+			@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
+
+		List<CommentViewResponseDTO> commentViewAllByBoard = commentsService.findCommentByBoard(
+				commentViewRequestDTO.getNode(), commentViewRequestDTO.getLevel(), commentViewRequestDTO.getSprintId(),
+				commentViewRequestDTO.getKpiIds());
+		if (CollectionUtils.isEmpty(commentViewAllByBoard)) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comment not found", null));
+		} else {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "Found comments", commentViewAllByBoard));
+		}
+
 	}
 }

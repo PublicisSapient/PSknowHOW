@@ -4,7 +4,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
+import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
 
 /**
  * @author Mahesh Repository for {@link KpiCommentsHistory}.

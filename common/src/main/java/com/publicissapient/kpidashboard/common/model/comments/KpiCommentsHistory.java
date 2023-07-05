@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.common.model.kpicommentshistory;
+package com.publicissapient.kpidashboard.common.model.comments;
 
 import java.util.List;
 
