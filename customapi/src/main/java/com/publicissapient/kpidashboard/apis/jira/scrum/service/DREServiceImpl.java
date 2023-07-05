@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -205,43 +204,18 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(totalIssue)) {
 			List<JiraIssue> totalSprintReportDefects = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
 					uniqueProjectMap);
-			List<JiraIssue> defectListWoDrop = new ArrayList<>();
-			KpiHelperService.getDefectsWithoutDrop(droppedDefects, totalSprintReportDefects, defectListWoDrop);
-
-			Set<String> linkedStoryIds = defectListWoDrop.stream().filter(defect -> defect.getDefectStoryID() != null)
-					.flatMap(defect -> defect.getDefectStoryID().stream()).collect(Collectors.toSet());
-
-			List<JiraIssue> jiraIssueLinkedStories = jiraIssueRepository.findIssueByNumber(mapOfFilters, linkedStoryIds,
-					new HashMap<>());
-			Map<String, JiraIssue> linkedStoriesMap = jiraIssueLinkedStories.stream()
-					.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
-			Set<JiraIssue> linkedJiraIssueDefectSet = new HashSet<>();
-
-			for (JiraIssue defect : defectListWoDrop) {
-				Set<String> linkedIds = defect.getDefectStoryID();
-				if (linkedIds != null) {
-					linkedIds.forEach(storyNumber -> {
-						JiraIssue linkedJiraIssueStory = linkedStoriesMap.get(storyNumber);
-						if (linkedJiraIssueStory != null && projectWiseDefectRemovalType
-								.get(defect.getBasicProjectConfigId()).contains(linkedJiraIssueStory.getTypeName())) {
-							linkedJiraIssueDefectSet.add(defect);
-						}
-					});
-				}
-			}
 
 			List<JiraIssue> totalBugs = jiraIssueRepository
 					.findLinkedDefects(mapOfFilters, totalNonBugIssues, uniqueProjectMap).stream()
 					.filter(jiraIssue -> !totalIssue.contains(jiraIssue.getNumber())).collect(Collectors.toList());
 
 			ArrayList<JiraIssue> totalDefects = new ArrayList<>(totalBugs);
-			totalDefects.addAll(linkedJiraIssueDefectSet);
 			List<JiraIssueCustomHistory> defectsCustomHistory = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(
 							totalDefects.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
 							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-			setDbQueryLogger(sprintDetails, totalDefects, linkedStoryIds);
+			setDbQueryLogger(sprintDetails, totalDefects, totalSprintReportDefects);
 
 			resultListMap.put(TOTAL_DEFECTS, totalDefects);
 			resultListMap.put(SUB_TASK_BUGS, totalBugs);
@@ -416,7 +390,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 * @param linkedStoryIds
 	 */
 	private void setDbQueryLogger(List<SprintDetails> sprintDetails, List<JiraIssue> totalDefectList,
-			Set<String> linkedStoryIds) {
+								  List<JiraIssue> linkedStoryIds) {
 
 		if (customApiConfig.getApplicationDetailedLogger().equalsIgnoreCase("on")) {
 			log.info(SEPARATOR_ASTERISK);
