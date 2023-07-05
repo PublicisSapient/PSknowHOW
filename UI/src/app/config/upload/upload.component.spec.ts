@@ -1330,6 +1330,7 @@ describe('UploadComponent', () => {
 
     spyOn(httpService, 'saveOrUpdateAssignee').and.returnValue(of(response));
     const getCapacityDataSpy = spyOn(component, 'getCapacityData');
+    component.kanban = true;
     component.addRemoveAssignees();
     fixture.detectChanges();
     expect(getCapacityDataSpy).toHaveBeenCalled();

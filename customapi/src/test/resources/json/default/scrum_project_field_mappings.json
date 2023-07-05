@@ -119,7 +119,7 @@
       "Enabler Story",
       "Change request"
     ],
-    "jiraLiveStatus": "",
+    "jiraLiveStatus": "Live",
     "regressionAutomationLabels": [],
     "rootCauseValue": [
       "Coding"

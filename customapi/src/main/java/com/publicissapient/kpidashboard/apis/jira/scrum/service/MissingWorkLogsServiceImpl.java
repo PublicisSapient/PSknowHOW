@@ -33,8 +33,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -60,11 +58,13 @@ import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @SuppressWarnings("javadoc")
+@Slf4j
 @Component
 public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MissingWorkLogsServiceImpl.class);
 	private static final String STORY_LIST = "Total Issues(excluding open and dropped)";
 	private static final String TOTAL_STORY_LIST = "Total Issues(including open and dropped)";
 	private static final String DEV = "DeveloperKpi";
@@ -91,7 +91,7 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 			}
 		});
 
-		LOGGER.debug("[MISSING-WORK-LOGS-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
+		log.debug("[MISSING-WORK-LOGS-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
 		Map<String, List<DataCount>> trendAnalysisMap = trendValueList.stream()
@@ -240,8 +240,8 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 						kpiRequest.getFilterToShowOnTrend(), node);
 			}
 
-			LOGGER.debug("[MISSING-WORK-LOGS-SPRINT-WISE][{}]. Total Stories Count for sprint {}  is {}",
-					requestTrackerId, node.getSprintFilter().getName(), value);
+			log.debug("[MISSING-WORK-LOGS-SPRINT-WISE][{}]. Total Stories Count for sprint {}  is {}", requestTrackerId,
+					node.getSprintFilter().getName(), value);
 			LocalDateTime localStartDate = LocalDateTime.parse(startDate);
 			LocalDateTime localEndDate = LocalDateTime.parse(endDate);
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");

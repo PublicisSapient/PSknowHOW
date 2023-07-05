@@ -63,7 +63,7 @@ db.getCollection('kpi_fieldmapping').insert(
         type: ['Scrum'],
         kpiName: 'Created vs Resolved defects',
 		kpiSource:'Jira',
-        fieldNames : {'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
+        fieldNames : {'Workflow Status Mapping' : ['jiraIssueDeliverdStatus'] }
       },
       {
         kpiId: 'kpi42',
@@ -143,13 +143,6 @@ db.getCollection('kpi_fieldmapping').insert(
         fieldNames : {'Issue Types Mapping' : ['jiraSprintCapacityIssueType'] }
       },
       {
-        kpiId: 'kpi83',
-        kpiName: 'Average Resolution Time',
-		kpiSource: 'Jira',
-        type: ['Scrum'],
-        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejection','jiraIssueDeliverdStatus','jiraStatusForDevelopment'], 'Issue Types Mapping' : ['jiraIssueTypeNames'], 'Defects Mapping' : ['jiradefecttype'] }
-      },
-      {
         kpiId: 'kpi84',
         type: ['Scrum'],
         kpiName: 'Mean Time To Merge',
@@ -175,7 +168,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Lead Time',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraIntakeToDorIssueType'], 'Workflow Status Mapping' : ['jiraDor', 'jiraDod', 'jiraLiveStatus'] }
+        fieldNames : {'Issue Types Mapping' : ['jiraIntakeToDorIssueType'], 'Workflow Status Mapping' : ['jiraDor', 'jiraDod', 'jiraLiveStatus','storyFirstStatus'] }
       },
       {
         kpiId: 'kpi118',
@@ -504,7 +497,7 @@ db.getCollection('kpi_fieldmapping').insert(
           ]
         }
       },
-       {
+      {
               kpiId: 'kpi138',
               kpiName: 'Backlog Readiness Efficiency',
       		kpiSource: 'Jira',
@@ -514,8 +507,16 @@ db.getCollection('kpi_fieldmapping').insert(
             {
              kpiId: 'Kpi148',
              kpiName: 'Flow Load',
+             kpiSource: 'Jira',
              type: ['Other'],
-             fieldNames : { }
+             fieldNames: {
+                 'Workflow Status Mapping': [
+                    'storyFirstStatus',
+                    'jiraStatusForInProgress',
+                    'jiraStatusForQa',
+                    'jiraLiveStatus'
+                ]
+             }
             },
       {
         kpiId: 'Kpi146',

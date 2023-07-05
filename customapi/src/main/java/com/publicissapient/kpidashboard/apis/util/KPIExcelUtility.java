@@ -56,8 +56,6 @@ import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.application.ResolutionTimeValidation;
 import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -459,16 +457,6 @@ public class KPIExcelUtility {
 			IssueDetails issueDetails = (IssueDetails) object;
 			url = StringUtils.isEmpty(issueDetails.getUrl()) ? Constant.EMPTY_STRING : issueDetails.getUrl();
 		}
-		if (object instanceof IssueBacklog) {
-			IssueBacklog issueBacklog = (IssueBacklog) object;
-			url = StringUtils.isEmpty(issueBacklog.getUrl()) ? Constant.EMPTY_STRING : issueBacklog.getUrl();
-		}
-		if (object instanceof IssueBacklogCustomHistory) {
-			IssueBacklogCustomHistory issueBacklogCustomHistory = (IssueBacklogCustomHistory) object;
-			url = StringUtils.isEmpty(issueBacklogCustomHistory.getUrl()) ? Constant.EMPTY_STRING
-					: issueBacklogCustomHistory.getUrl();
-		}
-
 		return url;
 
 	}
@@ -520,48 +508,26 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateSprintVelocity(String sprint, Map<String, JiraIssue> totalStoriesMap,
-			Set<IssueDetails> issueDetailsSet, List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
-		if (CollectionUtils.isEmpty(issueDetailsSet)) {
-			if (MapUtils.isNotEmpty(totalStoriesMap)) {
-				totalStoriesMap.forEach((storyId, jiraIssue) -> {
-					KPIExcelData excelData = new KPIExcelData();
-					excelData.setSprintName(sprint);
-					Map<String, String> storyDetails = new HashMap<>();
-					storyDetails.put(storyId, checkEmptyURL(jiraIssue));
-					excelData.setStoryId(storyDetails);
-					excelData.setIssueDesc(checkEmptyName(jiraIssue));
-					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						excelData.setStoryPoint(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
-					} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
-						Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
-						Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
-						excelData.setStoryPoint(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping()
-								+ "/" + totalOriginalEstimate / 60 + " hrs");
-					}
-					kpiExcelData.add(excelData);
-				});
-			}
-		} else {
-			for (IssueDetails issueDetails : issueDetailsSet) {
+			List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+
+		if (MapUtils.isNotEmpty(totalStoriesMap)) {
+			totalStoriesMap.forEach((storyId, jiraIssue) -> {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setSprintName(sprint);
 				Map<String, String> storyDetails = new HashMap<>();
-				storyDetails.put(issueDetails.getSprintIssue().getNumber(), checkEmptyURL(issueDetails));
+				storyDetails.put(storyId, checkEmptyURL(jiraIssue));
 				excelData.setStoryId(storyDetails);
-				excelData.setIssueDesc(checkEmptyName(issueDetails));
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					excelData.setStoryPoint(
-							Optional.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0).toString());
-				} else if (null != issueDetails.getSprintIssue().getOriginalEstimate()) {
-					Double totalOriginalEstimate = issueDetails.getSprintIssue().getOriginalEstimate() / 60;
-					Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
-					excelData.setStoryPoint(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping()
-							+ "/" + totalOriginalEstimate / 60 + " hrs");
+					excelData.setStoryPoint(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+				} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+					Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+					excelData.setStoryPoint(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping() + "/"
+							+ totalOriginalEstimate + " hrs");
 				}
 				kpiExcelData.add(excelData);
-			}
+			});
 		}
 	}
 
@@ -866,7 +832,7 @@ public class KPIExcelUtility {
 
 	}
 
-	public static void populateDefectWithoutIssueLinkExcelData(List<IssueBacklog> defectWithoutStory,
+	public static void populateDefectWithoutIssueLinkExcelData(List<JiraIssue> defectWithoutStory,
 			List<KPIExcelData> kpiExcelData, String sprintName) {
 		if (CollectionUtils.isNotEmpty(defectWithoutStory)) {
 			defectWithoutStory.forEach(defect -> {
@@ -1012,7 +978,7 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateProductionDefectAgingExcelData(String projectName, List<IssueBacklog> defectList,
+	public static void populateProductionDefectAgingExcelData(String projectName, List<JiraIssue> defectList,
 			List<KPIExcelData> kpiExcelData) {
 		if (CollectionUtils.isNotEmpty(defectList)) {
 			defectList.forEach(defect -> {
@@ -1335,7 +1301,7 @@ public class KPIExcelUtility {
 	 * @param jiraDateMap
 	 */
 	public static void populateRefinementRejectionExcelData(List<KPIExcelData> excelDataList,
-			List<IssueBacklog> issuesExcel, Map<String, Map<String, List<IssueBacklog>>> weekAndTypeMap,
+			List<JiraIssue> issuesExcel, Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap,
 			Map<String, LocalDateTime> jiraDateMap) {
 
 		if (CollectionUtils.isNotEmpty(issuesExcel)) {
@@ -1369,11 +1335,11 @@ public class KPIExcelUtility {
 	 * @param e
 	 */
 	private static HashMap<String, String> getStatusNameAndWeekName(
-			Map<String, Map<String, List<IssueBacklog>>> weekAndTypeMap, IssueBacklog e) {
+			Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap, JiraIssue e) {
 		HashMap<String, String> data = new HashMap<>();
 		for (String week : weekAndTypeMap.keySet()) {
 			for (String type : weekAndTypeMap.get(week).keySet()) {
-				for (IssueBacklog issue : weekAndTypeMap.get(week).get(type)) {
+				for (JiraIssue issue : weekAndTypeMap.get(week).get(type)) {
 					if (issue.getNumber().equalsIgnoreCase(e.getNumber())) {
 						data.put(STATUS, type);
 						data.put(WEEK, week);

@@ -35,8 +35,6 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -57,9 +55,11 @@ import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraInfo;
 import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthClient;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClient> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JiraRestClientFactory.class);
 
 	private static final String STR_USERNAME = "username";
 	private static final String STR_PASSWORD = "password"; // NOSONAR
@@ -139,7 +139,7 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 					connection = baseUrl.openConnection();
 				}
 			} else {
-				LOGGER.error(
+				log.error(
 						"The response from Jira was blank or non existant - please check your property configurations");
 				return null;
 			}
@@ -148,11 +148,11 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 		} catch (URISyntaxException | IOException e) {
 			try {
-				LOGGER.error(
+				log.error(
 						"There was a problem parsing or reading the proxy configuration settings during openning a Jira connection. Defaulting to a non-proxy URI.");
 				return new URI(jiraBaseUri);
 			} catch (URISyntaxException e1) {
-				LOGGER.error("Correction:  The Jira connection base URI cannot be read!");
+				log.error("Correction:  The Jira connection base URI cannot be read!");
 				return null;
 			}
 		}
@@ -190,14 +190,14 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 		try {
 			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
 		} catch (RuntimeException e) {
-			LOGGER.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service", e);
+			log.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service", e);
 		}
 
 		if (null != response && response.getStatusCode().is2xxSuccessful()) {
 			cleaned = true;
-			LOGGER.info("[JIRA-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache {}", cacheName);
+			log.info("[JIRA-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache {}", cacheName);
 		} else {
-			LOGGER.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache {}", cacheName);
+			log.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache {}", cacheName);
 		}
 		return cleaned;
 	}
@@ -242,8 +242,8 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 			}
 
 		} catch (UnknownHostException | URISyntaxException e) {
-			LOGGER.error("The Jira host name is invalid. Further jira collection cannot proceed.");
-			LOGGER.debug("Exception", e);
+			log.error("The Jira host name is invalid. Further jira collection cannot proceed.");
+			log.debug("Exception", e);
 		}
 
 		return client;
@@ -291,9 +291,9 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 			client = new ProcessorAsynchJiraRestClientFactory().create(jiraUri, jiraOAuthClient, jiraProcessorConfig);
 
 		} catch (UnknownHostException | URISyntaxException e) {
-			LOGGER.error("The Jira host name is invalid. Further jira collection cannot proceed.");
+			log.error("The Jira host name is invalid. Further jira collection cannot proceed.");
 
-			LOGGER.debug("Exception", e);
+			log.debug("Exception", e);
 		}
 
 		return client;
