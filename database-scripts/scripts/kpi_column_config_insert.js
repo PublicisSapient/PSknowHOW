@@ -136,44 +136,8 @@ db.kpi_column_configs.insertMany([{
 
                                  	{
                                  		basicProjectConfigId: null,
-                                 		kpiId: 'kpi83',
-                                 		kpiColumnDetails: [{
-                                 			columnName: 'Sprint Name',
-                                 			order: 0,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
-                                 			columnName: 'Story ID',
-                                 			order: 1,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
-                                 			columnName: 'Issue Description',
-                                 			order: 2,
-                                 			isShown: true,
-                                 			isDefault: true
-                                 		}, {
-                                 			columnName: 'Issue Type',
-                                 			order: 3,
-                                 			isShown: true,
-                                 			isDefault: true
-                                 		}, {
-                                 			columnName: 'Resolution Time(In Days)',
-                                 			order: 4,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}]
-                                 	},
-
-                                 	{
-                                 		basicProjectConfigId: null,
                                  		kpiId: 'kpi3',
                                  		kpiColumnDetails: [{
-                                 			columnName: 'Project Name',
-                                 			order: 0,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
                                  			columnName: 'Story ID',
                                  			order: 1,
                                  			isShown: true,

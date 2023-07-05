@@ -153,11 +153,14 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
+		List<String> sprintStatusList = new ArrayList<>();
 		leafNodeList
 				.forEach(leaf -> basicProjectConfigObjectIds.add(leaf.getProjectFilter().getBasicProjectConfigId()));
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
 		List<SprintDetails> totalSprintDetails = sprintRepository
-				.findByBasicProjectConfigIdInAndStateOrderByStartDateDescQuery(basicProjectConfigObjectIds,
-						SprintDetails.SPRINT_STATE_CLOSED);
+				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
+						sprintStatusList);
 
 		// Group the SprintDetails by basicProjectConfigId
 		Map<ObjectId, List<SprintDetails>> sprintDetailsByProjectId = totalSprintDetails.stream()
