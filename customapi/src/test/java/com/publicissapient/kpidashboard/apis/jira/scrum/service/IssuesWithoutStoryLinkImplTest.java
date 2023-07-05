@@ -57,7 +57,6 @@ import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 
@@ -69,8 +68,6 @@ public class IssuesWithoutStoryLinkImplTest {
 	private ConfigHelperService configHelperService;
 	@Mock
 	private CacheService cacheService;
-	@Mock
-	private IssueBacklogRepository issueBacklogRepository;
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
 	@Mock
