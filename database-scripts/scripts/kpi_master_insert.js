@@ -2782,7 +2782,20 @@ db.getCollection('kpi_master').insert(
     "kanban": false,
     "chartType": null,
     "kpiInfo": {
-      "definition": "Backlog Readiness KPI compares the total size of ready Product Backlog items (PBI) against the average velocity of last five sprints to ascertain if enough backlog items are always available for the team to start development. It also calculates the average time taken for Backlog items to be ready for development."
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Ready Backlog: No. of issues which are refined in the backlog. This is identified through a status configured in KnowHOW."
+        },
+        {
+          "type": "paragraph",
+          "value": "Backlog Strength: Total size of 'Refined' issues in the backlog / Average velocity of last 5 sprints. It is calculated in terms of no. of sprints. Recommended strength is 2 sprints."
+        },
+        {
+          "type": "paragraph",
+          "value": "Readiness cycle time: Average time taken for Product Backlog items (PBIs) to be refined."
+        }
+      ]
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
