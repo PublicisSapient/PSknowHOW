@@ -107,8 +107,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				status.addAll(fieldMapping.getJiraDodLT());
 			}
 
-			if (Optional.ofNullable(fieldMapping.getJiraDor()).isPresent()) {
-				status.add(fieldMapping.getJiraDor());
+			if (Optional.ofNullable(fieldMapping.getJiraDorLT()).isPresent()) {
+				status.add(fieldMapping.getJiraDorLT());
 			}
 
 			if (Optional.ofNullable(fieldMapping.getJiraLiveStatusLT()).isPresent()) {
@@ -347,7 +347,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
 			Map<String, DateTime> dodStatusDateMap, JiraHistoryChangeLog statusUpdateLog) {
 		DateTime updatedOn = DateTime.parse(statusUpdateLog.getUpdatedOn().toString());
-		String dor = fieldMapping.getJiraDor();
+		String dor = fieldMapping.getJiraDorLT();
 		List<String> dod = fieldMapping.getJiraDodLT().stream().map(String::toLowerCase).collect(Collectors.toList());
 		String live = fieldMapping.getJiraLiveStatusLT();
 		String storyFirstStatus = fieldMapping.getStoryFirstStatusLT();

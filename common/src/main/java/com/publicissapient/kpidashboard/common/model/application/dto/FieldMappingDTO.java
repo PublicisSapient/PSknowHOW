@@ -80,9 +80,9 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> defectPriorityQS;
 	private String[] jiraIssueTypeNames;//TODO: duplicate
 	private String[] jiraIssueTypeNamesAVR;
-	private String storyFirstStatus;
+	private String storyFirstStatus;//TODO: Extra field
+	private String storyFirstStatusLT;
 	private String[] linkDefectToStoryField;
-	private String envImpacted;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;// TODO: Extra field
 	private List<String> jiraStatusForDevelopmentAVR;
@@ -95,7 +95,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraStatusForQa;
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
-	private List<String> jiraDod;//TODO: Extra field
+	private List<String> jiraDod;//TODO: Duplicate
 	private List<String> jiraDodDIR;
 	private List<String> jiraDodQADD;
 	private List<String> jiraDodLT;
@@ -123,10 +123,9 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraBugRaisedByCustomField;
 	private List<String> jiraDefectRemovalStatus;
 	private List<String> jiraDefectRemovalIssueType;
-	/**
-	 * Device Platform (iOS/Android/Desktop)
-	 */
-	private String devicePlatform;
+	// Added for Defect Reopen Rate KPI.
+	private List<String> jiraDefectClosedStatus;
+
 	private String jiraStoryPointsCustomField;
 	// parent issue type for the test
 	private List<String> jiraTestAutomationIssueType;
@@ -157,8 +156,8 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraIntakeToDorIssueType;// TODO: Extra field
 	private List<String> jiraIntakeToDorIssueTypeLT;
 
-	private List<String> jiraStoryIdentification;
-	private List<String> jiraStoryIdentificationIC;
+private List<String> jiraStoryIdentification;// TODO: Duplicate
+private List<String> jiraStoryIdentificationIC;
 
 	private String jiraLiveStatus;//TODO: duplicate
 	private String jiraLiveStatusLT;
@@ -217,14 +216,11 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> resolutionTypeForRejectionRCA;
 	private List<String> resolutionTypeForRejectionDIR;
 	private List<String> resolutionTypeForRejectionQADD;
-	private List<String> qaRootCauseValue;
 	private List<String> jiraQADefectDensityIssueType;
 	private String jiraBugRaisedByQACustomField;
 	private String jiraBugRaisedByQAIdentification;
 	private List<String> jiraBugRaisedByQAValue;
 	private List<String> jiraDefectDroppedStatus;
-	// Added for Defect Reopen Rate KPI.
-	private List<String> jiraDefectClosedStatus;
 
 	// Epic custom Field mapping
 	private String epicCostOfDelay;
@@ -250,6 +246,14 @@ public class FieldMappingDTO extends BasicModel {
 	// issue status to exclude missing worklogs
 	private List<String> issueStatusToBeExcludedFromMissingWorklogs;
 
+// field for In Progress status
+private List<String> jiraStatusForInProgress;// TODO: Extra field
+private List<String> jiraStatusForInProgressCPT;
+private List<String> jiraStatusForInProgressDCS;
+private List<String> jiraStatusForInProgressIBU;
+private List<String> jiraStatusForInProgressPWS;
+private List<String> jiraStatusForInProgressILS;
+private List<String> jiraStatusForInProgressWR;
 
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
@@ -263,8 +267,9 @@ public class FieldMappingDTO extends BasicModel {
 	// additional filter config fields
 	private List<AdditionalFilterConfig> additionalFilterConfig;
 
-	// issue status to exclude missing worklogs
-	private List<String> issueStatusExcluMissingWork;
+// issue status to exclude missing worklogs
+private List<String> issueStatusExcluMissingWork;// TODO: Extra field
+private List<String> issueStatusExcluMissingWorkEH;
 
 	// issue On Hold status to exclude Closure possible
 	private List<String> jiraOnHoldStatus;
@@ -273,24 +278,27 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraFTPRStoryIdentification;
 	private List<String> jiraIFTPRStoryIdentification;
 
-	// field for Wasting - wait status
-	private List<String> jiraWaitStatus;
+// field for Wasting - wait status
+private List<String> jiraWaitStatus;// TODO: Extra field
+private List<String> jiraWaitStatusIW;
 
-	// field for Wasting - block status
-	private List<String> jiraBlockedStatus;
+// field for Wasting - block status
+private List<String> jiraBlockedStatus;// TODO: Extra field
+private List<String> jiraBlockedStatusIW;
 
-	// field for Wasting - Include Blocked Status
-	private String jiraIncludeBlockedStatus;
+// field for Wasting - Include Blocked Status
+private String jiraIncludeBlockedStatus; // TODO: Extra field
+private String jiraIncludeBlockedStatusIW;
 
-	// field for In Progress status
-	private List<String> jiraStatusForInProgress;
-
-	// for for JiraDueDate
-	@Builder.Default
-	private String jiraDueDateField = CommonConstant.DUE_DATE;
-	private String jiraDueDateCustomField;
-	private String jiraDevDueDateCustomField;
-	private List<String> jiraDevDoneStatus;
+// for for JiraDueDate
+@Builder.Default
+private String jiraDueDateField = CommonConstant.DUE_DATE;
+private String jiraDueDateCustomField;
+private String jiraDevDueDateCustomField;
+private List<String> jiraDevDoneStatus;// TODO: Extra field
+private List<String> jiraDevDoneStatusWR;
+private List<String> jiraDevDoneStatusDCS;
+private List<String> jiraDevDoneStatusPWS;
 
 	// For DTS_21154 - field for Team refinement status
 	private List<String> jiraRejectedInRefinement;
@@ -319,7 +327,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraIterationCompletionStatusIBU;
 	private List<String> jiraIterationCompletionStatusICO;
 	private List<String> jiraIterationCompletionStatusPWS;
-	private List<String> jiraIterationCompletionStatusUWS;
+	private List<String> jiraIterationCompletionStatusUPWS;
 	private List<String> jiraIterationCompletionStatusQS;
 	private List<String> jiraIterationCompletionStatusWR;
 	private List<String> jiraIterationCompletionStatusIW;

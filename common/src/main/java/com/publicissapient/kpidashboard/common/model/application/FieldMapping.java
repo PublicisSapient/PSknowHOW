@@ -95,7 +95,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
-	private List<String> jiraDod;//TODO: Duplicate
+	private List<String> jiraDod;//TODO: Extra field
 	private List<String> jiraDodDIR;
 	private List<String> jiraDodQADD;
 	private List<String> jiraDodLT;
@@ -152,15 +152,15 @@ public class FieldMapping extends BasicModel {
 	private String readyForDevelopmentStatus;
 
 
-	private String jiraDor;
+	private String jiraDorLT;
 
 	private List<String> jiraIntakeToDorIssueType;// TODO: Extra field
 	private List<String> jiraIntakeToDorIssueTypeLT;
 
-	private List<String> jiraStoryIdentification;
+	private List<String> jiraStoryIdentification;// TODO: Duplicate
 	private List<String> jiraStoryIdentificationIC;
 
-	private String jiraLiveStatus;//TODO: duplicate
+	private String jiraLiveStatus;//TODO: Extra field
 	private String jiraLiveStatusLT;
 	private String jiraLiveStatusLTK;
 	private String jiraLiveStatusNOPK;

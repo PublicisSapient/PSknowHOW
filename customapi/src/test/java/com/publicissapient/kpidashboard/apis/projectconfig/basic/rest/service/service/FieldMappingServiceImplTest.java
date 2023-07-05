@@ -346,7 +346,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraDefectCreatedStatus("Open");
 		fieldMapping.setStoryFirstStatus("Open");
 		fieldMapping.setJiraLiveStatus("Closed");
-		fieldMapping.setJiraDor("In Analysis");
+		fieldMapping.setJiraDorLT("In Analysis");
 		fieldMapping.setJiraDefectRejectionStatusQS("Closed");
 		fieldMapping.setJiraDod(Arrays.asList("Ready for Sign-Off"));
 		fieldMapping.setJiraIssueDeliverdStatusFTPR(Arrays.asList("Closed", "Ready for Delivery"));

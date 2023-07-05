@@ -17,6 +17,16 @@ fieldMappings.forEach(function(fm) {
         const jiraFTPRStoryIdentification=fm.jiraFTPRStoryIdentification;
         const jiraIterationCompletionStatusCustomField=fm.jiraIterationCompletionStatusCustomField;
         const jiraIterationCompletionTypeCustomField=fm.jiraIterationCompletionTypeCustomField;
+        const jiraDor=fm.jiraDor;
+        const jiraIntakeToDorIssueType=fm.jiraIntakeToDorIssueType;
+        const jiraStoryIdentification=fm.jiraStoryIdentification;
+        const jiraStatusForInProgress=fm.jiraStatusForInProgress;
+        const issueStatusExcluMissingWork=fm.issueStatusExcluMissingWork;
+        const storyFirstStatus=fm.storyFirstStatus;
+        const jiraWaitStatus=fm.jiraWaitStatus;
+        const jiraBlockedStatus=fm.jiraBlockedStatus;
+        const jiraIncludeBlockedStatus=fm.jiraIncludeBlockedStatus;
+        const jiraDevDoneStatus=fm.jiraDevDoneStatus;
         db.field_mapping.updateOne({ "_id": fm._id }, {
             $set: {
                 "defectPriorityIFTPR": defectPriority,
@@ -77,6 +87,10 @@ fieldMappings.forEach(function(fm) {
                 "jiraIssueDeliverdStatusCVR": jiraIssueDeliverdStatus,
                 "jiraIssueDeliverdStatusFTPR": jiraIssueDeliverdStatus,
 
+                "jiraIntakeToDorIssueTypeLT": jiraIntakeToDorIssueType,
+
+                "jiraStoryIdentificationIC": jiraStoryIdentification,
+
                 "excludeRCAFromIFTPR": excludeRCAFromFTPR,
                 "excludeRCAFromDIR": excludeRCAFromFTPR,
                 "excludeRCAFromQADD": excludeRCAFromFTPR,
@@ -94,7 +108,18 @@ fieldMappings.forEach(function(fm) {
                 "resolutionTypeForRejectionDIR": resolutionTypeForRejection,
                 "resolutionTypeForRejectionQADD": resolutionTypeForRejection,
 
+               "jiraStatusForInProgressCPT":jiraStatusForInProgress,
+                	 "jiraStatusForInProgressDCS": jiraStatusForInProgress,
+                	 "jiraStatusForInProgressIBU": jiraStatusForInProgress,
+                	 "jiraStatusForInProgressPWS": jiraStatusForInProgress,
+                	 "jiraStatusForInProgressILS": jiraStatusForInProgress,
+                	"jiraStatusForInProgressWR": jiraStatusForInProgress,
+
+                	"issueStatusExcluMissingWorkEH":issueStatusExcluMissingWork,
+
                 "jiraIssueTypeNamesAVR":jiraIssueTypeNames,
+
+                "storyFirstStatusLT":storyFirstStatus,
 
                 "jiraLiveStatusLT":jiraLiveStatus,
                 "jiraLiveStatusLTK":jiraLiveStatus,
@@ -104,7 +129,19 @@ fieldMappings.forEach(function(fm) {
                 "jiraLiveStatusOTA":jiraLiveStatus,
                 "jiraLiveStatusPDA":jiraLiveStatus,
 
+                "jiraDorLT":jiraDor,
+
                 "jiraIFTPRStoryIdentification":jiraFTPRStoryIdentification,
+
+                "jiraWaitStatusIW": jiraWaitStatus,
+
+                "jiraBlockedStatusIW": jiraBlockedStatus,
+
+                "jiraIncludeBlockedStatusIW": jiraIncludeBlockedStatus,
+
+                "jiraDevDoneStatusWR": jiraDevDoneStatus,
+                "jiraDevDoneStatusDCS": jiraDevDoneStatus,
+                "jiraDevDoneStatusPWS": jiraDevDoneStatus,
 
                 "jiraIterationCompletionStatusIFTPR" : jiraIterationCompletionStatusCustomField,
                 "jiraIterationCompletionStatusCPT" : jiraIterationCompletionStatusCustomField,
@@ -153,18 +190,18 @@ fieldMappings.forEach(function(fm) {
 
 
 
-            },
-            $unset: {
-                "defectPriority": "",
-                "jiraStatusForDevelopment": "",
-                "resolutionTypeForRejection": "",
-                "jiraIssueDeliverdStatus": "",
-                "jiraDefectCountlIssueType": "",
-                "jiraSprintVelocityIssueType": "",
-                "jiraDefectRejectionStatus": "",
-                "jiraIssueTypeNames": ""
-
             }
+//            $unset: {
+//                "defectPriority": "",
+//                "jiraStatusForDevelopment": "",
+//                "resolutionTypeForRejection": "",
+//                "jiraIssueDeliverdStatus": "",
+//                "jiraDefectCountlIssueType": "",
+//                "jiraSprintVelocityIssueType": "",
+//                "jiraDefectRejectionStatus": "",
+//                "jiraIssueTypeNames": ""
+//
+//            }
         })
     }
 })

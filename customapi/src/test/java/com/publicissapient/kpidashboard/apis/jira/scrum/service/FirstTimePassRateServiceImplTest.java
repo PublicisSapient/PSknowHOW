@@ -206,7 +206,6 @@ public class FirstTimePassRateServiceImplTest {
 
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequest.getRequestTrackerId());
-
 		try {
 			KpiElement kpiElement = firstTimePassRateService.getKpiData(this.kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

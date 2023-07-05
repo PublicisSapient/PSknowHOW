@@ -283,7 +283,7 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setJiraIssueDeliverdStatusFTPR(jiraType);
 		fieldMapping.setJiraIssueDeliverdStatusSV(jiraType);
 
-		fieldMapping.setJiraDor("In Progress");
+		fieldMapping.setJiraDorLT("In Progress");
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 

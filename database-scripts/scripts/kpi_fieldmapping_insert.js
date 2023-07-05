@@ -1112,7 +1112,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDORLT",
+    "fieldName": "jiraDorLT",
     "fieldLabel": "Status to Identify Development Status",
     "fieldType": "chips",
     "fieldCategory": "workflow",

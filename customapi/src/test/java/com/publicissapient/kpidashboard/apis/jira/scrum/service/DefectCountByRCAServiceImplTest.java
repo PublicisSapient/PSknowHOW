@@ -26,6 +26,8 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +86,9 @@ public class DefectCountByRCAServiceImplTest {
 	@Mock
 	private JiraServiceR jiraService;
 
+	@Mock
+	FieldMapping fieldMapping;
+
 	@Test
 	public void testGetCalculateKPIMetrics() {
 		assertThat(defectCountByRCAService.calculateKPIMetrics(new HashMap<>()), equalTo(null));
@@ -111,7 +116,8 @@ public class DefectCountByRCAServiceImplTest {
 		bugList = jiraIssueDataFactory.getBugs();
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
-		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping.setJiradefecttypeIDCR(Arrays.asList());
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 	}
 
@@ -127,6 +133,7 @@ public class DefectCountByRCAServiceImplTest {
 			when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 			when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 			when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+//			when(fieldMapping.getJiradefecttypeIDCR()).thenReturn(null);
 			when(jiraIssueRepository.findLinkedDefects(anyMap(), any(), anyMap())).thenReturn(bugList);
 			KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -146,6 +153,7 @@ public class DefectCountByRCAServiceImplTest {
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> returnMap = defectCountByRCAService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertNotNull(returnMap);

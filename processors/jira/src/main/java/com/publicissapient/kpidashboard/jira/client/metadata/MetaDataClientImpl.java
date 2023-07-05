@@ -329,11 +329,10 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraStatusForQa(workflowMap.get(CommonConstant.QA));
 			fieldMapping.setJiraDefectInjectionIssueType(issueTypeMap.get(CommonConstant.STORY));
 			if (CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.DOR))) {
-				fieldMapping.setJiraDor(workflowMap.get(CommonConstant.DOR).get(0));
+				fieldMapping.setJiraDorLT(workflowMap.get(CommonConstant.DOR).get(0));
 			} else {
-				fieldMapping.setJiraDor(null);
+				fieldMapping.setJiraDorLT(null);
 			}
-			fieldMapping.setJiraDod(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodDIR(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodQADD(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodLT(workflowMap.get(CommonConstant.DOD));
@@ -488,7 +487,6 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping
 					.setJiraIssueDeliverdStatusFTPR(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping.setJiraDefectCreatedStatus(CommonConstant.OPEN);
-			fieldMapping.setJiraDod(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodDIR(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodQADD(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodLT(workflowMap.get(CommonConstant.DOD));
@@ -502,7 +500,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraLiveStatusOTA(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusPDA(CommonConstant.CLOSED);
 			fieldMapping.setJiraDefectRemovalStatus(null);
-			fieldMapping.setJiraDor(CommonConstant.OPEN);
+			fieldMapping.setJiraDorLT(CommonConstant.OPEN);
 			fieldMapping.setResolutionTypeForRejectionAVR(
 					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionDC(
