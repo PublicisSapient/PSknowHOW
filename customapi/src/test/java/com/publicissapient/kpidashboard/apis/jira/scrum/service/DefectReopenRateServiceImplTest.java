@@ -40,8 +40,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryQueryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
@@ -57,11 +55,7 @@ public class DefectReopenRateServiceImplTest {
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
 	@Mock
-	private IssueBacklogCustomHistoryQueryRepository issueBacklogCustomHistoryQueryRepository;
-	@Mock
 	private KpiHelperService kpiHelperService;
-	@Mock
-	private IssueBacklogRepository issueBacklogRepository;
 	@Mock
 	private ConfigHelperService configHelperService;
 	@Mock

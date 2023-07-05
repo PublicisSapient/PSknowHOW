@@ -808,11 +808,11 @@ export class HttpService {
     this.http.get<any>(this.authDetailsUrl).subscribe((response) => {
       if (response && response?.success && response?.data) {
         const authDetails = response?.data;
-        const newRoles = authDetails['projectsAccess'].map(
+        const newRoles = authDetails['projectsAccess']?.map(
           (projectRolesDetails) => projectRolesDetails?.role,
         );
         let roleAlreadyExist = true;
-        newRoles.forEach((role) => {
+        newRoles?.forEach((role) => {
           if (!existingRoles.includes(role)) {
             roleAlreadyExist = false;
           }

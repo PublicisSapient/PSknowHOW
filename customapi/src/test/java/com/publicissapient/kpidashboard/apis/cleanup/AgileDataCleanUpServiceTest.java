@@ -45,8 +45,6 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
@@ -63,12 +61,6 @@ public class AgileDataCleanUpServiceTest {
 
 	@InjectMocks
 	private AgileDataCleanUpService agileDataCleanUpService;
-
-	@Mock
-	private IssueBacklogRepository issueBacklogRepository;
-
-	@Mock
-	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 
 	@Mock
 	private ProjectToolConfigRepository projectToolConfigRepository;

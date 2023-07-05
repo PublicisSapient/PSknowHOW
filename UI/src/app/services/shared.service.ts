@@ -325,7 +325,6 @@ export class SharedService {
     }else{
       this.currentUserDetails={...this.currentUserDetails,...details};
     }
-
     this.currentUserDetailsSubject.next(this.currentUserDetails);
   }
 

@@ -78,8 +78,6 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
@@ -152,12 +150,6 @@ public class ScrumJiraIssueClientImplTest {
 
 	@Mock
 	private HandleJiraHistory handleJiraHistory;
-
-	@Mock
-	private IssueBacklogRepository issueBacklogRepository;
-
-	@Mock
-	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 
 	@BeforeEach
 	public void setUp() throws Exception {

@@ -36,8 +36,6 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
@@ -97,11 +95,6 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 	@Autowired
 	private SprintRepository sprintRepository;
 
-	@Autowired
-	private IssueBacklogRepository issueBacklogRepository;
-
-	@Autowired
-	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 
 	private static void getLevelIds(boolean flag, List<String> levelList, List<HierarchyLevel> accountHierarchyList) {
 		for (HierarchyLevel hierarchyLevel : accountHierarchyList) {
@@ -154,9 +147,7 @@ public class AgileDataCleanUpService implements ToolDataCleanUpService {
 
 			} else {
 				jiraIssueRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
-				issueBacklogRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
 				jiraIssueCustomHistoryRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
-				issueBacklogCustomHistoryRepository.deleteByBasicProjectConfigId(basicProjectConfigId);
 				boolean flag = false;
 				List<String> levelList = new ArrayList<>();
 				List<HierarchyLevel> accountHierarchyList = cacheService.getFullHierarchyLevel();

@@ -29,6 +29,7 @@ import { faRotateRight } from '@fortawesome/fontawesome-free';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
 import { first } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-filter',
@@ -115,13 +116,6 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.router.navigate(['/dashboard/Help']);
       },
     },
-    {
-      label: 'Logout',
-      icon: 'fas fa-sign-out-alt',
-      command: () => {
-        this.logout();
-      },
-    },
   ];
   username: string;
   isGuest = false;
@@ -133,6 +127,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedSprint={};
   noProjects = false;
   selectedRelease ={};
+  ssoLogin = environment.SSO_LOGIN;
 
   constructor(
     private service: SharedService,
@@ -145,6 +140,16 @@ export class FilterComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    if(!this.ssoLogin){
+      this.items.push(    {
+        label: 'Logout',
+        icon: 'fas fa-sign-out-alt',
+        command: () => {
+          this.logout();
+        },
+      });
+    }
+
     this.service.currentUserDetailsObs.subscribe(details=>{
       if(details){
         this.username = details['user_name'];

@@ -64,10 +64,8 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 
@@ -94,8 +92,6 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CacheService cacheService;
-	@Autowired
-	private IssueBacklogRepository issueBacklogRepository;
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
@@ -193,15 +189,13 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		List<IssueBacklog> storyList = issueBacklogRepository.findIssuesBySprintAndType(mapOfFilters,
+		List<JiraIssue> storyList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 				uniqueProjectMapForStories);
-		List<String> storyIssueNumberList = storyList.stream().map(IssueBacklog::getNumber)
-				.collect(Collectors.toList());
+		List<String> storyIssueNumberList = storyList.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
+		resultListMap.put(STORY_LIST, storyIssueNumberList);
 
 		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 				Arrays.asList(NormalizedJira.TEST_TYPE.getValue()));
-		resultListMap.put(STORY_LIST, storyIssueNumberList);
-
 		resultListMap.put(TOTAL_TEST_CASES,
 				testCaseDetailsRepository.findNonRegressionTestDetails(mapOfFilters, uniqueProjectMap, NIN));
 		return resultListMap;
@@ -306,9 +300,8 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		resultListMap.put(STORY_LIST, storyIssueNumberList);
 		defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
-
-		resultListMap.put(DEFECT_LIST, kpiHelperService.convertJiraIssueToBacklog(
-				jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn)));
+		resultListMap.put(DEFECT_LIST,
+				jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectIssueTypeNotIn));
 		return resultListMap;
 
 	}
@@ -341,10 +334,10 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 						|| !CollectionUtils.containsAny(t.getDefectStoryID(), storiesInProject)))
 				.collect(Collectors.toList());
 
-		List<IssueBacklog> totalDefects = checkPriority(
-				(List<IssueBacklog>) returnMap.get(DEFECTS_WITHOUT_STORY_DEFECTS_LIST));
-		List<IssueBacklog> totalStories = (List<IssueBacklog>) returnMap.get(DEFECTS_WITHOUT_STORY_LIST);
-		List<IssueBacklog> defectWithoutStory = new ArrayList<>();
+		List<JiraIssue> totalDefects = checkPriority(
+				(List<JiraIssue>) returnMap.get(DEFECTS_WITHOUT_STORY_DEFECTS_LIST));
+		List<JiraIssue> totalStories = (List<JiraIssue>) returnMap.get(DEFECTS_WITHOUT_STORY_LIST);
+		List<JiraIssue> defectWithoutStory = new ArrayList<>();
 		defectWithoutStory.addAll(
 				totalDefects.stream().filter(f -> !CollectionUtils.containsAny(f.getDefectStoryID(), totalStories))
 						.collect(Collectors.toList()));
@@ -368,8 +361,8 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 			populateIterationDataForTestWithoutStory(testCasesWithoutStoryLinkModals, testCaseDetails);
 		}
 
-		for (IssueBacklog issueBacklog : defectWithoutStory) {
-			populateIterationDataForDefectWithoutStory(defectWithoutStoryLinkModals, issueBacklog);
+		for (JiraIssue jiraIssue : defectWithoutStory) {
+			populateIterationDataForDefectWithoutStory(defectWithoutStoryLinkModals, jiraIssue);
 		}
 
 		List<IterationKpiData> data = new ArrayList<>();
@@ -389,13 +382,13 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 
 	}
 
-	private List<IssueBacklog> checkPriority(List<IssueBacklog> issueBacklogs) {
-		for (IssueBacklog issue : issueBacklogs) {
+	private List<JiraIssue> checkPriority(List<JiraIssue> jiraIssues) {
+		for (JiraIssue issue : jiraIssues) {
 			if (StringUtils.isBlank(issue.getPriority())) {
 				issue.setPriority(Constant.MISC);
 			}
 		}
-		return issueBacklogs;
+		return jiraIssues;
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<TestCaseDetails> totalTests,
