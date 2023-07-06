@@ -77,9 +77,9 @@ public class CommentsServiceImpl implements CommentsService {
 	}
 
 	@Override
-	public List<CommentViewResponseDTO> findCommentByBoard(String node, String level, String sprintId,
+	public List<CommentViewResponseDTO> findCommentByBoard(List<String> nodes, String level, String sprintId,
 			List<String> kpiIds) {
-		List<KPIComments> kpiCommentsList = kpiCommentsRepository.findCommentsByBoard(node, level, sprintId, kpiIds);
+		List<KPIComments> kpiCommentsList = kpiCommentsRepository.findCommentsByBoard(nodes, level, sprintId, kpiIds);
 		
 		if (CollectionUtils.isNotEmpty(kpiCommentsList)) {
 			return kpiCommentsList.stream()
