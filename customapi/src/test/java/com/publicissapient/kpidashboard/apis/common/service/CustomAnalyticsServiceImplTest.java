@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,6 +77,7 @@ public class CustomAnalyticsServiceImplTest {
 		user.setUsername("user");
 		user.setAuthType(AuthType.STANDARD);
 		user.setAuthorities(Lists.newArrayList("ROLE_VIEWER"));
+		user.setId(new ObjectId("6373796960277453212bc610"));
 
 		authentication = new Authentication();
 		authentication.setEmail("email");
