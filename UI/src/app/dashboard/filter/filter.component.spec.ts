@@ -999,6 +999,7 @@ describe('FilterComponent', () => {
     spyOn(sharedService,"setSelectedTrends");
     component.filterForm.get('selectedLevel').setValue("hierarchyLevelOne");
     component.filterForm.get('selectedTrendValue').setValue("AutoTest1_hierarchyLevelOne");
+    spyOn(component,"compileGAData");
     component.applyChanges('sprint',true);
     expect(sharedService.setSelectedLevel).toHaveBeenCalled();
     expect(sharedService.setSelectedTrends).toHaveBeenCalled();
@@ -1017,6 +1018,7 @@ describe('FilterComponent', () => {
     component.ngOnInit();
     component.filterForm?.get('selectedLevel')?.setValue("hierarchyLevelOne");
     component.filterForm?.get('selectedTrendValue')?.setValue("AutoTest1_hierarchyLevelOne");
+    spyOn(component,"compileGAData");
     component.applyChanges("date",true);
     expect(component.toggleDateDropdown).toBeFalsy();
   })
@@ -1050,6 +1052,7 @@ describe('FilterComponent', () => {
     ];
      component.filterApplyData = filterApplyData;
     spyOn(component,"resetFilterApplyObj");
+    spyOn(component,"compileGAData");
     component.createFilterApplyData();
     expect(component.filterApplyData['selectedMap']['sprint'].length).toBeGreaterThan(0)
   })
@@ -1079,6 +1082,7 @@ describe('FilterComponent', () => {
       level: 1
     };
     spyOn(component,"resetFilterApplyObj");
+    spyOn(component,"compileGAData");
     component.createFilterApplyData();
     expect(component.filterApplyData['level']).not.toBeNull();
   })
@@ -1107,6 +1111,7 @@ describe('FilterComponent', () => {
       level: 5
     };
     spyOn(component,"resetFilterApplyObj");
+    spyOn(component,"compileGAData");
     component.createFilterApplyData();
     expect(component.filterApplyData['level']).not.toBeNull();
   })
