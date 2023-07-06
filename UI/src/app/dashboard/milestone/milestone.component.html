@@ -15,7 +15,7 @@
                     <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                       (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                       [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
-                      [showExport]="false" [isShow]="true" [showChartView]="kpi?.kpiDetail?.boxType == 'chart'">
+                      [showExport]="false" [isShow]="true" [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true">
                       <ng-container *ngIf="!noTabAccess else noDataAccess">
                         <div class="p-d-flex p-justify-around p-align-center w-100"
                           *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -65,7 +65,7 @@
                         (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
                         [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
                         [showExport]="true" [isShow]="true"
-                        [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)">
+                        [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)" [showCommentIcon]="true">
                         <ng-container *ngIf="!noTabAccess else noDataAccess">
                           <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
                             <div class="p-pl-3 p-pr-3 w-100 position-relative chart-container-height" [ngSwitch]="kpi?.kpiDetail?.chartType"

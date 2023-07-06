@@ -38,6 +38,12 @@ export class CommentsComponent implements OnInit {
           return data.nodeId === sharedObj.filterApplyData.selectedMap?.sprint[i]
         })[0]);
       }
+    } else if(this.selectedTab === 'release'){
+      for (let i = 0; i < sharedObj.filterApplyData.selectedMap?.release.length; i++) {
+        this.selectedFilters.push(sharedObj.filterData.filter(data => {
+          return data.nodeId === sharedObj.filterApplyData.selectedMap?.release[i]
+        })[0]);
+      }
     } else{
       for (let i = 0; i < sharedObj.filterApplyData.selectedMap?.project.length; i++) {
         this.selectedFilters.push(sharedObj.filterData.filter(data => {
@@ -50,9 +56,9 @@ export class CommentsComponent implements OnInit {
   submitComment(filterData=this.selectedFilters[this.selectedTabIndex]){
 
     const reqObj = {
-      node: this.selectedTab !== 'iteration' ? filterData.nodeId : filterData.parentId[0],
+      node: (this.selectedTab !== 'iteration' && this.selectedTab !== 'release') ? filterData.nodeId : filterData.parentId[0],
       level: filterData.level,
-      sprintId: this.selectedTab === 'iteration' ? filterData.nodeId : '',
+      nodeChildId: (this.selectedTab === 'iteration' || this.selectedTab === 'release') ? filterData.nodeId : '',
       kpiId: this.kpiId,
       commentsInfo: [
         {
@@ -80,8 +86,14 @@ export class CommentsComponent implements OnInit {
   }
 
   getComments(){
+    const postData = {
+      node: (this.selectedTab !== 'iteration' && this.selectedTab !== 'release') ? this.selectedFilters[this.selectedTabIndex]?.nodeId : this.selectedFilters[this.selectedTabIndex]?.parentId[0],
+      nodeChildId: (this.selectedTab === 'iteration' || this.selectedTab === 'release') ? this.selectedFilters[this.selectedTabIndex].nodeId : '',
+      kpiId: this.kpiId,
+      level: this.selectedFilters[this.selectedTabIndex]?.level
+    };
     this.dataLoaded = false;
-    this.http_service.getComment(this.selectedTab, this.selectedFilters[this.selectedTabIndex], this.kpiId)
+    this.http_service.getComment(postData)
     .subscribe(response => {
       if(response.data?.CommentsInfo){
         this.commentsList = response.data.CommentsInfo;
