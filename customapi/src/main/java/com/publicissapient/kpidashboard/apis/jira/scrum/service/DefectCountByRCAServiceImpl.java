@@ -112,7 +112,7 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 			if (null != sprintDetails) {
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeIDCR(),
+						new ArrayList<>(),
 						fieldMapping.getJiraIterationCompletionStatusIDCR());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,

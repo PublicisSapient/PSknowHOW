@@ -212,7 +212,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 					.get(sprintDetail.getBasicProjectConfigId());
 			// to modify sprintdetails on the basis of configuration for the project
 			KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
-					fieldMapping.getJiraIterationCompletionTypeIC(),
+					new ArrayList<>(),
 					fieldMapping.getJiraIterationCompletionStatusIC());
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,

@@ -331,18 +331,18 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationCompletionTypeCustomField;// TODO: Extra field  //test done
 	private List<String> jiraIterationCompletionTypeCPT;
 	private List<String> jiraIterationCompletionTypeBRE;
-	private List<String> jiraIterationCompletionTypeQS;
+//	private List<String> jiraIterationCompletionTypeQS;
 	private List<String> jiraIterationCompletionTypeIW;
 	private List<String> jiraIterationCompletionTypePWS;
 	private List<String> jiraIterationCompletionTypeUPWS;
 	private List<String> jiraIterationCompletionTypeDCS;
-	private List<String> jiraIterationCompletionTypeIFTPR;
-	private List<String> jiraIterationCompletionTypeIDCP;
-	private List<String> jiraIterationCompletionTypeIDCR;
-	private List<String> jiraIterationCompletionTypeIDCS;
-	private List<String> jiraIterationCompletionTypeIC;
+//	private List<String> jiraIterationCompletionTypeIFTPR;
+//	private List<String> jiraIterationCompletionTypeIDCP;
+//	private List<String> jiraIterationCompletionTypeIDCR;
+//	private List<String> jiraIterationCompletionTypeIDCS;
+//	private List<String> jiraIterationCompletionTypeIC;
 	private List<String> jiraIterationCompletionTypeCR;
-	private List<String> jiraIterationCompletionTypeSV;
+//	private List<String> jiraIterationCompletionTypeSV;
 	private List<String> jiraIterationCompletionTypeWR;
 	private List<String> jiraIterationCompletionTypeSP;
 	private List<String> jiraIterationCompletionTypeEVA;

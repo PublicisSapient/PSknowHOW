@@ -588,7 +588,7 @@ public class KpiHelperService { // NOPMD
 						.get(sprintDetail.getBasicProjectConfigId());
 				//to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
-						fieldMapping.getJiraIterationCompletionTypeSV(),
+						new ArrayList<>(),
 						fieldMapping.getJiraIterationCompletionStatusSV());
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper

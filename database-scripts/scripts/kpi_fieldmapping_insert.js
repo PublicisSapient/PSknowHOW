@@ -622,16 +622,6 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeQS",
-    "fieldLabel": "Iteration Board Issue types",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "Issue Types to be considered Completed"
-    }
-  },
-  {
     "fieldName": "jiraIterationCompletionTypeIW",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
@@ -672,67 +662,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeIFTPR",
-    "fieldLabel": "Iteration Board Issue types",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "Issue Types to be considered Completed"
-    }
-  },
-  {
-    "fieldName": "jiraIterationCompletionTypeIDCP",
-    "fieldLabel": "Iteration Board Issue types",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "Issue Types to be considered Completed"
-    }
-  },
-  {
-    "fieldName": "jiraIterationCompletionTypeIDCR",
-    "fieldLabel": "Iteration Board Issue types",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "Issue Types to be considered Completed"
-    }
-  },
-  {
-    "fieldName": "jiraIterationCompletionTypeIDCS",
-    "fieldLabel": "Iteration Board Issue types",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "Issue Types to be considered Completed"
-    }
-  },
-  {
-    "fieldName": "jiraIterationCompletionTypeIC",
-    "fieldLabel": "Iteration Board Issue types",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "Issue Types to be considered Completed"
-    }
-  },
-  {
     "fieldName": "jiraIterationCompletionTypeCR",
-    "fieldLabel": "Iteration Board Issue types",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "Issue Types to be considered Completed"
-    }
-  },
-  {
-    "fieldName": "jiraIterationCompletionTypeSV",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",

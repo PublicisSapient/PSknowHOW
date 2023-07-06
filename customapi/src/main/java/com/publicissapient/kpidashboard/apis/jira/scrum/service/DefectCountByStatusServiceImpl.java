@@ -130,7 +130,7 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 			if (null != sprintDetails) {
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeIDCS(),
+						new ArrayList<>(),
 						fieldMapping.getJiraIterationCompletionStatusIDCS());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,

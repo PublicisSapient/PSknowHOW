@@ -36,10 +36,10 @@ public enum FieldMappingEnum {
 					"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize","additionalFilterConfig")),
 
 	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationIC", "jiradefecttypeIC",
-			"jiraIterationCompletionTypeIC", "jiraIterationCompletionStatusIC")),
+			"jiraIterationCompletionStatusIC")),
 
 	KPI39("Sprint Velocity", KPISource.JIRA.name(), Arrays.asList("jiraSprintVelocityIssueTypeSV",
-			"jiraIterationCompletionStatusSV", "jiraIssueDeliverdStatusSV", "jiraIterationCompletionTypeSV")),
+			"jiraIterationCompletionStatusSV", "jiraIssueDeliverdStatusSV")),
 
 	KPI5("Sprint Predictability", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionTypeSP", "jiraIterationCompletionStatusSP")),
@@ -57,7 +57,7 @@ public enum FieldMappingEnum {
 
 	KPI135("First Time Pass Rate (Iteration)", KPISource.JIRA.name(),
 			Arrays.asList("jiraStatusForDevelopmentIFTPR", "jiraIFTPRStoryIdentification", "jiradefecttypeIFTPR",
-					"jiraIterationCompletionTypeIFTPR", "jiraIterationCompletionStatusIFTPR")),
+					"jiraIterationCompletionStatusIFTPR")),
 
 	KPI53("Lead Time (Kanban)", KPISource.JIRA.name(),
 			Arrays.asList("jiraIntakeToDorIssueTypeLT", "jiraDorLT", "jiraLiveStatusLTK")),
@@ -75,7 +75,7 @@ public enum FieldMappingEnum {
 			"resolutionTypeForRejectionDC", "jiraDefectRejectionStatusDC")),
 
 	KPI140("Defect Count by Priority (Iteration)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeIDCP",
-			"jiraIterationCompletionStatusIDCP", "jiraIterationCompletionTypeIDCP")),
+			"jiraIterationCompletionStatusIDCP")),
 
 	KPI144("Defect Count by Priority (Release)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeRDCP")),
 
@@ -89,10 +89,10 @@ public enum FieldMappingEnum {
 			"resolutionTypeForRejectionRCA", "jiraDefectRejectionStatusRCA")),
 
 	KPI132("Defect Count by RCA (Iteration)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeIDCR",
-			"jiraIterationCompletionStatusIDCR", "jiraIterationCompletionTypeIDCR")),
+			"jiraIterationCompletionStatusIDCR")),
 
 	KPI136("Defect Count by Status (Iteration)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeIDCS",
-			"jiraIterationCompletionStatusIDCS", "jiraIterationCompletionTypeIDCS")),
+			"jiraIterationCompletionStatusIDCS")),
 
 	KPI14("Defect Injection Rate", KPISource.JIRA.name(),
 			Arrays.asList("jiradefecttype", "excludeRCAFromDIR", "resolutionTypeForRejectionDIR",
@@ -110,8 +110,7 @@ public enum FieldMappingEnum {
 
 	KPI133("Quality Status", KPISource.JIRA.name(),
 			Arrays.asList("resolutionTypeForRejectionQS", "jiraDefectRejectionStatusQS", "jiradefecttypeQS",
-					"defectPriorityQS", "excludeRCAFromQS", "jiraIterationCompletionStatusQS",
-					"jiraIterationCompletionTypeQS")),
+					"defectPriorityQS", "excludeRCAFromQS", "jiraIterationCompletionStatusQS")),
 
 	KPI126("Created vs Resolved defects", KPISource.JIRA.name(),
 			Arrays.asList("jiradefecttypeCVR", "jiraIssueDeliverdStatusCVR")),
