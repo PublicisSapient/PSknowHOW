@@ -70,22 +70,6 @@ export class GoogleAnalyticsService {
     });
   }
 
-  setProjectList(data) {
-    const chunkSize = 25;
-    const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
-    while (data.length) {
-      dataLayer.push({
-        event: 'productDetailView',
-        ecommerce: {
-          detail: {
-            products: data.splice(0, chunkSize)
-          }
-        }
-      });
-    }
-
-  }
-
   setLoginMethod(data, loginType){
 
     const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
@@ -94,5 +78,15 @@ export class GoogleAnalyticsService {
          'authentication_method' : loginType,
          'user_id' : data.user_id 
     });
+  }
+
+  setProjectData(data) {
+    const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
+    for (let i = 0; i<data.length; i++) {
+      dataLayer.push({
+        event: 'ProjectViewed',
+        ...data[i]
+      });
+    }
   }
 }
