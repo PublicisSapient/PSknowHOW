@@ -4,11 +4,13 @@ import static com.publicissapient.kpidashboard.common.util.DateUtil.dateTimeForm
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
@@ -33,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CommentsServiceImpl implements CommentsService {
 
-	public static final String TIME_FORMAT = "dd-MMM-YYYY";
+	public static final String TIME_FORMAT = "dd-MMM-YYYY HH:mm";
 
 	@Autowired
 	private KpiCommentsRepository kpiCommentsRepository;
@@ -72,6 +74,22 @@ public class CommentsServiceImpl implements CommentsService {
 		log.info("Final filter comments of matching kpiId {}", mappedCollection);
 		return mappedCollection;
 	}
+
+	@Override
+	public Map<String, Integer> findCommentByBoard(List<String> node, String level, String sprintId,
+			List<String> kpiIds) {
+		List<KPIComments> kpiCommentsList = kpiCommentsRepository.findCommentsByBoard(node, level, sprintId, kpiIds);
+		Map<String, Integer> hierarchyWiseComments = new HashMap<>();
+
+		if (CollectionUtils.isNotEmpty(kpiCommentsList)) {
+			kpiCommentsList.stream().collect(Collectors.groupingBy(KPIComments::getKpiId))
+					.forEach((kpiId, commentsList) -> hierarchyWiseComments.merge(kpiId, commentsList.stream()
+							.flatMap(comment -> comment.getCommentsInfo().stream()).collect(Collectors.toList()).size(),
+							Integer::sum));
+		}
+		return hierarchyWiseComments;
+	}
+
 
 	/**
 	 * This method will filter the comments with selected KpiId on the basis of
@@ -215,4 +233,5 @@ public class CommentsServiceImpl implements CommentsService {
 		log.debug("Saved new comment and re-arranged existing comments info into kpi_comments_history collection {}",
 				kpiCommentsHistory);
 	}
+
 }

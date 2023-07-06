@@ -1,13 +1,17 @@
 package com.publicissapient.kpidashboard.apis.comments.rest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.common.model.comments.CommentViewRequestDTO;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,5 +76,25 @@ public class CommentsController {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(responseStatus, "Issue occurred while saving the comment.", comment));
 		}
+	}
+
+	/**
+	 *
+	 * @param commentViewRequestDTO
+	 * @return
+	 */
+	@GetMapping("/getCommentCount")
+	public ResponseEntity<ServiceResponse> getKpiWiseCommentsCount(
+			@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
+		Map<String,Integer> kpiWiseCount = commentsService.findCommentByBoard(
+				commentViewRequestDTO.getNode(), commentViewRequestDTO.getLevel(), commentViewRequestDTO.getSprintId(),
+				commentViewRequestDTO.getKpiIds());
+		if (MapUtils.isEmpty(kpiWiseCount)) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments not found", null));
+		} else {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "Found Comments Count", kpiWiseCount));
+		}
+
 	}
 }
