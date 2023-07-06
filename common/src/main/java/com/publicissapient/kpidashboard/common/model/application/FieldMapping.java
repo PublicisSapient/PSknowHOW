@@ -352,6 +352,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationCompletionTypeEH;
 	private LocalDate createdDate;
 
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *
