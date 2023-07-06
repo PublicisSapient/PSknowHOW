@@ -795,11 +795,14 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 if(kpiId === 'kpi17'){
                     this.kpiChartData[kpiId] = [];
                     for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-                        let obj = {
-                            'data':this.kpiSelectedFilterObj[kpiId][i],
-                            'value':trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value[0]?.value
-                        }
-                        this.kpiChartData[kpiId].push(obj);
+                        let trendList = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0];
+                        trendList?.value.forEach((x) => {
+                            let obj = {
+                                'data':this.kpiSelectedFilterObj[kpiId][i],
+                                'value':x.value
+                            }
+                            this.kpiChartData[kpiId].push(obj);
+                        })
                     }
                 }else{
                     const tempArr = {};
@@ -812,6 +815,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             } else {
                 if (this.kpiSelectedFilterObj[kpiId]?.length > 0) {
                     this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value;
+                    if(kpiId == 'kpi17' && this.kpiSelectedFilterObj[kpiId][0]?.toLowerCase() == 'average coverage'){
+                        for(let i = 0; i<this.kpiChartData[kpiId]?.length; i++){
+                            this.kpiChartData[kpiId][i]['filter'] = this.kpiSelectedFilterObj[kpiId][0];
+                        }
+                    }
                 } else {
                     this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
                 }
