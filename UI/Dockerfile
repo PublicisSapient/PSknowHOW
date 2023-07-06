@@ -1,4 +1,4 @@
-FROM nginx:1.22.1-alpine-slim
+FROM psknowhow/nginx:1.22.1-alpine-slim
 
 ENV PID_LOC="/run/nginx" \
     CONF_LOG="/etc/nginx/conf.d" \
