@@ -803,8 +803,8 @@ public class KPIExcelUtility {
 			projectVersionList.forEach(pv -> {
 				KPIExcelData excelData = new KPIExcelData();
 				excelData.setProjectName(projectName);
-				excelData.setReleaseName(pv.getDescription());
-				excelData.setReleaseDesc(pv.getName());
+				excelData.setReleaseName(pv.getName());
+				excelData.setReleaseDesc(pv.getDescription());
 				excelData.setReleaseEndDate(pv.getReleaseDate().toString(DATE_YEAR_MONTH_FORMAT));
 				excelData.setMonth(pv.getReleaseDate().toString(MONTH_YEAR_FORMAT));
 				kpiExcelData.add(excelData);
