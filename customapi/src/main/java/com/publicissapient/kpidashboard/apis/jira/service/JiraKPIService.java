@@ -51,7 +51,6 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -209,12 +208,12 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public void populateIterationDataForDefectWithoutStory(List<IterationKpiModalValue> overAllModalValues,
-			IssueBacklog issueBacklog) {
+			JiraIssue jiraIssue) {
 
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(issueBacklog.getNumber());
-		iterationKpiModalValue.setIssueURL(issueBacklog.getUrl());
-		iterationKpiModalValue.setDescription(issueBacklog.getName());
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
 		overAllModalValues.add(iterationKpiModalValue);
 	}
 
@@ -315,14 +314,14 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
-			List<IterationKpiModalValue> modalValues, IssueBacklog issueBacklog) {
+			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueType(issueBacklog.getTypeName());
-		iterationKpiModalValue.setIssueURL(issueBacklog.getUrl());
-		iterationKpiModalValue.setIssueId(issueBacklog.getNumber());
-		iterationKpiModalValue.setDescription(issueBacklog.getName());
-		iterationKpiModalValue.setPriority(issueBacklog.getPriority());
-		iterationKpiModalValue.setIssueSize(Optional.ofNullable(issueBacklog.getStoryPoints()).orElse(0.0).toString());
+		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
 		overAllmodalValues.add(iterationKpiModalValue);
 		modalValues.add(iterationKpiModalValue);
 	}

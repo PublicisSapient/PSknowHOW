@@ -114,6 +114,7 @@ public class ProcessorToolConnection {
 	private String parameterNameForEnvironment;
 	private boolean bearerToken;
 	private boolean azureIterationStatusFieldUpdate;
+	private String projectComponent;
 
 	public boolean getbearerToken() {
 		return bearerToken;

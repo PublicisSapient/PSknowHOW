@@ -35,8 +35,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -67,10 +65,12 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(WastageServiceImpl.class);
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
 	private static final String ISSUES = "issues";
@@ -129,7 +129,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 
 		if (null != leafNode) {
-			LOGGER.info("Wastage -> Requested sprint : {}", leafNode.getName());
+			log.info("Wastage -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
@@ -177,7 +177,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		SprintDetails sprintDetail = (SprintDetails) resultMap.get(SPRINT_DETAILS);
 
 		if (CollectionUtils.isNotEmpty(allIssues)) {
-			LOGGER.info("Wastage -> request id : {} total jira Issues : {}", requestTrackerId, allIssues.size());
+			log.info("Wastage -> request id : {} total jira Issues : {}", requestTrackerId, allIssues.size());
 
 			Map<String, Map<String, List<JiraIssue>>> typeAndPriorityWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getPriority)));
@@ -196,7 +196,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 			List<List<String>> fetchBlockAndWaitStatus = filedMappingExist(fieldMapping);
 			boolean flagIncluded = checkFlagIncludedStatus(fieldMapping);
-			LOGGER.info("Is flag included for wastage kpi calculation  {}", flagIncluded);
+			log.info("Is flag included for wastage kpi calculation  {}", flagIncluded);
 
 			List<String> blockedStatusList = fetchBlockAndWaitStatus.get(0);
 			List<String> waitStatusList = fetchBlockAndWaitStatus.get(1);

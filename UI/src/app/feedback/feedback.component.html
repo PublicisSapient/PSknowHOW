@@ -1,0 +1,37 @@
+<div class="icon-feedback" (click)="showForm = !showForm">
+    <i class="fa-solid fa-message"></i>
+</div>
+<div class="p-sm-6 feedback-sect" [ngClass]="{'p-d-block': showForm, 'p-d-none':!showForm}">
+    <h3 class="p-m-0">Give Feedback</h3>
+    <form [formGroup]="voiceForm" autocomplete="off">
+        <div class="p-sm-12">
+            <label for="feedbackType">Select your option</label>
+            <div class="p-d-flex p-pt-1">
+                <p-radioButton value="feedback" label="Feedback" formControlName="feedbackType"></p-radioButton>
+                <p-radioButton value="idea" label="New Idea" formControlName="feedbackType" class="p-ml-4">
+                </p-radioButton>
+            </div>
+        </div>
+        <div class="p-sm-12">
+            <label for="category">Area</label>
+            <p-dropdown [options]="area" formControlName="category" placeholder="Select"></p-dropdown>
+        </div>
+        <div class="p-sm-12">
+            <label for="feedback">Comment</label>
+            <textarea [rows]="5" class="p-w-100 feedback" formControlName="feedback" pInputTextarea></textarea>
+            <div class="text-danger" *ngIf="!voiceForm.controls.feedback?.valid && (voiceForm.controls.feedback?.dirty
+          ||voiceForm.controls.feedback?.touched)">
+                Feedback can be of max 600 characters
+            </div>
+        </div>
+        <div class="p-sm-12">
+            <p class="p-mb-0 p-pr-3"
+                [ngClass]="{'alert-success': isFeedbackSubmitted, 'alert-error': !isFeedbackSubmitted}">
+                {{formMessage}}
+            </p>
+
+            <button pButton pRipple type="button" class="p-button-sm p-button-success p-button-raised" label="Submit"
+                (click)="save()" [disabled]="voiceForm.invalid"></button>
+        </div>
+    </form>
+</div>

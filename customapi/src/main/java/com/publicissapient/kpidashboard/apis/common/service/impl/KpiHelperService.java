@@ -69,8 +69,6 @@ import com.publicissapient.kpidashboard.common.model.application.KPIFieldMapping
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -588,7 +586,7 @@ public class KpiHelperService { // NOPMD
 			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
 
-		} 
+		}
 
 		return resultListMap;
 	}
@@ -1453,35 +1451,4 @@ public class KpiHelperService { // NOPMD
 		}
 	}
 
-	public List<JiraIssue> convertBacklogToJiraIssue(List<IssueBacklog> issueBacklogList) {
-		List<JiraIssue> jiraIssues = new ArrayList<>();
-		ModelMapper mapper = new ModelMapper();
-		issueBacklogList.forEach(issueBacklog -> jiraIssues.add(mapper.map(issueBacklog, JiraIssue.class)));
-		return jiraIssues;
-	}
-
-	public List<IssueBacklog> convertJiraIssueToBacklog(List<JiraIssue> jiraIssueList) {
-		List<IssueBacklog> issueBacklogs = new ArrayList<>();
-		ModelMapper mapper = new ModelMapper();
-		jiraIssueList.forEach(jiraIssue -> issueBacklogs.add(mapper.map(jiraIssue, IssueBacklog.class)));
-		return issueBacklogs;
-	}
-
-	public List<JiraIssueCustomHistory> convertBacklogHistoryToJiraHistory(
-			List<IssueBacklogCustomHistory> issueBacklogCustomHistories) {
-		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
-		ModelMapper mapper = new ModelMapper();
-		issueBacklogCustomHistories.forEach(
-				issueHistory -> jiraIssueCustomHistoryList.add(mapper.map(issueHistory, JiraIssueCustomHistory.class)));
-		return jiraIssueCustomHistoryList;
-	}
-
-	public List<IssueBacklogCustomHistory> convertJiraHistoryToBacklogHistory(
-			List<JiraIssueCustomHistory> jiraIssueCustomHistories) {
-		List<IssueBacklogCustomHistory> issueBacklogCustomHistoryList = new ArrayList<>();
-		ModelMapper mapper = new ModelMapper();
-		jiraIssueCustomHistories.forEach(jiraIssueCustomHistory -> issueBacklogCustomHistoryList
-				.add(mapper.map(jiraIssueCustomHistory, IssueBacklogCustomHistory.class)));
-		return issueBacklogCustomHistoryList;
-	}
 }

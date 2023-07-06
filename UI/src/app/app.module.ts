@@ -87,7 +87,7 @@ import { HorizontalStackProgressbarComponent } from './component/horizontal-stac
 import { CircularProgressWithLegendsComponent } from './component/circular-progress-with-legends/circular-progress-with-legends.component';
 import { ExternalUrlDirective } from './external-url.directive';
 import { MessageService } from 'primeng/api';
-import { LandingPageComponent } from './dashboard/landing-page/landing-page.component';
+import { HelpComponent } from './dashboard/help/help.component';
 import { DialogModule } from 'primeng/dialog';
 import { KpiCardComponent } from './dashboard/kpi-card/kpi-card.component';
 import { TrendIndicatorComponent } from './dashboard/trend-indicator/trend-indicator.component';
@@ -112,6 +112,7 @@ import { HorizontalPercentBarChartComponent } from './component/horizontal-perce
 import { CumulativeLineChartComponent } from './component/cumulative-line-chart/cumulative-line-chart.component';
 
 import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
+import { FeedbackComponent } from './feedback/feedback.component';
 
 /******************************************************/
 
@@ -159,7 +160,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         HorizontalStackProgressbarComponent,
         CircularProgressWithLegendsComponent,
         ExternalUrlDirective,
-        LandingPageComponent,
+        HelpComponent,
         KpiCardComponent,
         TrendIndicatorComponent,
         TooltipComponent,
@@ -175,7 +176,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         MilestoneComponent,
         HorizontalPercentBarChartComponent,
         CumulativeLineChartComponent,
-        StackedAreaChartComponent
+        StackedAreaChartComponent,
+        FeedbackComponent
     ],
     imports: [
         DropdownModule,
