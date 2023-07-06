@@ -12,6 +12,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentHistoryRepositoryCustom;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentRepositoryCustom;
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,12 @@ public class CommentsServiceImpl implements CommentsService {
 
 	@Autowired
 	private KpiCommentsRepository kpiCommentsRepository;
+
+	@Autowired
+	private KpiCommentRepositoryCustom kpiCommentsCustomRepository;
+
+	@Autowired
+	private KpiCommentHistoryRepositoryCustom kpiCommentsHistoryCustomRepository;
 
 	@Autowired
 	private KpiCommentsHistoryRepository kpiCommentsHistoryRepository;
@@ -88,6 +96,12 @@ public class CommentsServiceImpl implements CommentsService {
 							Integer::sum));
 		}
 		return hierarchyWiseComments;
+	}
+
+	@Override
+	public void deleteComments(String commentId) {
+		kpiCommentsCustomRepository.deleteByCommentId(commentId);
+		kpiCommentsHistoryCustomRepository.markCommentDelete(commentId);
 	}
 
 

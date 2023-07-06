@@ -17,8 +17,9 @@ import java.util.List;
 @NoArgsConstructor
 public class CommentViewRequestDTO {
 
-    private List<String> node;
+    private List<String> nodes;
     private String level;
     private String sprintId;
     private List<String> kpiIds;
+    private String commentId;
 }

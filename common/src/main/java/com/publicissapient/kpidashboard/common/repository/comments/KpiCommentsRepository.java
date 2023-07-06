@@ -20,4 +20,6 @@ public interface KpiCommentsRepository extends MongoRepository<KPIComments, Stri
 	@Query("{ 'node' : { $in : ?0 }, 'level' : ?1, 'sprintId' : ?2, 'kpiId' : { $in : ?3 }}")
 	List<KPIComments> findCommentsByBoard(List<String> nodes, String level, String sprintId, List<String> kpiIds);
 
+	@Query(value = "{ 'node' : { $in : ?0 }, 'level' : ?1, 'sprintId' : ?2, 'kpiId' : ?3, 'commentsInfo.commentId' : ?4 }", delete = true)
+	long removeByBoardAndCommentId(List<String> nodes, String level, String sprintId, String kpiId, String commentId);
 }

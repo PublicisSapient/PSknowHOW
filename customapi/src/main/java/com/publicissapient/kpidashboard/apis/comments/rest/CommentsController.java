@@ -1,17 +1,15 @@
 package com.publicissapient.kpidashboard.apis.comments.rest;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.validation.Valid;
 
-import com.publicissapient.kpidashboard.common.model.comments.CommentViewRequestDTO;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +19,7 @@ import com.publicissapient.kpidashboard.apis.comments.service.CommentsService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.comments.CommentRequestDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
+import com.publicissapient.kpidashboard.common.model.comments.CommentViewRequestDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -86,8 +85,8 @@ public class CommentsController {
 	@GetMapping("/getCommentCount")
 	public ResponseEntity<ServiceResponse> getKpiWiseCommentsCount(
 			@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
-		Map<String,Integer> kpiWiseCount = commentsService.findCommentByBoard(
-				commentViewRequestDTO.getNode(), commentViewRequestDTO.getLevel(), commentViewRequestDTO.getSprintId(),
+		Map<String, Integer> kpiWiseCount = commentsService.findCommentByBoard(commentViewRequestDTO.getNodes(),
+				commentViewRequestDTO.getLevel(), commentViewRequestDTO.getSprintId(),
 				commentViewRequestDTO.getKpiIds());
 		if (MapUtils.isEmpty(kpiWiseCount)) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments not found", null));
@@ -96,5 +95,21 @@ public class CommentsController {
 					.body(new ServiceResponse(true, "Found Comments Count", kpiWiseCount));
 		}
 
+	}
+
+	/**
+	 *
+	 * @param commentViewRequestDTO
+	 * @return
+	 */
+	@DeleteMapping("/getCommentCount")
+	public ResponseEntity<ServiceResponse> deleteComments(@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
+		try {
+			commentsService.deleteComments(commentViewRequestDTO.getCommentId());
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Succesfully Deleted Comments", commentViewRequestDTO.getCommentId()));
+		}
+		catch(Exception ex){
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments not delete comments", ex.getMessage()));
+		}
 	}
 }

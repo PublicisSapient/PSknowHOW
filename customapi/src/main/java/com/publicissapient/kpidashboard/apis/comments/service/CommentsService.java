@@ -11,8 +11,8 @@ public interface CommentsService {
 
 	Map<String, Object> findCommentByKPIId(String node, String level, String sprintId, String kpiId);
 
-	// List<CommentViewResponseDTO> findCommentByBoard(String node, String level,
-	// String sprintId, List<String> kpiId);
 	Map<String, Integer> findCommentByBoard(List<String> node, String level, String sprintId,
 											List<String> kpiId);
+
+	void deleteComments(String commentId);
 }
