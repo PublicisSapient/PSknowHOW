@@ -106,10 +106,10 @@ public class CommentsController {
 	public ResponseEntity<ServiceResponse> deleteComments(@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
 		try {
 			commentsService.deleteComments(commentViewRequestDTO.getCommentId());
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Succesfully Deleted Comments", commentViewRequestDTO.getCommentId()));
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Successfully Deleted Comment", commentViewRequestDTO.getCommentId()));
 		}
 		catch(Exception ex){
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments not delete comments", ex.getMessage()));
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments Not Deleted", ex.getMessage()));
 		}
 	}
 }
