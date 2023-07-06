@@ -131,17 +131,14 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		FieldMapping projectOne = new FieldMapping();
 		projectOne.setBasicProjectConfigId(new ObjectId("6335368249794a18e8a4479f"));
 		projectOne.setTicketCountIssueType(Arrays.asList("Story"));
-		projectOne.setJiraLiveStatusNOPK("Closed");
 
 		FieldMapping projectTwo = new FieldMapping();
 		projectTwo.setBasicProjectConfigId(new ObjectId("5b719d06a500d00814bfb2b9"));
 		projectTwo.setTicketCountIssueType(Arrays.asList("Story"));
-		projectTwo.setJiraLiveStatusNOPK("Closed");
 
 		FieldMapping projectThree = new FieldMapping();
 		projectThree.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
 		projectThree.setTicketCountIssueType(Arrays.asList("Story"));
-		projectThree.setJiraLiveStatusNOPK("Closed");
 
 		fieldMappingList.add(projectOne);
 		fieldMappingList.add(projectTwo);

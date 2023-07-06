@@ -344,6 +344,7 @@
     "jiraBlockedStatusIW": [
       "On Hold"
     ],
-    "jiraDueDateField": "Due Date"
+    "jiraDueDateField": "Due Date",
+    "defectPriorityFTPR": []
   }
 ]

@@ -117,7 +117,6 @@ public class DefectCountByRCAServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-		fieldMapping.setJiradefecttypeIDCR(Arrays.asList());
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 	}
 
@@ -133,8 +132,8 @@ public class DefectCountByRCAServiceImplTest {
 			when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 			when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 			when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
-//			when(fieldMapping.getJiradefecttypeIDCR()).thenReturn(null);
 			when(jiraIssueRepository.findLinkedDefects(anyMap(), any(), anyMap())).thenReturn(bugList);
+			when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 			KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertNotNull(kpiElement);
