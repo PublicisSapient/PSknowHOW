@@ -17,6 +17,6 @@ public class CommentRequestDTO {
 
 	private String node;
 	private String level;
-	private String sprintId;
+	private String nodeChildId;
 	private String kpiId;
 }

@@ -43,7 +43,7 @@ public class CommentsController {
 	public ResponseEntity<ServiceResponse> getCommentsByKPI(@RequestBody CommentRequestDTO commentRequestDTO) {
 
 		final Map<String, Object> mappedCommentInfo = commentsService.findCommentByKPIId(commentRequestDTO.getNode(),
-				commentRequestDTO.getLevel(), commentRequestDTO.getSprintId(), commentRequestDTO.getKpiId());
+				commentRequestDTO.getLevel(), commentRequestDTO.getNodeChildId(), commentRequestDTO.getKpiId());
 		if (MapUtils.isEmpty(mappedCommentInfo)) {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(false, "Comment not found", mappedCommentInfo));

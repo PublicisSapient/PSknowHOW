@@ -8,5 +8,5 @@ public interface CommentsService {
 
 	boolean submitComment(CommentSubmitDTO comment);
 
-	Map<String, Object> findCommentByKPIId(String node, String level, String sprintId, String kpiId);
+	Map<String, Object> findCommentByKPIId(String node, String level, String nodeChildId, String kpiId);
 }

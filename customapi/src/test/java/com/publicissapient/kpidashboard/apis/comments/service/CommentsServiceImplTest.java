@@ -23,7 +23,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
-import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
+import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
 
@@ -64,7 +64,7 @@ public class CommentsServiceImplTest {
 		final CommentSubmitDTO commentDTO = new CommentSubmitDTO();
 		commentDTO.setNode(node);
 		commentDTO.setLevel(level);
-		commentDTO.setSprintId(sprintId);
+		commentDTO.setNodeChildId(sprintId);
 		commentDTO.setKpiId(kpiId);
 
 		List<CommentsInfo> commentsInfo = new ArrayList<>();
@@ -85,7 +85,7 @@ public class CommentsServiceImplTest {
 		final CommentSubmitDTO commentDTO = new CommentSubmitDTO();
 		commentDTO.setNode(node);
 		commentDTO.setLevel(level);
-		commentDTO.setSprintId(sprintId);
+		commentDTO.setNodeChildId(sprintId);
 		commentDTO.setKpiId(kpiId);
 
 		List<CommentsInfo> commentsInfo = new ArrayList<>();
@@ -114,7 +114,7 @@ public class CommentsServiceImplTest {
 		final CommentSubmitDTO commentDTO = new CommentSubmitDTO();
 		commentDTO.setNode(node);
 		commentDTO.setLevel(level);
-		commentDTO.setSprintId(sprintId);
+		commentDTO.setNodeChildId(sprintId);
 		commentDTO.setKpiId(kpiId);
 
 		List<CommentsInfo> commentsInfo = new ArrayList<>();
@@ -137,7 +137,7 @@ public class CommentsServiceImplTest {
 		final CommentSubmitDTO commentDTO = new CommentSubmitDTO();
 		commentDTO.setNode(node);
 		commentDTO.setLevel(level);
-		commentDTO.setSprintId(sprintId);
+		commentDTO.setNodeChildId(sprintId);
 		commentDTO.setKpiId(kpiId);
 
 		List<CommentsInfo> commentsInfo = new ArrayList<>();
@@ -169,7 +169,7 @@ public class CommentsServiceImplTest {
 		final CommentSubmitDTO commentDTO = new CommentSubmitDTO();
 		commentDTO.setNode(node);
 		commentDTO.setLevel(level);
-		commentDTO.setSprintId(sprintId);
+		commentDTO.setNodeChildId(sprintId);
 		commentDTO.setKpiId(kpiId);
 
 		List<CommentsInfo> commentsInfo = new ArrayList<>();
@@ -203,7 +203,7 @@ public class CommentsServiceImplTest {
 		KPIComments kpiComment = new KPIComments();
 		kpiComment.setNode(node);
 		kpiComment.setLevel(level);
-		kpiComment.setSprintId(sprintId);
+		kpiComment.setNodeChildId(sprintId);
 		kpiComment.setKpiId(kpiId);
 
 		List<CommentsInfo> commentsInfo = new ArrayList<>();
@@ -222,7 +222,7 @@ public class CommentsServiceImplTest {
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
 		mappedCollection.put("node", node);
 		mappedCollection.put("level", level);
-		mappedCollection.put("sprintId", sprintId);
+		mappedCollection.put("nodeChildId", sprintId);
 		mappedCollection.put("kpiId", kpiId);
 		mappedCollection.put("CommentsInfo", commentsInfo);
 		when(kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId)).thenReturn(kpiComment);
