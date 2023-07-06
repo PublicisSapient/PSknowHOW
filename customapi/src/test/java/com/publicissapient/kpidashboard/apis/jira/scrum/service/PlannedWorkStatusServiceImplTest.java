@@ -196,6 +196,7 @@ public class PlannedWorkStatusServiceImplTest {
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistoryList);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> returnMap = plannedWorkStatusService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertNotNull(returnMap);

@@ -146,6 +146,7 @@ public class IterationBurnupServiceImplTest {
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetailsList.get(0));
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = iterationBurnupService.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
 		assertNotNull(defectDataListMap);
