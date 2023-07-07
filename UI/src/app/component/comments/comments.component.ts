@@ -21,6 +21,7 @@ export class CommentsComponent implements OnInit {
   commentError = false;
   dataLoaded = false;
   @Output() closeSpringOverlay = new EventEmitter();
+  showLoader:boolean = false;
 
   constructor(private service: SharedService, private http_service: HttpService) { }
 
@@ -45,6 +46,7 @@ export class CommentsComponent implements OnInit {
         })[0]);
       }
     }
+    this.getComments();
   }
 
   submitComment(filterData=this.selectedFilters[this.selectedTabIndex]){
@@ -64,19 +66,10 @@ export class CommentsComponent implements OnInit {
     this.http_service.submitComment(reqObj).subscribe((response) => {
       this.commentText = '';
       this.commentError = false;
-      if (this.showAddComment) {
-        this.getComments();
-      }
+      this.getComments();
     }, error => {
       console.log(error);
     });
-  }
-
-  viewAllHandler(event,element){
-    element.hide(event);
-    this.commentsList = [];
-    this.displayCommentsList = true;
-    this.getComments();
   }
 
   getComments(){
@@ -101,5 +94,15 @@ export class CommentsComponent implements OnInit {
     } else {
       this.commentError = false;
     }
+  }
+
+  deleteComment(id){
+    this.showLoader = true;
+    this.http_service.deleteComment({'commentId': id}).subscribe((res) => {
+      if(res.success){
+        this.showLoader = false;
+        this.getComments();
+      }
+    })
   }
 }

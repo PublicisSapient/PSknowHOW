@@ -153,6 +153,7 @@ export class HttpService {
   private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
   private getCommentUrl = this.baseUrl + '/api/comments/getCommentsByKpiId';
   private submitCommentUrl = this.baseUrl + '/api/comments/submitComments';
+  private deleteCommentUrl = this.baseUrl + '/api/comments/deleteCommentById';
   private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
   private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
   private saveAssigneeForProjectUrl = this.baseUrl + '/api/capacity/assignee';
@@ -1065,6 +1066,10 @@ export class HttpService {
 
   submitComment(data): Observable<any> {
     return this.http.post<object>(this.submitCommentUrl, data);
+  }
+
+  deleteComment(data): Observable<any> {
+    return this.http.delete<object>(this.deleteCommentUrl, data);
   }
 
   /* Update project details  */
