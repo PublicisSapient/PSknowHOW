@@ -316,7 +316,7 @@
                       <p-multiSelect resetFilterOnHide="true" autofocusFilter="true" (onPanelShow)="onFilterClick(item)"
                         (onPanelHide)="onFilterBlur(item)" [options]="this.tableColumnData[item]"
                         [placeholder]="'Select '+ item" (onChange)="filter($event.value)" [optionValue]="'value'"
-                        [optionLabel]="'name'" [ngModel]="tableColumnForm[item]">
+                        [optionLabel]="'name'" [ngModel]="tableColumnForm[item]" styleClass="column-filter">
                         <ng-template pTemplate="selectedItems">
                           <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
                         </ng-template>

@@ -1136,4 +1136,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }
         }
       }
+
+
+  reloadKPI(event){
+    const updateKPi = this.masterData.kpiList.find(masterdata=> masterdata.kpiId === event.kpiId)
+    this.filterApplyData['kpiList'] = [{...updateKPi}]
+    this.postJiraKpi(this.filterApplyData,'jira')
+  }
 }
