@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
+import com.publicissapient.kpidashboard.common.model.comments.CommentViewResponseDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
 import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
@@ -55,7 +56,7 @@ public class CommentsServiceImplTest {
 		kpiId = "kpi12";
 		commentBy = "testUser";
 		comment = "More data required";
-		TIME_FORMAT = "dd-MMM-YYYY";
+		TIME_FORMAT = "dd-MMM-YYYY HH:mm";
 		date = dateTimeFormatter(new Date(), TIME_FORMAT);
 	}
 
@@ -230,5 +231,52 @@ public class CommentsServiceImplTest {
 		Map<String, Object> mappedCollectionActual = commentServiceImpl.findCommentByKPIId(node, level, sprintId,
 				kpiId);
 		Assert.assertEquals(mappedCollection, mappedCollectionActual);
+	}
+
+	@Test
+	public void getCommentByBoardTest() {
+		List<KPIComments> kpiCommentsList = new ArrayList<>();
+		KPIComments kpiComment = new KPIComments();
+		kpiComment.setNode(node);
+		kpiComment.setLevel(level);
+		kpiComment.setSprintId(sprintId);
+		kpiComment.setKpiId(kpiId);
+		kpiCommentsList.add(kpiComment);
+
+		List<CommentsInfo> commentsInfo = new ArrayList<>();
+		CommentsInfo commentInfo = new CommentsInfo();
+		String date = dateTimeFormatter(new Date(), TIME_FORMAT);
+		commentInfo.setCommentId(UUID.randomUUID().toString());
+		commentInfo.setCommentBy(commentBy);
+		commentInfo.setCommentOn(date);
+		commentInfo.setComment(comment);
+		commentsInfo.add(commentInfo);
+		kpiComment.setCommentsInfo(commentsInfo);
+
+		List<String> nodes = new ArrayList<>();
+		nodes.add("xyz_project_node_id");
+
+		List<String> kpiIds = new ArrayList<>();
+		kpiIds.add("kpi3");
+		kpiIds.add("kpi5");
+
+		List<CommentViewResponseDTO> commentViewResponseDTOList = new ArrayList<>();
+		CommentViewResponseDTO commentViewResponseDTO = new CommentViewResponseDTO();
+		commentViewResponseDTO.setKpiId(kpiComment.getKpiId());
+		commentViewResponseDTO.setNode(kpiComment.getNode());
+		commentViewResponseDTO.setLevel(kpiComment.getLevel());
+		commentViewResponseDTO.setSprintId(kpiComment.getSprintId());
+		commentViewResponseDTO.setComment(commentInfo.getComment());
+		commentViewResponseDTO.setCommentId(commentInfo.getCommentId());
+		commentViewResponseDTO.setCommentOn(commentInfo.getCommentOn());
+		commentViewResponseDTO.setCommentBy(commentInfo.getCommentBy());
+
+		commentViewResponseDTOList.add(commentViewResponseDTO);
+
+		when(kpiCommentsRepository.findCommentsByBoard(nodes, level, sprintId, kpiIds)).thenReturn(kpiCommentsList);
+		Mockito.when(customApiConfig.getLimitCommentsShownOnKpiDashboardCount()).thenReturn(5);
+		List<CommentViewResponseDTO> commentViewResponse = commentServiceImpl.findCommentByBoard(nodes, level, sprintId,
+				kpiIds);
+		Assert.assertEquals(commentViewResponseDTOList, commentViewResponse);
 	}
 }
