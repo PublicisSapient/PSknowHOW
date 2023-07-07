@@ -495,4 +495,16 @@ export class HelperService {
         }
         return aggArr;
     }
+
+    getKpiCommentsHttp(data){
+        let kpiData = {};
+        this.httpService.getCommentCount(data).subscribe((response) => {
+            if(response.success){
+                kpiData = {...response.data};
+            }
+        }, error => {
+            console.log(error);
+        })
+        return kpiData;
+    }
 }

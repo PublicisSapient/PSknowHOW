@@ -100,6 +100,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   ];
   forzenColumns = ['issue id','issue description'];
   commitmentReliabilityKpi;
+  kpiCommentsCountObj: object = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -204,6 +205,7 @@ export class IterationComponent implements OnInit, OnDestroy {
             const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
             this.timeRemaining = this.calcBusinessDays(today, endDate);
             this.groupJiraKpi(kpiIdsForCurrentBoard);
+            this.getKpiCommentsCount();
           }
         }
       } else {
@@ -887,5 +889,16 @@ export class IterationComponent implements OnInit, OnDestroy {
 
   typeOf(value) {
     return typeof value === 'object' && value !== null;
+  }
+
+  getKpiCommentsCount(){
+    let requestObj = {
+      "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,
+      "level":this.filterApplyData?.level,
+      "sprintId": this.filterApplyData['selectedMap']?.sprint[0],
+      'kpiIds': []
+    };
+    requestObj['kpiIds'] = (this.upDatedConfigData.map((item) => item.kpiId));
+    this.kpiCommentsCountObj = this.helperService.getKpiCommentsHttp(requestObj);
   }
 }
