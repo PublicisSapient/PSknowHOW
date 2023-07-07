@@ -132,6 +132,11 @@ export class BacklogComponent implements OnInit, OnDestroy{
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
+
+    const kpi3Index = this.updatedConfigGlobalData .findIndex(kpi => kpi.kpiId === 'kpi3');
+    const kpi3 = this.updatedConfigGlobalData .splice(kpi3Index,1);
+    this.updatedConfigGlobalData .splice(0,0,kpi3[0]);
+
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     const showKpisCount = (Object.values(this.kpiConfigData).filter(item => item === true))?.length;
     if (showKpisCount === 0) {
@@ -192,6 +197,13 @@ export class BacklogComponent implements OnInit, OnDestroy{
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
+
+    const kpi3 = postData.kpiList.find(kpi => kpi.kpiId === 'kpi3');
+    kpi3['filterDuration'] = {
+      duration:'WEEKS',
+      value:2
+    };
+
     this.jiraKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {

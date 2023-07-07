@@ -9,8 +9,8 @@
           <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
             <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
 
-              <div class="card-type-1 p-mb-3  p-sm-6" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph"
-                [ngClass]="{'p-pl-4': i%2 == 0, 'p-pr-4': i%2 != 0}">
+              <div class="card-type-1 p-sm-6" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph"
+                [ngClass]="{'p-pl-4': i%2 != 0 || i == 0, 'p-pr-4': i%2 == 0, 'p-w-100': i == 0}">
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                   (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                   [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOptionForCard($event, kpi)"
@@ -54,7 +54,7 @@
               </div>
               <ng-template #showGraph>
                 <div class="p-sm-6 backlog-chart"
-                  [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar', 'p-pl-4': i%2 == 0, 'p-pr-4': i%2 != 0}">
+                  [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar', 'p-pl-4': i%2 != 0, 'p-pr-4': i%2 == 0}">
                   <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                     [trendData]="kpiChartData[kpi?.kpiId]"
                     (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
