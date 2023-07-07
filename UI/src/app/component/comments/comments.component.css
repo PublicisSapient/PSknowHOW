@@ -50,11 +50,14 @@
 }
 
 .comment-box{
-    border: 1px solid;
-    border-radius: 0px;
-    padding: 0px 10px 0px 10px;
+    background: #4B4B4B2B;
+    border-radius: 3px;
+    padding: 10px;
 }
 
+.comment-box p {
+    margin: 0;
+}
 .comment-combo{
     margin-bottom: 20px;
 }
@@ -86,5 +89,12 @@ textarea:focus-visible{
     width: auto !important;
     left: 20% !important; right: 20% !important;
     min-width: 450px;
-    z-index: 0 !important;
+    /* z-index: 0 !important; */
+}
+.icon-delete{
+    cursor: pointer;
+}
+.commented-by{
+    display: flex;
+    justify-content: space-between;
 }
