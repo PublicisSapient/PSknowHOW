@@ -43,12 +43,8 @@ public enum KPIExcelColumn {
 					"Mean Time To Merge (In Hours)")), AVERAGE_RESOLUTION_TIME(
 							"kpi83",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Issue Type",
-									"Resolution Time(In Days)")), LEAD_TIME(
-											"kpi3",
-											Arrays.asList("Project Name", "Story ID", "Issue Description",
-													"Intake to DOR(In Days)", "DOR to DOD (In Days)",
-													"DOD TO Live (In Days)", "Lead Time (In Days)")),
-
+									"Resolution Time(In Days)")),
+	LEAD_TIME("kpi3", Arrays.asList("Issue Id", "Issue Description", "Intake to DOR (In Days)", "DOR to DOD (In Days)", "DOD TO Live (In Days)", "Intake to DOD (In Days)", "DOR to Live (In Days)", "Lead Time (In Days)")),
 	LEAD_TIME_KANBAN("kpi53", Arrays.asList("Project Name", "Story ID", "Issue Description", "Open to Triage(In Days)",
 			"Triage to Complete (In Days)", "Complete TO Live (In Days)", "Lead Time (In Days)")),
 

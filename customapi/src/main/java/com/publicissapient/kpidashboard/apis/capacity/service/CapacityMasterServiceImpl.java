@@ -143,6 +143,7 @@ public class CapacityMasterServiceImpl implements CapacityMasterService {
 						&& project.isSaveAssigneeDetails()) {
 					capacityKpiData.getAssigneeCapacity().stream().forEach(assigneeCapacity -> assigneeCapacity
 							.setLeaves(Optional.ofNullable(assigneeCapacity.getLeaves()).orElse(0D)));
+					capacityKpiData.getAssigneeCapacity().stream().forEach(assigneeCapacity -> assigneeCapacity.setHappinessRating(0));
 					// Setting most recently submitted happiness index value for a sprint
 					setHappinessIndex(happinessKpiData, capacityKpiData.getAssigneeCapacity());
 					capacityMaster.setAssigneeCapacity(capacityKpiData.getAssigneeCapacity());

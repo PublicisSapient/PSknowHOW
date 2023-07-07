@@ -3,7 +3,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -28,22 +27,20 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -62,7 +59,8 @@ public class LeadTimeServiceImplTest {
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
-	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -178,54 +176,46 @@ public class LeadTimeServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-		when(customApiSetting.getSprintCountForFilters()).thenReturn(5);
-		String startDate = LocalDate.now().minusDays(customApiSetting.getSprintCountForFilters() * 14L)
-				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		String endDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
+		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMap(any(), any()))
 				.thenReturn(jiraIssueCustomHistories);
 
-		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
+		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
-		List<JiraIssueCustomHistory> dataMap = (List<JiraIssueCustomHistory>) resultListMap.get(STORY_HISTORY_DATA);
+		List<JiraIssueCustomHistory> dataMap = (List<JiraIssueCustomHistory>) resultListMap
+				.get(STORY_HISTORY_DATA);
 		assertThat("Lead Time Data :", dataMap.size(), equalTo(92));
 	}
 
 	@Test
-	public void testGetDorToDod() throws ApplicationException {
+	public void testGetKpiData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
+		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMap(any(), any()))
 				.thenReturn(jiraIssueCustomHistories);
-		when(configHelperService.calculateCriteria()).thenReturn(kpiWiseAggregation);
 		String kpiRequestTrackerId = "Jira-Excel-5be544de025de212549176a9";
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-				.thenReturn(kpiRequestTrackerId);
-		when(leadTimeService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-
-		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 
 		try {
 			KpiElement kpiElement = leadTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			List<DataCountGroup> dataCountGroups = (List<DataCountGroup>) kpiElement.getTrendValueList();
-			dataCountGroups.stream().forEach(cycle -> {
-				String cycleFilter = cycle.getFilter();
+			DataCount dataCountGroups = (DataCount) kpiElement.getTrendValueList();
+
+			List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) dataCountGroups.getValue();
+			iterationKpiValues.stream().forEach(iteration -> {
+				String cycleFilter = iteration.getFilter1();
 				switch (cycleFilter) {
 				case LEAD_TIME:
-					assertThat("LeadTime :", cycle.getValue().size(), equalTo(1));
+					assertThat("LeadTime :", iteration.getData().size(), equalTo(2));
 					break;
 				case INTAKE_TO_DOR:
-					assertThat("Intake to DoR Value :", cycle.getValue().size(), equalTo(1));
+					assertThat("Intake to DoR Value :", iteration.getData().size(), equalTo(2));
 					break;
 				case DOR_TO_DOD:
-					assertThat("DoR to DoD Value :", cycle.getValue().size(), equalTo(1));
+					assertThat("DoR to DoD Value :", iteration.getData().size(), equalTo(2));
 					break;
 				case DOD_TO_LIVE:
-					assertThat("DoD to Live Value :", cycle.getValue().size(), equalTo(1));
+					assertThat("DoD to Live Value :", iteration.getData().size(), equalTo(2));
 					break;
 				default:
 					break;

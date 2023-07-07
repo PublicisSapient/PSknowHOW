@@ -50,7 +50,6 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
@@ -386,7 +385,7 @@ public final class KPIHelperUtil {
 		return priorityCountMap;
 	}
 
-	public static Map<String, Long> setpriorityScrumForBacklog(List<IssueBacklog> sprintWiseDefectDataList,
+	public static Map<String, Long> setpriorityScrumForBacklog(List<JiraIssue> sprintWiseDefectDataList,
 			CustomApiConfig customApiConfig) {
 		Map<String, Long> priorityCountMap = new HashMap<>();
 		Long p1Count = 0L;
@@ -395,7 +394,7 @@ public final class KPIHelperUtil {
 		Long p4Count = 0L;
 		Long p5Count = 0L;
 
-		for (IssueBacklog issue : sprintWiseDefectDataList) {
+		for (JiraIssue issue : sprintWiseDefectDataList) {
 
 			if (StringUtils.isBlank(issue.getPriority())) {
 				p5Count++;
