@@ -208,6 +208,7 @@ public class KPIExcelUtility {
 				if (kpiId.equalsIgnoreCase(KPICode.DEFECT_REJECTION_RATE.getKpiId())) {
 					excelData.setRejectedDefect(present);
 				}
+				excelData.setPriority(jiraIssue.getPriority());
 
 				kpiExcelData.add(excelData);
 			});
