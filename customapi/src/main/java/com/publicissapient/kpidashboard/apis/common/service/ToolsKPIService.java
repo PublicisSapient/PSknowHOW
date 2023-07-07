@@ -668,7 +668,9 @@ public abstract class ToolsKPIService<R, S> {
 		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
 			calculatedValue = valueList.stream().mapToDouble(i -> i).sum();
 		} else if (Constant.PERCENTAGE_TYPE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
-			calculatedValue = AggregationUtils.average(valueList); // need to change
+			// aggregation Criteria used sub kpi filter while multi select dropdown for UI
+			// calculatedValue is used aggregation for tree level value for Backend
+			calculatedValue = AggregationUtils.average(valueList);
 		}
 		return round(calculatedValue);
 	}
