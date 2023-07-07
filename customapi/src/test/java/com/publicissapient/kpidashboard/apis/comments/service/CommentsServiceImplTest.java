@@ -1,15 +1,20 @@
 package com.publicissapient.kpidashboard.apis.comments.service;
 
 import static com.publicissapient.kpidashboard.common.util.DateUtil.dateTimeFormatter;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentHistoryRepositoryCustom;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentRepositoryCustom;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,12 +31,19 @@ import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
 import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommentsServiceImplTest {
 
 	@Mock
 	KpiCommentsRepository kpiCommentsRepository;
+	@Mock
+	private KpiCommentRepositoryCustom kpiCommentsCustomRepository;
+
+	@Mock
+	private KpiCommentHistoryRepositoryCustom kpiCommentsHistoryCustomRepository;
+
 	@Mock
 	KpiCommentsHistoryRepository kpiCommentsHistoryRepository;
 	String node;
@@ -126,7 +138,7 @@ public class CommentsServiceImplTest {
 		commentInfo.setCommentId(UUID.randomUUID().toString());
 		commentDTO.setCommentsInfo(commentsInfo);
 
-		when(kpiCommentsRepository.save(Mockito.any())).thenThrow(NullPointerException.class);
+		when(kpiCommentsRepository.save(any())).thenThrow(NullPointerException.class);
 
 		final boolean commentSubmitted = commentServiceImpl.submitComment(commentDTO);
 		Assert.assertFalse(commentSubmitted);
@@ -231,4 +243,45 @@ public class CommentsServiceImplTest {
 				kpiId);
 		Assert.assertEquals(mappedCollection, mappedCollectionActual);
 	}
+
+	@Test
+	public void findCommentByBoard() {
+		KPIComments kpiComment = new KPIComments();
+		kpiComment.setNode(node);
+		kpiComment.setLevel(level);
+		kpiComment.setSprintId(sprintId);
+		kpiComment.setKpiId(kpiId);
+
+		List<CommentsInfo> commentsInfo = new ArrayList<>();
+		CommentsInfo commentInfo = new CommentsInfo();
+		String date = dateTimeFormatter(new Date(), TIME_FORMAT);
+		commentInfo.setCommentId(UUID.randomUUID().toString());
+		commentInfo.setCommentBy(commentBy);
+		commentInfo.setCommentOn(date);
+		commentInfo.setComment(comment);
+		commentsInfo.add(commentInfo);
+		commentsInfo.add(commentInfo);
+		commentsInfo.add(commentInfo);
+		commentsInfo.add(commentInfo);
+		kpiComment.setCommentsInfo(commentsInfo);
+		List<KPIComments> kpiCommentsList= new ArrayList<>();
+		kpiCommentsList.add(kpiComment);
+
+		Map<String, Object> mappedCollection = new LinkedHashMap<>();
+		mappedCollection.put("kpi12",4);
+		when(kpiCommentsRepository.findCommentsByBoard(Arrays.asList(node), level, sprintId, Arrays.asList(kpiId))).thenReturn(kpiCommentsList);
+		Map<String, Integer> mappedCollectionActual = commentServiceImpl.findCommentByBoard(Arrays.asList(node), level, sprintId,
+				Arrays.asList(kpiId));
+		Assert.assertEquals(mappedCollection, mappedCollectionActual);
+	}
+
+	@Test
+	public void deleteComments() {
+		Mockito.doNothing().when(kpiCommentsCustomRepository).deleteByCommentId(anyString());
+		Mockito.doNothing().when(kpiCommentsHistoryCustomRepository).markCommentDelete(anyString());
+		commentServiceImpl.deleteComments("");
+
+	}
+
+
 }

@@ -35,8 +35,9 @@ public class KpiCommentRepositoryImpl implements KpiCommentRepositoryCustom {
 
 	@Override
 	public void deleteByCommentId(String commentId) {
+		Query query = Query.query(Criteria.where("commentsInfo.commentId").is(commentId));
 		Query commentIdQuery = Query.query(Criteria.where("commentId").is(commentId));
-		mongoTemplate.updateMulti(new Query(), new Update().pull("commentsInfo", commentIdQuery), KPIComments.class);
+		mongoTemplate.updateMulti(query, new Update().pull("commentsInfo", commentIdQuery), KPIComments.class);
 	}
 
 }

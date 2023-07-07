@@ -36,7 +36,7 @@ public class KpiCommentHistoryRepositoryImpl implements KpiCommentHistoryReposit
 	@Override
 	public void markCommentDelete(String commentId) {
 		Query query = Query.query(Criteria.where("commentsInfo.commentId").is(commentId));
-		Update update = new Update().set("commentsInfo.$.deleted", true);
+		Update update = new Update().set("commentsInfo.$.isDeleted", true);
 		mongoTemplate.updateMulti(query, update, KpiCommentsHistory.class);
 	}
 

@@ -19,5 +19,5 @@ public class CommentsInfo {
 	private String commentBy;
 	private String commentOn;
 	private String comment;
-	private boolean deleted; //soft delete
+	private boolean isDeleted; //soft delete on comment history
 }
