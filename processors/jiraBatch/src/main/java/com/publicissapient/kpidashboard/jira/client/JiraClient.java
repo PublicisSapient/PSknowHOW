@@ -60,24 +60,24 @@ public class JiraClient {
 
 	private ProcessorJiraRestClient client;
 
-	public ProcessorJiraRestClient getClient(Map.Entry<String, ProjectConfFieldMapping> entry,KerberosClient krb5Client) {
-		ProjectConfFieldMapping projectConfig = entry.getValue();
-		if (projectConfig.getJira().getConnection().isPresent()) {
-			Connection connection = projectConfig.getJira().getConnection().get();
+	public ProcessorJiraRestClient getClient(ProjectConfFieldMapping projectConfFieldMapping,
+			KerberosClient krb5Client) {
+		if (projectConfFieldMapping.getJira().getConnection().isPresent()) {
+			Connection connection = projectConfFieldMapping.getJira().getConnection().get();
 			boolean isOauth = connection.getIsOAuth();
 			krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
 					connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
-			client = getProcessorRestClient(entry, isOauth, connection,krb5Client);
+			client = getProcessorRestClient(projectConfFieldMapping, isOauth, connection, krb5Client);
 		}
 		return client;
 	}
 
-	private ProcessorJiraRestClient getProcessorRestClient(Map.Entry<String, ProjectConfFieldMapping> entry,
-			boolean isOauth, Connection conn,KerberosClient krb5Client) {
+	private ProcessorJiraRestClient getProcessorRestClient(ProjectConfFieldMapping projectConfFieldMapping,
+			boolean isOauth, Connection conn, KerberosClient krb5Client) {
 		if (conn.isJaasKrbAuth()) {
 			return getSpnegoSamlClient(krb5Client);
 		} else {
-			return getProcessorJiraRestClient(entry, isOauth, conn);
+			return getProcessorJiraRestClient(projectConfFieldMapping, isOauth, conn);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class JiraClient {
 		return client;
 	}
 
-	private ProcessorJiraRestClient getProcessorJiraRestClient(Map.Entry<String, ProjectConfFieldMapping> entry,
+	private ProcessorJiraRestClient getProcessorJiraRestClient(ProjectConfFieldMapping projectConfFieldMapping,
 			boolean isOauth, Connection conn) {
 		ProcessorJiraRestClient client;
 
@@ -115,7 +115,7 @@ public class JiraClient {
 			jiraOAuthProperties.setPrivateKey(jiraCommonService.decryptJiraPassword(conn.getPrivateKey()));
 
 			// Generate and save accessToken
-			saveAccessToken(entry);
+			saveAccessToken(projectConfFieldMapping);
 			jiraOAuthProperties.setAccessToken(conn.getAccessToken());
 
 			client = getJiraOAuthClient(JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
@@ -249,13 +249,13 @@ public class JiraClient {
 		}
 	}
 
-	public void saveAccessToken(Map.Entry<String, ProjectConfFieldMapping> entry) {
-		Optional<Connection> connectionOptional = entry.getValue().getJira().getConnection();
+	public void saveAccessToken(ProjectConfFieldMapping projectConfFieldMapping) {
+		Optional<Connection> connectionOptional = projectConfFieldMapping.getJira().getConnection();
 		if (connectionOptional.isPresent()) {
 			Optional<String> checkNull = Optional.ofNullable(connectionOptional.get().getAccessToken());
 			if (!checkNull.isPresent() || checkNull.get().isEmpty()) {
 
-				JiraToolConfig jiraToolConfig = entry.getValue().getJira();
+				JiraToolConfig jiraToolConfig = projectConfFieldMapping.getJira();
 				generateAndSaveAccessToken(jiraToolConfig);
 			}
 		}

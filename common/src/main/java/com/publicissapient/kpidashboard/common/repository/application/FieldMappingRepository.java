@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.repository.application;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
@@ -79,4 +80,13 @@ public interface FieldMappingRepository extends MongoRepository<FieldMapping, Ob
 	 * @return field mapping of the tool
 	 */
 	Optional<FieldMapping> findById(ObjectId id);
+
+	/*
+	 * Find by list of projectBasicConfigIds
+	 * 
+	 * @param projectConfigsIds projectConfig ids
+	 * 
+	 * @return list field mapping of the tool
+	 */
+	List<FieldMapping> findByBasicProjectConfigIdIn(List<ObjectId> projectConfigsIds);
 }

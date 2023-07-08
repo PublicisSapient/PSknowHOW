@@ -42,7 +42,6 @@ import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.JiraIssueMetadata;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -50,9 +49,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class FetchSprintReportImpl implements FetchSprintReport {
-
-	@Autowired
-	private JiraProcessorRepository jiraProcessorRepository;
 
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;

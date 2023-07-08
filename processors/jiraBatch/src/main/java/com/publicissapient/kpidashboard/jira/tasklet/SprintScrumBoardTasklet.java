@@ -19,7 +19,7 @@ import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.service.FetchSprintReportImpl;
+import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +33,7 @@ public class SprintScrumBoardTasklet implements Tasklet {
 	JiraClient jiraClient;
 
 	@Autowired
-	private FetchSprintReportImpl fetchSprintReport;
+	private FetchSprintReport fetchSprintReport;
 
 	@Autowired
 	private SprintRepository sprintRepository;
@@ -41,15 +41,17 @@ public class SprintScrumBoardTasklet implements Tasklet {
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		log.info("**** Sprint report for Scrum Board started * * *");
-		Map<String, ProjectConfFieldMapping> projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(false,
-				false);
-		for (Map.Entry<String, ProjectConfFieldMapping> entry : projConfFieldMapping.entrySet()) {
-			KerberosClient krb5Client = null;
-			ProcessorJiraRestClient client = jiraClient.getClient(entry, krb5Client);
-			Set<SprintDetails> setForCacheClean = new HashSet<>();
-			List<SprintDetails> sprintDetailsList = fetchSprintReport.createSprintDetailBasedOnBoard(entry.getValue(),
-					setForCacheClean, krb5Client);
-			sprintRepository.saveAll(sprintDetailsList);
+		Map<String, List<ProjectConfFieldMapping>> projConfFieldMapping = fetchProjectConfiguration
+				.fetchConfiguration(false);
+		for (Map.Entry<String, List<ProjectConfFieldMapping>> entry : projConfFieldMapping.entrySet()) {
+			for (ProjectConfFieldMapping projectConfFieldMapping : entry.getValue()) {
+				KerberosClient krb5Client = null;
+				ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
+				Set<SprintDetails> setForCacheClean = new HashSet<>();
+				List<SprintDetails> sprintDetailsList = fetchSprintReport
+						.createSprintDetailBasedOnBoard(projectConfFieldMapping, setForCacheClean, krb5Client);
+				sprintRepository.saveAll(sprintDetailsList);
+			}
 		}
 		log.info("**** Sprint report for Scrum Board ended * * *");
 		return RepeatStatus.FINISHED;

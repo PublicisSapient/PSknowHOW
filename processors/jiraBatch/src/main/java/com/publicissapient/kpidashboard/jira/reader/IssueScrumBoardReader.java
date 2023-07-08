@@ -54,25 +54,25 @@ public class IssueScrumBoardReader implements ItemReader<Issue> {
 	@Autowired
 	JiraCommonService jiraCommonService;
 
-	private Map<String, ProjectConfFieldMapping> projConfFieldMapping;
+	private Map<String, List<ProjectConfFieldMapping>> projConfFieldMapping;
 	private int boardIndex = 0;
 	private List<Issue> issues;
 	private int issueIndex = 0;
-	private int startAt=0;
+	private int startAt = 0;
 	private ProcessorJiraRestClient client;
 
 	@Override
 	public Issue read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
 		log.info("**** Jira Issue fetch for Scrum started * * *");
-		int pageSize=jiraProcessorConfig.getPageSize();
+		int pageSize = jiraProcessorConfig.getPageSize();
 		if (null == projConfFieldMapping) {
-			projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(false, false);
+			projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(false);
 		}
 
-		if (projConfFieldMapping.entrySet().iterator().hasNext()) {
-			
+		/**if (projConfFieldMapping.entrySet().iterator().hasNext()) {
+
 			KerberosClient krb5Client = null;
-			Map.Entry<String, ProjectConfFieldMapping> entry = projConfFieldMapping.entrySet().iterator().next();
+			Map.Entry<String, List<ProjectConfFieldMapping>> entry = projConfFieldMapping.entrySet().iterator().next();
 			client = jiraClient.getClient(entry, krb5Client);
 			ProjectConfFieldMapping projectConfig = entry.getValue();
 			boolean dataExist = false;
@@ -81,8 +81,7 @@ public class IssueScrumBoardReader implements ItemReader<Issue> {
 			ProcessorExecutionTraceLog processorExecutionTraceLog = jiraCommonService.createTraceLog(projectConfig);
 			String queryDate = JiraHelper.getDeltaDate(processorExecutionTraceLog.getLastSuccessfulRun());
 			String userTimeZone = jiraCommonService.getUserTimeZone(projectConfig, krb5Client);
-			
-			
+
 			List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
 			if (CollectionUtils.isNotEmpty(boardDetailsList) && boardIndex < boardDetailsList.size()) {
 				BoardDetails board = boardDetailsList.get(boardIndex);
@@ -91,7 +90,7 @@ public class IssueScrumBoardReader implements ItemReader<Issue> {
 							userTimeZone, startAt, dataExist);
 					issues = JiraHelper.getIssuesFromResult(searchResult);
 					issueIndex = 0;
-					startAt+=pageSize;
+					startAt += pageSize;
 				}
 				if (CollectionUtils.isNotEmpty(issues) && issueIndex < issues.size()) {
 					Issue issue = issues.get(issueIndex);
@@ -101,7 +100,7 @@ public class IssueScrumBoardReader implements ItemReader<Issue> {
 				boardIndex++;
 			}
 
-		}
+		}**/
 
 		return null;
 	}

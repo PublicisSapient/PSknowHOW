@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.jira.tasklet;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.batch.core.StepContribution;
@@ -37,14 +38,16 @@ public class MetaDataScrumBoardTasklet implements Tasklet {
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		log.info("**** Metadata fetch for Scrum Board started * * *");
-		Map<String, ProjectConfFieldMapping> projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(false,
-				false);
+		Map<String, List<ProjectConfFieldMapping>> projConfFieldMapping = fetchProjectConfiguration
+				.fetchConfiguration(false);
 		if (jiraProcessorConfig.isFetchMetadata()) {
-			for (Map.Entry<String, ProjectConfFieldMapping> entry : projConfFieldMapping.entrySet()) {
-				KerberosClient krb5Client = null;
-				ProcessorJiraRestClient client = jiraClient.getClient(entry, krb5Client);
-				createMetadata.collectMetadata(entry.getValue(), client);
-			}
+			projConfFieldMapping.forEach((url, projConfFieldMappings) -> {
+				projConfFieldMappings.forEach(projectConfFieldMapping -> {
+					KerberosClient krb5Client = null;
+					ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
+					createMetadata.collectMetadata(projectConfFieldMapping, client);
+				});
+			});
 		}
 		log.info("**** Metadata fetch for Scrum Board ended * * *");
 		return RepeatStatus.FINISHED;
