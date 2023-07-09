@@ -89,6 +89,9 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	private static final String AGGREGATE_TIME_REMAINING_ESTIMATE_MINUTES = "aggregateTimeRemainingEstimateMinutes";
 	private static final String AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES = "aggregateTimeOriginalEstimateMinutes";
 	private static final String LOGGED_WORK_MINUTES = "timeSpentInMinutes";
+	private static final String SPRINT_ASSET_STATE = "sprintAssetState";
+	private static final String FUTURE = "FUTURE";
+	private static final String CLOSED = "CLOSED";
 
 	@Autowired
 	private MongoTemplate operations;
@@ -211,6 +214,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(AGGREGATE_TIME_REMAINING_ESTIMATE_MINUTES);
 		query.fields().include(AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES);
 		query.fields().include(LOGGED_WORK_MINUTES);
+		query.fields().include(SPRINT_ASSET_STATE);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -302,9 +306,14 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		}
 		orCriteria.orOperator(filter.toArray(filter.toArray(new Criteria[filter.size()])));
 		criteria.and(JIRA_UPDATED_DATE).gte(startDate).lte(endDate);
-		criteria.orOperator(Criteria.where(SPRINT_NAME).isNull(), Criteria.where(SPRINT_NAME).is(""), orCriteria);
+		criteria.orOperator(Criteria.where(SPRINT_ASSET_STATE).in("",null, FUTURE, FUTURE.toLowerCase(),
+				CLOSED, CLOSED.toLowerCase()), orCriteria);
 		Query query = new Query(criteria);
-
+		query.fields().include(SPRINT_ASSET_STATE);
+		query.fields().include(NUMBER);
+		query.fields().include(STATUS);
+		query.fields().include(PROJECT_ID);
+		query.fields().include(TICKET_CREATED_DATE_FIELD);
 		return operations.find(query, JiraIssue.class);
 	}
 

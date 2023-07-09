@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -69,6 +70,8 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Autowired
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 
 	@Override
 	public String getQualifierType() {
@@ -129,10 +132,11 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate = new HashMap<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(node.getProjectFilter().getBasicProjectConfigId());
+			String basicConfigId = node.getProjectFilter().getBasicProjectConfigId().toString();
 			// Iterating Over All issues history's statusUpdationLog and saving start and
 			// end date for each status
 			jiraIssueCustomHistories.forEach(jiraIssueCustomHistory -> createDateRangeForStatuses(endDate, startDate,
-					statusesWithStartAndEndDate, jiraIssueCustomHistory, fieldMapping));
+					statusesWithStartAndEndDate, jiraIssueCustomHistory, fieldMapping, basicConfigId));
 
 			Map<String, Map<String, Integer>> dateWithStatusCount = new HashMap<>();
 			LocalDate tempStartDate = startDate;
@@ -196,7 +200,8 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 
 	private void createDateRangeForStatuses(LocalDate endDate, LocalDate startDate,
 			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate,
-			JiraIssueCustomHistory jiraIssueCustomHistory, FieldMapping fieldMapping) {
+			JiraIssueCustomHistory jiraIssueCustomHistory, FieldMapping fieldMapping,
+			String basicConfigId) {
 		List<JiraHistoryChangeLog> statusChangeLog = jiraIssueCustomHistory.getStatusUpdationLog();
 		int size = statusChangeLog.size();
 		String status = "";
@@ -205,7 +210,7 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		if (size > 0 && statusChangeLog.get(size - 1).getUpdatedOn().toLocalDate().isBefore(startDate)) {
 			status = statusChangeLog.get(statusChangeLog.size() - 1).getChangedTo();
 			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, startDate, endDate,
-					fieldMapping);
+					fieldMapping, basicConfigId);
 		}
 
 		// When issue is created after end date
@@ -219,7 +224,7 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 				LocalDate intervalStartDate = changeLog.getUpdatedOn().toLocalDate();
 				LocalDate intervalEndDate = nextChangeLog.getUpdatedOn().toLocalDate();
 				savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, intervalStartDate,
-						intervalEndDate, fieldMapping);
+						intervalEndDate, fieldMapping, basicConfigId);
 			}
 			JiraHistoryChangeLog lastChangeLog = statusChangeLog.get(statusChangeLog.size() - 1);
 			status = lastChangeLog.getChangedTo();
@@ -228,14 +233,15 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 				return;
 			LocalDate intervalEndDate = endDate;
 			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, intervalStartDate,
-					intervalEndDate, fieldMapping);
+					intervalEndDate, fieldMapping, basicConfigId);
 		}
 	}
 
 	private void savingDateRangeInMap(LocalDate startDate, LocalDate endDate,
 			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate, String status,
-			LocalDate intervalStartDate, LocalDate intervalEndDate, FieldMapping fieldMapping) {
-		if (isStatusValid(fieldMapping, status)) {
+			LocalDate intervalStartDate, LocalDate intervalEndDate, FieldMapping fieldMapping,
+			 String basicConfigId) {
+		if (isStatusValid(fieldMapping, status, basicConfigId)) {
 			if (intervalEndDate.isBefore(startDate) || intervalStartDate.isAfter(endDate))
 				return;
 			if (intervalStartDate.isBefore(startDate))
@@ -251,14 +257,14 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		}
 	}
 
-	private boolean isStatusValid(FieldMapping fieldMapping, String status) {
-		return fieldMapping.getStoryFirstStatus().equalsIgnoreCase(status)
+	private boolean isStatusValid(FieldMapping fieldMapping, String status, String basicConfigId) {
+		List<String> doneStatus = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicConfigId)
+				.getClosedList().values().stream().map(dodstatus->dodstatus.toLowerCase()).collect(Collectors.toList());
+		return !doneStatus.contains(status.toLowerCase()) && (fieldMapping.getStoryFirstStatus().equalsIgnoreCase(status)
 				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())
 						&& fieldMapping.getJiraStatusForInProgress().contains(status))
 				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForQa())
-						&& fieldMapping.getJiraStatusForQa().contains(status))
-				|| (StringUtils.isNotEmpty(fieldMapping.getJiraLiveStatus())
-						&& fieldMapping.getJiraLiveStatus().equalsIgnoreCase(status));
+						&& fieldMapping.getJiraStatusForQa().contains(status)));
 
 	}
 

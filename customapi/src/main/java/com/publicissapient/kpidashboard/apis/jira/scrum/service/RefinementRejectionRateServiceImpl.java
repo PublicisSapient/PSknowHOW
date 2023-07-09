@@ -32,7 +32,9 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -82,6 +84,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	private static final String REJECTED_IN_REFINEMENT_HOVER_VALUE = "Rejected Stories";
 	private static final String TOTAL_STORIES = "Total Stories";
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private static final String CLOSED = "CLOSED";
 
 	@Autowired
 	private KpiHelperService kpiHelperService;
@@ -96,6 +99,8 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
+	@Autowired
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 
 	/**
 	 * @return String
@@ -144,7 +149,8 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		return getUnAssignedIssueDataMap(leafNodeList, startDate, endDate);
+		String basicConfigId = leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString();
+		return getUnAssignedIssueDataMap(leafNodeList, startDate, endDate, basicConfigId);
 
 	}
 
@@ -462,10 +468,13 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	 * @param endDate
 	 * @return
 	 */
-	public Map<String, Object> getUnAssignedIssueDataMap(List<Node> leafNodeList, String startDate, String endDate) {
+	public Map<String, Object> getUnAssignedIssueDataMap(List<Node> leafNodeList, String startDate, String endDate,
+			String basicConfigId) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		List<String> projectList = new ArrayList<>();
+		List<String> doneStatus = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicConfigId)
+				.getClosedList().values().stream().map(dodstatus->dodstatus.toLowerCase()).collect(Collectors.toList());
 
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
@@ -474,8 +483,10 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 					projectList.stream().distinct().collect(Collectors.toList()));
 		});
 
-		List<JiraIssue> unAssignedJiraIssues = new ArrayList<>();
-		unAssignedJiraIssues.addAll(jiraIssueRepository.findUnassignedIssues(startDate, endDate, mapOfFilters));
+		List<JiraIssue> allUnAssignedJiraIssues = jiraIssueRepository.findUnassignedIssues(startDate, endDate, mapOfFilters);
+		List<JiraIssue> unAssignedJiraIssues = allUnAssignedJiraIssues.stream().filter(issue -> issue.getSprintAssetState() == null
+				|| !issue.getSprintAssetState().equalsIgnoreCase(CLOSED) || !doneStatus.contains(issue.getStatus().toLowerCase()))
+				.collect(Collectors.toList());
 		List<String> historyData = unAssignedJiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
 		jiraIssueCustomHistories.addAll(

@@ -52,7 +52,7 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 	 *            the story list
 	 * @return the list
 	 */
-	@Query(value = "{ 'storyID' : { $in: ?0 } }", fields = "{ 'storyID' : 1, 'storySprintDetails' : 1}")
+	@Query(value = "{ 'storyID' : { $in: ?0 } }", fields = "{ 'storyID' : 1, 'storySprintDetails' : 1, 'statusUpdationLog' : 1, 'createdDate':1}")
 	List<JiraIssueCustomHistory> findByStoryIDIn(List<String> storyList);
 
 	/**
