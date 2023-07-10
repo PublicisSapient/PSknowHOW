@@ -14,6 +14,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
   @Output() downloadExcel = new EventEmitter<boolean>();
   @Input() dropdownArr: any;
   @Output() optionSelected = new EventEmitter<any>();
+  @Output() reloadKPITab = new EventEmitter<any>();
   faShareSquare = faShareSquare;
   isTooltip = false;
   filterTooltip = false;
@@ -210,7 +211,7 @@ export class KpiCardComponent implements OnInit, OnDestroy {
     const selectedTab = this.service.getSelectedTab().toLowerCase();
     const selectedType = this.service.getSelectedType().toLowerCase();
     const selectedTrend = this.service.getSelectedTrends();
-    if (selectedType === 'scrum' && selectedTrend.length == 1 && selectedTab !== 'iteration' && selectedTab !== 'backlog' && selectedTab !== 'release') {
+    if (selectedType === 'scrum' && selectedTrend.length == 1 && selectedTab !== 'backlog' && selectedTab !== 'release') {
       this.loading = true;
       this.displayConfigModel = true;
       this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`).subscribe(data => {
@@ -268,6 +269,11 @@ export class KpiCardComponent implements OnInit, OnDestroy {
         this.fieldMappingMetaData = [];
       }
     });
+  }
+
+  reloadKPI(){
+    this.displayConfigModel = false;
+    this.reloadKPITab.emit(this.kpiData);
   }
 
   ngOnDestroy() {

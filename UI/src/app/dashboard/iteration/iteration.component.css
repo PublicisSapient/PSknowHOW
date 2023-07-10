@@ -149,11 +149,11 @@ padding: 0.75rem !important;
     max-height: 140px !important;
 }
 
-:host ::ng-deep .p-multiselect-label{
+:host ::ng-deep.column-filter .p-multiselect-label{
     padding: 0px;
 }
 
-:host ::ng-deep.p-multiselect-trigger{
+:host ::ng-deep.column-filter .p-multiselect-trigger{
     display: none;
 }
 :host ::ng-deep.p-datatable-header{
@@ -165,7 +165,7 @@ padding: 0.75rem !important;
     min-height: 45vh;
 }
 
-:host ::ng-deep.p-multiselect{
+:host ::ng-deep.column-filter.p-multiselect{
     border: none;
     background-color: transparent;
 }

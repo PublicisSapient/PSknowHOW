@@ -32,7 +32,8 @@
                 [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
                 [showExport]="showChart" [showChartView]="showChart" [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"
                 [isShow]="(kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false) || (!iSAdditionalFilterSelected && kpiLoader === false) && (ifKpiExist(kpi.kpiId) != -1) ? true : false"
-                [sprintsOverlayVisible]="sprintsOverlayVisible && kpi?.kpiDetail?.chartType !== 'table'" [trendValueList]="kpiChartData[kpi?.kpiId]" [colors]="this.colorObj" [showCommentIcon]="showCommentIcon">
+                [sprintsOverlayVisible]="sprintsOverlayVisible && kpi?.kpiDetail?.chartType !== 'table'" [trendValueList]="kpiChartData[kpi?.kpiId]" [colors]="this.colorObj" [showCommentIcon]="showCommentIcon"
+                (reloadKPITab)="reloadKPI($event)">
                   <ng-container *ngIf="!noTabAccess else noDataAccess">
                     <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
                       <div class="p-pl-3 p-pr-3" [ngSwitch]="kpi?.kpiDetail?.chartType"
@@ -68,7 +69,7 @@
                     <ng-template #noData>
                       <div class="overlay"
                         *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length && !iSAdditionalFilterSelected) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length && kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
-                        <div class="loading-img"></div>
+                        <div class="loading-img">no-data</div>
                       </div>
                       <div class="min-ht"
                         *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && !iSAdditionalFilterSelected && kpiLoader === false) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false)">
@@ -81,7 +82,7 @@
                     </ng-template>
                     <ng-template #loader>
                       <div class="overlay">
-                        <div class="loading-img"></div>
+                        <div class="loading-img">loader</div>
                       </div>
                     </ng-template>
                   </ng-container>

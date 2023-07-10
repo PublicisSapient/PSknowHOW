@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit,Output,EventEmitter } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
@@ -33,6 +33,7 @@ export class FieldMappingFormComponent implements OnInit {
   @Input() formData;
   @Input() selectedConfig;
   @Input() selectedToolConfig;
+  @Output() reloadKPI = new EventEmitter();
   populateDropdowns = true;
   selectedField = '';
   singleSelectionDropdown = false;
@@ -120,6 +121,12 @@ private setting = {
           this.form.controls[obj].setValue(this.selectedFieldMapping[obj]);
         }
       }
+    }
+     if (!this.form.invalid) {
+      const submitData = {...this.formData,...this.selectedFieldMapping}
+      submitData['basicProjectConfigId'] = this.selectedConfig.id;
+      delete submitData.id;
+      this.saveFieldMapping(submitData);
     }
   }
 
@@ -284,6 +291,7 @@ private setting = {
           summary: 'Field Mappings submitted!!',
         });
         this.uploadedFileName = '';
+        this.reloadKPI.emit();
       } else {
         this.messenger.add({
           severity: 'error',
@@ -293,48 +301,7 @@ private setting = {
     });
   }
 
-  export() {
-    if (this.form.invalid) {
-      return;
-    }
-
-    const submitData = {};
-    for (const obj in this.form.value) {
-      submitData[obj] = this.form.value[obj];
-    }
-    // this.handleAdditionalFilters(submitData);
-
-    this.dyanmicDownloadByHtmlTag({
-      fileName: 'mappings.json',
-      text: JSON.stringify(submitData)
-    });
-  }
-
-  handleAdditionalFilters(submitData: any): any {
-    /** addiitional filters start*/
-    const additionalFilters = this.filterHierarchy.filter((filter) => filter.level > this.filterHierarchy.filter(f => f.hierarchyLevelId === 'sprint')[0].level);
-    // modify submitData
-    submitData['additionalFilterConfig'] = [];
-    additionalFilters.forEach(element => {
-      if (submitData[element.hierarchyLevelId + 'Identifier'] && submitData[element.hierarchyLevelId + 'Identifier'].length) {
-        const additionalFilterObj = {};
-        additionalFilterObj['filterId'] = element.hierarchyLevelId;
-        additionalFilterObj['identifyFrom'] = submitData[element.hierarchyLevelId + 'Identifier'];
-        if (additionalFilterObj['identifyFrom'] === 'CustomField') {
-          additionalFilterObj['identificationField'] = submitData[element.hierarchyLevelId + 'IdentSingleValue'];
-          additionalFilterObj['values'] = [];
-        } else {
-          additionalFilterObj['identificationField'] = '';
-          additionalFilterObj['values'] = submitData[element.hierarchyLevelId + 'IdentMultiValue'] ? submitData[element.hierarchyLevelId + 'IdentMultiValue'] : [];
-        }
-        submitData['additionalFilterConfig'].push(additionalFilterObj);
-      }
-      delete submitData[element.hierarchyLevelId + 'Identifier'];
-      delete submitData[element.hierarchyLevelId + 'IdentSingleValue'];
-      delete submitData[element.hierarchyLevelId + 'IdentMultiValue'];
-    });
-    return submitData;
-  }
+  
 
   
   private dyanmicDownloadByHtmlTag(arg: {

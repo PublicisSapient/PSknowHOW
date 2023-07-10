@@ -168,7 +168,9 @@
             [fieldMappingConfig]="fieldMappingConfig" 
             [formData]="selectedFieldMapping"
             [selectedConfig]="selectedConfig"
-            [selectedToolConfig]="selectedToolConfig"></app-field-mapping-form>
+            [selectedToolConfig]="selectedToolConfig"
+            (reloadKPI)="reloadKPI()"
+            ></app-field-mapping-form>
       </ng-template>
       <ng-template pTemplate="footer"></ng-template>
       <ng-container *ngIf=" noData && !loading">
