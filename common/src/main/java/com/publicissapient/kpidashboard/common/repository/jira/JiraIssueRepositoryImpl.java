@@ -314,6 +314,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(STATUS);
 		query.fields().include(PROJECT_ID);
 		query.fields().include(TICKET_CREATED_DATE_FIELD);
+		query.fields().include(NAME);
+		query.fields().include(PRIORITY);
 		return operations.find(query, JiraIssue.class);
 	}
 

@@ -272,7 +272,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			List<String> ignoreStatusList = new ArrayList<>();
+			List<String> excludeStatusList = new ArrayList<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			if (null != fieldMapping) {
@@ -280,11 +280,11 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
 							fieldMapping.getJiraStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 				}
-				ignoreStatusList.addAll(
+				excludeStatusList.addAll(
 						CollectionUtils.isEmpty(fieldMapping.getExcludeStatusKpi129()) ? Lists.newArrayList()
 								: fieldMapping.getExcludeStatusKpi129());
 				uniqueProjectIssueStatusMap.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(ignoreStatusList));
+						CommonUtils.convertToPatternList(excludeStatusList));
 				uniqueProjectIssueTypeNotIn.put(basicProjectConfigId.toString(), uniqueProjectIssueStatusMap);
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
