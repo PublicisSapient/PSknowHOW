@@ -146,7 +146,7 @@ public class FirstTimePassRateServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-		defectPriority = fieldMapping.getDefectPriorityFTPR().stream().filter(a -> !a.equals("")).map(String::toUpperCase)
+		defectPriority = fieldMapping.getDefectPriorityKPI82().stream().filter(a -> !a.equals("")).map(String::toUpperCase)
 				.collect(Collectors.toList());
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setProjectConfigMap(projectConfigMap);

@@ -45,7 +45,6 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -474,12 +473,12 @@ public class KpiHelperService { // NOPMD
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 					basicProjectConfigId.toString());
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraQADefectDensityIssueType()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraQAKPI111IssueType()));
 
-			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityQADD());
-			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromQADD());
+			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityQAKPI111());
+			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromQAKPI111());
 
-			List<String> dodList = fieldMapping.getJiraDodQADD();
+			List<String> dodList = fieldMapping.getJiraDodQAKPI111();
 			if (CollectionUtils.isNotEmpty(dodList)) {
 				mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
 						CommonUtils.convertToPatternList(dodList));
@@ -487,9 +486,9 @@ public class KpiHelperService { // NOPMD
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraQADefectDensityIssueType()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraQAKPI111IssueType()));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping.getResolutionTypeForRejectionQADD(),fieldMapping.getJiraDefectRejectionStatusQADD());
+			getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping.getResolutionTypeForRejectionQAKPI111(),fieldMapping.getJiraDefectRejectionStatusQAKPI111());
 		});
 
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);

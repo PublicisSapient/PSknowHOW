@@ -772,7 +772,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIssueDeliverdStatusCVR",
+    "fieldName": "jiraIssueDeliverdStatusKPI126",
     "fieldLabel": "Issue Delivered Status",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -782,7 +782,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIssueDeliverdStatusFTPR",
+    "fieldName": "jiraIssueDeliverdStatusKPI82",
     "fieldLabel": "Issue Delivered Status",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -812,7 +812,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "resolutionTypeForRejectionDC",
+    "fieldName": "resolutionTypeForRejectionKPI28",
     "fieldLabel": "Resolution Type for Rejection",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -832,7 +832,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "resolutionTypeForRejectionDRR",
+    "fieldName": "resolutionTypeForRejectionKPI37",
     "fieldLabel": "Resolution Type for Rejection",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -852,7 +852,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "resolutionTypeForRejectionFTPR",
+    "fieldName": "resolutionTypeForRejectionKPI82",
     "fieldLabel": "Resolution Type for Rejection",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -882,7 +882,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "resolutionTypeForRejectionRCA",
+    "fieldName": "resolutionTypeForRejectionRCAKPI36",
     "fieldLabel": "Resolution Type for Rejection",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -902,7 +902,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "resolutionTypeForRejectionQADD",
+    "fieldName": "resolutionTypeForRejectionQAKPI111",
     "fieldLabel": "Resolution Type for Rejection",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -922,7 +922,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDefectRejectionStatusDC",
+    "fieldName": "jiraDefectRejectionStatusKPI28",
     "fieldLabel": "Defect Rejection Status",
     "fieldType": "text",
     "fieldCategory": "workflow",
@@ -942,7 +942,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDefectRejectionStatusDRR",
+    "fieldName": "jiraDefectRejectionStatusKPI37",
     "fieldLabel": "Defect Rejection Status",
     "fieldType": "text",
     "fieldCategory": "workflow",
@@ -962,7 +962,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDefectRejectionStatusFTPR",
+    "fieldName": "jiraDefectRejectionStatusKPI82",
     "fieldLabel": "Defect Rejection Status",
     "fieldType": "text",
     "fieldCategory": "workflow",
@@ -992,7 +992,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDefectRejectionStatusRCA",
+    "fieldName": "jiraDefectRejectionStatusRCAKPI36",
     "fieldLabel": "Defect Rejection Status",
     "fieldType": "text",
     "fieldCategory": "workflow",
@@ -1012,7 +1012,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDefectRejectionStatusQADD",
+    "fieldName": "jiraDefectRejectionStatusQAKPI111",
     "fieldLabel": "Defect Rejection Status",
     "fieldType": "text",
     "fieldCategory": "workflow",
@@ -1032,7 +1032,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraStatusForDevelopmentFTPR",
+    "fieldName": "jiraStatusForDevelopmentKPI82",
     "fieldLabel": "Status to Identify Development Status",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -1072,7 +1072,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraFTPRStoryIdentification",
+    "fieldName": "jiraKPI82StoryIdentification",
     "fieldLabel": "Issues types included in FTPR",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -1154,7 +1154,7 @@ db.getCollection('field_mapping_structure').insert(
     ]
   },
   {
-    "fieldName": "defectPriorityQADD",
+    "fieldName": "defectPriorityQAKPI111",
     "fieldLabel": "Defect priority exclusion from Quality KPIs",
     "fieldType": "multiselect",
     "section": "Defects Mapping",
@@ -1185,7 +1185,7 @@ db.getCollection('field_mapping_structure').insert(
     ]
   },
   {
-    "fieldName": "defectPriorityFTPR",
+    "fieldName": "defectPriorityKPI82",
     "fieldLabel": "Defect priority exclusion from Quality KPIs",
     "fieldType": "multiselect",
     "section": "Defects Mapping",
@@ -1247,7 +1247,7 @@ db.getCollection('field_mapping_structure').insert(
     ]
   },
   {
-    "fieldName": "excludeRCAFromFTPR",
+    "fieldName": "excludeRCAFromKPI82",
     "fieldLabel": "Defect RCA exclusion from Quality KPIs",
     "fieldType": "chips",
     "section": "Defects Mapping",
@@ -1274,7 +1274,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "excludeRCAFromQADD",
+    "fieldName": "excludeRCAFromQAKPI111",
     "fieldLabel": "Defect RCA exclusion from Quality KPIs",
     "fieldType": "chips",
     "section": "Defects Mapping",
@@ -1332,7 +1332,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDodQADD",
+    "fieldName": "jiraDodQAKPI111",
     "fieldLabel": "DOD Status",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -1362,7 +1362,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraQADefectDensityIssueType",
+    "fieldName": "jiraQAKPI111IssueType",
     "fieldLabel": "QA Defect Density - Issue Types with Linked Defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -1372,7 +1372,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDefectSeepageIssueType",
+    "fieldName": "jiraIssueTypeKPI35",
     "fieldLabel": "Defect Seepage Rate - Issue Types with Linked Defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -1392,7 +1392,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDefectRejectionlIssueType",
+    "fieldName": "jiraIssueTypeKPI37",
     "fieldLabel": "Defect Rejection Rate - Issue Types with Linked Defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -1444,7 +1444,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "resolutionTypeForRejectionDSR",
+    "fieldName": "resolutionTypeForRejectionKPI35",
     "fieldLabel": "Defect Seepage Rate - Issue Types with Linked Defect",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -1454,7 +1454,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDefectRejectionStatusDSR",
+    "fieldName": "jiraDefectRejectionStatusKPI35",
     "fieldLabel": "Defect Rejection Status",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -1786,7 +1786,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiradefecttypeCVR",
+    "fieldName": "jiradefecttypeKPI126",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -1830,7 +1830,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiradefecttypeFTPR",
+    "fieldName": "jiradefecttypeKPI82",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",

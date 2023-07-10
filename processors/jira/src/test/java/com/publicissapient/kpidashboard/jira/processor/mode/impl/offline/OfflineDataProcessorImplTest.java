@@ -195,11 +195,11 @@ public class OfflineDataProcessorImplTest {
 		jiraType.add("Story");
 		fieldMapping.setJiraDefectInjectionIssueType(jiraType);
 		fieldMapping.setJiraTechDebtIssueType(jiraType);
-		fieldMapping.setJiraDefectSeepageIssueType(jiraType);
+		fieldMapping.setJiraIssueTypeKPI35(jiraType);
 		fieldMapping.setJiraDefectRemovalStatus(jiraType);
-		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
+		fieldMapping.setJiraIssueTypeKPI37(jiraType);
 		fieldMapping.setJiraTestAutomationIssueType(jiraType);
-		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
+		fieldMapping.setJiraIssueTypeKPI37(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeRCA(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeDC(jiraType);
 		fieldMapping.setJiraIntakeToDorIssueTypeLT(jiraType);

@@ -66,19 +66,19 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiradefecttypeIWS;
 	private List<String> jiradefecttypeLT;
 	private List<String> jiradefecttypeMW;
-	private List<String> jiradefecttypeFTPR;
+	private List<String> jiradefecttypeKPI82;
 	private List<String> jiradefecttypeKPI135;
 	private List<String> jiradefecttypeIC;
 	private List<String> jiradefecttypeAVR;
-	private List<String> jiradefecttypeCVR;
+	private List<String> jiradefecttypeKPI126;
 	private List<String> jiradefecttypeBDRR;
 
 	// defectPriority
 	private List<String> defectPriority;//TODO: Extra field
 	private List<String> defectPriorityIFTPR;
 	private List<String> defectPriorityDIR;
-	private List<String> defectPriorityQADD;
-	private List<String> defectPriorityFTPR;
+	private List<String> defectPriorityQAKPI111;
+	private List<String> defectPriorityKPI82;
 	private List<String> defectPriorityKPI133;
 
 	private String[] jiraIssueTypeNames;//TODO: Extra field
@@ -89,7 +89,7 @@ public class FieldMapping extends BasicModel {
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;// TODO: Extra field
 	private List<String> jiraStatusForDevelopmentAVR;
-	private List<String> jiraStatusForDevelopmentFTPR;
+	private List<String> jiraStatusForDevelopmentKPI82;
 	private List<String> jiraStatusForDevelopmentKPI135;
 	@Builder.Default
 	private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
@@ -97,7 +97,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDefectInjectionIssueType;
 	private List<String> jiraDod;//TODO: Extra field
 	private List<String> jiraDodDIR;
-	private List<String> jiraDodQADD;
+	private List<String> jiraDodQAKPI111;
 	private List<String> jiraDodLT;
 	private List<String> jiraDodPDA;
 	private String jiraDefectCreatedStatus;
@@ -107,20 +107,20 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraTechDebtValue;
 	private String jiraDefectRejectionStatus;// TODO: Extra field //test done
 	private String jiraDefectRejectionStatusAVR;
-	private String jiraDefectRejectionStatusDC;
+	private String jiraDefectRejectionStatusKPI28;
 	private String jiraDefectRejectionStatusDRE;
-	private String jiraDefectRejectionStatusDRR;
-	private String jiraDefectRejectionStatusDSR;
-	private String jiraDefectRejectionStatusFTPR;
+	private String jiraDefectRejectionStatusKPI37;
+	private String jiraDefectRejectionStatusKPI35;
+	private String jiraDefectRejectionStatusKPI82;
 	private String jiraDefectRejectionStatusIFTPR;
 	private String jiraDefectRejectionStatusKPI133;
-	private String jiraDefectRejectionStatusRCA;
+	private String jiraDefectRejectionStatusRCAKPI36;
 	private String jiraDefectRejectionStatusDIR;
-	private String jiraDefectRejectionStatusQADD;
+	private String jiraDefectRejectionStatusQAKPI111;
 	private String jiraBugRaisedByIdentification;
 	private List<String> jiraBugRaisedByValue;
 
-	private List<String> jiraDefectSeepageIssueType;
+	private List<String> jiraIssueTypeKPI35;
 	private String jiraBugRaisedByCustomField;
 	private List<String> jiraDefectRemovalStatus;
 	private List<String> jiraDefectRemovalIssueType;
@@ -138,7 +138,7 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> jiraSprintCapacityIssueType;
 
-	private List<String> jiraDefectRejectionlIssueType;
+	private List<String> jiraIssueTypeKPI37;
 	private List<String> jiraDefectCountlIssueType;// TODO: Extra field // test done
 	private List<String> jiraDefectCountlIssueTypeDC;
 	private List<String> jiraDefectCountlIssueTypeRCA;
@@ -147,8 +147,8 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueDeliverdStatusBR;
 	private List<String> jiraIssueDeliverdStatusSV;
 	private List<String> jiraIssueDeliverdStatusAVR;
-	private List<String> jiraIssueDeliverdStatusCVR;
-	private List<String> jiraIssueDeliverdStatusFTPR;
+	private List<String> jiraIssueDeliverdStatusKPI126;
+	private List<String> jiraIssueDeliverdStatusKPI82;
 	private String readyForDevelopmentStatus;
 
 
@@ -191,10 +191,10 @@ public class FieldMapping extends BasicModel {
 	private String jiraStatusMappingCustomField;
 
 	private List<String> rootCauseValue;
-	private List<String> excludeRCAFromFTPR;//TODO: Extra field // test done
+	private List<String> excludeRCAFromKPI82;//TODO: Extra field // test done
 	private List<String> excludeRCAFromIFTPR;
 	private List<String> excludeRCAFromDIR;
-	private List<String> excludeRCAFromQADD;
+	private List<String> excludeRCAFromQAKPI111;
 	private List<String> excludeRCAFromKPI133;
 
 	// For Lloyds KPIs
@@ -205,17 +205,17 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> resolutionTypeForRejection;// TODO: Extra field  //test done
 	private List<String> resolutionTypeForRejectionAVR;
-	private List<String> resolutionTypeForRejectionDC;
+	private List<String> resolutionTypeForRejectionKPI28;
 	private List<String> resolutionTypeForRejectionDRE;
-	private List<String> resolutionTypeForRejectionDRR;
-	private List<String> resolutionTypeForRejectionDSR;
-	private List<String> resolutionTypeForRejectionFTPR;
+	private List<String> resolutionTypeForRejectionKPI37;
+	private List<String> resolutionTypeForRejectionKPI35;
+	private List<String> resolutionTypeForRejectionKPI82;
 	private List<String> resolutionTypeForRejectionIFTPR;
 	private List<String> resolutionTypeForRejectionKPI133;
-	private List<String> resolutionTypeForRejectionRCA;
+	private List<String> resolutionTypeForRejectionRCAKPI36;
 	private List<String> resolutionTypeForRejectionDIR;
-	private List<String> resolutionTypeForRejectionQADD;
-	private List<String> jiraQADefectDensityIssueType;
+	private List<String> resolutionTypeForRejectionQAKPI111;
+	private List<String> jiraQAKPI111IssueType;
 
 	private String jiraBugRaisedByQACustomField;
 	private String jiraBugRaisedByQAIdentification;
@@ -270,7 +270,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraOnHoldStatus;
 
 	// field for FTPR
-	private List<String> jiraFTPRStoryIdentification;
+	private List<String> jiraKPI82StoryIdentification;
 	private List<String> jiraKPI135StoryIdentification;
 
 	// field for Wasting - wait status

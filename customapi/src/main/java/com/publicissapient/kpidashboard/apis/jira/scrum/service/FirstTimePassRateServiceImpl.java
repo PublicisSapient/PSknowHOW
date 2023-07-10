@@ -274,17 +274,17 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					Pair.of(leaf.getSprintFilter().getStartDate(), leaf.getSprintFilter().getEndDate()));
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityFTPR());
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromFTPR());
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityKPI82());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromKPI82());
 
-			if (Optional.ofNullable(fieldMapping.getJiraFTPRStoryIdentification()).isPresent()) {
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeFTPR(),
-						fieldMapping.getJiraFTPRStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+			if (Optional.ofNullable(fieldMapping.getJiraKPI82StoryIdentification()).isPresent()) {
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeKPI82(),
+						fieldMapping.getJiraKPI82StoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			}
 
 			mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
-					fieldMapping.getJiraIssueDeliverdStatusFTPR());
-			KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionFTPR(), fieldMapping.getJiraDefectRejectionStatusFTPR());
+					fieldMapping.getJiraIssueDeliverdStatusKPI82());
+			KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionKPI82(), fieldMapping.getJiraDefectRejectionStatusKPI82());
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
@@ -321,7 +321,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
 			FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
 			return kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory,
-					fieldMapping.getJiraStatusForDevelopmentFTPR());
+					fieldMapping.getJiraStatusForDevelopmentKPI82());
 		});
 
 		List<String> storyIdList = new ArrayList<>();
