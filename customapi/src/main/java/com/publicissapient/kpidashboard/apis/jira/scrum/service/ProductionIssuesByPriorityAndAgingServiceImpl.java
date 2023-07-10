@@ -96,6 +96,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			List<String> defectList = new ArrayList<>();
 			defectList.add(CommonConstant.BUG);
+			defectList.addAll(fieldMapping.getIssueTypeKpi127()!=null?fieldMapping.getIssueTypeKpi127():new ArrayList<>());
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(defectList));
 

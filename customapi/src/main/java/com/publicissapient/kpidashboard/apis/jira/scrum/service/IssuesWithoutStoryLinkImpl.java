@@ -281,11 +281,8 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 							fieldMapping.getJiraStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 				}
 				ignoreStatusList.addAll(
-						CollectionUtils.isEmpty(fieldMapping.getJiraDefectDroppedStatus()) ? Lists.newArrayList()
-								: fieldMapping.getJiraDefectDroppedStatus());
-				ignoreStatusList.addAll(
-						CollectionUtils.isEmpty(fieldMapping.getJiraDod()) ? Lists.newArrayList()
-								: fieldMapping.getJiraDod());
+						CollectionUtils.isEmpty(fieldMapping.getExcludeStatusKpi129()) ? Lists.newArrayList()
+								: fieldMapping.getExcludeStatusKpi129());
 				uniqueProjectIssueStatusMap.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(ignoreStatusList));
 				uniqueProjectIssueTypeNotIn.put(basicProjectConfigId.toString(), uniqueProjectIssueStatusMap);

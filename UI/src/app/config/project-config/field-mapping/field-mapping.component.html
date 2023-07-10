@@ -260,6 +260,26 @@
                         </div>
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
+                        *ngIf="fieldstoShow?.includes('excludeStatusKpi129') || fieldstoShow.length === 0">
+                        <label class="field-title">Status to be excluded <span class="fa fa-info-circle"
+                                aria-hidden="true" pTooltip='<span>
+                                                Definition:
+                                                All statuses which should be excluded for calculation of defects without story link. <br>
+                                                Example: Cancelled, Dropped etc<hr>
+                                                KPI Impacted:
+                                                Defect without story link
+                                              </span>' tooltipPosition="top" tooltipEvent="hover"
+                                tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
+                                inputId="excludeStatusKpi129" formControlName="excludeStatusKpi129"
+                                placeholder="Enter status for Dropped Defect" addOnBlur="true">
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'excludeStatusKpi129', 'workflow')"></button>
+                        </div>
+                    </div>
+                    <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraStatusForDevelopment') || fieldstoShow.length === 0">
                         <label class="field-title">Status to
                             Identify Development Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
@@ -794,6 +814,25 @@
                                   (click)="showDialogToAddValue(false, 'jiraStoryIdentification', 'Issue_Type')"></button>
                           </div>
                       </div>
+                      <div class="p-mb-3 p-d-flex p-align-center"
+                      *ngIf="fieldstoShow?.includes('issueTypeKpi127') || fieldstoShow.length === 0">
+                      <label class="field-title">Issue type to be included
+                          <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                              Definition:
+                              All issue types to identify Production defects . <br>
+                              Example: Story <hr>
+                              KPI Impacted:
+                              Production Ageing Kpi
+                             </span>' tooltipPosition="top" tooltipEvent ="hover" tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                        <div class="p-inputgroup">
+                            <p-chips [style]="{'max-width':'initial','width':'60vw'}" inputId="issueTypeKpi127"
+                                formControlName="issueTypeKpi127" placeholder="Enter Story Identification"
+                                addOnBlur="true" >
+                            </p-chips>
+                            <button type="button" pButton pRipple icon="pi pi-search"
+                                (click)="showDialogToAddValue(false, 'issueTypeKpi127', 'Issue_Type')"></button>
+                        </div>
+                    </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraFTPRStoryIdentification') || fieldstoShow.length === 0">
                         <label class="field-title">Issues types included in FTPR <span class="fa fa-info-circle" aria-hidden="true"

@@ -417,8 +417,13 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		List<String> doneStatus = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectId.toString())
-				.getClosedList().values().stream().map(status->status.toLowerCase()).collect(Collectors.toList());
+		List<String> doneStatus = new ArrayList<>();
+		Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectId.toString())
+				.getClosedList();
+		if(doneStatusMap!=null)
+		{
+			doneStatus = doneStatusMap.values().stream().map(status->status.toLowerCase()).collect(Collectors.toList());
+		}
 
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		basicProjectConfigIds.add(basicProjectId.toString());
@@ -439,8 +444,9 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 		uniqueProjectMap.put(basicProjectId.toString(), mapOfProjectFilters);
 		List<JiraIssue> allIssues =  jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
+		List<String> finalDoneStatus = doneStatus;
 		allIssues = allIssues.stream().filter(issue-> issue.getSprintAssetState() == null ||
-				!issue.getSprintAssetState().equalsIgnoreCase(CLOSED) || !doneStatus.contains(issue.getStatus().toLowerCase()))
+				!issue.getSprintAssetState().equalsIgnoreCase(CLOSED) || !finalDoneStatus.contains(issue.getStatus().toLowerCase()))
 				.collect(Collectors.toList());
 		return allIssues;
 	}

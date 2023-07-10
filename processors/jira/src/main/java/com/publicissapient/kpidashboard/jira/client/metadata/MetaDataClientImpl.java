@@ -349,6 +349,8 @@ public class MetaDataClientImpl implements MetadataClient {
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraDefectClosedStatus(
 					workflowMap.getOrDefault(CommonConstant.JIRA_STATUS_FOR_CLOSED, new ArrayList<>()));
+			fieldMapping.setExcludeStatusKpi129(workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
+			fieldMapping.setIssueTypeKpi127(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 
 			if (projectConfig.isKanban()) {
 				populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap, templateName);
@@ -411,6 +413,8 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraStatusForQa(workflowMap.get(CommonConstant.QA));
 			fieldMapping.setJiraDefectRejectionStatus(CommonConstant.REJECTED);
 			fieldMapping.setJiradefecttype(issueTypeMap.get(CommonConstant.BUG));
+			fieldMapping.setExcludeStatusKpi129(workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
+			fieldMapping.setIssueTypeKpi127(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 
 		}
 	}

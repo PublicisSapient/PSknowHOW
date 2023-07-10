@@ -297,14 +297,18 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			if (fieldMapping.getJiradefecttype() != null) {
 				defectTypeList.addAll(fieldMapping.getJiradefecttype());
 			}
-			List<String> doneStatus = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId.toString())
-					.getClosedList().values().stream().map(status->status).collect(Collectors.toList());
 			defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
 					.collect(Collectors.toList());
+			Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId.toString())
+					.getClosedList();
+			if(doneStatusMap!=null)
+			{
+				List<String> doneStatus  = doneStatusMap.values().stream().collect(Collectors.toList());
+				mapOfProjectFilters.put(STATUS, CommonUtils.convertToPatternList(doneStatus));
+			}
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(defectList));
-			mapOfProjectFilters.put(STATUS, CommonUtils.convertToPatternList(doneStatus));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),

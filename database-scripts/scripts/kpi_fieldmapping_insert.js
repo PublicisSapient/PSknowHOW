@@ -406,14 +406,14 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Defects Without Story Link',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Issue Types Mapping' : ['jiraStoryIdentification'], 'Workflow Status Mapping' : ['jiraDefectDroppedStatus', 'jiraDod'] }
+        fieldNames : { 'Issue Types Mapping' : ['jiraStoryIdentification'], 'Workflow Status Mapping' : ['excludeStatusKpi129'] }
       },
       {
         kpiId: 'kpi127',
         kpiName: 'Production Defects Ageing',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraDod', 'jiraLiveStatus', 'jiraDefectDroppedStatus'], 'Defects Mapping' : ['productionDefectIdentifier'] }
+        fieldNames : { 'Workflow Status Mapping' : ['jiraDod', 'jiraLiveStatus', 'jiraDefectDroppedStatus'], 'Issue Types Mapping' : ['issueTypeKpi127'], 'Defects Mapping' : ['productionDefectIdentifier'] }
       },
       {
         kpiId: 'kpi131',
