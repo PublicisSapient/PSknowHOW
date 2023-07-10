@@ -1074,7 +1074,7 @@ export class HttpService {
   }
 
   getCommentCount(data): Observable<any>{
-    return this.http.get<object>(this.getCommentCountUrl, data);
+    return this.http.post<object>(this.getCommentCountUrl, data);
   }
 
   /* Update project details  */

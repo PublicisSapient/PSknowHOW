@@ -11,7 +11,7 @@
                     <img src="../../../assets/img/database-svg.svg" *ngIf="sprintsOverlayVisible"  (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event,kpiHeader) : '' ;" alt="Sprint Details" class="cursor-pointer p-ml-1 sprint-hover-icon"   pTooltip='<div class="inner-content">
                         Please click on icon for all sprint details.
                     </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper" />
-                    <app-comments *ngIf="showCommentIcon" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName" [selectedTab]="selectedTab" (closeSpringOverlay)="op.hide($event);"></app-comments>
+                    <app-comments *ngIf="showCommentIcon" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName" [selectedTab]="selectedTab" (closeSpringOverlay)="op.hide($event);" [commentCount]="commentCount"></app-comments>
                 </h3>
             </div>
         </div>

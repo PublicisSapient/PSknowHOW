@@ -1,12 +1,13 @@
-<img class="kpi-info-icon cursor-pointer" src="../../../assets/img/comment-icon.svg" alt="comment icon"
+<div class="p-d-inline-block position-relative">
+    <img class="kpi-info-icon cursor-pointer" src="../../../assets/img/comment-icon.svg" alt="comment icon"
     aria-hidden="true" (click)="op1.toggle($event); openComments()" />
+    <div class="comment-count" *ngIf="commentCount">{{commentCount}}</div>
+</div>
 <p-overlayPanel #op1 [showCloseIcon]="true" styleClass="comments-overlay">
     <div class="p-d-flex p-justify-between p-align-center">
         <span class="overlay-heading">
             Comments
         </span>
-        <!-- <button class="p-element p-ripple p-button-sm p-button-success p-button-raised p-button"
-            (click)="viewAllHandler($event,op1)">View All</button> -->
     </div>
     <p-tabView (onChange)="commentTabChange($event)" [(activeIndex)]="selectedTabIndex">
         <p-tabPanel *ngFor="let filter of selectedFilters; let i = index"
@@ -26,7 +27,7 @@
                 <ng-container *ngIf="commentsList.length>0; else noComments">
                     <div *ngFor="let comment of commentsList" class="comment-combo">
                         <div class="commented-by">@{{comment?.commentBy}} commented - {{comment?.commentOn}}
-                            <span class="icon-delete" (click)="deleteComment(commentId)">
+                            <span class="icon-delete" (click)="deleteComment(comment.commentId)">
                                 <i *ngIf="!showLoader" class="far fa-trash-alt"></i>
                                 <i *ngIf="showLoader" class="fas fa-circle-notch"></i>
                             </span>

@@ -82,7 +82,7 @@ public class CommentsController {
 	 * @param commentViewRequestDTO
 	 * @return
 	 */
-	@GetMapping("/getCommentCount")
+	@PostMapping("/getCommentCount")
 	public ResponseEntity<ServiceResponse> getKpiWiseCommentsCount(
 			@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
 		Map<String, Integer> kpiWiseCount = commentsService.findCommentByBoard(commentViewRequestDTO.getNodes(),

@@ -898,7 +898,10 @@ export class IterationComponent implements OnInit, OnDestroy {
       "sprintId": this.filterApplyData['selectedMap']?.sprint[0],
       'kpiIds': []
     };
-    requestObj['kpiIds'] = (this.upDatedConfigData.map((item) => item.kpiId));
-    this.kpiCommentsCountObj = this.helperService.getKpiCommentsHttp(requestObj);
+    requestObj['kpiIds'] = (this.updatedConfigGlobalData.map((item) => item.kpiId));
+    this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+      this.kpiCommentsCountObj = res;
+    });
+    
   }
 }

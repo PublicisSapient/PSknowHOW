@@ -11,6 +11,7 @@ export class CommentsComponent implements OnInit {
   @Input() kpiId;
   @Input() kpiName;
   @Input() selectedTab;
+  @Input() commentCount: string;
   showCommentIcon = false;
   displayCommentsList: boolean;
   showAddComment: boolean = false;
@@ -98,7 +99,9 @@ export class CommentsComponent implements OnInit {
 
   deleteComment(id){
     this.showLoader = true;
-    this.http_service.deleteComment({'commentId': id}).subscribe((res) => {
+    let commentIds = [];
+    commentIds.push(id)
+    this.http_service.deleteComment({'commentId': commentIds}).subscribe((res) => {
       if(res.success){
         this.showLoader = false;
         this.getComments();
