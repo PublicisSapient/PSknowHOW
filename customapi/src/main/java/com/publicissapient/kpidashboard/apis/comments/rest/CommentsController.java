@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -98,14 +99,14 @@ public class CommentsController {
 
 	/**
 	 *
-	 * @param commentViewRequestDTO
+	 * @param commentId
 	 * @return
 	 */
-	@DeleteMapping("/deleteCommentById")
-	public ResponseEntity<ServiceResponse> deleteComments(@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
+	@DeleteMapping("/deleteCommentById/{commentId}")
+	public ResponseEntity<ServiceResponse> deleteComments(@PathVariable String commentId) {
 		try {
-			commentsService.deleteComments(commentViewRequestDTO.getCommentId());
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Successfully Deleted Comment", commentViewRequestDTO.getCommentId()));
+			commentsService.deleteComments(commentId);
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Successfully Deleted Comment",commentId));
 		}
 		catch(Exception ex){
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments Not Deleted", ex.getMessage()));
