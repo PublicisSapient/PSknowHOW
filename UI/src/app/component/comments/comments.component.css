@@ -114,3 +114,15 @@ textarea:focus-visible{
     align-items: center;
     justify-content: center;
 }
+
+::ng-deep .comments-modal .p-tabview .p-tabview-nav li .p-tabview-nav-link{
+    padding: 5px;
+    border-radius: 2px;
+    font-size: .8rem;
+    border: 1px solid var(--color-black);
+}
+::ng-deep .comments-modal .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link{
+    color: #fff;
+    background: var(--color-secondary-blue);
+    border-color: var(--color-secondary-blue);
+}

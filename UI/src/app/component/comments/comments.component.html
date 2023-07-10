@@ -9,7 +9,7 @@
             Comments
         </span>
     </div>
-    <p-tabView (onChange)="commentTabChange($event)" [(activeIndex)]="selectedTabIndex">
+    <p-tabView (onChange)="commentTabChange($event)" [(activeIndex)]="selectedTabIndex" class="comments-modal">
         <p-tabPanel *ngFor="let filter of selectedFilters; let i = index"
             header="{{filter.nodeName.length > 15 ? filter.nodeName.substring(0,15)+'..' : filter.nodeName}}">
             <div class="comment-combo">
