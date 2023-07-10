@@ -1,3 +1,4 @@
+//7.2 changes
 // comment feature collections generic field name for all board (iteration , release)
 db.kpi_comments.updateMany(
   {},
@@ -13,3 +14,5 @@ db.kpi_comments_history.updateMany(
     { $unset: "sprintId" },
   ]
 )
+
+//7.3 changes
