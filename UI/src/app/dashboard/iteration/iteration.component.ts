@@ -888,4 +888,12 @@ export class IterationComponent implements OnInit, OnDestroy {
   typeOf(value) {
     return typeof value === 'object' && value !== null;
   }
+
+  /** Reload KPI once field mappoing updated */
+  reloadKPI(event){
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event['kpiDetail']['groupId'],'Iteration');
+    if (currentKPIGroup?.kpiList?.length > 0) {
+        this.postJiraKpi(this.kpiJira, 'jira');
+    }
+  }
 }

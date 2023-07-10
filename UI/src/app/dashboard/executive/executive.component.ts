@@ -1138,9 +1138,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
       }
 
 
+      /** Reload KPI once field mappoing updated */
   reloadKPI(event){
-    const updateKPi = this.masterData.kpiList.find(masterdata=> masterdata.kpiId === event.kpiId)
-    this.filterApplyData['kpiList'] = [{...updateKPi}]
-    this.postJiraKpi(this.filterApplyData,'jira')
+    const currentKPIGroup  = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event['kpiDetail']['groupId'],'');
+                if (currentKPIGroup?.kpiList?.length > 0) {
+                    this.postJiraKpi(currentKPIGroup, 'jira');
+                }
   }
 }

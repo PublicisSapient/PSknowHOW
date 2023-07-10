@@ -56,7 +56,6 @@ export class FieldMappingFieldComponent implements OnInit,ControlValueAccessor {
   }
 
   setValue() {
-    console.log(this.value);
     this.onChange(this.value);
   }
 

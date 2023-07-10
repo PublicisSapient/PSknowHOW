@@ -28,13 +28,25 @@ describe('FieldMappingFieldComponent', () => {
       declarations: [ FieldMappingFieldComponent ]
     })
     .compileComponents();
-
-    fixture = TestBed.createComponent(FieldMappingFieldComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(FieldMappingFieldComponent);
+      component = fixture.componentInstance;
+    });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should reset radio button',()=>{
+    component.resetRadioButton("fakeName");
+    expect(component.value).toBe('')
+  })
+
+  it('should set addtional filter value button',()=>{
+    component.setAdditionalFilterValue("fakeName");
+    component.showDialogToAddValue(true,'Name','field')
+    expect(component.value).toBe('fakeName')
+  })
 });

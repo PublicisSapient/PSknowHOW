@@ -29,6 +29,7 @@ import { of } from 'rxjs';
 
 const fakeKpiFieldMappingConfigList = require('../../../test/resource/fakeMappingFieldConfig.json');
 const baseUrl = environment.baseUrl;
+const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
 const completeHierarchyData = {
   kanban: [
     {
@@ -488,4 +489,112 @@ describe('FieldMappingFormComponent', () => {
     component.saveFieldMapping({jiraconfig : "123"});
     expect(component.form.valid).toBeTruthy();
   });
+
+  it('should populate value on import',()=>{
+    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.fieldConfiguration;
+    component.formData = fakeSelectedFieldMapping;
+    component.selectedConfig = {id:'1233'};
+    component.selectedToolConfig = [{id:'1233',toolName:'JIRA'}];
+    component.ngOnInit();
+   const spyFun =  spyOn(component,'saveFieldMapping');
+    component.setControlValueOnImport(fakeSelectedFieldMapping);
+    expect(spyFun).toBeDefined();
+  })
+
+
+  it('should close dialog',()=>{
+    component.cancelDialog()
+   expect(component.displayDialog).toBeFalsy();
+  })
+
+  it('should open/close the dropdown dialog and set values', () => {
+    component.selectedField = 'jiraDefectRejectionStatusDIR';
+    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.fieldConfiguration;
+    component.formData = fakeSelectedFieldMapping;
+    component.selectedConfig = {id:'1233'};
+    component.selectedToolConfig = [{id:'1233',toolName:'JIRA'}];
+    component.ngOnInit();
+    component.form.controls['jiraDefectRejectionStatusDIR'].setValue("fake value")
+    component.fieldMappingMetaData = dropDownMetaData.data;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'fields'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'fields'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData.data;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'workflow'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+    
+    component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'workflow'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData.data;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'Issue_Link'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+    
+    component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'Issue_Link'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData.data;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'Issue_Type'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+    
+    component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'Issue_Type'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue({isSingle:true,fieldName:'jiraDefectRejectionStatusDIR',type:'default'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData.data;
+    component.showDialogToAddValue({isSingle:false,fieldName:'jiraDefectRejectionStatusDIR',type:'fields'});
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+  });
+
+   it('should select values from popup', () => {
+    component.singleSelectionDropdown = false;
+    component.selectedField = 'jiraDefectRejectionStatusDIR';
+    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.fieldConfiguration;
+    component.formData = fakeSelectedFieldMapping;
+    component.selectedConfig = {id:'1233'};
+    component.selectedToolConfig = [{id:'1233',toolName:'JIRA'}];
+    component.fieldMappingMultiSelectValues = [{
+      key: 'New',
+      data: 'New'
+    }, {
+      key: 'Active',
+      data: 'Active'
+    }, {
+      key: 'Resolved',
+      data: 'Resolved'
+    }, {
+      key: 'Closed',
+      data: 'Closed'
+    }, {
+      key: 'Removed',
+      data: 'Removed'
+    }];
+    component.ngOnInit();
+    component.form.controls[component.selectedField].setValue([]);
+    component.selectedMultiValue = [{
+      key: 'Resolved',
+      data: 'Resolved'
+    }, {
+      key: 'Closed',
+      data: 'Closed'
+    }, {
+      key: 'Removed',
+      data: 'Removed'
+    }];
+    component.saveDialog();
+    expect(component.form.controls[component.selectedField].value).toEqual(['Resolved', 'Closed', 'Removed']);
+    expect(component.populateDropdowns).toBeFalsy();
+    expect(component.displayDialog).toBeFalsy();
+  });
+
 });

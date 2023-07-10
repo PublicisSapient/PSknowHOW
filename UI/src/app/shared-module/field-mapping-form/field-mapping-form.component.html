@@ -17,7 +17,7 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
 <form [formGroup]="form" autocomplete="off">
-    <p-accordion [multiple]="true" [style]="{'width':'100%'}" #accordion>
+    <p-accordion [multiple]="true" [style]="{'width':'100%'}" #accordion [activeIndex]="[0,1,2,3,4,5,6]">
         <p-accordionTab *ngFor="let section of fieldMappingSectionList" [header]="section">
             <div class="p-p-0">
                 <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of formConfig[section]">
