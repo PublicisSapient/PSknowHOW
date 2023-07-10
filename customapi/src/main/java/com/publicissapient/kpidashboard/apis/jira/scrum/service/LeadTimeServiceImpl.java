@@ -1,8 +1,10 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -60,6 +62,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	private static final String PROJECT = "project";
 	private static final String LEAD_TIME = "Lead Time";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Issue Type";
+	private static final String SEARCH_BY_DURATION = "Duration";
 	public static final String DAYS = "days";
 	public static final String ISSUES = "issues";
 	@Autowired
@@ -305,12 +308,13 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 					(double) Math.round(ObjectUtils.defaultIfNull(overAllDodLive, 0L).doubleValue() / 480),
 					ObjectUtils.defaultIfNull(overAllDodLiveTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 					getIterationKpiModalValue(overAllDodLiveModalValues, cycleTimeList)));
-			IterationKpiValue iterationKpiValue = new IterationKpiValue(CommonConstant.OVERALL, null, data);
+			IterationKpiValue iterationKpiValue = new IterationKpiValue(CommonConstant.OVERALL, CommonConstant.OVERALL, data);
 			dataList.add(iterationKpiValue);
 		}
-
-		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypeFilter);
-		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
+		Set<String> duration = new LinkedHashSet<>(Arrays.asList("Past Week","Past 2 Weeks", "Past Month","Past 3 Months" , "Past 6 Months"));
+		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_DURATION, duration);
+		IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypeFilter);
+		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
 		// Modal Heads Options
 		kpiElement.setFilters(iterationKpiFilters);
 		trendValue.setValue(dataList);
