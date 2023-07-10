@@ -1052,16 +1052,7 @@ export class HttpService {
     );
   }
 
-  getComment(selectedTab, selectedFilter, kpiId) {
-    const postData = {
-      node:
-        selectedTab !== 'iteration'
-          ? selectedFilter?.nodeId
-          : selectedFilter?.parentId[0],
-      sprintId: selectedTab === 'iteration' ? selectedFilter.nodeId : '',
-      kpiId: kpiId,
-      level: selectedFilter?.level,
-    };
+  getComment(postData) {
     return this.http.post<any>(this.getCommentUrl, postData);
   }
 

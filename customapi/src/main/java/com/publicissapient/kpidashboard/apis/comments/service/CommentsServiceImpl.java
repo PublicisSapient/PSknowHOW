@@ -23,7 +23,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
-import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
+import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
 
@@ -60,14 +60,14 @@ public class CommentsServiceImpl implements CommentsService {
 	 * 
 	 * @param node
 	 * @param level
-	 * @param sprintId
+	 * @param nodeChildId
 	 * @param kpiId
 	 * @return
 	 */
 	@Override
-	public Map<String, Object> findCommentByKPIId(String node, String level, String sprintId, String kpiId) {
+	public Map<String, Object> findCommentByKPIId(String node, String level, String nodeChildId, String kpiId) {
 
-		KPIComments kpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId);
+		KPIComments kpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, nodeChildId, kpiId);
 
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
 		if (null != kpiComments) {
@@ -75,7 +75,7 @@ public class CommentsServiceImpl implements CommentsService {
 			List<CommentsInfo> finalCommentsInfo = commentMappingOperation(kpiComments);
 			mappedCollection.put("node", node);
 			mappedCollection.put("level", level);
-			mappedCollection.put("sprintId", sprintId);
+			mappedCollection.put("nodeChildId", nodeChildId);
 			mappedCollection.put("kpiId", kpiId);
 			mappedCollection.put("CommentsInfo", finalCommentsInfo);
 		}
@@ -171,14 +171,14 @@ public class CommentsServiceImpl implements CommentsService {
 		String node = kpiComments.getNode();
 		String level = kpiComments.getLevel();
 		String kpiId = kpiComments.getKpiId();
-		String sprintId = kpiComments.getSprintId();
+		String nodeChildId = kpiComments.getNodeChildId();
 		List<CommentsInfo> newCommentsInfo = kpiComments.getCommentsInfo();
 		List<CommentsInfo> newCommentsInfoHistory = kpiCommentsHistory.getCommentsInfo();
 
 		try {
-			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId);
+			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, nodeChildId, kpiId);
 			KpiCommentsHistory matchedKpiCommentsHistory = kpiCommentsHistoryRepository
-					.findByNodeAndLevelAndSprintIdAndKpiId(node, level, sprintId, kpiId);
+					.findByNodeAndLevelAndSprintIdAndKpiId(node, level, nodeChildId, kpiId);
 
 			if (Objects.isNull(matchedKpiComments)) {
 				kpiCommentsRepository.save(kpiComments);

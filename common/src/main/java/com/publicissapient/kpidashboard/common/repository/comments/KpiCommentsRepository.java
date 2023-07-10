@@ -14,8 +14,8 @@ import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
 @Repository
 public interface KpiCommentsRepository extends MongoRepository<KPIComments, String> {
 
-	@Query("{ 'node' : ?0, 'level' : ?1, 'sprintId' : ?2, 'kpiId' : ?3}")
-	KPIComments findCommentsByFilter(String node, String level, String sprintId, String kpiId);
+	@Query("{ 'node' : ?0, 'level' : ?1, 'nodeChildId' : ?2, 'kpiId' : ?3}")
+	KPIComments findCommentsByFilter(String node, String level, String nodeChildId, String kpiId);
 
 	@Query("{ 'node' : { $in : ?0 }, 'level' : ?1, 'sprintId' : ?2, 'kpiId' : { $in : ?3 }}")
 	List<KPIComments> findCommentsByBoard(List<String> nodes, String level, String sprintId, List<String> kpiIds);
