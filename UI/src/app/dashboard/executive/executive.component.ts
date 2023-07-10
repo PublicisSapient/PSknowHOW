@@ -282,8 +282,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             this.groupSonarKpi(kpiIdsForCurrentBoard);
                         }
                         let hierarchyDataArr = JSON.parse(localStorage.getItem('hierarchyData'));
-                        let projectLevel = hierarchyDataArr[hierarchyDataArr.length - 1].level + 1;
-                        if(this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
+                        if(hierarchyDataArr?.length>0){
+                            let projectLevel = hierarchyDataArr[hierarchyDataArr?.length - 1]['level'] + 1;
+                            if(this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
+                        }
                     }
                 } else if (this.filterData?.length && !$event.makeAPICall) {
                     // alert('no call');
@@ -1154,7 +1156,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 this.kpiCommentsCountObj[kpiId] = res[kpiId];
             });
         }else{
-            requestObj['kpiIds'] = (this.updatedConfigGlobalData.map((item) => item.kpiId));
+            requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
             this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
                 this.kpiCommentsCountObj = res;
             }); 

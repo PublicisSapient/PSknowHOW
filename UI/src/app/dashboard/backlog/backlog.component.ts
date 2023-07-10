@@ -715,7 +715,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
         this.kpiCommentsCountObj[kpiId] = res[kpiId];
       });
     }else{
-      requestObj['kpiIds'] = (this.updatedConfigGlobalData.map((item) => item.kpiId));
+      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
       this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
         this.kpiCommentsCountObj = res;
       });
