@@ -22,7 +22,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { SharedService } from '../../services/shared.service';
-import { GoogleAnalyticsService } from '../../services/google-analytics.service';
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
@@ -41,7 +40,7 @@ export class LoginComponent implements OnInit {
 
 
 
-    constructor(private formBuilder: UntypedFormBuilder, private route: ActivatedRoute, private router: Router, private httpService: HttpService, private sharedService: SharedService,  private ga: GoogleAnalyticsService) {
+    constructor(private formBuilder: UntypedFormBuilder, private route: ActivatedRoute, private router: Router, private httpService: HttpService, private sharedService: SharedService) {
     }
 
     ngOnInit() {
@@ -161,7 +160,6 @@ export class LoginComponent implements OnInit {
             /*After successfully login redirect form to dashboard router(Executive page)*/
             localStorage.setItem('loginType', loginType);
             this.adLogin = loginType;
-            this.ga.setLoginMethod(data.body, loginType);
             if (this.redirectToProfile()) {
                 this.router.navigate(['./dashboard/Config/Profile']);
             } else {
