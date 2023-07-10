@@ -99,9 +99,7 @@ export class CommentsComponent implements OnInit {
 
   deleteComment(id){
     this.showLoader = true;
-    let commentIds = [];
-    commentIds.push(id)
-    this.http_service.deleteComment({'commentId': commentIds}).subscribe((res) => {
+    this.http_service.deleteComment({'commentId': id}).subscribe((res) => {
       if(res.success){
         this.showLoader = false;
         this.getComments();
