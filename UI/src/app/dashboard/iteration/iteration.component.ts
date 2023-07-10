@@ -891,17 +891,24 @@ export class IterationComponent implements OnInit, OnDestroy {
     return typeof value === 'object' && value !== null;
   }
 
-  getKpiCommentsCount(){
+  getKpiCommentsCount(kpiId?){
     let requestObj = {
       "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,
       "level":this.filterApplyData?.level,
       "nodeChildId": this.filterApplyData['selectedMap']?.sprint[0],
       'kpiIds': []
     };
-    requestObj['kpiIds'] = (this.updatedConfigGlobalData.map((item) => item.kpiId));
-    this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-      this.kpiCommentsCountObj = res;
-    });
+    if(kpiId){
+      requestObj['kpiIds'] = [kpiId];
+      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+        this.kpiCommentsCountObj[kpiId] = res[kpiId];
+      });
+    }else{
+      requestObj['kpiIds'] = (this.updatedConfigGlobalData.map((item) => item.kpiId));
+      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+        this.kpiCommentsCountObj = res;
+      });
+    }
 
   }
 }

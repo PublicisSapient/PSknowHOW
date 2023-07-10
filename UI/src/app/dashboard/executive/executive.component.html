@@ -33,7 +33,7 @@
                 [showExport]="showChart" [showChartView]="showChart" [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"
                 [isShow]="(kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false) || (!iSAdditionalFilterSelected && kpiLoader === false) && (ifKpiExist(kpi.kpiId) != -1) ? true : false"
                 [sprintsOverlayVisible]="sprintsOverlayVisible && kpi?.kpiDetail?.chartType !== 'table'" [trendValueList]="kpiChartData[kpi?.kpiId]" [colors]="this.colorObj" [showCommentIcon]="showCommentIcon"
-                [commentCount]="kpiCommentsCountObj[kpi?.kpiId]">
+                [commentCount]="kpiCommentsCountObj[kpi?.kpiId]" (getCommentCountByKpi)="getKpiCommentsCount($event)">
                   <ng-container *ngIf="!noTabAccess else noDataAccess">
                     <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
                       <div class="p-pl-3 p-pr-3" [ngSwitch]="kpi?.kpiDetail?.chartType"

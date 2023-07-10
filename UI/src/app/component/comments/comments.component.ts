@@ -23,6 +23,7 @@ export class CommentsComponent implements OnInit {
   dataLoaded = false;
   @Output() closeSpringOverlay = new EventEmitter();
   showLoader:boolean = false;
+  @Output() getCommentsCountByKpiId = new EventEmitter();
 
   constructor(private service: SharedService, private http_service: HttpService) { }
 
@@ -74,6 +75,7 @@ export class CommentsComponent implements OnInit {
       this.commentText = '';
       this.commentError = false;
       this.getComments();
+      this.getCommentsCountByKpiId.emit(reqObj.kpiId);
     }, error => {
       console.log(error);
     });
@@ -99,6 +101,8 @@ export class CommentsComponent implements OnInit {
 
   commentTabChange(data){
     this.selectedTabIndex = data.index;
+    this.commentsList = [];
+    this.getComments();
   }
 
   commentChanged() {
@@ -115,6 +119,7 @@ export class CommentsComponent implements OnInit {
       if(res.success){
         this.showLoader = false;
         this.getComments();
+        this.getCommentsCountByKpiId.emit(this.kpiId);
       }
     })
   }
