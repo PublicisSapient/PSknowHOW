@@ -111,7 +111,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     selectedTab= 'iteration';
     showCommentIcon = false;
     noProjects = false;
-    sprintsOverlayVisible : boolean = false
+    sprintsOverlayVisible : boolean = false;
+    kpiCommentsCountObj: object = {};
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -280,6 +281,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             this.groupBitBucketKpi(kpiIdsForCurrentBoard);
                             this.groupSonarKpi(kpiIdsForCurrentBoard);
                         }
+                        let hierarchyDataArr = JSON.parse(localStorage.getItem('hierarchyData'));
+                        let projectLevel = hierarchyDataArr[hierarchyDataArr.length - 1].level + 1;
+                        if(this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
                     }
                 } else if (this.filterData?.length && !$event.makeAPICall) {
                     // alert('no call');
@@ -1135,5 +1139,19 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 }
             }
         }
+      }
+
+      getKpiCommentsCount(){
+        let requestObj = {
+          "nodes": [...this.filterApplyData?.ids],
+          "level":this.filterApplyData?.level,
+          "sprintId": "",
+          'kpiIds': []
+        };
+        requestObj['kpiIds'] = (this.updatedConfigGlobalData.map((item) => item.kpiId));
+        this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+          this.kpiCommentsCountObj = res;
+        });
+        
       }
 }

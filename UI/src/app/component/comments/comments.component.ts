@@ -99,7 +99,7 @@ export class CommentsComponent implements OnInit {
 
   deleteComment(id){
     this.showLoader = true;
-    this.http_service.deleteComment({'commentId': id}).subscribe((res) => {
+    this.http_service.deleteComment(id).subscribe((res) => {
       if(res.success){
         this.showLoader = false;
         this.getComments();

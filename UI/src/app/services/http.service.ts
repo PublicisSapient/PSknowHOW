@@ -1069,8 +1069,8 @@ export class HttpService {
     return this.http.post<object>(this.submitCommentUrl, data);
   }
 
-  deleteComment(data): Observable<any> {
-    return this.http.delete<object>(this.deleteCommentUrl, data);
+  deleteComment(id): Observable<any> {
+    return this.http.delete<object>(this.deleteCommentUrl+ '/' + id);
   }
 
   getCommentCount(data): Observable<any>{
