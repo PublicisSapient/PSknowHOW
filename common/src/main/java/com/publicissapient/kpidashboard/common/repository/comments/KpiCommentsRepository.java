@@ -17,9 +17,6 @@ public interface KpiCommentsRepository extends MongoRepository<KPIComments, Stri
 	@Query("{ 'node' : ?0, 'level' : ?1, 'nodeChildId' : ?2, 'kpiId' : ?3}")
 	KPIComments findCommentsByFilter(String node, String level, String nodeChildId, String kpiId);
 
-	@Query("{ 'node' : { $in : ?0 }, 'level' : ?1, 'sprintId' : ?2, 'kpiId' : { $in : ?3 }}")
-	List<KPIComments> findCommentsByBoard(List<String> nodes, String level, String sprintId, List<String> kpiIds);
-
-	@Query(value = "{ 'node' : { $in : ?0 }, 'level' : ?1, 'sprintId' : ?2, 'kpiId' : ?3, 'commentsInfo.commentId' : ?4 }", delete = true)
-	long removeByBoardAndCommentId(List<String> nodes, String level, String sprintId, String kpiId, String commentId);
+	@Query("{ 'node' : { $in : ?0 }, 'level' : ?1, 'nodeChildId' : ?2, 'kpiId' : { $in : ?3 }}")
+	List<KPIComments> findCommentsByBoard(List<String> nodes, String level, String nodeChildId, List<String> kpiIds);
 }

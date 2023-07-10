@@ -95,7 +95,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   globalConfig;
   sharedObject;
   navigationTabs:Array<object> = [
-    {'label':'Iteration Review', 'count': 0}, 
+    {'label':'Iteration Review', 'count': 0},
     {'label':'Iteration Progress', 'count': 0}
   ];
   forzenColumns = ['issue id','issue description'];
@@ -157,7 +157,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
       let board = this.upDatedConfigData[i]?.subCategoryBoard;
       let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
-      if(idx != -1) this.navigationTabs[idx]['count']++; 
+      if(idx != -1) this.navigationTabs[idx]['count']++;
     }
     if(this.commitmentReliabilityKpi?.isEnabled){
       this.navigationTabs[0]['count']++;
@@ -895,13 +895,13 @@ export class IterationComponent implements OnInit, OnDestroy {
     let requestObj = {
       "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,
       "level":this.filterApplyData?.level,
-      "sprintId": this.filterApplyData['selectedMap']?.sprint[0],
+      "nodeChildId": this.filterApplyData['selectedMap']?.sprint[0],
       'kpiIds': []
     };
     requestObj['kpiIds'] = (this.updatedConfigGlobalData.map((item) => item.kpiId));
     this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
       this.kpiCommentsCountObj = res;
     });
-    
+
   }
 }

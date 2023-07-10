@@ -84,9 +84,9 @@ public class CommentsServiceImpl implements CommentsService {
 	}
 
 	@Override
-	public Map<String, Integer> findCommentByBoard(List<String> node, String level, String sprintId,
+	public Map<String, Integer> findCommentByBoard(List<String> node, String level, String nodeChildId,
 			List<String> kpiIds) {
-		List<KPIComments> kpiCommentsList = kpiCommentsRepository.findCommentsByBoard(node, level, sprintId, kpiIds);
+		List<KPIComments> kpiCommentsList = kpiCommentsRepository.findCommentsByBoard(node, level, nodeChildId, kpiIds);
 		Map<String, Integer> hierarchyWiseComments = new HashMap<>();
 
 		if (CollectionUtils.isNotEmpty(kpiCommentsList)) {
@@ -178,7 +178,7 @@ public class CommentsServiceImpl implements CommentsService {
 		try {
 			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, nodeChildId, kpiId);
 			KpiCommentsHistory matchedKpiCommentsHistory = kpiCommentsHistoryRepository
-					.findByNodeAndLevelAndSprintIdAndKpiId(node, level, nodeChildId, kpiId);
+					.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, nodeChildId, kpiId);
 
 			if (Objects.isNull(matchedKpiComments)) {
 				kpiCommentsRepository.save(kpiComments);

@@ -12,7 +12,7 @@ import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory
 @Repository
 public interface KpiCommentsHistoryRepository extends MongoRepository<KpiCommentsHistory, String> {
 
-	@Query("{ 'node' : ?0, 'level' : ?1, 'sprintId' : ?2, 'kpiId' : ?3}")
-	KpiCommentsHistory findByNodeAndLevelAndSprintIdAndKpiId(String node, String level, String sprintId, String kpiId);
+	@Query("{ 'node' : ?0, 'level' : ?1, 'nodeChildId' : ?2, 'kpiId' : ?3}")
+	KpiCommentsHistory findByNodeAndLevelAndNodeChildIdAndKpiId(String node, String level, String nodeChildId, String kpiId);
 
 }

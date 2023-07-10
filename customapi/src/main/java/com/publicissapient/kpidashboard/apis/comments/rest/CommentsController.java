@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,7 +85,7 @@ public class CommentsController {
 	public ResponseEntity<ServiceResponse> getKpiWiseCommentsCount(
 			@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
 		Map<String, Integer> kpiWiseCount = commentsService.findCommentByBoard(commentViewRequestDTO.getNodes(),
-				commentViewRequestDTO.getLevel(), commentViewRequestDTO.getSprintId(),
+				commentViewRequestDTO.getLevel(), commentViewRequestDTO.getNodeChildId(),
 				commentViewRequestDTO.getKpiIds());
 		if (MapUtils.isEmpty(kpiWiseCount)) {
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments not found", null));

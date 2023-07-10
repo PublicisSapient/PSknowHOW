@@ -31,7 +31,6 @@ import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
 import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommentsServiceImplTest {
@@ -114,7 +113,7 @@ public class CommentsServiceImplTest {
 
 		KpiCommentsHistory kpiCommentsHistory = new KpiCommentsHistory();
 		kpiCommentsHistory.setCommentsInfo(commentsInfo);
-		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndSprintIdAndKpiId(node, level, sprintId, kpiId))
+		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, sprintId, kpiId))
 				.thenReturn(kpiCommentsHistory);
 
 		final boolean commentSubmitted = commentServiceImpl.submitComment(commentDTO);
@@ -169,7 +168,7 @@ public class CommentsServiceImplTest {
 		kpiCommentsHistory.setCommentsInfo(commentsInfo);
 
 		when(customApiConfig.getKpiCommentsMaxStoreCount()).thenReturn(2);
-		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndSprintIdAndKpiId(node, level, sprintId, kpiId))
+		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, sprintId, kpiId))
 				.thenReturn(kpiCommentsHistory);
 
 		final boolean commentSubmitted = commentServiceImpl.submitComment(commentDTO);
@@ -203,7 +202,7 @@ public class CommentsServiceImplTest {
 
 		KpiCommentsHistory kpiCommentsHistory = new KpiCommentsHistory();
 		kpiCommentsHistory.setCommentsInfo(commentsInfo);
-		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndSprintIdAndKpiId(node, level, sprintId, kpiId))
+		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, sprintId, kpiId))
 				.thenReturn(kpiCommentsHistory);
 
 		final boolean commentSubmitted = commentServiceImpl.submitComment(commentDTO);
@@ -249,7 +248,7 @@ public class CommentsServiceImplTest {
 		KPIComments kpiComment = new KPIComments();
 		kpiComment.setNode(node);
 		kpiComment.setLevel(level);
-		kpiComment.setSprintId(sprintId);
+		kpiComment.setNodeChildId(sprintId);
 		kpiComment.setKpiId(kpiId);
 
 		List<CommentsInfo> commentsInfo = new ArrayList<>();

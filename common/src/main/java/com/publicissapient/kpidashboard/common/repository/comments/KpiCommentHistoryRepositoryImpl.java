@@ -18,14 +18,13 @@
 
 package com.publicissapient.kpidashboard.common.repository.comments;//NOPMD
 
+import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-
-import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
 
 @Service
 public class KpiCommentHistoryRepositoryImpl implements KpiCommentHistoryRepositoryCustom {
