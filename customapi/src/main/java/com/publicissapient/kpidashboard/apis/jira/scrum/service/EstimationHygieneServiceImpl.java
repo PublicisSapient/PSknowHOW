@@ -108,8 +108,8 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeEH(),
-						fieldMapping.getJiraIterationCompletionStatusEH());
+						fieldMapping.getJiraIterationCompletionTypeKPI124(),
+						fieldMapping.getJiraIterationCompletionStatusKPI124());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
@@ -235,8 +235,8 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 	private boolean checkStatus(JiraIssue jiraIssue, FieldMapping fieldMapping) {
 
 		boolean toDrop = false;
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getIssueStatusExcluMissingWorkEH())) {
-			toDrop = fieldMapping.getIssueStatusExcluMissingWorkEH().stream().map(String::toUpperCase)
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getIssueStatusExcluMissingWorkKPI124())) {
+			toDrop = fieldMapping.getIssueStatusExcluMissingWorkKPI124().stream().map(String::toUpperCase)
 					.collect(Collectors.toList()).contains(jiraIssue.getJiraStatus().toUpperCase());
 		}
 		return toDrop;

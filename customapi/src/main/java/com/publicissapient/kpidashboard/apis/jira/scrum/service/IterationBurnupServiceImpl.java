@@ -147,8 +147,8 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeIBU(),
-						fieldMapping.getJiraIterationCompletionStatusIBU());
+						fieldMapping.getJiraIterationCompletionTypeKPI125(),
+						fieldMapping.getJiraIterationCompletionStatusKPI125());
 
 				LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
 						DATE_TIME_FORMATTER);
@@ -564,17 +564,17 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				KpiDataHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressIBU(), jiraIssues, inProgressIssues, openIssues);
+				KpiDataHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI125(), jiraIssues, inProgressIssues, openIssues);
 				iterationPotentialDelayList
 						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
 		}
 
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressIBU())) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI125())) {
 			List<JiraIssue> inProgressIssues = allIssues.stream()
 					.filter(jiraIssue -> (jiraIssue.getAssigneeId() == null)
 							&& StringUtils.isNotEmpty(jiraIssue.getDueDate())
-							&& (fieldMapping.getJiraStatusForInProgressIBU().contains(jiraIssue.getStatus())))
+							&& (fieldMapping.getJiraStatusForInProgressKPI125().contains(jiraIssue.getStatus())))
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();

@@ -134,8 +134,8 @@ public class QualityStatusServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-		fieldMapping.setJiraDefectRejectionStatusQS("");
-		fieldMapping.setResolutionTypeForRejectionQS(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
+		fieldMapping.setJiraDefectRejectionStatusKPI133("");
+		fieldMapping.setResolutionTypeForRejectionKPI133(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}

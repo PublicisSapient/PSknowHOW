@@ -131,11 +131,11 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
 						new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusIDCS());
+						fieldMapping.getJiraIterationCompletionStatusKPI136());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
-				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttypeIDCS)
+				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttypeKPI136)
 						.orElse(Collections.emptyList());
 				Set<String> totalSprintReportDefects = new HashSet<>();
 				Set<String> totalSprintReportStories = new HashSet<>();
@@ -303,7 +303,7 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 	}
 
 	private List<JiraIssue> filterDefects(Map<String, Object> resultMap, FieldMapping fieldMapping) {
-		List<String> defectStatuses = fieldMapping.getJiradefecttypeIDCS();
+		List<String> defectStatuses = fieldMapping.getJiradefecttypeKPI136();
 		// subtask defects consider as BUG type in jira_issue
 		defectStatuses.add(NormalizedJira.DEFECT_TYPE.getValue());
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(CommonConstant.TOTAL_ISSUES))) {

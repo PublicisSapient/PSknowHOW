@@ -347,7 +347,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setStoryFirstStatus("Open");
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setJiraDorLT("In Analysis");
-		fieldMapping.setJiraDefectRejectionStatusQS("Closed");
+		fieldMapping.setJiraDefectRejectionStatusKPI133("Closed");
 		fieldMapping.setJiraDod(Arrays.asList("Ready for Sign-Off"));
 		fieldMapping.setJiraIssueDeliverdStatusFTPR(Arrays.asList("Closed", "Ready for Delivery"));
 		fieldMapping.setJiraDefectRemovalStatus(Arrays.asList("Closed"));
@@ -355,7 +355,7 @@ public class FieldMappingServiceImplTest {
 				Arrays.asList("Duplicate", "Cannot Reproduce", "Invalid", "Declined", "Dropped"));
 		fieldMapping.setJiraStatusForDevelopmentAVR(Arrays.asList("In Development"));
 		fieldMapping.setJiraStatusForDevelopmentFTPR(Arrays.asList("In Development"));
-		fieldMapping.setJiraStatusForDevelopmentIFTPR(Arrays.asList("In Development"));
+		fieldMapping.setJiraStatusForDevelopmentKPI135(Arrays.asList("In Development"));
 		fieldMapping.setJiraStatusForQa(Arrays.asList("In Testing"));
 		// customField
 		fieldMapping.setSprintName("customfield_12700");

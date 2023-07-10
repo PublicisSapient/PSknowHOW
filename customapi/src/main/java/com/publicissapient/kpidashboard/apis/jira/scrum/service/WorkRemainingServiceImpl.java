@@ -124,8 +124,8 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeWR(),
-						fieldMapping.getJiraIterationCompletionStatusWR());
+						fieldMapping.getJiraIterationCompletionTypeKPI119(),
+						fieldMapping.getJiraIterationCompletionStatusKPI119());
 
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);
@@ -212,7 +212,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 									.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
 											.equals(jiraIssue.getNumber()))
 									.findFirst().orElse(new JiraIssueCustomHistory());
-							String devCompletionDate = getDevCompletionDate(issueCustomHistory,fieldMapping.getJiraDevDoneStatusWR());
+							String devCompletionDate = getDevCompletionDate(issueCustomHistory,fieldMapping.getJiraDevDoneStatusKPI119());
 							KPIExcelUtility.populateIterationKPI(finalOverAllmodalValues, finalmodalValues, jiraIssue,
 									fieldMapping, modalObjectMap);
 							issueCount = issueCount + 1;
@@ -346,8 +346,8 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 					issueWiseDelay.stream()
 							.filter(iterationPotentialDelay -> iterationPotentialDelay.getIssueId()
 									.equalsIgnoreCase(jiraIssue.getNumber()) && null != fieldMapping
-									&& CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressWR())
-									&& fieldMapping.getJiraStatusForInProgressWR().contains(jiraIssue.getStatus()))
+									&& CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI119())
+									&& fieldMapping.getJiraStatusForInProgressKPI119().contains(jiraIssue.getStatus()))
 							.forEach(delayList::add);
 				}
 
@@ -389,17 +389,17 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				KpiDataHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressWR(), jiraIssues, inProgressIssues, openIssues);
+				KpiDataHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI119(), jiraIssues, inProgressIssues, openIssues);
 				iterationPotentialDelayList
 						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
 		}
 
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressWR())) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI119())) {
 			List<JiraIssue> inProgressIssues = allIssues.stream()
 					.filter(jiraIssue -> (jiraIssue.getAssigneeId() == null)
 							&& StringUtils.isNotEmpty(jiraIssue.getDueDate())
-							&& (fieldMapping.getJiraStatusForInProgressWR().contains(jiraIssue.getStatus())))
+							&& (fieldMapping.getJiraStatusForInProgressKPI119().contains(jiraIssue.getStatus())))
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();

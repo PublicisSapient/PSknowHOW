@@ -112,8 +112,8 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeDCS(),
-						fieldMapping.getJiraIterationCompletionStatusDCS());
+						fieldMapping.getJiraIterationCompletionTypeKPI145(),
+						fieldMapping.getJiraIterationCompletionStatusKPI145());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
@@ -368,7 +368,7 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 				JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream().filter(
 						jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
 						.findFirst().orElse(new JiraIssueCustomHistory());
-				String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping.getJiraDevDoneStatusDCS());
+				String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping.getJiraDevDoneStatusKPI145());
 				compltedIssues.putIfAbsent(jiraIssue, devCompletionDate);
 			});
 		}
@@ -405,8 +405,8 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 		filterStorySprintDetails.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 
 		// Getting inProgress Status
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressDCS())) {
-			inProgressStatuses = fieldMapping.getJiraStatusForInProgressDCS();
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI145())) {
+			inProgressStatuses = fieldMapping.getJiraStatusForInProgressKPI145();
 		}
 		LocalDate startDate = null;
 		LocalDate endDate;

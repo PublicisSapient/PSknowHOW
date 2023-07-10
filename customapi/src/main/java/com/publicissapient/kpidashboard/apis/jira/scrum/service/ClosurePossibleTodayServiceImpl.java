@@ -117,8 +117,8 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 						.get(sprintDetail.getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
-						fieldMapping.getJiraIterationCompletionTypeCPT(),
-						fieldMapping.getJiraIterationCompletionStatusCPT());
+						fieldMapping.getJiraIterationCompletionTypeKPI122(),
+						fieldMapping.getJiraIterationCompletionStatusKPI122());
 				List<String> notCompletedIssues = KpiDataHelper
 						.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
@@ -268,17 +268,17 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				KpiDataHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressCPT(), jiraIssues, inProgressIssues, openIssues);
+				KpiDataHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI122(), jiraIssues, inProgressIssues, openIssues);
 				iterationPotentialDelayList
 						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
 		}
 
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressCPT())) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI122())) {
 			List<JiraIssue> inProgressIssues = allIssues.stream()
 					.filter(jiraIssue -> (jiraIssue.getAssigneeId() == null)
 							&& StringUtils.isNotEmpty(jiraIssue.getDueDate())
-							&& (fieldMapping.getJiraStatusForInProgressCPT().contains(jiraIssue.getStatus())))
+							&& (fieldMapping.getJiraStatusForInProgressKPI122().contains(jiraIssue.getStatus())))
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();

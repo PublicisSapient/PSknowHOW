@@ -92,8 +92,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 */
 	private static boolean checkFlagIncludedStatus(FieldMapping fieldMapping) {
 		boolean isFlagIncluded = false;
-		if (null != fieldMapping && StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatusIW()) && fieldMapping
-				.getJiraIncludeBlockedStatusIW().contains(CommonConstant.IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE)) {
+		if (null != fieldMapping && StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatusKPI131()) && fieldMapping
+				.getJiraIncludeBlockedStatusKPI131().contains(CommonConstant.IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE)) {
 			isFlagIncluded = true;
 		}
 		return isFlagIncluded;
@@ -137,8 +137,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeIW(),
-						fieldMapping.getJiraIterationCompletionStatusIW());
+						fieldMapping.getJiraIterationCompletionTypeKPI131(),
+						fieldMapping.getJiraIterationCompletionStatusKPI131());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
@@ -295,13 +295,13 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		List<String> blockedStatus = new ArrayList<>();
 		List<String> waitStatus = new ArrayList<>();
 		if (null != fieldMapping) {
-			if (StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatusIW())
-					&& fieldMapping.getJiraIncludeBlockedStatusIW().contains(CommonConstant.BLOCKED_STATUS_WASTAGE)
+			if (StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatusKPI131())
+					&& fieldMapping.getJiraIncludeBlockedStatusKPI131().contains(CommonConstant.BLOCKED_STATUS_WASTAGE)
 					&& CollectionUtils.isNotEmpty(fieldMapping.getJiraBlockedStatusIW()))
 				blockedStatus = fieldMapping.getJiraBlockedStatusIW();
 
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraWaitStatusIW()))
-				waitStatus = fieldMapping.getJiraWaitStatusIW();
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraWaitStatusKPI131()))
+				waitStatus = fieldMapping.getJiraWaitStatusKPI131();
 		}
 		return Arrays.asList(blockedStatus, waitStatus);
 	}

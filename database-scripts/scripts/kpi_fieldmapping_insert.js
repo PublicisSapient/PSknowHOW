@@ -602,7 +602,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeCPT",
+    "fieldName": "jiraIterationCompletionTypeKPI122",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -611,6 +611,16 @@ db.getCollection('field_mapping_structure').insert(
       "definition": "Issue Types to be considered Completed"
     }
   },
+  {
+      "fieldName": "jiraIterationCompletionTypeKPI124",
+      "fieldLabel": "Iteration Board Issue types",
+      "fieldType": "chips",
+      "fieldCategory": "Issue_Type",
+      "section": "Issue Types Mapping",
+      "tooltip": {
+        "definition": "Issue Types to be considered Completed"
+      }
+    },
   {
     "fieldName": "jiraIterationCompletionTypeBRE",
     "fieldLabel": "Iteration Board Issue types",
@@ -622,7 +632,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeIW",
+    "fieldName": "jiraIterationCompletionTypeKPI131",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -632,7 +642,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypePWS",
+    "fieldName": "jiraIterationCompletionTypeKPI128",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -642,7 +652,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeUPWS",
+    "fieldName": "jiraIterationCompletionTypeKPI134",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -652,7 +662,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeDCS",
+    "fieldName": "jiraIterationCompletionTypeKPI145",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -672,7 +682,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeWR",
+    "fieldName": "jiraIterationCompletionTypeKPI119",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -682,7 +692,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeEVA",
+    "fieldName": "jiraIterationCompletionTypeKPI75",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -692,7 +702,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeILS",
+    "fieldName": "jiraIterationCompletionTypeKPI123",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -702,7 +712,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeIBU",
+    "fieldName": "jiraIterationCompletionTypeKPI125",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -712,7 +722,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeICO",
+    "fieldName": "jiraIterationCompletionTypeKPI120",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -862,7 +872,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "resolutionTypeForRejectionQS",
+    "fieldName": "resolutionTypeForRejectionKPI133",
     "fieldLabel": "Resolution Type for Rejection",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -972,7 +982,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDefectRejectionStatusQS",
+    "fieldName": "jiraDefectRejectionStatusKPI133",
     "fieldLabel": "Defect Rejection Status",
     "fieldType": "text",
     "fieldCategory": "workflow",
@@ -1032,7 +1042,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraStatusForDevelopmentIFTPR",
+    "fieldName": "jiraStatusForDevelopmentKPI135",
     "fieldLabel": "Status to Identify Development Status",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -1072,7 +1082,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIFTPRStoryIdentification",
+    "fieldName": "jiraKPI135StoryIdentification",
     "fieldLabel": "Issues types included in FTPR",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -1206,7 +1216,7 @@ db.getCollection('field_mapping_structure').insert(
     ]
   },
   {
-    "fieldName": "defectPriorityQS",
+    "fieldName": "defectPriorityKPI133",
     "fieldLabel": "Defect priority exclusion from Quality KPIs",
     "fieldType": "multiselect",
     "section": "Defects Mapping",
@@ -1273,7 +1283,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "excludeRCAFromQS",
+    "fieldName": "excludeRCAFromKPI133",
     "fieldLabel": "Defect RCA exclusion from Quality KPIs",
     "fieldType": "chips",
     "section": "Defects Mapping",
@@ -1454,7 +1464,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-      "fieldName": "jiraIterationCompletionStatusIFTPR",
+      "fieldName": "jiraIterationCompletionStatusKPI135",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1474,7 +1484,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusCPT",
+      "fieldName": "jiraIterationCompletionStatusKPI122",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1484,7 +1494,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusEVA",
+      "fieldName": "jiraIterationCompletionStatusKPI75",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1494,7 +1504,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusDCS",
+      "fieldName": "jiraIterationCompletionStatusKPI145",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1504,7 +1514,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusIDCP",
+      "fieldName": "jiraIterationCompletionStatusKPI140",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1514,7 +1524,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusIDCR",
+      "fieldName": "jiraIterationCompletionStatusKPI132",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1524,7 +1534,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusIDCS",
+      "fieldName": "jiraIterationCompletionStatusKPI136",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1574,7 +1584,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusEH",
+      "fieldName": "jiraIterationCompletionStatusKPI124",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1584,7 +1594,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusILS",
+      "fieldName": "jiraIterationCompletionStatusKPI123",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1594,7 +1604,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusIBU",
+      "fieldName": "jiraIterationCompletionStatusKPI125",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1604,7 +1614,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusICO",
+      "fieldName": "jiraIterationCompletionStatusKPI120",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1614,7 +1624,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusPWS",
+      "fieldName": "jiraIterationCompletionStatusKPI128",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1624,7 +1634,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusUPWS",
+      "fieldName": "jiraIterationCompletionStatusKPI134",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1634,7 +1644,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusQS",
+      "fieldName": "jiraIterationCompletionStatusKPI133",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1644,7 +1654,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusWR",
+      "fieldName": "jiraIterationCompletionStatusKPI119",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1654,7 +1664,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusIW",
+      "fieldName": "jiraIterationCompletionStatusKPI131",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1664,7 +1674,7 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
     {
-          "fieldName": "jiraWaitStatusIW",
+          "fieldName": "jiraWaitStatusKPI131",
           "fieldLabel": "Wastage - Wait Status",
           "fieldType": "chips",
           "fieldCategory": "workflow",
@@ -1809,7 +1819,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiradefecttypeIFTPR",
+    "fieldName": "jiradefecttypeKPI135",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -1864,7 +1874,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiradefecttypeQS",
+    "fieldName": "jiradefecttypeKPI133",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -1919,7 +1929,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiradefecttypeIDCP",
+    "fieldName": "jiradefecttypeKPI140",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -1930,7 +1940,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiradefecttypeIDCS",
+    "fieldName": "jiradefecttypeKPI136",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -1952,7 +1962,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiradefecttypeIDCR",
+    "fieldName": "jiradefecttypeKPI132",
     "fieldLabel": "Issue Type to Identify Defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -2090,7 +2100,7 @@ db.getCollection('field_mapping_structure').insert(
         ]
 },
 {
-    "fieldName": "jiraIncludeBlockedStatusIW",
+    "fieldName": "jiraIncludeBlockedStatus131",
     "fieldLabel": "Wastage - Blocked Issues Criteria ",
     "fieldType": "radiobutton",
 	"fieldCategory": "workflow",
@@ -2214,7 +2224,7 @@ db.getCollection('field_mapping_structure').insert(
           }
 },
 {
-    "fieldName": "issueStatusExcluMissingWorkEH",
+    "fieldName": "issueStatusExcluMissingWorkKPI124",
     "fieldLabel": "Issue status to be excluded from Missing Worklogs ",
      "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -2223,7 +2233,7 @@ db.getCollection('field_mapping_structure').insert(
           "definition": "Statuses selected depict all created status of issue types included in the Project.",
           }
 },{
-    "fieldName": "jiraStatusForInProgressDCS",
+    "fieldName": "jiraStatusForInProgressKPI145",
     "fieldLabel": "Status to identify In Progress",
      "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -2233,7 +2243,7 @@ db.getCollection('field_mapping_structure').insert(
           }
 },
 {
-    "fieldName": "jiraStatusForInProgressCPT",
+    "fieldName": "jiraStatusForInProgressKPI122",
     "fieldLabel": "Status to identify In Progress",
      "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -2242,7 +2252,7 @@ db.getCollection('field_mapping_structure').insert(
           "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
           }
 },{
-    "fieldName": "jiraStatusForInProgressIBU",
+    "fieldName": "jiraStatusForInProgressKPI125",
     "fieldLabel": "Status to identify In Progress",
      "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -2251,7 +2261,7 @@ db.getCollection('field_mapping_structure').insert(
           "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
           }
 },{
-    "fieldName": "jiraStatusForInProgressILS",
+    "fieldName": "jiraStatusForInProgressKPI123",
     "fieldLabel": "Status to identify In Progress",
      "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -2260,7 +2270,7 @@ db.getCollection('field_mapping_structure').insert(
           "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
           }
 },{
-    "fieldName": "jiraStatusForInProgressWR",
+    "fieldName": "jiraStatusForInProgressKPI119",
     "fieldLabel": "Status to identify In Progress",
      "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -2269,7 +2279,7 @@ db.getCollection('field_mapping_structure').insert(
           "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
           }
 },{
-    "fieldName": "jiraStatusForInProgressPWS",
+    "fieldName": "jiraStatusForInProgressKPI128",
     "fieldLabel": "Status to identify In Progress",
      "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -2278,7 +2288,7 @@ db.getCollection('field_mapping_structure').insert(
           "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
           }
 },{
-    "fieldName": "jiraDevDoneStatusWR",
+    "fieldName": "jiraDevDoneStatusKPI119",
     "fieldLabel": "Dev Completion Status",
      "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -2288,7 +2298,7 @@ db.getCollection('field_mapping_structure').insert(
                                                                         ",
           }
 },{
-    "fieldName": "jiraDevDoneStatusDCS",
+    "fieldName": "jiraDevDoneStatusKPI145",
     "fieldLabel": "Dev Completion Status",
      "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -2298,7 +2308,7 @@ db.getCollection('field_mapping_structure').insert(
                                                                         ",
           }
 },{
-    "fieldName": "jiraDevDoneStatusPWS",
+    "fieldName": "jiraDevDoneStatusKPI128",
     "fieldLabel": "Dev Completion Status",
      "fieldType": "chips",
     "fieldCategory": "workflow",

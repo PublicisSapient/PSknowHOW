@@ -237,7 +237,7 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiraDefectRejectionStatusFTPR("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusIFTPR("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusQADD("Dropped");
-		fieldMapping.setJiraDefectRejectionStatusQS("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI133("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusRCA("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
@@ -329,7 +329,7 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiraDefectRejectionStatusFTPR("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusIFTPR("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusQADD("Dropped");
-		fieldMapping.setJiraDefectRejectionStatusQS("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI133("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusRCA("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 

@@ -120,8 +120,8 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeILS(),
-						fieldMapping.getJiraIterationCompletionStatusILS());
+						fieldMapping.getJiraIterationCompletionTypeKPI123(),
+						fieldMapping.getJiraIterationCompletionStatusKPI123());
 
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);
@@ -298,17 +298,17 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				KpiDataHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressILS(), jiraIssues, inProgressIssues, openIssues);
+				KpiDataHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI123(), jiraIssues, inProgressIssues, openIssues);
 				iterationPotentialDelayList
 						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
 		}
 
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressILS())) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI123())) {
 			List<JiraIssue> inProgressIssues = allIssues.stream()
 					.filter(jiraIssue -> (jiraIssue.getAssigneeId() == null)
 							&& StringUtils.isNotEmpty(jiraIssue.getDueDate())
-							&& (fieldMapping.getJiraStatusForInProgressILS().contains(jiraIssue.getStatus())))
+							&& (fieldMapping.getJiraStatusForInProgressKPI123().contains(jiraIssue.getStatus())))
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();
