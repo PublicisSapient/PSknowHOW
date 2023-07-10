@@ -48,7 +48,7 @@ export class MultilineComponent implements OnChanges {
   @Input() isChildComponent: boolean;
   @Input() xCaption: string;
   @Input() unit?: string;
-  @Input() color?: string;
+  @Input() color?: Array<string>;
   @Input() selectedtype: string;
   elem;
   sliderLimit = <any>'750';
@@ -85,7 +85,7 @@ export class MultilineComponent implements OnChanges {
     d3.select(this.elem).select('#verticalSVG').select('svg').remove();
     d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
-
+    
     const data = this.data;
     const thresholdValue = this.thresholdValue;
     const elem = this.elem;
@@ -106,7 +106,7 @@ export class MultilineComponent implements OnChanges {
     const marginTop = 35;
     const color = this.color;
     const name = this.name;
-    const id = this.kpiId;
+    const kpiId = this.kpiId;
     const showPercent = false;
     const showWeek = false;
     const showUnit = this.unit;
@@ -257,7 +257,7 @@ export class MultilineComponent implements OnChanges {
       XCaption.text('Sprints');
     }
 
-    if (id === 'kpi114' || id === 'kpi74' || id === 'kpi997') {
+    if (kpiId === 'kpi114' || kpiId === 'kpi74' || kpiId === 'kpi997') {
       XCaption.text('Months');
     }
 
@@ -320,179 +320,6 @@ export class MultilineComponent implements OnChanges {
       .style('fill', 'none')
       .attr('class', 'gridline');
 
-    /************ horizontal legend addition started **********/
-
-    // The names which you want to appear as legends should be inside this array.
-    // const legendData = [];
-    // let legendWidth = 0;
-    // for (const obj in data) {
-
-    //     legendWidth = legendWidth + data[obj].data.length * 10 + 40;
-    //     legendData.push(data[obj].data);
-    // }
-
-    // const scrollWidth = d3.select(elem).select('#multiLineChart').node().getBoundingClientRect().width;
-
-    // if (this.isChildComponent) {
-    //     $(elem).find('.bstimeslider').remove();
-    // }
-
-    // d3.select(elem).select('#multiLineChart').append('div')
-    //     .attr('class', 'bstimeslider')
-    //     .style('width', scrollWidth - 15 + 'px');
-
-    // const slider = d3.select(elem).select('.bstimeslider');
-
-    // const sliderData = slider.append('div').attr('id', 'viewContainer')
-    //     .style('margin-left', '-' + (((scrollWidth - 85) / 2) - 15) + 'px')
-    //     .style('width', scrollWidth - 100 + 'px')
-    //     .append('div')
-    //     .attr('id', 'tslshow')
-    //     .style('width', '1000px');
-
-    // const sliderText = sliderData
-    //     .selectAll('div')
-    //     .data(legendData)
-    //     .enter()
-    //     .append('div')
-    //     .attr('class', 'bktibx')
-    //     .style('width', (d, i) => d.length);
-
-    // // if wanna use circle instead of line in legend
-    // sliderText.append('span')
-    //     .attr('cx', 13)
-    //     .attr('class', function (d, i) {
-    //         return 'legendCircle' + i;
-    //     })
-    //     .style('background-color', function (d, i) {
-    //         return color[i];
-    //     })
-    //     .style('border', function (d, i) {
-    //         return '1px solid ' + color[i];
-    //     })
-    //     .style('width', '12px')
-    //     .style('height', '12px')
-    //     .style('border-radius', '50%')
-    //     .style('display', ' inline-block')
-    //     .style('margin', '0px 10px');
-
-    // sliderText.append('text')
-    //     .attr('class', function (d, i) {
-    //         return 'legendText' + i;
-    //     })
-    //     .attr('x', 30)
-    //     .attr('y', 3)
-    //     .attr('dy', '.15em')
-    //     .text((d, i) => d)
-    //     .style('text-anchor', 'start')
-    //     .style('font-size', 12)
-    //     .style('cursor', 'pointer')
-    //     .on('mouseover', function (d, i) {
-    //         const className = 'line' + i;
-    //         d3.select(elem).selectAll('.line')
-    //             .style('opacity', otherLinesOpacityHover);
-    //         d3.select(elem).selectAll('.circle')
-    //             .style('opacity', circleOpacityOnLineHover);
-    //         d3.select(elem).select('.' + className)
-    //             .style('opacity', lineOpacityHover)
-    //             .style('stroke-width', lineStrokeHover)
-    //             .style('cursor', 'pointer');
-    //         svg.append('text')
-    //             .attr('class', 'title-text')
-    //             .style('fill', color[i])
-    //             .text(d)
-    //             .attr('text-anchor', 'middle')
-    //             .attr('x', (width - margin) / 2)
-    //             .attr('y', -10);
-    //     })
-    //     .on('click', function (d, i) {
-
-    //         const dvalue = d3.select(elem).select('.line' + i).style('display');
-    //         if (dvalue !== 'none') {
-    //             d3.select(elem).select('.legendCircle' + i)
-    //                 .style('background-color', 'var(--color-white)');
-    //             const displayValue = 'none';
-    //             d3.select(elem).select('.line' + i)
-    //                 .style('display', displayValue);
-    //             d3.select(elem).select('.circlegroup' + i)
-    //                 .style('display', displayValue);
-    //             d3.select(elem).select('.legendText' + i)
-    //                 .style('text-decoration', 'line-through');
-    //         } else {
-    //             d3.select(elem).select('.legendCircle' + i)
-    //                 .style('background-color', color[i]);
-    //             const displayValue = 'inline';
-    //             d3.select(elem).select('.line' + i)
-    //                 .style('display', displayValue);
-    //             d3.select(elem).select('.circlegroup' + i)
-    //                 .style('display', displayValue);
-    //             d3.select(elem).select('.legendText' + i)
-    //                 .style('text-decoration', 'none');
-    //         }
-
-    //     })
-    //     .on('mouseout', function (d, i) {
-    //         const className = 'line' + i;
-    //         svg.select('.title-text').remove();
-    //         d3.select(elem).selectAll('.line').style('opacity', lineOpacity);
-    //         d3.select(elem).selectAll('.circle')
-    //             .style('opacity', circleOpacity);
-    //         d3.select(elem).selectAll('.' + className + '')
-    //             .style('stroke-width', lineStroke);
-    //     });
-
-    // calculating width of
-
-    // const element = d3.select(elem).selectAll('.bktibx');
-    // let legendSliderWidth = 0;
-
-    // for (let i = 0; i < element._groups[0].length; i++) {
-    //     legendSliderWidth += element._groups[0][i].clientWidth;
-    //     legendSliderWidth += 1;
-
-    // }
-
-    // legendWidth = legendSliderWidth;
-
-    // this.sliderLimit = legendWidth;
-    // const move = '100px';
-
-    // d3.select(this.elem).select('#tslshow')
-    //     .style('width', legendWidth + 'px');
-
-    // if (legendWidth >= scrollWidth - 85) {
-
-    //     d3.select(elem).select('#viewContainer').style('background-color', '#f4f4f4');
-    //     slider.append('div')
-    //         .attr('id', 'rightArrow')
-    //         .on('click', function () {
-
-    //             const view = $(this).siblings('#viewContainer').find('#tslshow');
-    //             const currentPosition = parseInt(view.css('left'), 10);
-    //             // scrollWidth-100
-    //             if (currentPosition + legendWidth >= scrollWidth - 100) {
-    //                 view.stop(false, true).animate({ left: '-=' + move }, { duration: 400 });
-    //             }
-    //         })
-    //         .append('span')
-    //         .text('>');
-
-    //     slider.append('div')
-    //         .attr('id', 'leftArrow')
-    //         .on('click', function () {
-
-    //             const view = $(this).siblings('#viewContainer').find('#tslshow');
-    //             const currentPosition = parseInt(view.css('left'), 10);
-    //             if (currentPosition < -99) {
-    //                 view.stop(false, true).animate({ left: '+=' + move }, { duration: 400 });
-    //             }
-
-    //         })
-    //         .append('span')
-    //         .text('<');
-    // }
-
-    /********************Horizontal scrollbar end ***********************/
 
     /* Add line into SVG acoording to data */
     const line = d3
@@ -549,9 +376,9 @@ export class MultilineComponent implements OnChanges {
       .style('stroke', (d, i) => color[i])
       .style('opacity', lineOpacity)
       .style('stroke-dasharray', function (d, i) {
-        // if ((d.data).includes('LogTime') && name === 'Sprint Capacity') {
-        //     return '4, 4';
-        // }
+        if (d['filter']?.toLowerCase() == 'average coverage' || d['data']?.toLowerCase() == 'average coverage') {
+          return '4,4';
+        }
       })
       .style('fill', 'none')
       .style('stroke-width', '2')
@@ -608,10 +435,10 @@ export class MultilineComponent implements OnChanges {
           div
             .html(
               `${d.date || d.sSprintName}` +
-                ' : ' +
-                "<span class='toolTipValue'> " +
-                `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
-                '</span>',
+              ' : ' +
+              "<span class='toolTipValue'> " +
+              `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
+              '</span>',
             )
             .style('left', xPosition + 20 + 'px')
             // .style('top', yScale(d.value) - topValue + 'px');
@@ -621,10 +448,10 @@ export class MultilineComponent implements OnChanges {
               .append('p')
               .html(
                 `${hoverData}` +
-                  ' : ' +
-                  "<span class='toolTipValue'> " +
-                  `${d.hoverValue[hoverData]}` +
-                  ' </span>',
+                ' : ' +
+                "<span class='toolTipValue'> " +
+                `${d.hoverValue[hoverData]}` +
+                ' </span>',
               );
           }
         }
@@ -693,7 +520,39 @@ export class MultilineComponent implements OnChanges {
             );
         }
       });
+    if (this.kpiId == 'kpi17') {
+      d3.select(this.elem).select('#legendContainer').remove();
+      const legendDiv = d3.select(this.elem).select('#multiLineChart').append('div')
+        .attr('id', 'legendContainer')
+        .style('margin-left', 60 + 'px')
+        .append('div');
+      
+      legendDiv.transition()
+        .duration(200)
+        .style('display', 'block')
+        .style('opacity', 1)
+        .attr('class', 'p-d-flex p-flex-wrap normal-legend');
 
+      let colorArr = [];
+      for(let i=0; i<color?.length;i++){
+        if(!colorArr.includes(color[i])){
+          colorArr.push(color[i]);
+        }
+      }
+
+      if(colorArr?.length>0){
+        let htmlString = '<div class="legend_item" style="display:flex; align-items:center;"><div>';
+  
+        
+        colorArr.forEach((d, i) => {
+          htmlString += `<div class="legend_color_indicator" style="margin:0 5px 2px 0;width:15px; border-width:2px; border-style:dashed; border-color: ${color[i]}"></div>`;
+        });
+  
+        htmlString += '</div><div class="font-small"> Average Coverage</div></div>'
+  
+        legendDiv.html(htmlString);
+      }
+    }
     const content = this.elem.querySelector('#horizontalSVG');
     content.scrollLeft += width;
   }
@@ -703,6 +562,7 @@ export class MultilineComponent implements OnChanges {
     d3.select(this.elem).select('#verticalSVG').select('svg').remove();
     d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
+    d3.select(this.elem).select('#legendContainer').remove();
     this.data = [];
   }
 }

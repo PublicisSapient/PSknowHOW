@@ -179,7 +179,10 @@
 .kpi-value-center{
     justify-content: center;
 }
-
-
+.kpi-card-body{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
 
 
