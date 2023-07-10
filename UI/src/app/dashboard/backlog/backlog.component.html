@@ -37,12 +37,16 @@
                                   [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
                                   != -99 ?
                                   convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
+                                  <span *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
+                                    {{ x?.value != -99 ? x?.unit : ''}}
+                                  </span>
                                 <span *ngIf="x?.value1 && x?.value1 != -99 && x?.value1 != undefined"
                                   [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
                                   x?.value1}}</span>
-                                <span *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
-                                  {{ x?.value != -99 ? x?.unit : ''}}
-                                </span>
+                                  <span *ngIf="x?.value1 && x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours'">
+                                    {{ x?.value1 != -99 ? x?.unit1 : ''}}
+                                  </span>
+                               
                               </ng-template>
                             </p>
                           </div>
@@ -100,11 +104,11 @@
               </ng-template>
               <ng-template #noData>
                 <div class="overlay"
-                  *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader">
+                  *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader || kpiSpecificLoader.includes(kpi.kpiId)">
                   <div class="loading-img"></div>
                 </div>
                 <div class="min-ht"
-                  *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)">
+                  *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false && !kpiSpecificLoader.includes(kpi.kpiId)) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false && !kpiSpecificLoader.includes(kpi.kpiId))">
                   <div class="err">No Data Available</div>
                 </div>
 
