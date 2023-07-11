@@ -576,11 +576,11 @@ db.getCollection('kpi_master').insertMany(
     "xAxisLabel": "Weeks",
     "isPositiveTrend": true,
     "showTrend": true,
-    "kpiFilter": "dropDown",
+    "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
+    "hideOverallFilter": false,
     "maturityRange": [
       "-20",
       "20-40",
