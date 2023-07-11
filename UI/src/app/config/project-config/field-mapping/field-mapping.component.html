@@ -814,25 +814,6 @@
                                   (click)="showDialogToAddValue(false, 'jiraStoryIdentification', 'Issue_Type')"></button>
                           </div>
                       </div>
-                      <div class="p-mb-3 p-d-flex p-align-center"
-                      *ngIf="fieldstoShow?.includes('issueTypeKpi127') || fieldstoShow.length === 0">
-                      <label class="field-title">Issue type to be included
-                          <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
-                              Definition:
-                              All issue types to identify Production defects . <br>
-                              Example: Defect <hr>
-                              KPI Impacted:
-                              Production Ageing Kpi
-                             </span>' tooltipPosition="top" tooltipEvent ="hover" tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
-                        <div class="p-inputgroup">
-                            <p-chips [style]="{'max-width':'initial','width':'60vw'}" inputId="issueTypeKpi127"
-                                formControlName="issueTypeKpi127" placeholder="Enter Story Identification"
-                                addOnBlur="true" >
-                            </p-chips>
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(false, 'issueTypeKpi127', 'Issue_Type')"></button>
-                        </div>
-                    </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraFTPRStoryIdentification') || fieldstoShow.length === 0">
                         <label class="field-title">Issues types included in FTPR <span class="fa fa-info-circle" aria-hidden="true"

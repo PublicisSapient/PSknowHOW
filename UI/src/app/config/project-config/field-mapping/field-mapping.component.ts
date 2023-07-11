@@ -451,7 +451,6 @@ export class FieldMappingComponent implements OnInit {
       jiraTestAutomationIssueType: [[]],
       jiraIntakeToDorIssueType: [[]],
       jiraStoryIdentification: [[]],
-      issueTypeKpi127: [[]],
       jiraFTPRStoryIdentification: [[]],
       jiraSprintCapacityIssueType: [[]],
       jiraIssueEpicType: [[]],
