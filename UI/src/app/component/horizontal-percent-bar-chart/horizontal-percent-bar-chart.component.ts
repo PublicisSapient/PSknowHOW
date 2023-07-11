@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, HostListener, Input, OnChanges, SimpleChanges } from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
@@ -26,14 +26,18 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
 
   draw(){
+    let chartContainerWidth = (document.getElementById('chart')?.offsetWidth ?  document.getElementById('chart')?.offsetWidth : 485);
+    chartContainerWidth = chartContainerWidth <= 490 ? chartContainerWidth : chartContainerWidth-70;
     const chart = d3.select('#chart');
-    chart.select('svg').remove();
+    chart.select('.chart-container').select('svg').remove();
+    chart.select('.chart-container').remove();
     const margin = {top: 10, right: 22, bottom: 20, left: 100};
-    const width = 485 - margin.left - margin.right;
+    const width = chartContainerWidth - margin.left - margin.right;
     const height = 180 - margin.top - margin.bottom;
-
     // append the svg object to the body of the page
     const svg = chart
+      .append('div')
+      .attr('class','chart-container')
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -108,7 +112,6 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .keys(subgroups)
       (this.data);
 
-    let tooltipContainer;
 
     // Show the bars
     svg.append('g')
@@ -127,52 +130,70 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .style('cursor', 'pointer')
       .on('mouseover', (event, d) => {
         this.selectedGroup = d.data.kpiGroup;
-        const tooltipData = stackedData.flat(1).filter(groupData => groupData.data.kpiGroup === this.selectedGroup);
-        tooltipContainer = chart
-          .select('.tooltip-container')
-          .selectAll('div')
-          .data(tooltipData)
-          .join('div')
-          .attr('class', 'tooltip')
-          .style('left', d => {
-            const percentVal = +(d[1] - d[0]).toFixed(0);
-            return (x(d[0] + (percentVal - percentVal / 2))) + margin.left + 'px';
-          })
-          .style('top', d => y(d.data.kpiGroup) - 8 + 'px')
-          .text(d => (d[1] - d[0]).toFixed(2).replace(/\.00$/, '') + '%')
-          .transition()
-          .duration(500)
-          .style('display', d => (+(d[1] - d[0]).toFixed(2).replace(/\.00$/, '') > 0) ? 'block' : 'none')
-          .style('opacity', 1);
+        const tooltipData = this.data.filter(tooltip => tooltip.kpiGroup === this.selectedGroup)[0];
+        d3.select('#chart').select('#legendContainer').selectAll('div').remove();
+        this.showTooltip(subgroups, width, margin, color, tooltipData);
       })
       .on('mouseout', (event, d) => {
-        d3.select('#chart')
-          .selectAll('.tooltip')
-          .transition()
-          .duration(1000)
-          .style('display', 'none')
-          .style('opacity', 0);
+        d3.select('#chart').select('#legendContainer').selectAll('div').remove();
+        this.showLegend(subgroups, width, margin, color);
       });
 
+      this.showLegend(subgroups,width,margin,color);
+
+  }
+
+  showLegend(subgroups, width, margin, color) {
     const legendDiv = d3.select('#chart').select('#legendContainer')
       .style('margin-top', '20px')
-      .attr('width', width)
-      .style('margin-left', margin.left + 'px');
+      .attr('width', 'auto')
+      .style('margin-left', 50+ 'px');
 
     legendDiv.transition()
       .duration(200)
       .style('display', 'block')
       .style('opacity', 1)
-      .style('width', width + 'px')
+      .style('width', 'auto')
       .attr('class', 'p-d-flex p-flex-wrap normal-legend');
 
     let htmlString = '';
 
     subgroups.forEach((d, i) => {
-      htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> <span class="p-m-1">: ${d}</span></div>`;
+      htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> <span class="p-m-1" style="font-weight:bold">: ${d}</span></div>`;
     });
 
     legendDiv.html(htmlString)
       .style('bottom', 60 + 'px');
+  }
+
+  showTooltip(subgroups, width, margin, color, tooltipData) {
+    const legendDiv = d3.select('#chart').select('#legendContainer')
+      .style('margin-top', '20px')
+      .attr('width', 'auto')
+      .style('margin-left', 50 + 'px');
+
+    legendDiv.transition()
+      .duration(200)
+      .style('display', 'block')
+      .style('opacity', 1)
+      .style('width', 'auto')
+      .attr('class', 'p-d-flex p-flex-wrap normal-legend');
+
+    let htmlString = '';
+
+    subgroups.forEach((d, i) => {
+      htmlString += `<div class="legend_item" style="flex-direction:column; align-items:start; margin-right:1.5rem">
+                    <div style="margin-bottom:0.5rem" class="p-d-flex p-align-center">
+                      <div class="legend_color_indicator" style="background-color: ${color(d)}">
+                      </div>
+                      <span class="p-m-1" style="font-weight:bold">: ${d}</span>
+                    </div>
+                    <div style="font-size: 0.75rem;">${tooltipData.kpiGroup}: <span style="color:${color(d)}; font-weight:bold">${tooltipData['value'][d]}</span></div>
+                    <div style="font-size: 0.75rem;">Percentage: <span style="color:${color(d)} ; font-weight:bold">${tooltipData[d].toFixed(2).replace(/\.00$/, '')}%</span></div>
+                    </div>`;
+    });
+
+    legendDiv.html(htmlString)
+      .style('bottom', 30 + 'px');
   }
 }

@@ -71,6 +71,8 @@ import lombok.extern.slf4j.Slf4j;
 public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object>, Map<ObjectId, List<SonarDetails>>> {
 	private static final String TEST_UNIT_COVERAGE = "coverage";
 
+	private static final String AVERAGE_COVERAGE = "Average Coverage";
+
 	@Autowired
 	private CustomApiConfig customApiConfig;
 
@@ -138,9 +140,9 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<String> projectList = new ArrayList<>();
 
 		getSonarHistoryForAllProjects(pList, null, false).forEach((projectNodeId, projectData) -> {
+			List<String> projectList = new ArrayList<>();
 			List<String> coverageList = new ArrayList<>();
 			List<String> versionDate = new ArrayList<>();
 			Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
@@ -191,7 +193,7 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 			Double coverage = metricMap.get(TEST_UNIT_COVERAGE) == null ? 0d
 					: Double.parseDouble(metricMap.get(TEST_UNIT_COVERAGE).toString());
 			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
-			DataCount dcObj = getDataCountObject(coverage, projectName, date, projectNodeId);
+			DataCount dcObj = getDataCountObject(coverage, projectName, date, projectNodeId, keyName);
 			projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 			projectList.add(keyName);
 			versionDate.add(date);
@@ -201,8 +203,8 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 		});
 		DataCount dcObj = getDataCountObject(
 				calculateKpiValue(dateWiseCoverageList, KPICode.UNIT_TEST_COVERAGE.getKpiId()), projectName, date,
-				projectNodeId);
-		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
+				projectNodeId, AVERAGE_COVERAGE);
+		projectWiseDataMap.computeIfAbsent(AVERAGE_COVERAGE, k -> new ArrayList<>()).add(dcObj);
 	}
 
 	private Map<String, SonarHistory> prepareEmptyJobWiseHistoryMap(List<SonarHistory> sonarHistoryList, Long end) {
@@ -228,14 +230,16 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 		return historyMap;
 	}
 
-	private DataCount getDataCountObject(Double value, String projectName, String date, String projectNodeId) {
+	private DataCount getDataCountObject(Double value, String projectName, String date, String projectNodeId , String keyName) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSSprintID(date);
 		dataCount.setSSprintName(date);
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
-		dataCount.setHoverValue(new HashMap<>());
+		Map<String, Object> hoverValueMap = new HashMap<>();
+		hoverValueMap.put(keyName , value);
+		dataCount.setHoverValue(hoverValueMap);
 		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(projectNodeId)));
 		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
 		dataCount.setValue(value);

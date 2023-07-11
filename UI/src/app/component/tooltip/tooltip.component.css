@@ -10,6 +10,7 @@
     min-width: 180px;
     color: #333;
     margin-left: -24px;
+    right: 0;
 }
 .tooltip h4{
     font-family: var(--font-medium);
@@ -80,7 +81,7 @@ ul.kpi-info-list {
     /* box-shadow: 0px -2px 5px 0 rgb(0 0 0 / 40%); */
     -webkit-filter:  drop-shadow(0px -2px 1px #b9b9bb);
     filter:  drop-shadow(0px -2px 1px #b9b9bb);
-    left: 23px;
+    right: 23px;
 }
 
 .tooltip-kpi::before{
