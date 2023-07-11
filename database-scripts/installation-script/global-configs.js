@@ -1,41 +1,21 @@
-db.global_config.updateOne({"zephyrCloudBaseUrl": {"$exists": false}},{$set : {"zephyrCloudBaseUrl":"https://api.zephyrscale.smartbear.com/v2/"}},{upsert:false,multi:true})
-
-
-//Authentication types supported by the system, these can also be managed from settings section
-db.global_config.insertOne([{
-                "env": "production",
-                "authTypeStatus": {
-                    "standardLogin": true,
-                    "adLogin": false
-                }
-            }
-        ]);
-
-//SMTP details
-if (db.getCollection("global_config").find({
-        env: "production"
-    }).count() > 0) {
-    if (db.getCollection("global_config").find({
-            "emailServerDetail": {
-                $exists: true
-            }
-        }).count() == 0) {
-        db.getCollection("global_config").updateOne({
-            "env": "production"
-        }, {
-            $set: {
-                "emailServerDetail": {
-                    "emailHost": "mail.example.com",
-                    "emailPort": 25,
-                    "fromEmail": "no-reply@example.com",
-                    "feedbackEmailIds": [
-                        "sampleemail@example.com"
-                    ]
-                }
-            }
-        }, {})
-    }
-}
+//Authentication types supported by the system, these can also be managed from settings section and SMTP details
+db.global_config.insertOne({
+                               "env": "production",
+                               "authTypeStatus": {
+                                 "standardLogin": true,
+                                 "adLogin": false
+                               },
+                               "emailServerDetail": {
+                                 "emailHost": "mail.example.com",
+                                 "emailPort": 25,
+                                 "fromEmail": "no-reply@example.com",
+                                 "feedbackEmailIds": [
+                                   "sampleemail@example.com"
+                                 ]
+                               },
+                               "zephyrCloudBaseUrl": "https://api.zephyrscale.smartbear.com/v2/"
+                             }
+);
 
 //list of tools supported
 if (db.processor.countDocuments({}) === 0) {
