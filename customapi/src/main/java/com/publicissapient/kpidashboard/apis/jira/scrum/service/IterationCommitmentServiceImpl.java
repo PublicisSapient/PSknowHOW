@@ -117,7 +117,7 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeKPI120(),
+						fieldMapping.getJiraIterationIssuetypeKPI120(),
 						fieldMapping.getJiraIterationCompletionStatusKPI120());
 
 				List<String> puntedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,

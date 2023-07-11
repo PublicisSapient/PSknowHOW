@@ -121,12 +121,12 @@ public class FTPRServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-		fieldMapping.setExcludeRCAFromIFTPR(Arrays.asList("coding"));
+		fieldMapping.setExcludeRCAFromKPI135(Arrays.asList("coding"));
 		fieldMapping.setJiraKPI82StoryIdentification(Arrays.asList("Story"));
-		fieldMapping.setJiraDefectRejectionStatusIFTPR("");
-		fieldMapping.setResolutionTypeForRejectionIFTPR(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
+		fieldMapping.setJiraDefectRejectionStatusKPI135("");
+		fieldMapping.setResolutionTypeForRejectionKPI135(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(Arrays.asList("Closed"));
-		fieldMapping.setDefectPriorityIFTPR(Arrays.asList("p2", "p1"));
+		fieldMapping.setDefectPriorityKPI135(Arrays.asList("p2", "p1"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 

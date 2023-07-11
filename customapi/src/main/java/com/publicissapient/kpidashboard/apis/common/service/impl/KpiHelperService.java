@@ -118,7 +118,6 @@ public class KpiHelperService { // NOPMD
 	private static final String FIELD_STATUS = "status";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-	private static final String TOOL_JIRA = ProcessorConstants.JIRA;
 
 	@Autowired
 	JiraServiceR jiraKPIService;
@@ -384,21 +383,21 @@ public class KpiHelperService { // NOPMD
 			sprintList.add(leaf.getSprintFilter().getId());
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
-			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityDIR());
-			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromDIR());
+			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityKPI14());
+			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromKPI14());
 
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 					leaf.getProjectFilter().getBasicProjectConfigId());
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueType()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueTypeKPI14()));
 			mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
-					CommonUtils.convertToPatternList(fieldMapping.getJiraDodDIR()));
-			mapOfProjectFiltersFH.put("statusUpdationLog.defect.changedTo", fieldMapping.getJiraDefectCreatedStatus());
+					CommonUtils.convertToPatternList(fieldMapping.getJiraDodKPI14()));
+			mapOfProjectFiltersFH.put("statusUpdationLog.defect.changedTo", fieldMapping.getJiraDefectCreatedStatusKPI14());
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueType()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueTypeKPI14()));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionDIR(), fieldMapping.getJiraDefectRejectionStatusDIR());
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionKPI14(), fieldMapping.getJiraDefectRejectionStatusKPI14());
 		});
 
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
@@ -571,10 +570,10 @@ public class KpiHelperService { // NOPMD
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueTypeSV()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueTypeKpi39()));
 
 			mapOfProjectFilters.put(JiraFeature.STATUS.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatusSV()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatusKpi39()));
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
@@ -588,7 +587,7 @@ public class KpiHelperService { // NOPMD
 				//to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
 						new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusSV());
+						fieldMapping.getJiraIterationCompletionStatusKpi39());
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -656,7 +655,7 @@ public class KpiHelperService { // NOPMD
 						.get(sprintDetail.getBasicProjectConfigId());
 				//to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
-						fieldMapping.getJiraIterationCompletionTypeBRE(),
+						fieldMapping.getJiraIterationIssuetypeBRE(),
 						fieldMapping.getJiraIterationCompletionStatusBRE());
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
@@ -714,7 +713,7 @@ public class KpiHelperService { // NOPMD
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			List<String> capacityIssueType = fieldMapping.getJiraSprintCapacityIssueType();
+			List<String> capacityIssueType = fieldMapping.getJiraSprintCapacityIssueTypeKpi46();
 			if (CollectionUtils.isEmpty(capacityIssueType)) {
 				capacityIssueType = new ArrayList<>();
 				capacityIssueType.add("Story");

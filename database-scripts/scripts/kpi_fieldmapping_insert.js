@@ -6,21 +6,21 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Defect Injection Rate',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames :  {'Workflow Status Mapping' : ['jiraDod', 'jiraDefectCreatedStatus', 'jiraDefectDroppedStatus','resolutionTypeForRejectionDIR','jiraDefectRejectionStatusDIR'], 'Issue Types Mapping' : ['jiraDefectInjectionIssueType'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] }
+        fieldNames :  {'Workflow Status Mapping' : ['jiraDod', 'jiraDefectCreatedStatus', 'jiraDefectDroppedStatus','resolutionTypeForRejectionKPI14','jiraDefectRejectionStatusKPI14'], 'Issue Types Mapping' : ['jiraDefectInjectionIssueType'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] }
       },
       {
         kpiId: 'kpi82',
         kpiName: 'First Time Pass Rate',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejectionFTPR','jiraIssueDeliverdStatusFTPR','jiraDefectRejectionStatusFTPR','jiraIterationCompletionStatusCustomField','jiraStatusForQa','jiraStatusForDevelopment','jiraFtprRejectStatus'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] ,'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField','jiraFTPRStoryIdentification']}
+        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejectionFTPR','jiraIssueDeliverdStatusFTPR','jiraDefectRejectionStatusFTPR','jiraIterationCompletionStatusCustomField','jiraStatusForQa','jiraStatusForDevelopment','jiraFtprRejectStatus'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] ,'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField','jiraFTPRStoryIdentification']}
         },
         {
                 kpiId: 'kpi135',
                 kpiName: 'First Time Pass Rate',
         		kpiSource:'Jira',
                 type: ['Scrum'],
-                fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejectionIFTPR','jiraIssueDeliverdStatusFTPR','jiraDefectRejectionStatusIFTPR','jiraIterationCompletionStatusCustomField','jiraStatusForQa','jiraStatusForDevelopment','jiraFtprRejectStatus'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] ,'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField','jiraFTPRStoryIdentification']}
+                fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejectionIFTPR','jiraIssueDeliverdStatusFTPR','jiraDefectRejectionStatusIFTPR','jiraIterationCompletionStatusCustomField','jiraStatusForQa','jiraStatusForDevelopment','jiraFtprRejectStatus'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR'] ,'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField','jiraFTPRStoryIdentification']}
                 },
 
       {
@@ -126,21 +126,21 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Issue Count',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraStoryIdentificationIC','jiraIterationCompletionTypeCustomField'] ,'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'], 'Defects Mapping' : ['jiradefecttype']}
+        fieldNames : {'Issue Types Mapping' : ['jiraStoryIdentificationKpi40','jiraIterationIssuetypeCustomField'] ,'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'], 'Defects Mapping' : ['jiradefecttype']}
       },
       {
         kpiId: 'kpi72',
         kpiName: 'Commitment Reliability',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : { 'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'], 'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
+        fieldNames : { 'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField'], 'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
       },
       {
         kpiId: 'kpi39',
         kpiName: 'Sprint Velocity',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueTypeSV','jiraIterationCompletionTypeCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] ,'Workflow Status Mapping' : ['jiraIssueDeliverdStatusSV','jiraIterationCompletionStatusCustomField']}
+        fieldNames : {'Issue Types Mapping' : ['jiraSprintVelocityIssueTypeSV','jiraIterationIssuetypeCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] ,'Workflow Status Mapping' : ['jiraIssueDeliverdStatusSV','jiraIterationCompletionStatusCustomField']}
       },
       {
         kpiId: 'kpi46',
@@ -148,13 +148,6 @@ db.getCollection('kpi_fieldmapping').insert(
 		kpiSource: 'Jira',
         type: ['Scrum'],
         fieldNames : {'Issue Types Mapping' : ['jiraSprintCapacityIssueType'] }
-      },
-      {
-        kpiId: 'kpi83',
-        kpiName: 'Average Resolution Time',
-		kpiSource: 'Jira',
-        type: ['Scrum'],
-        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejectionAVR','jiraIssueDeliverdStatusAVR','jiraStatusForDevelopment','jiraDefectRejectionStatusAVR'], 'Issue Types Mapping' : ['jiraIssueTypeNames'], 'Defects Mapping' : ['jiradefecttype'] }
       },
       {
         kpiId: 'kpi84',
@@ -210,7 +203,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Sprint Predictability',
 		kpiSource: 'Jira',
         type: ['Scrum'],
-        fieldNames : {'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'], 'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
+        fieldNames : {'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField'], 'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'], 'Custom Fields Mapping' : ['estimationCriteria', 'storyPointToHourMapping', 'jiraStoryPointsCustomField'] }
       },
       {
         kpiId: 'kpi55',
@@ -344,56 +337,56 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Work Remaining',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress', 'jiraDevDoneStatus','jiraIterationCompletionStatusCustomField'], 'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'],'Custom Fields Mapping' : ['jiraDueDateField']}
+        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress', 'jiraDevDoneStatus','jiraIterationCompletionStatusCustomField'], 'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField'],'Custom Fields Mapping' : ['jiraDueDateField']}
       },
       {
         kpiId: 'kpi75',
         kpiName: 'Estimate vs Actual',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'], 'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField']}
+        fieldNames : { 'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'], 'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField']}
       },
       {
         kpiId: 'kpi123',
         kpiName: 'Issues likely to Spill',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress','jiraIterationCompletionStatusCustomField'], 'Custom Fields Mapping' : ['jiraDueDateField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField']}
+        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress','jiraIterationCompletionStatusCustomField'], 'Custom Fields Mapping' : ['jiraDueDateField'],'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField']}
       },
       {
         kpiId: 'kpi122',
         kpiName: 'Closure Possible Today',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress','jiraIterationCompletionStatusCustomField'], 'Custom Fields Mapping' : ['jiraDueDateField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField']}
+        fieldNames : { 'Workflow Status Mapping' : ['jiraStatusForInProgress','jiraIterationCompletionStatusCustomField'], 'Custom Fields Mapping' : ['jiraDueDateField'],'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField']}
       },
       {
         kpiId: 'kpi120',
         kpiName: 'Iteration Commitment',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : {'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
+        fieldNames : {'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField'] }
       },
       {
         kpiId: 'kpi124',
         kpiName: 'Estimation Hygiene',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['issueStatusExcluMissingWork','jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
+        fieldNames : { 'Workflow Status Mapping' : ['issueStatusExcluMissingWork','jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField'] }
       },
       {
         kpiId: 'kpi125',
         kpiName: 'Iteration Burnup',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : {'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
+        fieldNames : {'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField'] }
       },
 	  {
         kpiId: 'kpi128',
         kpiName: 'Planned Work Status',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : {'Workflow Status Mapping' : ['jiraStatusForInProgress', 'jiraDevDoneStatus','jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField']}
+        fieldNames : {'Workflow Status Mapping' : ['jiraStatusForInProgress', 'jiraDevDoneStatus','jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField']}
       },
       {
          kpiId: 'kpi145',
@@ -428,28 +421,28 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Wastage',
         kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Workflow Status Mapping' : ['jiraBlockedStatus', 'jiraWaitStatus','jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
+        fieldNames : { 'Workflow Status Mapping' : ['jiraBlockedStatus', 'jiraWaitStatus','jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField'] }
       },
       {
         kpiId: 'kpi133',
         kpiName: 'Quality Status',
         kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejectionQS','jiraDefectRejectionStatusQS','jiraIterationCompletionStatusCustomField'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR','jiradefecttype'], 'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
+        fieldNames : {'Workflow Status Mapping' : ['resolutionTypeForRejectionQS','jiraDefectRejectionStatusQS','jiraIterationCompletionStatusCustomField'], 'Defects Mapping' : ['defectPriority', 'excludeRCAFromFTPR','jiradefecttype'], 'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField'] }
       },
 	  {
         kpiId: 'kpi134',
         kpiName: 'Unplanned Work Status',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : {'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
+        fieldNames : {'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField'] }
       },
       {
         kpiId: 'kpi136',
         kpiName: 'Defect Count by Status',
         kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : {'Defects Mapping' : ['jiradefecttype'],'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField'] }
+        fieldNames : {'Defects Mapping' : ['jiradefecttype'],'Workflow Status Mapping' : ['jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationIssuetypeCustomField'] }
       },
       {
         kpiId: 'kpi137',
@@ -541,18 +534,18 @@ db.getCollection('field_mapping_structure').remove({});
 db.getCollection('field_mapping_structure').insert(
 [
   {
-    "fieldName": "jiraStoryIdentificationIC",
-    "fieldLabel": "Issue Count KPI Issue type",
+    "fieldName": "jiraStoryIdentificationKpi40",
+    "fieldLabel": "Issue type to identify Story",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Value to identify kind of stories which are used for identification for story count.",
+      "definition": "All issue types that are used as/equivalent to Story.",
       "kpiImpacted": "Issue Count Kpi"
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeCustomField",
+    "fieldName": "jiraIterationIssuetypeCustomField",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -562,67 +555,47 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionStatusCustomField",
-    "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "kpiImpacted": "Iteration Dashboard and SPEED KPIs - Sprint Velocity, Commitment Reliability, Issue Count, Sprint Predictability"
-    }
-  },
-  {
-    "fieldName": "jiraSprintVelocityIssueTypeSV",
-    "fieldLabel": "Sprint Velocity - Issue Types with Linked Defect",
+    "fieldName": "jiraSprintVelocityIssueTypeKpi39",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All issue types with which defect is linked. <br>  Example: Story, Change Request .<hr>"
+      "definition": "All issue types that are sized in story points and should be counted in Velocity calculation"
     }
   },
   {
-    "fieldName": "jiraSprintCapacityIssueType",
-    "fieldLabel": "Sprint Capacity Issue Type",
+    "fieldName": "jiraSprintCapacityIssueTypeKpi46",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Value to identify kind of stories which are used for identification for Sprint Capacity.<br /> Example: Story<hr>"
+      "definition": "All issues types against work is logged and should be considered for Utilization"
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeCustomField",
-    "fieldLabel": "Iteration Board Issue types",
+    "fieldName": "jiraIterationIssuetypeKPI122",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue Types to be considered Completed"
+      "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeKPI122",
-    "fieldLabel": "Iteration Board Issue types",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "Issue Types to be considered Completed"
-    }
-  },
-  {
-      "fieldName": "jiraIterationCompletionTypeKPI124",
-      "fieldLabel": "Iteration Board Issue types",
+      "fieldName": "jiraIterationIssuetypeKPI124",
+      "fieldLabel": "Issue type to be included",
       "fieldType": "chips",
       "fieldCategory": "Issue_Type",
       "section": "Issue Types Mapping",
       "tooltip": {
-        "definition": "Issue Types to be considered Completed"
+        "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
       }
     },
   {
-    "fieldName": "jiraIterationCompletionTypeBRE",
+    "fieldName": "jiraIterationIssuetypeBRE",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -632,7 +605,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeKPI131",
+    "fieldName": "jiraIterationIssuetypeKPI131",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -642,7 +615,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeKPI128",
+    "fieldName": "jiraIterationIssuetypeKPI128",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -652,7 +625,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeKPI134",
+    "fieldName": "jiraIterationIssuetypeKPI134",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -662,67 +635,76 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeKPI145",
-    "fieldLabel": "Iteration Board Issue types",
+    "fieldName": "jiraIterationIssuetypeKPI145",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue Types to be considered Completed"
+      "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeCR",
-    "fieldLabel": "Iteration Board Issue types",
+    "fieldName": "jiraIterationIssuetypeKpi72",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue Types to be considered Completed"
+      "definition": "All issue types that are considered in sprint commitment"
     }
-  },
-  {
-    "fieldName": "jiraIterationCompletionTypeKPI119",
-    "fieldLabel": "Iteration Board Issue types",
+  },{
+    "fieldName": "jiraIterationIssuetypeKpi5",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue Types to be considered Completed"
+      "definition": "All issue types that should be included in Sprint Predictability calculation"
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeKPI75",
-    "fieldLabel": "Iteration Board Issue types",
+    "fieldName": "jiraIterationIssuetypeKPI119",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue Types to be considered Completed"
+      "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeKPI123",
-    "fieldLabel": "Iteration Board Issue types",
+    "fieldName": "jiraIterationIssuetypeKPI75",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue Types to be considered Completed"
+      "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeKPI125",
-    "fieldLabel": "Iteration Board Issue types",
+    "fieldName": "jiraIterationIssuetypeKPI123",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue Types to be considered Completed"
+      "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
     }
   },
   {
-    "fieldName": "jiraIterationCompletionTypeKPI120",
+    "fieldName": "jiraIterationIssuetypeKPI125",
+    "fieldLabel": "Issue type to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
+    }
+  },
+  {
+    "fieldName": "jiraIterationIssuetypeKPI120",
     "fieldLabel": "Iteration Board Issue types",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -752,16 +734,6 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIssueDeliverdStatusSV",
-    "fieldLabel": "Issue Delivered Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
-    }
-  },
-  {
     "fieldName": "jiraIssueDeliverdStatusBR",
     "fieldLabel": "Issue Delivered Status",
     "fieldType": "chips",
@@ -773,72 +745,52 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiraIssueDeliverdStatusKPI126",
-    "fieldLabel": "Issue Delivered Status",
+    "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
+      "definition": "Status considered for defect closure (Mention completed status of all types of defects)"
     }
   },
   {
     "fieldName": "jiraIssueDeliverdStatusKPI82",
-    "fieldLabel": "Issue Delivered Status",
+    "fieldLabel": "Status to identify completed issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
-    }
-  },
-  {
-    "fieldName": "jiraIssueDeliverdStatusAVR",
-    "fieldLabel": "Issue Delivered Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "Status from workflow on which issue is delivered. <br> Example: Closed<hr>"
-    }
-  },
-  {
-    "fieldName": "resolutionTypeForRejectionAVR",
-    "fieldLabel": "Resolution Type for Rejection",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "Resolution type to identify rejected defects. <br>"
+      "definition": "Completion status for all issue types mentioned for calculation of FTPR"
     }
   },
   {
     "fieldName": "resolutionTypeForRejectionKPI28",
-    "fieldLabel": "Resolution Type for Rejection",
+    "fieldLabel": "Resolution type to be excluded",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Resolution type to identify rejected defects. <br>"
+      "definition": "Resolutions for defects which are to be excluded from 'Defect count by Priority' calculation"
     }
   },
   {
-    "fieldName": "resolutionTypeForRejectionDRE",
-    "fieldLabel": "Resolution Type for Rejection",
+    "fieldName": "resolutionTypeForRejectionKPI34",
+    "fieldLabel": "Resolution type to be excluded",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Resolution type to identify rejected defects. <br>"
+      "definition": "Resolutions for defects which are to be excluded from 'Defect Removal Efficiency' calculation."
     }
   },
   {
     "fieldName": "resolutionTypeForRejectionKPI37",
-    "fieldLabel": "Resolution Type for Rejection",
+    "fieldLabel": "Resolution type to be included",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Resolution type to identify rejected defects. <br>"
+      "definition": "Resolutions for defects which are to be excluded from 'Defect Rejection Rate' calculation."
     }
   },
   {
@@ -853,16 +805,16 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "resolutionTypeForRejectionKPI82",
-    "fieldLabel": "Resolution Type for Rejection",
+    "fieldLabel": "Resolution type to be excluded",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Resolution type to identify rejected defects. <br>"
+      "definition": "Resolutions for defects which are to be excluded from 'FTPR' calculation"
     }
   },
   {
-    "fieldName": "resolutionTypeForRejectionIFTPR",
+    "fieldName": "resolutionTypeForRejectionKPI135",
     "fieldLabel": "Resolution Type for Rejection",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -873,82 +825,72 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "resolutionTypeForRejectionKPI133",
-    "fieldLabel": "Resolution Type for Rejection",
+    "fieldLabel": "Resolution type to be excluded",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Resolution type to identify rejected defects. <br>"
+      "definition": "Resolutions for defects which are to be excluded from 'Quality Status' calculation"
     }
   },
   {
     "fieldName": "resolutionTypeForRejectionRCAKPI36",
-    "fieldLabel": "Resolution Type for Rejection",
+    "fieldLabel": "Resolution type to be excluded",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Resolution type to identify rejected defects. <br>"
+      "definition": "Resolutions for defects which are to be excluded from 'Defect count by RCA' calculation."
     }
   },
   {
-    "fieldName": "resolutionTypeForRejectionDIR",
-    "fieldLabel": "Resolution Type for Rejection",
+    "fieldName": "resolutionTypeForRejectionKPI14",
+    "fieldLabel": "Resolution type to be excluded",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Resolution type to identify rejected defects. <br>"
+      "definition": "Resolutions for defects which are to be excluded from 'Defect Injection rate' calculation <br>"
     }
   },
   {
     "fieldName": "resolutionTypeForRejectionQAKPI111",
-    "fieldLabel": "Resolution Type for Rejection",
+    "fieldLabel": "Resolution type to be excluded",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Resolution type to identify rejected defects. <br>"
-    }
-  },
-  {
-    "fieldName": "jiraDefectRejectionStatusAVR",
-    "fieldLabel": "Defect Rejection Status",
-    "fieldType": "text",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
+      "definition": "Resolutions for defects which are to be excluded from 'Defect Density' calculation."
     }
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI28",
-    "fieldLabel": "Defect Rejection Status",
+    "fieldLabel": "Status to be excluded",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
+      "definition": "All statuses which are considered for Rejecting defects."
     }
   },
   {
-    "fieldName": "jiraDefectRejectionStatusDRE",
-    "fieldLabel": "Defect Rejection Status",
+    "fieldName": "jiraDefectRejectionStatusKPI34",
+    "fieldLabel": "Status to be excluded",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
+      "definition": "All statuses which are considered for Rejecting defects."
     }
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI37",
-    "fieldLabel": "Defect Rejection Status",
+    "fieldLabel": "Status to identify Rejected defects",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
+      "definition": "All statuses which are considered for Rejecting defects."
     }
   },
   {
@@ -963,16 +905,16 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI82",
-    "fieldLabel": "Defect Rejection Status",
+    "fieldLabel": "Status to be excluded",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
+      "definition": "All statuses which are considered for Rejecting defects"
     }
   },
   {
-    "fieldName": "jiraDefectRejectionStatusIFTPR",
+    "fieldName": "jiraDefectRejectionStatusKPI135",
     "fieldLabel": "Defect Rejection Status",
     "fieldType": "text",
     "fieldCategory": "workflow",
@@ -983,72 +925,62 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI133",
-    "fieldLabel": "Defect Rejection Status",
+    "fieldLabel": "Status to be excluded",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
+      "definition": "All statuses which are considered for Rejecting defects."
     }
   },
   {
     "fieldName": "jiraDefectRejectionStatusRCAKPI36",
-    "fieldLabel": "Defect Rejection Status",
+    "fieldLabel": "Status to be excluded",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
+      "definition": "All statuses which are considered for Rejecting defects."
     }
   },
   {
-    "fieldName": "jiraDefectRejectionStatusDIR",
-    "fieldLabel": "Defect Rejection Status",
+    "fieldName": "jiraDefectRejectionStatusKPI14",
+    "fieldLabel": "Status to be excluded",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
+      "definition": "All statuses which are considered for Rejecting defects"
     }
   },
   {
     "fieldName": "jiraDefectRejectionStatusQAKPI111",
-    "fieldLabel": "Defect Rejection Status",
+    "fieldLabel": "Status to be excluded",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
-    }
-  },
-  {
-    "fieldName": "jiraStatusForDevelopmentAVR",
-    "fieldLabel": "Status to Identify Development Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-      "definition": "The status of Story Issue Type which identifies the In-Development status in JIRA. <br> Example: In Development<hr>"
+      "definition": "All statuses which are considered for Rejecting defects."
     }
   },
   {
     "fieldName": "jiraStatusForDevelopmentKPI82",
-    "fieldLabel": "Status to Identify Development Status",
+    "fieldLabel": "Status for 'In Development' issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "The status of Story Issue Type which identifies the In-Development status in JIRA. <br> Example: In Development<hr>"
+      "definition": "All statuses that relate to In development status of a Story"
     }
   },
   {
     "fieldName": "jiraStatusForDevelopmentKPI135",
-    "fieldLabel": "Status to Identify Development Status",
+    "fieldLabel": "Status for 'In Development' issues",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "The status of Story Issue Type which identifies the In-Development status in JIRA. <br> Example: In Development<hr>"
+      "definition": "All statuses that relate to In development status of a Story"
     }
   },
   {
@@ -1062,7 +994,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIntakeToDorIssueTypeLT",
+    "fieldName": "jiraIssueTypeLT",
     "fieldLabel": "Lead time issue type",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -1073,26 +1005,26 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiraKPI82StoryIdentification",
-    "fieldLabel": "Issues types included in FTPR",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue types that are required to be tracked for First time pass rate (FTPR).<br> Example: Story or equivalent <hr>"
+      "definition": "All issue types for which FTPR should be calculated"
     }
   },
   {
     "fieldName": "jiraKPI135StoryIdentification",
-    "fieldLabel": "Issues types included in FTPR",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue types that are required to be tracked for First time pass rate (FTPR).<br> Example: Story or equivalent <hr>"
+      "definition": "All issue types for which FTPR should be calculated"
     }
   },
   {
-    "fieldName": "defectPriorityIFTPR",
+    "fieldName": "defectPriorityKPI135",
     "fieldLabel": "Defect priority exclusion from Quality KPIs",
     "fieldType": "multiselect",
     "section": "Defects Mapping",
@@ -1123,12 +1055,12 @@ db.getCollection('field_mapping_structure').insert(
     ]
   },
   {
-    "fieldName": "defectPriorityDIR",
-    "fieldLabel": "Defect priority exclusion from Quality KPIs",
+    "fieldName": "defectPriorityKPI14",
+    "fieldLabel": "Priority to be included",
     "fieldType": "multiselect",
     "section": "Defects Mapping",
     "tooltip": {
-      "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+      "definition": "Priority values of defects which are to be considered in 'Defect Injection rate' calculation"
     },
     "options": [
       {
@@ -1155,11 +1087,11 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "defectPriorityQAKPI111",
-    "fieldLabel": "Defect priority exclusion from Quality KPIs",
+    "fieldLabel": "Priority to be included",
     "fieldType": "multiselect",
     "section": "Defects Mapping",
     "tooltip": {
-      "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+      "definition": "Priority values of defects which are to be considered in 'Defect Density' calculation"
     },
     "options": [
       {
@@ -1186,11 +1118,11 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "defectPriorityKPI82",
-    "fieldLabel": "Defect priority exclusion from Quality KPIs",
+    "fieldLabel": "Priority to be included",
     "fieldType": "multiselect",
     "section": "Defects Mapping",
     "tooltip": {
-      "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+      "definition": "Priority values of defects which are to be considered in 'FTPR' calculation"
     },
     "options": [
       {
@@ -1217,11 +1149,11 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "defectPriorityKPI133",
-    "fieldLabel": "Defect priority exclusion from Quality KPIs",
+    "fieldLabel": "Priority to be included",
     "fieldType": "multiselect",
     "section": "Defects Mapping",
     "tooltip": {
-      "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+      "definition": "Priority values of defects which are to be considered in 'Quality Status' calculation"
     },
     "options": [
       {
@@ -1248,6 +1180,15 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "excludeRCAFromKPI82",
+    "fieldLabel": "Root cause values to be excluded",
+    "fieldType": "chips",
+    "section": "Defects Mapping",
+    "tooltip": {
+      "definition": "Root cause reasons for defects which are to be excluded from 'FTPR' calculation"
+    }
+  },
+  {
+    "fieldName": "excludeRCAFromKPI135",
     "fieldLabel": "Defect RCA exclusion from Quality KPIs",
     "fieldType": "chips",
     "section": "Defects Mapping",
@@ -1256,59 +1197,50 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "excludeRCAFromIFTPR",
-    "fieldLabel": "Defect RCA exclusion from Quality KPIs",
+    "fieldName": "excludeRCAFromKPI14",
+    "fieldLabel": "Root cause values to be excluded",
     "fieldType": "chips",
     "section": "Defects Mapping",
     "tooltip": {
-      "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
-    }
-  },
-  {
-    "fieldName": "excludeRCAFromDIR",
-    "fieldLabel": "Defect RCA exclusion from Quality KPIs",
-    "fieldType": "chips",
-    "section": "Defects Mapping",
-    "tooltip": {
-      "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+      "definition": "Root cause reasons for defects which are to be excluded from 'Defect Injection rate' calculation"
     }
   },
   {
     "fieldName": "excludeRCAFromQAKPI111",
-    "fieldLabel": "Defect RCA exclusion from Quality KPIs",
+    "fieldLabel": "Root cause values to be excluded",
     "fieldType": "chips",
     "section": "Defects Mapping",
     "tooltip": {
-      "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+      "definition": "Root cause reasons for defects which are to be excluded from 'Defect Density' calculation"
     }
   },
   {
     "fieldName": "excludeRCAFromKPI133",
-    "fieldLabel": "Defect RCA exclusion from Quality KPIs",
+    "fieldLabel": "Root cause values to be excluded",
     "fieldType": "chips",
     "section": "Defects Mapping",
     "tooltip": {
-      "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+      "definition": "Root cause reasons for defects which are to be excluded from 'Quality Status' calculation"
     }
   },
   {
-    "fieldName": "jiraDefectInjectionIssueType",
-    "fieldLabel": "Defect Injection Rate - Issue Types with Linked Defect",
+    "fieldName": "jiraDefectInjectionIssueTypeKPI14",
+    "fieldLabel": "Issue types which will have linked defects",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All issue types with which defect is linked. <br> Example: Story, Change Request. <hr>"
+      "definition": "Issue type that will have defects linked to them."
     }
   },
   {
-    "fieldName": "jiraDefectCreatedStatus",
-    "fieldLabel": "Defect Created Status",
+    "fieldName": "jiraDefectCreatedStatusKPI14",
+    "fieldLabel": "Default status when defect is created",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "First status of defect. Default status when a defect is opened. <br> Example: Open<hr/>"
+      "definition": "Default status when upon creation of Defect (Mention default status of all types of defects)"
     }
   },
   {
@@ -1322,23 +1254,23 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDodDIR",
-    "fieldLabel": "DOD Status",
+    "fieldName": "jiraDodKPI14",
+    "fieldLabel": "Status considered for defect closure",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. <br> Example: In Testing <hr>"
+      "definition": "Status considered for defect closure (Mention completed status of all types of defects)"
     }
   },
   {
     "fieldName": "jiraDodQAKPI111",
-    "fieldLabel": "DOD Status",
+    "fieldLabel": "Status considered for defect closure",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. <br> Example: In Testing <hr>"
+      "definition": "Status considered for defect closure (Mention completed status of all types of defects)"
     }
   },
   {
@@ -1363,42 +1295,42 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiraQAKPI111IssueType",
-    "fieldLabel": "QA Defect Density - Issue Types with Linked Defect",
+    "fieldLabel": "Issue types which will have linked defects",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All issue types with which defect is linked . <br> Example: Story, Change Request, Enhancement <hr>"
+      "definition": "Issue type that will have defects linked to them."
     }
   },
   {
     "fieldName": "jiraIssueTypeKPI35",
-    "fieldLabel": "Defect Seepage Rate - Issue Types with Linked Defect",
+    "fieldLabel": "Issue types which will have linked defects",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All issue types with which defect is linked . <br> Example: Story, Change Request. <hr>"
+      "definition": "Issue type that will have defects linked to them."
     }
   },
   {
-    "fieldName": "jiraDefectRemovalIssueType",
-    "fieldLabel": "Defect Removal Rate - Issue Types with Linked Defect",
+    "fieldName": "jiraDefectRemovalIssueTypeKPI34",
+    "fieldLabel": "Issue type to be included.",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All issue types with which defect is linked. <br> Example: Story, Change Request.<hr>"
+      "definition": "Issue types that are considered as defects in Jira."
     }
   },
   {
     "fieldName": "jiraIssueTypeKPI37",
-    "fieldLabel": "Defect Rejection Rate - Issue Types with Linked Defect",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "All issue types with which defect is linked. <br>Example: Story, Change Request .<hr>"
+      "definition": "Issue types that are considered as defects in Jira"
     }
   },
   {
@@ -1413,24 +1345,13 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIssueTypeNamesAVR",
-    "fieldLabel": "Issue Types to be fetched from Jira",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "processorCommon":true,
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "Issue Type in Jira. These issue type are fetched in PsKnowHow dashboard. <br> Example : Story, Defect, Risk, Change Request, Test<hr>"
-    }
-  },
-  {
-    "fieldName": "jiraDefectRemovalStatus",
-    "fieldLabel": "Defect Removal Status",
+    "fieldName": "jiraDefectRemovalStatusKPI34",
+    "fieldLabel": "Status to identify closed defects",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which defect is considered as removed. <br> Example: Closed<hr>"
+      "definition": "All statuses which are used when defect is fixed & closed."
     }
   },
   {
@@ -1445,32 +1366,32 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "resolutionTypeForRejectionKPI35",
-    "fieldLabel": "Defect Seepage Rate - Issue Types with Linked Defect",
+    "fieldLabel": "Resolution type to be excluded",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Resolution type to identify rejected defects. <br>"
+      "definition": "Resolutions for defects which are to be excluded from 'Defect Seepage rate' calculation."
     }
   },
   {
     "fieldName": "jiraDefectRejectionStatusKPI35",
-    "fieldLabel": "Defect Rejection Status",
+    "fieldLabel": "Status to be excluded",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
+      "definition": "All statuses which are considered for Rejecting defects"
     }
   },
   {
       "fieldName": "jiraIterationCompletionStatusKPI135",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
@@ -1485,32 +1406,32 @@ db.getCollection('field_mapping_structure').insert(
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI122",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI75",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI145",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
@@ -1525,16 +1446,36 @@ db.getCollection('field_mapping_structure').insert(
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI132",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI136",
+      "fieldLabel": "Status to identify completed issues",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusKpi72",
+      "fieldLabel": "Status to identify completed issues",
+      "fieldType": "chips",
+      "fieldCategory": "workflow",
+      "section": "WorkFlow Status Mapping",
+      "tooltip": {
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
+      }
+    },
+  {
+      "fieldName": "jiraIterationCompletionStatusKpi39",
       "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
       "fieldType": "chips",
       "fieldCategory": "workflow",
@@ -1544,73 +1485,43 @@ db.getCollection('field_mapping_structure').insert(
       }
     },
   {
-      "fieldName": "jiraIterationCompletionStatusIC",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldName": "jiraIterationCompletionStatusKpi5",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
-      }
-    },
-  {
-      "fieldName": "jiraIterationCompletionStatusCR",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
-      "fieldType": "chips",
-      "fieldCategory": "workflow",
-      "section": "WorkFlow Status Mapping",
-      "tooltip": {
-        "definition": "Status to identify as closed"
-      }
-    },
-  {
-      "fieldName": "jiraIterationCompletionStatusSV",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
-      "fieldType": "chips",
-      "fieldCategory": "workflow",
-      "section": "WorkFlow Status Mapping",
-      "tooltip": {
-        "definition": "Status to identify as closed"
-      }
-    },
-  {
-      "fieldName": "jiraIterationCompletionStatusSP",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
-      "fieldType": "chips",
-      "fieldCategory": "workflow",
-      "section": "WorkFlow Status Mapping",
-      "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI124",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI123",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI125",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
@@ -1645,22 +1556,22 @@ db.getCollection('field_mapping_structure').insert(
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI133",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI119",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
@@ -1787,46 +1698,35 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiradefecttypeKPI126",
-    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+      "definition": "Issue types that are considered as defects in Jira."
     }
   },
   {
-    "fieldName": "jiradefecttypeAVR",
-    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldName": "jiradefecttypeKpi40",
+    "fieldLabel": "Status to identify defects",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeIC",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+      "definition": "Issue types that are considered as defects in Jira."
     }
   },
   {
     "fieldName": "jiradefecttypeKPI135",
-    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldLabel": "Issue type to identify defects",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+      "definition": "Issue types that are considered as Defects in Jira"
     }
   },
   {
@@ -1837,7 +1737,7 @@ db.getCollection('field_mapping_structure').insert(
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+      "definition": "Issue types that are considered as defects in Jira"
     }
   },
   {
@@ -1875,13 +1775,13 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiradefecttypeKPI133",
-    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldLabel": "Issue type to be identify defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+      "definition": "Issue types that are considered as defects in Jira"
     }
   },
   {
@@ -1947,7 +1847,7 @@ db.getCollection('field_mapping_structure').insert(
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+      "definition": "Issue types that are considered as Defects in Jira"
     }
   },
   {
@@ -1963,13 +1863,13 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiradefecttypeKPI132",
-    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldLabel": "Issue type to identify defects",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+      "definition": "Issue types that are considered as Defects in Jira"
     }
   },
   {
@@ -2225,58 +2125,58 @@ db.getCollection('field_mapping_structure').insert(
 },
 {
     "fieldName": "issueStatusExcluMissingWorkKPI124",
-    "fieldLabel": "Issue status to be excluded from Missing Worklogs ",
+    "fieldLabel": "Status to be excluded",
      "fieldType": "chips",
     "fieldCategory": "workflow",
      "section": "WorkFlow Status Mapping",
      "tooltip": {
-          "definition": "Statuses selected depict all created status of issue types included in the Project.",
+          "definition": "All statuses of an issue that should be ignored for checking the logged work",
           }
 },{
     "fieldName": "jiraStatusForInProgressKPI145",
-    "fieldLabel": "Status to identify In Progress",
+    "fieldLabel": "Status to identify In Progress issues",
      "fieldType": "chips",
     "fieldCategory": "workflow",
      "section": "WorkFlow Status Mapping",
      "tooltip": {
-          "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
+          "definition": "All statuses that issues have moved from the Created status and also has not been completed",
           }
 },
 {
     "fieldName": "jiraStatusForInProgressKPI122",
-    "fieldLabel": "Status to identify In Progress",
+    "fieldLabel": "Status to identify In Progress issues",
      "fieldType": "chips",
     "fieldCategory": "workflow",
      "section": "WorkFlow Status Mapping",
      "tooltip": {
-          "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
+          "definition": "All statuses that issues have moved from the Created status and also has not been completed",
           }
 },{
     "fieldName": "jiraStatusForInProgressKPI125",
-    "fieldLabel": "Status to identify In Progress",
+    "fieldLabel": "Status to identify In Progress issues",
      "fieldType": "chips",
     "fieldCategory": "workflow",
      "section": "WorkFlow Status Mapping",
      "tooltip": {
-          "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
+          "definition": "All statuses that issues have moved from the Created status and also has not been completed",
           }
 },{
     "fieldName": "jiraStatusForInProgressKPI123",
-    "fieldLabel": "Status to identify In Progress",
+    "fieldLabel": "Status to identify In Progress issues",
      "fieldType": "chips",
     "fieldCategory": "workflow",
      "section": "WorkFlow Status Mapping",
      "tooltip": {
-          "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
+          "definition": "All statuses that issues have moved from the Created status and also has not been completed",
           }
 },{
     "fieldName": "jiraStatusForInProgressKPI119",
-    "fieldLabel": "Status to identify In Progress",
+    "fieldLabel": "Status to identify In Progress issues",
      "fieldType": "chips",
     "fieldCategory": "workflow",
      "section": "WorkFlow Status Mapping",
      "tooltip": {
-          "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
+          "definition": "All statuses that issues have moved from the Created status and also has not been completed",
           }
 },{
     "fieldName": "jiraStatusForInProgressKPI128",
@@ -2289,23 +2189,21 @@ db.getCollection('field_mapping_structure').insert(
           }
 },{
     "fieldName": "jiraDevDoneStatusKPI119",
-    "fieldLabel": "Dev Completion Status",
+    "fieldLabel": "Status to identify Dev completed issues",
      "fieldType": "chips",
     "fieldCategory": "workflow",
      "section": "WorkFlow Status Mapping",
      "tooltip": {
-          "definition": "This status identifies when Development is completed for an issue<br>
-                                                                        ",
+          "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
           }
 },{
     "fieldName": "jiraDevDoneStatusKPI145",
-    "fieldLabel": "Dev Completion Status",
+    "fieldLabel": "Status to identify Dev completion",
      "fieldType": "chips",
     "fieldCategory": "workflow",
      "section": "WorkFlow Status Mapping",
      "tooltip": {
-          "definition": "This status identifies when Development is completed for an issue<br>
-                                                                        ",
+          "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
           }
 },{
     "fieldName": "jiraDevDoneStatusKPI128",
@@ -2317,7 +2215,25 @@ db.getCollection('field_mapping_structure').insert(
           "definition": "This status identifies when Development is completed for an issue<br>
                                                                         ",
           }
-},
+},{
+    "fieldName": "jiraDefectCountlIssueTypeKPI28",
+    "fieldLabel": "Issue type to be included",
+     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+     "section": "Issue Types Mapping",
+     "tooltip": {
+          "definition": "Issue types that are considered as defects in Jira.",
+          }
+},{
+    "fieldName": "jiraDefectCountlIssueTypeKPI36",
+    "fieldLabel": "Issue type to be included",
+     "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+     "section": "Issue Types Mapping",
+     "tooltip": {
+          "definition": "Issue types that are considered as defects in Jira.",
+          }
+}
 
 
 

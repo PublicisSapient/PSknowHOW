@@ -94,10 +94,10 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			if (Optional.ofNullable(fieldMapping.getJiraIntakeToDorIssueTypeLT()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getJiraIssueTypeLT()).isPresent()) {
 
 				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeLT(),
-						fieldMapping.getJiraIntakeToDorIssueTypeLT(),
+						fieldMapping.getJiraIssueTypeLT(),
 						JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 

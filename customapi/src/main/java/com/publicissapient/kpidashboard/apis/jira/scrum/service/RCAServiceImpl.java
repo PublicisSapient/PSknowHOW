@@ -202,9 +202,9 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 			// defectCountIssueType is same as rcaIssueType. Hence did not
 			// created a
 			// separate field mapping.
-			if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDefectCountlIssueTypeRCA())) {
+			if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDefectCountlIssueTypeKPI36())) {
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getJiraDefectCountlIssueTypeRCA()));
+						CommonUtils.convertToPatternList(fieldMapping.getJiraDefectCountlIssueTypeKPI36()));
 			}
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionRCAKPI36(), fieldMapping.getJiraDefectRejectionStatusRCAKPI36());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);

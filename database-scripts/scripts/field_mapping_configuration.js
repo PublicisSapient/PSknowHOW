@@ -27,163 +27,186 @@ fieldMappings.forEach(function(fm) {
         const jiraBlockedStatus=fm.jiraBlockedStatus;
         const jiraIncludeBlockedStatus=fm.jiraIncludeBlockedStatus;
         const jiraDevDoneStatus=fm.jiraDevDoneStatus;
+        const jiraQADefectDensityIssueType=fm.jiraQADefectDensityIssueType;
+        const jiraDefectInjectionIssueType=fm.jiraDefectInjectionIssueType;
+        const jiraDefectCreatedStatus=fm.jiraDefectCreatedStatus;
+        const jiraDefectSeepageIssueType=fm.jiraDefectSeepageIssueType;
+        const jiraDefectRemovalStatus=fm.jiraDefectRemovalStatus;
+        const jiraDefectRemovalIssueType=fm.jiraDefectRemovalIssueType;
+        const jiraSprintCapacityIssueType=fm.jiraSprintCapacityIssueType;
+        const jiraDefectRejectionlIssueType=fm.jiraDefectRejectionlIssueType;
         db.field_mapping.updateOne({ "_id": fm._id }, {
-            $set: {
-                "defectPriorityIFTPR": defectPriority,
-                "defectPriorityDIR": defectPriority,
-                "defectPriorityQADD": defectPriority,
-                "defectPriorityFTPR": defectPriority,
-                "defectPriorityQS": defectPriority,
+          $set: {
 
-                "jiradefecttypeSWE": jiradefecttype,
-                "jiradefecttypeIDCR": jiradefecttype,
-                "jiradefecttypeIDCS": jiradefecttype,
-                "jiradefecttypeIDCP": jiradefecttype,
-                "jiradefecttypeRDCA": jiradefecttype,
-                "jiradefecttypeRDCP": jiradefecttype,
-                "jiradefecttypeRDCR": jiradefecttype,
-                "jiradefecttypeRDCS": jiradefecttype,
-                "jiradefecttypeQS": jiradefecttype,
-                "jiradefecttypeIWS": jiradefecttype,
-                "jiradefecttypeLT": jiradefecttype,
-                "jiradefecttypeMW": jiradefecttype,
-                "jiradefecttypeFTPR": jiradefecttype,
-                "jiradefecttypeIFTPR": jiradefecttype,
-                "jiradefecttypeIC": jiradefecttype,
-                "jiradefecttypeAVR": jiradefecttype,
-                "jiradefecttypeCVR": jiradefecttype,
-                "jiradefecttypeBDRR": jiradefecttype,
+            "jiradefecttypeSWE":jiradefecttype,
+            "jiradefecttypeKPI132":jiradefecttype,
+            "jiradefecttypeKPI136":jiradefecttype,
+            "jiradefecttypeKPI140":jiradefecttype,
+            "jiradefecttypeRDCA":jiradefecttype,
+            "jiradefecttypeRDCP":jiradefecttype,
+            "jiradefecttypeRDCR":jiradefecttype,
+            "jiradefecttypeRDCS":jiradefecttype,
+            "jiradefecttypeKPI133":jiradefecttype,
+            "jiradefecttypeIWS":jiradefecttype,
+            "jiradefecttypeLT":jiradefecttype,
+            "jiradefecttypeMW":jiradefecttype,
+            "jiradefecttypeKPI82":jiradefecttype,
+            "jiradefecttypeKPI135":jiradefecttype,
+            "jiradefecttypeKpi40":jiradefecttype,
+            "jiradefecttypeAVR":jiradefecttype,
+            "jiradefecttypeKPI126":jiradefecttype,
+            "jiradefecttypeBDRR":jiradefecttype,
+        
+            "defectPriorityKPI135":defectPriority,
+            "defectPriorityKPI14":defectPriority,
+            "defectPriorityQAKPI111":defectPriority,
+            "defectPriorityKPI82":defectPriority,
+            "defectPriorityKPI133":defectPriority,
+        
+            "jiraIssueTypeNamesAVR": jiraIssueTypeNames,
+        
+            "storyFirstStatusLT": storyFirstStatus,
+        
+            "jiraStatusForDevelopmentAVR": jiraStatusForDevelopment,
+            "jiraStatusForDevelopmentKPI82": jiraStatusForDevelopment,
+            "jiraStatusForDevelopmentKPI135": jiraStatusForDevelopment,
+        
+            "jiraDefectInjectionIssueTypeKPI14": jiraDefectInjectionIssueType,
+            
+            "jiraDodKPI14":jiraDod,
+            "jiraDodQAKPI111":jiraDod,
+            "jiraDodLT":jiraDod,
+            "jiraDodPDA":jiraDod,
+            
+            "jiraDefectCreatedStatusKPI14": jiraDefectCreatedStatus,
+       
+            "jiraDefectRejectionStatusAVR":jiraDefectRejectionStatus,
+            "jiraDefectRejectionStatusKPI28":jiraDefectRejectionStatus,
+            "jiraDefectRejectionStatusKPI34":jiraDefectRejectionStatus,
+            "jiraDefectRejectionStatusKPI37":jiraDefectRejectionStatus,
+            "jiraDefectRejectionStatusKPI35":jiraDefectRejectionStatus,
+            "jiraDefectRejectionStatusKPI82":jiraDefectRejectionStatus,
+            "jiraDefectRejectionStatusKPI135":jiraDefectRejectionStatus,
+            "jiraDefectRejectionStatusKPI133":jiraDefectRejectionStatus,
+            "jiraDefectRejectionStatusRCAKPI36":jiraDefectRejectionStatus,
+            "jiraDefectRejectionStatusKPI14":jiraDefectRejectionStatus,
+            "jiraDefectRejectionStatusQAKPI111":jiraDefectRejectionStatus,
+        
+            "jiraIssueTypeKPI35": jiraDefectSeepageIssueType,
+        
+            "jiraDefectRemovalStatusKPI34": jiraDefectRemovalStatus,
+            "jiraDefectRemovalIssueTypeKPI34": jiraDefectRemovalIssueType,
+        
+            "jiraSprintVelocityIssueTypeKpi39": jiraSprintVelocityIssueType,
+            "jiraSprintVelocityIssueTypeBR": jiraSprintVelocityIssueType,
+        
+            "jiraSprintCapacityIssueTypeKpi46": jiraSprintCapacityIssueType,
+        
+            "jiraIssueTypeKPI37": jiraDefectRejectionlIssueType,
+        
+            "jiraDefectCountlIssueTypeKPI28": jiraDefectCountlIssueType,
+            "jiraDefectCountlIssueTypeKPI36": jiraDefectCountlIssueType,
+        
+            "jiraIssueDeliverdStatusBR": jiraIssueDeliverdStatus,
+            "jiraIssueDeliverdStatusKpi39": jiraIssueDeliverdStatus,
+            "jiraIssueDeliverdStatusAVR": jiraIssueDeliverdStatus,
+            "jiraIssueDeliverdStatusKPI126": jiraIssueDeliverdStatus,
+            "jiraIssueDeliverdStatusKPI82": jiraIssueDeliverdStatus,
+        
+            "jiraDorLT": jiraDor,
+       
+            "jiraIssueTypeLT": jiraIntakeToDorIssueType,
+        
+            "jiraStoryIdentificationKpi40": jiraStoryIdentification,
 
-                "jiraStatusForDevelopmentAVR": jiraStatusForDevelopment,
-                "jiraStatusForDevelopmentFTPR": jiraStatusForDevelopment,
-                "jiraStatusForDevelopmentIFTPR": jiraStatusForDevelopment,
+            "jiraKPI82StoryIdentification": jiraFTPRStoryIdentification,
+            "jiraKPI135StoryIdentification": jiraFTPRStoryIdentification,
+        
+            "jiraLiveStatusLT": jiraLiveStatus,
+            "jiraLiveStatusLTK": jiraLiveStatus,
+            "jiraLiveStatusNOPK": jiraLiveStatus,
+            "jiraLiveStatusNOSK": jiraLiveStatus,
+            "jiraLiveStatusNORK": jiraLiveStatus,
+            "jiraLiveStatusOTA": jiraLiveStatus,
+            "jiraLiveStatusPDA": jiraLiveStatus,
+        
+            "excludeRCAFromKPI82": excludeRCAFromFTPR,
+            "excludeRCAFromKPI135": excludeRCAFromFTPR,
+            "excludeRCAFromKPI14": excludeRCAFromFTPR,
+            "excludeRCAFromQAKPI111": excludeRCAFromFTPR,
+            "excludeRCAFromKPI133": excludeRCAFromFTPR,
+        
+            "resolutionTypeForRejectionAVR": resolutionTypeForRejection,
+            "resolutionTypeForRejectionKPI28": resolutionTypeForRejection,
+            "resolutionTypeForRejectionKPI34": resolutionTypeForRejection,
+            "resolutionTypeForRejectionKPI37": resolutionTypeForRejection,
+            "resolutionTypeForRejectionKPI35": resolutionTypeForRejection,
+            "resolutionTypeForRejectionKPI82": resolutionTypeForRejection,
+            "resolutionTypeForRejectionKPI135": resolutionTypeForRejection,
+            "resolutionTypeForRejectionKPI133": resolutionTypeForRejection,
+            "resolutionTypeForRejectionRCAKPI36": resolutionTypeForRejection,
+            "resolutionTypeForRejectionKPI14": resolutionTypeForRejection,
+            "resolutionTypeForRejectionQAKPI111": resolutionTypeForRejection,
 
-                "jiraDodDIR": jiraDod,
-                "jiraDodQADD": jiraDod,
-                "jiraDodLT": jiraDod,
-                "jiraDodPDA": jiraDod,
+            "jiraQAKPI111IssueType": jiraQADefectDensityIssueType,
+        
+            "jiraStatusForInProgressKPI122": jiraStatusForInProgress,
+            "jiraStatusForInProgressKPI145": jiraStatusForInProgress,
+            "jiraStatusForInProgressKPI125": jiraStatusForInProgress,
+            "jiraStatusForInProgressKPI128": jiraStatusForInProgress,
+            "jiraStatusForInProgressKPI123": jiraStatusForInProgress,
+            "jiraStatusForInProgressKPI119": jiraStatusForInProgress,
+        
+            "issueStatusExcluMissingWorkKPI124": issueStatusExcluMissingWork,
+        
+            "jiraDevDoneStatusKPI119": jiraDevDoneStatus,
+            "jiraDevDoneStatusKPI145": jiraDevDoneStatus,
+            "jiraDevDoneStatusKPI128": jiraDevDoneStatus,
 
-                "jiraDefectRejectionStatusAVR": jiraDefectRejectionStatus,
-                "jiraDefectRejectionStatusDC": jiraDefectRejectionStatus,
-                "jiraDefectRejectionStatusDRE": jiraDefectRejectionStatus,
-                "jiraDefectRejectionStatusDRR": jiraDefectRejectionStatus,
-                "jiraDefectRejectionStatusDSR": jiraDefectRejectionStatus,
-                "jiraDefectRejectionStatusFTPR": jiraDefectRejectionStatus,
-                "jiraDefectRejectionStatusIFTPR": jiraDefectRejectionStatus,
-                "jiraDefectRejectionStatusQS": jiraDefectRejectionStatus,
-                "jiraDefectRejectionStatusRCA": jiraDefectRejectionStatus,
-                "jiraDefectRejectionStatusDIR": jiraDefectRejectionStatus,
-                "jiraDefectRejectionStatusQADD": jiraDefectRejectionStatus,
+            	"jiraWaitStatusKPI131": jiraWaitStatus,
+            
 
-                "jiraSprintVelocityIssueTypeSV": jiraSprintVelocityIssueType,
-                "jiraSprintVelocityIssueTypeBR": jiraSprintVelocityIssueType,
+            	"jiraBlockedStatusIW": jiraBlockedStatus,
 
-                "jiraDefectCountlIssueTypeDC": jiraDefectCountlIssueType,
-                "jiraDefectCountlIssueTypeRCA": jiraDefectCountlIssueType,
-
-                "jiraIssueDeliverdStatusBR": jiraIssueDeliverdStatus,
-                "jiraIssueDeliverdStatusSV": jiraIssueDeliverdStatus,
-                "jiraIssueDeliverdStatusAVR": jiraIssueDeliverdStatus,
-                "jiraIssueDeliverdStatusCVR": jiraIssueDeliverdStatus,
-                "jiraIssueDeliverdStatusFTPR": jiraIssueDeliverdStatus,
-
-                "jiraIntakeToDorIssueTypeLT": jiraIntakeToDorIssueType,
-
-                "jiraStoryIdentificationIC": jiraStoryIdentification,
-
-                "excludeRCAFromIFTPR": excludeRCAFromFTPR,
-                "excludeRCAFromDIR": excludeRCAFromFTPR,
-                "excludeRCAFromQADD": excludeRCAFromFTPR,
-                "excludeRCAFromQS": excludeRCAFromFTPR,
-
-                "resolutionTypeForRejectionAVR": resolutionTypeForRejection,
-                "resolutionTypeForRejectionDC": resolutionTypeForRejection,
-                "resolutionTypeForRejectionDRE": resolutionTypeForRejection,
-                "resolutionTypeForRejectionDRR": resolutionTypeForRejection,
-                "resolutionTypeForRejectionDSR": resolutionTypeForRejection,
-                "resolutionTypeForRejectionFTPR": resolutionTypeForRejection,
-                "resolutionTypeForRejectionIFTPR": resolutionTypeForRejection,
-                "resolutionTypeForRejectionQS": resolutionTypeForRejection,
-                "resolutionTypeForRejectionRCA": resolutionTypeForRejection,
-                "resolutionTypeForRejectionDIR": resolutionTypeForRejection,
-                "resolutionTypeForRejectionQADD": resolutionTypeForRejection,
-
-               "jiraStatusForInProgressCPT":jiraStatusForInProgress,
-                	 "jiraStatusForInProgressDCS": jiraStatusForInProgress,
-                	 "jiraStatusForInProgressIBU": jiraStatusForInProgress,
-                	 "jiraStatusForInProgressPWS": jiraStatusForInProgress,
-                	 "jiraStatusForInProgressILS": jiraStatusForInProgress,
-                	"jiraStatusForInProgressWR": jiraStatusForInProgress,
-
-                	"issueStatusExcluMissingWorkEH":issueStatusExcluMissingWork,
-
-                "jiraIssueTypeNamesAVR":jiraIssueTypeNames,
-
-                "storyFirstStatusLT":storyFirstStatus,
-
-                "jiraLiveStatusLT":jiraLiveStatus,
-                "jiraLiveStatusLTK":jiraLiveStatus,
-                "jiraLiveStatusNOPK":jiraLiveStatus,
-                "jiraLiveStatusNOSK":jiraLiveStatus,
-                "jiraLiveStatusNORK":jiraLiveStatus,
-                "jiraLiveStatusOTA":jiraLiveStatus,
-                "jiraLiveStatusPDA":jiraLiveStatus,
-
-                "jiraDorLT":jiraDor,
-
-                "jiraIFTPRStoryIdentification":jiraFTPRStoryIdentification,
-
-                "jiraWaitStatusIW": jiraWaitStatus,
-
-                "jiraBlockedStatusIW": jiraBlockedStatus,
-
-                "jiraIncludeBlockedStatusIW": jiraIncludeBlockedStatus,
-
-                "jiraDevDoneStatusWR": jiraDevDoneStatus,
-                "jiraDevDoneStatusDCS": jiraDevDoneStatus,
-                "jiraDevDoneStatusPWS": jiraDevDoneStatus,
-
-                "jiraIterationCompletionStatusIFTPR" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusCPT" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusEVA" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusDCS" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusIDCP" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusIDCR" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusIDCS" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusIC" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusCR" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusSV" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusSP" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusEH" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusILS" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusIBU" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusICO" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusPWS" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusUWS" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusQS" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusWR" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusIW" : jiraIterationCompletionStatusCustomField,
-                "jiraIterationCompletionStatusBRE" : jiraIterationCompletionStatusCustomField,
-
-                "jiraIterationCompletionTypeCPT" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypeBRE" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypeIW" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypePWS" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypeUPWS" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypeDCS" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypeCR" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypeWR" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypeSP" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypeEVA" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypeILS" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypeIBU" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypeICO" : jiraIterationCompletionTypeCustomField,
-                "jiraIterationCompletionTypeEH" : jiraIterationCompletionTypeCustomField
-
-
-
-
-            }
+            	"jiraIncludeBlockedStatusKPI131": jiraIncludeBlockedStatus,
+        
+            "jiraIterationCompletionStatusKPI135": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI122": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI75": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI145": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI140": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI132": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI136": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKpi40": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKpi72": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKpi39": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKpi5": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI124": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI123": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI125": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI120": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI128": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI134": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI133": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI119": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI131": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusBRE": jiraIterationCompletionStatusCustomField,
+        
+            "jiraIterationIssuetypeKPI122": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeBRE": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKPI131": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKPI128": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKPI134": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKPI145": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKpi72": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKPI119": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKpi5": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKPI75": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKPI123": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKPI125": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKPI120": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKPI124": jiraIterationCompletionTypeCustomField,
+          }
 //            $unset: {
 //                "defectPriority": "",
 //                "jiraStatusForDevelopment": "",

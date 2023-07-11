@@ -98,9 +98,9 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 					.collect(Collectors.toList());
 
 			// exclude the issue from total stories based on defect rejection status
-			if (Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatusIFTPR()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatusKPI135()).isPresent()) {
 				totalStoryList = totalStoryList.stream()
-						.filter(jiraIssue -> !jiraIssue.getStatus().equals(fieldMapping.getJiraDefectRejectionStatusIFTPR()))
+						.filter(jiraIssue -> !jiraIssue.getStatus().equals(fieldMapping.getJiraDefectRejectionStatusKPI135()))
 						.collect(Collectors.toList());
 			}
 		}
@@ -278,9 +278,9 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			// Total stories from issues completed collection in a sprint
 			totalStoryList = getTotalStoryList(fieldMapping, allIssues, totalStoryList);
 
-			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint, fieldMapping.getDefectPriorityIFTPR());
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getExcludeRCAFromIFTPR());
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionIFTPR(), fieldMapping.getJiraDefectRejectionStatusIFTPR());
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint, fieldMapping.getDefectPriorityKPI135());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getExcludeRCAFromKPI135());
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionKPI135(), fieldMapping.getJiraDefectRejectionStatusKPI135());
 			KpiHelperService.getDefectsWithoutDrop(droppedDefects, allIssues, totalJiraIssues);
 
 			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttypeKPI135)

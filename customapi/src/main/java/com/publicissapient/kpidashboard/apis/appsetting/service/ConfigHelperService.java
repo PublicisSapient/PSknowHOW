@@ -308,4 +308,11 @@ public class ConfigHelperService {
 		return userBoardConfigRepository.findAll();
 	}
 
+	@PostConstruct
+	@Cacheable(CommonConstant.CACHE_PROJECT_TOOL_CONFIG)
+	public Object loadAllProjectToolConfig() {
+		log.info("loading projectToolConfig data");
+		return projectToolConfigRepository.findAll();
+	}
+
 }

@@ -108,7 +108,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeKPI124(),
+						fieldMapping.getJiraIterationIssuetypeKPI124(),
 						fieldMapping.getJiraIterationCompletionStatusKPI124());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,

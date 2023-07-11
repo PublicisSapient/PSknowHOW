@@ -257,7 +257,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiradefecttypeKPI82(issueTypeMap.get(CommonConstant.BUG));
 		fieldMapping.setJiradefecttypeKPI135(issueTypeMap.get(CommonConstant.BUG));
 		fieldMapping.setJiradefecttypeAVR(issueTypeMap.get(CommonConstant.BUG));
-		fieldMapping.setJiradefecttypeIC(issueTypeMap.get(CommonConstant.BUG));
+		fieldMapping.setJiradefecttypeKpi40(issueTypeMap.get(CommonConstant.BUG));
 		fieldMapping.setJiradefecttypeKPI126(issueTypeMap.get(CommonConstant.BUG));
 		fieldMapping.setJiradefecttypeBDRR(issueTypeMap.get(CommonConstant.BUG));
 
@@ -272,23 +272,23 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
 		if (CollectionUtils.isNotEmpty(firstStatusList)) {
 			fieldMapping.setStoryFirstStatus(firstStatusList.get(0));
-			fieldMapping.setJiraDefectCreatedStatus(firstStatusList.get(0));
+			fieldMapping.setJiraDefectCreatedStatusKPI14(firstStatusList.get(0));
 		} else {
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
-			fieldMapping.setJiraDefectCreatedStatus(CommonConstant.OPEN);
+			fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
 		}
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping.setJiraStatusForDevelopmentAVR(workflowMap.get(CommonConstant.DEVELOPMENT));
 		fieldMapping.setJiraStatusForDevelopmentKPI82(workflowMap.get(CommonConstant.DEVELOPMENT));
 		fieldMapping.setJiraStatusForDevelopmentKPI135(workflowMap.get(CommonConstant.DEVELOPMENT));
 		fieldMapping.setJiraStatusForQa(workflowMap.get(CommonConstant.QA));
-		fieldMapping.setJiraDefectInjectionIssueType(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(issueTypeMap.get(CommonConstant.STORY));
 		if (CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.DOR))) {
 			fieldMapping.setJiraDorLT(workflowMap.get(CommonConstant.DOR).get(0));
 		} else {
 			fieldMapping.setJiraDorLT(null);
 		}
-		fieldMapping.setJiraDodDIR(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodLT(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodPDA(workflowMap.get(CommonConstant.DOD));
@@ -308,46 +308,46 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraIterationCompletionStatusKPI140(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI132(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI136(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusIC(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusCR(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusSV(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusSP(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraIterationCompletionStatusKpi40(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraIterationCompletionStatusKpi72(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraIterationCompletionStatusKpi39(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraIterationCompletionStatusKpi5(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI124(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI125(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusBRE(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraIssueTypeKPI35(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraDefectRemovalStatus(workflowMap.get(CommonConstant.DELIVERED));
-		fieldMapping.setJiraDefectRemovalIssueType(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraDefectRemovalStatusKPI34(workflowMap.get(CommonConstant.DELIVERED));
+		fieldMapping.setJiraDefectRemovalIssueTypeKPI34(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraStoryPointsCustomField(customField.get(CommonConstant.STORYPOINT));
 		fieldMapping.setJiraTestAutomationIssueType(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraSprintVelocityIssueTypeSV(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraSprintVelocityIssueTypeKpi39(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraSprintVelocityIssueTypeBR(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraSprintCapacityIssueType(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraIssueTypeKPI37(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraDefectCountlIssueTypeDC(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraDefectCountlIssueTypeRCA(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraIssueDeliverdStatusSV(workflowMap.get(CommonConstant.DELIVERED));
+		fieldMapping.setJiraDefectCountlIssueTypeKPI28(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraDefectCountlIssueTypeKPI36(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraIssueDeliverdStatusKpi39(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIssueDeliverdStatusBR(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIssueDeliverdStatusAVR(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIssueDeliverdStatusKPI126(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(workflowMap.get(CommonConstant.DELIVERED));
 
-		fieldMapping.setJiraIntakeToDorIssueTypeLT(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraIssueTypeLT(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraStoryIdentification(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraKPI82StoryIdentification(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraKPI135StoryIdentification(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setRootCauseValue(valuesToIdentifyMap.get(CommonConstant.ROOT_CAUSE_VALUE));
 		fieldMapping.setResolutionTypeForRejectionAVR(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setResolutionTypeForRejectionKPI28(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
-		fieldMapping.setResolutionTypeForRejectionDRE(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
+		fieldMapping.setResolutionTypeForRejectionKPI34(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setResolutionTypeForRejectionKPI37(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setResolutionTypeForRejectionKPI35(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setResolutionTypeForRejectionKPI82(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
-		fieldMapping.setResolutionTypeForRejectionIFTPR(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
+		fieldMapping.setResolutionTypeForRejectionKPI135(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setResolutionTypeForRejectionKPI133(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setResolutionTypeForRejectionRCAKPI36(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
-		fieldMapping.setResolutionTypeForRejectionDIR(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
+		fieldMapping.setResolutionTypeForRejectionKPI14(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setResolutionTypeForRejectionQAKPI111(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setJiraQAKPI111IssueType(issueTypeMap.get(CommonConstant.STORY));
 

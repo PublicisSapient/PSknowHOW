@@ -120,7 +120,7 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeKPI123(),
+						fieldMapping.getJiraIterationIssuetypeKPI123(),
 						fieldMapping.getJiraIterationCompletionStatusKPI123());
 
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(

@@ -332,26 +332,26 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraIssueTypeNames(new String[] { "Story", "Enabler Story" });
 		fieldMapping.setJiraIssueTypeKPI35(Arrays.asList("Story"));
 		fieldMapping.setJiraQAKPI111IssueType(Arrays.asList("Story"));
-		fieldMapping.setJiraDefectCountlIssueTypeRCA(Arrays.asList("Story"));
-		fieldMapping.setJiraSprintVelocityIssueTypeSV(Arrays.asList("Story", "Defect"));
-		fieldMapping.setJiraDefectRemovalIssueType(Arrays.asList("Story"));
+		fieldMapping.setJiraDefectCountlIssueTypeKPI36(Arrays.asList("Story"));
+		fieldMapping.setJiraSprintVelocityIssueTypeKpi39(Arrays.asList("Story", "Defect"));
+		fieldMapping.setJiraDefectRemovalIssueTypeKPI34(Arrays.asList("Story"));
 		fieldMapping.setJiraIssueTypeKPI37(Arrays.asList("Story"));
-		fieldMapping.setJiraDefectInjectionIssueType(Arrays.asList("Story"));
+		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(Arrays.asList("Story"));
 		fieldMapping.setJiraTestAutomationIssueType(Arrays.asList("Story"));
-		fieldMapping.setJiraIntakeToDorIssueTypeLT(Arrays.asList("Story", "Defect"));
+		fieldMapping.setJiraIssueTypeLT(Arrays.asList("Story", "Defect"));
 		fieldMapping.setJiraTechDebtIssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraStoryIdentification(Arrays.asList("Story"));
-		fieldMapping.setJiraSprintCapacityIssueType(Arrays.asList("Story"));
+		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(Arrays.asList("Story"));
 		// workflow
-		fieldMapping.setJiraDefectCreatedStatus("Open");
+		fieldMapping.setJiraDefectCreatedStatusKPI14("Open");
 		fieldMapping.setStoryFirstStatus("Open");
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setJiraDorLT("In Analysis");
 		fieldMapping.setJiraDefectRejectionStatusKPI133("Closed");
 		fieldMapping.setJiraDod(Arrays.asList("Ready for Sign-Off"));
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(Arrays.asList("Closed", "Ready for Delivery"));
-		fieldMapping.setJiraDefectRemovalStatus(Arrays.asList("Closed"));
-		fieldMapping.setResolutionTypeForRejectionIFTPR(
+		fieldMapping.setJiraDefectRemovalStatusKPI34(Arrays.asList("Closed"));
+		fieldMapping.setResolutionTypeForRejectionKPI135(
 				Arrays.asList("Duplicate", "Cannot Reproduce", "Invalid", "Declined", "Dropped"));
 		fieldMapping.setJiraStatusForDevelopmentAVR(Arrays.asList("In Development"));
 		fieldMapping.setJiraStatusForDevelopmentKPI82(Arrays.asList("In Development"));

@@ -189,8 +189,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			List<String> jiraStoryIdentification = new ArrayList<>();
-			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationIC()).isPresent()) {
-				jiraStoryIdentification = fieldMapping.getJiraStoryIdentificationIC().stream().map(String::toLowerCase)
+			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKpi40()).isPresent()) {
+				jiraStoryIdentification = fieldMapping.getJiraStoryIdentificationKpi40().stream().map(String::toLowerCase)
 						.collect(Collectors.toList());
 			}
 			projectWiseJiraIdentification.put(basicProjectConfigId.toString(), jiraStoryIdentification);
@@ -200,7 +200,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 																	  // comparison
 					.distinct().collect(Collectors.toList());
 
-			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeIC(), categories,
+			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeKpi40(), categories,
 					JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
@@ -213,7 +213,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			// to modify sprintdetails on the basis of configuration for the project
 			KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
 					new ArrayList<>(),
-					fieldMapping.getJiraIterationCompletionStatusIC());
+					fieldMapping.getJiraIterationCompletionStatusKpi40());
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));

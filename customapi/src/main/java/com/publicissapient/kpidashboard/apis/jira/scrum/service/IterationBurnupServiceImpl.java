@@ -147,7 +147,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeKPI125(),
+						fieldMapping.getJiraIterationIssuetypeKPI125(),
 						fieldMapping.getJiraIterationCompletionStatusKPI125());
 
 				LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],

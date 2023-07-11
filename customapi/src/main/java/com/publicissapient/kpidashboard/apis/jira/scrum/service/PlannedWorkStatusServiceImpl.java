@@ -136,7 +136,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
-						fieldMapping.getJiraIterationCompletionTypeKPI128(),
+						fieldMapping.getJiraIterationIssuetypeKPI128(),
 						fieldMapping.getJiraIterationCompletionStatusKPI128());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,

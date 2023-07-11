@@ -186,7 +186,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 			final FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectCountlIssueTypeDC()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectCountlIssueTypeKPI28()));
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping.getResolutionTypeForRejectionKPI28(),fieldMapping.getJiraDefectRejectionStatusKPI28());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
