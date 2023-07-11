@@ -36,6 +36,7 @@ import { HelperService } from 'src/app/services/helper.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { of, throwError } from 'rxjs';
 import { ConfigComponent } from 'src/app/config/config.component';
+import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 
 describe('FilterComponent', () => {
   let component: FilterComponent;
@@ -47,6 +48,7 @@ describe('FilterComponent', () => {
   let getAuthorizationService: GetAuthorizationService;
   let helperService: HelperService;
   let excelService: ExcelService;
+  let ga: GoogleAnalyticsService;
   const baseUrl = environment.baseUrl;  // Servers Env
 
   const fakeFilterData = require('../../../test/resource/fakeFilterData.json');
@@ -189,6 +191,8 @@ describe('FilterComponent', () => {
     },
     level: 1
   };
+
+  const fakeSelectedFilterArray =  []
 
   beforeEach(() => {
 
@@ -1519,6 +1523,17 @@ describe('FilterComponent', () => {
     spyOn(component,'findTraceLogForTool').and.returnValue(fakeTraceLog)
     component.showExecutionDate();
     expect(component.selectedProjectLastSyncStatus).toBe("FAILURE");
+  })
+
+  fit('should compile GA data', () => {
+    let gaArray = [{
+
+    }];
+    
+    component.selectedFilterArray = selectedFilterArray;
+    
+    spyOn(ga, 'setProjectData');
+    expect()
   })
 
 });
