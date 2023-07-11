@@ -208,7 +208,6 @@ public class CommentsServiceImpl implements CommentsService {
 	 */
 	private void reMappingOfKpiComments(KPIComments matchedKpiComment, List<CommentsInfo> newCommentsInfo) {
 		List<CommentsInfo> commentsInfo = matchedKpiComment.getCommentsInfo();
-		if (CollectionUtils.isNotEmpty(commentsInfo)) {
 			int commentsInfoSize = commentsInfo.size();
 			int perKpiMaxCommentsStoreCount = customApiConfig.getKpiCommentsMaxStoreCount();
 			if (commentsInfoSize < perKpiMaxCommentsStoreCount) {
@@ -227,7 +226,6 @@ public class CommentsServiceImpl implements CommentsService {
 						"Old comments removed, saved new comment & re-arranged comments into kpi_comments collection {}",
 						matchedKpiComment);
 			}
-		}
 	}
 
 	/**
