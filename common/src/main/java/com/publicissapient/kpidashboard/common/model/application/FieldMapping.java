@@ -127,7 +127,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraTicketWipStatus;
 	private List<String> jiraTicketRejectedStatus;
 	private List<String> excludeStatusKpi129;
-	private List<String> issueTypeKpi127;
 
 	private String jiraStatusMappingCustomField;
 

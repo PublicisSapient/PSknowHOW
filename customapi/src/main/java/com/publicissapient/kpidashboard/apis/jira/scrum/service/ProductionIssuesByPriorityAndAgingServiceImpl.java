@@ -94,12 +94,10 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			if (null != fieldMapping) {
-				if (Optional.ofNullable(fieldMapping.getIssueTypeKpi127()).isPresent()) {
-					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
-							fieldMapping.getIssueTypeKpi127(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
-				}
-			}
+			List<String> defectList = new ArrayList<>();
+			defectList.add(CommonConstant.BUG);
+			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(defectList));
 
 			if (Optional.ofNullable(fieldMapping.getJiraDod()).isPresent()) {
 				List<String> closedStatusList = new ArrayList<>();
