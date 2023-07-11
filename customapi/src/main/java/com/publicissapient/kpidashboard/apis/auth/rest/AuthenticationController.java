@@ -165,7 +165,7 @@ public class AuthenticationController {
 
 				if(useInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN)){
 					return ResponseEntity.status(HttpStatus.ACCEPTED)
-							.body(new ServiceResponse(true, "You have the Server Admin Rights", null));
+							.body(new ServiceResponse(true, "User successfully created and assigned the server administration rights.", null));
 				}
 				signupManager.sendUserPreApprovalRequestEmailToAdmin(request.getUsername(), request.getEmail());
 				return ResponseEntity.status(HttpStatus.ACCEPTED)
