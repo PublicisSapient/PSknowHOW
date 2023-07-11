@@ -1,10 +1,14 @@
 #chart{
     position: relative;
     height: 290px;
-    width: auto;
+    width: 100%;
     margin-top: 1rem;
     display: flex;
     justify-content: center;
+}
+
+:host ::ng-deep.chart-container{
+  position: relative;
 }
 
 :host ::ng-deep.tooltip{
@@ -16,6 +20,7 @@
     color: var(--color-gray-34);
     border-radius: 2px;
     box-shadow: 0px 0px 6px #b9b9bb;
+    pointer-events: none;
 }
 
 :host::ng-deep .legend_item {

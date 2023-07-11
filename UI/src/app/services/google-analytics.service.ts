@@ -71,7 +71,6 @@ export class GoogleAnalyticsService {
   }
 
   setLoginMethod(data, loginType){
-
     const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
     dataLayer.push({
          'event' : 'login',

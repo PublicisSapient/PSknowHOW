@@ -54,7 +54,6 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private static final String USER_NAME = "user_name";
 	private static final String USER_EMAIL = "user_email";
-	private static final String USER_ID = "user_id";
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final Object USER_AUTHORITIES = "authorities";
@@ -86,7 +85,6 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
 		json.put(USER_NAME, username);
 		json.put(USER_EMAIL, email);
-		json.put(USER_ID, userinfo.getId().toString());
 		json.put(USER_AUTHORITIES, userinfo.getAuthorities());
 		Gson gson = new Gson();
 
