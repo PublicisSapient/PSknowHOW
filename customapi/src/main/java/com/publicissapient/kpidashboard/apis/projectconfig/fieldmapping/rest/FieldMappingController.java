@@ -123,7 +123,7 @@ public class FieldMappingController {
 		boolean result = fieldMappingService.compareMappingOnSave(projectToolConfigId, fieldMapping);
 
 		ServiceResponse response = null;
-		if (result || templateCode.equalsIgnoreCase(projectToolConfig.getMetadataTemplateCode()) ) {
+		if (result && templateCode.equalsIgnoreCase(projectToolConfig.getMetadataTemplateCode()) ) {
 			response = new ServiceResponse(true, "mappings are not same as default mapping", false);
 		} else {
 			response = new ServiceResponse(true, "mappings are same as default mapping", true);
