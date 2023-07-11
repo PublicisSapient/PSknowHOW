@@ -296,7 +296,7 @@ private List<String> jiraWaitStatusKPI131;
 
 // field for Wasting - block status
 private List<String> jiraBlockedStatus;// TODO: Extra field
-private List<String> jiraBlockedStatusIW;
+private List<String> jiraBlockedStatusKPI131;
 
 // field for Wasting - Include Blocked Status
 private String jiraIncludeBlockedStatus; // TODO: Extra field

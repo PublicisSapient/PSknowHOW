@@ -166,7 +166,7 @@ fieldMappings.forEach(function(fm) {
             	"jiraWaitStatusKPI131": jiraWaitStatus,
             
 
-            	"jiraBlockedStatusIW": jiraBlockedStatus,
+            	"jiraBlockedStatusKPI131": jiraBlockedStatus,
 
             	"jiraIncludeBlockedStatusKPI131": jiraIncludeBlockedStatus,
         

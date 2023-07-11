@@ -297,8 +297,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		if (null != fieldMapping) {
 			if (StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatusKPI131())
 					&& fieldMapping.getJiraIncludeBlockedStatusKPI131().contains(CommonConstant.BLOCKED_STATUS_WASTAGE)
-					&& CollectionUtils.isNotEmpty(fieldMapping.getJiraBlockedStatusIW()))
-				blockedStatus = fieldMapping.getJiraBlockedStatusIW();
+					&& CollectionUtils.isNotEmpty(fieldMapping.getJiraBlockedStatusKPI131()))
+				blockedStatus = fieldMapping.getJiraBlockedStatusKPI131();
 
 			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraWaitStatusKPI131()))
 				waitStatus = fieldMapping.getJiraWaitStatusKPI131();

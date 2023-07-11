@@ -606,32 +606,32 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI131",
-    "fieldLabel": "Iteration Board Issue types",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue Types to be considered Completed"
+      "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
     }
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI128",
-    "fieldLabel": "Iteration Board Issue types",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue Types to be considered Completed"
+      "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
     }
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI134",
-    "fieldLabel": "Iteration Board Issue types",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue Types to be considered Completed"
+      "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
     }
   },
   {
@@ -705,12 +705,12 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiraIterationIssuetypeKPI120",
-    "fieldLabel": "Iteration Board Issue types",
+    "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue Types to be considered Completed"
+      "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
     }
   },
   {
@@ -1245,7 +1245,7 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiraDod",
-    "fieldLabel": "DOD Status",
+    "fieldLabel": "Status to identify DOD",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1335,7 +1335,7 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiraIssueTypeNames",
-    "fieldLabel": "Issue Types to be fetched from Jira",
+    "fieldLabel": "Issue types to be included",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "processorCommon":true,
@@ -1396,7 +1396,7 @@ db.getCollection('field_mapping_structure').insert(
     },
   {
       "fieldName": "jiraIterationCompletionStatusCustomField",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
@@ -1436,12 +1436,12 @@ db.getCollection('field_mapping_structure').insert(
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI140",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
@@ -1526,32 +1526,32 @@ db.getCollection('field_mapping_structure').insert(
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI120",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI128",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI134",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
   {
@@ -1576,22 +1576,22 @@ db.getCollection('field_mapping_structure').insert(
     },
   {
       "fieldName": "jiraIterationCompletionStatusKPI131",
-      "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+      "fieldLabel": "Status to identify completed issues",
       "fieldType": "chips",
       "fieldCategory": "workflow",
       "section": "WorkFlow Status Mapping",
       "tooltip": {
-        "definition": "Status to identify as closed"
+        "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
       }
     },
     {
           "fieldName": "jiraWaitStatusKPI131",
-          "fieldLabel": "Wastage - Wait Status",
+          "fieldLabel": "Status that signify queue",
           "fieldType": "chips",
           "fieldCategory": "workflow",
           "section": "WorkFlow Status Mapping",
           "tooltip": {
-            "definition": "The statuses wherein no activity takes place and signify that the issues needs to move to picked up by a team member like Ready for deployment, Ready for testing etc"
+            "definition": "The statuses wherein no activity takes place and signifies that issue is queued and need to move for work to resume on the issue."
           }
         },
   {
@@ -1607,7 +1607,7 @@ db.getCollection('field_mapping_structure').insert(
 
   {
     "fieldName": "jiraLiveStatus",
-    "fieldLabel": "Live Status - Lead Time",
+    "fieldLabel": "Status to identify Live status",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
@@ -1830,13 +1830,13 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiradefecttypeKPI140",
-    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldLabel": "Issue type to be identify defect",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+      "definition": "Issue types that are considered as defects in Jira"
     }
   },
   {
@@ -1874,18 +1874,18 @@ db.getCollection('field_mapping_structure').insert(
   },
   {
     "fieldName": "jiradefecttype",
-    "fieldLabel": "Issue Type to Identify Defect",
+    "fieldLabel": "Status to identify defects",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+      "definition": "Issue types that are considered as Defects in Jira"
     }
   },
 {
     "fieldName": "jiraStoryPointsCustomField",
-    "fieldLabel": "Estimation",
+    "fieldLabel": "Story Points Custom Field",
     "fieldType": "text",
     "fieldCategory": "custom",
     "section": "Custom Fields Mapping",
@@ -1905,7 +1905,7 @@ db.getCollection('field_mapping_structure').insert(
 },
 {
     "fieldName": "epicCostOfDelay",
-    "fieldLabel": "Epic Cost of Delay",
+    "fieldLabel": "Custom field for COD",
     "fieldType": "text",
     "fieldCategory": "custom",
     "section": "Custom Fields Mapping",
@@ -1916,7 +1916,7 @@ db.getCollection('field_mapping_structure').insert(
 },
 {
     "fieldName": "epicRiskReduction",
-    "fieldLabel": "Epic Risk Reduction",
+    "fieldLabel": "Custom field for Risk Reduction",
     "fieldType": "text",
     "fieldCategory": "custom",
     "section": "Custom Fields Mapping",
@@ -1927,7 +1927,7 @@ db.getCollection('field_mapping_structure').insert(
 },
 {
     "fieldName": "epicUserBusinessValue",
-    "fieldLabel": "Epic Business Value",
+    "fieldLabel": "Custom field for BV",
     "fieldType": "text",
     "fieldCategory": "custom",
     "section": "Custom Fields Mapping",
@@ -1938,7 +1938,7 @@ db.getCollection('field_mapping_structure').insert(
 },
 {
     "fieldName": "epicWsjf",
-    "fieldLabel": "Epic WSJF",
+    "fieldLabel": "Custom field for WSJF",
     "fieldType": "text",
     "fieldCategory": "custom",
     "section": "Custom Fields Mapping",
@@ -1949,7 +1949,7 @@ db.getCollection('field_mapping_structure').insert(
 },
 {
     "fieldName": "epicTimeCriticality",
-    "fieldLabel": "Epic Time Criticality",
+    "fieldLabel": "Custom field for Time Criticality",
     "fieldType": "text",
     "fieldCategory": "custom",
     "section": "Custom Fields Mapping",
@@ -1960,7 +1960,7 @@ db.getCollection('field_mapping_structure').insert(
 },
 {
     "fieldName": "epicJobSize",
-    "fieldLabel": "Epic Job Size",
+    "fieldLabel": "Custom field for Job Size",
     "fieldType": "text",
     "fieldCategory": "custom",
     "section": "Custom Fields Mapping",
@@ -2000,14 +2000,13 @@ db.getCollection('field_mapping_structure').insert(
         ]
 },
 {
-    "fieldName": "jiraIncludeBlockedStatus131",
-    "fieldLabel": "Wastage - Blocked Issues Criteria ",
+    "fieldName": "jiraIncludeBlockedStatusKPI131",
+    "fieldLabel": "Status to identify Blocked issues",
     "fieldType": "radiobutton",
 	"fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-          "definition": "The statuses that signify that team is unable to proceed on an issue due to internal
-          or external dependency like On Hold, Waiting for user response, Blocked etc should be included."
+          "definition": "The statuses that signify that team is unable to proceed on an issue due to internal or external dependency like On Hold, Waiting for user response, dependent work etc."
         },
      "options": [
           {
@@ -2021,7 +2020,7 @@ db.getCollection('field_mapping_structure').insert(
         ],
      "nestedFields": [
           {
-            "fieldName": "jiraBlockedStatusIW",
+            "fieldName": "jiraBlockedStatusKPI131",
             "fieldLabel": "Status to Identify 'Blocked' status ",
             "fieldType": "chips",
             "filterGroup": ["Blocked Status"],
@@ -2180,12 +2179,12 @@ db.getCollection('field_mapping_structure').insert(
           }
 },{
     "fieldName": "jiraStatusForInProgressKPI128",
-    "fieldLabel": "Status to identify In Progress",
+    "fieldLabel": "Status to identify In Progress issues",
      "fieldType": "chips",
     "fieldCategory": "workflow",
      "section": "WorkFlow Status Mapping",
      "tooltip": {
-          "definition": "This field should consider all status that are considered In Progress in Jira for e.g. Analysis, development, code review, testing etc <br>",
+          "definition": "All statuses that issues have moved from the Created status and also has not been completed",
           }
 },{
     "fieldName": "jiraDevDoneStatusKPI119",
@@ -2207,13 +2206,12 @@ db.getCollection('field_mapping_structure').insert(
           }
 },{
     "fieldName": "jiraDevDoneStatusKPI128",
-    "fieldLabel": "Dev Completion Status",
+    "fieldLabel": "Status to identify Dev completed issues",
      "fieldType": "chips",
     "fieldCategory": "workflow",
      "section": "WorkFlow Status Mapping",
      "tooltip": {
-          "definition": "This status identifies when Development is completed for an issue<br>
-                                                                        ",
+          "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
           }
 },{
     "fieldName": "jiraDefectCountlIssueTypeKPI28",
