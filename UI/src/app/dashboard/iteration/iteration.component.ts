@@ -109,6 +109,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.kpiChartData = {};
         this.kpiSelectedFilterObj = {};
         this.kpiDropdowns = {};
+        this.kpiCommentsCountObj = {};
         this.sharedObject = sharedobject;
         if(this.globalConfig || this.service.getDashConfigData()){
           this.receiveSharedData(sharedobject);
