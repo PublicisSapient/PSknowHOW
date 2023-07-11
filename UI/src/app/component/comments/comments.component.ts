@@ -22,7 +22,8 @@ export class CommentsComponent implements OnInit {
   commentError = false;
   dataLoaded = false;
   @Output() closeSpringOverlay = new EventEmitter();
-  showLoader:boolean = false;
+  showLoader:object = {};
+  showConfirmBtn:object = {};
   @Output() getCommentsCountByKpiId = new EventEmitter();
 
   constructor(private service: SharedService, private http_service: HttpService) { }
@@ -94,6 +95,10 @@ export class CommentsComponent implements OnInit {
       if(response.data?.CommentsInfo){
         this.commentsList = response.data.CommentsInfo;
       }
+      for(let i=0; i<this.commentsList?.length; i++){
+        this.showConfirmBtn[this.commentsList[i]?.commentId] = false;
+        this.showLoader[this.commentsList[i]?.commentId] = false;
+      }
       this.showAddComment = false;
       this.dataLoaded = true;
     });
@@ -113,11 +118,16 @@ export class CommentsComponent implements OnInit {
     }
   }
 
-  deleteComment(id){
-    this.showLoader = true;
-    this.http_service.deleteComment(id).subscribe((res) => {
+  handleConfirmDelete(commentId){
+    this.showConfirmBtn[commentId] = true;
+  }
+
+  deleteComment(commentId){
+    this.showConfirmBtn[commentId] = false;
+    this.showLoader[commentId] = true;
+    this.http_service.deleteComment(commentId).subscribe((res) => {
       if(res.success){
-        this.showLoader = false;
+        this.showLoader[commentId] = false;
         this.getComments();
         this.getCommentsCountByKpiId.emit(this.kpiId);
       }
