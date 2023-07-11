@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,11 +158,15 @@ public class AuthenticationController {
 				Authentication authentication = authenticationService.create(request.getUsername(),
 						request.getPassword(), request.getEmail());
 
-				userInfoService.save(userInfoService.createDefaultUserInfo(request.getUsername(), AuthType.STANDARD,
+				UserInfo useInfo = userInfoService.save(userInfoService.createDefaultUserInfo(request.getUsername(), AuthType.STANDARD,
 						request.getEmail()));
 
 				authenticationResponseService.handle(httpServletResponse, authentication);
 
+				if(useInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN)){
+					return ResponseEntity.status(HttpStatus.ACCEPTED)
+							.body(new ServiceResponse(true, "You have the Server Admin Rights", null));
+				}
 				signupManager.sendUserPreApprovalRequestEmailToAdmin(request.getUsername(), request.getEmail());
 				return ResponseEntity.status(HttpStatus.ACCEPTED)
 						.body(new ServiceResponse(true, "Your access request has been sent for approval", null));
