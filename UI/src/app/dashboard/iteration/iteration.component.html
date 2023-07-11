@@ -349,7 +349,7 @@
                 <ng-container *ngFor="let k of x[item]|keyvalue">
                   <a [href]="k.value" class="p-d-block text-blue" target="_blank"
                     *ngIf="k.value.includes('http'); else showText">{{k.key}}</a>
-                  <ng-template #showText><span>{{k.value}}</span><br></ng-template>
+                  <ng-template #showText><span>{{k.value}}</span></ng-template>
                 </ng-container>
               </td>
               <ng-template #elseBlock>
