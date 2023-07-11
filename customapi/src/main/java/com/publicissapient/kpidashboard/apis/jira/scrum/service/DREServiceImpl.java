@@ -421,7 +421,10 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			} else if (sprintWiseHowerMap.get(currentNodeIdentifier).get(priority) != null) {
 				howerMap.put(priority, sprintWiseHowerMap.get(currentNodeIdentifier).get(priority));
 			} else {
-				howerMap.put(priority, getHoverString(0, 0));
+				Map<String, Integer> innerHoverMap = new HashMap<>();
+				innerHoverMap.put(REMOVED, 0);
+				innerHoverMap.put(TOTAL, 0);
+				howerMap.put(priority, innerHoverMap);
 			}
 			dataCount.setHoverValue(howerMap);
 		}
@@ -458,10 +461,6 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		dataValues.put("totalValue", sprintPriorityTotalDefectCount);
 		dataValues.put("actualValue", sprintPriorityClosedDefectCount);
 		dataCount.setDataValues(dataValues);
-	}
-
-	private String getHoverString(int closedDefectCount, int totalDefectCount) {
-		return REMOVED + ":" + closedDefectCount + ", " + TOTAL + ":" + totalDefectCount;
 	}
 
 	private Double calculateDREValue(int closedDefectCount, int totalDefectCount) {
@@ -550,13 +549,16 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		if (closedDefects != null && totalDefects != null && CollectionUtils.isNotEmpty(totalDefects.keySet())) {
 			Set<String> priorities = totalDefects.keySet();
 			for (String priority : priorities) {
-				int closedDefectCount = CollectionUtils.isNotEmpty(closedDefects.get(priority))
+				Integer closedDefectCount = CollectionUtils.isNotEmpty(closedDefects.get(priority))
 						? closedDefects.get(priority).size()
 						: 0;
-				int totalDefectCount = CollectionUtils.isNotEmpty(totalDefects.get(priority))
+				Integer totalDefectCount = CollectionUtils.isNotEmpty(totalDefects.get(priority))
 						? totalDefects.get(priority).size()
 						: 0;
-				howerMap.put(priority, getHoverString(closedDefectCount, totalDefectCount));
+				Map<String , Integer> innerHoverMap = new HashMap<>();
+				innerHoverMap.put(REMOVED , closedDefectCount);
+				innerHoverMap.put(TOTAL , totalDefectCount);
+				howerMap.put(priority, innerHoverMap);
 			}
 		}
 		sprintWiseHowerMap.put(sprint, howerMap);

@@ -270,6 +270,17 @@ public abstract class ToolsKPIService<R, S> {
 						hoverValue.computeIfPresent(key, (k, v) -> (Double) v + (Double) value);
 					} else if (value instanceof Long) {
 						hoverValue.computeIfPresent(key, (k, v) -> (Long) v + (Long) value);
+					} else if (value instanceof HashMap) {
+						Map<String , Integer> innerHoverMap = (Map<String, Integer>) value;
+						if (hoverValue.get(key) instanceof HashMap) {
+							Map<String, Integer > innerValueSet = (Map<String, Integer>) hoverValue.get(key);
+							innerHoverMap.forEach((innerKey, innerValue) -> {
+								if (innerValue instanceof Integer) {
+									innerValueSet.computeIfPresent(innerKey, (k, v) ->  v +  innerValue);
+								}
+							});
+							hoverValue.computeIfPresent(key, (k, v) -> innerValueSet);
+						}
 					}
 					hoverValue.putIfAbsent(key, value);
 				});
