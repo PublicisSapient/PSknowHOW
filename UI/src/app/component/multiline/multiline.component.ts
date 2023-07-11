@@ -608,24 +608,32 @@ export class MultilineComponent implements OnChanges {
           div
             .html(
               `${d.date || d.sSprintName}` +
-                ' : ' +
-                "<span class='toolTipValue'> " +
-                `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
-                '</span>',
+              ' : ' +
+              "<span class='toolTipValue'> " +
+              `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
+              '</span>',
             )
             .style('left', xPosition + 20 + 'px')
             // .style('top', yScale(d.value) - topValue + 'px');
             .style('top', yPosition + 20 + 'px');
           for (const hoverData in d.hoverValue) {
-            div
-              .append('p')
-              .html(
-                `${hoverData}` +
-                  ' : ' +
+            const hoverDiv = div.append('p').html(
+              `${hoverData}` +
+              ' : ');
+            if (d.hoverValue[hoverData] && Object.keys(d.hoverValue[hoverData])?.length > 0) {
+              for (const hVal in d.hoverValue[hoverData]) {
+                hoverDiv.append('span').html(
                   "<span class='toolTipValue'> " +
-                  `${d.hoverValue[hoverData]}` +
+                  `${hVal + ':' + d.hoverValue[hoverData][hVal]}` +
                   ' </span>',
-              );
+                );
+              }
+            } else {
+              hoverDiv.append('span').html(
+                "<span class='toolTipValue'> " +
+                `${d.hoverValue[hoverData]}` +
+                ' </span>',)
+            }
           }
         }
       })
