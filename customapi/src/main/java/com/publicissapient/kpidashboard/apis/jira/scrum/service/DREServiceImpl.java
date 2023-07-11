@@ -208,6 +208,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			List<JiraIssue> totalBugs = jiraIssueRepository
 					.findLinkedDefects(mapOfFilters, totalNonBugIssues, uniqueProjectMap).stream()
 					.filter(jiraIssue -> !totalIssue.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+			totalSprintReportDefects.addAll(totalBugs);
 
 			ArrayList<JiraIssue> totalDefects = new ArrayList<>(totalBugs);
 			List<JiraIssueCustomHistory> defectsCustomHistory = jiraIssueCustomHistoryRepository
@@ -217,7 +218,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			setDbQueryLogger(sprintDetails, totalDefects, totalSprintReportDefects);
 
-			resultListMap.put(TOTAL_DEFECTS, totalDefects);
+			resultListMap.put(TOTAL_DEFECTS, totalSprintReportDefects);
 			resultListMap.put(SUB_TASK_BUGS, totalBugs);
 			resultListMap.put(DEFECT_HISTORY, defectsCustomHistory);
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
