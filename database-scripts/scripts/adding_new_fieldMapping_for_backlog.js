@@ -7,7 +7,7 @@ fms.forEach((fm)=> {
            "_id":id
         }, {
             $set: {
-                'excludeStatusKpi129': defectDropStatus,
+                'excludeStatusKpi129': defectDropStatus
             }
         });
 });
