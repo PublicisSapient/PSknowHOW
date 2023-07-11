@@ -1,10 +1,10 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -151,8 +151,24 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest,
 			DataCount dataCount) {
-		String startDate = "2023-07-04";
-		String endDate = "2023-07-07";
+		KpiElement leadTimeReq = kpiRequest.getKpiList().stream().filter(k -> k.getKpiId().equalsIgnoreCase("kpi3"))
+				.findFirst().orElse(new KpiElement());
+
+		LinkedHashMap<String, Object> filterDuration = (LinkedHashMap<String, Object>) leadTimeReq.getFilterDuration();
+		int value = 2; // Default value for 'value'
+		String duration = CommonConstant.WEEK; // Default value for 'duration'
+		String startDate = null;
+		String endDate = LocalDate.now().toString();
+
+		if (filterDuration != null) {
+			value = (int) filterDuration.getOrDefault("value", 2);
+			duration = (String) filterDuration.getOrDefault("duration",CommonConstant.WEEK);
+		}
+		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+			startDate = LocalDate.now().minusWeeks(value).toString();
+		} else if (duration.equalsIgnoreCase(CommonConstant.MONTH)) {
+			startDate = LocalDate.now().minusMonths(value).toString();
+		}
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, startDate, endDate, kpiRequest);
 
 		List<JiraIssueCustomHistory> ticketList = (List<JiraIssueCustomHistory>) resultMap.get(STORY_HISTORY_DATA);
@@ -308,10 +324,12 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 					(double) Math.round(ObjectUtils.defaultIfNull(overAllDodLive, 0L).doubleValue() / 480),
 					ObjectUtils.defaultIfNull(overAllDodLiveTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
 					getIterationKpiModalValue(overAllDodLiveModalValues, cycleTimeList)));
-			IterationKpiValue iterationKpiValue = new IterationKpiValue(CommonConstant.OVERALL, CommonConstant.OVERALL, data);
+			IterationKpiValue iterationKpiValue = new IterationKpiValue(CommonConstant.OVERALL, CommonConstant.OVERALL,
+					data);
 			dataList.add(iterationKpiValue);
 		}
-		Set<String> duration = new LinkedHashSet<>(Arrays.asList("Past Week","Past 2 Weeks", "Past Month","Past 3 Months" , "Past 6 Months"));
+		Set<String> duration = new LinkedHashSet<>(
+				Arrays.asList("Past Week", "Past 2 Weeks", "Past Month", "Past 3 Months", "Past 6 Months"));
 		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_DURATION, duration);
 		IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypeFilter);
 		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
@@ -382,9 +400,9 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 	private void transitionExist(List<Long> overAllTimeList, List<JiraIssueCustomHistory> overAllTransitionModalValues,
 			List<Long> filterTimeList, List<JiraIssueCustomHistory> transitionModalValues,
-			JiraIssueCustomHistory jiraIssueCustomHistory, String transition) {
-		if (!transition.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-			long time = KpiDataHelper.calculateTimeInDays(Long.parseLong(transition));
+			JiraIssueCustomHistory jiraIssueCustomHistory, String transitionTime) {
+		if (!transitionTime.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+			long time = KpiDataHelper.calculateTimeInDays(Long.parseLong(transitionTime));
 			filterTimeList.add(time);
 			overAllTimeList.add(time);
 			transitionModalValues.add(jiraIssueCustomHistory);
