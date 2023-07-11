@@ -6447,7 +6447,7 @@ db.getCollection('kpi_fieldmapping').insertMany(
           ]
         }
       },
-       {
+      {
               kpiId: 'kpi138',
               kpiName: 'Backlog Readiness Efficiency',
       		kpiSource: 'Jira',
@@ -6457,8 +6457,16 @@ db.getCollection('kpi_fieldmapping').insertMany(
             {
              kpiId: 'Kpi148',
              kpiName: 'Flow Load',
+             kpiSource: 'Jira',
              type: ['Other'],
-             fieldNames : { }
+             fieldNames: {
+                 'Workflow Status Mapping': [
+                    'storyFirstStatus',
+                    'jiraStatusForInProgress',
+                    'jiraStatusForQa',
+                    'jiraLiveStatus'
+                ]
+             }
             },
       {
         kpiId: 'Kpi146',
