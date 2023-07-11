@@ -262,13 +262,15 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicConfigId)
 				.getClosedList();
 		List<String> doneStatus = new ArrayList<>();
-		if(doneStatusMap!=null)
-		doneStatus = doneStatusMap.values().stream().map(dodstatus->dodstatus.toLowerCase()).collect(Collectors.toList());
-		return !doneStatus.contains(status.toLowerCase()) && (fieldMapping.getStoryFirstStatus().equalsIgnoreCase(status)
-				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())
-						&& fieldMapping.getJiraStatusForInProgress().contains(status))
-				|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForQa())
-						&& fieldMapping.getJiraStatusForQa().contains(status)));
+		if (doneStatusMap != null)
+			doneStatus = doneStatusMap.values().stream().map(dodstatus -> dodstatus.toLowerCase())
+					.collect(Collectors.toList());
+		return !doneStatus.contains(status.toLowerCase())
+				&& (fieldMapping.getStoryFirstStatus().equalsIgnoreCase(status)
+						|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())
+								&& fieldMapping.getJiraStatusForInProgress().contains(status))
+						|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForQa())
+								&& fieldMapping.getJiraStatusForQa().contains(status)));
 
 	}
 

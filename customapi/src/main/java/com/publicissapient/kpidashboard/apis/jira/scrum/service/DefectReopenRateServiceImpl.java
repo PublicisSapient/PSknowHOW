@@ -302,9 +302,8 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 					.collect(Collectors.toList());
 			Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId.toString())
 					.getClosedList();
-			if(doneStatusMap!=null)
-			{
-				List<String> doneStatus  = doneStatusMap.values().stream().collect(Collectors.toList());
+			if (doneStatusMap != null) {
+				List<String> doneStatus = doneStatusMap.values().stream().collect(Collectors.toList());
 				mapOfProjectFilters.put(STATUS, CommonUtils.convertToPatternList(doneStatus));
 			}
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),

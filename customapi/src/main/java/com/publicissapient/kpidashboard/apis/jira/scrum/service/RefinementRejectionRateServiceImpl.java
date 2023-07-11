@@ -476,9 +476,8 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 		List<String> doneStatus = new ArrayList<>();
 		Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicConfigId)
 				.getClosedList();
-		if(doneStatusMap!=null)
-		{
-			doneStatus = doneStatusMap.values().stream().map(s->s.toLowerCase()).collect(Collectors.toList());
+		if (doneStatusMap != null) {
+			doneStatus = doneStatusMap.values().stream().map(s -> s.toLowerCase()).collect(Collectors.toList());
 		}
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
@@ -487,10 +486,13 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 					projectList.stream().distinct().collect(Collectors.toList()));
 		});
 
-		List<JiraIssue> allUnAssignedJiraIssues = jiraIssueRepository.findUnassignedIssues(startDate, endDate, mapOfFilters);
+		List<JiraIssue> allUnAssignedJiraIssues = jiraIssueRepository.findUnassignedIssues(startDate, endDate,
+				mapOfFilters);
 		List<String> finalDoneStatus = doneStatus;
-		List<JiraIssue> unAssignedJiraIssues = allUnAssignedJiraIssues.stream().filter(issue -> issue.getSprintAssetState() == null
-				|| !issue.getSprintAssetState().equalsIgnoreCase(CLOSED) || !finalDoneStatus.contains(issue.getStatus().toLowerCase()))
+		List<JiraIssue> unAssignedJiraIssues = allUnAssignedJiraIssues.stream()
+				.filter(issue -> issue.getSprintAssetState() == null
+						|| !issue.getSprintAssetState().equalsIgnoreCase(CLOSED)
+						|| !finalDoneStatus.contains(issue.getStatus().toLowerCase()))
 				.collect(Collectors.toList());
 		List<String> historyData = unAssignedJiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();

@@ -418,11 +418,11 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		List<String> doneStatus = new ArrayList<>();
-		Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectId.toString())
-				.getClosedList();
-		if(doneStatusMap!=null)
-		{
-			doneStatus = doneStatusMap.values().stream().map(status->status.toLowerCase()).collect(Collectors.toList());
+		Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository
+				.findByBasicProjectConfigId(basicProjectId.toString()).getClosedList();
+		if (doneStatusMap != null) {
+			doneStatus = doneStatusMap.values().stream().map(status -> status.toLowerCase())
+					.collect(Collectors.toList());
 		}
 
 		List<String> basicProjectConfigIds = new ArrayList<>();
@@ -439,14 +439,16 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-		mapOfFilters.put(JiraFeature.SPRINT_STATUS.getFieldValueInFeature(), Lists.newArrayList("", null,
-				FUTURE, FUTURE.toLowerCase(), CLOSED, CLOSED.toLowerCase()));
+		mapOfFilters.put(JiraFeature.SPRINT_STATUS.getFieldValueInFeature(),
+				Lists.newArrayList("", null, FUTURE, FUTURE.toLowerCase(), CLOSED, CLOSED.toLowerCase()));
 
 		uniqueProjectMap.put(basicProjectId.toString(), mapOfProjectFilters);
-		List<JiraIssue> allIssues =  jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
+		List<JiraIssue> allIssues = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
 		List<String> finalDoneStatus = doneStatus;
-		allIssues = allIssues.stream().filter(issue-> issue.getSprintAssetState() == null ||
-				!issue.getSprintAssetState().equalsIgnoreCase(CLOSED) || !finalDoneStatus.contains(issue.getStatus().toLowerCase()))
+		allIssues = allIssues.stream()
+				.filter(issue -> issue.getSprintAssetState() == null
+						|| !issue.getSprintAssetState().equalsIgnoreCase(CLOSED)
+						|| !finalDoneStatus.contains(issue.getStatus().toLowerCase()))
 				.collect(Collectors.toList());
 		return allIssues;
 	}
