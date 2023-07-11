@@ -284,6 +284,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(DEFECT_RAISED_BY);
 		query.fields().include(JIRA_ISSUE_STATUS);
 		query.fields().include(URL);
+		query.fields().include(NAME);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -404,6 +405,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(DEFECT_STORY_ID);
 		query.fields().include(ROOT_CAUSE);
 		query.fields().include(URL);
+		query.fields().include(NAME);
 
 		return operations.find(query, JiraIssue.class);
 
@@ -459,6 +461,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(NUMBER);
 		query.fields().include(DEFECT_STORY_ID);
 		query.fields().include(URL);
+		query.fields().include(NAME);
 
 		return operations.find(query, JiraIssue.class);
 	}

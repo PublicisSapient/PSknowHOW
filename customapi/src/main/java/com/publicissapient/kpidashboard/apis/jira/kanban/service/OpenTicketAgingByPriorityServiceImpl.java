@@ -18,8 +18,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,16 +49,18 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * open tickets till now from past 15 months count based on x Axis values and
  * did not Works any date filters on kanban
  * 
  * @author Hiren Babariya
  */
+@Slf4j
 @Component
 public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(OpenTicketAgingByPriorityServiceImpl.class);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private static final String RANGE = "range";
@@ -154,7 +154,7 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		LOGGER.info("OPEN-TICKET-COUNT-BY-PRIORITY {}", kpiRequest.getRequestTrackerId());
+		log.info("OPEN-TICKET-COUNT-BY-PRIORITY {}", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes()
@@ -189,7 +189,7 @@ public class OpenTicketAgingByPriorityServiceImpl extends JiraKPIService<Long, L
 		kpiElement.setTrendValueList(dataCountGroups);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 
-		LOGGER.debug(
+		log.debug(
 				"[OPEN-TICKET-COUNT-BY-PRIORITY -KANBAN-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
 		return kpiElement;

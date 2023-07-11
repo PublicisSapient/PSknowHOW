@@ -1,12 +1,4 @@
-FROM mongo:4.4.1-bionic
-
-# If psknowhow/mongo-base:4.4.1-bionic image is not downloadable follow README.md to geneteate new
-
-LABEL version "VERSION"
-LABEL description "Docker image of dashboard mongo database"
-LABEL keywords "infra-devops_mongodb"
-LABEL team "infra-devops"
-LABEL type "mongodb/VERSION"
+FROM mongo:5.0.18
 
 ENV AUTH="yes" \
     JOURNALING="yes" \

@@ -18,8 +18,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,11 +44,13 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHisto
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class NetOpenTicketCountStatusImpl
 		extends JiraKPIService<Long, List<Object>, Map<String, Map<String, Map<String, Set<String>>>>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(NetOpenTicketCountStatusImpl.class);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private static final String FIELD_STATUS = "status";
@@ -90,7 +90,7 @@ public class NetOpenTicketCountStatusImpl
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		LOGGER.info("NET-OPEN-TICKET-COUNT-BY-STATUS {}", kpiRequest.getRequestTrackerId());
+		log.info("NET-OPEN-TICKET-COUNT-BY-STATUS {}", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes()
@@ -124,7 +124,7 @@ public class NetOpenTicketCountStatusImpl
 		kpiElement.setTrendValueList(dataCountGroups);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 
-		LOGGER.debug(
+		log.debug(
 				"[TOTAL-TICKET-COUNT-BY-STATUS-KANBAN-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
 		return kpiElement;
