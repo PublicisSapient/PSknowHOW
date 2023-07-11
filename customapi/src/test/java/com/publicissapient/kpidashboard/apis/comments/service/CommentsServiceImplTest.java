@@ -109,12 +109,14 @@ public class CommentsServiceImplTest {
 		commentDTO.setCommentsInfo(commentsInfo);
 
 		KPIComments kpiComments = new KPIComments();
+		kpiComments.setCommentsInfo(new ArrayList<>());
 		when(kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId)).thenReturn(kpiComments);
 
 		KpiCommentsHistory kpiCommentsHistory = new KpiCommentsHistory();
 		kpiCommentsHistory.setCommentsInfo(commentsInfo);
 		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, sprintId, kpiId))
 				.thenReturn(kpiCommentsHistory);
+		when(customApiConfig.getKpiCommentsMaxStoreCount()).thenReturn(2);
 
 		final boolean commentSubmitted = commentServiceImpl.submitComment(commentDTO);
 		Assert.assertTrue(commentSubmitted);
