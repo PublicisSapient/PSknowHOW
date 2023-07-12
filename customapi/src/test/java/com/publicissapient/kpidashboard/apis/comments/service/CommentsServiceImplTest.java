@@ -213,7 +213,7 @@ public class CommentsServiceImplTest {
 
 	@Test
 	public void findCommentByKPIIdTest() {
-		KPIComments kpiComment = new KPIComments();
+		KpiCommentsHistory kpiComment = new KpiCommentsHistory();
 		kpiComment.setNode(node);
 		kpiComment.setLevel(level);
 		kpiComment.setNodeChildId(sprintId);
@@ -238,7 +238,7 @@ public class CommentsServiceImplTest {
 		mappedCollection.put("nodeChildId", sprintId);
 		mappedCollection.put("kpiId", kpiId);
 		mappedCollection.put("CommentsInfo", commentsInfo);
-		when(kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId)).thenReturn(kpiComment);
+		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, sprintId, kpiId)).thenReturn(kpiComment);
 		Mockito.when(customApiConfig.getLimitCommentsShownOnKpiDashboardCount()).thenReturn(5);
 		Map<String, Object> mappedCollectionActual = commentServiceImpl.findCommentByKPIId(node, level, sprintId,
 				kpiId);
@@ -247,7 +247,7 @@ public class CommentsServiceImplTest {
 
 	@Test
 	public void findCommentByBoard() {
-		KPIComments kpiComment = new KPIComments();
+		KpiCommentsHistory kpiComment = new KpiCommentsHistory();
 		kpiComment.setNode(node);
 		kpiComment.setLevel(level);
 		kpiComment.setNodeChildId(sprintId);
@@ -265,12 +265,12 @@ public class CommentsServiceImplTest {
 		commentsInfo.add(commentInfo);
 		commentsInfo.add(commentInfo);
 		kpiComment.setCommentsInfo(commentsInfo);
-		List<KPIComments> kpiCommentsList= new ArrayList<>();
+		List<KpiCommentsHistory> kpiCommentsList= new ArrayList<>();
 		kpiCommentsList.add(kpiComment);
 
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
 		mappedCollection.put("kpi12",4);
-		when(kpiCommentsRepository.findCommentsByBoard(Arrays.asList(node), level, sprintId, Arrays.asList(kpiId))).thenReturn(kpiCommentsList);
+		when(kpiCommentsHistoryRepository.findCommentsByBoard(Arrays.asList(node), level, sprintId, Arrays.asList(kpiId))).thenReturn(kpiCommentsList);
 		Map<String, Integer> mappedCollectionActual = commentServiceImpl.findCommentByBoard(Arrays.asList(node), level, sprintId,
 				Arrays.asList(kpiId));
 		Assert.assertEquals(mappedCollection, mappedCollectionActual);
