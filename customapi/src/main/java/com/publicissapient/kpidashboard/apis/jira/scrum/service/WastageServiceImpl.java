@@ -443,7 +443,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		long hours;
 		if (nextEntryActivityDate.isBefore(sprintEndDate)) {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				hours = getHoursIfNextEntryActivityDateIsWeekend(entryActivityDate, nextEntryActivityDate);
+				hours = getHoursCalculationWeekendOrWeekday(entryActivityDate, nextEntryActivityDate);
 			} else {
 				hours = (ChronoUnit.HOURS.between(sprintStartDate, nextEntryActivityDate)
 						- minusHoursOfWeekEndDays(sprintStartDate, nextEntryActivityDate));
@@ -460,7 +460,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		return hours;
 	}
 
-	private long getHoursIfNextEntryActivityDateIsWeekend(LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
+	private long getHoursCalculationWeekendOrWeekday(LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
 		long hours;
 		if(isWeekEnd(nextEntryActivityDate)){
 			LocalDateTime givenDateTime = nextEntryActivityDate;
