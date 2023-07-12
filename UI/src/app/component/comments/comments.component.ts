@@ -119,6 +119,11 @@ export class CommentsComponent implements OnInit {
   }
 
   handleConfirmDelete(commentId){
+    for(let key in this.showConfirmBtn){
+      if(this.showConfirmBtn[key]){
+        this.showConfirmBtn[key] = false;
+      }
+    }
     this.showConfirmBtn[commentId] = true;
   }
 

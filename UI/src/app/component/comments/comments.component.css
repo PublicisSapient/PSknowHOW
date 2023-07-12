@@ -139,3 +139,7 @@ textarea:focus-visible{
     color: #fff;
     cursor: pointer;
 }
+.comment-list-container{
+    max-height: 200px;
+    overflow-y: auto;
+}

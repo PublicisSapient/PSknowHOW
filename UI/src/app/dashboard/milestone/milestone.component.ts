@@ -594,9 +594,9 @@ export class MilestoneComponent implements OnInit {
 
   getKpiCommentsCount(kpiId?){
     let requestObj = {
-      "nodes": [...this.filterApplyData?.ids],
+      "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,
       "level":this.filterApplyData?.level,
-      "nodeChildId": "",
+      "nodeChildId": this.filterApplyData['selectedMap']?.release[0],
       'kpiIds': []
     };
     if(kpiId){
