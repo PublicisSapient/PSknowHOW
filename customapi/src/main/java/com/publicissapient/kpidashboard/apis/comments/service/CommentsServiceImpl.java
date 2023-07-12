@@ -133,7 +133,7 @@ public class CommentsServiceImpl implements CommentsService {
 						commentViewResponseDTO.setCommentBy(commentsInfo.getCommentBy());
 						return commentViewResponseDTO;
 					})).sorted(Comparator.comparing(CommentViewResponseDTO::getCommentOn))
-					.limit(customApiConfig.getLimitCommentsShownOnKpiDashboardCount()).collect(Collectors.toList());
+					.limit(10).collect(Collectors.toList());
 		} else {
 			return new ArrayList<>();
 		}

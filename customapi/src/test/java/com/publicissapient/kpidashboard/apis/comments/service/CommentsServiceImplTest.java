@@ -288,12 +288,12 @@ public class CommentsServiceImplTest {
 
 
 	@Test
-	public void getCommentByBoardTest() {
-		List<KPIComments> kpiCommentsList = new ArrayList<>();
-		KPIComments kpiComment = new KPIComments();
+	public void findLatestCommentSummaryTest() {
+		List<KpiCommentsHistory> kpiCommentsList= new ArrayList<>();
+		KpiCommentsHistory kpiComment = new KpiCommentsHistory();
 		kpiComment.setNode(node);
 		kpiComment.setLevel(level);
-		kpiComment.setSprintId(sprintId);
+		kpiComment.setNodeChildId(sprintId);
 		kpiComment.setKpiId(kpiId);
 		kpiCommentsList.add(kpiComment);
 
@@ -319,7 +319,7 @@ public class CommentsServiceImplTest {
 		commentViewResponseDTO.setKpiId(kpiComment.getKpiId());
 		commentViewResponseDTO.setNode(kpiComment.getNode());
 		commentViewResponseDTO.setLevel(kpiComment.getLevel());
-		commentViewResponseDTO.setNodeChildId(kpiComment.getSprintId());
+		commentViewResponseDTO.setNodeChildId(kpiComment.getNodeChildId());
 		commentViewResponseDTO.setComment(commentInfo.getComment());
 		commentViewResponseDTO.setCommentId(commentInfo.getCommentId());
 		commentViewResponseDTO.setCommentOn(commentInfo.getCommentOn());
@@ -327,7 +327,7 @@ public class CommentsServiceImplTest {
 
 		commentViewResponseDTOList.add(commentViewResponseDTO);
 
-		when(kpiCommentsRepository.findCommentsByBoard(nodes, level, sprintId, kpiIds)).thenReturn(kpiCommentsList);
+		when(kpiCommentsHistoryRepository.findCommentsByBoard(nodes, level, sprintId, kpiIds)).thenReturn(kpiCommentsList);
 		Mockito.when(customApiConfig.getLimitCommentsShownOnKpiDashboardCount()).thenReturn(5);
 		List<CommentViewResponseDTO> commentViewResponse = commentServiceImpl.findLatestCommentSummary(nodes, level, sprintId,
 				kpiIds);
