@@ -3033,6 +3033,30 @@ db.getCollection('kpi_master').insert(
       "kpiFilter": "dropdown",
       "boxType": "chart",
       "calculateMaturity": false
-    }
+    },
+    {
+         "kpiId": "kpi152",
+         "kpiName": "Backlog Count By Issue Type",
+         "kpiUnit": "Count",
+         "isDeleted": "False",
+         "defaultOrder": 8,
+         "kpiCategory": "Backlog",
+         "kpiSource": "Jira",
+         "groupId": 10,
+         "thresholdValue": "",
+         "kanban": false,
+         "chartType": "pieChart",
+         "kpiInfo": {
+           "definition": "Total count of issues in the backlog with a breakup by issue type."
+         },
+         "xAxisLabel": "",
+         "yAxisLabel": "",
+         "isPositiveTrend": true,
+         "showTrend": false,
+         "isAdditionalFilterSupport": false,
+         "kpiFilter": "dropdown",
+         "boxType": "chart",
+         "calculateMaturity": false
+     }
 ]
 );

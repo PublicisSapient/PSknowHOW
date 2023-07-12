@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class BackLogCountByIssueTypeServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -53,7 +53,8 @@ public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, Lis
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 
 		if (leafNode != null) {
-			log.info("BackLog Count By Status kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
+			log.info("BackLog Count By Issue Type kpi -> Requested project : {}",
+					leafNode.getProjectFilter().getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
@@ -64,7 +65,7 @@ public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, Lis
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.BACKLOG_ISSUE_COUNT_BY_STATUS.name();
+		return KPICode.BACKLOG_COUNT_BY_ISSUE_TYPE.name();
 	}
 
 	@Override
@@ -77,14 +78,14 @@ public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, Lis
 				projectWiseLeafNodeValue(v, trendValueList, kpiElement, kpiRequest);
 			}
 		});
-		log.info("BackLogCountByStatusServiceImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("BackLogCountByIssueTypeServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
-	private static void getIssuesStatusCount(Map<String, List<JiraIssue>> statusData,
-			Map<String, Integer> statusWiseCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> statusEntry : statusData.entrySet()) {
-			statusWiseCountMap.put(statusEntry.getKey(), statusEntry.getValue().size());
+	private static void getIssuesTypeCount(Map<String, List<JiraIssue>> issuesTypeData,
+			Map<String, Integer> typeWiseCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> statusEntry : issuesTypeData.entrySet()) {
+			typeWiseCountMap.put(statusEntry.getKey(), statusEntry.getValue().size());
 		}
 	}
 
@@ -105,21 +106,21 @@ public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, Lis
 
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 
-			log.info("Backlog Count By Status -> request id : {} total jira Issues : {}", requestTrackerId,
+			log.info("Backlog Count By Issue Type -> request id : {} total jira Issues : {}", requestTrackerId,
 					jiraIssues.size());
 
-			Map<String, List<JiraIssue>> statusWiseIssuesList = jiraIssues.stream()
-					.collect(Collectors.groupingBy(JiraIssue::getStatus));
+			Map<String, List<JiraIssue>> typeWiseIssuesList = jiraIssues.stream()
+					.collect(Collectors.groupingBy(JiraIssue::getTypeName));
 
-			log.info("statusWiseIssuesList ->  : {}", statusWiseIssuesList);
-			Map<String, Integer> statusWiseCountMap = new HashMap<>();
-			getIssuesStatusCount(statusWiseIssuesList, statusWiseCountMap);
-			if (MapUtils.isNotEmpty(statusWiseCountMap)) {
+			log.info("typeWiseIssuesList ->  : {}", typeWiseIssuesList);
+			Map<String, Integer> typeWiseCountMap = new HashMap<>();
+			getIssuesTypeCount(typeWiseIssuesList, typeWiseCountMap);
+			if (MapUtils.isNotEmpty(typeWiseCountMap)) {
 				List<DataCount> trendValueListOverAll = new ArrayList<>();
 				DataCount overallData = new DataCount();
-				int sumOfDefectsCount = statusWiseCountMap.values().stream().mapToInt(Integer::intValue).sum();
-				overallData.setData(String.valueOf(sumOfDefectsCount));
-				overallData.setValue(statusWiseCountMap);
+				int sumOfIssuesCount = typeWiseCountMap.values().stream().mapToInt(Integer::intValue).sum();
+				overallData.setData(String.valueOf(sumOfIssuesCount));
+				overallData.setValue(typeWiseCountMap);
 				overallData.setKpiGroup(CommonConstant.OVERALL);
 				overallData.setSProjectName(leafNode.getProjectFilter().getName());
 				trendValueListOverAll.add(overallData);
@@ -133,11 +134,11 @@ public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, Lis
 				IterationKpiValue filterDataOverall = new IterationKpiValue(CommonConstant.OVERALL,
 						middleTrendValueListOverAll);
 				filterDataList.add(filterDataOverall);
-				kpiElement.setModalHeads(KPIExcelColumn.BACKLOG_COUNT_BY_STATUS.getColumns());
-				kpiElement.setExcelColumns(KPIExcelColumn.BACKLOG_COUNT_BY_STATUS.getColumns());
+				kpiElement.setModalHeads(KPIExcelColumn.BACKLOG_COUNT_BY_ISSUE_TYPE.getColumns());
+				kpiElement.setExcelColumns(KPIExcelColumn.BACKLOG_COUNT_BY_ISSUE_TYPE.getColumns());
 				kpiElement.setExcelData(excelData);
-				log.info("BacklogCountByStatusServiceImpl -> request id : {} total jira Issues : {}", requestTrackerId,
-						filterDataList.get(0));
+				log.info("BacklogCountByIssueTypeServiceImpl -> request id : {} total jira Issues : {}",
+						requestTrackerId, filterDataList.get(0));
 			}
 
 		}

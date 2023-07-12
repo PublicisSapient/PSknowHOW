@@ -1413,8 +1413,7 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateBacklogCountByStatusExcelData(List<JiraIssue> jiraIssues,
-															 List<KPIExcelData> kpiExcelData) {
+	public static void populateBacklogCountExcelData(List<JiraIssue> jiraIssues, List<KPIExcelData> kpiExcelData) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			jiraIssues.stream().forEach(jiraIssue -> {
 				KPIExcelData excelData = new KPIExcelData();
@@ -1435,8 +1434,8 @@ public class KPIExcelUtility {
 				excelData.setCreatedDate(date);
 				String updateDate = Constant.EMPTY_STRING;
 				if (jiraIssue.getUpdateDate() != null) {
-					updateDate = DateUtil.dateTimeConverter(jiraIssue.getUpdateDate(), DATE_FORMAT_PRODUCTION_DEFECT_AGEING,
-							DateUtil.DISPLAY_DATE_FORMAT);
+					updateDate = DateUtil.dateTimeConverter(jiraIssue.getUpdateDate(),
+							DATE_FORMAT_PRODUCTION_DEFECT_AGEING, DateUtil.DISPLAY_DATE_FORMAT);
 				}
 				excelData.setUpdatedDate(updateDate);
 				kpiExcelData.add(excelData);
