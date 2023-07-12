@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	private static final String TOTAL_JIRA_ISSUE = "TOTAL_JIRA_ISSUE";
 	private static final String PROJECT_CLOSED_STATUS_MAP = "PROJECT_CLOSED_STATUS_MAP";
 	private static final String JIRA_REOPEN_HISTORY = "JIRA_REOPEN_HISTORY";
+	private static final String STATUS = "status";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -77,6 +79,9 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 
 	@Autowired
 	private KpiHelperService kpiHelperService;
+
+	@Autowired
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 
 	/**
 	 * Gets qualifier type
@@ -295,6 +300,12 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
 					.collect(Collectors.toList());
+			Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId.toString())
+					.getClosedList();
+			if (doneStatusMap != null) {
+				List<String> doneStatus = doneStatusMap.values().stream().collect(Collectors.toList());
+				mapOfProjectFilters.put(STATUS, CommonUtils.convertToPatternList(doneStatus));
+			}
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(defectList));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);

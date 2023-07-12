@@ -1,60 +1,55 @@
-<img class="kpi-info-icon cursor-pointer" src="../../../assets/img/comment-icon.svg"  alt="comment icon" aria-hidden="true" (click)="op1.toggle($event); openComments()" />
+<div class="p-d-inline-block position-relative">
+    <img class="kpi-info-icon cursor-pointer" src="../../../assets/img/comment-icon.svg" alt="comment icon"
+    aria-hidden="true" (click)="op1.toggle($event); openComments()" />
+    <div class="comment-count" *ngIf="commentCount">{{commentCount}}</div>
+</div>
 <p-overlayPanel #op1 [showCloseIcon]="true" styleClass="comments-overlay">
     <div class="p-d-flex p-justify-between p-align-center">
-        <span class="overlay-heading">
+        <span class="overlay-heading p-mb-2">
             Comments
         </span>
-        <button class="p-element p-ripple p-button-sm p-button-success p-button-raised p-button"
-            (click)="viewAllHandler($event,op1)">View All</button>
     </div>
-    <p-tabView (onChange)="commentTabChange($event)" [(activeIndex)]="selectedTabIndex">
-        <p-tabPanel *ngFor="let filter of selectedFilters; let i = index" header="{{filter.nodeName.length > 15 ? filter.nodeName.substring(0,15)+'..' : filter.nodeName}}">
-            <div>
-                <textarea class="comment" [(ngModel)]="commentText" maxlength="500" (input)="commentChanged()" [ngClass]="commentError?'errorClass':''"></textarea>
+    <p-tabView (onChange)="commentTabChange($event)" [(activeIndex)]="selectedTabIndex" class="comments-modal">
+        <p-tabPanel *ngFor="let filter of selectedFilters; let i = index"
+            header="{{filter.nodeName.length > 15 ? filter.nodeName.substring(0,15)+'..' : filter.nodeName}}">
+            <div class="comment-combo">
+                <textarea class="comment" placeholder="Add Comment" [(ngModel)]="commentText" maxlength="500" (input)="commentChanged()"
+                    [ngClass]="commentError?'errorClass':''"></textarea>
                 <span *ngIf="commentError" class="text-danger">Comment can be of max 500 characters</span>
+                <div class="p-d-flex p-justify-end p-align-center">
+                    <button class="p-element p-ripple p-button-sm p-button-secondary p-button"
+                        (click)="commentText = ''; commentError = false">Cancel</button>
+                    <button class="p-element p-ripple p-button-sm p-button-success p-button"
+                        (click)="submitComment(filter)" [disabled]="commentText.trim() === ''">Submit</button>
+                </div>
             </div>
-            <div class="p-d-flex p-justify-end p-align-center">
-                <button class="p-element p-ripple p-button-sm p-button-success p-button-raised p-button"
-                    (click)="submitComment(filter)" [disabled]="commentText.trim() === ''">Submit</button>
+            <div *ngIf="dataLoaded; else loader" class="comment-list-container">
+                <ng-container *ngIf="commentsList.length>0; else noComments">
+                    <div *ngFor="let comment of commentsList" class="comment-combo">
+                        <div class="commented-by">@{{comment?.commentBy}} commented - {{comment?.commentOn}}
+                            <span class="icon-delete">
+                                <i *ngIf="!showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]" class="far fa-trash-alt p-mr-1" (click)="handleConfirmDelete(comment.commentId)"></i>
+                                <span *ngIf="showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]" class="btn-confirm-delete p-mr-1" (click)="deleteComment(comment.commentId)">Confirm Delete</span>
+                                <i *ngIf="showLoader[comment.commentId] && !showConfirmBtn[comment.commentId]" class="fas fa-circle-notch p-mr-1"></i>
+                            </span>
+                        </div>
+                        <div class="comment-box p-mt-1">
+                            <p>{{comment?.comment}}</p>
+                        </div>
+
+                    </div>
+                </ng-container>
+                <ng-template #noComments>
+                    <div class="comment-box comment-combo">
+                        No Comments Available.
+                    </div>
+                </ng-template>
             </div>
+            <ng-template #loader>
+                <div class="overlay">
+                    <div class="loading-img"></div>
+                </div>
+            </ng-template>
         </p-tabPanel>
     </p-tabView>
 </p-overlayPanel>
-
-<p-dialog [(visible)]="displayCommentsList" [style]="{width: '450px'}" [modal]="true">
-    <p-header>
-        {{kpiName}} Comments
-        <button class="p-element p-ripple p-button-sm p-button-success p-button-raised p-button submit-button" (click)="showAddComment = true">Add Comment</button>
-      </p-header>
-
-    <div class="comment-combo" *ngIf="showAddComment">
-        <div *ngIf="showAddComment" class="p-d-flex p-justify-end p-align-center">
-            <button class="p-element p-ripple p-button-sm p-button-secondary p-button"
-                (click)="showAddComment = false; commentText = ''; commentError = false">Cancel</button>
-            <button class="p-element p-ripple p-button-sm p-button-success p-button" (click)="submitComment(filter)" [disabled]="commentText.trim() === ''">Submit</button>
-        </div>
-        <textarea class="comment" [(ngModel)]="commentText" maxlength="500" (input)="commentChanged()" [ngClass]="commentError?'errorClass':''"></textarea>
-        <span *ngIf="commentError" class="text-danger">Comment can be of max 500 characters</span>
-    </div>
-    <div *ngIf="dataLoaded; else loader">
-    <ng-container *ngIf="commentsList.length>0; else noComments">
-        <div *ngFor="let comment of commentsList" class="comment-combo">
-            <span class="commented-by">@{{comment?.commentBy}} commented - {{comment?.commentOn}}</span>
-            <div class="comment-box">
-                <p>{{comment?.comment}}</p>
-            </div>
-    
-        </div>
-    </ng-container>
-    <ng-template #noComments>
-        <div class="comment-box comment-combo">
-            No Comments Available.
-        </div>
-    </ng-template>
-    </div>
-    <ng-template #loader>
-        <div class="overlay">
-            <div class="loading-img"></div>
-        </div>
-    </ng-template>
-</p-dialog>

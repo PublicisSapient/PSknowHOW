@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.AllArgsConstructor;
@@ -24,7 +23,7 @@ import lombok.Setter;
 public class KpiCommentsHistory extends BasicModel {
 	private String node;
 	private String level;
-	private String sprintId;
+	private String nodeChildId;
 	private String kpiId;
 	private List<CommentsInfo> commentsInfo;
 }

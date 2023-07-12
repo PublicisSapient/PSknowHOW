@@ -111,7 +111,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     selectedTab= 'iteration';
     showCommentIcon = false;
     noProjects = false;
-    sprintsOverlayVisible : boolean = false
+    sprintsOverlayVisible : boolean = false;
+    kpiCommentsCountObj: object = {};
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -279,6 +280,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             this.groupJiraKpi(kpiIdsForCurrentBoard);
                             this.groupBitBucketKpi(kpiIdsForCurrentBoard);
                             this.groupSonarKpi(kpiIdsForCurrentBoard);
+                        }
+                        let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
+                        if(projectLevel){
+                            if(this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
                         }
                     }
                 } else if (this.filterData?.length && !$event.makeAPICall) {
@@ -1175,4 +1180,24 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }
         }
       }
+
+      getKpiCommentsCount(kpiId?){
+        let requestObj = {
+          "nodes": [...this.filterApplyData?.ids],
+          "level":this.filterApplyData?.level,
+          "nodeChildId": "",
+          'kpiIds': []
+        };
+        if(kpiId){
+            requestObj['kpiIds'] = [kpiId];
+            this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+                this.kpiCommentsCountObj[kpiId] = res[kpiId];
+            });
+        }else{
+            requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
+            this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+                this.kpiCommentsCountObj = res;
+            }); 
+        }
+    }
 }

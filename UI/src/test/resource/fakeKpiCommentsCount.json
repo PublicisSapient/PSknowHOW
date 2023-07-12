@@ -1,0 +1,21 @@
+{
+    "message": "Found Comments Count",
+    "success": true,
+    "data": {
+        "kpi120": 2,
+        "kpi128": 1,
+        "kpi119": 2,
+        "kpi123": 3,
+        "kpi75": 4,
+        "kpi124": 2,
+        "kpi131": 3,
+        "kpi125": 1,
+        "kpi132": 2,
+        "kpi133": 3,
+        "kpi134": 4,
+        "kpi135": 5,
+        "kpi140": 1,
+        "kpi136": 3,
+        "kpi145": 1
+    }
+}

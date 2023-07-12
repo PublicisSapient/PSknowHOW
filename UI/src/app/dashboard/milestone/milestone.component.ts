@@ -64,7 +64,7 @@ export class MilestoneComponent implements OnInit {
   kpiLoader = true;
   globalConfig;
   sharedObject;
-
+  kpiCommentsCountObj: object = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     
@@ -149,6 +149,7 @@ export class MilestoneComponent implements OnInit {
             this.timeRemaining = this.calcBusinessDays(today, endDate);
             this.service.iterationCongifData.next({daysLeft: this.timeRemaining});
             this.groupJiraKpi(kpiIdsForCurrentBoard);
+            this.getKpiCommentsCount();
           }
         }
       } 
@@ -591,7 +592,26 @@ export class MilestoneComponent implements OnInit {
     }
   }
 
-
+  getKpiCommentsCount(kpiId?){
+    let requestObj = {
+      "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,
+      "level":this.filterApplyData?.level,
+      "nodeChildId": this.filterApplyData['selectedMap']?.release[0],
+      'kpiIds': []
+    };
+    if(kpiId){
+      requestObj['kpiIds'] = [kpiId];
+      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+        this.kpiCommentsCountObj[kpiId] = res[kpiId];
+      });
+    }else{
+      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
+      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+        this.kpiCommentsCountObj = res;
+      });
+    }
+    
+  }
 
    /** unsubscribing all Kpi Request  */
   ngOnDestroy() {

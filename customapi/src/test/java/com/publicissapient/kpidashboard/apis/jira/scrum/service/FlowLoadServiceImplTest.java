@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -14,7 +15,9 @@ import java.util.Map;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +52,9 @@ public class FlowLoadServiceImplTest {
 	@Mock
 	CacheService cacheService;
 	@Mock
-	CustomApiConfig customApiConfig;
+	JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+	@Mock
+	private CustomApiConfig customApiConfig;
 	List<Node> leafNodeList = new ArrayList<>();
 	TreeAggregatorDetail treeAggregatorDetail;
 	List<JiraIssueCustomHistory> issueBacklogHistoryDataList = new ArrayList<>();
@@ -108,6 +113,8 @@ public class FlowLoadServiceImplTest {
 		when(jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(Mockito.any()))
 				.thenReturn(issueBacklogHistoryDataList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(any())).thenReturn(
+				new JiraIssueReleaseStatus(new String(),new HashMap<>(),new HashMap<>(),new HashMap<>()));
 		KpiElement responseKpiElement = flowLoadService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 
