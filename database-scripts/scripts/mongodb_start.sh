@@ -131,6 +131,10 @@ function running_js()
   echo "########## Removing Backlog collections `date`############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/remove_backlog_collections.js
 
+  echo "########## Adding New FieldMapping for Backlog.js `date`############"
+    mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/adding_new_fieldMapping_for_backlog.js
+
+
   echo "########## Comment feature field Name generic for all board  `date`############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/comments_feature_generic_fieldName.js
 }

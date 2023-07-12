@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -32,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.bson.types.ObjectId;
 import org.hamcrest.core.StringContains;
 import org.junit.Assert;
@@ -65,6 +68,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RefinementRejectionRateServiceImplTest {
@@ -84,6 +88,8 @@ public class RefinementRejectionRateServiceImplTest {
 	RefinementRejectionRateServiceImpl refinementRejectionRateService;
 	@Mock
 	CustomDateRange customDateRange;
+	@Mock
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 	@Mock
 	private KpiHelperService kpiHelperService;
 	@Mock
@@ -134,6 +140,8 @@ public class RefinementRejectionRateServiceImplTest {
 				.thenReturn(jiraIssueList);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.anyList(),
 				Mockito.anyList())).thenReturn(unassignedJiraHistoryDataList);
+		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(any())).thenReturn(
+				new JiraIssueReleaseStatus(new String(),new HashMap<>(),new HashMap<>(),new HashMap<>()));
 		Map<String, Object> responseRefinementList = refinementRejectionRateService.fetchKPIDataFromDb(leafNodeList,
 				customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString(), kpiRequest);
 		assertNotNull(responseRefinementList);
@@ -150,6 +158,8 @@ public class RefinementRejectionRateServiceImplTest {
 	public void testGetKpiData() throws ApplicationException {
 		when(customApiConfig.getBacklogWeekCount()).thenReturn(5);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(any())).thenReturn(
+				new JiraIssueReleaseStatus(new String(),new HashMap<>(),new HashMap<>(),new HashMap<>()));
 		KpiElement responseKpiElement = refinementRejectionRateService.getKpiData(kpiRequest,
 				kpiRequest.getKpiList().get(0), treeAggregatorDetail);
 
