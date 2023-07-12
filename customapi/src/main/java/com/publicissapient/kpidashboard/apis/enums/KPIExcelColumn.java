@@ -232,6 +232,8 @@ public enum KPIExcelColumn {
 
 	DEFECT_COUNT_BY_STATUS_RELEASE("kpi141", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
 			"Issue Status", "Root Cause", "Priority", "Assignee")),
+	BACKLOG_COUNT_BY_STATUS("kpi151", Arrays.asList("Issue ID", "Issue Description", "Issue Type",
+			"Issue Status", "Priority","Created Date","Updated Date", "Assignee")),
 
 	DEFECT_COUNT_BY_RCA_RELEASE("kpi142", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
 			"Issue Status", "Root Cause", "Priority", "Assignee")),
