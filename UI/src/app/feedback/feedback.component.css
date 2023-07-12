@@ -1,30 +1,185 @@
-.icon-feedback{
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    z-index: 100;
-    height: 40px;
-    width: 40px;
-    background: white;
-    border-radius: 50px;
-    box-shadow: 0px 1px 4px grey;
-    cursor: pointer;
-}
-.feedback-sect{
-    width: 250px;
+.feeback-container {
     position: absolute;
-    bottom: 45px;
-    right: 45px;
-    z-index: 10000;
-    background:#fff;
-    box-shadow: 0px 2px 8px grey;
+    bottom: 42px;
+    left: 0px;
+}
+.icon-feedback1 {
+    margin: 0 0 -28px 14px;
+    cursor: pointer;
+    width: 113px;
+    height: 40px;
+}
+
+.icon-feedback2 {
+    margin-left: -3px;
+    opacity: 1;
+    cursor: pointer;
+    width: 40px ;
+    height: 40px ;
+}
+
+
+@media only screen and (max-width: 1600px){
+    .icon-feedback1 {
+        width: 80px;
+        height: 25px;
+        margin-bottom: -32px;
+
+    }
+
+    .icon-feedback2 {
+        width: 25px;
+        height: 25px;
+        margin-left: 5px;
+    }
+}
+
+.document-link {
+    top: 810px;
+    left: 89px;
+    width: 316px;
+    height: 113px;
+    text-align: left;
+    font: normal normal medium 13px/20px Futura Next;
+    letter-spacing: 0px;
+    opacity: 1;
+}
+
+::ng-deep .feedback-overlay-with-sidebar {
+    position: fixed !important;
+    z-index: 2000;
+    width: 364px;
+    height: 214px;    
+    left: 43px !important;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 4px 15px #7070709A;
     border-radius: 5px;
-    font-size: 12px;
+    display: block !important;
+    opacity: 1;
+    --overlayArrowLeft: -100px !important;
+    margin-top: -10px !important;
 }
-.feedback{
-    height: 50px;
+::ng-deep .feedback-overlay {
+    position: fixed !important;
+    z-index: 2000;
+    left: 73px !important;
+    width: 364px;
+    height: 214px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 4px 15px #7070709A;
+    border-radius: 5px;
+    display: block !important;
+    opacity: 1;
+    --overlayArrowLeft: -100px !important;
+    margin-top: -10px !important;
 }
-:host ::ng-deep .p-inputtext{
-    padding: 5px;
-    font-size: 12px;
+
+::ng-deep.p-overlaypanel .p-overlaypanel-close {
+    background: #707070 !important;
+    color: #ffffff;
+    width: 18px;
+    height: 18px;
+    border-radius: 14px;
+    opacity: 1;
+}
+
+::ng-deep .p-overlaypanel .p-overlaypanel-content {
+    padding: 1rem !important;
+}
+
+.p-button {
+    left: 272px;
+    width: 60px;
+    height: 22px;
+    background: #437495 0% 0% no-repeat padding-box;
+    border-radius: 2px;
+    opacity: 1;
+}
+
+::ng-deep .p-inputtext {
+    border-radius: 0px;
+}
+
+::ng-deep .pi{
+    line-height: 0 !important;
+    font-size: 11px;
+}
+
+.overlay-heading1 {
+    font-weight: 700 !important;
+    font-size: 1 !important;
+}
+
+.comment {
+    resize: none;
+    margin-top: -5px;
+    top: 832px;
+    left: 89px;
+    width: 332px;
+    height: 81px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 1px solid #707070;
+    opacity: 1;
+}
+
+.drop-right {
+    top: 940px;
+    left: 406px;
+    right: 20px;
+    width: 18px;
+    height: 18px;
+    opacity: 1;
+}
+
+.drop-left {
+    top: 940px;
+    left: 89px;
+    width: 18px;
+    height: 18px;
+    opacity: 1;
+}
+
+.forward {
+    margin-right: 5px;
+    margin-top: 10px;
+}
+
+.backward {
+    margin-right: 5px;
+    margin-top: 22px;
+}
+
+.documentation {
+    top: 940px;
+    left: 292px;
+    width: 100px;
+    height: 16px;
+    text-align: left;
+    font: normal normal medium 16px/24px Futura Next;
+    letter-spacing: 0px;
+    color: #707070;
+    opacity: 1;
+}
+
+.feedback {
+    top: 940px;
+    padding-left: 8px;
+    width: 71px;
+    height: 16px;
+    text-align: left;
+    font: normal normal medium 16px/24px Futura Next;
+    letter-spacing: 0px;
+    color: #707070;
+    opacity: 1;
+}
+
+.click-here {
+    top: 60px;
+    left: 153px;
+    width: 59px;
+    height: 13px;
+    text-align: left;
+    font: normal normal medium 13px/20px Futura Next;
+    letter-spacing: 0px;
+    color: #1F7EFF;
 }
