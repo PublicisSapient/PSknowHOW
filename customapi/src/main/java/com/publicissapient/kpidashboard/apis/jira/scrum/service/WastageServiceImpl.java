@@ -20,9 +20,19 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.OVERALL;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -302,7 +312,6 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		List<JiraHistoryChangeLog> statusUpdationLog = new ArrayList<>();
 		List<JiraHistoryChangeLog> flagStatusUpdationLog;
 		List<Integer> resultList = new ArrayList<>();
-
 		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
 			statusUpdationLog = issueCustomHistory.getStatusUpdationLog();
 		}
@@ -434,8 +443,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		long hours;
 		if (nextEntryActivityDate.isBefore(sprintEndDate)) {
 			if (entryActivityDate.isAfter(sprintStartDate)) {
-				hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
-						- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));
+				hours = getHoursIfNextEntryActivityDateIsWeekend(entryActivityDate, nextEntryActivityDate);
 			} else {
 				hours = (ChronoUnit.HOURS.between(sprintStartDate, nextEntryActivityDate)
 						- minusHoursOfWeekEndDays(sprintStartDate, nextEntryActivityDate));
@@ -448,6 +456,35 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 				hours = (ChronoUnit.HOURS.between(sprintStartDate, sprintEndDate)
 						- minusHoursOfWeekEndDays(sprintStartDate, sprintEndDate));
 			}
+		}
+		return hours;
+	}
+
+	private long getHoursIfNextEntryActivityDateIsWeekend(LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
+		long hours;
+		if(isWeekEnd(nextEntryActivityDate)){
+			LocalDateTime givenDateTime = nextEntryActivityDate;
+			while (givenDateTime.getDayOfWeek() != DayOfWeek.FRIDAY) {
+				givenDateTime = givenDateTime.minusDays(1);
+			}
+			LocalDateTime endOfDay = givenDateTime.with(LocalTime.MAX);
+			hours = (ChronoUnit.HOURS.between(entryActivityDate, endOfDay)
+					- minusHoursOfWeekEndDays(entryActivityDate, endOfDay));
+
+		}
+		else if(isWeekEnd(entryActivityDate)){
+			LocalDateTime givenDateTime = entryActivityDate;
+			while (givenDateTime.getDayOfWeek() != DayOfWeek.MONDAY) {
+				givenDateTime = givenDateTime.plusDays(1);
+			}
+			LocalDateTime startOfDay = givenDateTime.with(LocalTime.MIN);
+			hours = (ChronoUnit.HOURS.between(startOfDay, nextEntryActivityDate)
+					- minusHoursOfWeekEndDays(startOfDay, nextEntryActivityDate));
+
+		}
+		else {
+			hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
+					- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));
 		}
 		return hours;
 	}
