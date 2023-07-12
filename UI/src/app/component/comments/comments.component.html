@@ -25,12 +25,12 @@
             </div>
             <div *ngIf="dataLoaded; else loader" class="comment-list-container">
                 <ng-container *ngIf="commentsList.length>0; else noComments">
-                    <div *ngFor="let comment of commentsList" class="comment-combo">
+                    <div *ngFor="let comment of commentsList" class="comment-combo p-mr-1">
                         <div class="commented-by">@{{comment?.commentBy}} commented - {{comment?.commentOn}}
                             <span class="icon-delete">
-                                <i *ngIf="!showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]" class="far fa-trash-alt p-mr-1" (click)="handleConfirmDelete(comment.commentId)"></i>
-                                <span *ngIf="showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]" class="btn-confirm-delete p-mr-1" (click)="deleteComment(comment.commentId)">Confirm Delete</span>
-                                <i *ngIf="showLoader[comment.commentId] && !showConfirmBtn[comment.commentId]" class="fas fa-circle-notch p-mr-1"></i>
+                                <i *ngIf="!showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]" class="far fa-trash-alt" (click)="handleConfirmDelete(comment.commentId)"></i>
+                                <span *ngIf="showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]" class="btn-confirm-delete" (click)="deleteComment(comment.commentId)">Confirm Delete</span>
+                                <i *ngIf="showLoader[comment.commentId] && !showConfirmBtn[comment.commentId]" class="fas fa-circle-notch"></i>
                             </span>
                         </div>
                         <div class="comment-box p-mt-1">

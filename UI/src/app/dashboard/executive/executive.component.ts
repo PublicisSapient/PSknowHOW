@@ -1183,7 +1183,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
       getKpiCommentsCount(kpiId?){
         let requestObj = {
-          "nodes": [...this.filterApplyData?.ids],
+          "nodes": [...this.filterApplyData?.['selectedMap']['project']],
           "level":this.filterApplyData?.level,
           "nodeChildId": "",
           'kpiIds': []
