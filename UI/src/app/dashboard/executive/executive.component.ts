@@ -281,9 +281,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             this.groupBitBucketKpi(kpiIdsForCurrentBoard);
                             this.groupSonarKpi(kpiIdsForCurrentBoard);
                         }
-                        let hierarchyDataArr = JSON.parse(localStorage.getItem('hierarchyData'));
-                        if(hierarchyDataArr?.length>0){
-                            let projectLevel = hierarchyDataArr[hierarchyDataArr?.length - 1]['level'] + 1;
+                        let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
+                        if(projectLevel){
                             if(this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
                         }
                     }
