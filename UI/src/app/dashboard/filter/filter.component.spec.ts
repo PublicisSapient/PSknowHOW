@@ -192,7 +192,23 @@ describe('FilterComponent', () => {
     level: 1
   };
 
-  const fakeSelectedFilterArray =  []
+  const fakeSelectedFilterArray =  [
+    {
+        "nodeId": "45160_ADDD_649a920fdf3e6c21e3968e30",
+        "nodeName": "KnowHOW | PI_14| ITR_1_ADDD",
+        "sprintStartDate": "2023-06-28T05:41:00.0000000",
+        "sprintEndDate": "2023-07-11T05:41:00.0000000",
+        "path": [
+            "ADDD_649a920fdf3e6c21e3968e30###2021 WLP Brand Retainer_port###ADEO_acc###Education_ver###A_bu"
+        ],
+        "labelName": "sprint",
+        "parentId": [
+            "ADDD_649a920fdf3e6c21e3968e30"
+        ],
+        "sprintState": "ACTIVE",
+        "level": 6
+    }
+]
 
   beforeEach(() => {
 
@@ -1525,15 +1541,21 @@ describe('FilterComponent', () => {
     expect(component.selectedProjectLastSyncStatus).toBe("FAILURE");
   })
 
-  fit('should compile GA data', () => {
-    let gaArray = [{
-
-    }];
-    
-    component.selectedFilterArray = selectedFilterArray;
-    
-    spyOn(ga, 'setProjectData');
-    expect()
+  it('should compile GA data', () => {
+    component.selectedFilterArray = fakeSelectedFilterArray;
+    const gaArray = [
+      {
+          "id": "45160_ADDD_649a920fdf3e6c21e3968e30",
+          "name": "KnowHOW | PI_14| ITR_1_ADDD",
+          "level": "sprint",
+          "category1": "A",
+          "category2": "Education",
+          "category3": "ADEO",
+          "category4": "2021 WLP Brand Retainer",
+          "category5": "ADDD"
+      }
+  ]
+    expect(component.selectedFilterArray.length).toEqual(gaArray.length);
   })
 
 });
