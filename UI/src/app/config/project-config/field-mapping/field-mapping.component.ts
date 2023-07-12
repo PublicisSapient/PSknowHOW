@@ -420,6 +420,7 @@ export class FieldMappingComponent implements OnInit {
       storyFirstStatus: [''],
       jiraDefectCreatedStatus: [''],
       jiraDefectDroppedStatus: [[]],
+      excludeStatusKpi129:[[]],
       jiraLiveStatus: [''],
       jiraDor: [''],
       jiraDefectRejectionStatus: [''],

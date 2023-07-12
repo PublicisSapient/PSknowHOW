@@ -52,6 +52,7 @@ public final class CommonConstant {
 	public static final String FIRST_STATUS = "firststatus";
 	public static final String OPEN = "Open";
 	public static final String CLOSED = "Closed";
+	public static final String FUTURE = "FUTURE";
 	public static final String ROOT_CAUSE = "rootcause";
 	public static final String DEVELOPMENT = "development";
 	public static final String QA = "qa";

@@ -130,9 +130,9 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<String> projectList = new ArrayList<>();
 
 		getSonarHistoryForAllProjects(pList, null, false).forEach((projectNodeId, projectData) -> {
+			List<String> projectList = new ArrayList<>();
 			List<String> debtList = new ArrayList<>();
 			List<String> versionDate = new ArrayList<>();
 			Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
