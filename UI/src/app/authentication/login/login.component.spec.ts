@@ -205,7 +205,7 @@ describe('LoginComponent', () => {
     expect(component.redirectToProfile).toBeTruthy();
   });
 
-  fit('should perform login successfully', ()=>{
+  it('should perform login successfully', ()=>{
     let data = {
       "headers": {
           "normalizedNames": {},
