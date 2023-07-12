@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div *ngIf="dataLoaded; else loader" class="comment-list-container">
-                <ng-container *ngIf="commentsList.length>0; else noComments">
+                <ng-container *ngIf="commentCount>0 && commentsList?.length>0; else noComments">
                     <div *ngFor="let comment of commentsList" class="comment-combo p-mr-1">
                         <div class="commented-by">@{{comment?.commentBy}} commented - {{comment?.commentOn}}
                             <span class="icon-delete">
