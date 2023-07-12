@@ -128,7 +128,7 @@ public class CommentsControllerTest {
 		nodes.add("xyz_project_node_id");
 		commentViewRequestDTO.setNodes(nodes);
 		commentViewRequestDTO.setLevel(level);
-		commentViewRequestDTO.setSprintId(sprintId);
+		commentViewRequestDTO.setNodeChildId(sprintId);
 		List<String> kpiIds = new ArrayList<>();
 		kpiIds.add("kpi3");
 		kpiIds.add("kpi5");
@@ -139,14 +139,14 @@ public class CommentsControllerTest {
 		commentViewResponseDTO.setKpiId(kpiId);
 		commentViewResponseDTO.setNode(node);
 		commentViewResponseDTO.setLevel(level);
-		commentViewResponseDTO.setSprintId(sprintId);
+		commentViewResponseDTO.setNodeChildId(sprintId);
 		commentViewResponseDTO.setComment("test data");
 		commentViewResponseDTO.setCommentId("UUID");
 		commentViewResponseDTO.setCommentOn("16-May-2023 15:33");
 		commentViewResponseDTO.setCommentBy("SUPERADMIN");
 
 		commentViewResponseDTOList.add(commentViewResponseDTO);
-		when(commentsService.findCommentByBoard(nodes, level, sprintId, kpiIds)).thenReturn(commentViewResponseDTOList);
+		when(commentsService.findLatestCommentSummary(nodes, level, sprintId, kpiIds)).thenReturn(commentViewResponseDTOList);
 		mockMvc.perform(post("/comments/commentsSummary").content(mapper.writeValueAsString(commentViewRequestDTO))
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 

@@ -84,14 +84,14 @@ public class CommentsController {
 	 * @return
 	 */
 	@PostMapping("/commentsSummary")
-	public ResponseEntity<ServiceResponse> getCommentsBoardWise(
+	public ResponseEntity<ServiceResponse> getCommentsSummary(
 			@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
 
-		List<CommentViewResponseDTO> commentViewAllByBoard = commentsService.findCommentByBoard(
+		List<CommentViewResponseDTO> commentViewAllByBoard = commentsService.findLatestCommentSummary(
 				commentViewRequestDTO.getNodes(), commentViewRequestDTO.getLevel(),
-				commentViewRequestDTO.getSprintId(), commentViewRequestDTO.getKpiIds());
+				commentViewRequestDTO.getNodeChildId(), commentViewRequestDTO.getKpiIds());
 		if (CollectionUtils.isEmpty(commentViewAllByBoard)) {
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comment not found", null));
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments not found", null));
 		} else {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "Found comments", commentViewAllByBoard));

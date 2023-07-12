@@ -76,10 +76,18 @@ public class CommentsServiceImpl implements CommentsService {
 		return mappedCollection;
 	}
 
+	/**
+	 *
+	 * @param nodes
+	 * @param level
+	 * @param nodeChildId
+	 * @param kpiIds
+	 * @return
+	 */
 	@Override
-	public List<CommentViewResponseDTO> findCommentByBoard(List<String> nodes, String level, String sprintId,
+	public List<CommentViewResponseDTO> findLatestCommentSummary(List<String> nodes, String level, String nodeChildId,
 			List<String> kpiIds) {
-		List<KPIComments> kpiCommentsList = kpiCommentsRepository.findCommentsByBoard(nodes, level, sprintId, kpiIds);
+		List<KPIComments> kpiCommentsList = kpiCommentsRepository.findCommentsByBoard(nodes, level, nodeChildId, kpiIds);
 		
 		if (CollectionUtils.isNotEmpty(kpiCommentsList)) {
 			return kpiCommentsList.stream()
@@ -88,7 +96,7 @@ public class CommentsServiceImpl implements CommentsService {
 						commentViewResponseDTO.setKpiId(kpiComment.getKpiId());
 						commentViewResponseDTO.setNode(kpiComment.getNode());
 						commentViewResponseDTO.setLevel(kpiComment.getLevel());
-						commentViewResponseDTO.setSprintId(kpiComment.getSprintId());
+						commentViewResponseDTO.setNodeChildId(kpiComment.getSprintId());
 						commentViewResponseDTO.setComment(commentsInfo.getComment());
 						commentViewResponseDTO.setCommentId(commentsInfo.getCommentId());
 						commentViewResponseDTO.setCommentOn(commentsInfo.getCommentOn());

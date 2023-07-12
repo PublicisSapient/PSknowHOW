@@ -17,7 +17,7 @@ public class CommentViewResponseDTO {
 
 	private String node;
 	private String level;
-	private String sprintId;
+	private String nodeChildId;
 	private String kpiId;
 	private String commentId;
 	private String commentBy;

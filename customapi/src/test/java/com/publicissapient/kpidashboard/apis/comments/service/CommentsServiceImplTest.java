@@ -265,7 +265,7 @@ public class CommentsServiceImplTest {
 		commentViewResponseDTO.setKpiId(kpiComment.getKpiId());
 		commentViewResponseDTO.setNode(kpiComment.getNode());
 		commentViewResponseDTO.setLevel(kpiComment.getLevel());
-		commentViewResponseDTO.setSprintId(kpiComment.getSprintId());
+		commentViewResponseDTO.setNodeChildId(kpiComment.getSprintId());
 		commentViewResponseDTO.setComment(commentInfo.getComment());
 		commentViewResponseDTO.setCommentId(commentInfo.getCommentId());
 		commentViewResponseDTO.setCommentOn(commentInfo.getCommentOn());
@@ -275,8 +275,15 @@ public class CommentsServiceImplTest {
 
 		when(kpiCommentsRepository.findCommentsByBoard(nodes, level, sprintId, kpiIds)).thenReturn(kpiCommentsList);
 		Mockito.when(customApiConfig.getLimitCommentsShownOnKpiDashboardCount()).thenReturn(5);
-		List<CommentViewResponseDTO> commentViewResponse = commentServiceImpl.findCommentByBoard(nodes, level, sprintId,
+		List<CommentViewResponseDTO> commentViewResponse = commentServiceImpl.findLatestCommentSummary(nodes, level, sprintId,
 				kpiIds);
 		Assert.assertEquals(commentViewResponseDTOList, commentViewResponse);
 	}
+
+	@Test
+	public void findLatestCommentSummary(){
+
+
+	}
+
 }

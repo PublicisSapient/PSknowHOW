@@ -12,5 +12,6 @@ public interface CommentsService {
 
 	Map<String, Object> findCommentByKPIId(String node, String level, String sprintId, String kpiId);
 
-	List<CommentViewResponseDTO> findCommentByBoard(List<String> nodes, String level, String sprintId, List<String> kpiId);
+	List<CommentViewResponseDTO> findLatestCommentSummary(List<String> nodes, String level, String sprintId, List<String> kpiId);
 }
+
