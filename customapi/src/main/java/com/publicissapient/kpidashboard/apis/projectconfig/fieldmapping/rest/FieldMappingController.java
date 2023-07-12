@@ -115,18 +115,17 @@ public class FieldMappingController {
 		String finalProjectToolConfigId = projectToolConfigId;
 		ProjectToolConfig projectToolConfig= projectToolConfigs.stream().filter(t->t.getId().toString().equals(finalProjectToolConfigId)).findFirst().get();
 
-		MetadataIdentifier metadataIdentifier = metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(
-				projectToolConfig.getMetadataTemplateCode(), projectToolConfig.getToolName(),
-				projectBasicConfig.isKanban());
-		String templateCode=metadataIdentifier.getTemplateCode();
-
 		boolean result = fieldMappingService.compareMappingOnSave(projectToolConfigId, fieldMapping);
 
 		ServiceResponse response = null;
-		if (result && templateCode.equalsIgnoreCase(projectToolConfig.getMetadataTemplateCode()) ) {
-			response = new ServiceResponse(true, "mappings are not same as default mapping", false);
+		if (result && !(projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase("10") ||
+				projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase("9"))) {
+			response = new ServiceResponse(true, "mappings are not same as default mapping", result);
+		} else if (result && (projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase("10")
+				|| projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase("9"))) {
+			response = new ServiceResponse(true, "changes are made in customize mappings", false);
 		} else {
-			response = new ServiceResponse(true, "mappings are same as default mapping", true);
+			response = new ServiceResponse(true, "mappings are same as already maintained mapping", result);
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);

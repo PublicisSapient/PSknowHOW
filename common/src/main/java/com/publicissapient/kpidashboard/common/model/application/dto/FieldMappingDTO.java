@@ -123,6 +123,7 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraDefectRejectionStatusQAKPI111;
 	private String jiraBugRaisedByIdentification;
 	private List<String> jiraBugRaisedByValue;
+
 	private List<String> jiraDefectSeepageIssueType;// TODO: Extra field
 	private List<String> jiraIssueTypeKPI35;
 	private String jiraBugRaisedByCustomField;
@@ -226,8 +227,10 @@ private List<String> excludeRCAFromKPI133;
 	private List<String> resolutionTypeForRejectionRCAKPI36;
 	private List<String> resolutionTypeForRejectionKPI14;
 	private List<String> resolutionTypeForRejectionQAKPI111;
+
 	private List<String> jiraQADefectDensityIssueType;// TODO: Extra field
 	private List<String> jiraQAKPI111IssueType;
+
 	private String jiraBugRaisedByQACustomField;
 	private String jiraBugRaisedByQAIdentification;
 	private List<String> jiraBugRaisedByQAValue;

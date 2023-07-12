@@ -2025,9 +2025,7 @@ db.getCollection('field_mapping_structure').insert(
             "fieldType": "chips",
             "filterGroup": ["Blocked Status"],
             "tooltip": {
-              "definition": "Provide Status to Identify Blocked Issues<br />
-                                        Example: On_Hold <hr>
-                                        KPI Impacted : Iteration Board - Wastage KPI"
+              "definition": "Provide Status to Identify Blocked Issues<br />Example: On_Hold <hr> KPI Impacted : Iteration Board - Wastage KPI"
             }
           }
         ]
@@ -2054,7 +2052,7 @@ db.getCollection('field_mapping_structure').insert(
           {
             "fieldName": "jiraBugRaisedByQAValue",
             "fieldLabel": "QA Defect Values",
-            "fieldType": "text",
+            "fieldType": "chips",
             "filterGroup": ["CustomField","Labels"],
             "tooltip": {
               "definition": "Provide label name to identify QA raised defects."
@@ -2091,15 +2089,7 @@ db.getCollection('field_mapping_structure').insert(
           }
         ],
      "nestedFields": [
-          {
-            "fieldName": "jiraBugRaisedByValue",
-            "fieldLabel": "UAT Defect Values",
-            "fieldType": "text",
-            "filterGroup": ["CustomField","Labels"],
-            "tooltip": {
-              "definition": "Provide label name to identify UAT or client raised defects.<br /> Example: Clone_by_QA <hr>"
-            }
-          },
+
           {
             "fieldName": "jiraBugRaisedByCustomField",
             "fieldLabel": "UAT Defect Custom Field",
@@ -2109,7 +2099,16 @@ db.getCollection('field_mapping_structure').insert(
             "tooltip": {
               "definition": "Provide customfield name to identify UAT or client raised defects. <br> Example: customfield_13907<hr>"
             }
-          }
+          },
+          {
+                        "fieldName": "jiraBugRaisedByValue",
+                        "fieldLabel": "UAT Defect Values",
+                        "fieldType": "chips",
+                        "filterGroup": ["CustomField","Labels"],
+                        "tooltip": {
+                          "definition": "Provide label name to identify UAT or client raised defects.<br /> Example: Clone_by_QA <hr>"
+                        }
+                      }
         ]
 },
 {

@@ -429,6 +429,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 //					"jiraIterationCompletionTypeCustomField", "jiraFtprRejectStatus");
 
 			List<String> fieldNameList = Arrays.asList(
+					"sprintName",
 			"jiradefecttype",
 			"jiradefecttypeSWE",
 			"jiradefecttypeKPI132",
