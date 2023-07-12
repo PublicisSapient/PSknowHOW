@@ -16,6 +16,6 @@ public interface CommentsService {
 											List<String> kpiId);
 	void deleteComments(String commentId);
 
-	List<CommentViewResponseDTO> findLatestCommentSummary(List<String> nodes, String level, String sprintId, List<String> kpiId);
+	List<CommentViewResponseDTO> findLatestCommentSummary(List<String> nodes, String level, String nodeChildId, List<String> kpiIds);
 
 }

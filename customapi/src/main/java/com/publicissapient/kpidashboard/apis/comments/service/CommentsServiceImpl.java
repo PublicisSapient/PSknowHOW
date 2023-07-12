@@ -13,8 +13,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentHistoryRepositoryCustom;
-import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentRepositoryCustom;
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +24,8 @@ import com.publicissapient.kpidashboard.common.model.comments.CommentViewRespons
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
 import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentHistoryRepositoryCustom;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentRepositoryCustom;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
 
@@ -103,6 +103,8 @@ public class CommentsServiceImpl implements CommentsService {
 	public void deleteComments(String commentId) {
 		kpiCommentsCustomRepository.deleteByCommentId(commentId);
 		kpiCommentsHistoryCustomRepository.markCommentDelete(commentId);
+	}
+				
 	/**
 	 *
 	 * @param nodes
@@ -114,16 +116,17 @@ public class CommentsServiceImpl implements CommentsService {
 	@Override
 	public List<CommentViewResponseDTO> findLatestCommentSummary(List<String> nodes, String level, String nodeChildId,
 			List<String> kpiIds) {
-		List<KPIComments> kpiCommentsList = kpiCommentsRepository.findCommentsByBoard(nodes, level, nodeChildId, kpiIds);
+		List<KpiCommentsHistory> kpiCommentsList = kpiCommentsHistoryRepository.findCommentsByBoard(nodes, level,
+				nodeChildId, kpiIds);
 
 		if (CollectionUtils.isNotEmpty(kpiCommentsList)) {
-			return kpiCommentsList.stream()
-					.flatMap(kpiComment -> kpiComment.getCommentsInfo().stream().map(commentsInfo -> {
+			return kpiCommentsList.stream().flatMap(kpiComment -> kpiComment.getCommentsInfo().stream()
+					.filter(commentsInfo -> !commentsInfo.isDeleted()).map(commentsInfo -> {
 						CommentViewResponseDTO commentViewResponseDTO = new CommentViewResponseDTO();
 						commentViewResponseDTO.setKpiId(kpiComment.getKpiId());
 						commentViewResponseDTO.setNode(kpiComment.getNode());
 						commentViewResponseDTO.setLevel(kpiComment.getLevel());
-						commentViewResponseDTO.setNodeChildId(kpiComment.getSprintId());
+						commentViewResponseDTO.setNodeChildId(kpiComment.getNodeChildId());
 						commentViewResponseDTO.setComment(commentsInfo.getComment());
 						commentViewResponseDTO.setCommentId(commentsInfo.getCommentId());
 						commentViewResponseDTO.setCommentOn(commentsInfo.getCommentOn());
