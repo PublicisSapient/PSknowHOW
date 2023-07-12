@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.ChangePasswordRequest;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.features.EnableFeatureToggle;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupManager;
@@ -158,14 +158,14 @@ public class AuthenticationController {
 				Authentication authentication = authenticationService.create(request.getUsername(),
 						request.getPassword(), request.getEmail());
 
-				UserInfo useInfo = userInfoService.save(userInfoService.createDefaultUserInfo(request.getUsername(), AuthType.STANDARD,
-						request.getEmail()));
+				UserInfo useInfo = userInfoService.save(userInfoService.createDefaultUserInfo(request.getUsername(),
+						AuthType.STANDARD, request.getEmail()));
 
 				authenticationResponseService.handle(httpServletResponse, authentication);
 
-				if(useInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN)){
-					return ResponseEntity.status(HttpStatus.ACCEPTED)
-							.body(new ServiceResponse(true, "User successfully created and assigned the server administration rights.", null));
+				if (useInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN)) {
+					return ResponseEntity.status(HttpStatus.ACCEPTED).body(new ServiceResponse(true,
+							"User successfully created and assigned the server administration rights.", null));
 				}
 				signupManager.sendUserPreApprovalRequestEmailToAdmin(request.getUsername(), request.getEmail());
 				return ResponseEntity.status(HttpStatus.ACCEPTED)

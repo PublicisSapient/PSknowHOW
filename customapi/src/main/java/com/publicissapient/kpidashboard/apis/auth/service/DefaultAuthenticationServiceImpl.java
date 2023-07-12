@@ -90,7 +90,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	@Override
 	public org.springframework.security.core.Authentication create(String username, String password, String email) {
 		Authentication authentication = new Authentication(username, password, email);
-		if(authenticationRepository.count()==0){
+		if (authenticationRepository.count() == 0) {
 			authentication.setApproved(true);
 		}
 		authentication = authenticationRepository.save(authentication);
