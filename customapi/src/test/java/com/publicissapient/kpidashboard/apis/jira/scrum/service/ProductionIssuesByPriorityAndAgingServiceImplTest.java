@@ -47,7 +47,7 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 	private static final String P1 = "p1,P1 - Blocker, blocker, 1, 0, p0, Urgent";
 	private static final String P2 = "p2, critical, P2 - Critical, 2, High";

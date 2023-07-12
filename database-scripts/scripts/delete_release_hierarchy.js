@@ -1,4 +1,4 @@
-//---------7.2.0-------
+//The script removes the extra releases other than the required from account_hierarchy table
 const bulkUpdateOps = [];
 
 function splitString(inputValue, delimiter) {
@@ -55,7 +55,7 @@ db.getCollection('project_release').find().forEach(project_release => {
     }
 });
 
-//bulk-updating account_hierarchy with column retain=true, if those are required on release filter
+//bulk-updating account_hierarchy with column retian=true, if those are required on release filter
 if (bulkUpdateOps.length > 0) {
     db.account_hierarchy.bulkWrite(bulkUpdateOps);
 }
@@ -69,5 +69,3 @@ db.account_hierarchy.update(
     { $unset: { retain: 1 } },
     { multi: true }
 );
-
-//7.3 changes
