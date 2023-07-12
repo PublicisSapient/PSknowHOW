@@ -20,11 +20,16 @@ package com.publicissapient.kpidashboard.jira.client.release;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,6 +74,8 @@ public class ScrumReleaseDataClientImplTest {
 	private HierarchyLevelService hierarchyLevelService;
 	@Mock
 	private JiraRestClientFactory jiraRestClientFactory;
+	@Mock
+	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -101,6 +108,17 @@ public class ScrumReleaseDataClientImplTest {
 		version.setReleaseDate(DateTime.now());
 		versionList.add(version);
 		when(jiraAdapter.getVersion(any())).thenReturn(versionList);
+
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+		JiraIssueCustomHistory jiraIssueCustomHistory = new JiraIssueCustomHistory();
+		JiraHistoryChangeLog changeLog= new JiraHistoryChangeLog("","V1.0.2", LocalDateTime.now());
+		List<JiraHistoryChangeLog> logList= new ArrayList<>();
+		logList.add(changeLog);
+		jiraIssueCustomHistory.setFixVersionUpdationLog(logList);
+		jiraIssueCustomHistories.add(jiraIssueCustomHistory);
+
+		when(jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(anyString())).thenReturn(jiraIssueCustomHistories);
+
 		releaseDataClient.processReleaseInfo(scrumProjectMapping);
 	}
 
@@ -108,6 +126,10 @@ public class ScrumReleaseDataClientImplTest {
 	public void processReleaseInfoNull() {
 		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId("Project",
 				scrumProjectMapping.getBasicProjectConfigId())).thenReturn(null);
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+		JiraIssueCustomHistory jiraIssueCustomHistory = new JiraIssueCustomHistory();
+		jiraIssueCustomHistories.add(jiraIssueCustomHistory);
+		when(jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(anyString())).thenReturn(jiraIssueCustomHistories);
 		releaseDataClient.processReleaseInfo(scrumProjectMapping);
 	}
 
@@ -120,6 +142,7 @@ public class ScrumReleaseDataClientImplTest {
 		subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
 		scrumProjectMapping.setKanban(false);
 
+
 		JiraToolConfig jiraToolConfig = new JiraToolConfig();
 		jiraToolConfig.setBoardQuery("");
 		jiraToolConfig.setQueryEnabled(false);
@@ -127,6 +150,7 @@ public class ScrumReleaseDataClientImplTest {
 		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
 		projectBasicConfig.setProjectName("TEST Project Internal");
 		projectBasicConfig.setIsKanban(false);
+		projectBasicConfig.setId(new ObjectId("5e15d8b195fe1300014538ce"));
 		scrumProjectMapping.setProjectBasicConfig(projectBasicConfig);
 		scrumProjectMapping.setJira(jiraToolConfig);
 	}
