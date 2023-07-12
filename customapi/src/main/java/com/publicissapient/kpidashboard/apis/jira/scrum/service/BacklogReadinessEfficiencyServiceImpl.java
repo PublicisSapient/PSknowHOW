@@ -87,8 +87,6 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 	private static final String ISSUES = "issues";
 
 	private static final String OVERALL = "Overall";
-	private static final String FUTURE = "FUTURE";
-	private static final String CLOSED = "CLOSED";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -440,14 +438,15 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 		mapOfFilters.put(JiraFeature.SPRINT_STATUS.getFieldValueInFeature(),
-				Lists.newArrayList("", null, FUTURE, FUTURE.toLowerCase(), CLOSED, CLOSED.toLowerCase()));
+				Lists.newArrayList("", null, CommonConstant.FUTURE, CommonConstant.FUTURE.toLowerCase(),
+						CommonConstant.CLOSED.toUpperCase(), CommonConstant.CLOSED.toLowerCase()));
 
 		uniqueProjectMap.put(basicProjectId.toString(), mapOfProjectFilters);
 		List<JiraIssue> allIssues = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
 		List<String> finalDoneStatus = doneStatus;
 		allIssues = allIssues.stream()
 				.filter(issue -> issue.getSprintAssetState() == null
-						|| !issue.getSprintAssetState().equalsIgnoreCase(CLOSED)
+						|| !issue.getSprintAssetState().equalsIgnoreCase(CommonConstant.CLOSED)
 						|| !finalDoneStatus.contains(issue.getStatus().toLowerCase()))
 				.collect(Collectors.toList());
 		return allIssues;

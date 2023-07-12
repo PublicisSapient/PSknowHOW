@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
@@ -84,7 +85,6 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	private static final String REJECTED_IN_REFINEMENT_HOVER_VALUE = "Rejected Stories";
 	private static final String TOTAL_STORIES = "Total Stories";
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	private static final String CLOSED = "CLOSED";
 
 	@Autowired
 	private KpiHelperService kpiHelperService;
@@ -491,7 +491,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 		List<String> finalDoneStatus = doneStatus;
 		List<JiraIssue> unAssignedJiraIssues = allUnAssignedJiraIssues.stream()
 				.filter(issue -> issue.getSprintAssetState() == null
-						|| !issue.getSprintAssetState().equalsIgnoreCase(CLOSED)
+						|| !issue.getSprintAssetState().equalsIgnoreCase(CommonConstant.CLOSED)
 						|| !finalDoneStatus.contains(issue.getStatus().toLowerCase()))
 				.collect(Collectors.toList());
 		List<String> historyData = unAssignedJiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
