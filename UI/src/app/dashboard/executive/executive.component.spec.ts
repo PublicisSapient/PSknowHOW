@@ -3551,7 +3551,370 @@ describe('ExecutiveComponent', () => {
     const spy = spyOn(component, 'checkLatestAndTrendValue');
     component.checkLatestAndTrendValue(kpiData, item);
     expect(spy).toHaveBeenCalled();
-  })
+  });
+
+  it('should call set kpi values after SonarKpiResponseReceive', () => {
+    const response = [
+        {
+            "kpiId": "kpi17",
+            "kpiName": "Unit Test Coverage",
+            "unit": "%",
+            "maxValue": "100",
+            "chartType": "",
+            "kpiInfo": {
+                "definition": "Measure  of the amount of code that is covered by unit tests.",
+                "formula": [
+                    {
+                        "lhs": "The calculation is done directly in Sonarqube"
+                    }
+                ],
+                "details": [
+                    {
+                        "type": "link",
+                        "kpiLinkDetail": {
+                            "text": "Detailed Information at",
+                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Unit-Test-Coverage"
+                        }
+                    }
+                ]
+            },
+            "id": "64ad2860dadebadcf40c7038",
+            "isDeleted": "False",
+            "kpiUnit": "%",
+            "kanban": false,
+            "kpiSource": "Sonar",
+            "thresholdValue": 55,
+            "trendValueList": [],
+            "maturityRange": [
+                "-20",
+                "20-40",
+                "40-60",
+                "60-80",
+                "80-"
+            ],
+            "groupId": 1
+        }
+    ];
+    spyOn(helperService, 'createKpiWiseId').and.returnValue({
+        "kpi17": {
+            "kpiId": "kpi17",
+            "kpiName": "Unit Test Coverage",
+            "unit": "%",
+            "maxValue": "100",
+            "chartType": "",
+            "kpiInfo": {
+                "definition": "Measure  of the amount of code that is covered by unit tests.",
+                "formula": [
+                    {
+                        "lhs": "The calculation is done directly in Sonarqube"
+                    }
+                ],
+                "details": [
+                    {
+                        "type": "link",
+                        "kpiLinkDetail": {
+                            "text": "Detailed Information at",
+                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Unit-Test-Coverage"
+                        }
+                    }
+                ]
+            },
+            "id": "64ad2860dadebadcf40c7038",
+            "isDeleted": "False",
+            "kpiUnit": "%",
+            "kanban": false,
+            "kpiSource": "Sonar",
+            "thresholdValue": 55,
+            "trendValueList": [],
+            "maturityRange": [
+                "-20",
+                "20-40",
+                "40-60",
+                "60-80",
+                "80-"
+            ],
+            "groupId": 1
+        }
+    });
+    spyOn(helperService, 'createSonarFilter');
+    const createAllKpiArraySpy = spyOn(component, 'createAllKpiArray');
+    component.afterSonarKpiResponseReceived(response);
+    expect(component.kpiLoader).toBeFalse();
+    expect(createAllKpiArraySpy).toHaveBeenCalled();
+
+});
+
+
+
+it('should call set kpi values after Zypher KpiResponseReceive', () => {
+    const response = [
+        {
+            "kpiId": "kpi42",
+            "kpiName": "Regression Automation Coverage",
+            "unit": "%",
+            "maxValue": "100",
+            "chartType": "",
+            "kpiInfo": {
+                "definition": "Measures the progress of automation of regression test cases (the test cases which are marked as part of regression suite.",
+                "formula": [
+                    {
+                        "lhs": "Regression Automation Coverage ",
+                        "operator": "division",
+                        "operands": [
+                            "No. of regression test cases automated",
+                            "Total no. of regression test cases"
+                        ]
+                    }
+                ],
+                "details": [
+                    {
+                        "type": "link",
+                        "kpiLinkDetail": {
+                            "text": "Detailed Information at",
+                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Regression-Automation-Coverage"
+                        }
+                    }
+                ]
+            },
+            "id": "64ad2860dadebadcf40c7036",
+            "isDeleted": "False",
+            "kpiUnit": "%",
+            "kanban": false,
+            "kpiSource": "Zypher",
+            "trendValueList": [
+                {
+                    "data": "AddingIterationProject",
+                    "value": [
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_3_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 1
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_4_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 2
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_5_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 3
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_6_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 4
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_14| ITR_1_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 5
+                        }
+                    ],
+                    "maturity": "1",
+                    "maturityValue": "0.0"
+                }
+            ],
+            "maturityRange": [
+                "-20",
+                "20-40",
+                "40-60",
+                "60-80",
+                "80-"
+            ],
+            "groupId": 1
+        }
+    ];
+    component.selectedtype = 'Scrum';
+    spyOn(helperService, 'createKpiWiseId').and.returnValue({
+        kpi42: {
+            "kpiId": "kpi42",
+            "kpiName": "Regression Automation Coverage",
+            "unit": "%",
+            "maxValue": "100",
+            "chartType": "",
+            "kpiInfo": {
+                "definition": "Measures the progress of automation of regression test cases (the test cases which are marked as part of regression suite.",
+                "formula": [
+                    {
+                        "lhs": "Regression Automation Coverage ",
+                        "operator": "division",
+                        "operands": [
+                            "No. of regression test cases automated",
+                            "Total no. of regression test cases"
+                        ]
+                    }
+                ],
+                "details": [
+                    {
+                        "type": "link",
+                        "kpiLinkDetail": {
+                            "text": "Detailed Information at",
+                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Regression-Automation-Coverage"
+                        }
+                    }
+                ]
+            },
+            "id": "64ad2860dadebadcf40c7036",
+            "isDeleted": "False",
+            "kpiUnit": "%",
+            "kanban": false,
+            "kpiSource": "Zypher",
+            "trendValueList": [
+                {
+                    "data": "AddingIterationProject",
+                    "value": [
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_3_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 1
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_4_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 2
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_5_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 3
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_6_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 4
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_14| ITR_1_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 5
+                        }
+                    ],
+                    "maturity": "1",
+                    "maturityValue": "0.0"
+                }
+            ],
+            "maturityRange": [
+                "-20",
+                "20-40",
+                "40-60",
+                "60-80",
+                "80-"
+            ],
+            "groupId": 1
+        }
+    });
+    spyOn(helperService, 'calculateTestExecutionData').and.returnValue({
+        selectedTestExecutionFilterData: [],
+        testExecutionFilterData: []
+    });
+    const createAllKpiArraySpy = spyOn(component, 'createAllKpiArray');
+    component.afterZypherKpiResponseReceived(response);
+    expect(component.kpiLoader).toBeFalse();
+    expect(createAllKpiArraySpy).toHaveBeenCalled();
+
+});
+
 });
 
 
