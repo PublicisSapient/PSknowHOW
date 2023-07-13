@@ -2636,5 +2636,53 @@ db.kpi_column_configs.insertMany([{
                                       isShown: true,
                                       isDefault: true
                                     }]
+                                  },
+                                  {
+                                    basicProjectConfigId: null,
+                                    kpiId: 'kpi151',
+                                    kpiColumnDetails: [{
+                                      columnName: 'Issue ID',
+                                      order: 0,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Issue Description',
+                                      order: 1,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Issue Type',
+                                      order: 2,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Issue Status',
+                                      order: 3,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Priority',
+                                      order: 4,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Created Date',
+                                      order: 5,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Updated Date',
+                                      order: 6,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Assignee',
+                                      order: 7,
+                                      isShown: true,
+                                      isDefault: true
+                                    }]
                                   }
                                  ]);

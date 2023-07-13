@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.common.repository.jira;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -158,6 +157,14 @@ public interface JiraIssueRepository
 	 */
 	List<JiraIssue> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
 
+	/*
+	 * Find documents for given numbers and basicProjectConfigId.
+	 *
+	 *
+	 * @param basicProjectConfigId basicProjectConfigId
+	 *
+	 * @return JiraIssue
+	 */
 	List<JiraIssue> findByBasicProjectConfigIdIn(String basicProjectConfigId);
 
 }

@@ -5896,7 +5896,7 @@ db.kpi_column_configs.insertMany([{
                                   }
                                  ]);
 
-//default fields mapping for each KPI, these fields are used to populate the config JIRA for any 
+//default fields mapping for each KPI, these fields are used to populate the config JIRA for any
 //project. these can be changed/updated in project config under setting in the KnowHOW
 
 db.getCollection('kpi_fieldmapping').insertMany(
