@@ -500,6 +500,8 @@ export class HelperService {
         return new Promise((resolve, reject) => this.httpService.getCommentCount(data).subscribe((response) => {
             if (response.success) {
                 resolve({ ...response.data });
+            }else{
+                resolve({});
             }
         }, error => {
             reject(error);

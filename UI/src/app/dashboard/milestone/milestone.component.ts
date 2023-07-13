@@ -71,6 +71,12 @@ export class MilestoneComponent implements OnInit {
     /** When filter dropdown change */
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
       if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'release') {
+        this.allKpiArray = [];
+        this.kpiChartData = {};
+        this.kpiSelectedFilterObj = {};
+        this.kpiDropdowns = {};
+        this.kpiCommentsCountObj = {};
+        this.sharedObject = sharedobject;
         if(this.globalConfig || this.service.getDashConfigData()){
           this.receiveSharedData(sharedobject);
         }

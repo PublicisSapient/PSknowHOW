@@ -160,6 +160,7 @@ public class AuthenticationControllerTest {
 		userInfo.setAuthorities(Arrays.asList("ROLE_VIEWER"));
 
 		when(authenticationService.isEmailExist(anyString())).thenReturn(false);
+		when(userInfoService.save(any())).thenReturn(userInfo);
 		signupManager.sendUserPreApprovalRequestEmailToAdmin(anyString(), anyString());
 		mockMvc.perform(post("/registerUser").accept(MediaType.APPLICATION_JSON).content(request)
 				.contentType(MediaType.APPLICATION_JSON)
