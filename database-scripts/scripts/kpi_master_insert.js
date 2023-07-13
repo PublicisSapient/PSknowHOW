@@ -2458,7 +2458,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 1,
+    "defaultOrder": 2,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2490,7 +2490,7 @@ db.getCollection('kpi_master').insert(
     "kpiName": "Production Defects Ageing",
     "kpiUnit": "Number",
     "isDeleted": "False",
-    "defaultOrder": 3,
+    "defaultOrder": 4,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2514,7 +2514,7 @@ db.getCollection('kpi_master').insert(
     "kpiName": "Refinement Rejection Rate",
     "kpiUnit": "%",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 5,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2564,7 +2564,7 @@ db.getCollection('kpi_master').insert(
     "kpiName": "Defect Reopen Rate",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 2,
+    "defaultOrder": 3,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2774,7 +2774,7 @@ db.getCollection('kpi_master').insert(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 5,
+    "defaultOrder": 8,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2814,7 +2814,7 @@ db.getCollection('kpi_master').insert(
     "boxType": "2_column",
     "kpiBaseLine": "0",
     "thresholdValue": "",
-    "defaultOrder": 6,
+    "defaultOrder": 1,
     "kpiUnit": "Count",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2854,65 +2854,15 @@ db.getCollection('kpi_master').insert(
     "isPositiveTrend": false,
     "showTrend": false,
     "kpiFilter": "multiSelectDropDown",
-    "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": true,
-    "maturityRange": [
-      "-60",
-      "60-45",
-      "45-30",
-      "30-10",
-      "10-"
-    ],
-    "maturityLevel": [
-      {
-        "level": "LeadTime",
-        "range": [
-          "-60",
-          "60-45",
-          "45-30",
-          "30-10",
-          "10-"
-        ]
-      },
-      {
-        "level": "Intake-DoR",
-        "range": [
-          "-30",
-          "30-20",
-          "20-10",
-          "10-5",
-          "5-"
-        ]
-      },
-      {
-        "level": "DoR-DoD",
-        "range": [
-          "-20",
-          "20-10",
-          "10-7",
-          "7-3",
-          "3-"
-        ]
-      },
-      {
-        "level": "DoD-Live",
-        "range": [
-          "-30",
-          "30-15",
-          "15-5",
-          "5-2",
-          "2-"
-        ]
-      }
-    ]
+    "calculateMaturity": false,
   },
   {
     "kpiId": "kpi148",
     "kpiName": "Flow Load",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 7,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2936,7 +2886,7 @@ db.getCollection('kpi_master').insert(
     "kpiName": "Flow Distribution",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 6,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,

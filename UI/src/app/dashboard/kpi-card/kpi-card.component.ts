@@ -59,7 +59,6 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
           if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
-            this.filterOptions = {};
             this.filterOptions = {...this.filterOptions};
             this.filterOption = 'Overall';
           } else {

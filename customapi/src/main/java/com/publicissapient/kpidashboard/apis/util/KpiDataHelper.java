@@ -38,6 +38,9 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.Hours;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
@@ -681,33 +684,17 @@ public final class KpiDataHelper {
 				iterationKpiModalValue.setIssueId(customHistory.getStoryID());
 				iterationKpiModalValue.setIssueURL(customHistory.getUrl());
 				iterationKpiModalValue.setDescription(customHistory.getDescription());
-				String intakeToDor = DateUtil.calWeekHours(cycleTimeValidationData.getIntakeDate(),
+				String intakeToDor = calWeekHours(cycleTimeValidationData.getIntakeDate(),
 						cycleTimeValidationData.getDorDate());
-				String dorToDod = DateUtil.calWeekHours(cycleTimeValidationData.getDorDate(),
+				String dorToDod = calWeekHours(cycleTimeValidationData.getDorDate(),
 						cycleTimeValidationData.getDodDate());
-				String dodToLive = DateUtil.calWeekHours(cycleTimeValidationData.getDodDate(),
+				String dodToLive = calWeekHours(cycleTimeValidationData.getDodDate(),
+						cycleTimeValidationData.getLiveDate());
+				String leadTime = calWeekHours(cycleTimeValidationData.getIntakeDate(),
 						cycleTimeValidationData.getLiveDate());
 				iterationKpiModalValue.setIntakeToDor(getTimeValue(intakeToDor));
 				iterationKpiModalValue.setDorToDod(getTimeValue(dorToDod));
 				iterationKpiModalValue.setDodToLive(getTimeValue(dodToLive));
-				String intakeToDod = DateUtil.calWeekHours(cycleTimeValidationData.getIntakeDate(),
-						cycleTimeValidationData.getDodDate());
-				if (cycleTimeValidationData.getDorDate() != null
-						&& !intakeToDod.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-					iterationKpiModalValue.setIntakeToDod(String.valueOf(CommonUtils
-							.convertIntoDays((int) DateUtil.calculateTimeInDays(Long.parseLong(intakeToDod)))));
-				} else
-					iterationKpiModalValue.setIntakeToDod(Constant.NOT_AVAILABLE);
-				String dorToLive = DateUtil.calWeekHours(cycleTimeValidationData.getDorDate(),
-						cycleTimeValidationData.getLiveDate());
-				if (cycleTimeValidationData.getDodDate() != null
-						&& !dorToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-					iterationKpiModalValue.setDorToLive(String.valueOf(CommonUtils
-							.convertIntoDays((int) DateUtil.calculateTimeInDays(Long.parseLong(dorToLive)))));
-				} else
-					iterationKpiModalValue.setDorToLive(Constant.NOT_AVAILABLE);
-				String leadTime = DateUtil.calWeekHours(cycleTimeValidationData.getIntakeDate(),
-						cycleTimeValidationData.getLiveDate());
 				iterationKpiModalValue.setLeadTime(getTimeValue(leadTime));
 				dataMap.put(customHistory.getStoryID(), iterationKpiModalValue);
 			}
@@ -717,11 +704,48 @@ public final class KpiDataHelper {
 
 	private static String getTimeValue(String time) {
 		if (time != null && !time.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-			return String
-					.valueOf(CommonUtils.convertIntoDays((int) DateUtil.calculateTimeInDays(Long.parseLong(time))));
+			return CommonUtils.convertIntoDays((int) calculateTimeInDays(Long.parseLong(time)));
 		} else {
 			return Constant.NOT_AVAILABLE;
 		}
 	}
 
+	public static String calWeekHours(DateTime startDateTime, DateTime endDateTime) {
+		if (startDateTime != null && endDateTime != null) {
+			int hours = Hours.hoursBetween(startDateTime, endDateTime).getHours();
+			int weekendsCount = countSaturdaysAndSundays(startDateTime, endDateTime);
+			int res = hours - weekendsCount * 24;
+			return String.valueOf(res);
+		}
+		return DateUtil.NOT_APPLICABLE;
+	}
+
+	/**
+	 *  Cal time with 8hr in a day
+	 * @param timeInHours
+	 * @return
+	 */
+	public static long calculateTimeInDays(long timeInHours) {
+		long timeInMin = (timeInHours / 24) * 8 * 60;
+		long remainingTimeInMin = (timeInHours % 24) * 60;
+		if (remainingTimeInMin >= 480) {
+			timeInMin = timeInMin + 480;
+		} else {
+			timeInMin = timeInMin + remainingTimeInMin;
+		}
+		return timeInMin;
+	}
+
+	public static int countSaturdaysAndSundays(DateTime startDateTime, DateTime endDateTime) {
+		int count = 0;
+		DateTime current = startDateTime;
+		while (current.isBefore(endDateTime)) {
+			if (current.getDayOfWeek() == DateTimeConstants.SATURDAY
+					|| current.getDayOfWeek() == DateTimeConstants.SUNDAY) {
+				count++;
+			}
+			current = current.plusDays(1);
+		}
+		return count;
+	}
 }
