@@ -89,3 +89,153 @@ db.kpi_comments_history.updateMany(
 
 //7.3 changes
 
+//-------------------- insert new kpi details -------
+
+db.kpi_column_configs.insertMany([{
+                                    basicProjectConfigId: null,
+                                    kpiId: 'kpi151',
+                                    kpiColumnDetails: [{
+                                      columnName: 'Issue ID',
+                                      order: 0,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Issue Description',
+                                      order: 1,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Issue Type',
+                                      order: 2,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Issue Status',
+                                      order: 3,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Priority',
+                                      order: 4,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Created Date',
+                                      order: 5,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Updated Date',
+                                      order: 6,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Assignee',
+                                      order: 7,
+                                      isShown: true,
+                                      isDefault: true
+                                    }]
+                                  },
+                                  {
+                                    basicProjectConfigId: null,
+                                    kpiId: 'kpi152',
+                                    kpiColumnDetails: [{
+                                      columnName: 'Issue ID',
+                                      order: 0,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Issue Description',
+                                      order: 1,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Issue Type',
+                                      order: 2,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Issue Status',
+                                      order: 3,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Priority',
+                                      order: 4,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Created Date',
+                                      order: 5,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Updated Date',
+                                      order: 6,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Assignee',
+                                      order: 7,
+                                      isShown: true,
+                                      isDefault: true
+                                    }]
+                                  }
+                                 ]);
+
+db.getCollection('kpi_master').insert(
+[{
+       "kpiId": "kpi151",
+       "kpiName": "Backlog Count By Status",
+       "kpiUnit": "Count",
+       "isDeleted": "False",
+       "defaultOrder": 8,
+       "kpiCategory": "Backlog",
+       "kpiSource": "Jira",
+       "groupId": 10,
+       "thresholdValue": "",
+       "kanban": false,
+       "chartType": "pieChart",
+       "kpiInfo": {
+         "definition": "Total count of issues in the Backlog with a breakup by Status."
+       },
+       "xAxisLabel": "",
+       "yAxisLabel": "",
+       "isPositiveTrend": true,
+       "showTrend": false,
+       "isAdditionalFilterSupport": false,
+       "kpiFilter": "dropdown",
+       "boxType": "chart",
+       "calculateMaturity": false
+     },
+     {
+          "kpiId": "kpi152",
+          "kpiName": "Backlog Count By Issue Type",
+          "kpiUnit": "Count",
+          "isDeleted": "False",
+          "defaultOrder": 8,
+          "kpiCategory": "Backlog",
+          "kpiSource": "Jira",
+          "groupId": 10,
+          "thresholdValue": "",
+          "kanban": false,
+          "chartType": "pieChart",
+          "kpiInfo": {
+            "definition": "Total count of issues in the backlog with a breakup by issue type."
+          },
+          "xAxisLabel": "",
+          "yAxisLabel": "",
+          "isPositiveTrend": true,
+          "showTrend": false,
+          "isAdditionalFilterSupport": false,
+          "kpiFilter": "dropdown",
+          "boxType": "chart",
+          "calculateMaturity": false
+      }
+ ]);
