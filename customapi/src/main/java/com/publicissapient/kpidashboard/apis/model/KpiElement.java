@@ -108,6 +108,7 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient List<String> excelColumns;
 	// For Excel column Info
 	private List<KPIExcelColumnInfo> excelColumnInfo;
+	private transient Object filterDuration;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -820,6 +821,14 @@ public class KpiElement implements Serializable { // NOPMD
 
 	public void setExcelData(List<KPIExcelData> excelData) {
 		this.excelData = excelData;
+	}
+
+	public Object getFilterDuration() {
+		return filterDuration;
+	}
+
+	public void setFilterDuration(Object filterDuration) {
+		this.filterDuration = filterDuration;
 	}
 
 }
