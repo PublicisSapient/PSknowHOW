@@ -234,7 +234,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 					}
 					List<IterationKpiData> data = new ArrayList<>();
 					IterationKpiData issuesForDevelopment = new IterationKpiData(READY_BACKLOG,
-							Double.valueOf(issueCount), storyPoint, null, SP, modalValues);
+							Double.valueOf(issueCount), storyPoint, null, SP,DAYS, modalValues);
 					IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, DEFAULT_BACKLOG_STRENGTH,
 							null, null, SPRINT, null);
 					log.debug("Issue type: {} priority: {} Cycle time: {}", issueType, priority, cycleTime);
