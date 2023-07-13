@@ -6306,7 +6306,7 @@ db.getCollection('kpi_fieldmapping').insertMany(
         kpiName: 'Defects Without Story Link',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Issue Types Mapping' : ['jiraStoryIdentification'], 'Workflow Status Mapping' : ['jiraDefectDroppedStatus'] }
+        fieldNames : { 'Issue Types Mapping' : ['jiraStoryIdentification'], 'Workflow Status Mapping' : ['excludeStatusKpi129'] }
       },
       {
         kpiId: 'kpi127',
@@ -6413,8 +6413,7 @@ db.getCollection('kpi_fieldmapping').insertMany(
                  'Workflow Status Mapping': [
                     'storyFirstStatus',
                     'jiraStatusForInProgress',
-                    'jiraStatusForQa',
-                    'jiraLiveStatus'
+                    'jiraStatusForQa'
                 ]
              }
             },
