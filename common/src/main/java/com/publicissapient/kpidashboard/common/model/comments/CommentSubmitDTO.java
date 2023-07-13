@@ -19,7 +19,7 @@ public class CommentSubmitDTO {
 
 	private String node;
 	private String level;
-	private String sprintId;
+	private String nodeChildId;
 	private String kpiId;
 	private List<CommentsInfo> commentsInfo;
 

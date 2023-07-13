@@ -153,6 +153,8 @@ export class HttpService {
   private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
   private getCommentUrl = this.baseUrl + '/api/comments/getCommentsByKpiId';
   private submitCommentUrl = this.baseUrl + '/api/comments/submitComments';
+  private deleteCommentUrl = this.baseUrl + '/api/comments/deleteCommentById';
+  private getCommentCountUrl = this.baseUrl + '/api/comments/getCommentCount';
   private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
   private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
   private saveAssigneeForProjectUrl = this.baseUrl + '/api/capacity/assignee';
@@ -1050,21 +1052,20 @@ export class HttpService {
     );
   }
 
-  getComment(selectedTab, selectedFilter, kpiId) {
-    const postData = {
-      node:
-        selectedTab !== 'iteration'
-          ? selectedFilter?.nodeId
-          : selectedFilter?.parentId[0],
-      sprintId: selectedTab === 'iteration' ? selectedFilter.nodeId : '',
-      kpiId: kpiId,
-      level: selectedFilter?.level,
-    };
+  getComment(postData) {
     return this.http.post<any>(this.getCommentUrl, postData);
   }
 
   submitComment(data): Observable<any> {
     return this.http.post<object>(this.submitCommentUrl, data);
+  }
+
+  deleteComment(id): Observable<any> {
+    return this.http.delete<object>(this.deleteCommentUrl+ '/' + id);
+  }
+
+  getCommentCount(data): Observable<any>{
+    return this.http.post<object>(this.getCommentCountUrl, data);
   }
 
   /* Update project details  */
