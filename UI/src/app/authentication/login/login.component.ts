@@ -22,7 +22,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { SharedService } from '../../services/shared.service';
-
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',

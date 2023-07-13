@@ -16,21 +16,12 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository.jira;
-
-import java.util.List;
-import java.util.Map;
+package com.publicissapient.kpidashboard.common.repository.comments;//NOPMD
 
 import org.springframework.stereotype.Repository;
 
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
-
-/**
- * Interface FeatureHistoryCustomQueryRepository.
- */
 @Repository
-public interface IssueBacklogCustomHistoryQueryRepository {
+public interface KpiCommentRepositoryCustom {
 
-	List<IssueBacklogCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap);
+	void deleteByCommentId(String commentId);
 }

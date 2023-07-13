@@ -64,9 +64,6 @@ function running_js()
 	echo "########### kpi category mapping with kpi master  ###########"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/kpi_category_mapping_insert.js
 
-	echo "########### superadmin_setup `date` ###########"
-	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/superadmin_setup.js
-
 	echo "###########  create_permissions `date` ###########"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/create_permissions.js
 
@@ -125,11 +122,18 @@ function running_js()
   echo "########## create release hierarchy with project version `date`############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/create_release_hierarchy.js
 
-  echo "########## Migrate backlog from jira issue to issue_backlog collection `date`############"
-  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/migrate_backlogs_from_jira_issue_collection.js
+  echo "########## delete release hierarchy with project version `date`############"
+  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/delete_release_hierarchy.js
+
+  echo "########## Removing Backlog collections `date`############"
+  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/remove_backlog_collections.js
+
+  echo "########## Adding New FieldMapping for Backlog.js `date`############"
+    mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/adding_new_fieldMapping_for_backlog.js
 
 
-
+  echo "########## Comment feature field Name generic for all board  `date`############"
+  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/comments_feature_generic_fieldName.js
 }
 
 function cron_service()

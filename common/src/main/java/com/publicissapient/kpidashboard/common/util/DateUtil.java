@@ -65,6 +65,7 @@ public class DateUtil {
 	public static final String BASIC_DATE_FORMAT = "dd-MM-yyyy";
 
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+	public static final String NOT_APPLICABLE = "NA";
 
 	private DateUtil() {
 		// to prevent creation on object
@@ -235,4 +236,5 @@ public class DateUtil {
 		}
 		return strDate;
 	}
+
 }

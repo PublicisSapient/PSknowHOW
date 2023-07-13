@@ -191,7 +191,8 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 					boolean assigneeFlag = checkAssigneeFlag(proBasicConfig, processorExecutionTraceLog);
 					updateAssigneeNameForCommits(assigneeFlag, gitHubProcessorItem, commitDetailList, unsavedCommits);
 					commitsRepo.saveAll(unsavedCommits);
-					log.info("Commits Saved For project {}->{}" ,proBasicConfig.getProjectName(),unsavedCommits.size());
+					log.info("Commits Saved For project {}->{}", proBasicConfig.getProjectName(),
+							unsavedCommits.size());
 					commitsCount += unsavedCommits.size();
 					if (!commitDetailList.isEmpty()) {
 						gitHubProcessorItem.setLastUpdatedCommit(commitDetailList.get(0).getRevisionNumber());
@@ -203,7 +204,8 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 					updateAssigneeForMerge(assigneeFlag, gitHubProcessorItem, mergeRequestsList, unsavedMergeRequests);
 					mergReqRepo.saveAll(unsavedMergeRequests);
 					mergReqCount += unsavedMergeRequests.size();
-					log.info("MRs Saved For project {}->{}" ,proBasicConfig.getProjectName(),unsavedMergeRequests.size());
+					log.info("MRs Saved For project {}->{}", proBasicConfig.getProjectName(),
+							unsavedMergeRequests.size());
 					gitHubProcessorItem.setLastUpdatedTime(Calendar.getInstance().getTime());
 					gitHubProcessorItemRepository.save(gitHubProcessorItem);
 					reposCount++;
@@ -224,7 +226,6 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 
 		MDC.put("RepoCount", String.valueOf(reposCount));
 		MDC.put("CommitCount", String.valueOf(commitsCount));
-
 
 		if (commitsCount > 0) {
 			cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.BITBUCKET_KPI_CACHE);
@@ -250,7 +251,7 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 				.collect(Collectors.toList());
 		List<CommitDetails> byProcessorItemIdAndRevisionNumberIn = commitsRepo
 				.findByProcessorItemIdAndRevisionNumberIn(gitHubProcessorItem.getId(), revisionNumbers);
-		log.info("Found Records of Commits in db ->{}" ,byProcessorItemIdAndRevisionNumberIn.size());
+		log.info("Found Records of Commits in db ->{}", byProcessorItemIdAndRevisionNumberIn.size());
 		commitDetailList.stream().forEach(commit -> {
 			Optional<CommitDetails> commitDetailsData = byProcessorItemIdAndRevisionNumberIn.stream()
 					.filter(existing -> existing.getRevisionNumber().equalsIgnoreCase(commit.getRevisionNumber()))
@@ -278,7 +279,7 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 				.collect(Collectors.toSet());
 		List<MergeRequests> byProcessorItemIdAndRevisionNumberIn = mergReqRepo
 				.findByProcessorItemIdAndRevisionNumberIn(gitHubProcessorItem.getId(), revisionNumbers);
-		log.info("Found Records of Merge in db ->{}" ,byProcessorItemIdAndRevisionNumberIn.size());
+		log.info("Found Records of Merge in db ->{}", byProcessorItemIdAndRevisionNumberIn.size());
 		mergeRequestsList.stream().forEach(mergeRequests -> {
 			Optional<MergeRequests> mergeRequestData = byProcessorItemIdAndRevisionNumberIn.stream().filter(
 					existing -> existing.getRevisionNumber().equalsIgnoreCase(mergeRequests.getRevisionNumber()))

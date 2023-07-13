@@ -11,7 +11,7 @@
                     <img src="../../../assets/img/database-svg.svg" *ngIf="sprintsOverlayVisible"  (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event,kpiHeader) : '' ;" alt="Sprint Details" class="cursor-pointer p-ml-1 sprint-hover-icon"   pTooltip='<div class="inner-content">
                         Please click on icon for all sprint details.
                     </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper" />
-                    <app-comments *ngIf="showCommentIcon" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName" [selectedTab]="selectedTab" (closeSpringOverlay)="op.hide($event);"></app-comments>
+                    <app-comments *ngIf="showCommentIcon" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName" [selectedTab]="selectedTab" (closeSpringOverlay)="op.hide($event);" [commentCount]="commentCount" (getCommentsCountByKpiId)="handleGetCount($event)"></app-comments>
                 </h3>
             </div>
         </div>
@@ -29,7 +29,17 @@
                 </ng-container>
                 <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-justify-between">
                     <ng-container *ngFor="let filter of dropdownArr;let k = index">
-                        <ng-select *ngIf="filter?.options?.length" [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'"
+                        <ng-select *ngIf="filter?.options?.length && filter.filterType === 'Duration'"
+                            [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'" (change)="handleChange('multi')"
+                            [placeholder]="filter?.filterType" [clearable]="false" class="p-pb-0 kpi-dropdown" [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}">
+                            <ng-container *ngFor="let item of filter?.options; index as i">
+                                <ng-option [value]="item">
+                                    {{item}}
+                                </ng-option>
+                            </ng-container>
+                        </ng-select>
+
+                        <ng-select *ngIf="filter?.options?.length && filter.filterType !== 'Duration'" [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'"
                             (change)="handleChange('multi')" [placeholder]="filter?.filterType"
                             (clear)="handleClearAll('filter'+(k+1))" class="p-pb-0 kpi-dropdown"
                             [ngClass]="{'p-mr-3': k != (dropdownArr?.length-1)}"
@@ -75,7 +85,7 @@
     [ngStyle]="{'height': showChartView ? '400px' : '150px', 
     'min-height': showChartView ? '330px' : '100px'}">
         <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="isShow && trendData?.length > 0 && showTrendIndicator"
-            >
+            [ngClass]="{'p-d-none':kpiData?.kpiId == 'kpi17' && trendData.length != 1}">
             <div *ngFor="let item of trendData; let i = index;" class="trend-box">
                 <app-trend-indicator
                     [dataTrend]="item" [color]="trendBoxColorObj[item?.hierarchyName]?.color" [kpiData]="kpiData"
@@ -83,7 +93,7 @@
                 </app-trend-indicator>
             </div>
         </div>
-        <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="!showChartView && (kpiData?.kpiId == 'kpi3' || kpiData?.kpiId == 'kpi53') && !(kpiData?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected)">
+        <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="!showChartView && (kpiData?.kpiId == 'kpi53') && !(kpiData?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected)">
             <div class="trend-box" *ngFor="let item of trendData; let i = index;">
                 <app-trend-indicator
                     [dataTrend]="item" [cols]="cols" [color]="trendBoxColorObj[item?.hierarchyName]?.color" 

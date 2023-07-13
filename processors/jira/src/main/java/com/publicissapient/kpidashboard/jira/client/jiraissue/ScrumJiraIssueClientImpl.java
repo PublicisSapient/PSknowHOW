@@ -84,8 +84,6 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
@@ -94,8 +92,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -161,12 +157,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 	@Autowired
 	private HandleJiraHistory handleJiraHistory;
-
-	@Autowired
-	private IssueBacklogRepository issueBacklogRepository;
-
-	@Autowired
-	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 
 	private static void storyWithSubTaskDefect(Issue issue, Map<String, IssueField> fields,
 			Set<String> defectStorySet) {
@@ -643,12 +633,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		Set<Assignee> assigneeSetToSave = new HashSet<>();
 		List<JiraIssue> jiraIssuesToSave = new ArrayList<>();
 		List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new ArrayList<>();
-		List<IssueBacklog> issueBacklogToSave = new ArrayList<>();
-		List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToSave = new ArrayList<>();
-		List<JiraIssue> jiraIssuesToDelete = new ArrayList<>();
-		List<JiraIssueCustomHistory> jiraIssueHistoryToDelete = new ArrayList<>();
-		List<IssueBacklog> issueBacklogToDelete = new ArrayList<>();
-		List<IssueBacklogCustomHistory> issueBacklogCustomHistoryToDelete = new ArrayList<>();
 
 		if (null == currentPagedJiraRs) {
 			log.error("JIRA Processor | No list of current paged JIRA's issues found");
@@ -675,11 +659,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 			JiraIssue jiraIssue = getJiraIssue(projectConfig, issueId);
 			JiraIssueCustomHistory jiraIssueHistory = getIssueCustomHistory(projectConfig, issueNumber);
-			IssueBacklog issueBacklog = getIssueBacklog(projectConfig, issueId);
-			IssueBacklogCustomHistory issueBacklogCustomHistory = getIssueBacklogCustomHistory(projectConfig,
-					issueNumber);
-			boolean jiraIssuePresentInDb = jiraIssue.getIssueId() != null ? true : false;
-			boolean backlogPresentInDb = issueBacklog.getIssueId() != null ? true : false;
 
 			Map<String, IssueField> fields = JiraIssueClientUtil.buildFieldMap(issue.getFields());
 
@@ -750,37 +729,15 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// jira_issue_custom_history
 				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
 				if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
-					if (backlogPresentInDb
-							&& !(isIssueBacklog(jiraIssue, sprint) && isValidBacklogStatus(fieldMapping, jiraIssue))) {
-						issueBacklogToDelete.add(issueBacklog);
-						issueBacklogCustomHistoryToDelete.add(issueBacklogCustomHistory);
-					}
 					jiraIssuesToSave.add(jiraIssue);
 					jiraIssueHistoryToSave.add(jiraIssueHistory);
 				}
-				if (isIssueBacklog(jiraIssue, sprint) && StringUtils.isNotBlank(jiraIssue.getProjectID())
-						&& !jiraIssue.getTypeName().equalsIgnoreCase("Epic")
-						&& isValidBacklogStatus(fieldMapping, jiraIssue)) {
-					concertJiraIssueToBacklog(jiraIssue, issueBacklog);
-					concertJiraIssueHistoryToBacklogHistory(jiraIssueHistory, issueBacklogCustomHistory);
-					issueBacklogCustomHistoryToSave.add(issueBacklogCustomHistory);
-					issueBacklogToSave.add(issueBacklog);
-				}
-
 			}
 		}
-
-		// Deleting from MongoDB
-		jiraIssueRepository.deleteAll(jiraIssuesToDelete);
-		jiraIssueCustomHistoryRepository.deleteAll(jiraIssueHistoryToDelete);
-		issueBacklogRepository.deleteAll(issueBacklogToDelete);
-		issueBacklogCustomHistoryRepository.deleteAll(issueBacklogCustomHistoryToDelete);
 
 		// Saving back to MongoDB
 		jiraIssueRepository.saveAll(jiraIssuesToSave);
 		jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
-		issueBacklogRepository.saveAll(issueBacklogToSave);
-		issueBacklogCustomHistoryRepository.saveAll(issueBacklogCustomHistoryToSave);
 		saveAccountHierarchy(jiraIssuesToSave, projectConfig);
 		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
 		if (!dataFromBoard) {
@@ -791,164 +748,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
 				.collect(Collectors.toSet()));
 		return jiraIssuesToSave;
-	}
-
-	private boolean isValidBacklogStatus(FieldMapping fieldMapping, JiraIssue jiraIssue) {
-		return !((CollectionUtils.isNotEmpty(fieldMapping.getJiraDod())
-				&& fieldMapping.getJiraDod().contains(jiraIssue.getStatus()))
-				|| (StringUtils.isNotEmpty(fieldMapping.getJiraLiveStatus()))
-						&& fieldMapping.getJiraLiveStatus().toLowerCase().equalsIgnoreCase(jiraIssue.getStatus()));
-	}
-
-	private void concertJiraIssueHistoryToBacklogHistory(JiraIssueCustomHistory jiraIssueHistory,
-			IssueBacklogCustomHistory issueBacklogCustomHistory) {
-		issueBacklogCustomHistory.setProjectID(jiraIssueHistory.getProjectID());
-		issueBacklogCustomHistory.setStoryID(jiraIssueHistory.getStoryID());
-		issueBacklogCustomHistory.setStoryType(jiraIssueHistory.getStoryType());
-		issueBacklogCustomHistory.setDefectStoryID(jiraIssueHistory.getDefectStoryID());
-		issueBacklogCustomHistory.setEstimate(jiraIssueHistory.getEstimate());
-		issueBacklogCustomHistory.setBufferedEstimateTime(jiraIssueHistory.getBufferedEstimateTime());
-		issueBacklogCustomHistory.setCreatedDate(jiraIssueHistory.getCreatedDate());
-		issueBacklogCustomHistory.setDevicePlatform(jiraIssueHistory.getDevicePlatform());
-		issueBacklogCustomHistory.setProjectKey(jiraIssueHistory.getProjectKey());
-		issueBacklogCustomHistory.setProjectComponentId(jiraIssueHistory.getProjectComponentId());
-		issueBacklogCustomHistory.setDeveloperId(jiraIssueHistory.getDeveloperId());
-		issueBacklogCustomHistory.setDeveloperName(jiraIssueHistory.getDeveloperName());
-		issueBacklogCustomHistory.setQaId(jiraIssueHistory.getQaId());
-		issueBacklogCustomHistory.setQaName(jiraIssueHistory.getQaName());
-		issueBacklogCustomHistory.setBuildId(jiraIssueHistory.getBuildId());
-		issueBacklogCustomHistory.setBuildNumber(jiraIssueHistory.getBuildNumber());
-		issueBacklogCustomHistory.setProjectName(jiraIssueHistory.getProjectName());
-		issueBacklogCustomHistory.setBasicProjectConfigId(jiraIssueHistory.getBasicProjectConfigId());
-		issueBacklogCustomHistory.setStatusUpdationLog(jiraIssueHistory.getStatusUpdationLog());
-		issueBacklogCustomHistory.setAssigneeUpdationLog(jiraIssueHistory.getAssigneeUpdationLog());
-		issueBacklogCustomHistory.setPriorityUpdationLog(jiraIssueHistory.getPriorityUpdationLog());
-		issueBacklogCustomHistory.setFixVersionUpdationLog(jiraIssueHistory.getFixVersionUpdationLog());
-		issueBacklogCustomHistory.setLabelUpdationLog(jiraIssueHistory.getLabelUpdationLog());
-		issueBacklogCustomHistory.setDueDateUpdationLog(jiraIssueHistory.getDueDateUpdationLog());
-		issueBacklogCustomHistory.setSprintUpdationLog(jiraIssueHistory.getSprintUpdationLog());
-		issueBacklogCustomHistory.setAdditionalFilters(jiraIssueHistory.getAdditionalFilters());
-		issueBacklogCustomHistory.setUrl(jiraIssueHistory.getUrl());
-		issueBacklogCustomHistory.setDescription(jiraIssueHistory.getDescription());
-	}
-
-	private void concertJiraIssueToBacklog(JiraIssue jiraIssue, IssueBacklog issueBacklog) {
-		issueBacklog.setProcessorId(jiraIssue.getProcessorId());
-		issueBacklog.setIssueId(jiraIssue.getIssueId());
-		issueBacklog.setNumber(jiraIssue.getNumber());
-		issueBacklog.setName(jiraIssue.getName());
-		issueBacklog.setTypeId(jiraIssue.getTypeId());
-		issueBacklog.setTypeName(jiraIssue.getTypeName());
-		issueBacklog.setStatus(jiraIssue.getStatus());
-		issueBacklog.setState(jiraIssue.getState());
-		issueBacklog.setEstimate(jiraIssue.getEstimate());
-		issueBacklog.setStoryPoints(jiraIssue.getStoryPoints());
-		issueBacklog.setEstimateTime(jiraIssue.getEstimateTime());
-		issueBacklog.setUrl(jiraIssue.getUrl());
-		issueBacklog.setChangeDate(jiraIssue.getChangeDate());
-		issueBacklog.setIsDeleted(jiraIssue.getIsDeleted());
-		issueBacklog.setPriority(jiraIssue.getPriority());
-		issueBacklog.setCount(jiraIssue.getCount());
-		issueBacklog.setLabels(jiraIssue.getLabels());
-		issueBacklog.setCreatedDate(jiraIssue.getCreatedDate());
-		issueBacklog.setDueDate(jiraIssue.getDueDate());
-		issueBacklog.setEnvImpacted(jiraIssue.getEnvImpacted());
-		issueBacklog.setBuildNumber(jiraIssue.getBuildNumber());
-		issueBacklog.setRootCauseList(jiraIssue.getRootCauseList());
-		issueBacklog.setOwnersID(jiraIssue.getOwnersID());
-		issueBacklog.setOwnersIsDeleted(jiraIssue.getOwnersIsDeleted());
-		issueBacklog.setOwnersChangeDate(jiraIssue.getOwnersChangeDate());
-		issueBacklog.setOwnersState(jiraIssue.getOwnersState());
-		issueBacklog.setOwnersUsername(jiraIssue.getOwnersUsername());
-		issueBacklog.setOwnersFullName(jiraIssue.getOwnersFullName());
-		issueBacklog.setOwnersShortName(jiraIssue.getOwnersShortName());
-		issueBacklog.setTeamIsDeleted(jiraIssue.getTeamIsDeleted());
-		issueBacklog.setTeamAssetState(jiraIssue.getTeamAssetState());
-		issueBacklog.setTeamChangeDate(jiraIssue.getTeamChangeDate());
-		issueBacklog.setTeamName(jiraIssue.getTeamName());
-		issueBacklog.setSprintIsDeleted(jiraIssue.getSprintIsDeleted());
-		issueBacklog.setTestAutomated(jiraIssue.getTestAutomated());
-		issueBacklog.setIsTestAutomated(jiraIssue.getIsTestAutomated());
-		issueBacklog.setIsTestCanBeAutomated(jiraIssue.getIsTestCanBeAutomated());
-		issueBacklog.setTestAutomatedDate(jiraIssue.getTestAutomatedDate());
-		issueBacklog.setSprintChangeDate(jiraIssue.getSprintChangeDate());
-		issueBacklog.setSprintAssetState(jiraIssue.getSprintAssetState());
-		issueBacklog.setSprintEndDate(jiraIssue.getSprintEndDate());
-		issueBacklog.setSprintBeginDate(jiraIssue.getSprintBeginDate());
-		issueBacklog.setSprintName(jiraIssue.getSprintName());
-		issueBacklog.setSprintID(jiraIssue.getSprintID());
-		issueBacklog.setSprintUrl(jiraIssue.getSprintUrl());
-		issueBacklog.setSprintIdList(jiraIssue.getSprintIdList());
-		issueBacklog.setEpicIsDeleted(jiraIssue.getEpicIsDeleted());
-		issueBacklog.setEpicChangeDate(jiraIssue.getEpicChangeDate());
-		issueBacklog.setEpicAssetState(jiraIssue.getEpicAssetState());
-		issueBacklog.setEpicType(jiraIssue.getEpicType());
-		issueBacklog.setEpicEndDate(jiraIssue.getEpicEndDate());
-		issueBacklog.setEpicBeginDate(jiraIssue.getEpicBeginDate());
-		issueBacklog.setEpicName(jiraIssue.getEpicName());
-		issueBacklog.setEpicUrl(jiraIssue.getEpicUrl());
-		issueBacklog.setEpicNumber(jiraIssue.getEpicNumber());
-		issueBacklog.setEpicID(jiraIssue.getEpicID());
-		issueBacklog.setReopeningCounter(jiraIssue.getReopeningCounter());
-		issueBacklog.setCostOfDelay(jiraIssue.getCostOfDelay());
-		issueBacklog.setJobSize(jiraIssue.getJobSize());
-		issueBacklog.setWsjf(jiraIssue.getWsjf());
-		issueBacklog.setBusinessValue(jiraIssue.getBusinessValue());
-		issueBacklog.setTimeCriticality(jiraIssue.getTimeCriticality());
-		issueBacklog.setRiskReduction(jiraIssue.getRiskReduction());
-		issueBacklog.setProjectPath(jiraIssue.getProjectPath());
-		issueBacklog.setProjectIsDeleted(jiraIssue.getProjectIsDeleted());
-		issueBacklog.setProjectState(jiraIssue.getProjectState());
-		issueBacklog.setProjectChangeDate(jiraIssue.getProjectChangeDate());
-		issueBacklog.setProjectEndDate(jiraIssue.getProjectEndDate());
-		issueBacklog.setProjectBeginDate(jiraIssue.getProjectBeginDate());
-		issueBacklog.setProjectName(jiraIssue.getProjectName());
-		issueBacklog.setProjectID(jiraIssue.getProjectID());
-		issueBacklog.setProjectKey(jiraIssue.getProjectKey());
-		issueBacklog.setJiraProjectName(jiraIssue.getJiraProjectName());
-		issueBacklog.setBufferedEstimateTime(jiraIssue.getBufferedEstimateTime());
-		issueBacklog.setResolution(jiraIssue.getResolution());
-		issueBacklog.setAffectedVersions(jiraIssue.getAffectedVersions());
-		issueBacklog.setWorkStreamID(jiraIssue.getWorkStreamID());
-		issueBacklog.setWorkStream(jiraIssue.getWorkStream());
-		issueBacklog.setAdditionalFilters(jiraIssue.getAdditionalFilters());
-		issueBacklog.setRelease(jiraIssue.getRelease());
-		issueBacklog.setReleaseId(jiraIssue.getReleaseId());
-		issueBacklog.setReleaseDate(jiraIssue.getReleaseDate());
-		issueBacklog.setAssigneeId(jiraIssue.getAssigneeId());
-		issueBacklog.setAssigneeName(jiraIssue.getAssigneeName());
-		issueBacklog.setDeveloperId(jiraIssue.getDeveloperId());
-		issueBacklog.setDeveloperName(jiraIssue.getDeveloperName());
-		issueBacklog.setQaId(jiraIssue.getQaId());
-		issueBacklog.setQaName(jiraIssue.getQaName());
-		issueBacklog.setAssignAttributeValue(jiraIssue.getAssignAttributeValue());
-		issueBacklog.setTeamNameValue(jiraIssue.getTeamNameValue());
-		issueBacklog.setStoryDemonstratedFieldValue(jiraIssue.getStoryDemonstratedFieldValue());
-		issueBacklog.setStoryDemonstratedFieldValueDate(jiraIssue.getStoryDemonstratedFieldValueDate());
-		issueBacklog.setDevicePlatform(jiraIssue.getDevicePlatform());
-		issueBacklog.setDefectRaisedBy(jiraIssue.getDefectRaisedBy());
-		issueBacklog.setJiraStatus(jiraIssue.getJiraStatus());
-		issueBacklog.setDefectStoryID(jiraIssue.getDefectStoryID());
-		issueBacklog.setSpeedyIssueType(jiraIssue.getSpeedyIssueType());
-		issueBacklog.setTimeSpentInMinutes(jiraIssue.getTimeSpentInMinutes());
-		issueBacklog.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
-		issueBacklog.setTestCaseFolderName(jiraIssue.getTestCaseFolderName());
-		issueBacklog.setReleaseVersions(jiraIssue.getReleaseVersions());
-		issueBacklog.setDefectRaisedByQA(jiraIssue.isDefectRaisedByQA());
-		issueBacklog.setOriginalEstimateMinutes(jiraIssue.getOriginalEstimateMinutes());
-		issueBacklog.setRemainingEstimateMinutes(jiraIssue.getRemainingEstimateMinutes());
-		issueBacklog.setProductionDefect(jiraIssue.isProductionDefect());
-		issueBacklog.setAggregateTimeOriginalEstimateMinutes(jiraIssue.getAggregateTimeOriginalEstimateMinutes());
-		issueBacklog.setAggregateTimeRemainingEstimateMinutes(jiraIssue.getAggregateTimeRemainingEstimateMinutes());
-		issueBacklog.setUpdateDate(jiraIssue.getUpdateDate());
-		issueBacklog.setDevDueDate(jiraIssue.getDevDueDate());
-
-	}
-
-	private boolean isIssueBacklog(JiraIssue jiraIssue, IssueField sprintField) {
-		return sprintField == null || sprintField.getValue() == null
-				|| JiraConstants.EMPTY_STR.equals(sprintField.getValue())
-				|| jiraIssue.getSprintAssetState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE);
 	}
 
 	/**
@@ -1269,16 +1068,20 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			Set<String> defectStorySet = new HashSet<>();
 			String parentKey = null;
 
-			for (IssueLink issueLink : issue.getIssueLinks()) {
-				if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())
-						&& jiraProcessorConfig.getExcludeLinks().stream()
-								.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
-					break;
-				}
-				defectStorySet.add(issueLink.getTargetIssueKey());
-			}
+			excludeLinks(issue, defectStorySet);
 			storyWithSubTaskDefect(issue, fields, defectStorySet);
 			jiraIssue.setDefectStoryID(defectStorySet);
+		}
+	}
+
+	private void excludeLinks(Issue issue, Set<String> defectStorySet) {
+		if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())) {
+			for (IssueLink issueLink : issue.getIssueLinks()) {
+				if (!jiraProcessorConfig.getExcludeLinks().stream()
+						.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
+					defectStorySet.add(issueLink.getTargetIssueKey());
+				}
+			}
 		}
 	}
 
@@ -1813,36 +1616,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					: baseUrl + jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
 		}
 		jiraIssue.setUrl(baseUrl);
-	}
-
-	private IssueBacklog getIssueBacklog(ProjectConfFieldMapping projectConfig, String issueId) {
-		List<IssueBacklog> issueBacklogs = issueBacklogRepository.findByIssueIdAndBasicProjectConfigId(
-				StringEscapeUtils.escapeHtml4(issueId), projectConfig.getBasicProjectConfigId().toString());
-
-		if (issueBacklogs.size() > 1) {
-			log.error("JIRA Processor | More than one Issue Backlog item found for id {}", issueId);
-		}
-
-		if (!issueBacklogs.isEmpty()) {
-			return issueBacklogs.get(0);
-		}
-		return new IssueBacklog();
-
-	}
-
-	private IssueBacklogCustomHistory getIssueBacklogCustomHistory(ProjectConfFieldMapping projectConfig,
-			String storyId) {
-		List<IssueBacklogCustomHistory> issueBacklogCustomHistorys = issueBacklogCustomHistoryRepository
-				.findByStoryIDAndBasicProjectConfigId(storyId, projectConfig.getBasicProjectConfigId().toString());
-		if (issueBacklogCustomHistorys.size() > 1) {
-			log.error("JIRA Processor | More than one Issue backlog History item found for id {}", storyId);
-		}
-
-		if (!issueBacklogCustomHistorys.isEmpty()) {
-			return issueBacklogCustomHistorys.get(0);
-		}
-		return new IssueBacklogCustomHistory();
-
 	}
 
 	private void processAndSaveProjectStatusCategory(List<Status> listOfProjectStatus, String basicProjectConfigId) {

@@ -111,7 +111,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     selectedTab= 'iteration';
     showCommentIcon = false;
     noProjects = false;
-    sprintsOverlayVisible : boolean = false
+    sprintsOverlayVisible : boolean = false;
+    kpiCommentsCountObj: object = {};
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -279,6 +280,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             this.groupJiraKpi(kpiIdsForCurrentBoard);
                             this.groupBitBucketKpi(kpiIdsForCurrentBoard);
                             this.groupSonarKpi(kpiIdsForCurrentBoard);
+                        }
+                        let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
+                        if(projectLevel){
+                            if(this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
                         }
                     }
                 } else if (this.filterData?.length && !$event.makeAPICall) {
@@ -469,8 +474,23 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.sonarKpiData = this.helperService.createKpiWiseId(getData);
             // creating Sonar filter and finding unique keys from all the sonar kpis
             this.sonarFilterData = this.helperService.createSonarFilter(this.sonarKpiData, this.selectedtype);
-            // by default selecting Select from the drop down in sonar filter
-            this.selectedSonarFilter = 'Overall';
+            /** writing hack for unit test coverage kpi */
+            if(this.sonarKpiData['kpi17']?.trendValueList?.length>0){
+                let overallObj = {
+                   'filter': 'Overall',
+                   'value': [] 
+                }
+                for(let i = 0; i<this.sonarKpiData['kpi17']?.trendValueList?.length;i++){
+                    for(let j = 0; j < this.sonarKpiData['kpi17']?.trendValueList[i]?.value?.length; j++){
+                        let obj = {
+                            'filter':this.sonarKpiData['kpi17']?.trendValueList[i]?.filter,
+                            'value':this.sonarKpiData['kpi17']?.trendValueList[i]?.value[j]?.value
+                        }
+                        overallObj['value'].push(obj);
+                    }
+                }
+                this.sonarKpiData['kpi17']?.trendValueList.push(overallObj);
+            }
             this.createAllKpiArray(this.sonarKpiData);
 
         } else {
@@ -777,16 +797,34 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         const trendValueList = this.allKpiArray[idx]?.trendValueList;
         if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
             if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
-                const tempArr = {};
-                for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+                if(kpiId === 'kpi17'){
+                    this.kpiChartData[kpiId] = [];
+                    for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+                        let trendList = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0];
+                        trendList?.value.forEach((x) => {
+                            let obj = {
+                                'data':this.kpiSelectedFilterObj[kpiId][i],
+                                'value':x.value
+                            }
+                            this.kpiChartData[kpiId].push(obj);
+                        })
+                    }
+                }else{
+                    const tempArr = {};
+                    for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
 
-                    tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+                        tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+                    }
+                    this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
                 }
-                this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
-
             } else {
                 if (this.kpiSelectedFilterObj[kpiId]?.length > 0) {
                     this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value;
+                    if(kpiId == 'kpi17' && this.kpiSelectedFilterObj[kpiId][0]?.toLowerCase() == 'average coverage'){
+                        for(let i = 0; i<this.kpiChartData[kpiId]?.length; i++){
+                            this.kpiChartData[kpiId][i]['filter'] = this.kpiSelectedFilterObj[kpiId][0];
+                        }
+                    }
                 } else {
                     this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
                 }
@@ -878,7 +916,13 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.chartColorList[kpiId] = [];
             for (let i = 0; i < arr?.length; i++) {
                 for (const key in this.colorObj) {
-                    if (this.colorObj[key]?.nodeName == arr[i]?.data) {
+                    if(kpiId == 'kpi17'){
+                        if(this.colorObj[key]?.nodeName == arr[i].value[0].sprojectName){
+                            this.chartColorList[kpiId].push(this.colorObj[key]?.color);
+                            finalArr.push(JSON.parse(JSON.stringify(arr[i])));
+                        }
+
+                    }else if (this.colorObj[key]?.nodeName == arr[i]?.data) {
                         this.chartColorList[kpiId].push(this.colorObj[key]?.color);
                         finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
                         // break;
@@ -1136,4 +1180,24 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }
         }
       }
+
+      getKpiCommentsCount(kpiId?){
+        let requestObj = {
+          "nodes": [...this.filterApplyData?.['selectedMap']['project']],
+          "level":this.filterApplyData?.level,
+          "nodeChildId": "",
+          'kpiIds': []
+        };
+        if(kpiId){
+            requestObj['kpiIds'] = [kpiId];
+            this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+                this.kpiCommentsCountObj[kpiId] = res[kpiId];
+            });
+        }else{
+            requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
+            this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+                this.kpiCommentsCountObj = res;
+            }); 
+        }
+    }
 }

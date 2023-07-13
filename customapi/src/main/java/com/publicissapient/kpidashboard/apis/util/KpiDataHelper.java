@@ -38,6 +38,9 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.Hours;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
@@ -48,10 +51,12 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -660,4 +665,87 @@ public final class KpiDataHelper {
 				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IterationKpiModalValue()));
 	}
 
+	/**
+	 * To create Map of Modal Object
+	 *
+	 * @param jiraIssueCustomHistories
+	 * @param cycleTimeList
+	 * @return
+	 */
+	public static Map<String, IterationKpiModalValue> createMapOfModalObjectFromJiraHistory(
+			List<JiraIssueCustomHistory> jiraIssueCustomHistories, List<CycleTimeValidationData> cycleTimeList) {
+		Map<String, IterationKpiModalValue> dataMap = new HashMap<>();
+		for (JiraIssueCustomHistory customHistory : jiraIssueCustomHistories) {
+			Optional<CycleTimeValidationData> cycleTimeValidationDataOptional = cycleTimeList.stream()
+					.filter(cyc -> cyc.getIssueNumber().equalsIgnoreCase(customHistory.getStoryID())).findFirst();
+			if (cycleTimeValidationDataOptional.isPresent()) {
+				CycleTimeValidationData cycleTimeValidationData = cycleTimeValidationDataOptional.get();
+				IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+				iterationKpiModalValue.setIssueId(customHistory.getStoryID());
+				iterationKpiModalValue.setIssueURL(customHistory.getUrl());
+				iterationKpiModalValue.setDescription(customHistory.getDescription());
+				String intakeToDor = calWeekHours(cycleTimeValidationData.getIntakeDate(),
+						cycleTimeValidationData.getDorDate());
+				String dorToDod = calWeekHours(cycleTimeValidationData.getDorDate(),
+						cycleTimeValidationData.getDodDate());
+				String dodToLive = calWeekHours(cycleTimeValidationData.getDodDate(),
+						cycleTimeValidationData.getLiveDate());
+				String leadTime = calWeekHours(cycleTimeValidationData.getIntakeDate(),
+						cycleTimeValidationData.getLiveDate());
+				iterationKpiModalValue.setIntakeToDor(getTimeValue(intakeToDor));
+				iterationKpiModalValue.setDorToDod(getTimeValue(dorToDod));
+				iterationKpiModalValue.setDodToLive(getTimeValue(dodToLive));
+				iterationKpiModalValue.setLeadTime(getTimeValue(leadTime));
+				dataMap.put(customHistory.getStoryID(), iterationKpiModalValue);
+			}
+		}
+		return dataMap;
+	}
+
+	private static String getTimeValue(String time) {
+		if (time != null && !time.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+			return CommonUtils.convertIntoDays((int) calculateTimeInDays(Long.parseLong(time)));
+		} else {
+			return Constant.NOT_AVAILABLE;
+		}
+	}
+
+	public static String calWeekHours(DateTime startDateTime, DateTime endDateTime) {
+		if (startDateTime != null && endDateTime != null) {
+			int hours = Hours.hoursBetween(startDateTime, endDateTime).getHours();
+			int weekendsCount = countSaturdaysAndSundays(startDateTime, endDateTime);
+			int res = hours - weekendsCount * 24;
+			return String.valueOf(res);
+		}
+		return DateUtil.NOT_APPLICABLE;
+	}
+
+	/**
+	 *  Cal time with 8hr in a day
+	 * @param timeInHours
+	 * @return
+	 */
+	public static long calculateTimeInDays(long timeInHours) {
+		long timeInMin = (timeInHours / 24) * 8 * 60;
+		long remainingTimeInMin = (timeInHours % 24) * 60;
+		if (remainingTimeInMin >= 480) {
+			timeInMin = timeInMin + 480;
+		} else {
+			timeInMin = timeInMin + remainingTimeInMin;
+		}
+		return timeInMin;
+	}
+
+	public static int countSaturdaysAndSundays(DateTime startDateTime, DateTime endDateTime) {
+		int count = 0;
+		DateTime current = startDateTime;
+		while (current.isBefore(endDateTime)) {
+			if (current.getDayOfWeek() == DateTimeConstants.SATURDAY
+					|| current.getDayOfWeek() == DateTimeConstants.SUNDAY) {
+				count++;
+			}
+			current = current.plusDays(1);
+		}
+		return count;
+	}
 }

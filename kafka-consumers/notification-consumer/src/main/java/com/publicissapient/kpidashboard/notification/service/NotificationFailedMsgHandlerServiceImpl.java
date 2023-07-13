@@ -6,13 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -23,6 +22,7 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 import com.publicissapient.kpidashboard.notification.config.NotificationConsumerConfig;
 import com.publicissapient.kpidashboard.notification.model.EmailEvent;
 
+@Slf4j
 @Service
 public class NotificationFailedMsgHandlerServiceImpl implements NotificationFailedMsgHandlerService {
 
@@ -32,12 +32,11 @@ public class NotificationFailedMsgHandlerServiceImpl implements NotificationFail
 	@Autowired
 	private NotificationConsumerConfig notificationConsumerConfig;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationFailedMsgHandlerServiceImpl.class);
 	private static final String SUCCESS_MESSAGE = "Mail message to topic sent successfully";
 	private static final String FAILURE_MESSAGE = "Error Sending the mail message to topic and the exception is: {}";
 
 	public void handleFailedMessage(ConsumerRecord<String, EmailEvent> consumerRecord) {
-		LOGGER.info("Persisting failed messages");
+		log.info("Persisting failed messages");
 	}
 
 	public void handleRecoverableMessage(ConsumerRecord<String, EmailEvent> consumerRecord) {
@@ -74,16 +73,16 @@ public class NotificationFailedMsgHandlerServiceImpl implements NotificationFail
 	}
 
 	private void handleFailure(String key, EmailEvent email, Throwable ex) {
-		LOGGER.error(FAILURE_MESSAGE, ex.getMessage());
+		log.error(FAILURE_MESSAGE, ex.getMessage());
 		try {
 			throw ex;
 		} catch (Throwable th) {
-			LOGGER.error("Error in onFailure :{}", th.getMessage());
+			log.error("Error in onFailure :{}", th.getMessage());
 		}
 	}
 
 	private void handleSuccess(String key, EmailEvent email, SendResult<String, Object> result) {
-		LOGGER.info(SUCCESS_MESSAGE + " key : {}, value : {}, Partition : {}", key, email.getSubject(),
+		log.info(SUCCESS_MESSAGE + " key : {}, value : {}, Partition : {}", key, email.getSubject(),
 				result.getRecordMetadata().partition());
 	}
 }
