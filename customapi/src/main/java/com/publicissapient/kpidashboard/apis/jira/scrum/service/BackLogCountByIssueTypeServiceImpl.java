@@ -71,11 +71,11 @@ public class BackLogCountByIssueTypeServiceImpl extends JiraKPIService<Integer, 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		List<DataCount> trendValueList = new ArrayList<>();
+
 		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
 			Filters filters = Filters.getFilter(k);
 			if (Filters.PROJECT == filters) {
-				projectWiseLeafNodeValue(v, trendValueList, kpiElement, kpiRequest);
+				projectWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
 		log.info("BackLogCountByIssueTypeServiceImpl -> getKpiData ->  : {}", kpiElement);
@@ -89,14 +89,13 @@ public class BackLogCountByIssueTypeServiceImpl extends JiraKPIService<Integer, 
 		}
 	}
 
-	private void projectWiseLeafNodeValue(List<Node> leafNodeList, List<DataCount> trendValueList,
-			KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
 		leafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<Node> latestSprintNode = new ArrayList<>();
+
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, "", "", kpiRequest);
@@ -104,7 +103,7 @@ public class BackLogCountByIssueTypeServiceImpl extends JiraKPIService<Integer, 
 		List<JiraIssue> jiraIssues = (List<JiraIssue>) resultMap.get(PROJECT_WISE_JIRA_ISSUE);
 		List<IterationKpiValue> filterDataList = new ArrayList<>();
 
-		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+		if (CollectionUtils.isNotEmpty(jiraIssues) && leafNode != null) {
 
 			log.info("Backlog Count By Issue Type -> request id : {} total jira Issues : {}", requestTrackerId,
 					jiraIssues.size());
@@ -123,6 +122,7 @@ public class BackLogCountByIssueTypeServiceImpl extends JiraKPIService<Integer, 
 				overallData.setValue(typeWiseCountMap);
 				overallData.setKpiGroup(CommonConstant.OVERALL);
 				overallData.setSProjectName(leafNode.getProjectFilter().getName());
+
 				trendValueListOverAll.add(overallData);
 
 				List<DataCount> middleTrendValueListOverAll = new ArrayList<>();
