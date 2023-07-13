@@ -55,9 +55,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
   noProjects = false;
   globalConfig;
   sharedObject;
+  kpiCommentsCountObj: object = {};
   kpiSpecificLoader =[];
   durationFilter='Past 2 Weeks';
-
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -165,6 +165,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
       if (this.masterData && Object.keys(this.masterData).length) {
         this.groupZypherKpi(kpiIdsForCurrentBoard);
         this.groupJiraKpi(kpiIdsForCurrentBoard);
+        this.getKpiCommentsCount();
       }
     } else {
       this.noTabAccess = true;
@@ -754,6 +755,26 @@ export class BacklogComponent implements OnInit, OnDestroy{
    typeOf(value) {
        return typeof value === 'object' && value !== null;
    }
+
+  getKpiCommentsCount(kpiId?){
+    let requestObj = {
+      "nodes": [...this.filterApplyData?.ids],
+      "level":this.filterApplyData?.level,
+      "nodeChildId": "",
+      'kpiIds': []
+    };
+    if(kpiId){
+      requestObj['kpiIds'] = [kpiId];
+      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+        this.kpiCommentsCountObj[kpiId] = res[kpiId];
+      });
+    }else{
+      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
+      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+        this.kpiCommentsCountObj = res;
+      });
+    }
+  }
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
     this.sharedObject = null;

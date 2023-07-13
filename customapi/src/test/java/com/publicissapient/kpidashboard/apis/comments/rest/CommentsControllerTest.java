@@ -59,7 +59,7 @@ public class CommentsControllerTest {
 		CommentSubmitDTO comment = new CommentSubmitDTO();
 		comment.setNode(node);
 		comment.setLevel(level);
-		comment.setSprintId(sprintId);
+		comment.setNodeChildId(sprintId);
 		comment.setKpiId(kpiId);
 		List<CommentsInfo> commentsInfo = new ArrayList<>();
 		CommentsInfo commentInfo = new CommentsInfo();
@@ -91,7 +91,7 @@ public class CommentsControllerTest {
 		CommentRequestDTO commentRequestDTO = new CommentRequestDTO();
 		commentRequestDTO.setNode(node);
 		commentRequestDTO.setLevel(level);
-		commentRequestDTO.setSprintId(sprintId);
+		commentRequestDTO.setNodeChildId(sprintId);
 		commentRequestDTO.setKpiId(kpiId);
 
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
@@ -109,7 +109,7 @@ public class CommentsControllerTest {
 		CommentRequestDTO commentRequestDTO = new CommentRequestDTO();
 		commentRequestDTO.setNode(node);
 		commentRequestDTO.setLevel(level);
-		commentRequestDTO.setSprintId(sprintId);
+		commentRequestDTO.setNodeChildId(sprintId);
 		commentRequestDTO.setKpiId(kpiId);
 
 		mockMvc.perform(post("/comments/getCommentsByKpiId").content(mapper.writeValueAsString(commentRequestDTO))
