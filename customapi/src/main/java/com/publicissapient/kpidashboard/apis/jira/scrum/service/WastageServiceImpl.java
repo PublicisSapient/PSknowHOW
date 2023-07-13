@@ -380,7 +380,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			// Checking if both alternate element are inside the sprint start and end date
 			if (!(entryActivityDate.isBefore(sprintStartDate) && nextEntryActivityDate.isBefore(sprintStartDate))
 					&& !(entryActivityDate.isAfter(sprintEndDate)
-					&& nextEntryActivityDate.isAfter(sprintEndDate)) && !(isWeekEnd(entryActivityDate) && isWeekEnd(nextEntryActivityDate))) {
+					&& nextEntryActivityDate.isAfter(sprintEndDate))) {
 					hours = hoursForEntriesInBetweenSprint(sprintStartDate, sprintEndDate, entryActivityDate,
 							nextEntryActivityDate);
 			}
@@ -441,9 +441,10 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	private long hoursForEntriesInBetweenSprint(LocalDateTime sprintStartDate, LocalDateTime sprintEndDate,
 			LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
 		long hours;
-		if (nextEntryActivityDate.isBefore(sprintEndDate)) {
-			if (entryActivityDate.isAfter(sprintStartDate)) {
-				hours = getHoursCalculationWeekendOrWeekday(entryActivityDate, nextEntryActivityDate);
+			if (nextEntryActivityDate.isBefore(sprintEndDate)) {
+				if (entryActivityDate.isAfter(sprintStartDate)) {
+					hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
+							- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));
 			} else {
 				hours = (ChronoUnit.HOURS.between(sprintStartDate, nextEntryActivityDate)
 						- minusHoursOfWeekEndDays(sprintStartDate, nextEntryActivityDate));
@@ -460,34 +461,6 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		return hours;
 	}
 
-	private long getHoursCalculationWeekendOrWeekday(LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
-		long hours;
-		if(isWeekEnd(nextEntryActivityDate)){
-			LocalDateTime givenDateTime = nextEntryActivityDate;
-			while (givenDateTime.getDayOfWeek() != DayOfWeek.FRIDAY) {
-				givenDateTime = givenDateTime.minusDays(1);
-			}
-			LocalDateTime endOfDay = givenDateTime.with(LocalTime.MAX);
-			hours = (ChronoUnit.HOURS.between(entryActivityDate, endOfDay)
-					- minusHoursOfWeekEndDays(entryActivityDate, endOfDay));
-
-		}
-		else if(isWeekEnd(entryActivityDate)){
-			LocalDateTime givenDateTime = entryActivityDate;
-			while (givenDateTime.getDayOfWeek() != DayOfWeek.MONDAY) {
-				givenDateTime = givenDateTime.plusDays(1);
-			}
-			LocalDateTime startOfDay = givenDateTime.with(LocalTime.MIN);
-			hours = (ChronoUnit.HOURS.between(startOfDay, nextEntryActivityDate)
-					- minusHoursOfWeekEndDays(startOfDay, nextEntryActivityDate));
-
-		}
-		else {
-			hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate)
-					- minusHoursOfWeekEndDays(entryActivityDate, nextEntryActivityDate));
-		}
-		return hours;
-	}
 
 	// Calculate the time for last entry of statusUpdationLog
 	private long hoursForLastEntryOfStatusUpdationLog(SprintDetails sprintDetails, LocalDateTime sprintStartDate,
@@ -534,6 +507,89 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	}
 
 	public int minusHoursOfWeekEndDays(LocalDateTime d1, LocalDateTime d2) {
+		int countOfWeekEndDays = saturdaySundayCount(d1, d2);
+		if (countOfWeekEndDays != 0) {
+
+			if (isWeekEnd(d1) || isWeekEnd(d2)) {
+				countOfWeekEndDays = hoursTimeIfActivityLiesOnWeekend(d1, d2);
+			} else {
+				countOfWeekEndDays = countOfWeekEndDays * 24;
+			}
+			return countOfWeekEndDays;
+		} else {
+			return 0;
+		}
+	}
+
+	public int hoursTimeIfActivityLiesOnWeekend(LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
+
+		long hours = 0;
+		if (isWeekEnd(entryActivityDate) && isWeekEnd(nextEntryActivityDate)) {
+			hours = hoursTimeIfBothActivitiesDateLiesOnWeekend(entryActivityDate, nextEntryActivityDate);
+		} else if (isWeekEnd(nextEntryActivityDate)) {
+			hours = hoursTimeFromWeekendStartDayToActivityDate(nextEntryActivityDate);
+		} else if (isWeekEnd(entryActivityDate)) {
+			hours = hoursTimeFromActivityDateToWeekendEndOfDay(entryActivityDate, nextEntryActivityDate);
+		}
+		return (int) hours;
+	}
+
+	public long hoursTimeFromWeekendStartDayToActivityDate(LocalDateTime nextEntryActivityDate) {
+		long hours;
+		LocalDateTime givenDateTime = nextEntryActivityDate;
+		while (givenDateTime.getDayOfWeek() != DayOfWeek.FRIDAY) {
+			givenDateTime = givenDateTime.minusDays(1);
+		}
+		LocalDateTime startOfDay = givenDateTime.with(LocalTime.MAX);
+		hours = (ChronoUnit.HOURS.between(startOfDay, nextEntryActivityDate)
+				+ plusHoursOfWeekEndDays(startOfDay, nextEntryActivityDate));
+		return hours;
+	}
+
+	public long hoursTimeFromActivityDateToWeekendEndOfDay(LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
+		long hours;
+		LocalDateTime givenDateTime = entryActivityDate;
+		while (givenDateTime.getDayOfWeek() != DayOfWeek.MONDAY) {
+			givenDateTime = givenDateTime.plusDays(1);
+		}
+		LocalDateTime endOfDay = givenDateTime.with(LocalTime.MIN);
+		hours = (ChronoUnit.HOURS.between(entryActivityDate, endOfDay)
+				+ plusHoursOfWeekEndDays(endOfDay, nextEntryActivityDate));
+		return hours;
+	}
+
+	public long hoursTimeIfBothActivitiesDateLiesOnWeekend(LocalDateTime entryActivityDate, LocalDateTime nextEntryActivityDate) {
+		long hours;
+		long hours1;
+		long hours2;
+		int hours3;
+
+		LocalDateTime plusDate = entryActivityDate.plusDays(2);
+
+		if (nextEntryActivityDate.isBefore(plusDate)) {
+			hours = (ChronoUnit.HOURS.between(entryActivityDate, nextEntryActivityDate));
+		} else {
+			LocalDateTime activityDate = entryActivityDate;
+			while (activityDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+				activityDate = activityDate.plusDays(1);
+			}
+			LocalDateTime endOfDay = activityDate.with(LocalTime.MIN);
+			hours1 = (ChronoUnit.HOURS.between(entryActivityDate, endOfDay));
+
+			LocalDateTime nextActivityDate = nextEntryActivityDate;
+			while (nextActivityDate.getDayOfWeek() != DayOfWeek.FRIDAY) {
+				nextActivityDate = nextActivityDate.minusDays(1);
+			}
+			LocalDateTime startOfDay = nextActivityDate.with(LocalTime.MAX);
+			hours2 = (ChronoUnit.HOURS.between(startOfDay, nextEntryActivityDate));
+
+			hours3 = plusHoursOfWeekEndDays(endOfDay, startOfDay);
+			hours = hours1 + hours2 + hours3;
+		}
+		return hours;
+	}
+
+	public int plusHoursOfWeekEndDays(LocalDateTime d1, LocalDateTime d2) {
 		int countOfWeekEndDays = saturdaySundayCount(d1, d2);
 		if (countOfWeekEndDays != 0) {
 			return countOfWeekEndDays * 24;
