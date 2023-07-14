@@ -1,0 +1,88 @@
+{
+  "id": "Project2_Build2",
+  "name": "build-2",
+  "projectName": "Project-2",
+  "projectId": "Project2",
+  "href": "/app/rest/buildTypes/id:Project2_Build2",
+  "webUrl": "http://server:port/viewType.html?buildTypeId=Project2_Build2",
+  "project": {
+    "id": "Project2",
+    "name": "Project-2",
+    "parentProjectId": "_Root",
+    "href": "/app/rest/projects/id:Project2",
+    "webUrl": "http://server:port/project.html?projectId=Project2"
+  },
+  "templates": {
+    "count": 0,
+    "buildType": []
+  },
+  "vcs-root-entries": {
+    "count": 0,
+    "vcs-root-entry": []
+  },
+  "settings": {
+    "count": 1,
+    "property": [
+      {
+        "name": "buildNumberCounter",
+        "value": "4"
+      }
+    ]
+  },
+  "parameters": {
+    "count": 0,
+    "href": "/app/rest/buildTypes/id:Project2_Build2/parameters",
+    "property": []
+  },
+  "steps": {
+    "count": 1,
+    "step": [
+      {
+        "id": "RUNNER_2",
+        "name": "",
+        "type": "simpleRunner",
+        "properties": {
+          "count": 3,
+          "property": [
+            {
+              "name": "script.content",
+              "value": "echo \"Hello\""
+            },
+            {
+              "name": "teamcity.step.mode",
+              "value": "default"
+            },
+            {
+              "name": "use.custom.script",
+              "value": "true"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "features": {
+    "count": 0
+  },
+  "triggers": {
+    "count": 0
+  },
+  "snapshot-dependencies": {
+    "count": 0
+  },
+  "artifact-dependencies": {
+    "count": 0
+  },
+  "agent-requirements": {
+    "count": 0
+  },
+  "builds": {
+    "href": "/app/rest/buildTypes/id:Project2_Build2/builds/"
+  },
+  "investigations": {
+    "href": "/app/rest/investigations?locator=buildType:(id:Project2_Build2)"
+  },
+  "compatibleAgents": {
+    "href": "/app/rest/agents?locator=compatible:(buildType:(id:Project2_Build2))"
+  }
+}

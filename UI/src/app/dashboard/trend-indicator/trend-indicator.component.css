@@ -1,0 +1,85 @@
+.indicator-container {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid var(--color-secondary-blue);
+    border-left: 5px solid var(--color-secondary-blue);
+    border-radius: 3px;
+    align-items: baseline;
+    padding: 8px 5px;
+}
+
+.indicator-container.second {
+    border-color: var(--color-occur-yellow);
+}
+
+.indicator-container.third {
+    border-color: var(--color-light-red);
+}
+
+.indicator-container:hover {
+    box-shadow: 0px 3px 6px #00000029;
+}
+
+.indicator-average-data,
+.indicator-maturity-data {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.average-data-primary {
+    font-size: 0.75rem;
+    margin: 0;
+    line-height: 1;
+}
+
+.indicator-heading {
+    font-weight: 500;
+    font-family: var(--font-medium);
+    font-size: 0.8rem;
+    margin: 0 0 7px 0;
+}
+
+.green {
+    color: var(--color-green);
+}
+
+.red {
+    color: var(--color-red);
+}
+
+.last-value {
+    color: var(--color-blue);
+}
+
+.unit{
+    font-size: 0.9rem;
+    /* margin-left: 5px; */
+}
+
+.positive-trend {
+    color: #49B493;
+    align-items: center; 
+}
+
+.negative-trend {
+    color: #EB3D4B;
+    align-items: center;
+}
+.no-trend{
+    /* color:#FFB02F; */
+    font-size: 1.1rem;
+    line-height: 1;
+    font-weight: bolder;
+}
+.kpi-trend{
+    font-size: .6rem;
+}
+.font-bold{
+    font-size: .75rem;
+    font-weight: 600;
+    vertical-align: bottom;
+}
+.other-trend{
+    color: black;
+}

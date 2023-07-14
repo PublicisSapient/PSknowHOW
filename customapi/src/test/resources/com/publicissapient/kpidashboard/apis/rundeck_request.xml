@@ -1,0 +1,44 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<notification trigger='success' status='succeeded' executionId='22'>
+  <executions count='1'>
+    <execution id='22' href='http://localhost:4440/project/Test/execution/follow/22' permalink='' status='succeeded' project='Test'>
+      <user>admin</user>
+      <date-started unixtime='1481001726484'>2016-12-06T05:22:06Z</date-started>
+      <date-ended unixtime='1481001727759'>2016-12-06T05:22:07Z</date-ended>
+      <job id='4007f9da-7a50-4e5d-a927-f9bdbcb825ad' averageDuration='1305' href='http://Swanands-MBP.PK5001Z:4440/api/18/job/4007f9da-7a50-4e5d-a927-f9bdbcb825ad' permalink='http://Swanands-MBP.PK5001Z:4440/project/Test/job/show/4007f9da-7a50-4e5d-a927-f9bdbcb825ad'>
+        <name>Testing Speedy</name>
+        <group></group>
+        <project>Test</project>
+        <description></description>
+        <options>
+          <option name='environment' value='DEV' />
+          <option name='artifactGroup' value='group' />
+          <option name='artifactName' value='my-artifact' />
+          <option name='version' value='0.0.1-SNAPSHOT' />
+        </options>
+      </job>
+      <description>Testing Speedy Job</description>
+      <argstring>-environment DEV -artifactGroup group -artifactId my-artifact -version 0.0.1-SNAPSHOT</argstring>
+      <successfulNodes>
+        <node name='localhost' />
+      </successfulNodes>
+    </execution>
+  </executions>
+</notification>

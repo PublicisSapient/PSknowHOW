@@ -1,0 +1,16 @@
+[
+  {
+    "sc": "default-organization",
+    "id": "AVu3b-MAphY78UZXuYHp",
+    "k": "testPackage.sonar:TestProject",
+    "nm": "testPackage.sonar:TestProject",
+    "qu": "TRK"
+  },
+  {
+    "sc": "default-organization",
+    "id": "BVx3b-MAphY78UZXuYHp",
+    "k": "testPackage.sonar:AnotherTestProject",
+    "nm": "testPackage.sonar:AnotherTestProject",
+    "qu": "TRK"
+  }
+]

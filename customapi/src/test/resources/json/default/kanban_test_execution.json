@@ -1,0 +1,35 @@
+[
+  {
+    "_id": "633a9b549a86a10a43ae4846",
+    "projectNodeId": "Kanban Project_6335368249794a18e8a4479f",
+    "projectName": "Kanban Project",
+    "totalTestCases": 50,
+    "executedTestCase": 40,
+    "passedTestCase": 20,
+    "basicProjectConfigId": "6335368249794a18e8a4479f",
+    "executionDate": "2022-10-08",
+    "_class": "com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution"
+  },
+  {
+    "_id": "633a9b4a9a86a10a43ae4845",
+    "projectNodeId": "Kanban Project_6335368249794a18e8a4479f",
+    "projectName": "Kanban Project",
+    "totalTestCases": 60,
+    "executedTestCase": 40,
+    "passedTestCase": 35,
+    "basicProjectConfigId": "6335368249794a18e8a4479f",
+    "executionDate": "2022-09-24",
+    "_class": "com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution"
+  },
+  {
+    "_id": "633a9b419a86a10a43ae4844",
+    "projectNodeId": "Kanban Project_6335368249794a18e8a4479f",
+    "projectName": "Kanban Project",
+    "totalTestCases": 40,
+    "executedTestCase": 25,
+    "passedTestCase": 20,
+    "basicProjectConfigId": "6335368249794a18e8a4479f",
+    "executionDate": "2022-10-13",
+    "_class": "com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution"
+  }
+]

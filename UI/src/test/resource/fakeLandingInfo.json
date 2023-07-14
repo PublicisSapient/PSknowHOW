@@ -1,0 +1,24 @@
+{
+    "message": "Fetched landing page HTML data successfully",
+    "success": true,
+    "data": [
+        {
+            "name": "Documentation",
+            "order": 1,
+            "content": "<div><p class='p-mb-0'>KnowHOW has an extensive documentation that is regularly updated on Confluence. The important links are:</p><ul class='p-pl-3'><li>Installation & Setup - <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/1966195/KnowHOW+-+Installation+Setup' target='_blank'>Click here</a></li><li>Project &amp; Tool Configuration - <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/1966202/KnowHOW+-+Project+Configuration' target='_blank'>Click here</a></li><li>KPI definitions - <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2064430/KnowHOW+KPI+Guide' target='_blank'>Click here</a></li></ul></div>"
+        },
+        {
+            "name": "Releases",
+            "order": 2,
+            "content": "<div><ul class='p-pl-3'><li>Release notes of v7.0.0 are available <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/12189906/PSKnowHOW+Releases' target='_blank'>here</a></li><li>Upcoming release (v8.0.0) is planned for 30-Sep-23</li></ul></div>"
+        },
+        {
+            "name": "Roadmap",
+            "order": 3,
+            "content": "<div><p class='p-mb-0'>Next 6 months of KnowHOW roadmap is available <a href='https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/3309626/PSknowHOW+-+Roadmap' target='_blank'>here</a>.</p></div>"
+        }
+        
+
+
+    ]
+}

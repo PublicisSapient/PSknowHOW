@@ -1,0 +1,27 @@
+{
+    "message": "Fetched Jobs Successfully",
+    "success": true,
+    "data": [
+        "API_Build",
+        "Auto_Deploy_Job_Scheduler",
+        "Central-consumer",
+        "Data-automation-build",
+        "Functional-Automation",
+        "Funtional_Auto",
+        "invoke_via_api",
+        "jenkins-jack",
+        "Kafka-Zookeeper-Build",
+        "Mongo-Build",
+        "MongoDB-PS",
+        "Notification-Consumer",
+        "offline-job",
+        "Offline_job",
+        "Performance_Testing",
+        "Processors_Build",
+        "Publish_S3",
+        "QA-Server-Deployment",
+        "sonar-api",
+        "TagCreationJob",
+        "UI_Build"
+    ]
+}

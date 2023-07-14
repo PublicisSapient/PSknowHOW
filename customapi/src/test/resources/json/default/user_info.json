@@ -1,0 +1,60 @@
+[
+  {
+    "_id" : "5dde44b4d6df797fce1eabe2",
+    "username" : "SUPERADMIN",
+    "authorities" : [
+      "ROLE_SUPERADMIN"
+    ],
+    "authType" : "STANDARD",
+    "projectsAccess" : [
+      {
+        "role" : "ROLE_SUPERADMIN",
+        "projectList" : []
+      }
+    ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.rbac.UserInfo"
+  },
+  {
+    "_id" : "60d0421825dbab314b46191a",
+    "username" : "testUser",
+    "authorities" : [
+      "ROLE_PROJECT_VIEWER",
+      "ROLE_PROJECT_ADMIN",
+      "ROLE_VIEWER"
+    ],
+    "authType" : "STANDARD",
+    "emailAddress" : "",
+    "projectsAccess" : [
+      {
+        "role" : "ROLE_PROJECT_VIEWER",
+        "projectList" : [
+          {
+            "projectName" : "KnowHOW",
+            "projectId" : "5fc0853c410df80001701321"
+          }
+        ]
+      },
+      {
+        "role" : "ROLE_PROJECT_ADMIN",
+        "projectList" : [
+          {
+            "projectName" : "Allianz Adjustment NA",
+            "projectId" : "60dabc03e17b2269cc76d13c"
+          }
+        ]
+      }
+    ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.rbac.UserInfo"
+  },
+  {
+    "_id" : "608296fba7b11b000112eea1",
+    "_class" : "com.publicissapient.kpidashboard.common.model.rbac.UserInfo",
+    "username" : "user188",
+    "authorities" : [
+      "ROLE_VIEWER"
+    ],
+    "authType" : "STANDARD",
+    "emailAddress" : "",
+    "projectsAccess" : []
+  }
+]

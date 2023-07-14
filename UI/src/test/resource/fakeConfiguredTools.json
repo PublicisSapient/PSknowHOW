@@ -1,0 +1,48 @@
+[
+    {
+        "id": "63b52332f33fd2360e9e72d4",
+        "toolName": "Bamboo",
+        "basicProjectConfigId": "63b3f9098ec44416b3ce9699",
+        "connectionId": "63b409e88ec44416b3ce96b3",
+        "connectionName": "Bamboo Connection",
+        "jobName": "RT-RAZ",
+        "jobType": "Build",
+        "createdAt": "2023-01-04T06:56:50",
+        "updatedAt": "2023-01-04T06:56:50",
+        "queryEnabled": false,
+        "boards": [
+            null
+        ]
+    },
+    {
+        "id": "63b5275df33fd2360e9e72dc",
+        "toolName": "Bamboo",
+        "basicProjectConfigId": "63b3f9098ec44416b3ce9699",
+        "connectionId": "63b409e88ec44416b3ce96b3",
+        "connectionName": "Bamboo Connection",
+        "jobType": "Deploy",
+        "createdAt": "2023-01-04T07:14:37",
+        "updatedAt": "2023-01-04T07:14:37",
+        "queryEnabled": false,
+        "boards": [
+            null
+        ],
+        "deploymentProjectName": "Alumni QA Deployment Job",
+        "deploymentProjectId": "81821697"
+    },
+    {
+        "id": "63b5277cf33fd2360e9e72dd",
+        "toolName": "Bamboo",
+        "basicProjectConfigId": "63b3f9098ec44416b3ce9699",
+        "connectionId": "63b409e88ec44416b3ce96b3",
+        "connectionName": "Bamboo Connection",
+        "jobName": "REL-BAM",
+        "jobType": "Build",
+        "createdAt": "2023-01-04T07:15:08",
+        "updatedAt": "2023-01-04T07:15:08",
+        "queryEnabled": false,
+        "boards": [
+            null
+        ]
+    }
+]

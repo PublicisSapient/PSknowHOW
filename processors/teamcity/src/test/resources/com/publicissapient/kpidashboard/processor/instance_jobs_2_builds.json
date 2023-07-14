@@ -1,0 +1,56 @@
+{
+  "id": "Project2",
+  "name": "Project-2",
+  "parentProjectId": "_Root",
+  "href": "/app/rest/projects/id:Project2",
+  "webUrl": "http://server:port/project.html?projectId=Project2",
+  "parentProject": {
+    "id": "_Root",
+    "name": "<Root project>",
+    "description": "Contains all other projects",
+    "href": "/app/rest/projects/id:_Root",
+    "webUrl": "http://server:port/project.html?projectId=_Root"
+  },
+  "buildTypes": {
+    "count": 2,
+    "buildType": [
+      {
+        "id": "Project2_Build2",
+        "name": "build-2",
+        "projectName": "Project-2",
+        "projectId": "Project2",
+        "href": "/app/rest/buildTypes/id:Project2_Build2",
+        "webUrl": "http://server:port/viewType.html?buildTypeId=Project2_Build2"
+      },
+      {
+        "id": "Project2_Build3",
+        "name": "build3",
+        "description": "Second build",
+        "projectName": "Project-2",
+        "projectId": "Project2",
+        "href": "/app/rest/buildTypes/id:Project2_Build3",
+        "webUrl": "http://server:port/viewType.html?buildTypeId=Project2_Build3"
+      }
+    ]
+  },
+  "templates": {
+    "count": 0,
+    "buildType": []
+  },
+  "parameters": {
+    "count": 0,
+    "href": "/app/rest/projects/id:Project2/parameters",
+    "property": []
+  },
+  "vcsRoots": {
+    "count": 0,
+    "href": "/app/rest/vcs-roots?locator=project:(id:Project2)"
+  },
+  "projectFeatures": {
+    "count": 0,
+    "href": "/app/rest/projects/id:Project2/projectFeatures"
+  },
+  "projects": {
+    "count": 0
+  }
+}

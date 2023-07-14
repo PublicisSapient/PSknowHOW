@@ -1,0 +1,14 @@
+[
+  {
+    "_id": "5ef1656b0ccc84d65fa295d3",
+    "_class": "com.publicissapient.kpidashboard.common.model.scm.CommitDetails",
+    "processorItemId": "5ef165680ccc84d65fa295d2",
+    "timestamp": 1592878442928,
+    "projectConfigId": [],
+    "branch": "master",
+    "revisionNumber": "771baf27bf8796adebe30e46cb7a0da50c68457f",
+    "commitLog": "Merged PR 2: Updated test file master",
+    "author": "Test User",
+    "commitTimestamp": 1591333944000
+  }
+]

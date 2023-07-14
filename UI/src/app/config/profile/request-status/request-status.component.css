@@ -1,0 +1,53 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+.status-container{
+    display: inline-block;
+    background-color: #dcb239;
+    color: #fff;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    padding: 4px 8px 4px 8px;
+    border-radius: 2px;
+    margin-right: 4px;
+    margin-top: 2px;
+    position: relative;
+}
+
+.status-container.rejected {
+    background-color: #ea6a47;
+    border: 1px solid #ea6a47;
+}
+
+.status-container.approved {
+    background-color: #6ab187;
+    border: 1px solid #6ab187;
+}
+
+#recall {
+    width: 80px;
+}
+
+#acceptReject {
+    width: 120px;
+}
+
+#role {
+   width: 220px; 
+}

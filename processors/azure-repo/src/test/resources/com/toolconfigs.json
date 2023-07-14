@@ -1,0 +1,12 @@
+[
+  {
+    "_id": "5eeb00c3c4cf29def8a6c359",
+    "_class": "com.publicissapient.kpidashboard.common.model.application.ToolConfig",
+    "projectIds": "5dee0eaa24aa9a0009504ca9",
+    "toolName": "AzureRepository",
+    "apiVersion": "5.1",
+    "branch": "master",
+    "repositoryName": "testRepo",
+    "connectionId": "5eeb00c3c4cf29def8a6c389"
+  }
+]

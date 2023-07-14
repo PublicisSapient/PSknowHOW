@@ -1,0 +1,39 @@
+{
+  "paging": {
+    "pageIndex": 1,
+    "pageSize": 100,
+    "total": 5
+  },
+  "components": [
+    {
+      "key": "ENGINEERING.KPIDASHBOARD.PROCESSORS",
+      "name": "ENGINEERING.KPIDASHBOARD.PROCESSORS",
+      "qualifier": "TRK",
+      "project": "ENGINEERING.KPIDASHBOARD.PROCESSORS"
+    },
+    {
+      "key": "ENGINEERING.KPIDASHBOARD.UI",
+      "name": "ENGINEERING.KPIDASHBOARD.UI",
+      "qualifier": "TRK",
+      "project": "ENGINEERING.KPIDASHBOARD.UI"
+    },
+    {
+      "key": "ENGINEERING.KPIDASHBOARD.CUSTOMAPI",
+      "name": "ENGINEERING.KPIDASHBOARD.CUSTOMAPI",
+      "qualifier": "TRK",
+      "project": "ENGINEERING.KPIDASHBOARD.CUSTOMAPI"
+    },
+    {
+      "key": "SURVEY_APP_UI",
+      "name": "SURVEY_APP_UI",
+      "qualifier": "TRK",
+      "project": "SURVEY_APP_UI"
+    },
+    {
+      "key": "SURVEY_APP_API",
+      "name": "SURVEY_APP_API",
+      "qualifier": "TRK",
+      "project": "SURVEY_APP_API"
+    }
+  ]
+}

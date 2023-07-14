@@ -1,0 +1,98 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
+<div class="p-grid">
+  <div class="p-md-12 container1">
+    <div class="tabs tabs-content p-xl-12">
+      <div class="content">
+        <h3 class="form_title">Grant Project Access</h3>
+
+        <div class="request-table-container">
+          <p-table dataKey="id" [value]="accessRequestList" [paginator]="true" [rows]="5"
+            [loading]="!dataLoading.includes('allRequests') || !dataLoading.includes('allRoles')"
+            styleClass="p-datatable-striped"  loadingIcon="loading-img">
+            <ng-template pTemplate="header">
+              <tr>
+                <!-- <th id="expandCollapase" style="width: 50px;"></th> -->
+                <th id="userName" style="width: 125px;">User Name</th>
+                <th id="projects" style="width: 250px;">Access Level</th>
+                <th id="role" style="width: 250px;">Role</th>
+                <th id="comment">Comment <br /> (click to edit)</th>
+                <th id="acceptReject">Actions</th>
+
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-request let-expanded="expanded">
+              <tr>
+                <!-- <td class='custom-table-cell'>
+                  <button type="button" pRipple pButton pRipple [pRowToggler]="request"
+                    class="p-button-text p-button-rounded p-button-plain"
+                    [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+                </td> -->
+                <td class='custom-table-cell  text-truncate'>{{request.username}}</td>
+                <td class='custom-table-cell'>
+                  <div class="info-block-container">
+                    <div class="info-block" *ngFor="let item of request.accessNode.accessItems" title="{{ item.itemName }}">
+                      {{request.accessNode.accessLevel | namePipe }} - {{ item.itemName }}
+                    </div>
+                  </div>
+                </td>
+                <td class='custom-table-cell'>
+                  <!-- <span *ngFor="let role of request.roles"> -->
+                    <p-dropdown id="roleList" class="mb-2 mr-sm-2" [options]="roleList" [(ngModel)]="request.role"
+                      [style]="{'width':'200px'}">
+                    </p-dropdown>
+                  <!-- </span> -->
+                </td>
+                <td pEditableColumn class='custom-table-cell'>
+                  <p-cellEditor>
+                    <ng-template pTemplate="input">
+                      <textarea style="width: 75%;" [(ngModel)]="request.reviewComments"
+                        placeholder="Put review comment"></textarea>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                      {{request.reviewComments}}
+                    </ng-template>
+                  </p-cellEditor>
+                </td>
+                <td class='custom-table-cell'>
+                  <div class="accept-reject-container p-d-flex">
+                    <div class="action-btns p-mr-5" (click)="approveRejectRequest(request, true)">
+                        <i class="fas fa-check"></i></div>
+                    <div class="action-btns" (click)="approveRejectRequest(request, false)"><i
+                        class="far fa-trash-alt"></i></div>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+           
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td [attr.colspan]="5">
+                  {{ !dataLoading.includes('allRequests') || !dataLoading.includes('allRoles') ? 'Loading...' : 'No
+                  pending access requests' }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,87 @@
+[
+  {
+    "_id" : "5ffd8cfde4b010a10dc8e5a3",
+    "_class" : "com.publicissapient.kpidashboard.common.model.application.Build",
+    "processorItemId" : "5ffd8cfce4b010a10dc8e557",
+    "timestamp" : 1610452221533,
+    "buildJob" : "uibuild",
+    "number" : "9",
+    "startTime" : 1612753837000,
+    "endTime" : 1612754437000,
+    "duration" : 922,
+    "buildStatus" : "SUCCESS"
+  },
+  {
+    "_id" : "5ffd8cfee4b010a10dc8e5a4",
+    "_class" : "com.publicissapient.kpidashboard.common.model.application.Build",
+    "processorItemId" : "5ffd8cfce4b010a10dc8e557",
+    "timestamp" : 1610452222051,
+    "buildJob" : "uibuild",
+    "number" : "10",
+    "startTime" : 1612761037000,
+    "endTime" : 1612761637000,
+    "duration" : 855,
+    "buildStatus" : "SUCCESS"
+  },
+  {
+    "_id" : "5ffd8cfee4b010a10dc8e5a5",
+    "_class" : "com.publicissapient.kpidashboard.common.model.application.Build",
+    "processorItemId" : "5ffd8cfce4b010a10dc8e557",
+    "timestamp" : 1610452222587,
+    "buildJob" : "uibuild",
+    "number" : "11",
+    "startTime" : 1588253883812,
+    "endTime" : 1588253883812,
+    "duration" : 559,
+    "buildStatus" : "SUCCESS"
+  },
+  {
+    "_id" : "5ffd8cffe4b010a10dc8e5a6",
+    "_class" : "com.publicissapient.kpidashboard.common.model.application.Build",
+    "processorItemId" : "5ffd8cfce4b010a10dc8e557",
+    "timestamp" : 1610452223075,
+    "buildJob" : "uibuild",
+    "number" : "12",
+    "startTime" : 1609919358201,
+    "endTime" : 1609919358201,
+    "duration" : 113739,
+    "buildStatus" : "SUCCESS",
+    "startedBy" : "chandrakanth.reddy"
+  },
+  {
+    "_id" : "5ffd8cffe4b010a10dc8e5a7",
+    "_class" : "com.publicissapient.kpidashboard.common.model.application.Build",
+    "processorItemId" : "5ffd8cfce4b010a10dc8e557",
+    "timestamp" : 1610452223572,
+    "buildJob" : "apibuild",
+    "number" : "1",
+    "startTime" : 1612773637000,
+    "endTime" : 1612774537000,
+    "duration" : 1275,
+    "buildStatus" : "SUCCESS"
+  },
+  {
+    "_id" : "5ffd8d00e4b010a10dc8e5a8",
+    "_class" : "com.publicissapient.kpidashboard.common.model.application.Build",
+    "processorItemId" : "5ffd8cfce4b010a10dc8e557",
+    "timestamp" : 1610452224060,
+    "buildJob" : "apibuild",
+    "number" : "2",
+    "startTime" : 1612774537000,
+    "endTime" : 1612776157000,
+    "duration" : 1158,
+    "buildStatus" : "FAILURE"
+  },
+  {
+    "_id" : "5ffd8d00e4b010a10dc8e5a9",
+    "_class" : "com.publicissapient.kpidashboard.common.model.application.Build",
+    "processorItemId" : "5ffd8cfce4b010a10dc8e557",
+    "timestamp" : 1610452224558,
+    "buildJob" : "apibuild",
+    "number" : "3",
+    "startTime" : 1612765237000,
+    "endTime" : 1612766437000,
+    "duration" : 1141,
+    "buildStatus" : "SUCCESS"
+  }
+]
