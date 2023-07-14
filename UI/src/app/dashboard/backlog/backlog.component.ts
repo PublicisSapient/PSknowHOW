@@ -56,6 +56,8 @@ export class BacklogComponent implements OnInit, OnDestroy{
   globalConfig;
   sharedObject;
   kpiCommentsCountObj: object = {};
+  kpiSpecificLoader =[];
+  durationFilter='Past 2 Weeks';
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -132,6 +134,11 @@ export class BacklogComponent implements OnInit, OnDestroy{
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
+
+    const kpi3Index = this.updatedConfigGlobalData .findIndex(kpi => kpi.kpiId === 'kpi3');
+    const kpi3 = this.updatedConfigGlobalData .splice(kpi3Index,1);
+    this.updatedConfigGlobalData .splice(0,0,kpi3[0]);
+
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     const showKpisCount = (Object.values(this.kpiConfigData).filter(item => item === true))?.length;
     if (showKpisCount === 0) {
@@ -193,6 +200,13 @@ export class BacklogComponent implements OnInit, OnDestroy{
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
+
+    const kpi3 = postData.kpiList.find(kpi => kpi.kpiId === 'kpi3');
+    kpi3['filterDuration'] = {
+      duration:'WEEKS',
+      value:2
+    };
+
     this.jiraKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
@@ -420,9 +434,8 @@ export class BacklogComponent implements OnInit, OnDestroy{
           const tempObj = {};
           for (const prop in filters) {
             tempObj[prop] = ['Overall'];
-            if(data[key]?.kpiId === 'kpi3' && filters[prop]?.filterType === 'Lead Time'){
-              tempObj[prop] = filters[prop]['options'][0];
-              break;
+            if(data[key]?.kpiId === 'kpi3' && filters[prop]?.filterType === 'Duration'){
+              tempObj[prop] = "Past 2 Weeks";
             }
           }
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
@@ -478,7 +491,11 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }else if(this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && (
         !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter1']) || !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter2'])
       )){
-        this.getChartDataForCardWithCombinationFilter(kpiId,idx,trendValueList);
+        if (kpiId === 'kpi3') {
+          this.getkpi3Data(kpiId,trendValueList);
+        }else{
+          this.getChartDataForCardWithCombinationFilter(kpiId,trendValueList);
+        }
       } else {
         /** when there are no kpi level filters */
         this.kpiChartData[kpiId] = [];
@@ -500,48 +517,85 @@ export class BacklogComponent implements OnInit, OnDestroy{
     }
   }
 
-  getChartDataForCardWithCombinationFilter(kpiId, idx,trendValueList){
-    let preAggregatedValues =[];
-    for(const filter in this.kpiSelectedFilterObj[kpiId]){
+  getkpi3Data(kpiId, trendValueList) {
+    let durationChanged = false;
+    if (this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1'] !== this.durationFilter) {
+      durationChanged = true;
+      this.kpiChartData[kpiId] = [];
+      this.durationFilter = this.kpiSelectedFilterObj[kpiId]['filter1'];
+    }
+
+    // if duration filter (filter1) changes,  make an api call to fetch data
+    if (durationChanged) {
+      const idx = this.ifKpiExist(kpiId);
+      if (idx !== -1) {
+        this.allKpiArray.splice(idx, 1);
+      }
+
+      this.kpiSpecificLoader.push('kpi3');
+      const kpi3Payload = JSON.parse(JSON.stringify(this.kpiJira));
+      const kpi3 = kpi3Payload.kpiList.filter(kpi => kpi.kpiId === 'kpi3')[0];
+      kpi3['filterDuration'] = {
+        duration: this.durationFilter.includes('Week') ? 'WEEKS' : 'MONTHS',
+        value: !isNaN(+this.durationFilter.split(' ')[1]) ? +this.durationFilter.split(' ')[1] : 1
+      };
+
+      kpi3Payload.kpiList = [kpi3];
+
+      this.httpService.postKpi(kpi3Payload, 'jira').subscribe(data =>{
+        const kpi3Data = data.find(kpi => kpi.kpiId === kpiId);
+        this.allKpiArray.push(kpi3Data);
+        this.getChartDataForCardWithCombinationFilter(kpiId, JSON.parse(JSON.stringify(kpi3Data.trendValueList)));
+        this.kpiSpecificLoader.pop();
+      });
+
+    }else{
+      this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
+    }
+
+  }
+
+  getChartDataForCardWithCombinationFilter(kpiId, trendValueList) {
+    let filters = this.kpiSelectedFilterObj[kpiId];
+    if (kpiId === 'kpi3') {
+    const issueFilter = this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter2') ? this.kpiSelectedFilterObj[kpiId]['filter2'] : ['Overall'];
+    filters = {
+      filter1: issueFilter
+    };
+  }
+
+    let preAggregatedValues = [];
+    for (const filter in filters) {
       let tempArr = [];
-      if(preAggregatedValues.length > 0){
+      if (preAggregatedValues.length > 0) {
         tempArr = preAggregatedValues;
-      }else{
+      } else {
         tempArr = trendValueList?.value ? trendValueList?.value : [];
       }
 
-      if(Array.isArray(this.kpiSelectedFilterObj[kpiId][filter])){
-        preAggregatedValues = [ ...tempArr.filter((x) => this.kpiSelectedFilterObj[kpiId][filter].includes(x[filter]))];
-      }else{
-        preAggregatedValues = [ ...tempArr.filter((x) =>  x[filter] === this.kpiSelectedFilterObj[kpiId][filter])];
+      if (Array.isArray(filters[filter])) {
+        preAggregatedValues = [...tempArr.filter((x) => filters[filter].includes(x[filter]))];
+      } else {
+        preAggregatedValues = [...tempArr.filter((x) => x[filter] === filters[filter])];
       }
     }
 
     if (preAggregatedValues?.length > 1) {
-      this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
-      if(kpiId === 'kpi3'){
-        let days = 0;
-        const filterName = this.kpiChartData[kpiId][0]['filter1'].split('-').join('to').toLowerCase();
-        const issueDetails = this.kpiChartData[kpiId][0]['data'][1]['modalValues'];
-        if(issueDetails.length > 0){
-          const issueStateName = Object.keys(issueDetails[0]).find(x => x.toLowerCase().includes(filterName));
-          let leadHours = 0;
-          for (const issue of issueDetails) {
-            let timeArr = issue[issueStateName] !== 'NA' ? issue[issueStateName].trim().split(" ") : [];
-            if(timeArr?.length > 0){
-              for(let i = 0; i<timeArr?.length; i++){
-                if(timeArr[i].includes('d')){
-                  days += +timeArr[i].slice(0, timeArr[i].length - 1);  
-                }else if(timeArr[i].includes('h')){
-                  leadHours += +timeArr[i].slice(0, timeArr[i].length - 1);
-                }
-              }
-            }
-          }
-          days = days + Math.round(leadHours/8);
-          days = Math.round(days/issueDetails.length);
-        }
-        this.kpiChartData[kpiId][0]['data'][0]['value'] = days;
+
+      if (kpiId === 'kpi3') {
+        //calculate number of days for lead time
+        let kpi3preAggregatedValues = JSON.parse(JSON.stringify(preAggregatedValues));
+        kpi3preAggregatedValues = kpi3preAggregatedValues.map(filterData => {
+          return { ...filterData, data: filterData.data.map(labelData => ({ ...labelData, value: labelData.value * labelData.value1 })) }
+        });
+
+        kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
+        console.log(kpi3preAggregatedValues);
+        
+        kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value:  (labelData.value1 > 0 ?  Math.round(labelData.value / labelData.value1) : 0) }));
+        this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
+      } else {
+        this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
       }
     } else {
       this.kpiChartData[kpiId] = [...preAggregatedValues];

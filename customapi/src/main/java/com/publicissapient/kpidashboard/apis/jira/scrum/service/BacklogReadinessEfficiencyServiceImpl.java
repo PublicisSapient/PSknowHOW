@@ -234,7 +234,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 					}
 					List<IterationKpiData> data = new ArrayList<>();
 					IterationKpiData issuesForDevelopment = new IterationKpiData(READY_BACKLOG,
-							Double.valueOf(issueCount), storyPoint, null, SP, modalValues);
+							Double.valueOf(issueCount), storyPoint, null, null, SP, modalValues);
 					IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, DEFAULT_BACKLOG_STRENGTH,
 							null, null, SPRINT, null);
 					log.debug("Issue type: {} priority: {} Cycle time: {}", issueType, priority, cycleTime);
@@ -251,7 +251,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 			List<IterationKpiData> data = new ArrayList<>();
 
 			IterationKpiData overAllIssues = new IterationKpiData(READY_BACKLOG,
-					Double.valueOf(overAllIssueCount.get(0)), overAllStoryPoints.get(0), null, SP, overAllmodalValues);
+					Double.valueOf(overAllIssueCount.get(0)), overAllStoryPoints.get(0), null, null, SP,
+					overAllmodalValues);
 			log.debug("Overall  the avg velocity of the previous sprint: {}", avgVelocity);
 			double strength = (double) Math.round(overAllStoryPoints.get(0) / avgVelocity * 100) / 100;
 			IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, strength, null, null, SPRINT,

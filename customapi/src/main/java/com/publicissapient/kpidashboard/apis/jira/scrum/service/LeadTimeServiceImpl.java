@@ -1,6 +1,8 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -39,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.CycleTime;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -46,7 +49,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,16 +56,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
 	private static final String STORY_HISTORY_DATA = "storyHistoryData";
-	private static final String INTAKE_TO_DOR = "Intake - DoR";
-	private static final String DOR_TO_DOD = "DoR - DoD";
-	private static final String DOD_TO_LIVE = "DoD - Live";
-	private static final String INTAKE_TO_DOD = "Intake - DoD";
-	private static final String DOR_TO_LIVE = "DoR - Live";
+	private static final String INTAKE_TO_DOR = "Intake - DOR";
+	private static final String DOR_TO_DOD = "DOR - DOD";
+	private static final String DOD_TO_LIVE = "DOD - Live";
 	private static final String PROJECT = "project";
 	private static final String LEAD_TIME = "Lead Time";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Issue Type";
-	private static final String ISSUE_COUNT = "Issue Count";
-	public static final String DAYS = "Days";
+	private static final String SEARCH_BY_DURATION = "Duration";
+	public static final String DAYS = "days";
+	public static final String ISSUES = "issues";
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
@@ -122,7 +123,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 		resultListMap.put(STORY_HISTORY_DATA, jiraIssueCustomHistoryRepository
-				.findByFilterAndFromStatusMap(mapOfFilters, uniqueProjectMap));
+				.findByFilterAndFromStatusMapWithDateFilter(mapOfFilters, uniqueProjectMap, startDate, endDate));
 
 		return resultListMap;
 	}
@@ -150,8 +151,25 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest,
 			DataCount dataCount) {
+		KpiElement leadTimeReq = kpiRequest.getKpiList().stream().filter(k -> k.getKpiId().equalsIgnoreCase("kpi3"))
+				.findFirst().orElse(new KpiElement());
 
-		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
+		LinkedHashMap<String, Object> filterDuration = (LinkedHashMap<String, Object>) leadTimeReq.getFilterDuration();
+		int value = 2; // Default value for 'value'
+		String duration = CommonConstant.WEEK; // Default value for 'duration'
+		String startDate = null;
+		String endDate = LocalDate.now().toString();
+
+		if (filterDuration != null) {
+			value = (int) filterDuration.getOrDefault("value", 2);
+			duration = (String) filterDuration.getOrDefault("duration",CommonConstant.WEEK);
+		}
+		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+			startDate = LocalDate.now().minusWeeks(value).toString();
+		} else if (duration.equalsIgnoreCase(CommonConstant.MONTH)) {
+			startDate = LocalDate.now().minusMonths(value).toString();
+		}
+		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, startDate, endDate, kpiRequest);
 
 		List<JiraIssueCustomHistory> ticketList = (List<JiraIssueCustomHistory>) resultMap.get(STORY_HISTORY_DATA);
 
@@ -181,18 +199,26 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	private void getCycleTime(List<JiraIssueCustomHistory> jiraIssueCustomHistoriesList, FieldMapping fieldMapping,
 			List<CycleTimeValidationData> cycleTimeList, KpiElement kpiElement, DataCount trendValue) {
 
-		Set<String> leadTimeFilter = new LinkedHashSet<>();
-		leadTimeFilter.add(LEAD_TIME);
-		leadTimeFilter.add(INTAKE_TO_DOR);
-		leadTimeFilter.add(DOR_TO_DOD);
-		leadTimeFilter.add(DOD_TO_LIVE);
-		leadTimeFilter.add(INTAKE_TO_DOD);
-		leadTimeFilter.add(DOR_TO_LIVE);
 		Set<String> issueTypeFilter = new LinkedHashSet<>();
 
 		List<IterationKpiValue> dataList = new ArrayList<>();
 
 		if (CollectionUtils.isNotEmpty(jiraIssueCustomHistoriesList)) {
+			List<Long> overAllIntakeDorTime = new ArrayList<>();
+			List<Long> overAllDorDodTime = new ArrayList<>();
+			List<Long> overAllDodLiveTime = new ArrayList<>();
+			List<Long> overAllLeadTimeList = new ArrayList<>();
+
+			List<JiraIssueCustomHistory> overAllIntakeDorModalValues = new ArrayList<>();
+			List<JiraIssueCustomHistory> overAllDorDodModalValues = new ArrayList<>();
+			List<JiraIssueCustomHistory> overAllDodLiveModalValues = new ArrayList<>();
+			List<JiraIssueCustomHistory> overAllLeadTimeModalValues = new ArrayList<>();
+
+			Long overAllIntakeDor = 0L;
+			Long overAllDorDod = 0L;
+			Long overAllDodLive = 0L;
+			Long overAllLeadTimeAvg = 0L;
+
 			Map<String, List<JiraIssueCustomHistory>> typeWiseIssues = jiraIssueCustomHistoriesList.stream()
 					.collect(Collectors.groupingBy(JiraIssueCustomHistory::getStoryType));
 			typeWiseIssues.forEach((type, jiraIssueCustomHistories) -> {
@@ -200,22 +226,16 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				List<Long> intakeDorTime = new ArrayList<>();
 				List<Long> dorDodTime = new ArrayList<>();
 				List<Long> dodLiveTime = new ArrayList<>();
-				List<Long> intakeDodTime = new ArrayList<>();
-				List<Long> dorLiveTime = new ArrayList<>();
 				List<Long> leadTimeList = new ArrayList<>();
 
 				Long intakeDor = 0L;
 				Long dorDod = 0L;
 				Long dodLive = 0L;
-				Long intakeDod = 0L;
-				Long dorLive = 0L;
 				Long leadTimeAvg = 0L;
 
 				List<JiraIssueCustomHistory> intakeDorModalValues = new ArrayList<>();
 				List<JiraIssueCustomHistory> dorDodModalValues = new ArrayList<>();
 				List<JiraIssueCustomHistory> dodLiveModalValues = new ArrayList<>();
-				List<JiraIssueCustomHistory> intakeDodModalValues = new ArrayList<>();
-				List<JiraIssueCustomHistory> dorLiveModalValues = new ArrayList<>();
 				List<JiraIssueCustomHistory> leadTimeModalValues = new ArrayList<>();
 
 				if (CollectionUtils.isNotEmpty(jiraIssueCustomHistories)) {
@@ -235,43 +255,23 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 								.forEach(statusUpdateLog -> updateCycleTimeValidationData(fieldMapping,
 										cycleTimeValidationData, cycleTime, dodStatusDateMap, statusUpdateLog));
 
-						String readyToIntake = DateUtil.calWeekHours(cycleTime.getIntakeTime(),
+						String intakeToReady = KpiDataHelper.calWeekHours(cycleTime.getIntakeTime(),
 								cycleTime.getReadyTime());
-						String readyToDeliver = DateUtil.calWeekHours(cycleTime.getReadyTime(),
+						String readyToDeliver = KpiDataHelper.calWeekHours(cycleTime.getReadyTime(),
 								cycleTime.getDeliveryTime());
-						String deliverToLive = DateUtil.calWeekHours(cycleTime.getDeliveryTime(),
+						String deliverToLive = KpiDataHelper.calWeekHours(cycleTime.getDeliveryTime(),
 								cycleTime.getLiveTime());
-						String leadTime = DateUtil.calWeekHours(cycleTime.getIntakeTime(),
+						String leadTime = KpiDataHelper.calWeekHours(cycleTime.getIntakeTime(),
 								cycleTime.getLiveTime());
-						if (!readyToIntake.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-							intakeDorTime.add(DateUtil.calculateTimeInDays(Long.parseLong(readyToIntake)));
-							intakeDorModalValues.add(jiraIssueCustomHistory);
-						}
-						if (!readyToDeliver.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-							dorDodTime.add(DateUtil.calculateTimeInDays(Long.parseLong(readyToDeliver)));
-							dorDodModalValues.add(jiraIssueCustomHistory);
-						}
-						if (!deliverToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-							dodLiveTime.add(DateUtil.calculateTimeInDays(Long.parseLong(deliverToLive)));
-							dodLiveModalValues.add(jiraIssueCustomHistory);
-						}
-						String intakeToDod = DateUtil.calWeekHours(cycleTime.getIntakeTime(),
-								cycleTime.getDeliveryTime());
-						if (cycleTime.getReadyTime() != null && !intakeToDod.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-							intakeDodTime.add(DateUtil.calculateTimeInDays(Long.parseLong(intakeToDod)));
-							intakeDodModalValues.add(jiraIssueCustomHistory);
-						}
-						String dorToLive = DateUtil.calWeekHours(cycleTime.getReadyTime(),
-								cycleTime.getLiveTime());
-						if (cycleTime.getDeliveryTime() != null
-								&& !dorToLive.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-							dorLiveTime.add(DateUtil.calculateTimeInDays(Long.parseLong(dorToLive)));
-							dorLiveModalValues.add(jiraIssueCustomHistory);
-						}
-						if (!leadTime.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-							leadTimeList.add(DateUtil.calculateTimeInDays(Long.parseLong(leadTime)));
-							leadTimeModalValues.add(jiraIssueCustomHistory);
-						}
+
+						transitionExist(overAllIntakeDorTime, overAllIntakeDorModalValues, intakeDorTime,
+								intakeDorModalValues, jiraIssueCustomHistory, intakeToReady);
+						transitionExist(overAllDorDodTime, overAllDorDodModalValues, dorDodTime, dorDodModalValues,
+								jiraIssueCustomHistory, readyToDeliver);
+						transitionExist(overAllDodLiveTime, overAllDodLiveModalValues, dodLiveTime, dodLiveModalValues,
+								jiraIssueCustomHistory, deliverToLive);
+						transitionExist(overAllLeadTimeList, overAllLeadTimeModalValues, leadTimeList,
+								leadTimeModalValues, jiraIssueCustomHistory, leadTime);
 
 						cycleTimeList.add(cycleTimeValidationData);
 					}
@@ -279,49 +279,64 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 					intakeDor = AggregationUtils.averageLong(intakeDorTime);
 					dorDod = AggregationUtils.averageLong(dorDodTime);
 					dodLive = AggregationUtils.averageLong(dodLiveTime);
-					intakeDod = AggregationUtils.averageLong(intakeDodTime);
-					dorLive = AggregationUtils.averageLong(dorLiveTime);
 					leadTimeAvg = AggregationUtils.averageLong(leadTimeList);
+
+					List<IterationKpiData> data = new ArrayList<>();
+					data.add(new IterationKpiData(LEAD_TIME,
+							(double) Math.round(ObjectUtils.defaultIfNull(leadTimeAvg, 0L).doubleValue() / 480),
+							ObjectUtils.defaultIfNull(leadTimeList.size(), 0L).doubleValue(), null, DAYS, ISSUES,
+							getIterationKpiModalValue(leadTimeModalValues, cycleTimeList)));
+					data.add(new IterationKpiData(INTAKE_TO_DOR,
+							(double) Math.round(ObjectUtils.defaultIfNull(intakeDor, 0L).doubleValue() / 480),
+							ObjectUtils.defaultIfNull(intakeDorTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
+							getIterationKpiModalValue(intakeDorModalValues, cycleTimeList)));
+					data.add(new IterationKpiData(DOR_TO_DOD,
+							(double) Math.round(ObjectUtils.defaultIfNull(dorDod, 0L).doubleValue() / 480),
+							ObjectUtils.defaultIfNull(dorDodTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
+							getIterationKpiModalValue(dorDodModalValues, cycleTimeList)));
+					data.add(new IterationKpiData(DOD_TO_LIVE,
+							(double) Math.round(ObjectUtils.defaultIfNull(dodLive, 0L).doubleValue() / 480),
+							ObjectUtils.defaultIfNull(dodLiveTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
+							getIterationKpiModalValue(dodLiveModalValues, cycleTimeList)));
+					IterationKpiValue iterationKpiValue = new IterationKpiValue(type, null, data);
+					dataList.add(iterationKpiValue);
 				}
-				prepareIterationKpiValue(type, INTAKE_TO_DOR, intakeDor, intakeDorTime, intakeDorModalValues,
-						cycleTimeList, dataList);
-				prepareIterationKpiValue(type, DOR_TO_DOD, dorDod, dorDodTime, dorDodModalValues, cycleTimeList,
-						dataList);
-				prepareIterationKpiValue(type, DOD_TO_LIVE, dodLive, dodLiveTime, dodLiveModalValues, cycleTimeList,
-						dataList);
-				prepareIterationKpiValue(type, INTAKE_TO_DOD, intakeDod, intakeDodTime, intakeDodModalValues,
-						cycleTimeList, dataList);
-				prepareIterationKpiValue(type, DOR_TO_LIVE, dorLive, dorLiveTime, dorLiveModalValues, cycleTimeList,
-						dataList);
-				prepareIterationKpiValue(type, LEAD_TIME, leadTimeAvg, leadTimeList, leadTimeModalValues, cycleTimeList,
-						dataList);
-
 			});
-		}
+			overAllIntakeDor = AggregationUtils.averageLong(overAllIntakeDorTime);
+			overAllDorDod = AggregationUtils.averageLong(overAllDorDodTime);
+			overAllDodLive = AggregationUtils.averageLong(overAllDodLiveTime);
+			overAllLeadTimeAvg = AggregationUtils.averageLong(overAllLeadTimeList);
 
-		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(LEAD_TIME, leadTimeFilter);
+			List<IterationKpiData> data = new ArrayList<>();
+			data.add(new IterationKpiData(LEAD_TIME,
+					(double) Math.round(ObjectUtils.defaultIfNull(overAllLeadTimeAvg, 0L).doubleValue() / 480),
+					ObjectUtils.defaultIfNull(overAllLeadTimeList.size(), 0L).doubleValue(), null, DAYS, ISSUES,
+					getIterationKpiModalValue(overAllLeadTimeModalValues, cycleTimeList)));
+			data.add(new IterationKpiData(INTAKE_TO_DOR,
+					(double) Math.round(ObjectUtils.defaultIfNull(overAllIntakeDor, 0L).doubleValue() / 480),
+					ObjectUtils.defaultIfNull(overAllIntakeDorTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
+					getIterationKpiModalValue(overAllIntakeDorModalValues, cycleTimeList)));
+			data.add(new IterationKpiData(DOR_TO_DOD,
+					(double) Math.round(ObjectUtils.defaultIfNull(overAllDorDod, 0L).doubleValue() / 480),
+					ObjectUtils.defaultIfNull(overAllDorDodTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
+					getIterationKpiModalValue(overAllDorDodModalValues, cycleTimeList)));
+			data.add(new IterationKpiData(DOD_TO_LIVE,
+					(double) Math.round(ObjectUtils.defaultIfNull(overAllDodLive, 0L).doubleValue() / 480),
+					ObjectUtils.defaultIfNull(overAllDodLiveTime.size(), 0L).doubleValue(), null, DAYS, ISSUES,
+					getIterationKpiModalValue(overAllDodLiveModalValues, cycleTimeList)));
+			IterationKpiValue iterationKpiValue = new IterationKpiValue(CommonConstant.OVERALL, CommonConstant.OVERALL,
+					data);
+			dataList.add(iterationKpiValue);
+		}
+		Set<String> duration = new LinkedHashSet<>(
+				Arrays.asList("Past Week", "Past 2 Weeks", "Past Month", "Past 3 Months", "Past 6 Months"));
+		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_DURATION, duration);
 		IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypeFilter);
 		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
 		// Modal Heads Options
 		kpiElement.setFilters(iterationKpiFilters);
 		trendValue.setValue(dataList);
 		kpiElement.setTrendValueList(trendValue);
-	}
-
-	private void prepareIterationKpiValue(String issueTypeFilterName, String leadTimeFilterName, Long transitionTime,
-			List<Long> transitionTimeList, List<JiraIssueCustomHistory> transitionModalValues,
-			List<CycleTimeValidationData> cycleTimeList, List<IterationKpiValue> dataList) {
-		IterationKpiValue intakeToDorIterationKpiValue = new IterationKpiValue();
-		intakeToDorIterationKpiValue.setFilter2(issueTypeFilterName);
-		intakeToDorIterationKpiValue.setFilter1(leadTimeFilterName);
-		List<IterationKpiData> intakeToDorKpiDataList = new ArrayList<>();
-		intakeToDorKpiDataList.add(new IterationKpiData(leadTimeFilterName,
-				(double) Math.round(ObjectUtils.defaultIfNull(transitionTime, 0L).doubleValue()/480), null, null, DAYS, null));
-		intakeToDorKpiDataList.add(new IterationKpiData(ISSUE_COUNT,
-				ObjectUtils.defaultIfNull(transitionTimeList.size(), 0L).doubleValue(), null, null, null,
-				getIterationKpiModalValue(transitionModalValues, cycleTimeList)));
-		intakeToDorIterationKpiValue.setData(intakeToDorKpiDataList);
-		dataList.add(intakeToDorIterationKpiValue);
 	}
 
 	private List<IterationKpiModalValue> getIterationKpiModalValue(List<JiraIssueCustomHistory> modalJiraIssues,
@@ -337,6 +352,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 	/**
 	 * Updates cycle time data for validation.
+	 * 
 	 * @param fieldMapping
 	 * @param cycleTimeValidationData
 	 * @param cycleTime
@@ -381,4 +397,17 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	public Long calculateKpiValue(List<Long> valueList, String kpiName) {
 		return calculateKpiValueForLong(valueList, kpiName);
 	}
+
+	private void transitionExist(List<Long> overAllTimeList, List<JiraIssueCustomHistory> overAllTransitionModalValues,
+			List<Long> filterTimeList, List<JiraIssueCustomHistory> transitionModalValues,
+			JiraIssueCustomHistory jiraIssueCustomHistory, String transitionTime) {
+		if (!transitionTime.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+			long time = KpiDataHelper.calculateTimeInDays(Long.parseLong(transitionTime));
+			filterTimeList.add(time);
+			overAllTimeList.add(time);
+			transitionModalValues.add(jiraIssueCustomHistory);
+			overAllTransitionModalValues.add(jiraIssueCustomHistory);
+		}
+	}
+
 }
