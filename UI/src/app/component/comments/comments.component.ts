@@ -11,6 +11,7 @@ export class CommentsComponent implements OnInit {
   @Input() kpiId;
   @Input() kpiName;
   @Input() selectedTab;
+  @Input() commentCount: string;
   showCommentIcon = false;
   displayCommentsList: boolean;
   showAddComment: boolean = false;
@@ -21,7 +22,10 @@ export class CommentsComponent implements OnInit {
   commentError = false;
   dataLoaded = false;
   @Output() closeSpringOverlay = new EventEmitter();
-
+  showLoader:object = {};
+  showConfirmBtn:object = {};
+  @Output() getCommentsCountByKpiId = new EventEmitter();
+  showSpinner:boolean = false;
   constructor(private service: SharedService, private http_service: HttpService) { }
 
   ngOnInit(): void {
@@ -38,6 +42,12 @@ export class CommentsComponent implements OnInit {
           return data.nodeId === sharedObj.filterApplyData.selectedMap?.sprint[i]
         })[0]);
       }
+    } else if(this.selectedTab === 'release'){
+      for (let i = 0; i < sharedObj.filterApplyData.selectedMap?.release.length; i++) {
+        this.selectedFilters.push(sharedObj.filterData.filter(data => {
+          return data.nodeId === sharedObj.filterApplyData.selectedMap?.release[i]
+        })[0]);
+      }
     } else{
       for (let i = 0; i < sharedObj.filterApplyData.selectedMap?.project.length; i++) {
         this.selectedFilters.push(sharedObj.filterData.filter(data => {
@@ -45,14 +55,15 @@ export class CommentsComponent implements OnInit {
         })[0]);
       }
     }
+    this.getComments();
   }
 
   submitComment(filterData=this.selectedFilters[this.selectedTabIndex]){
-
+    this.showSpinner = true;
     const reqObj = {
-      node: this.selectedTab !== 'iteration' ? filterData.nodeId : filterData.parentId[0],
+      node: (this.selectedTab !== 'iteration' && this.selectedTab !== 'release') ? filterData.nodeId : filterData.parentId[0],
       level: filterData.level,
-      sprintId: this.selectedTab === 'iteration' ? filterData.nodeId : '',
+      nodeChildId: (this.selectedTab === 'iteration' || this.selectedTab === 'release') ? filterData.nodeId : '',
       kpiId: this.kpiId,
       commentsInfo: [
         {
@@ -64,27 +75,30 @@ export class CommentsComponent implements OnInit {
     this.http_service.submitComment(reqObj).subscribe((response) => {
       this.commentText = '';
       this.commentError = false;
-      if (this.showAddComment) {
-        this.getComments();
-      }
+      this.getComments();
+      this.getCommentsCountByKpiId.emit(reqObj.kpiId);
+      this.showSpinner = false;
     }, error => {
       console.log(error);
     });
   }
 
-  viewAllHandler(event,element){
-    element.hide(event);
-    this.commentsList = [];
-    this.displayCommentsList = true;
-    this.getComments();
-  }
-
   getComments(){
+    const postData = {
+      node: (this.selectedTab !== 'iteration' && this.selectedTab !== 'release') ? this.selectedFilters[this.selectedTabIndex]?.nodeId : this.selectedFilters[this.selectedTabIndex]?.parentId[0],
+      nodeChildId: (this.selectedTab === 'iteration' || this.selectedTab === 'release') ? this.selectedFilters[this.selectedTabIndex].nodeId : '',
+      kpiId: this.kpiId,
+      level: this.selectedFilters[this.selectedTabIndex]?.level
+    };
     this.dataLoaded = false;
-    this.http_service.getComment(this.selectedTab, this.selectedFilters[this.selectedTabIndex], this.kpiId)
+    this.http_service.getComment(postData)
     .subscribe(response => {
       if(response.data?.CommentsInfo){
         this.commentsList = response.data.CommentsInfo;
+      }
+      for(let i=0; i<this.commentsList?.length; i++){
+        this.showConfirmBtn[this.commentsList[i]?.commentId] = false;
+        this.showLoader[this.commentsList[i]?.commentId] = false;
       }
       this.showAddComment = false;
       this.dataLoaded = true;
@@ -93,6 +107,8 @@ export class CommentsComponent implements OnInit {
 
   commentTabChange(data){
     this.selectedTabIndex = data.index;
+    this.commentsList = [];
+    this.getComments();
   }
 
   commentChanged() {
@@ -101,5 +117,26 @@ export class CommentsComponent implements OnInit {
     } else {
       this.commentError = false;
     }
+  }
+
+  handleConfirmDelete(commentId){
+    for(let key in this.showConfirmBtn){
+      if(this.showConfirmBtn[key]){
+        this.showConfirmBtn[key] = false;
+      }
+    }
+    this.showConfirmBtn[commentId] = true;
+  }
+
+  deleteComment(commentId){
+    this.showConfirmBtn[commentId] = false;
+    this.showLoader[commentId] = true;
+    this.http_service.deleteComment(commentId).subscribe((res) => {
+      if(res.success){
+        this.showLoader[commentId] = false;
+        this.getComments();
+        this.getCommentsCountByKpiId.emit(this.kpiId);
+      }
+    })
   }
 }

@@ -5,16 +5,16 @@
     <div *ngIf="selectedtype.toLowerCase() === 'scrum'">
       <div class="clearfix"></div>
       <div class="right-container col">
-        <div class="p-grid justify-content-start p-pt-3">
+        <div class="p-grid justify-content-start p-pt-3 p-pl-2 p-pr-2">
           <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
             <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
 
-              <div class="card-type-1 p-mb-3  p-sm-6" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph"
-                [ngClass]="{'p-pl-4': i%2 == 0, 'p-pr-4': i%2 != 0}">
+              <div class="card-type-1 p-sm-6" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph"
+                [ngClass]="{'p-w-100': kpi.kpiId == 'kpi3'}">
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                   (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                   [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOptionForCard($event, kpi)"
-                  [showExport]="false" [isShow]="true" [showChartView]="false">
+                  [showExport]="false" [isShow]="true" [showChartView]="false"  [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]" (getCommentCountByKpi)="getKpiCommentsCount($event)">
                   <ng-container *ngIf="!noTabAccess else noDataAccess">
                     <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100"
                       *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0 && !kpiLoader;else noData">
@@ -37,12 +37,15 @@
                                   [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
                                   != -99 ?
                                   convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
+                                  <span *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
+                                    {{ x?.value != -99 ? x?.unit : ''}}</span>
                                 <span *ngIf="x?.value1 && x?.value1 != -99 && x?.value1 != undefined"
                                   [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
                                   x?.value1}}</span>
-                                <span *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours'">
-                                  {{ x?.value != -99 ? x?.unit : ''}}
-                                </span>
+                                  <span *ngIf="x?.value1 && x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours'">
+                                    {{ x?.value1 != -99 ? x?.unit1 : ''}}
+                                  </span>
+                               
                               </ng-template>
                             </p>
                           </div>
@@ -54,13 +57,14 @@
               </div>
               <ng-template #showGraph>
                 <div class="p-sm-6 backlog-chart"
-                  [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar', 'p-pl-4': i%2 == 0, 'p-pr-4': i%2 != 0}">
+                  [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}">
                   <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                     [trendData]="kpiChartData[kpi?.kpiId]"
                     (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                     [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
                     [showExport]="true" [isShow]="true"
-                    [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true">
+                    [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true" [showCommentIcon]="true"
+                    [commentCount]="kpiCommentsCountObj[kpi?.kpiId]" (getCommentCountByKpi)="getKpiCommentsCount($event)">
                     <ng-container *ngIf="!noTabAccess else noDataAccess">
                       <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
                         <div class="p-pl-3 p-pr-3 w-100" [ngSwitch]="kpi?.kpiDetail?.chartType"
@@ -100,11 +104,11 @@
               </ng-template>
               <ng-template #noData>
                 <div class="overlay"
-                  *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader">
+                  *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader || kpiSpecificLoader.includes(kpi.kpiId)">
                   <div class="loading-img"></div>
                 </div>
                 <div class="min-ht"
-                  *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)">
+                  *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false && !kpiSpecificLoader.includes(kpi.kpiId)) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false && !kpiSpecificLoader.includes(kpi.kpiId))">
                   <div class="err">No Data Available</div>
                 </div>
 

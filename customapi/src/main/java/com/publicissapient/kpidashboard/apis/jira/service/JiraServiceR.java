@@ -148,7 +148,7 @@ public class JiraServiceR {
 				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
 						groupId, kpiRequest.getSprintIncluded());
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData) {
+						&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
 					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
 					return (List<KpiElement>) cachedData;
 				}
@@ -273,11 +273,14 @@ public class JiraServiceR {
 				.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
 
 		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& sprintLevel >= kpiRequest.getLevel()) {
+				&& sprintLevel >= kpiRequest.getLevel() && isLeadTimeDuration(kpiRequest.getKpiList())) {
 			cacheService.setIntoApplicationCache(projects, responseList, KPISource.JIRA.name(), groupId,
 					kpiRequest.getSprintIncluded());
 		}
 
+	}
+	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
+		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi3");
 	}
 
 	public void fetchSprintDetails(String[] sprintId) {

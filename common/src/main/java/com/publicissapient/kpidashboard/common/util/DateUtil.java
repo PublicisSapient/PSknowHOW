@@ -32,8 +32,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.Hours;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -239,37 +237,4 @@ public class DateUtil {
 		return strDate;
 	}
 
-	public static String calWeekHours(DateTime startDateTime, DateTime endDateTime) {
-		if (startDateTime != null && endDateTime != null) {
-			int hours = Hours.hoursBetween(startDateTime, endDateTime).getHours();
-			int weekendsCount = countSaturdaysAndSundays(startDateTime, endDateTime);
-			int res = hours - weekendsCount * 24;
-			return String.valueOf(res);
-		}
-		return NOT_APPLICABLE;
-	}
-
-	public static long calculateTimeInDays(long timeInHours) {
-		long timeInMin = (timeInHours / 24) * 8 * 60;
-		long remainingTimeInMin = (timeInHours % 24) * 60;
-		if (remainingTimeInMin >= 480) {
-			timeInMin = timeInMin + 480;
-		} else {
-			timeInMin = timeInMin + remainingTimeInMin;
-		}
-		return timeInMin;
-	}
-
-	public static int countSaturdaysAndSundays(DateTime startDateTime, DateTime endDateTime) {
-		int count = 0;
-		DateTime current = startDateTime;
-		while (current.isBefore(endDateTime)) {
-			if (current.getDayOfWeek() == DateTimeConstants.SATURDAY
-					|| current.getDayOfWeek() == DateTimeConstants.SUNDAY) {
-				count++;
-			}
-			current = current.plusDays(1);
-		}
-		return count;
-	}
 }

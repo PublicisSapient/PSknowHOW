@@ -7,16 +7,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Data
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentRequestDTO {
+public class CommentViewRequestDTO {
 
-	private String node;
-	private String level;
-	private String nodeChildId;
-	private String kpiId;
+    private List<String> nodes;
+    private String level;
+    private String nodeChildId;
+    private List<String> kpiIds;
+    private String commentId;
 }

@@ -43,7 +43,8 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
  ];
  sprintDetailsList : Array<any>;
  colorCssClassArray = ['sprint-hover-project1','sprint-hover-project2','sprint-hover-project3','sprint-hover-project4','sprint-hover-project5','sprint-hover-project6'];
-
+ @Input() commentCount : string;
+ @Output() getCommentCountByKpi = new EventEmitter();
 
   constructor(private service: SharedService) {
   }
@@ -58,7 +59,6 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
           if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
-            this.filterOptions = {};
             this.filterOptions = {...this.filterOptions};
             this.filterOption = 'Overall';
           } else {
@@ -191,6 +191,11 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   getColorCssClasses(index){
     return this.colorCssClassArray[index];
   }
+
+  handleGetCount(event){
+    this.getCommentCountByKpi.emit(event);
+  }
+
 
   ngOnDestroy() {
     this.kpiData = {};
