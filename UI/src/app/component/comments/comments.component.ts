@@ -25,7 +25,7 @@ export class CommentsComponent implements OnInit {
   showLoader:object = {};
   showConfirmBtn:object = {};
   @Output() getCommentsCountByKpiId = new EventEmitter();
-
+  showSpinner:boolean = false;
   constructor(private service: SharedService, private http_service: HttpService) { }
 
   ngOnInit(): void {
@@ -59,7 +59,7 @@ export class CommentsComponent implements OnInit {
   }
 
   submitComment(filterData=this.selectedFilters[this.selectedTabIndex]){
-
+    this.showSpinner = true;
     const reqObj = {
       node: (this.selectedTab !== 'iteration' && this.selectedTab !== 'release') ? filterData.nodeId : filterData.parentId[0],
       level: filterData.level,
@@ -77,6 +77,7 @@ export class CommentsComponent implements OnInit {
       this.commentError = false;
       this.getComments();
       this.getCommentsCountByKpiId.emit(reqObj.kpiId);
+      this.showSpinner = false;
     }, error => {
       console.log(error);
     });

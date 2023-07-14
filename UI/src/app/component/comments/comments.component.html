@@ -20,7 +20,9 @@
                     <button class="p-element p-ripple p-button-sm p-button-secondary p-button"
                         (click)="commentText = ''; commentError = false">Cancel</button>
                     <button class="p-element p-ripple p-button-sm p-button-success p-button"
-                        (click)="submitComment(filter)" [disabled]="commentText.trim() === ''">Submit</button>
+                        (click)="submitComment(filter)" [disabled]="commentText.trim() === ''">Submit
+                        <i *ngIf="showSpinner" class="fas fa-circle-notch p-ml-1 icon-spinner"></i>
+                    </button>
                 </div>
             </div>
             <div *ngIf="dataLoaded; else loader" class="comment-list-container">
@@ -30,7 +32,7 @@
                             <span class="icon-delete">
                                 <i *ngIf="!showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]" class="far fa-trash-alt" (click)="handleConfirmDelete(comment.commentId)"></i>
                                 <span *ngIf="showConfirmBtn[comment.commentId] && !showLoader[comment.commentId]" class="btn-confirm-delete" (click)="deleteComment(comment.commentId)">Confirm Delete</span>
-                                <i *ngIf="showLoader[comment.commentId] && !showConfirmBtn[comment.commentId]" class="fas fa-circle-notch"></i>
+                                <i *ngIf="showLoader[comment.commentId] && !showConfirmBtn[comment.commentId]" class="fas fa-circle-notch icon-spinner"></i>
                             </span>
                         </div>
                         <div class="comment-box p-mt-1">
