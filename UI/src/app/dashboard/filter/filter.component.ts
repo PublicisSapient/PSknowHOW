@@ -128,6 +128,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   noProjects = false;
   selectedRelease ={};
   ssoLogin = environment.SSO_LOGIN;
+  commentList: Array<object> = [];
+  showCommentPopup:boolean = false;
 
   constructor(
     private service: SharedService,
@@ -1368,5 +1370,23 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.selectedRelease={};
       this.service.setNoRelease(true);
     }
+  }
+
+  getRecentComments(){
+    let reqObj = {
+      "nodes": [...this.filterApplyData?.['selectedMap']['project']],
+      "level": this.filterApplyData?.['level'],
+      "nodeChildId": this.filterApplyData?.['selectedMap']['sprint'][0] || this.filterApplyData?.['selectedMap']['release'][0],
+      "kpiIds": this.showKpisList?.map((item) => item.kpiId)
+    }
+    this.httpService.getCommentSummary(reqObj).subscribe((response) => {
+      if(response['success']){
+        this.commentList = response['data'];
+      }else{
+        this.commentList = [];
+      }
+    }, error => {
+      console.log(error)
+    })
   }
 }
