@@ -1,0 +1,173 @@
+{
+  "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+  "builds": [
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowRun",
+      "actions": [
+        {
+          "_class": "hudson.model.CauseAction"
+        },
+        {
+          "_class": "hudson.model.ParametersAction",
+          "parameters": [
+            {
+              "_class": "net.uaznia.lukanus.hudson.plugins.gitparameter.GitParameterValue",
+              "name": "SBRANCH",
+              "value": "origin/Remove-tmp-refference"
+            },
+            {
+              "_class": "hudson.model.BooleanParameterValue",
+              "name": "CHOOSE_DEFAULT_REGISTRY",
+              "value": false
+            },
+            {
+              "_class": "hudson.model.BooleanParameterValue",
+              "name": "API_DEPLOYMENT",
+              "value": true
+            },
+            {
+              "_class": "hudson.model.BooleanParameterValue",
+              "name": "PUSH_REGISTRY",
+              "value": false
+            },
+            {
+              "_class": "hudson.model.BooleanParameterValue",
+              "name": "DEPLOY",
+              "value": true
+            },
+            {
+              "_class": "hudson.model.StringParameterValue",
+              "name": "SERVER_USER",
+              "value": "root"
+            },
+            {
+              "_class": "hudson.model.StringParameterValue",
+              "name": "SERVER_IP",
+              "value": "Test"
+            },
+            {
+              "_class": "hudson.model.StringParameterValue",
+              "name": "BUILDTYPE",
+              "value": ""
+            },
+            {
+              "_class": "hudson.model.StringParameterValue",
+              "name": "SERVER_ROLE",
+              "value": "Producer"
+            },
+            {
+              "_class": "hudson.model.StringParameterValue",
+              "name": "FOLDER_PATH",
+              "value": ""
+            },
+            {
+              "_class": "hudson.model.StringParameterValue",
+              "name": "VERTICALS",
+              "value": ""
+            },
+            {
+              "_class": "hudson.model.StringParameterValue",
+              "name": "SERVER_PASSWORD",
+              "value": "Test"
+            },
+            {
+              "_class": "hudson.model.StringParameterValue",
+              "name": "CERT_PATH",
+              "value": ""
+            },
+            {
+              "_class": "hudson.model.StringParameterValue",
+              "name": "VERSION",
+              "value": ""
+            },
+            {
+              "_class": "hudson.model.StringParameterValue",
+              "name": "FROMVERSION",
+              "value": ""
+            },
+            {
+              "_class": "hudson.model.StringParameterValue",
+              "name": "DNS_NAME",
+              "value": ""
+            },
+            {
+              "_class": "hudson.model.BooleanParameterValue",
+              "name": "MONGO_CONNECTION",
+              "value": false
+            },
+            {
+              "_class": "hudson.model.StringParameterValue",
+              "name": "BRANCH",
+              "value": "Remove-tmp-refference"
+            }
+          ]
+        },
+        {
+        },
+        {
+          "_class": "jenkins.metrics.impl.TimeInQueueAction"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.libs.LibrariesAction"
+        },
+        {
+        },
+        {
+          "_class": "hudson.plugins.git.util.BuildData"
+        },
+        {
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.cps.EnvActionImpl"
+        },
+        {
+        },
+        {
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.support.steps.input.ApproverAction"
+        },
+        {
+          "_class": "hudson.plugins.git.util.BuildData"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.cps.view.InterpolatedSecretsAction"
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+          "_class": "org.jenkinsci.plugins.displayurlapi.actions.RunDisplayAction"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartDeclarativePipelineAction"
+        },
+        {
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphAction"
+        },
+        {
+        },
+        {
+        },
+        {
+        },
+        {
+        }
+      ],
+      "duration": 386209,
+      "id": "1737",
+      "number": 1737,
+      "result": "SUCCESS",
+      "timestamp": 1653994177560
+    }
+  ]
+}

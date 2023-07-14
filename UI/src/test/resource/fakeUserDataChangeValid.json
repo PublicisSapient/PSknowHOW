@@ -1,0 +1,43 @@
+{
+    "id": "5f34748fc9a50d7baba8300a89",
+    "username": "testUser",
+    "authorities": [
+        "ROLE_VIEWER"
+    ],
+    "authType": "STANDARD",
+    "emailAddress": "dilip@nn.com",
+    "projectsAccess": [
+        {
+            "role": "ROLE_PROJECT_ADMIN",
+            "accessNodes": [
+                {
+                    "accessLevel": "Project",
+                    "accessItems": [
+                        {
+                            "itemName": "Test1",
+                            "itemId": "5ea7cfa9a7b11b0001d27969"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "role": "ROLE_PROJECT_VIEWER",
+            "accessNodes": [
+                {
+                    "accessLevel": "Project",
+                    "accessItems": [
+                        {
+                            "itemName": "Test3",
+                            "itemId": "e2dcc41b-6cca-4c6c-bdb0-0370312befa1"
+                        },
+                        {
+                            "itemName": "Test2",
+                            "itemId": "cf4e0515-ca86-453a-8eb1-1c30c9a6e7bc"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

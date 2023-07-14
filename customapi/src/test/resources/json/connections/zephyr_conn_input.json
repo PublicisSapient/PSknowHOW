@@ -1,0 +1,8 @@
+[
+  {
+    "type": "Zephyr",
+    "connectionName": "Zephyr Test Connection",
+    "connPrivate": true,
+    "cloudEnv": true
+  }
+]

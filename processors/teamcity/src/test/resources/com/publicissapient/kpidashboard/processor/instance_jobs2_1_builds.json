@@ -1,0 +1,49 @@
+{
+  "id": "p1",
+  "name": "Project1",
+  "parentProjectId": "_Root",
+  "description": "Sample project to test teamcity api",
+  "href": "/app/rest/projects/id:p1",
+  "webUrl": "http://sever:port/project.html?projectId=p1",
+  "parentProject": {
+    "id": "_Root",
+    "name": "<Root project>",
+    "description": "Contains all other projects",
+    "href": "/app/rest/projects/id:_Root",
+    "webUrl": "http://server:port/project.html?projectId=_Root"
+  },
+  "buildTypes": {
+    "count": 1,
+    "buildType": [
+      {
+        "id": "build1",
+        "name": "Build1",
+        "description": "Sample build",
+        "projectName": "Project1",
+        "projectId": "p1",
+        "href": "/app/rest/buildTypes/id:build1",
+        "webUrl": "http://server:port/viewType.html?buildTypeId=build1"
+      }
+    ]
+  },
+  "templates": {
+    "count": 0,
+    "buildType": []
+  },
+  "parameters": {
+    "count": 0,
+    "href": "/app/rest/projects/id:p1/parameters",
+    "property": []
+  },
+  "vcsRoots": {
+    "count": 0,
+    "href": "/app/rest/vcs-roots?locator=project:(id:p1)"
+  },
+  "projectFeatures": {
+    "count": 0,
+    "href": "/app/rest/projects/id:p1/projectFeatures"
+  },
+  "projects": {
+    "count": 0
+  }
+}

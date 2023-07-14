@@ -1,0 +1,23 @@
+{
+  "paging": {
+    "pageIndex": 1,
+    "pageSize": 500,
+    "total": 2
+  },
+  "components": [
+    {
+      "organization": "default-organization",
+      "id": "AVu3b-MAphY78UZXuYHp",
+      "key": "testPackage.sonar:TestProject",
+      "name": "testPackage.sonar:TestProject",
+      "qualifier": "TRK"
+    },
+    {
+      "organization": "default-organization",
+      "id": "BVx3b-MAphY78UZXuYHp",
+      "key": "testPackage.sonar:AnotherTestProject",
+      "name": "testPackage.sonar:AnotherTestProject",
+      "qualifier": "TRK"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "kpiList": [],
+  "ids": [
+    "Scrum Project_6335363749794a18e8a4479b"
+  ],
+  "level": 5,
+  "label": "project",
+  "selectedMap": {
+    "corporate": [],
+    "business": [],
+    "account": [],
+    "subaccount": [],
+    "project": [
+      "Scrum Project_6335363749794a18e8a4479b"
+    ],
+    "sprint": [],
+    "sqd": []
+  },
+  "sprintIncluded": [
+    "CLOSED"
+  ]
+}

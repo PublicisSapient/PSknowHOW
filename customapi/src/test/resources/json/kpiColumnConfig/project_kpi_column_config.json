@@ -1,0 +1,62 @@
+[
+  {
+    "_id": "6442576d3705314e30d0e4f4",
+    "basicProjectConfigId": "5f7f54b28d5ab15c5be865f9",
+    "kpiId": "kpi3",
+    "kpiColumnDetails": [
+      {
+        "columnName": "Column 1",
+        "order": 0,
+        "isShown": true,
+        "isDefault": false
+      },
+      {
+        "columnName": "Column 3",
+        "order": 1,
+        "isShown": true,
+        "isDefault": false
+      }
+    ],
+    "_class": "com.publicissapient.kpidashboard.common.model.application.KpiColumnConfig"
+  },
+  {
+    "_id": "644257483705314e30d0e4f3",
+    "basicProjectConfigId": null,
+    "kpiId": "kpi3",
+    "kpiColumnDetails": [
+      {
+        "columnName": "Column 1",
+        "order": 0,
+        "isShown": true,
+        "isDefault": false
+      },
+      {
+        "columnName": "Column 3",
+        "order": 1,
+        "isShown": true,
+        "isDefault": false
+      }
+    ],
+    "_class": "com.publicissapient.kpidashboard.common.model.application.KpiColumnConfig"
+  },
+  {
+    "_id": "644256f73705314e30d0e4f2",
+    "basicProjectConfigId": "5f7f54b28d5ab15c5be865f8",
+    "kpiId": "kpi32",
+    "kpiColumnDetails": [
+      {
+        "columnName": "Column 1",
+        "order": 0,
+        "isShown": true,
+        "isDefault": false
+      },
+      {
+        "columnName": "Column 3",
+        "order": 1,
+        "isShown": true,
+        "isDefault": false
+      }
+    ],
+    "_class": "com.publicissapient.kpidashboard.common.model.application.KpiColumnConfig"
+  }
+]

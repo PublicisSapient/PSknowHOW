@@ -1,0 +1,46 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
+
+<h5 class="form_title">Raise Access Request</h5>
+<form autocomplete="off">
+  <app-project-filter (projectSelectedEvent)="projectSelectedEvent($event)"></app-project-filter>
+  <label for="roleType" class="">Select Role: </label>
+  <div class="role-container">
+    <div class="role-box divide-type" *ngFor="let data of roleList;let i=index"
+      [ngClass]="{'active' : data.active , 'disabled' : data.disabled}" (click)="selectRole(data, roleList);">
+      <span class="selected-indicator"><span class="fa fa-check-circle" aria-hidden="true"></span>Selected</span>
+      <span class="fas fa-user-cog" aria-hidden="true" *ngIf="data.roleName === 'ROLE_PROJECT_ADMIN'"></span>
+      <span class="far fa-user" aria-hidden="true" *ngIf="data.roleName === 'ROLE_PROJECT_VIEWER'"></span>
+      <span class="fab fa-superpowers" aria-hidden="true" *ngIf="data.roleName === 'ROLE_SUPERADMIN'"></span>
+      <span class="far fa-user" aria-hidden="true" *ngIf="data.roleName === 'ROLE_GUEST'"></span>
+      <div class="role-name">
+        {{ (data.roleName.length>20)? (data.roleName.substring(0,19) + "..."):(data.roleName) }}
+      </div>
+      <div class="role-desc">
+        {{ (data.roleDescription.length>40)? (data.roleName.substring(0,39) + "..."):(data.roleDescription) }}
+      </div>
+    </div>
+  </div>
+</form>
+<div class="form-footer">
+  <button pButton pRipple label="Submit" icon="pi pi-save" class="p-button p-button-success p-button-raised"
+    (click)="submitRequest()"
+    [disabled]="(roleSelected && !!requestData['role'] && requestData['role'] === 'ROLE_SUPERADMIN')? false: (this.roleSelected && !!this.requestData['accessNode'] && this.requestData['accessNode']['accessItems'] && this.requestData['accessNode']['accessItems'].length > 0)? false: true"></button>
+</div>

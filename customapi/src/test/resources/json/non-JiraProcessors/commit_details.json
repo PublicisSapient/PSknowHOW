@@ -1,0 +1,89 @@
+[
+  {
+    "_id": "5fdb0edbe4b0eb1a35a7d4f0",
+    "processorItemId": "633ab3fb26878c56f03ebd36",
+    "date" : "2022-03-1",
+    "count": 42345612,
+    "timestamp": "1608191671357",
+    "projectConfigId": [],
+    "branch": "release/ux-qa",
+    "revisionNumber": "f374b260cd07056266b7a3048b6229af300b83ca",
+    "commitLog": "#UPSUXO-1189 | #1552828 | M15: Update component output (new skin: Grid View",
+    "author": "testUser1",
+    "parentRevisionNumbers": [
+      "cff6eed87502f44a05cd4d683954d30a678140cb"
+    ],
+    "commitTimestamp": "1607422514000",
+    "type": "NEW"
+  },
+  {
+    "_id": "5fdb0edbe4b0eb1a35a7d4f1",
+    "processorItemId": "633ab3fb26878c56f03ebd36",
+    "date" : "2022-04-1",
+    "count": 423456234,
+    "timestamp": "1608191671357",
+    "projectConfigId": [],
+    "branch": "release/ux-qa",
+    "revisionNumber": "cff6eed87502f44a05cd4d683954d30a678140cb",
+    "commitLog": "#UPSUXO-1190 | #1796582 | M15: Update component output (new skin: Grid Image Block View",
+    "author": "testUser1",
+    "parentRevisionNumbers": [
+      "db01824ad46b7280aa35945729feec2c9ec4bda6"
+    ],
+    "commitTimestamp": "1607422455000",
+    "type": "NEW"
+  },
+  {
+    "_id": "5fdb0edbe4b0eb1a35a7d4f2",
+    "processorItemId": "633ab3fb26878c56f03ebd36",
+    "date" : "2022-08-10",
+    "count": 42345623,
+    "timestamp": "1608191671357",
+
+    "projectConfigId": [],
+    "branch": "release/ux-qa",
+    "revisionNumber": "db01824ad46b7280aa35945729feec2c9ec4bda6",
+    "commitLog": "#UPSUXO-1191 | #1630080 | M44: ContentBlock Redesign: Component output",
+    "author": "testUser1",
+    "parentRevisionNumbers": [
+      "4dc7c0dd3019097bc01a7177811d912d792e0098"
+    ],
+    "commitTimestamp": "1607319309000",
+    "type": "NEW"
+  },
+  {
+    "_id": "5fdb0edbe4b0eb1a35a7d4f3",
+    "processorItemId": "633ab3fb26878c56f03ebd36",
+    "date" : "2022-08-14",
+    "count": 4278456,
+    "timestamp": "1608191671357",
+    "projectConfigId": [],
+    "branch": "release/ux-qa",
+    "revisionNumber": "4dc7c0dd3019097bc01a7177811d912d792e0098",
+    "commitLog": "Merge pull request #53 in UPS/ups from feature/TFS-1630080_M44_ContentBlock_Redesign to release/ux-qa\n\n* commit 'cf71c81ab6bdf899337f8d13b83f4b3ba3a0cd57':\n  #UPSUXO-1191 | #1630080 | M44: ContentBlock Redesign: Component output\n  #UPSUXO-1191 | #1630080 | M44: ContentBlock Redesign: Component output\n  #UPSUXO-1191 | #1630080 | M44: ContentBlock Redesign: Component output\n  #UPSUXO-1191 | #1630080 | M44: ContentBlock Redesign: Component output\n  #UPSUXO-1191 | #1630080 | M44: ContentBlock Redesign: Component output\n  #UPSUXO-1191 | #1630080 | M44: ContentBlock Redesign: Component output",
+    "author": "testUser2",
+    "parentRevisionNumbers": [
+      "f3013b96512b8c364f8ee58b4c55e91494f0e127",
+      "cf71c81ab6bdf899337f8d13b83f4b3ba3a0cd57"
+    ],
+    "commitTimestamp": "1606917655000",
+    "type": "MERGE"
+  },
+  {
+    "_id": "5fdb0edbe4b0eb1a35a7d4f4",
+    "processorItemId": "633ab3fb26878c56f03ebd36",
+    "date" : "2022-08-18",
+    "count": 423456,
+    "timestamp": "1608191671357",
+    "projectConfigId": [],
+    "branch": "release/ux-qa",
+    "revisionNumber": "cf71c81ab6bdf899337f8d13b83f4b3ba3a0cd57",
+    "commitLog": "#UPSUXO-1191 | #1630080 | M44: ContentBlock Redesign: Component output",
+    "author": "testUser1",
+    "parentRevisionNumbers": [
+      "58b38f48a360e46c40c5ed5c1b216e77b1b05d64"
+    ],
+    "commitTimestamp": "1606916855000",
+    "type": "NEW"
+  }
+]

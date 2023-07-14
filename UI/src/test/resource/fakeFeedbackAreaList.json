@@ -1,0 +1,13 @@
+{
+    "message": "Projects For Category1 and Category2",
+    "success": true,
+    "data": [
+        "KPI Graphs",
+        "EMM",
+        "KPI Maturity wheel",
+        "Tool integration",
+        "New metric",
+        "Admin",
+        "Others"
+    ]
+}

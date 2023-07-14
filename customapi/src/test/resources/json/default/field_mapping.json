@@ -1,0 +1,353 @@
+[
+  {
+    "projectToolConfigId": "5fc085b0410df80001701329",
+    "basicProjectConfigId": "5fc0853c410df80001701321",
+    "atmQueryEndpoint": "rest/atm/1.0/",
+    "sprintName": "customfield_12700",
+    "jiradefecttype": [
+      "Defect",
+      "Bug"
+    ],
+    "jiraIssueTypeNames": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request",
+      "Defect",
+      "Bug",
+      "Epic"
+    ],
+    "storyFirstStatus": "Open",
+    "linkDefectToStoryField": [
+      "contains",
+      "belongs to",
+      "is blocked by",
+      "blocks",
+      "Discovered while testing",
+      "has dependency on",
+      "is dependent on"
+    ],
+    "rootCause": "customfield_19121",
+    "jiraStatusForDevelopment": [
+      "Implementing",
+      "In Development",
+      "In Analysis"
+    ],
+    "jiraAtmProjectId": "1000",
+    "jiraAtmProjectKey": "DTS",
+    "jiraStatusForQa": [
+      "In Testing"
+    ],
+    "testAutomated": "Execution Type",
+    "testAutomationStatusLabel": "Execution Type",
+    "testRegressionLabel": "Sanity/ regression",
+    "testRegressionValue": [
+      "Regression",
+      "Sanity"
+    ],
+    "jiraTestCaseType": [],
+    "jiraDefectInjectionIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraDod": [
+      "Closed",
+      "Resolved",
+      "Ready for Delivery"
+    ],
+    "jiraDefectCreatedStatus": "Open",
+    "jiraTechDebtIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraTechDebtIdentification": "",
+    "jiraTechDebtCustomField": "",
+    "jiraTechDebtValue": [],
+    "jiraDefectRejectionStatus": "",
+    "jiraBugRaisedByIdentification": "Labels",
+    "jiraBugRaisedByValue": [
+      "UAT_Defect"
+    ],
+    "jiraDefectSeepageIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraBugRaisedByCustomField": "",
+    "jiraDefectRemovalStatus": [
+      "Closed",
+      "Resolved",
+      "Ready for Delivery",
+      "Ready for Release"
+    ],
+    "jiraDefectRemovalIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "atmFolderPath": [],
+    "jiraStoryPointsCustomField": "customfield_20803",
+    "jiraTestAutomationIssueType": [
+      "Epic",
+      "Issue",
+      "Story",
+      "Enabler Story",
+      "Bug",
+      "Defect",
+      "Change request"
+    ],
+    "jiraAutomatedTestValue": [
+      " Functional Automation (covered)"
+    ],
+    "jiraCanNotAutomatedTestValue": [
+      "Manual",
+      "None"
+    ],
+    "jiraSprintVelocityIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraSprintCapacityIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraDefectRejectionlIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraDefectCountlIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraIssueDeliverdStatus": [
+      "Closed",
+      "Resolved",
+      "Ready for Delivery",
+      "Ready for Release"
+    ],
+    "jiraDor": "In Analysis",
+    "jiraIntakeToDorIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraStoryIdentification": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraLiveStatus": "",
+    "regressionAutomationLabels": [],
+    "rootCauseValue": ["Coding"],
+    "pickNewATMJIRADetails": true,
+    "resolutionTypeForRejection": [
+      "Invalid",
+      "Duplicate",
+      "Unrequired"
+    ],
+    "qaRootCauseValue": [
+      "Coding",
+      "Configuration",
+      "Regression",
+      "Data"
+    ],
+    "jiraQADefectDensityIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraBugRaisedByQACustomField": "",
+    "jiraBugRaisedByQAIdentification": "",
+    "jiraBugRaisedByQAValue": [],
+    "jiraDefectDroppedStatus": [],
+    "atmSubprojectField": "Component",
+    "estimationCriteria": "Story Point",
+    "storyPointToHourMapping": "8"
+  },
+  {
+    "projectToolConfigId": "5fc08597410df80001701328",
+    "basicProjectConfigId": "5fc08006ec57dc0001f72a92",
+    "atmQueryEndpoint": "",
+    "sprintName": "customfield_12700",
+    "jiradefecttype": [
+      "Defect",
+      "Bug"
+    ],
+    "jiraIssueTypeNames": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request",
+      "Defect",
+      "Bug",
+      "Epic"
+    ],
+    "storyFirstStatus": "Open",
+    "linkDefectToStoryField": [
+      "contains",
+      "belongs to",
+      "is blocked by",
+      "blocks",
+      "Discovered while testing",
+      "has dependency on",
+      "is dependent on"
+    ],
+    "rootCause": "customfield_19121",
+    "jiraStatusForDevelopment": [
+      "Implementing",
+      "In Development",
+      "In Analysis"
+    ],
+    "jiraAtmProjectId": "",
+    "jiraAtmProjectKey": "",
+    "jiraStatusForQa": [
+      "In Testing"
+    ],
+    "testAutomated": "",
+    "testAutomationStatusLabel": "",
+    "testRegressionLabel": "",
+    "testRegressionValue": [],
+    "jiraTestCaseType": [],
+    "jiraDefectInjectionIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraDod": [
+      "Closed",
+      "Resolved",
+      "Ready for Delivery"
+    ],
+    "jiraDefectCreatedStatus": "Open",
+    "jiraTechDebtIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraTechDebtIdentification": "",
+    "jiraTechDebtCustomField": "",
+    "jiraTechDebtValue": [],
+    "jiraDefectRejectionStatus": "",
+    "jiraBugRaisedByIdentification": "",
+    "jiraBugRaisedByValue": [],
+    "jiraDefectSeepageIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraBugRaisedByCustomField": "",
+    "jiraDefectRemovalStatus": [
+      "Closed",
+      "Resolved",
+      "Ready for Delivery",
+      "Ready for Release"
+    ],
+    "jiraDefectRemovalIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "atmFolderPath": [],
+    "jiraStoryPointsCustomField": "customfield_20803",
+    "jiraTestAutomationIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraAutomatedTestValue": [],
+    "jiraCanNotAutomatedTestValue": [],
+    "jiraSprintVelocityIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraSprintCapacityIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraDefectRejectionlIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraDefectCountlIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraIssueDeliverdStatus": [
+      "Closed",
+      "Resolved",
+      "Ready for Delivery",
+      "Ready for Release"
+    ],
+    "jiraDor": "In Progress",
+    "jiraIntakeToDorIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraStoryIdentification": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraLiveStatus": "",
+    "regressionAutomationLabels": [],
+    "rootCauseValue": ["Coding"],
+    "pickNewATMJIRADetails": false,
+    "resolutionTypeForRejection": [
+      "Invalid",
+      "Duplicate",
+      "Unrequired"
+    ],
+    "qaRootCauseValue": [
+      "Coding",
+      "Configuration",
+      "Regression",
+      "Data"
+    ],
+    "jiraQADefectDensityIssueType": [
+      "Story",
+      "Enabler Story",
+      "Tech Story",
+      "Change request"
+    ],
+    "jiraBugRaisedByQACustomField": "",
+    "jiraBugRaisedByQAIdentification": "",
+    "jiraBugRaisedByQAValue": [],
+    "jiraDefectDroppedStatus": [],
+    "atmSubprojectField": "",
+    "estimationCriteria": "Story Point",
+    "storyPointToHourMapping": "8"
+  }
+]

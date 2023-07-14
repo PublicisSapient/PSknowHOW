@@ -1,0 +1,82 @@
+[
+    {
+        "kpiId": "kpi14",
+        "kpiName": "Defect Injection Rate",
+        "unit": "%",
+        "maxValue": "200",
+        "chartType": "",
+        "kpiInfo": {
+            "definition": "DEFECT INJECTION RATE measures the total number of defects (bugs) detected for a story",
+            "formula": [
+                {
+                    "lhs": "DIR for a sprint",
+                    "operator": "division",
+                    "operands": [
+                        "No. of defects tagged to all stories closed in a sprint",
+                        "Total no. of stories closed in the sprint"
+                    ]
+                }
+            ],
+            "details": [
+                {
+                    "type": "paragraph",
+                    "value": "It is calculated as a ‘Percentage’. Lower the percentage, better is the ‘Quality’"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "A progress indicator shows trend of defect injection rate between last 2 sprints. A downward trend is considered positive"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "Maturity of the KPI is calculated based on the average of the last 5 sprints"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "*If the KPI data is not available for last 5 sprints, the Maturity level will not be shown"
+                }
+            ],
+            "maturityLevels": [
+                {
+                    "level": "M5",
+                    "bgColor": "#6cab61",
+                    "range": "25%"
+                },
+                {
+                    "level": "M4",
+                    "bgColor": "#AEDB76",
+                    "range": "75-25%"
+                },
+                {
+                    "level": "M3",
+                    "bgColor": "#eff173",
+                    "range": "125%-75%"
+                },
+                {
+                    "level": "M2",
+                    "bgColor": "#ffc35b",
+                    "range": "175% -125%"
+                },
+                {
+                    "level": "M1",
+                    "bgColor": "#F06667",
+                    "range": "> 175%"
+                }
+            ]
+        },
+        "id": "63355d7c41a0342c3790fb83",
+        "isDeleted": "False",
+        "kpiUnit": "%",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "thresholdValue": 10,
+        "trendValueList": [],
+        "maturityRange": [
+            ">=175",
+            "175-125",
+            "125-75",
+            "75-25",
+            "25-0"
+        ],
+        "groupId": 1
+    }
+]

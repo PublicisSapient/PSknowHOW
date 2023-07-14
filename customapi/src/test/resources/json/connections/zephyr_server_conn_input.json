@@ -1,0 +1,9 @@
+[
+  {
+    "type": "Zephyr",
+    "connectionName": "Zephyr Test",
+    "apiEndPoint": "/rest/atm/1.0",
+    "connPrivate": false,
+    "cloudEnv": false
+  }
+]

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="27.5" height="22" viewBox="0 0 27.5 22">
+  <g id="kpi_settings" transform="translate(1.25)" opacity="1">
+    <line id="Line_154" data-name="Line 154" x2="12" transform="translate(0 5.5)" fill="none" stroke="#707070" stroke-linecap="round" stroke-width="2.5"/>
+    <line id="Line_165" data-name="Line 165" x2="3" transform="translate(22 5.5)" fill="none" stroke="#707070" stroke-linecap="round" stroke-width="2.5"/>
+    <line id="Line_155" data-name="Line 155" x2="12" transform="translate(13 16.5)" fill="none" stroke="#707070" stroke-linecap="round" stroke-width="2.5"/>
+    <g id="Ellipse_41" data-name="Ellipse 41" transform="translate(11.5)" fill="none" stroke="#707070" stroke-width="2.5">
+      <circle cx="5.5" cy="5.5" r="5.5" stroke="none"/>
+      <circle cx="5.5" cy="5.5" r="4.25" fill="none"/>
+    </g>
+    <g id="Ellipse_42" data-name="Ellipse 42" transform="translate(2.5 11)" fill="none" stroke="#707070" stroke-width="2.5">
+      <circle cx="5.5" cy="5.5" r="5.5" stroke="none"/>
+      <circle cx="5.5" cy="5.5" r="4.25" fill="none"/>
+    </g>
+    <line id="Line_166" data-name="Line 166" x2="3" transform="translate(0 16.5)" fill="none" stroke="#707070" stroke-linecap="round" stroke-width="2.5"/>
+  </g>
+</svg>

@@ -1,0 +1,110 @@
+{
+    "message": "Fetched Pipelines Successfully",
+    "success": true,
+    "data": [
+        {
+            "pipelineName": "SBR3 - AEM Feature Merge Pipeline",
+            "definitions": "1"
+        },
+        {
+            "pipelineName": "SBR3 - AEM Develop Backup SBR Bitbucket pipeline",
+            "definitions": "2"
+        },
+        {
+            "pipelineName": "SBR3 - AEM Develop Environment Merge Pipeline",
+            "definitions": "3"
+        },
+        {
+            "pipelineName": "SBR3 - AEM QA Environment Merge Pipeline",
+            "definitions": "4"
+        },
+        {
+            "pipelineName": "SBR3 - SBRDevelop Branch To SBR Develop-QA Merge Pipeline",
+            "definitions": "5"
+        },
+        {
+            "pipelineName": "Pally Test Pipeline -- To be deleted",
+            "definitions": "7"
+        },
+        {
+            "pipelineName": "Pa11y Testing Pipeline",
+            "definitions": "9"
+        },
+        {
+            "pipelineName": "SBR3 AEM ZAP Flow Test Pipeline",
+            "definitions": "11"
+        },
+        {
+            "pipelineName": "SBR3 - SBR Develop-QA Branch To SBR Staging Merge Pipeline",
+            "definitions": "12"
+        },
+        {
+            "pipelineName": "SBR3 - AEM Staging Environment Merge Pipeline",
+            "definitions": "13"
+        },
+        {
+            "pipelineName": "SBR3 - DotCom QA Automation Test Pipeline -- to be deleted",
+            "definitions": "14"
+        },
+        {
+            "pipelineName": "SBR3 - AEM Old Branch List Pipeline",
+            "definitions": "17"
+        },
+        {
+            "pipelineName": "SBR3 - DEV SBRDevelop Branch to SBR UAT Merge Pipeline",
+            "definitions": "18"
+        },
+        {
+            "pipelineName": "SBR3 - AEM UAT Environment Merge Pipeline",
+            "definitions": "19"
+        },
+        {
+            "pipelineName": "SBR3 - AEM Old Feature Branch Delete Pipeline",
+            "definitions": "20"
+        },
+        {
+            "pipelineName": "SBR3 - AEM SonarQube Scan Pipeline",
+            "definitions": "22"
+        },
+        {
+            "pipelineName": "Invoke-API Pipeline",
+            "definitions": "23"
+        },
+        {
+            "pipelineName": "Cache Purge - Dev - Invoke API Pipeline",
+            "definitions": "24"
+        },
+        {
+            "pipelineName": "Cache Purge - QA - Invoke API Pipeline",
+            "definitions": "26"
+        },
+        {
+            "pipelineName": "Cache Purge - UAT - Invoke API Pipeline",
+            "definitions": "27"
+        },
+        {
+            "pipelineName": "Cache Purge - Stage - Invoke API Pipeline",
+            "definitions": "28"
+        },
+        {
+            "pipelineName": "SBR3 - AEM HOTFIX Environment Merge Pipeline",
+            "definitions": "29"
+        },
+        {
+            "pipelineName": "Google Lighthouse Reports - Pipeline",
+            "definitions": "30"
+        },
+        {
+            "pipelineName": "Cache Purge - PROD- Invoke API Pipeline",
+            "definitions": "32"
+        },
+        {
+            "pipelineName": "Dotcom E-commerce QA Automation Test Pipeline",
+            "definitions": "33"
+        },
+        {
+            "pipelineName": "Dotcom Ecom Automation - Test 2",
+            "definitions": "34"
+        }
+    ]
+}

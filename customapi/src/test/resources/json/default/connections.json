@@ -1,0 +1,79 @@
+[
+	{
+		"id" : "5fd99f7bc8b51a7b55aec836",
+		"type" : "Jira",
+		"connectionName" : "Tools-Atlassian Tools Support -Jira Connection",
+		"cloudEnv" : false,
+		"apiEndPoint" : "rest/api/2/",
+		"privateKey" : "",
+		"isOAuth" : false,
+		"offline" : false,
+		"updatedAt" : "2020-12-16T06:45:54"
+	},
+	{
+		"id" : "5fdc809fb55d53cc1692540f",
+		"type" : "Sonar",
+		"connectionName" : "Sonar Connection 9",
+		"createdBy" : "SUPERADMIN",
+		"updatedBy" : "SUPERADMIN",
+		"connectionUsers" : [
+			"SUPERADMIN"
+		],
+		"isConnPrivate" : false
+	},
+	{
+		"id" : "5fdc809fb55d53cc1692542e",
+		"type" : "Jenkins",
+		"connectionName" : "Jenkins Connection 12",
+		"createdBy" : "SUPERADMIN",
+		"updatedBy" : "SUPERADMIN",
+		"connectionUsers" : [
+			"SUPERADMIN"
+		],
+		"isConnPrivate" : false
+	},
+	{
+		"id" : "5fdc809fb55d53cc1692543c",
+		"type" : "Bitbucket",
+		"connectionName" : "Bitbucket Connection 6",
+		"apiEndPoint" : "/projectName/repoName",
+		"createdBy" : "SUPERADMIN",
+		"updatedBy" : "SUPERADMIN",
+		"connectionUsers" : [
+			"SUPERADMIN"
+		],
+		"isConnPrivate" : false
+	},
+	{
+		"id" : "60d56b5d42881d7b6e2e8d12",
+		"type" : "Azure",
+		"connectionName" : "AutomatedAzureConnection19",
+		"cloudEnv" : false,
+		"isOAuth" : false,
+		"offline" : false,
+		"createdAt" : "2021-06-25T05:36:29",
+		"createdBy" : "SUPERADMIN",
+		"connPrivate" : true,
+		"updatedBy" : "SUPERADMIN",
+		"connectionUsers" : [
+			"SUPERADMIN"
+		],
+		"_class" : "com.publicissapient.kpidashboard.common.model.connection.Connection"
+	},
+	{
+		"id": "61ee308fb665a32d954da08a",
+		"type": "GitHub",
+		"connectionName": "Test GitHub",
+		"cloudEnv": false,
+		"isOAuth": false,
+		"offline": false,
+		"createdAt": "2022-01-24T10:22:31",
+		"createdBy": "SUPERADMIN",
+		"connPrivate": true,
+		"updatedBy": "SUPERADMIN",
+		"connectionUsers": [
+			"SUPERADMIN"
+		]
+	}
+
+]

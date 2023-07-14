@@ -1,0 +1,81 @@
+[
+  {
+    "node": [
+      {
+        "groupName": "hierarchyLevelOne",
+        "accountHierarchyKanban": {
+          "nodeName": "Sample One",
+          "path": "",
+          "createdDate": "2022-09-29T11:39:06.262",
+          "isDeleted": "False",
+          "filterCategoryId": "632814ec8d7e06a0cfd669bc",
+          "basicProjectConfigId": "6335368249794a18e8a4479f",
+          "labelName": "hierarchyLevelOne",
+          "nodeId": "Sample One_hierarchyLevelOne"
+        },
+        "level": 1,
+        "name": "Sample One",
+        "id": "Sample One_hierarchyLevelOne",
+        "value": 0,
+        "parentId": null
+      },
+      {
+        "groupName": "hierarchyLevelTwo",
+        "accountHierarchyKanban": {
+          "nodeName": "Sample Two",
+          "path": "Sample One_hierarchyLevelOne",
+          "createdDate": "2022-09-29T11:39:06.262",
+          "isDeleted": "False",
+          "filterCategoryId": "632814ec8d7e06a0cfd669bd",
+          "basicProjectConfigId": "6335368249794a18e8a4479f",
+          "labelName": "hierarchyLevelTwo",
+          "nodeId": "Sample Two_hierarchyLevelTwo"
+        },
+        "level": 2,
+        "name": "Sample Two",
+        "id": "Sample Two_hierarchyLevelTwo",
+        "value": 0,
+        "parentId": "Sample One_hierarchyLevelOne"
+      },
+      {
+        "groupName": "hierarchyLevelThree",
+        "accountHierarchyKanban": {
+          "nodeName": "Sample Three",
+          "path": "Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+          "createdDate": "2022-09-29T11:39:06.262",
+          "isDeleted": "False",
+          "filterCategoryId": "632814ec8d7e06a0cfd669be",
+          "basicProjectConfigId": "6335368249794a18e8a4479f",
+          "labelName": "hierarchyLevelThree",
+          "nodeId": "Sample Three_hierarchyLevelThree"
+        },
+        "level": 3,
+        "name": "Sample Three",
+        "id": "Sample Three_hierarchyLevelThree",
+        "value": 0,
+        "parentId": "Sample Two_hierarchyLevelTwo"
+      },
+      {
+        "groupName": "project",
+        "accountHierarchyKanban": {
+          "nodeName": "Kanban Project",
+          "path": "Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+          "createdDate": "2022-09-29T11:39:06.262",
+          "isDeleted": "False",
+          "filterCategoryId": null,
+          "basicProjectConfigId": "6335368249794a18e8a4479f",
+          "labelName": "project",
+          "nodeId": "Kanban Project_6335368249794a18e8a4479f"
+        },
+        "level": 4,
+        "name": "Kanban Project",
+        "id": "Kanban Project_6335368249794a18e8a4479f",
+        "value": 0,
+        "parentId": "Sample Three_hierarchyLevelThree"
+      }
+    ],
+    "leafNodeId": "Kanban Project_6335368249794a18e8a4479f",
+    "basicProjectConfigId": "6335368249794a18e8a4479f",
+    "labelName": "project"
+  }
+]

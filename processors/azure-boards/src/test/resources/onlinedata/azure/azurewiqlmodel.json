@@ -1,0 +1,58 @@
+{
+  "queryType": "flat",
+  "queryResultType": "workItem",
+  "asOf": "2020-07-17T12:01:50.663Z",
+  "columns": [
+    {
+      "referenceName": "System.Id",
+      "name": "ID",
+      "url": "https://test.com/testUser/_apis/wit/fields/System.Id"
+    },
+    {
+      "referenceName": "System.Title",
+      "name": "Title",
+      "url": "https://test.com/testUser/_apis/wit/fields/System.Title"
+    },
+    {
+      "referenceName": "System.State",
+      "name": "State",
+      "url": "https://test.com/testUser/_apis/wit/fields/System.State"
+    }
+  ],
+  "sortColumns": [
+    {
+      "field": {
+        "referenceName": "System.CreatedDate",
+        "name": "Created Date",
+        "url": "https://test.com/testUser/_apis/wit/fields/System.CreatedDate"
+      },
+      "descending": false
+    }
+  ],
+  "workItems": [
+    {
+      "id": 1,
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/1"
+    },
+    {
+      "id": 2,
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/2"
+    },
+    {
+      "id": 3,
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/3"
+    },
+    {
+      "id": 4,
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/4"
+    },
+    {
+      "id": 41,
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/41"
+    },
+    {
+      "id": 92,
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92"
+    }
+  ]
+}

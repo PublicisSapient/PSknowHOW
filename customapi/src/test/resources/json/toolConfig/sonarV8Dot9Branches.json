@@ -1,0 +1,24 @@
+{
+  "branches": [
+    {
+      "name": "develop",
+      "isMain": false,
+      "type": "BRANCH",
+      "status": {
+        "qualityGateStatus": "OK"
+      },
+      "analysisDate": "2022-03-31T18:37:12+0000",
+      "excludedFromPurge": true
+    },
+    {
+      "name": "master",
+      "isMain": true,
+      "type": "BRANCH",
+      "status": {
+        "qualityGateStatus": "OK"
+      },
+      "analysisDate": "2022-03-31T17:41:13+0000",
+      "excludedFromPurge": true
+    }
+  ]
+}

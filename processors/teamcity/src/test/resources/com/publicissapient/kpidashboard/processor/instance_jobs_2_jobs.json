@@ -1,0 +1,19 @@
+{
+  "project": [
+    {
+      "id": "Project2",
+      "name": "Project-2",
+      "parentProjectId": "_Root",
+      "href": "/app/rest/projects/id:Project2",
+      "webUrl": "http://server:port/project.html?projectId=Project2"
+    },
+    {
+      "id": "p1",
+      "name": "Project1",
+      "parentProjectId": "_Root",
+      "description": "Sample project to test teamcity api",
+      "href": "/app/rest/projects/id:p1",
+      "webUrl": "http://server:port/project.html?projectId=p1"
+    }
+  ]
+}

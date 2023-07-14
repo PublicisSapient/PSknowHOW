@@ -1,0 +1,604 @@
+[
+  {
+    "id" : 99608,
+    "description" : "Jira 8.5 ER Upgrade",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-03-14T05:30:00.000"
+  },
+
+  {
+    "id" : "99609",
+    "description" : "Speedy v2.12.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-03-06T05:30:00.000"
+  },
+  {
+    "id" : "99610",
+    "description" : "Speedy v2.13.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-03-09T05:30:00.000"
+  },
+  {
+    "id" : "101208",
+    "description" : "Speedy v3.0.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-03-20T05:30:00.000"
+  },
+  {
+    "id" : "101207",
+    "description" : "Speedy v3.1.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-04-03T05:30:00.000"
+  },
+  {
+    "id" : "101237",
+    "description" : "Speedy v3.2.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-04-20T05:30:00.000"
+  },
+  {
+    "id" : "101685",
+    "description" : "Speedy v3.3.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-05-04T05:30:00.000"
+  },
+  {
+    "id" : "103100",
+    "description" : "Speedy v3.3.1",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-05-22T05:30:00.000"
+  },
+  {
+    "id" : "102708",
+    "description" : "Speedy v3.4.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-06-08T05:30:00.000"
+  },
+  {
+    "id" : "104507",
+    "description" : "KnowHOW v3.5.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-08-04T05:30:00.000"
+  },
+  {
+    "id" : "104937",
+    "description" : "PI-2-ITR-6",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-09-30T05:30:00.000"
+  },
+  {
+    "id" : "104936",
+    "description" : "PI-2-ITR-5",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-09-09T05:30:00.000"
+  },
+  {
+    "id" : "104935",
+    "description" : "PI-2-ITR-4",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-08-26T05:30:00.000"
+  },
+  {
+    "id" : "104934",
+    "description" : "PI-2-ITR-3",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-08-12T05:30:00.000"
+  },
+  {
+    "id" : "104823",
+    "description" : "PI-2-|TR-2",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-07-29T05:30:00.000"
+  },
+  {
+    "id" : "104506",
+    "description" : "PI-2-ITR-1",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-07-15T05:30:00.000"
+  },
+  {
+    "id" : "105213",
+    "description" : "Confluence Upgrade",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-09-30T05:30:00.000"
+  },
+  {
+    "id" : "105214",
+    "description" : "Digitas.Fr Migration",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-09-23T05:30:00.000"
+  },
+  {
+    "id" : "105851",
+    "description" : "KnowHOW v3.6.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-08-20T05:30:00.000"
+  },
+  {
+    "id" : "105882",
+    "description" : "KnowHOW v3.7.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-10-26T05:30:00.000"
+  },
+  {
+    "id" : "106242",
+    "description" : "Easy Agile Plugin Upgrade",
+    "isArchived" : "false",
+    "isReleased" : "true"
+  },
+  {
+    "id" : "106243",
+    "description" : "PI-3-ITR-1",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-10-13T05:30:00.000"
+  },
+  {
+    "id" : "106244",
+    "description" : "PI-3-ITR-2",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-10-27T05:30:00.000"
+  },
+  {
+    "id" : "106245",
+    "description" : "PI-3-ITR-3",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-11-10T05:30:00.000"
+  },
+  {
+    "id" : "106246",
+    "description" : "PI-3-ITR-4",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-11-24T05:30:00.000"
+  },
+  {
+    "id" : "106247",
+    "description" : "PI-3-ITR-5",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-12-08T05:30:00.000"
+  },
+  {
+    "id" : "106248",
+    "description" : "PI-3-ITR-6",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-12-23T05:30:00.000"
+  },
+  {
+    "id" : "106249",
+    "description" : "Digitas.US Migration",
+    "isArchived" : "false",
+    "isReleased" : "true"
+  },
+  {
+    "id" : "106500",
+    "description" : "KnowHOW v4.0.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-12-14T05:30:00.000"
+  },
+  {
+    "id" : "107218",
+    "description" : "KnowHOW v4.1.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2020-12-28T05:30:00.000"
+  },
+  {
+    "id" : "107219",
+    "description" : "KnowHOW v4.2.0",
+    "name" : "Admin Screen Improvements; Hygiene KPIs ((Additional Filters not considered)); Tech Debt; EMM in 360",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-02-16T05:30:00.000"
+  },
+  {
+    "id" : "110728",
+    "description" : "KnowHOW v4.3.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-03-10T05:30:00.000"
+  },
+  {
+    "id" : "111246",
+    "description" : "KnowHOW v4.4.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-03-31T05:30:00.000"
+  },
+  {
+    "id" : "113424",
+    "description" : "KnowHOW v4.5.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-05-06T05:30:00.000"
+  },
+  {
+    "id" : "115031",
+    "description" : "KnowHOW v4.6.0",
+    "name" : "Major Release",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-07-27T05:30:00.000"
+  },
+  {
+    "id" : "114658",
+    "description" : "KnowHOW v4.7.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-10-01T05:30:00.000"
+  },
+  {
+    "id" : "114659",
+    "description" : "KnowHOW v4.8.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-01-07T05:30:00.000"
+  },
+  {
+    "id" : "114661",
+    "description" : "KnowHOW PI-6",
+    "isArchived" : "false",
+    "isReleased" : "false",
+    "releaseDate" : "2021-09-29T05:30:00.000"
+  },
+  {
+    "id" : "115209",
+    "description" : "KnowHOW v4.5.1",
+    "name" : "Project Delete Functionality",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-06-11T05:30:00.000"
+  },
+  {
+    "id" : "116409",
+    "description" : "closed",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-09-21T05:30:00.000"
+  },
+  {
+    "id" : "116701",
+    "description" : "KnowHOW PI-7",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  },
+  {
+    "id" : "116704",
+    "description" : "SonarQube Upgrade 8.9",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-09-25T05:30:00.000"
+  },
+  {
+    "id" : "116705",
+    "description" : "Bitbucket Consolidation",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-11-30T05:30:00.000"
+  },
+  {
+    "id" : "117421",
+    "description" : "KnowHOW v4.6.1",
+    "name" : "Emergency issues",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-08-17T05:30:00.000"
+  },
+  {
+    "id" : "118523",
+    "description" : "KnowHOW v4.6.2",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-09-17T05:30:00.000"
+  },
+  {
+    "id" : "119102",
+    "description" : "Jira Upgrade 8.13.x",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2021-11-27T05:30:00.000"
+  },
+  {
+    "id" : "121216",
+    "description" : "Bitbucket Upgrade 7.6",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-01-22T05:30:00.000"
+  },
+  {
+    "id" : "121215",
+    "description" : "Confluence Upgrade 7.13.x",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-03-12T05:30:00.000"
+  },
+  {
+    "id" : "121214",
+    "description" : "Jira Upgrade 8.20",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-03-26T05:30:00.000"
+  },
+  {
+    "id" : "122214",
+    "description" : "AP PI-9",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  },
+  {
+    "id" : "123004",
+    "description" : "KnowHOW PI-8",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  },
+  {
+    "id" : "123315",
+    "description" : "KnowHOW PI-9",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  },
+  {
+    "id" : "121428",
+    "description" : "AP PI-8",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  },
+  {
+    "id" : "121427",
+    "description" : "AP PI-7",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  },
+  {
+    "id" : "123146",
+    "description" : "AP v1.1.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-06-23T05:30:00.000"
+  },
+  {
+    "id" : "116316",
+    "description" : "AP v1.0.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-06-13T05:30:00.000"
+  },
+  {
+    "id" : "114660",
+    "description" : "KnowHOW v4.9.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-03-03T05:30:00.000"
+  },
+  {
+    "id" : "117502",
+    "description" : "KnowHOW v4.10.0",
+    "name" : "Hygiene Dashboard, Customer feedback",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-04-04T05:30:00.000"
+  },
+  {
+    "id" : "123929",
+    "description" : "KnowHOW v4.11.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-05-24T05:30:00.000"
+  },
+  {
+    "id" : "123788",
+    "description" : "KnowHOW v5.0.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-06-21T05:30:00.000"
+  },
+  {
+    "id" : "124531",
+    "description" : "KnowHOW v4.9.1",
+    "name" : "Hotfix Release",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-03-14T05:30:00.000"
+  },
+  {
+    "id" : "125509",
+    "description" : "KnowHOW v4.10.1",
+    "name" : "Future Sprints removal",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-04-18T05:30:00.000"
+  },
+  {
+    "id" : "126401",
+    "description" : "KnowHOW v4.11.1",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-06-10T05:30:00.000"
+  },
+  {
+    "id" : "126504",
+    "description" : "KnowHOW v4.10.2",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-05-18T05:30:00.000"
+  },
+  {
+    "id" : "127246",
+    "description" : "AP PI-10",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  },
+  {
+    "id" : "127822",
+    "description" : "AP v1.2.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-08-08T05:30:00.000"
+  },
+  {
+    "id" : "127829",
+    "description" : "KnowHOW PI-10",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  },
+  {
+    "id" : "128225",
+    "description" : "KnowHOW v5.0.2",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-07-18T05:30:00.000"
+  },
+  {
+    "id" : "128230",
+    "description" : "AP v1.4.0",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  },
+  {
+    "id" : "128231",
+    "description" : "AP v1.3.0",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-09-09T05:30:00.000"
+  },
+  {
+    "id" : "128232",
+    "description" : "AP v1.5.0",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  },
+  {
+    "id" : "128409",
+    "description" : "KnowHOW v5.0.3",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-07-22T05:30:00.000"
+  },
+  {
+    "id" : "129835",
+    "description" : "AP v1.2.1",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-08-25T05:30:00.000"
+  },
+  {
+    "id" : "130312",
+    "description" : "Enable Automated User Deactivation",
+    "isArchived" : "false",
+    "isReleased" : "false",
+    "releaseDate" : "2022-09-30T05:30:00.000"
+  },
+  {
+    "id" : "130313",
+    "description" : "Enable Token Based Authentication",
+    "isArchived" : "false",
+    "isReleased" : "false",
+    "releaseDate" : "2022-11-30T05:30:00.000"
+  },
+  {
+    "id" : "128120",
+    "description" : "KnowHOW v5.0.1",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-07-01T05:30:00.000"
+  },
+  {
+    "id" : "124534",
+    "description" : "KnowHOW v5.1.0",
+    "name" : "Kanban Dashboard Aggregations & UI, Iteration Dashboard, Committed vs Delivered, Capacity Planning & Test Execution details",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-09-09T05:30:00.000"
+  },
+  {
+    "id" : "128103",
+    "description" : "KnowHOW v5.2.0",
+    "name" : "Nissan fixes, HSBC",
+    "isArchived" : "false",
+    "isReleased" : "false",
+    "releaseDate" : "2022-10-07T05:30:00.000"
+  },
+  {
+    "id" : "128104",
+    "description" : "KnowHOW v5.3.0",
+    "name" : "Metadata Separation",
+    "isArchived" : "false",
+    "isReleased" : "false",
+    "releaseDate" : "2022-10-13T05:30:00.000"
+  },
+  {
+    "id" : "128127",
+    "description" : "KnowHOW v5.4.0",
+    "isArchived" : "false",
+    "isReleased" : "false",
+    "releaseDate" : "2022-11-15T05:30:00.000"
+  },
+  {
+    "id" : "130513",
+    "description" : "KnowHOW v5.0.4",
+    "name" : "Sonar Hotfixes",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-09-02T05:30:00.000"
+  },
+  {
+    "id" : "130328",
+    "description" : "KnowHOW_v5.0.4",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  },
+  {
+    "id" : "130460",
+    "description" : "AP PI-11",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  },
+  {
+    "id" : "130544",
+    "description" : "KnowHOW v5.1.1",
+    "name" : "Hotfix - GS",
+    "isArchived" : "false",
+    "isReleased" : "true",
+    "releaseDate" : "2022-09-15T05:30:00.000"
+  },
+  {
+    "id" : "131004",
+    "description" : "KnowHOW v5.5.0",
+    "isArchived" : "false",
+    "isReleased" : "false",
+    "releaseDate" : "2023-01-03T05:30:00.000"
+  },
+  {
+    "id" : "131124",
+    "description" : "KnowHOW v5.2.1",
+    "name" : "Temp",
+    "isArchived" : "false",
+    "isReleased" : "false"
+  }
+
+]

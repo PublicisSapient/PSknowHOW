@@ -1,0 +1,10 @@
+{
+    "message": "branches list fetch successfully",
+    "success": true,
+    "data": [
+        "origin/DTS_10195_logs_jira",
+        "origin/develop",
+        "origin/release-6.0.0",
+        "master"
+    ]
+}

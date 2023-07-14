@@ -1,0 +1,91 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<div class="main">
+    <p-table #dt [columns]="cols" dataKey="id" [value]="allProjectList" [rows]="10" [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[5,10,25]" [loading]="loading" [paginator]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [globalFilterFields]="globalSearchFilter" styleClass="p-datatable-striped" [alwaysShowPaginator]="false">
+        <ng-template pTemplate="caption">
+            <div class="table-header">
+                List of Projects
+                <div class="d-flex p-align-center p-d-flex">
+                    <span class="p-input-icon-left p-mr-3">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                            placeholder="Global Search" />
+                    </span>
+                    <button pButton pRipple label="New Project" icon="pi pi-plus" class="p-button-success p-ml-2"
+                        (click)="newProject()"></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr *ngIf="columns.length>0">
+                <th [pSortableColumn]="col.id" *ngFor="let col of columns" class="p-text-capitalize">
+                    <div class="p-d-flex col-head">
+
+                        {{col.heading}}
+                        <p-sortIcon [field]="col.id"></p-sortIcon>
+                    </div>
+                </th>
+                <th class="p-text-right p-pr-5">Actions</th>
+            </tr>
+            <tr class="w-100" *ngIf="columns.length>0">
+                <th *ngFor="let col of columns">
+                    <input pInputText [id]="col.id" type="text"
+                        (input)="dt.filter($event.target.value, col.id, 'startsWith')" class="p-column-filter"
+                        [style]="{'width':'100%'}" placeholder="Search" />
+                    <label [for]="col.id"></label>
+                </th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-project let-columns="columns">
+            <tr>
+                <td *ngFor="let col of columns">
+                    {{project[col.id]}}
+                </td>
+                <td class="p-0 p-text-right">
+                    <div class="p-d-flex p-jc-end">
+                        <div *ngIf="isAdminOrSuperAdmin" class="action-btns p-mr-5"
+                            (click)="editConfiguration(project)"><i class="fas fa-wrench"></i></div>
+                        <div *ngIf="isAdminOrSuperAdmin" class="action-btns" (click)="deleteProject(project)"
+                            [ngClass]="{'not-allowed': authorization.checkIfViewer(project)}"><i
+                                class="far fa-trash-alt p-mr-5"></i></div>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td [attr.colspan]="7">
+                    No Project found
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-confirmDialog #cd>
+    <p-footer>
+        <button *ngIf="projectConfirm" type="button" (click)="cd.accept()" pButton label="Yes"></button>
+        <button *ngIf="projectConfirm" type="button" (click)="cd.reject()" pButton label="No"></button>
+        <button *ngIf="!projectConfirm" type="button" (click)="cd.reject()" pButton label="OK"></button>
+    </p-footer>
+</p-confirmDialog>

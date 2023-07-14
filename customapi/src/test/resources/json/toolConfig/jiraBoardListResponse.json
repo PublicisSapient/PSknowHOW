@@ -1,0 +1,18 @@
+{
+  "maxResults": 50,
+  "startAt": 0,
+  "total": 2,
+  "isLast": true,
+  "values": [
+    {
+      "id": 11862,
+      "name": "Test | XYZ | Scrum Board",
+      "type": "scrum"
+    },
+    {
+      "id": 14857,
+      "name": "Test | ABC Support | Scrum Board",
+      "type": "scrum"
+    }
+  ]
+}

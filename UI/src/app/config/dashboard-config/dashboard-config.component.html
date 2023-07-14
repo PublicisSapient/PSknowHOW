@@ -1,0 +1,51 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+  <div class="dashboard-config-block p-p-3">
+    <p-toast position="top-right"></p-toast>
+    <button (click)="save()" class="save-kpi p-p-2"><img src="../../../assets/img/save_icon.svg" alt="save" class="save-icon"/>Save</button>
+    <p-tabView (onChange)="handleTabChange($event)" class="dashboard-config-tabs">
+        <p-tabPanel *ngFor='let item of tabHeaders' header="{{item}}" headerStyleClass="tab-{{item}}">
+            <form [formGroup]="kpiForm" autocomplete="off" *ngIf="item === selectedTab">
+                <div *ngFor="let boardData of tabListContent[item]; let i=index" class="kpi-category-header-block">
+                    <div class="kpi-category-header p-mb-3"
+                        *ngIf="((boardData?.boardName && boardData?.kpis.length > 0) 
+                        && ((item.toLowerCase() === 'scrum' && i==0 && tabListContent[item].length < 3) || (item.toLowerCase() === 'kanban' && i==0 && tabListContent[item].length < 2) || (i==0 && item.toLowerCase() === 'others') || i!==0))">
+                        <div class="p-grid board-name-block p-py-2 p-d-flex p-jc-between">
+                            <div class="p-xl-6 p-md-12 p-pl-3 p-pr-3 p-text-left board-name">
+                                {{boardData.boardName}}
+                            </div>
+                            <div class="p-xl-6 p-md-12 p-pl-2 p-pr-2 p-text-right" formGroupName="kpiCategories">
+                                <p-inputSwitch [formControlName]="boardData.boardName" (onChange)="handleKpiCategoryChange($event, boardData)">
+                                </p-inputSwitch>
+                                <span class="all-selection p-px-2">All</span>
+                            </div>
+                        </div>
+                        <div class="p-grid kpis-list  p-pl-2 p-pr-2 " formGroupName="kpis">
+                            <div class="p-xl-3 p-md-12" *ngFor="let kpi of boardData.kpis">
+                                <p-inputSwitch *ngIf = "item === selectedTab" [formControlName]="kpi.kpiId" (onChange)="handleKpiChange($event, kpi, boardData.boardName, boardData.kpis)">
+                                </p-inputSwitch>
+                                <span class="kpi-name p-p-3">{{kpi.kpiName}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </p-tabPanel>
+    </p-tabView>
+    <app-page-loader *ngIf="loader"></app-page-loader>
+</div>

@@ -1,0 +1,57 @@
+{
+  "count": 13,
+  "property": [
+    {
+      "name": "ArtifactsSize",
+      "value": "9576"
+    },
+    {
+      "name": "BuildDuration",
+      "value": "5441"
+    },
+    {
+      "name": "BuildDurationNetTime",
+      "value": "362"
+    },
+    {
+      "name": "buildStageDuration:artifactsPublishing",
+      "value": "4663"
+    },
+    {
+      "name": "buildStageDuration:buildFinishing",
+      "value": "53"
+    },
+    {
+      "name": "buildStageDuration:buildStepRUNNER_2",
+      "value": "362"
+    },
+    {
+      "name": "buildStageDuration:firstStepPreparation",
+      "value": "12"
+    },
+    {
+      "name": "buildStageDuration:toolsUpdating",
+      "value": "1"
+    },
+    {
+      "name": "BuildTestStatus",
+      "value": "1"
+    },
+    {
+      "name": "queueWaitReason:Build_settings_have_not_been_finalized",
+      "value": "47"
+    },
+    {
+      "name": "serverSideBuildFinishing",
+      "value": "50"
+    },
+    {
+      "name": "SuccessRate",
+      "value": "1"
+    },
+    {
+      "name": "TimeSpentInQueue",
+      "value": "44"
+    }
+  ]
+}
