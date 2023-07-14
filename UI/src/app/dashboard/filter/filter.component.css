@@ -1097,4 +1097,28 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 .traceLog-fail-font{
   color:  red;
 }
-
+.comment-popup{
+  width: 300px;
+  max-height: 400px;
+  overflow-y: scroll;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  padding: 15px;
+  box-shadow: 0px 1px 10px #00000045;
+  z-index: 2000;
+}
+.latest-comments{
+  color: #666666;
+}
+.comment-heading{
+  color: var(--color-blue);
+}
+.comment-author{
+  color: #666666;
+}
+.comment-msg{
+  color: #666666;
+  font-size: .8rem; 
+}

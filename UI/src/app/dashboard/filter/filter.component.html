@@ -215,6 +215,26 @@
             </div>
 
             <!-- /show/hide kpi's ends -->
+            <!-- comments icon start -->
+            <div class="position-relative">
+               <div class="btn-custom p-p-2 rounded filter-btn p-ml-2"
+                  (click)="getRecentComments(); showCommentPopup = !showCommentPopup" role="button">
+                  <img src="../../../assets/img/ico-comments.svg" alt="Comments" />
+               </div>
+               <div id="comment-popup" class="comment-popup" *ngIf="showCommentPopup && commentList?.length > 0">
+                  <h5 class="p-m-0 latest-comments">Latest 10 comments</h5>
+                  <h5 class="p-m-0"></h5>
+                  <div *ngFor="let comment of commentList">
+                     <h5 class="comment-heading p-mb-0 p-mt-2">{{comment.kpiId}}</h5>
+                     <div class="comment-author">
+                        <b>{{comment?.commentBy}}</b> 
+                        {{comment?.commentOn}}
+                     </div>
+                     <p class="comment-msg p-mt-1">{{comment?.comment}}</p>
+                  </div>
+               </div>
+            </div>
+            <!-- /comments icon end -->
             <!-- Notification button start -->
             <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn noti-btn-wraper"
                (click)="notification.toggle($event)" role="button">
