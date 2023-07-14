@@ -1,0 +1,54 @@
+{
+  "total_count": 2,
+  "workflow_runs": [
+    {
+      "id": 956414393,
+      "name": "CI",
+      "node_id": "WFR_kwLOENr6TM45Abm5",
+      "head_branch": "DTS-11558",
+      "display_title": "CI",
+      "run_number": 24,
+      "event": "pull_request_review",
+      "status": "completed",
+      "conclusion": "success",
+      "workflow_id": 8846930,
+      "url": "https://test.com/repos/username/reponame/actions/runs/956414393",
+      "html_url": "https://github.com/username/reponame/actions/runs/956414393",
+      "pull_requests": [],
+      "created_at": "2021-06-21T08:38:43Z",
+      "updated_at": "2021-06-21T08:57:05Z",
+      "run_started_at": "2021-06-21T08:38:43Z",
+      "workflow_url": "https://test.com/repos/username/reponame/actions/workflows/8846930",
+      "head_commit": {
+        "author": {
+          "name": "testUser",
+          "email": "test.user@test.com"
+        }
+      }
+    },
+    {
+      "id": 925458356,
+      "name": "CI",
+      "node_id": "WFR_kwLOENr6TM43KV-0",
+      "head_branch": "master",
+      "run_number": 23,
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "workflow_id": 8846930,
+      "url": "https://test.com/repos/username/reponame/actions/runs/925458356",
+      "html_url": "https://github.com/username/reponame/actions/runs/925458356",
+      "pull_requests": [],
+      "created_at": "2021-06-10T14:27:54Z",
+      "updated_at": "2021-06-10T14:28:37Z",
+      "run_started_at": "2021-06-21T08:38:43Z",
+      "workflow_url": "https://test.com/repos/username/reponame/actions/workflows/8846930",
+      "head_commit": {
+        "author": {
+          "name": "testUser2",
+          "email": "testUser2@test.com"
+        }
+      }
+    }
+  ]
+}

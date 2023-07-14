@@ -1,0 +1,150 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
+<div class="main login-settings-container p-pb-1">
+    <h3 class="card__primary__title__text p-mb-3 p-mt-1">Configuration</h3>
+    <div class="checkbox-options-container border-top p-mt-3" *ngIf="selectedTypes.length">
+        <div *ngFor="let option of loginSettingsTypes;let i=index" class="checkbox-option p-pl-3 p-pr-3">
+            <p-checkbox name="group" value="option" [value]="option" [(ngModel)]="selectedTypes"
+                [inputId]="option.name" (onChange)="checkValues()"
+                [readonly]="option.name === 'standardLogin' && typeNotSelected('adLogin')"></p-checkbox>
+            <label [for]="option.name" class="p-ml-3">{{option.label}}</label>
+        </div>
+        <span>* Select atleast 1 Authentication type</span>
+    </div>
+    <!-- <form [hidden]="typeNotSelected('standardLogin')" [formGroup]="standardLoginForm" autocomplete="off" class="p-mx-auto">
+        <h3 class="form-title">KnowHOW Local Authentication</h3>
+        <div class="p-grid p-pt-1">
+            <div class="p-field p-p-0 p-lg-5 p-mr-4 p-ml-2">
+                <div class="p-field p-p-0">
+                    <span class="p-float-label">
+                        <input type="text" pInputText id="username" formControlName="username"
+                            [style]="{'width':'100%'}" required
+                            [ngClass]="{ 'p-invalid': submitted && adForm.username.errors }">
+                        <label for="username">Enter
+                            User Name</label>
+                    </span>
+                </div>
+            </div>
+            <div class="p-field p-p-0 p-lg-5">
+                <div class="p-field p-p-0">
+                    <span class="p-float-label">
+                        <input type="password" pInputText id="password" formControlName="password"
+                            [style]="{'width':'100%'}" required
+                            [ngClass]="{ 'p-invalid': submitted && adForm.password.errors }"
+                            autocomplete="new-password">
+                        <label for="password">Enter
+                            Password</label>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </form> -->
+    <form [style.opacity]="typeNotSelected('adLogin') ? '0' : '1'" [style.visibility]="typeNotSelected('adLogin') ? 'hidden' : 'visible'" [formGroup]="adSettingsForm" autocomplete="off" class="p-mx-auto">
+        <h3 class="form-title">AD Authentication</h3>
+        <div class="p-grid p-pt-1">
+            <div class="p-field p-p-0 p-lg-5 p-mr-4 p-ml-2">
+                <div class="p-field p-p-0">
+                    <span class="p-float-label">
+                        <input type="text" pInputText id="username" formControlName="username"
+                            [style]="{'width':'100%'}" required
+                            [ngClass]="{ 'p-invalid': submitted && adForm.username.errors }">
+                        <label for="username">Enter
+                            Bind User Name</label>
+                    </span>
+                </div>
+                <div class="p-field p-p-0">
+                    <span class="p-float-label">
+                        <input type="password" pInputText id="password" formControlName="password"
+                            [style]="{'width':'100%'}" required
+                            [ngClass]="{ 'p-invalid': submitted && adForm.password.errors }"
+                            autocomplete="new-password">
+                        <label for="password">Enter
+                            Bind User Password</label>
+                    </span>
+                </div>
+                <div class="p-field p-p-0">
+                    <span class="p-float-label">
+                        <input type="text" pInputText id="host" formControlName="host" [style]="{'width':'100%'}"
+                            required [ngClass]="{ 'p-invalid': submitted && adForm.host.errors }">
+                        <label for="host">Enter AD
+                            Host</label>
+                    </span>
+                </div>
+            </div>
+            <div class="p-field p-p-0 p-lg-5">
+                <div class="p-field p-p-0">
+                    <span class="p-float-label">
+                        <p-inputNumber id="port" formControlName="port" [style]="{'width':'100%'}" required
+                            [ngClass]="{ 'p-invalid': submitted && adForm.port.errors }" [useGrouping]="false">
+                        </p-inputNumber>
+                        <label for="port">Enter AD
+                            Port</label>
+                    </span>
+                </div>
+
+                <div class="p-field p-p-0">
+                    <span class="p-float-label">
+                        <input type="text" pInputText id="rootDn" formControlName="rootDn" [style]="{'width':'100%'}"
+                            required [ngClass]="{ 'p-invalid': submitted && adForm.rootDn.errors }">
+                        <label for="rootDn">Root Distinguished Name (RootDN)</label>
+                    </span>
+                </div>
+                <div class="p-field p-p-0">
+                    <span class="p-float-label">
+                        <input type="text" pInputText id="domain" formControlName="domain" [style]="{'width':'100%'}"
+                            required [ngClass]="{ 'p-invalid': submitted && adForm.domain.errors }">
+                        <label for="domain">Enter Domain</label>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- <form [hidden]="typeNotSelected('ping')" [formGroup]="pingAuthenticationForm" autocomplete="off" class="p-mx-auto">
+        <h3 class="form-title">PING Authentication</h3>
+        <div class="p-grid p-pt-1">
+            <div class="p-field p-p-0 p-lg-5 p-mr-4 p-ml-2">
+                <div class="p-field p-p-0">
+                    <span class="p-float-label">
+                        <input type="text" pInputText id="field1" formControlName="field1" [style]="{'width':'100%'}"
+                            required [ngClass]="{ 'p-invalid': submitted && adForm.username.errors }">
+                        <label for="username">Enter
+                            field1</label>
+                    </span>
+                </div>
+            </div>
+            <div class="p-field p-p-0 p-lg-5">
+                <div class="p-field p-p-0">
+                    <span class="p-float-label">
+                        <input type="password" pInputText id="field2" formControlName="field2"
+                            [style]="{'width':'100%'}" required
+                            [ngClass]="{ 'p-invalid': submitted && adForm.password.errors }"
+                            autocomplete="new-password">
+                        <label for="password">Enter
+                            field2</label>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </form> -->
+    <div class="save-container">
+        <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3"
+            icon="pi pi-save" [disabled]="disableSave" iconPos="left" label="Save" (click)="submit()"></button>
+    </div>
+</div>

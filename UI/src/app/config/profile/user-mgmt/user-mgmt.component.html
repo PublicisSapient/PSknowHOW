@@ -1,0 +1,92 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
+<h3 class="form_title p-pl-3">Change Password</h3>
+
+<form [formGroup]="changePasswordForm">
+  <div class="group p-xl-6" data-validate="Old Password is required">
+    <span class="p-float-label">
+      <input pInputText class="p-inputtext-lg" type="password" name="oldpassword" id="oldpassword"
+        formControlName="oldpassword" [ngClass]="{ 'is-invalid': submitted && f.oldpassword.errors }"
+        required="required" [style]="{'width':'100%'}" />
+      <label for="oldpassword">Current Password </label>
+    </span>
+    <!-- Password validation-->
+    <div *ngIf="submitted && f.oldpassword.errors" class="invalid-text">
+      <!--Required password-->
+      <div *ngIf="f.oldpassword.errors.required">Current Password is required</div>
+    </div>
+  </div>
+
+  <div class="group p-xl-6" data-validate="Password is required">
+    <span class="p-float-label">
+      <input pInputText class="p-inputtext-lg" type="password" name="password" id="password" formControlName="password"
+        [ngClass]="{ 'is-invalid': submitted && f.password.errors }" required="required"
+        title="At least 8 characters in length with Lowercase letters, Uppercase letters, Numbers and Special characters"
+        [style]="{'width':'100%'}" />
+      <label for="password">New Password </label>
+    </span>
+    <span class="highlight"></span>
+    <span class="bar"></span>
+
+
+    <!-- Password validation-->
+    <div *ngIf="submitted && f.password.errors" class="invalid-text">
+      <!--Required password-->
+      <div *ngIf="f.password.errors.required">New Password is required</div>
+      <div *ngIf="f.password.errors.maxlength">Maximum length is 30 characters</div>
+      <!--Invalid password according to pattern-->
+      <div *ngIf="f.password.errors.pattern">At least 8 characters in length with Lowercase letters, Uppercase
+        letters, Numbers and Special characters($,@,$,!,%,*,?,&)
+      </div>
+    </div>
+  </div>
+
+
+  <div class="group p-xl-6" data-validate="Password is required">
+    <span class="p-float-label">
+      <input pInputText class="p-inputtext-lg" type="password" name="confirmpassword" formControlName="confirmpassword"
+        [ngClass]="{ 'is-invalid': submitted && f.confirmpassword.errors }" id="confirm-pswd" required="required"
+        [style]="{'width':'100%'}" />
+      <label for="confirm-pswd">Confirm New Password </label>
+    </span>
+    <span class="highlight"></span>
+    <span class="bar"></span>
+
+    <!--Required password validation-->
+    <div *ngIf="submitted && f.confirmpassword && f.confirmpassword.errors" class="invalid-text">
+      <div *ngIf="f.confirmpassword.errors.required">Confirm Password is required</div>
+    </div>
+
+    <!--Mismatch password with not required -->
+    <div
+      *ngIf="submitted && changePasswordForm.errors && changePasswordForm.errors['notSame'] && !f.confirmpassword.errors"
+      class="invalid-text">Password mismatch</div>
+
+    <div
+      *ngIf="submitted && changePasswordForm.errors && changePasswordForm.errors['newAndOldPswdMatch'] && !f.confirmpassword.errors"
+      class="invalid-text">Old and new passwords cannot be same</div>
+  </div>
+  <div class="group p-xl-6 p-text-right">
+  <button type="button" pButton pRipple icon="fa fa-check" (click)="onSubmit()" label="Submit"
+    class="p-button p-button-success p-button-raised mar-l-15" [disabled]="!changePasswordForm.valid"></button>
+  </div>
+</form>
+<div *ngIf="error" class="alert alert-danger">{{error}}</div>
+<div *ngIf="success" class="alert">{{success}}</div>

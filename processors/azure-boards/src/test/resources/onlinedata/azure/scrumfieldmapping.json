@@ -1,0 +1,183 @@
+{
+  "id": "5e97fb4f857aba0001487a2c",
+  "projectConfigId": "5e97fb4f857aba0001487a2b",
+  "atmQueryEndpoint": "rest/atm/1.0/",
+  "sprintName": "customfield_12700",
+  "jiradefecttype": [
+    "Bug"
+  ],
+  "jiraIssueTypeNames": [
+    "Story",
+    "Defect",
+    "Feature",
+    "Enabler Story",
+    "Bug",
+    "User Story",
+    "Task"
+  ],
+  "storyFirstStatus": "New",
+  "linkDefectToStoryField": [
+    "Parent"
+  ],
+  "rootCause": "Custom.RootCause",
+  "jiraStatusForDevelopment": [
+    "In Progress"
+  ],
+  "jiraAtmProjectId": "",
+  "jiraAtmProjectKey": "",
+  "jiraStatusForQa": [
+    "In Testing"
+  ],
+  "testAutomated": "Execution Type",
+  "testAutomationStatusLabel": "Execution Type",
+  "testRegressionLabel": "Sanity/ regression",
+  "testRegressionValue": [
+    "Regression"
+  ],
+  "jiraTestCaseType": [],
+  "jiraDefectInjectionIssueType": [
+    "Story",
+    "User Story"
+  ],
+  "jiraDod": [
+    "Resolved"
+  ],
+  "jiraDefectCreatedStatus": "New",
+  "jiraTechDebtIssueType": [
+    "Story",
+    "User Story"
+  ],
+  "jiraTechDebtIdentification": "Labels",
+  "jiraTechDebtCustomField": "",
+  "jiraTechDebtValue": [
+    "TECH_DEBT"
+  ],
+  "jiraDefectRejectionStatus": "Rejection",
+  "jiraBugRaisedByIdentification": "CustomField",
+  "jiraBugRaisedByValue": [
+    "Client Testing (UAT)"
+  ],
+  "jiraDefectSeepageIssueType": [
+    "Story",
+    "User Story"
+  ],
+  "jiraBugRaisedByCustomField": "Custom.UAT",
+  "jiraDefectRemovalStatus": [
+    "Closed",
+    "Resolved"
+  ],
+  "jiraDefectRemovalIssueType": [
+    "Story",
+    "User Story"
+  ],
+  "atmFolderPath": [],
+  "devicePlatform": "devicePlatform",
+  "jiraStoryPointsCustomField": "Custom.Estimation",
+  "jiraTestAutomationIssueType": [
+    "User Story"
+  ],
+  "jiraAutomatedTestValue": [
+    "Automation"
+  ],
+  "jiraCanNotAutomatedTestValue": [
+    "Manual"
+  ],
+  "jiraSprintVelocityIssueType": [
+    "Feature",
+    "User Story"
+  ],
+  "jiraSprintCapacityIssueType": [
+    "Defect",
+    "Feature",
+    "User Story",
+    "Bug",
+    "Task"
+  ],
+  "jiraDefectRejectionlIssueType": [
+    "User Story"
+  ],
+  "jiraDefectCountlIssueType": [
+    "User Story",
+    "Bug"
+  ],
+  "jiraIssueDeliverdStatus": [
+    "Closed"
+  ],
+  "jiraDor": "Active",
+  "jiraIntakeToDorIssueType": [
+    "Story",
+    "User Story"
+  ],
+  "jiraStoryIdentification": [
+    "User Story"
+  ],
+  "jiraLiveStatus": "Closed",
+  "regressionAutomationLabels": [],
+  "rootCauseValue": [
+    "Code Issue"
+  ],
+  "pickNewATMJIRADetails": false,
+  "jiraDataSegregation": [
+    {
+      "jiraSegregationIssueType": [
+        "User Story",
+        "Bug"
+      ],
+      "segregationFieldType": "CustomField",
+      "segregationCustomFieldId": "Custom.Segregation",
+      "segregationValue": [
+        "Segregation"
+      ],
+      "include": true
+    },
+    {
+      "jiraSegregationIssueType": [
+        "User Story",
+        "Bug"
+      ],
+      "segregationFieldType": "Labels",
+      "segregationCustomFieldId": "Custom.Segregation",
+      "segregationValue": [
+        "Segregation"
+      ],
+      "include": true
+    },
+    {
+      "jiraSegregationIssueType": [
+        "User Story",
+        "Bug"
+      ],
+      "segregationFieldType": "CustomField",
+      "segregationCustomFieldId": "Custom.Segregation",
+      "segregationValue": [
+        "SegregationCheck"
+      ],
+      "include": false
+    },
+    {
+      "jiraSegregationIssueType": [
+        "User Story",
+        "Bug"
+      ],
+      "segregationFieldType": "Labels",
+      "segregationCustomFieldId": "Custom.Segregation",
+      "segregationValue": [
+        "Segregation"
+      ],
+      "include": false
+    }
+  ],
+  "qaRootCauseValue": [
+    "Code Issue"
+  ],
+  "jiraQADefectDensityIssueType": [
+    "User Story"
+  ],
+  "jiraBugRaisedByQACustomField": "Custom.QA",
+  "jiraBugRaisedByQAIdentification": "CustomField",
+  "jiraBugRaisedByQAValue": [
+    "QA",
+    "QATesting",
+    "Test"
+  ]
+}

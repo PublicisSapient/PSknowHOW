@@ -1,0 +1,725 @@
+{
+  "count": 5,
+  "value": [
+    {
+      "_links": {
+        "self": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/8"
+        },
+        "web": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_build/results?buildId=8"
+        },
+        "sourceVersionDisplayUri": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/8/sources"
+        },
+        "timeline": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/8/Timeline"
+        },
+        "badge": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/status/2"
+        }
+      },
+      "properties": {
+      },
+      "tags": [
+      ],
+      "validationResults": [
+      ],
+      "plans": [
+        {
+          "planId": "aa03488c-daf3-45da-9db4-cba8e7237194"
+        }
+      ],
+      "triggerInfo": {
+        "ci.sourceSha": "771baf27bf8796adebe30e46cb7a0da50c68457f",
+        "ci.triggerRepository": "17a61eb1-2860-4609-bf01-b6a8769c8a69"
+      },
+      "id": 8,
+      "buildNumber": "20200605.4",
+      "status": "completed",
+      "result": "succeeded",
+      "queueTime": "2020-06-05T10:42:26.0823423Z",
+      "startTime": "2020-06-05T10:42:35.9384631Z",
+      "finishTime": "2020-06-05T10:42:47.5494262Z",
+      "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/8",
+      "definition": {
+        "drafts": [
+        ],
+        "id": 2,
+        "name": "AzureTest-Pipeline2",
+        "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Definitions/2?revision=2",
+        "uri": "vstfs:///Build/Definition/2",
+        "path": "\\",
+        "type": "build",
+        "queueStatus": "enabled",
+        "revision": 2,
+        "project": {
+          "id": "b08688aa-7449-4b13-bc51-68bf67326d54",
+          "name": "AzureTest",
+          "url": "https://test.com/testProject/_apis/projects/b08688aa-7449-4b13-bc51-68bf67326d54",
+          "state": "wellFormed",
+          "revision": 14,
+          "visibility": "private",
+          "lastUpdateTime": "2020-06-03T07:35:31.643Z"
+        }
+      },
+      "buildNumberRevision": 4,
+      "project": {
+        "id": "b08688aa-7449-4b13-bc51-68bf67326d54",
+        "name": "AzureTest",
+        "url": "https://test.com/testProject/_apis/projects/b08688aa-7449-4b13-bc51-68bf67326d54",
+        "state": "wellFormed",
+        "revision": 14,
+        "visibility": "private",
+        "lastUpdateTime": "2020-06-03T07:35:31.643Z"
+      },
+      "uri": "vstfs:///Build/Build/8",
+      "sourceBranch": "refs/heads/master",
+      "sourceVersion": "771baf27bf8796adebe30e46cb7a0da50c68457f",
+      "queue": {
+        "id": 8,
+        "name": "Hosted Ubuntu 1604",
+        "pool": {
+          "id": 8,
+          "name": "Hosted Ubuntu 1604",
+          "isHosted": true
+        }
+      },
+      "priority": "normal",
+      "reason": "individualCI",
+      "requestedFor": {
+        "displayName": "test Display Name",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "uniqueName": "testUser@test.com",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+        "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+      },
+      "requestedBy": {
+        "displayName": "Microsoft.VisualStudio.Services.TFS",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/00000002-0000-8888-8000-000000000000",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+          }
+        },
+        "id": "00000002-0000-8888-8000-000000000000",
+        "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+      },
+      "lastChangedDate": "2020-06-05T10:42:47.8Z",
+      "lastChangedBy": {
+        "displayName": "Microsoft.VisualStudio.Services.TFS",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/00000002-0000-8888-8000-000000000000",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+          }
+        },
+        "id": "00000002-0000-8888-8000-000000000000",
+        "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+      },
+      "orchestrationPlan": {
+        "planId": "aa03488c-daf3-45da-9db4-cba8e7237194"
+      },
+      "logs": {
+        "id": 0,
+        "type": "Container",
+        "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/8/logs"
+      },
+      "repository": {
+        "id": "17a61eb1-2860-4609-bf01-b6a8769c8a69",
+        "type": "TfsGit",
+        "clean": null,
+        "checkoutSubmodules": false
+      },
+      "keepForever": true,
+      "retainedByRelease": false,
+      "triggeredByBuild": null
+    },
+    {
+      "_links": {
+        "self": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/5"
+        },
+        "web": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_build/results?buildId=5"
+        },
+        "sourceVersionDisplayUri": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/5/sources"
+        },
+        "timeline": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/5/Timeline"
+        },
+        "badge": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/status/2"
+        }
+      },
+      "properties": {
+      },
+      "tags": [
+      ],
+      "validationResults": [
+      ],
+      "plans": [
+        {
+          "planId": "aa03488c-daf3-45da-9db4-cba8e7237194"
+        }
+      ],
+      "triggerInfo": {
+        "ci.sourceSha": "771baf27bf8796adebe30e46cb7a0da50c68457f",
+        "ci.triggerRepository": "17a61eb1-2860-4609-bf01-b6a8769c8a69"
+      },
+      "id": 5,
+      "buildNumber": "20200605.4",
+      "status": "completed",
+      "result": "partiallySucceeded",
+      "queueTime": "2020-06-05T10:42:26.0823423Z",
+      "startTime": "2020-06-05T10:42:35.9384631Z",
+      "finishTime": "2020-06-05T10:42:47.5494262Z",
+      "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/5",
+      "definition": {
+        "drafts": [
+        ],
+        "id": 2,
+        "name": "AzureTest-Pipeline2",
+        "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Definitions/2?revision=2",
+        "uri": "vstfs:///Build/Definition/2",
+        "path": "\\",
+        "type": "build",
+        "queueStatus": "enabled",
+        "revision": 2,
+        "project": {
+          "id": "b08688aa-7449-4b13-bc51-68bf67326d54",
+          "name": "AzureTest",
+          "url": "https://test.com/testProject/_apis/projects/b08688aa-7449-4b13-bc51-68bf67326d54",
+          "state": "wellFormed",
+          "revision": 14,
+          "visibility": "private",
+          "lastUpdateTime": "2020-06-03T07:35:31.643Z"
+        }
+      },
+      "buildNumberRevision": 4,
+      "project": {
+        "id": "b08688aa-7449-4b13-bc51-68bf67326d54",
+        "name": "AzureTest",
+        "url": "https://test.com/testProject/_apis/projects/b08688aa-7449-4b13-bc51-68bf67326d54",
+        "state": "wellFormed",
+        "revision": 14,
+        "visibility": "private",
+        "lastUpdateTime": "2020-06-03T07:35:31.643Z"
+      },
+      "uri": "vstfs:///Build/Build/8",
+      "sourceBranch": "refs/heads/master",
+      "sourceVersion": "771baf27bf8796adebe30e46cb7a0da50c68457f",
+      "queue": {
+        "id": 8,
+        "name": "Hosted Ubuntu 1604",
+        "pool": {
+          "id": 8,
+          "name": "Hosted Ubuntu 1604",
+          "isHosted": true
+        }
+      },
+      "priority": "normal",
+      "reason": "individualCI",
+      "requestedFor": {
+        "displayName": "test Display Name",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "uniqueName": "testUser@test.com",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+        "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+      },
+      "requestedBy": {
+        "displayName": "Microsoft.VisualStudio.Services.TFS",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/00000002-0000-8888-8000-000000000000",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+          }
+        },
+        "id": "00000002-0000-8888-8000-000000000000",
+        "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+      },
+      "lastChangedDate": "2020-06-05T10:42:47.8Z",
+      "lastChangedBy": {
+        "displayName": "Microsoft.VisualStudio.Services.TFS",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/00000002-0000-8888-8000-000000000000",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+          }
+        },
+        "id": "00000002-0000-8888-8000-000000000000",
+        "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+      },
+      "orchestrationPlan": {
+        "planId": "aa03488c-daf3-45da-9db4-cba8e7237194"
+      },
+      "logs": {
+        "id": 0,
+        "type": "Container",
+        "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/8/logs"
+      },
+      "repository": {
+        "id": "17a61eb1-2860-4609-bf01-b6a8769c8a69",
+        "type": "TfsGit",
+        "clean": null,
+        "checkoutSubmodules": false
+      },
+      "keepForever": true,
+      "retainedByRelease": false,
+      "triggeredByBuild": null
+    },
+    {
+      "_links": {
+        "self": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/6"
+        },
+        "web": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_build/results?buildId=6"
+        },
+        "sourceVersionDisplayUri": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/6/sources"
+        },
+        "timeline": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/6/Timeline"
+        },
+        "badge": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/status/2"
+        }
+      },
+      "properties": {
+      },
+      "tags": [
+      ],
+      "validationResults": [
+      ],
+      "plans": [
+        {
+          "planId": "aa03488c-daf3-45da-9db4-cba8e7237194"
+        }
+      ],
+      "triggerInfo": {
+        "ci.sourceSha": "771baf27bf8796adebe30e46cb7a0da50c68457f",
+        "ci.triggerRepository": "17a61eb1-2860-4609-bf01-b6a8769c8a69"
+      },
+      "id": 6,
+      "buildNumber": "20200605.4",
+      "status": "completed",
+      "result": "failed",
+      "queueTime": "2020-06-05T10:42:26.0823423Z",
+      "startTime": "2020-06-05T10:42:35.9384631Z",
+      "finishTime": "2020-06-05T10:42:47.5494262Z",
+      "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/6",
+      "definition": {
+        "drafts": [
+        ],
+        "id": 2,
+        "name": "AzureTest-Pipeline2",
+        "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Definitions/2?revision=2",
+        "uri": "vstfs:///Build/Definition/2",
+        "path": "\\",
+        "type": "build",
+        "queueStatus": "enabled",
+        "revision": 2,
+        "project": {
+          "id": "b08688aa-7449-4b13-bc51-68bf67326d54",
+          "name": "AzureTest",
+          "url": "https://test.com/testProject/_apis/projects/b08688aa-7449-4b13-bc51-68bf67326d54",
+          "state": "wellFormed",
+          "revision": 14,
+          "visibility": "private",
+          "lastUpdateTime": "2020-06-03T07:35:31.643Z"
+        }
+      },
+      "buildNumberRevision": 4,
+      "project": {
+        "id": "b08688aa-7449-4b13-bc51-68bf67326d54",
+        "name": "AzureTest",
+        "url": "https://test.com/testProject/_apis/projects/b08688aa-7449-4b13-bc51-68bf67326d54",
+        "state": "wellFormed",
+        "revision": 14,
+        "visibility": "private",
+        "lastUpdateTime": "2020-06-03T07:35:31.643Z"
+      },
+      "uri": "vstfs:///Build/Build/8",
+      "sourceBranch": "refs/heads/master",
+      "sourceVersion": "771baf27bf8796adebe30e46cb7a0da50c68457f",
+      "queue": {
+        "id": 8,
+        "name": "Hosted Ubuntu 1604",
+        "pool": {
+          "id": 8,
+          "name": "Hosted Ubuntu 1604",
+          "isHosted": true
+        }
+      },
+      "priority": "normal",
+      "reason": "individualCI",
+      "requestedFor": {
+        "displayName": "test Display Name",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "uniqueName": "testUser@test.com",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+        "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+      },
+      "requestedBy": {
+        "displayName": "Microsoft.VisualStudio.Services.TFS",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/00000002-0000-8888-8000-000000000000",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+          }
+        },
+        "id": "00000002-0000-8888-8000-000000000000",
+        "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+      },
+      "lastChangedDate": "2020-06-05T10:42:47.8Z",
+      "lastChangedBy": {
+        "displayName": "Microsoft.VisualStudio.Services.TFS",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/00000002-0000-8888-8000-000000000000",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+          }
+        },
+        "id": "00000002-0000-8888-8000-000000000000",
+        "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+      },
+      "orchestrationPlan": {
+        "planId": "aa03488c-daf3-45da-9db4-cba8e7237194"
+      },
+      "logs": {
+        "id": 0,
+        "type": "Container",
+        "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/8/logs"
+      },
+      "repository": {
+        "id": "17a61eb1-2860-4609-bf01-b6a8769c8a69",
+        "type": "TfsGit",
+        "clean": null,
+        "checkoutSubmodules": false
+      },
+      "keepForever": true,
+      "retainedByRelease": false,
+      "triggeredByBuild": null
+    },
+    {
+      "_links": {
+        "self": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/7"
+        },
+        "web": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_build/results?buildId=7"
+        },
+        "sourceVersionDisplayUri": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/7/sources"
+        },
+        "timeline": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/7/Timeline"
+        },
+        "badge": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/status/2"
+        }
+      },
+      "properties": {
+      },
+      "tags": [
+      ],
+      "validationResults": [
+      ],
+      "plans": [
+        {
+          "planId": "aa03488c-daf3-45da-9db4-cba8e7237194"
+        }
+      ],
+      "triggerInfo": {
+        "ci.sourceSha": "771baf27bf8796adebe30e46cb7a0da50c68457f",
+        "ci.triggerRepository": "17a61eb1-2860-4609-bf01-b6a8769c8a69"
+      },
+      "id": 7,
+      "buildNumber": "20200605.4",
+      "status": "completed",
+      "result": "canceled",
+      "queueTime": "2020-06-05T10:42:26.0823423Z",
+      "startTime": "2020-06-05T10:42:35.9384631Z",
+      "finishTime": "2020-06-05T10:42:47.5494262Z",
+      "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/7",
+      "definition": {
+        "drafts": [
+        ],
+        "id": 2,
+        "name": "AzureTest-Pipeline2",
+        "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Definitions/2?revision=2",
+        "uri": "vstfs:///Build/Definition/2",
+        "path": "\\",
+        "type": "build",
+        "queueStatus": "enabled",
+        "revision": 2,
+        "project": {
+          "id": "b08688aa-7449-4b13-bc51-68bf67326d54",
+          "name": "AzureTest",
+          "url": "https://test.com/testProject/_apis/projects/b08688aa-7449-4b13-bc51-68bf67326d54",
+          "state": "wellFormed",
+          "revision": 14,
+          "visibility": "private",
+          "lastUpdateTime": "2020-06-03T07:35:31.643Z"
+        }
+      },
+      "buildNumberRevision": 4,
+      "project": {
+        "id": "b08688aa-7449-4b13-bc51-68bf67326d54",
+        "name": "AzureTest",
+        "url": "https://test.com/testProject/_apis/projects/b08688aa-7449-4b13-bc51-68bf67326d54",
+        "state": "wellFormed",
+        "revision": 14,
+        "visibility": "private",
+        "lastUpdateTime": "2020-06-03T07:35:31.643Z"
+      },
+      "uri": "vstfs:///Build/Build/8",
+      "sourceBranch": "refs/heads/master",
+      "sourceVersion": "771baf27bf8796adebe30e46cb7a0da50c68457f",
+      "queue": {
+        "id": 8,
+        "name": "Hosted Ubuntu 1604",
+        "pool": {
+          "id": 8,
+          "name": "Hosted Ubuntu 1604",
+          "isHosted": true
+        }
+      },
+      "priority": "normal",
+      "reason": "individualCI",
+      "requestedFor": {
+        "displayName": "test Display Name",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "uniqueName": "testUser@test.com",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+        "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+      },
+      "requestedBy": {
+        "displayName": "Microsoft.VisualStudio.Services.TFS",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/00000002-0000-8888-8000-000000000000",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+          }
+        },
+        "id": "00000002-0000-8888-8000-000000000000",
+        "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+      },
+      "lastChangedDate": "2020-06-05T10:42:47.8Z",
+      "lastChangedBy": {
+        "displayName": "Microsoft.VisualStudio.Services.TFS",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/00000002-0000-8888-8000-000000000000",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+          }
+        },
+        "id": "00000002-0000-8888-8000-000000000000",
+        "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+      },
+      "orchestrationPlan": {
+        "planId": "aa03488c-daf3-45da-9db4-cba8e7237194"
+      },
+      "logs": {
+        "id": 0,
+        "type": "Container",
+        "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/8/logs"
+      },
+      "repository": {
+        "id": "17a61eb1-2860-4609-bf01-b6a8769c8a69",
+        "type": "TfsGit",
+        "clean": null,
+        "checkoutSubmodules": false
+      },
+      "keepForever": true,
+      "retainedByRelease": false,
+      "triggeredByBuild": null
+    },
+    {
+      "_links": {
+        "self": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/9"
+        },
+        "web": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_build/results?buildId=9"
+        },
+        "sourceVersionDisplayUri": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/9/sources"
+        },
+        "timeline": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/9/Timeline"
+        },
+        "badge": {
+          "href": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/status/2"
+        }
+      },
+      "properties": {
+      },
+      "tags": [
+      ],
+      "validationResults": [
+      ],
+      "plans": [
+        {
+          "planId": "aa03488c-daf3-45da-9db4-cba8e7237194"
+        }
+      ],
+      "triggerInfo": {
+        "ci.sourceSha": "771baf27bf8796adebe30e46cb7a0da50c68457f",
+        "ci.triggerRepository": "17a61eb1-2860-4609-bf01-b6a8769c8a69"
+      },
+      "id": 9,
+      "buildNumber": "20200605.4",
+      "status": "completed",
+      "result": "anyother",
+      "queueTime": "2020-06-05T10:42:26.0823423Z",
+      "startTime": "2020-06-05T10:42:35.9384631Z",
+      "finishTime": "2020-06-05T10:42:47.5494262Z",
+      "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Builds/9",
+      "definition": {
+        "drafts": [
+        ],
+        "id": 2,
+        "name": "AzureTest-Pipeline2",
+        "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/Definitions/2?revision=2",
+        "uri": "vstfs:///Build/Definition/2",
+        "path": "\\",
+        "type": "build",
+        "queueStatus": "enabled",
+        "revision": 2,
+        "project": {
+          "id": "b08688aa-7449-4b13-bc51-68bf67326d54",
+          "name": "AzureTest",
+          "url": "https://test.com/testProject/_apis/projects/b08688aa-7449-4b13-bc51-68bf67326d54",
+          "state": "wellFormed",
+          "revision": 14,
+          "visibility": "private",
+          "lastUpdateTime": "2020-06-03T07:35:31.643Z"
+        }
+      },
+      "buildNumberRevision": 4,
+      "project": {
+        "id": "b08688aa-7449-4b13-bc51-68bf67326d54",
+        "name": "AzureTest",
+        "url": "https://test.com/testProject/_apis/projects/b08688aa-7449-4b13-bc51-68bf67326d54",
+        "state": "wellFormed",
+        "revision": 14,
+        "visibility": "private",
+        "lastUpdateTime": "2020-06-03T07:35:31.643Z"
+      },
+      "uri": "vstfs:///Build/Build/8",
+      "sourceBranch": "refs/heads/master",
+      "sourceVersion": "771baf27bf8796adebe30e46cb7a0da50c68457f",
+      "queue": {
+        "id": 8,
+        "name": "Hosted Ubuntu 1604",
+        "pool": {
+          "id": 8,
+          "name": "Hosted Ubuntu 1604",
+          "isHosted": true
+        }
+      },
+      "priority": "normal",
+      "reason": "individualCI",
+      "requestedFor": {
+        "displayName": "test Display Name",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "uniqueName": "testUser@test.com",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+        "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+      },
+      "requestedBy": {
+        "displayName": "Microsoft.VisualStudio.Services.TFS",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/00000002-0000-8888-8000-000000000000",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+          }
+        },
+        "id": "00000002-0000-8888-8000-000000000000",
+        "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+      },
+      "lastChangedDate": "2020-06-05T10:42:47.8Z",
+      "lastChangedBy": {
+        "displayName": "Microsoft.VisualStudio.Services.TFS",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/00000002-0000-8888-8000-000000000000",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+          }
+        },
+        "id": "00000002-0000-8888-8000-000000000000",
+        "uniqueName": "00000002-0000-8888-8000-000000000000@2c895908-04e0-4952-89fd-54b0046d6288",
+        "imageUrl": "https://test.com/testProject/_apis/GraphProfile/MemberAvatars/s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA",
+        "descriptor": "s2s.MDAwMDAwMDItMDAwMC04ODg4LTgwMDAtMDAwMDAwMDAwMDAwQDJjODk1OTA4LTA0ZTAtNDk1Mi04OWZkLTU0YjAwNDZkNjI4OA"
+      },
+      "orchestrationPlan": {
+        "planId": "aa03488c-daf3-45da-9db4-cba8e7237194"
+      },
+      "logs": {
+        "id": 0,
+        "type": "Container",
+        "url": "https://test.com/testProject/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/build/builds/8/logs"
+      },
+      "repository": {
+        "id": "17a61eb1-2860-4609-bf01-b6a8769c8a69",
+        "type": "TfsGit",
+        "clean": null,
+        "checkoutSubmodules": false
+      },
+      "keepForever": true,
+      "retainedByRelease": false,
+      "triggeredByBuild": null
+    }
+  ]
+}

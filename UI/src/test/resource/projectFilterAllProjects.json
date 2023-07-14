@@ -1,0 +1,72 @@
+{
+    "message": "Fetched successfully",
+    "success": true,
+    "data": [
+        {
+            "id": "6335363749794a18e8a4479b",
+            "projectName": "Scrum Project",
+            "createdAt": "2022-09-29T06:07:51",
+            "kanban": false,
+            "hierarchy": [
+                {
+                    "hierarchyLevel": {
+                        "level": 1,
+                        "hierarchyLevelId": "hierarchyLevelOne",
+                        "hierarchyLevelName": "Level One"
+                    },
+                    "value": "Sample One"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 2,
+                        "hierarchyLevelId": "hierarchyLevelTwo",
+                        "hierarchyLevelName": "Level Two"
+                    },
+                    "value": "Sample Two"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 3,
+                        "hierarchyLevelId": "hierarchyLevelThree",
+                        "hierarchyLevelName": "Level Three"
+                    },
+                    "value": "Sample Three"
+                }
+            ],
+            "isKanban": false
+        },
+        {
+            "id": "6335368249794a18e8a4479f",
+            "projectName": "Kanban Project",
+            "createdAt": "2022-09-29T06:09:06",
+            "kanban": true,
+            "hierarchy": [
+                {
+                    "hierarchyLevel": {
+                        "level": 1,
+                        "hierarchyLevelId": "hierarchyLevelOne",
+                        "hierarchyLevelName": "Level One"
+                    },
+                    "value": "Sample One"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 2,
+                        "hierarchyLevelId": "hierarchyLevelTwo",
+                        "hierarchyLevelName": "Level Two"
+                    },
+                    "value": "Sample Two"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 3,
+                        "hierarchyLevelId": "hierarchyLevelThree",
+                        "hierarchyLevelName": "Level Three"
+                    },
+                    "value": "Sample Three"
+                }
+            ],
+            "isKanban": true
+        }
+    ]
+}

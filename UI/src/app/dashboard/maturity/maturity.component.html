@@ -1,0 +1,38 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+  <ng-container *ngIf="!noProjects else noProjectsTemplate">
+<div class="maturity-container">
+   <ng-container *ngIf="!showNoDataMsg">
+      <button pButton pRipple type="button" *ngFor="let board of tabs; let i=index"
+         [label]="i===0 ?  'OVERALL' : (board.boardName | uppercase)" class=" p-m-2"
+         [ngClass]="{'p-button-outlined' : selectedTabIndex !== i}" (click)="handleTabChange(i)"></button>
+      <div class="chart123"></div>
+   </ng-container>
+   <div *ngIf="showNoDataMsg && !loader && noDataForFilter">
+      <div class="p-d-flex p-align-center p-justify-center no-sprint-msg">
+         <h2 class="msg">The selected organization level need to have atleast one value available for the KPI's to show up</h2>
+       </div>
+   </div>
+</div>
+</ng-container>
+<ng-template #noProjectsTemplate>
+   <div class="p-d-flex p-align-center p-justify-center no-projects">
+     <h2>You do not have access to any {{isKanban ? 'Kanban' : 'Scrum'}} project</h2>
+   </div>
+ </ng-template>
+<app-page-loader *ngIf="loader && (loaderJira || loaderSonar || loaderZypher || loaderBitBucket || loaderJenkins)"></app-page-loader>

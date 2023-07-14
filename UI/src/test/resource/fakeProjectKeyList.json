@@ -1,0 +1,11 @@
+{
+    "message": "fetched successfully",
+    "success": true,
+    "data": [
+        "ENGINEERING.KPIDASHBOARD.PROCESSORS",
+        "ENGINEERING.KPIDASHBOARD.UI",
+        "ENGINEERING.KPIDASHBOARD.CUSTOMAPI",
+        "SURVEY_APP_UI",
+        "SURVEY_APP_API"
+    ]
+}

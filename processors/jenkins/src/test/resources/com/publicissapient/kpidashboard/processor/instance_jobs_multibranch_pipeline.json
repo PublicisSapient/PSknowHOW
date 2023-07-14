@@ -1,0 +1,56 @@
+{
+  "_class": "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject",
+  "name": "job1",
+  "url": "http://server/job/job1/",
+  "builds": [
+    {
+      "_class": "hudson.model.FreeStyleBuild",
+      "number": 2,
+      "building": false,
+      "duration": 296508,
+      "result": "SUCCESS",
+      "timestamp": 1614251789526,
+      "url": "http://server/job/job1/2/",
+      "culprits": []
+    },
+    {
+      "_class": "hudson.model.FreeStyleBuild",
+      "number": 1,
+      "building": false,
+      "duration": 296508,
+      "result": "ABORTED",
+      "timestamp": 1614251789526,
+      "url": "http://server/job/job1/1/",
+      "culprits": []
+    }
+  ],
+  "jobs": [
+    {
+      "_class": "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject",
+      "name": "master",
+      "url": "http://server/job/job1/job/master",
+      "builds": [
+        {
+          "_class": "hudson.model.FreeStyleBuild",
+          "number": 1,
+          "building": false,
+          "duration": 296508,
+          "result": "SUCCESS",
+          "timestamp": 1614251789526,
+          "url": "http://server/job/job1/1/",
+          "culprits": []
+        },
+        {
+          "_class": "hudson.model.FreeStyleBuild",
+          "number": 2,
+          "building": false,
+          "duration": 296508,
+          "result": "FAILURE",
+          "timestamp": 1614251789526,
+          "url": "http://server/job/job2/2/",
+          "culprits": []
+        }
+      ]
+    }
+  ]
+}

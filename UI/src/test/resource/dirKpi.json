@@ -1,0 +1,391 @@
+{
+    "kpiId": "kpi14",
+    "kpiName": "Defects Injection Rate",
+    "unit": "%",
+    "maxValue": "200",
+    "chartType": "",
+    "id": "619c9270bbc4e40dfcc4caa9",
+    "isDeleted": "False",
+    "kpiCategory": "Quality",
+    "kpiUnit": "%",
+    "kanban": false,
+    "kpiSource": "Jira",
+    "thresholdValue": 10.0,
+    "trendValueList": [
+        {
+            "data": "Test Category",
+            "value": [
+                {
+                    "data": "109",
+                    "value": 109.09,
+                    "howerValue": {
+                        "Defects": 12,
+                        "Stories": 11
+                    },
+                    "sprintIds": [
+                        "34219_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34219_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34219_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "MAP|PI_7|ITR_2| 13 Oct_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "MAP|PI_7|ITR_2| 13 Oct_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "MAP|PI_7|ITR_2| 13 Oct_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "60",
+                    "value": 60.0,
+                    "howerValue": {
+                        "Defects": 9,
+                        "Stories": 15
+                    },
+                    "sprintIds": [
+                        "34171_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34171_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34171_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "KnowHOW|PI_7|ITR_2|13 Oct_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "KnowHOW|PI_7|ITR_2|13 Oct_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "KnowHOW|PI_7|ITR_2|13 Oct_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "0",
+                    "value": 0.0,
+                    "howerValue": {
+                        "Defects": 0,
+                        "Stories": 15
+                    },
+                    "sprintIds": [
+                        "34288_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34288_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34288_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "PS HOW |PI_7|ITR_2|13_Oct_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "PS HOW |PI_7|ITR_2|13_Oct_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "PS HOW |PI_7|ITR_2|13_Oct_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "35",
+                    "value": 35.29,
+                    "howerValue": {
+                        "Defects": 6,
+                        "Stories": 17
+                    },
+                    "sprintIds": [
+                        "34268_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34268_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34268_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "Panthers|PI_7|ITR_3|27 Oct_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "Panthers|PI_7|ITR_3|27 Oct_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "Panthers|PI_7|ITR_3|27 Oct_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "162",
+                    "value": 161.54,
+                    "howerValue": {
+                        "Defects": 21,
+                        "Stories": 13
+                    },
+                    "sprintIds": [
+                        "34178_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34178_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34178_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "MAP|PI_7|ITR_3|27 Oct_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "MAP|PI_7|ITR_3|27 Oct_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "MAP|PI_7|ITR_3|27 Oct_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "0",
+                    "value": 0.0,
+                    "howerValue": {
+                        "Defects": 0,
+                        "Stories": 7
+                    },
+                    "sprintIds": [
+                        "34172_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34172_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34172_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "KnowHOW|PI_7|ITR_3|27 Oct_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "KnowHOW|PI_7|ITR_3|27 Oct_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "KnowHOW|PI_7|ITR_3|27 Oct_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "0",
+                    "value": 0.0,
+                    "howerValue": {
+                        "Defects": 0,
+                        "Stories": 13
+                    },
+                    "sprintIds": [
+                        "34289_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34289_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34289_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "PS HOW |PI_7|ITR_3|27_Oct_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "PS HOW |PI_7|ITR_3|27_Oct_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "PS HOW |PI_7|ITR_3|27_Oct_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "0",
+                    "value": 0.0,
+                    "howerValue": {
+                        "Defects": 0,
+                        "Stories": 8
+                    },
+                    "sprintIds": [
+                        "34269_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34269_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34269_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "Panthers|PI_7|ITR_4|10 Nov_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "Panthers|PI_7|ITR_4|10 Nov_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "Panthers|PI_7|ITR_4|10 Nov_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "0",
+                    "value": 0.0,
+                    "howerValue": {
+                        "Defects": 0,
+                        "Stories": 10
+                    },
+                    "sprintIds": [
+                        "34173_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34173_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34173_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "KnowHOW|PI_7|ITR_4|10 Nov_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "KnowHOW|PI_7|ITR_4|10 Nov_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "KnowHOW|PI_7|ITR_4|10 Nov_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "75",
+                    "value": 75.0,
+                    "howerValue": {
+                        "Defects": 6,
+                        "Stories": 8
+                    },
+                    "sprintIds": [
+                        "34179_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34179_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34179_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "MAP|PI_7|ITR_4|10 Nov_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "MAP|PI_7|ITR_4|10 Nov_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "MAP|PI_7|ITR_4|10 Nov_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "0",
+                    "value": 0.0,
+                    "howerValue": {
+                        "Defects": 0,
+                        "Stories": 1
+                    },
+                    "sprintIds": [
+                        "34291_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34291_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34291_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "PS HOW |PI_7|ITR_4|10_Nov_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "PS HOW |PI_7|ITR_4|10_Nov_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "PS HOW |PI_7|ITR_4|10_Nov_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "0",
+                    "value": 0.0,
+                    "howerValue": {
+                        "Defects": 0,
+                        "Stories": 2
+                    },
+                    "sprintIds": [
+                        "34270_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34270_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34270_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "Panthers|PI_7|ITR_5|24 Nov_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "Panthers|PI_7|ITR_5|24 Nov_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "Panthers|PI_7|ITR_5|24 Nov_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "0",
+                    "value": 0.0,
+                    "howerValue": {
+                        "Defects": 0,
+                        "Stories": 0
+                    },
+                    "sprintIds": [
+                        "34292_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34292_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34292_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "PS HOW |PI_7|ITR_5|24_Nov_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "PS HOW |PI_7|ITR_5|24_Nov_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "PS HOW |PI_7|ITR_5|24_Nov_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "20",
+                    "value": 0.0,
+                    "howerValue": {
+                        "Defects": 0,
+                        "Stories": 0
+                    },
+                    "sprintIds": [
+                        "34271_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34271_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34271_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "Panthers|PI_7|ITR_6|08 Dec_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "Panthers|PI_7|ITR_6|08 Dec_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "Panthers|PI_7|ITR_6|08 Dec_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                },
+                {
+                    "data": "10",
+                    "value": 0.0,
+                    "howerValue": {
+                        "Defects": 0,
+                        "Stories": 0
+                    },
+                    "sprintIds": [
+                        "34293_60020003701_PLYCA_Mantenimiento y Soporte 2021_616fa37c4823c12b847970a6",
+                        "34293_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021_615ef1c2454f9e51756617dc",
+                        "34293_DigitasLBi_616fa2144823c12b8479707e"
+                    ],
+                    "sprintNames": [
+                        "PS HOW |PI_7|ITR_6|08_Dec_60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "PS HOW |PI_7|ITR_6|08_Dec_70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "PS HOW |PI_7|ITR_6|08_Dec_DigitasLBi"
+                    ],
+                    "projectNames": [
+                        "60020003701_PLYCA_Mantenimiento y Soporte 2021",
+                        "70021004001_Abbott_Buylla_Mantenimiento OpenLab_2021",
+                        "DigitasLBi"
+                    ],
+                    "sprojectName": "60020003701_PLYCA_Mantenimiento y Soporte 202170021004001_Abbott_Buylla_Mantenimiento OpenLab_2021DigitasLBi"
+                }
+            ],
+            "maturity": "5",
+            "maturityValue": 29.39
+        }
+    ],
+    "maturityRange": [
+        "-175",
+        "175-150",
+        "150-125",
+        "125-115",
+        "115-"
+    ],
+    "groupId": 2
+}

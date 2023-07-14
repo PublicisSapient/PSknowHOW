@@ -1,0 +1,161 @@
+[
+{
+  "_id" : "633314788736d469c66f8678",
+  "nodeId" : "0.0_sqd_63330b7068b5d05cf59c4386",
+  "nodeName" : "0.0",
+  "labelName" : "sqd",
+  "parentId" : "TestKanban_63330b7068b5d05cf59c4386",
+  "basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+  "path" : "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+  "createdDate" : "2022-09-27T20:49:20.265"
+},
+  
+{
+"_id" : "6333145d8736d469c66f863b",
+"nodeId" : "13.0_sqd_63330b7068b5d05cf59c4386",
+"nodeName" : "13.0",
+"labelName" : "sqd",
+"parentId" : "TestKanban_63330b7068b5d05cf59c4386",
+"basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+"path" : "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+"createdDate" : "2022-09-27T20:48:53.931"
+},
+  
+{
+"_id" : "6333145d8736d469c66f863a",
+"nodeId" : "20.0_sqd_63330b7068b5d05cf59c4386",
+"nodeName" : "20.0",
+"labelName" : "sqd",
+"parentId" : "TestKanban_63330b7068b5d05cf59c4386",
+"basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+"path" : "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+"createdDate" : "2022-09-27T20:48:53.939"
+},
+  
+{
+"_id" : "6333144d8736d469c66f85fd",
+"nodeId" : "_sqd_63330b7068b5d05cf59c4386",
+"nodeName" : "",
+"labelName" : "sqd",
+"parentId" : "TestKanban_63330b7068b5d05cf59c4386",
+"basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+"path" : "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+"createdDate" : "2022-09-27T20:48:37.549"
+},
+  
+{
+"_id" : "6333144d8736d469c66f85fc",
+"nodeId" : "2.0_sqd_63330b7068b5d05cf59c4386",
+"nodeName" : "2.0",
+"labelName" : "sqd",
+"parentId" : "TestKanban_63330b7068b5d05cf59c4386",
+"basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+"path" : "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+"createdDate" : "2022-09-27T20:48:37.553"
+},
+  
+{
+"_id" : "6333144d8736d469c66f85fb",
+"nodeId" : "1.0_sqd_63330b7068b5d05cf59c4386",
+"nodeName" : "1.0",
+"labelName" : "sqd",
+"parentId" : "TestKanban_63330b7068b5d05cf59c4386",
+"basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+"path" : "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+"createdDate" : "2022-09-27T20:48:37.549"
+},
+  
+{
+"_id" : "6333144d8736d469c66f85fa",
+"nodeId" : "8.0_sqd_63330b7068b5d05cf59c4386",
+"nodeName" : "8.0",
+"labelName" : "sqd",
+"parentId" : "TestKanban_63330b7068b5d05cf59c4386",
+"basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+"path" : "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+"createdDate" : "2022-09-27T20:48:37.554"
+},
+  
+{
+"_id" : "6333144d8736d469c66f85f9",
+"nodeId" : "3.0_sqd_63330b7068b5d05cf59c4386",
+"nodeName" : "3.0",
+"labelName" : "sqd",
+"parentId" : "TestKanban_63330b7068b5d05cf59c4386",
+"basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+"path" : "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+"createdDate" : "2022-09-27T20:48:37.548"
+},
+  
+{
+"_id" : "6333144d8736d469c66f85f8",
+"nodeId" : "5.0_sqd_63330b7068b5d05cf59c4386",
+"nodeName" : "5.0",
+"labelName" : "sqd",
+"parentId" : "TestKanban_63330b7068b5d05cf59c4386",
+"basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+"path" : "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+"createdDate" : "2022-09-27T20:48:37.551"
+},
+{
+"_id" : "63330b7068b5d05cf59c438a",
+"nodeId" : "TestKanban_63330b7068b5d05cf59c4386",
+"nodeName" : "TestKanban",
+"labelName" : "project",
+"parentId" : "S1_subaccount",
+"basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+"isDeleted" : "False",
+"path" : "S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+"createdDate" : "2022-09-27T20:10:48.978"
+},
+  
+{
+"_id" : "63330b7068b5d05cf59c4389",
+"nodeId" : "S1_subaccount",
+"nodeName" : "S1",
+"labelName" : "subaccount",
+"filterCategoryId" : "63244d35d1d9f4caf85056fa",
+"parentId" : "Org3_account",
+"basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+"isDeleted" : "False",
+"path" : "Org3_account###Leve2_business###Corpate1_corporate",
+"createdDate" : "2022-09-27T20:10:48.978"
+},
+  
+{
+"_id" : "63330b7068b5d05cf59c4388",
+"nodeId" : "Org3_account",
+"nodeName" : "Org3",
+"labelName" : "account",
+"filterCategoryId" : "63244d35d1d9f4caf85056f9",
+"parentId" : "Leve2_business",
+"basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+"isDeleted" : "False",
+"path" : "Leve2_business###Corpate1_corporate",
+"createdDate" : "2022-09-27T20:10:48.978"
+},
+  
+{
+"_id" : "63330b7068b5d05cf59c4387",
+"nodeId" : "Leve2_business",
+"nodeName" : "Leve2",
+"labelName" : "business",
+"filterCategoryId" : "63244d35d1d9f4caf85056f8",
+"parentId" : "Corpate1_corporate",
+"basicProjectConfigId" : "63330b7068b5d05cf59c4386",
+"isDeleted" : "False",
+"path" : "Corpate1_corporate",
+"createdDate" : "2022-09-27T20:10:48.978"
+},
+  {
+    "_id" : "6332f2e568b5d05cf59c42bc",
+    "nodeId" : "Corpate1_corporate",
+    "nodeName" : "Corpate1",
+    "labelName" : "corporate",
+    "filterCategoryId" : "63330b7068b5d05cf59c4386",
+    "basicProjectConfigId" : "6332f2e568b5d05cf59c42bb",
+    "isDeleted" : "False",
+    "path" : "",
+    "createdDate" : "2022-09-27T18:26:05.568"
+  }
+  ]

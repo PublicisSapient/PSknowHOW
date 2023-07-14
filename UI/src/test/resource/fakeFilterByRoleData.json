@@ -1,0 +1,224 @@
+[
+    {
+        "id": "5f47a5a030c49e0001595000",
+        "username": "testUser1",
+        "authorities": [
+            "ROLE_VIEWER",
+            "ROLE_SUPERADMIN",
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "mandeep.sikka@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "5ef2f757a7b11b0001980b0d",
+        "username": "testUser2",
+        "authorities": [
+            "ROLE_VIEWER",
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "ramakrishnan.pragadeeswaran@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "5eb3c243a7b11b0001ee4f9a",
+        "username": "testUser3",
+        "authorities": [
+            "ROLE_VIEWER",
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "randeep.singh@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "5ea7cd94063c29192d7fc0f7",
+        "username": "testUser4",
+        "authorities": [
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "mansriva0@publicisgroupe.net",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "60b0a1bd24aa9a000199f09a",
+        "username": "testUser5",
+        "authorities": [
+            "ROLE_SUPERADMIN",
+            "ROLE_VIEWER"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "user123@gmail.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "63887fb9aa7f2ce2397936cb",
+        "username": "testUser6",
+        "authorities": [
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "LDAP",
+        "emailAddress": "girish.pathak@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "5f7306b12ab79c00017382c5",
+        "username": "testUser7",
+        "authorities": [
+            "ROLE_VIEWER",
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "harish.singh@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "5f22b33dadbe1d0001087fc0",
+        "username": "testUser8",
+        "authorities": [
+            "ROLE_VIEWER",
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "chimudga@publicisgroupe.net",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "62027d6499d4c84cab561acf",
+        "username": "testUser9",
+        "authorities": [
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "LDAP",
+        "emailAddress": "kevin.griffin@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "630e3e59d9479a1fac0370d5",
+        "username": "testUser10",
+        "authorities": [
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "LDAP",
+        "emailAddress": "leo.acosta@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "5ea8082fa7b11b0001b27b7f",
+        "username": "testUser11",
+        "authorities": [
+            "ROLE_VIEWER",
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "mayuresh.bhardwaj@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "5ebe4218a7b11b0001fb1d13",
+        "username": "testUser12",
+        "authorities": [
+            "ROLE_VIEWER",
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "anil.raina@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "5ec3dd8da7b11b00015db2d4",
+        "username": "testUser13",
+        "authorities": [
+            "ROLE_VIEWER",
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "sarfuddin.siddiqui@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "610ba40495f04f36f1f3cbea",
+        "username": "testUser14",
+        "authorities": [
+            "ROLE_SUPERADMIN",
+            "ROLE_VIEWER"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "satyarup.pujari@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    },
+    {
+        "id": "5eb50d60a7b11b0001ce4388",
+        "username": "testUser15",
+        "authorities": [
+            "ROLE_VIEWER",
+            "ROLE_SUPERADMIN"
+        ],
+        "authType": "STANDARD",
+        "emailAddress": "vinayak.agarwal@publicissapient.com",
+        "projectsAccess": [
+            {
+                "role": "ROLE_SUPERADMIN"
+            }
+        ]
+    }
+]

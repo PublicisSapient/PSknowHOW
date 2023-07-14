@@ -1,0 +1,14 @@
+{
+  "expand": "branches",
+  "branches": {
+    "size": 0,
+    "expand": "branch",
+    "start-index": 0,
+    "max-result": 0,
+    "branch": [
+      {
+        "key": "CFDP-DTI"
+      }
+    ]
+  }
+}

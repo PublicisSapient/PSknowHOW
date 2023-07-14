@@ -1,0 +1,46 @@
+{
+  "size": 220,
+  "searchResults": [
+    {
+      "id": "18120708",
+      "type": "project",
+      "searchEntity": {
+        "id": "18120708",
+        "key": "18120708",
+        "projectName": " Chat bot web",
+        "description": ""
+      }
+    },
+    {
+      "id": "61898790",
+      "type": "project",
+      "searchEntity": {
+        "id": "61898790",
+        "key": "61898790",
+        "projectName": " Deploy_akka-profile-microservice",
+        "description": ""
+      }
+    },
+    {
+      "id": "61898782",
+      "type": "project",
+      "searchEntity": {
+        "id": "61898782",
+        "key": "61898782",
+        "projectName": " Deploy_akka_account-microservice",
+        "description": ""
+      }
+    },
+    {
+      "id": "61898783",
+      "type": "project",
+      "searchEntity": {
+        "id": "61898783",
+        "key": "61898783",
+        "projectName": " Deploy_Assembler",
+        "description": ""
+      }
+    } ],
+  "start-index": 0,
+  "max-result": 220
+}

@@ -1,0 +1,82 @@
+{
+  "results": {
+    "size": 120,
+    "expand": "result",
+    "start-index": 0,
+    "max-result": 25,
+    "result": [
+      {
+        "link": {
+          "href": "/bamboo/rest/api/latest/result/MT-IN-3",
+          "rel": "self"
+        },
+        "plan": {
+          "shortName": "indranil",
+          "shortKey": "IN",
+          "type": "chain",
+          "enabled": true,
+          "link": {
+            "href": "/bamboo/rest/api/latest/plan/MT-IN",
+            "rel": "self"
+          },
+          "key": "MT-IN",
+          "name": "7maytest - indranil",
+          "planKey": {
+            "key": "MT-IN"
+          }
+        },
+        "buildResultKey": "MT-IN-3",
+        "lifeCycleState": "Finished",
+        "id": 88277522,
+        "key": "MT-IN-3",
+        "planResultKey": {
+          "key": "MT-IN-3",
+          "entityKey": {
+            "key": "MT-IN"
+          },
+          "resultNumber": 3
+        },
+        "state": "Successful",
+        "buildState": "Successful",
+        "number": 3,
+        "buildNumber": 3
+      },
+      {
+        "link": {
+          "href": "/bamboo/rest/api/latest/result/BAMPRC-DOJO-3",
+          "rel": "self"
+        },
+        "plan": {
+          "shortName": "DOJO",
+          "shortKey": "DOJO",
+          "type": "chain",
+          "enabled": true,
+          "link": {
+            "href": "/bamboo/rest/api/latest/plan/BAMPRC-DOJO",
+            "rel": "self"
+          },
+          "key": "BAMPRC-DOJO",
+          "name": "BambooProjC - DOJO",
+          "planKey": {
+            "key": "BAMPRC-DOJO"
+          }
+        },
+        "buildResultKey": "BAMPRC-DOJO-3",
+        "lifeCycleState": "Finished",
+        "id": 60109187,
+        "key": "BAMPRC-DOJO-3",
+        "planResultKey": {
+          "key": "BAMPRC-DOJO-3",
+          "entityKey": {
+            "key": "BAMPRC-DOJO"
+          },
+          "resultNumber": 3
+        },
+        "state": "Failed",
+        "buildState": "Failed",
+        "number": 3,
+        "buildNumber": 3
+      }
+    ]
+  }
+}

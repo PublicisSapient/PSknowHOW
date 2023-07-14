@@ -1,0 +1,119 @@
+{
+  "id": "5f0f2c7682e1de3e785404e5",
+  "basicProjectConfigId": "5f0f2c7682e1de3e785404e4",
+  "atmQueryEndpoint": "",
+  "jiradefecttype": [
+    "Bug"
+  ],
+  "jiraIssueTypeNames": [
+    "Feature",
+    "Bug",
+    "Task",
+    "User Story",
+    "Epic",
+    "Feature"
+  ],
+  "storyFirstStatus": "New",
+  "rootCause": "Custom.RootCause",
+  "jiraAtmProjectId": "",
+  "jiraAtmProjectKey": "",
+  "testAutomated": "Execution Type",
+  "testAutomationStatusLabel": "Execution Type",
+  "testRegressionLabel": "Sanity/ regression",
+  "testRegressionValue": [
+    "Regression"
+  ],
+  "jiraTestCaseType": [],
+  "jiraTechDebtIssueType": [],
+  "jiraTechDebtIdentification": "Labels",
+  "jiraTechDebtCustomField": "",
+  "jiraTechDebtValue": [
+    "TECH_DEBT"
+  ],
+  "atmFolderPath": [],
+  "jiraStoryPointsCustomField": "Custom.Estimation",
+  "jiraAutomatedTestValue": [],
+  "jiraCanNotAutomatedTestValue": [],
+  "regressionAutomationLabels": [],
+  "ticketCountIssueType": [
+    "Bug",
+    "User Story"
+  ],
+  "jiraStatusForQa": [
+    "READY FOR QA"
+  ],
+  "jiraStatusForDevelopment": [
+    "DEVELOPMENT"
+  ],
+  "jiraTicketVelocityIssueType": [
+    "User Story",
+    "Feature",
+    "Bug",
+    "Epic"
+  ],
+  "ticketDeliverdStatus": [
+    "Closed"
+  ],
+  "ticketReopenStatus": [
+    "Reopened"
+  ],
+  "kanbanJiraTechDebtIssueType": [
+    "User Story"
+  ],
+  "jiraTicketResolvedStatus": [
+    "Resolved"
+  ],
+  "jiraTicketClosedStatus": [
+    "Closed"
+  ],
+  "jiraTicketReopenIssueType": [
+    "User Story",
+    "Bug"
+  ],
+  "jiraTicketThroughputIssueType": [
+    "User Story",
+    "Bug"
+  ],
+  "kanbanCycleTimeIssueType": [
+    "User Story",
+    "Bug"
+  ],
+  "jiraTicketTriagedStatus": [
+    "Active"
+  ],
+  "jiraTicketWipClosedIssueType": [
+    "User Story",
+    "Bug"
+  ],
+  "rootCauseValue": [
+    "Code Issue"
+  ],
+  "pickNewATMJIRADetails": false,
+  "jiraDataSegregation": [
+    {
+      "jiraSegregationIssueType": [
+        "User Story",
+        "Bug"
+      ],
+      "segregationFieldType": "CustomField",
+      "segregationCustomFieldId": "Custom.Segregation",
+      "segregationValue": [
+        "Segregation"
+      ],
+      "include": true
+    },
+    {
+      "jiraSegregationIssueType": [
+        "User Story",
+        "Bug"
+      ],
+      "segregationFieldType": "Labels",
+      "segregationCustomFieldId": "Custom.Segregation",
+      "segregationValue": [
+        "Segregation"
+      ],
+      "include": true
+    }
+  ],
+  "devicePlatform": "devicePlatform"
+}

@@ -1,0 +1,24 @@
+{
+  "self": "https://test.com/rest/api/2/user?accountId=5e315421a834270cb0992ca7",
+  "accountId": "5e315421a834270cb0992ca7",
+  "accountType": "atlassian",
+  "avatarUrls": {
+    "48x48": "https://test.com/5e315421a834270cb0992ca7/db6c89d0-c39a-4417-a209-3d7834ae7739/48",
+    "24x24": "https://test.com/5e315421a834270cb0992ca7/db6c89d0-c39a-4417-a209-3d7834ae7739/24",
+    "16x16": "https://test.com/5e315421a834270cb0992ca7/db6c89d0-c39a-4417-a209-3d7834ae7739/16",
+    "32x32": "https://test.com/5e315421a834270cb0992ca7/db6c89d0-c39a-4417-a209-3d7834ae7739/32"
+  },
+  "displayName": "Test User",
+  "active": true,
+  "timeZone": "Europe/Stockholm",
+  "locale": "en_US",
+  "groups": {
+    "size": 2,
+    "items": []
+  },
+  "applicationRoles": {
+    "size": 1,
+    "items": []
+  },
+  "expand": "groups,applicationRoles"
+}

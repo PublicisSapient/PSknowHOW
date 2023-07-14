@@ -1,0 +1,24 @@
+{
+  "paging": {
+    "pageIndex": 2,
+    "pageSize": 1,
+    "total": 0
+  },
+  "measures": [
+    {
+      "metric": "complexity",
+      "history": [
+      ]
+    },
+    {
+      "metric": "ncloc",
+      "history": [
+      ]
+    },
+    {
+      "metric": "new_violations",
+      "history": [
+      ]
+    }
+  ]
+}

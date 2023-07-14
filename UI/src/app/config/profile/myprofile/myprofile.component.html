@@ -1,0 +1,225 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<div class="content">
+  <div class="form-title-container p-mb-3 p-mt-3 p-ml-3 p-mr-3 clearfix bg-cyan p-d-flex">
+    <div class="p-md-4 long-text float-left pad-r-0 pad-l-0 ">
+      <h4 class="form_title">User Name:</h4>
+      <span class="sub-text">{{userName}}</span>
+    </div>
+    <div class="p-md-4 long-text float-left pad-r-0 pad-l-0" *ngIf="!ssoLogin">
+      <h4 class="form_title">Configured email:</h4>
+      <span class="sub-text">{{userEmail}}</span>
+    </div>
+    <div class="p-md-4 long-text pull-right pad-r-0 pad-l-0" *ngIf="userRole !== '--'">
+      <h4 class="form_title">Current Role:</h4>
+      <span class="sub-text">{{userRole}}</span>
+    </div>
+  </div>
+
+  <div class="card p-text-center border-warning p-mb-3" *ngIf="userEmail === '--' && !ssoLogin">
+    <div class="card-header bg-warning border-warning">
+      Configure Email
+    </div>
+    <div class="card-body">
+      <h3 class="card-title text-warning">You don't have an email configured!!</h3>
+      <p class="card-text">As such, you will not be able to change your password. Configure a proper email address for
+        use when you want to change the password.</p>
+      <form [formGroup]="userEmailForm" class="p-grid p-jc-center">
+        <label class="p-md-6">
+          Enter email:
+          <input class="form-control w-100" name="email" id="email" pInputText formControlName="email"
+            [ngClass]="{ 'is-invalid': emailSubmitted && getEmailForm.email.errors }">
+        </label>
+
+        <label class="p-md-6">
+          Confirm email:
+          <input class="form-control w-100" name="confirmEmail" id="confirmEmail" pInputText formControlName="confirmEmail"
+            [ngClass]="{ 'is-invalid': emailSubmitted && (getEmailForm.confirmEmail.errors || (userEmailForm.errors && userEmailForm.errors['notSame'])) }">
+        </label>
+        <button  pButton pRipple type="submit" class="p-button-lg p-button-success p-button-raised" [disabled]="!userEmailForm.valid" (click)="setEmail()">
+          Set Email
+        </button>
+      </form>
+      <!--Mismatched email with not required                     -->
+      <div *ngIf="userEmailForm.errors && userEmailForm.errors['notSame'] && !getEmailForm.confirmEmail.errors"
+        class="invalid-text">Email mismatch</div>
+
+      <!-- Email Validation -->
+      <div *ngIf="(getEmailForm.email.hasError('pattern') || getEmailForm.confirmEmail.hasError('pattern'))"
+        class="invalid-text">
+        Please enter a valid
+        email
+      </div>
+      
+      <div *ngIf="message && message.length" class="invalid-text">{{ message }}</div>
+
+      <!--Loading div-->
+      <div class='loader' *ngIf="dataLoading"></div>
+    </div>
+  </div>
+
+  <div class="card p-text-center border-success p-mb-3" *ngIf="userEmailConfigured">
+    <div class="card-header bg-success border-success">
+      Email Configured
+    </div>
+    <div class="card-body">
+      <h5 class="card-title p-p-2 alert-success">You have configured an email!!</h5>
+      <p class="card-text">Now you can go ahead and change the password.</p>
+    </div>
+  </div>
+
+  <div class="card p-text-center border-danger p-mb-3" *ngIf="noAccess">
+    <div class="card-header bg-danger  border-danger">
+      You don't have the required access
+    </div>
+    <div class="card-body">
+      <h3 class="card-title text-danger">You don't have the required access!!</h3>
+      <div class="card-text">As such, you will not be able to access the dashboards and configuration options. <br />
+        <div class="p-text-left options-div">Right now you can only do the following:
+          <ul class="options-list">
+            <li>Add a new project in Project Config</li>
+            <li>Raise access request for viewing/editing other existing projects</li>
+          </ul>
+        </div>
+        Once the SUPERADMIN approves your request, you will be able to access the dashboards and other options.
+      </div>
+    </div>
+  </div>
+
+  <div class="action-container p-md-12 mt-5 clearfix">
+
+    <a class="action-link float-left p-md-3 p-mb-3" *ngIf="!isSuperAdmin"
+      routerLink="/dashboard/Config/Profile/RaiseRequest">
+      <div class="action-box clearfix bg-role">
+        <div class="action-icon">
+          <i class="fa fa-unlock" aria-hidden="true"></i>
+        </div>
+        <div class="action-text">
+          Raise Access Request<br />
+        </div>
+      </div>
+    </a>
+
+    <a class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" *ngIf="(isSuperAdmin || isProjectAdmin)"
+      routerLink="/dashboard/Config/Profile/GrantRequests">
+      <div class="action-box clearfix bg-role">
+        <div class="action-icon">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <div class="action-text">
+          Grant Project Access<br />
+        </div>
+      </div>
+    </a>
+
+    <a class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" *ngIf="isSuperAdmin"
+      routerLink="/dashboard/Config/Profile/GrantNewUserAuthRequests">
+      <div class="action-box clearfix bg-role">
+        <div class="action-icon">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <div class="action-text">
+          Grant User Access<br />
+        </div>
+      </div>
+    </a>
+
+    <a class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" *ngIf="isSuperAdmin" routerLink="/dashboard/Config/Profile/AccessMgmt">
+      <div class="action-box clearfix bg-role">
+        <div class="action-icon">
+          <i class="fa fa-universal-access" aria-hidden="true"></i>
+        </div>
+        <div class="action-text">
+          Access Management<br />
+        </div>
+      </div>
+    </a>
+
+    <a class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" *ngIf="!isSuperAdmin"
+      routerLink="/dashboard/Config/Profile/RequestStatus">
+      <div class="action-box clearfix bg-role">
+        <div class="action-icon">
+          <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+        </div>
+        <div class="action-text">
+          Your Request Status<br />
+        </div>
+      </div>
+    </a>
+
+    <a class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" routerLink="/dashboard/Config/BasicConfig">
+      <div class="action-box clearfix bg-role">
+        <div class="action-icon float-left">
+          <i class="fa fa-plus-circle fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="action-text">
+          Add Project Config<br />
+        </div>
+      </div>
+    </a>
+
+    <a *ngIf="!adLogin && !ssoLogin" class="action-link float-left p-md-3 p-mb-3 p-pl-3 p-pr-3" [class.disabled]="userEmail === '--'"
+      routerLink="/dashboard/Config/Profile/UserSettings">
+      <div class="action-box clearfix bg-role">
+        <div class="action-icon float-left">
+          <i class="fa fa-key fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="action-text">
+          Change Password<br />
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div *ngIf="roleBasedProjectList.length > 0" class="p-grid">
+    <div class="p-md-12 container1">
+      <div class="tabs tabs-content p-xl-12">
+        <div class="content">
+          <h3 class="form_title p-mb-2">Current Project Access</h3>
+
+          <div class="request-table-container">
+            <p-table [value]="roleBasedProjectList" styleClass="p-datatable-striped" id="project-access-table"  loadingIcon="loading-img" 
+            rowGroupMode="rowspan" groupRowsBy="role"
+            sortField="role" sortMode="single">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Role</th>
+                  <th *ngFor="let col of dynamicCols" id="col.id">
+                    {{col?.name}}
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-project let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
+                <tr>
+                  <td *ngIf="rowgroup" [attr.rowspan]="rowspan" class='border-bottom border-right'>
+                    <div>{{project['role']}}</div>
+                  </td>
+                  <td class="p-p-3 border-bottom border-right" *ngFor="let col of dynamicCols">
+                    <span [ngClass]="{'info-block':col.id === 'projectName'}">{{project[col.id]}}</span>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

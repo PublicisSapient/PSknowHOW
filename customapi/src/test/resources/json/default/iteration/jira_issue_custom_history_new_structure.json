@@ -1,0 +1,4012 @@
+[
+  {
+    "_id" : "64709f09d64e8f7725d6c592",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24623",
+    "storyType" : "Story",
+    "estimate" : "0",
+    "createdDate" : "2023-04-25T19:26:31.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-04-25T19:26:31.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-05-25T11:43:22.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2023-04-25T19:26:31.000"
+      },
+      {
+        "changedFrom" : "Pragyan Sundarray",
+        "changedTo" : "Agney Praseed",
+        "updatedOn" : "2023-05-24T19:11:57.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-04-25T19:26:31.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-04-25T19:26:31.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-08T12:16:27.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "",
+        "updatedOn" : "2023-05-10T16:49:50.000"
+      },
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T13:36:35.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24623",
+    "description" : "Checkbox Qs | UNSCORED Responses of checkbox-type Qs should be under UNSCORED tab",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c593",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25089",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-20993" ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-22T18:28:39.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-22T18:28:39.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-05-24T08:12:27.000"
+      },
+      {
+        "changedFrom" : "In Investigation",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-26T13:27:16.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Ready for Testing",
+        "updatedOn" : "2023-05-26T13:27:19.000"
+      },
+      {
+        "changedFrom" : "Ready for Testing",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-26T15:02:24.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Intake",
+        "updatedOn" : "2023-05-26T17:35:36.000"
+      },
+      {
+        "changedFrom" : "In Intake",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-05-26T19:17:20.000"
+      },
+      {
+        "changedFrom" : "In Investigation",
+        "changedTo" : "In Testing",
+        "updatedOn" : "2023-05-26T19:17:32.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-22T18:28:39.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Raja Guru",
+        "updatedOn" : "2023-05-26T13:27:28.000"
+      },
+      {
+        "changedFrom" : "Raja Guru",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-26T15:02:40.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Raja Guru",
+        "updatedOn" : "2023-05-26T19:12:59.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-22T18:28:39.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "AP v2.0.0",
+        "updatedOn" : "2023-05-22T18:28:39.000"
+      }
+    ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-22T18:28:39.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:26.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T02:02:03.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T10:44:52.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25089",
+    "description" : "Intermittent Issue || BACK Button doesn't work Properly for Anonymous Assessment",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c594",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25051",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-20993" ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-19T10:43:43.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-19T10:43:43.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-05-19T11:36:22.000"
+      },
+      {
+        "changedFrom" : "In Investigation",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-22T13:57:34.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-22T13:59:36.000"
+      },
+      {
+        "changedFrom" : "Closed",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-24T11:42:59.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-05-24T11:54:28.000"
+      },
+      {
+        "changedFrom" : "In Investigation",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-26T13:27:59.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Ready for Testing",
+        "updatedOn" : "2023-05-26T13:30:10.000"
+      },
+      {
+        "changedFrom" : "Ready for Testing",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-26T14:53:07.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-05-26T17:36:00.000"
+      },
+      {
+        "changedFrom" : "In Investigation",
+        "changedTo" : "In Testing",
+        "updatedOn" : "2023-05-26T19:12:28.000"
+      },
+      {
+        "changedFrom" : "In Testing",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-30T09:33:07.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-19T10:43:43.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Raja Guru",
+        "updatedOn" : "2023-05-19T11:38:02.000"
+      },
+      {
+        "changedFrom" : "Raja Guru",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-19T12:57:37.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Mariadass Jesuraja",
+        "updatedOn" : "2023-05-19T13:00:55.000"
+      },
+      {
+        "changedFrom" : "Mariadass Jesuraja",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-24T11:42:48.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Raja Guru",
+        "updatedOn" : "2023-05-26T13:30:21.000"
+      },
+      {
+        "changedFrom" : "Raja Guru",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-26T14:52:58.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Raja Guru",
+        "updatedOn" : "2023-05-26T19:12:19.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P1 - Blocker",
+        "updatedOn" : "2023-05-19T10:43:43.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "AP v2.0.0",
+        "updatedOn" : "2023-05-24T15:28:07.000"
+      }
+    ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-19T10:43:43.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:18.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T02:01:00.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T10:43:08.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25051",
+    "description" : "Generate URL Checkbox is not available on the New Assessment page ||",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c595",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24959",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-23093" ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-12T14:15:49.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-12T14:15:49.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-05-25T12:27:06.000"
+      },
+      {
+        "changedFrom" : "In Investigation",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-25T12:27:28.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Ready for Testing",
+        "updatedOn" : "2023-05-25T14:31:29.000"
+      },
+      {
+        "changedFrom" : "Ready for Testing",
+        "changedTo" : "In Testing",
+        "updatedOn" : "2023-05-25T15:15:42.000"
+      },
+      {
+        "changedFrom" : "In Testing",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-26T14:44:34.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Anmol Mishra",
+        "updatedOn" : "2023-05-12T14:15:49.000"
+      },
+      {
+        "changedFrom" : "Anmol Mishra",
+        "changedTo" : "Agney Praseed",
+        "updatedOn" : "2023-05-24T20:00:59.000"
+      },
+      {
+        "changedFrom" : "Agney Praseed",
+        "changedTo" : "Karthick P",
+        "updatedOn" : "2023-05-25T14:33:09.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-12T14:15:49.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-12T14:15:49.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:10.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-24T20:02:08.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T12:38:09.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24959",
+    "description" : "Incorrect string on the question summary, description and answer options | Sustain Eng",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c596",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24933",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-23093" ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-11T18:26:57.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-11T18:26:57.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-05-12T11:07:53.000"
+      },
+      {
+        "changedFrom" : "In Investigation",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-25T17:02:57.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Ready for Testing",
+        "updatedOn" : "2023-05-25T17:10:37.000"
+      },
+      {
+        "changedFrom" : "Ready for Testing",
+        "changedTo" : "In Testing",
+        "updatedOn" : "2023-05-26T12:48:25.000"
+      },
+      {
+        "changedFrom" : "In Testing",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-26T14:44:28.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Abinaya Kannan",
+        "updatedOn" : "2023-05-11T18:26:57.000"
+      },
+      {
+        "changedFrom" : "Abinaya Kannan",
+        "changedTo" : "Anmol Mishra",
+        "updatedOn" : "2023-05-12T12:56:35.000"
+      },
+      {
+        "changedFrom" : "Anmol Mishra",
+        "changedTo" : "Agney Praseed",
+        "updatedOn" : "2023-05-25T16:59:55.000"
+      },
+      {
+        "changedFrom" : "Agney Praseed",
+        "changedTo" : "Karthick P",
+        "updatedOn" : "2023-05-25T17:11:04.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-11T18:26:57.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "AP 1.12.1",
+        "updatedOn" : "2023-05-12T12:56:41.000"
+      },
+      {
+        "changedFrom" : "AP 1.12.1",
+        "changedTo" : "",
+        "updatedOn" : "2023-05-12T19:02:43.000"
+      }
+    ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-15T00:00",
+        "updatedOn" : "2023-05-12T19:03:08.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-11T18:26:57.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:05.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T02:00:10.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-26T12:48:09.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24933",
+    "description" : "Duplicate answer options and answer options are missing on the questionnaire page | Sustain Eng",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c597",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-23111",
+    "storyType" : "Story",
+    "estimate" : "13.0",
+    "createdDate" : "2023-03-15T17:10:16.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-03-15T17:10:16.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-04-18T12:20:11.000"
+      },
+      {
+        "changedFrom" : "In Analysis",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-04-18T12:20:17.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Code Review",
+        "updatedOn" : "2023-04-20T17:46:50.000"
+      },
+      {
+        "changedFrom" : "Code Review",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-05T12:51:24.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2023-03-15T17:10:16.000"
+      },
+      {
+        "changedFrom" : "Pragyan Sundarray",
+        "changedTo" : "Mariadass Jesuraja",
+        "updatedOn" : "2023-04-12T15:07:08.000"
+      },
+      {
+        "changedFrom" : "Mariadass Jesuraja",
+        "changedTo" : "Abinaya Kannan",
+        "updatedOn" : "2023-05-10T13:23:46.000"
+      },
+      {
+        "changedFrom" : "Abinaya Kannan",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-25T12:33:45.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-03-15T17:10:16.000"
+      },
+      {
+        "changedFrom" : "P4 - Minor",
+        "changedTo" : "P3 - Major",
+        "updatedOn" : "2023-04-10T13:19:05.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "AP v2.1.0",
+        "updatedOn" : "2023-05-09T18:16:27.000"
+      }
+    ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-04-24T00:00",
+        "updatedOn" : "2023-04-13T11:58:06.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_2",
+        "updatedOn" : "2023-03-23T15:22:13.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_2",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-04-26T13:30:32.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-10T12:24:17.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:19:44.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-23111",
+    "description" : "Admin user can see the list of generated URLs for an Assessment Type",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c598",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25052",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-20993" ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-19T10:56:57.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-19T10:56:57.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-05-19T11:46:17.000"
+      },
+      {
+        "changedFrom" : "In Investigation",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-26T13:21:23.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Ready for Testing",
+        "updatedOn" : "2023-05-26T13:21:35.000"
+      },
+      {
+        "changedFrom" : "Ready for Testing",
+        "changedTo" : "In Testing",
+        "updatedOn" : "2023-05-26T19:16:31.000"
+      },
+      {
+        "changedFrom" : "In Testing",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-29T12:03:50.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-19T10:56:57.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Raja Guru",
+        "updatedOn" : "2023-05-26T13:22:01.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P1 - Blocker",
+        "updatedOn" : "2023-05-19T10:56:57.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "AP v2.0.0",
+        "updatedOn" : "2023-05-25T10:41:42.000"
+      }
+    ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-19T10:56:57.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:19.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T02:01:16.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T10:41:55.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25052",
+    "description" : "Hamburger Menu  & Reports & Trends and Username are not available for logged user ||",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c599",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-23114",
+    "storyType" : "Story",
+    "estimate" : "8.0",
+    "createdDate" : "2023-03-15T17:51:57.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-03-15T17:51:57.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-05-17T11:35:44.000"
+      },
+      {
+        "changedFrom" : "In Analysis",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-18T11:27:59.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Code Review",
+        "updatedOn" : "2023-05-18T11:33:34.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2023-03-15T17:51:57.000"
+      },
+      {
+        "changedFrom" : "Pragyan Sundarray",
+        "changedTo" : "Agney Praseed",
+        "updatedOn" : "2023-05-10T16:31:16.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-03-15T17:51:57.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-18T00:00",
+        "updatedOn" : "2023-05-10T16:34:09.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-03-23T15:22:30.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-03-23T17:03:08.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-04-25T10:39:06.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:19:48.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-23114",
+    "description" : "Admin can extend the expiry date of a link",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c59a",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25109",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-22899" ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-23T13:53:49.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-23T13:53:49.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-05-25T12:39:15.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Anmol Mishra",
+        "updatedOn" : "2023-05-23T13:53:49.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P1 - Blocker",
+        "updatedOn" : "2023-05-23T13:53:49.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-24T00:00",
+        "updatedOn" : "2023-05-23T13:53:49.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-23T13:53:49.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:28.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25109",
+    "description" : "DFA | Engagement and PID information did not get updated in DFA DB after uploading Forecast report on 17 May and 22 May 2023",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c59b",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24884",
+    "storyType" : "Task",
+    "estimate" : "0",
+    "createdDate" : "2023-05-10T16:17:18.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-10T16:17:18.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Progress",
+        "updatedOn" : "2023-05-23T12:57:08.000"
+      },
+      {
+        "changedFrom" : "In Progress",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-26T12:34:20.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Rishabh Shukla",
+        "updatedOn" : "2023-05-10T16:17:18.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-10T16:17:18.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_2",
+        "updatedOn" : "2023-05-10T16:17:18.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24884",
+    "description" : "Frontend UI development",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c59c",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24725",
+    "storyType" : "Story",
+    "estimate" : "5.0",
+    "createdDate" : "2023-05-03T12:38:25.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-03T12:38:25.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-05-16T12:06:50.000"
+      },
+      {
+        "changedFrom" : "In Analysis",
+        "changedTo" : "Ready for Testing",
+        "updatedOn" : "2023-05-26T12:29:11.000"
+      },
+      {
+        "changedFrom" : "Ready for Testing",
+        "changedTo" : "In Testing",
+        "updatedOn" : "2023-05-29T12:04:40.000"
+      },
+      {
+        "changedFrom" : "In Testing",
+        "changedTo" : "On Hold",
+        "updatedOn" : "2023-05-29T17:36:43.000"
+      },
+      {
+        "changedFrom" : "On Hold",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-30T13:11:06.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Rishabh Shukla",
+        "updatedOn" : "2023-05-03T12:38:25.000"
+      },
+      {
+        "changedFrom" : "Rishabh Shukla",
+        "changedTo" : "Raja Guru",
+        "updatedOn" : "2023-05-26T12:29:25.000"
+      },
+      {
+        "changedFrom" : "Raja Guru",
+        "changedTo" : "Rishabh Shukla",
+        "updatedOn" : "2023-05-30T13:11:19.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-05-03T12:38:25.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "AP 1.12.0",
+        "updatedOn" : "2023-05-03T12:38:25.000"
+      },
+      {
+        "changedFrom" : "AP 1.12.0",
+        "changedTo" : "AP v2.0.0",
+        "updatedOn" : "2023-05-03T13:52:21.000"
+      },
+      {
+        "changedFrom" : "AP v2.0.0",
+        "changedTo" : "AP v2.1.0",
+        "updatedOn" : "2023-05-09T12:49:46.000"
+      }
+    ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-18T00:00",
+        "updatedOn" : "2023-05-10T16:18:00.000"
+      },
+      {
+        "changedFrom" : "2023-05-18T00:00",
+        "changedTo" : "2023-05-19T00:00",
+        "updatedOn" : "2023-05-10T16:18:25.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-05-03T12:38:25.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-10T12:24:33.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:02.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24725",
+    "description" : "Changes in Summary EXPORT - phase II",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c59d",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24974",
+    "storyType" : "Enabler Story",
+    "estimate" : "0",
+    "createdDate" : "2023-05-12T21:35:38.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-12T21:35:38.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-05-12T21:35:48.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Adina-Alexandra Ursache",
+        "updatedOn" : "2023-05-12T21:35:38.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-12T21:35:38.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-23T00:00",
+        "updatedOn" : "2023-05-12T21:35:38.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-12T21:35:38.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:13.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24974",
+    "description" : "As a MAP team member, I would like to log my PI13 | ITR4 meetings on this task, so that I can be up to date with the timecard.",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c59e",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25213",
+    "storyType" : "Studio Task",
+    "estimate" : "0",
+    "createdDate" : "2023-05-25T01:57:07.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-25T01:57:07.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Progress",
+        "updatedOn" : "2023-05-26T12:01:06.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Alecsandru Ciobanu",
+        "updatedOn" : "2023-05-25T01:57:07.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-25T01:57:07.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T01:57:07.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25213",
+    "description" : "BE documentation",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c59f",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-23147",
+    "storyType" : "Enabler Story",
+    "estimate" : "3.0",
+    "createdDate" : "2023-03-16T15:05:45.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-03-16T15:05:45.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-05-26T12:01:00.000"
+      },
+      {
+        "changedFrom" : "In Analysis",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-26T19:56:55.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Tiberiu Zatreanu",
+        "updatedOn" : "2023-03-16T15:05:45.000"
+      },
+      {
+        "changedFrom" : "Tiberiu Zatreanu",
+        "changedTo" : "Alecsandru Ciobanu",
+        "updatedOn" : "2023-05-19T12:53:49.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-03-16T15:05:45.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-03-23T15:27:38.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-04-11T03:12:44.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-09T16:53:53.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-23147",
+    "description" : "Technical Documentation on Form Builder implementation",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c5a0",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25116",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-22616" ],
+    "estimate" : "1.0",
+    "createdDate" : "2023-05-23T15:57:14.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-23T15:57:14.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Anil Kumar Singh",
+        "updatedOn" : "2023-05-23T15:57:14.000"
+      },
+      {
+        "changedFrom" : "Anil Kumar Singh",
+        "changedTo" : "Mariadass Jesuraja",
+        "updatedOn" : "2023-05-24T19:44:07.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-23T15:57:14.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-06-06T00:00",
+        "updatedOn" : "2023-05-26T11:59:17.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-23T15:57:14.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25116",
+    "description" : "In history field showing empty on listing page, if user starts new assessment ",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c5a1",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-23158",
+    "storyType" : "Story",
+    "estimate" : "3.0",
+    "createdDate" : "2023-03-16T16:44:47.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-03-16T16:44:47.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "Ready for Sprint Planning",
+        "updatedOn" : "2023-05-11T12:28:28.000"
+      },
+      {
+        "changedFrom" : "Ready for Sprint Planning",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-16T12:34:17.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Code Review",
+        "updatedOn" : "2023-05-22T20:14:06.000"
+      },
+      {
+        "changedFrom" : "Code Review",
+        "changedTo" : "In Testing",
+        "updatedOn" : "2023-05-24T13:34:36.000"
+      },
+      {
+        "changedFrom" : "In Testing",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-24T13:34:42.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Tiberiu Zatreanu",
+        "updatedOn" : "2023-03-16T16:44:47.000"
+      },
+      {
+        "changedFrom" : "Tiberiu Zatreanu",
+        "changedTo" : "Alecsandru Ciobanu",
+        "updatedOn" : "2023-05-09T16:58:27.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-03-16T16:44:47.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_1",
+        "updatedOn" : "2023-03-23T15:28:39.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_1",
+        "changedTo" : "MAP|PI_13|ITR_2",
+        "updatedOn" : "2023-03-28T16:25:42.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_2",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-04-12T12:04:29.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-04-26T12:06:06.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-09T16:57:41.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-09T16:58:30.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-23158",
+    "description" : "[FE] Adapt the moved components so that they are completely reusable within a consuming service",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c5a2",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25206",
+    "storyType" : "Task",
+    "estimate" : "0",
+    "createdDate" : "2023-05-24T19:28:52.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-24T19:28:52.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Progress",
+        "updatedOn" : "2023-05-26T19:09:30.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Mariadass Jesuraja",
+        "updatedOn" : "2023-05-24T19:28:52.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-24T19:28:52.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-06-02T00:00",
+        "updatedOn" : "2023-05-26T11:58:46.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T19:28:52.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25206",
+    "description" : "Backend effort",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c5a3",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25188",
+    "storyType" : "Story",
+    "estimate" : "5.0",
+    "createdDate" : "2023-05-24T16:25:43.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-24T16:25:43.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-05-26T19:09:09.000"
+      },
+      {
+        "changedFrom" : "In Analysis",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-26T19:09:19.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Anil Kumar Singh",
+        "updatedOn" : "2023-05-24T16:25:43.000"
+      },
+      {
+        "changedFrom" : "Anil Kumar Singh",
+        "changedTo" : "Mariadass Jesuraja",
+        "updatedOn" : "2023-05-24T19:25:26.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-24T16:25:43.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-06-02T00:00",
+        "updatedOn" : "2023-05-26T11:58:22.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T16:25:43.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25188",
+    "description" : "Update reports/trends apis to include url based changes",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c5a4",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24719",
+    "storyType" : "Story",
+    "estimate" : "1.0",
+    "createdDate" : "2023-05-02T15:12:59.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-02T15:12:59.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-02T15:12:59.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Rishabh Shukla",
+        "updatedOn" : "2023-05-09T18:46:39.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-02T15:12:59.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "AP PI-14",
+        "updatedOn" : "2023-05-26T11:02:35.000"
+      }
+    ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-16T00:00",
+        "updatedOn" : "2023-05-10T15:28:20.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-05-02T15:12:59.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-10T12:24:29.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:19:59.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T01:59:20.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-26T11:02:23.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24719",
+    "description" : "UI | User should be able to see the progress of a file download",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c5a5",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-23093",
+    "storyType" : "Story",
+    "estimate" : "5.0",
+    "createdDate" : "2023-03-15T15:18:27.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-03-15T15:18:27.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-05-03T12:02:45.000"
+      },
+      {
+        "changedFrom" : "In Analysis",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-05T11:29:28.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Ready for Testing",
+        "updatedOn" : "2023-05-09T17:02:28.000"
+      },
+      {
+        "changedFrom" : "Ready for Testing",
+        "changedTo" : "In Testing",
+        "updatedOn" : "2023-05-11T10:31:46.000"
+      },
+      {
+        "changedFrom" : "In Testing",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-15T16:16:07.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-26T10:58:42.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2023-03-15T15:18:27.000"
+      },
+      {
+        "changedFrom" : "Pragyan Sundarray",
+        "changedTo" : "Abinaya Kannan",
+        "updatedOn" : "2023-04-26T17:53:53.000"
+      },
+      {
+        "changedFrom" : "Abinaya Kannan",
+        "changedTo" : "Karthick P",
+        "updatedOn" : "2023-05-09T17:04:35.000"
+      },
+      {
+        "changedFrom" : "Karthick P",
+        "changedTo" : "Anmol Mishra",
+        "updatedOn" : "2023-05-15T16:15:45.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-03-15T15:18:27.000"
+      },
+      {
+        "changedFrom" : "P4 - Minor",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-04-27T12:34:34.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_2",
+        "updatedOn" : "2023-03-23T15:23:23.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_2",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-04-12T13:37:39.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-10T12:24:18.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:19:46.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T01:58:50.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-26T10:58:58.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-23093",
+    "description" : "Configure template for Sustain Engg Maturity Model",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c5a6",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-23156",
+    "storyType" : "Story",
+    "estimate" : "3.0",
+    "createdDate" : "2023-03-16T16:35:37.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-03-16T16:35:37.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-05-25T19:29:26.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Tiberiu Zatreanu",
+        "updatedOn" : "2023-03-16T16:35:37.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-03-16T16:35:37.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_1",
+        "updatedOn" : "2023-03-23T15:30:01.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_1",
+        "changedTo" : "MAP|PI_13|ITR_2",
+        "updatedOn" : "2023-03-28T16:26:09.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_2",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-04-10T13:40:02.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-04-26T11:49:16.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-09T16:52:13.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-23156",
+    "description" : "Analyze, define, document strategy for validation and propagation of the content",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f09d64e8f7725d6c5a7",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-20993",
+    "storyType" : "Story",
+    "estimate" : "8.0",
+    "createdDate" : "2022-12-14T10:51:54.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2022-12-14T10:51:54.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-04-17T12:57:09.000"
+      },
+      {
+        "changedFrom" : "In Analysis",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-04-17T12:57:25.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Ready for Testing",
+        "updatedOn" : "2023-05-19T11:40:55.000"
+      },
+      {
+        "changedFrom" : "Ready for Testing",
+        "changedTo" : "In Testing",
+        "updatedOn" : "2023-05-23T13:03:22.000"
+      },
+      {
+        "changedFrom" : "In Testing",
+        "changedTo" : "On Hold",
+        "updatedOn" : "2023-05-25T18:21:04.000"
+      },
+      {
+        "changedFrom" : "On Hold",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-30T13:10:42.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2022-12-14T10:51:54.000"
+      },
+      {
+        "changedFrom" : "Pragyan Sundarray",
+        "changedTo" : "Anmol Mishra",
+        "updatedOn" : "2023-02-22T14:56:52.000"
+      },
+      {
+        "changedFrom" : "Anmol Mishra",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-04-12T18:43:51.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Anmol Mishra",
+        "updatedOn" : "2023-04-12T18:45:08.000"
+      },
+      {
+        "changedFrom" : "Anmol Mishra",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-02T12:47:14.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Raja Guru",
+        "updatedOn" : "2023-05-23T13:03:35.000"
+      },
+      {
+        "changedFrom" : "Raja Guru",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-30T13:09:39.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2022-12-14T10:51:54.000"
+      },
+      {
+        "changedFrom" : "P4 - Minor",
+        "changedTo" : "P3 - Major",
+        "updatedOn" : "2023-02-17T11:05:57.000"
+      },
+      {
+        "changedFrom" : "P3 - Major",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-05-09T17:49:56.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "AP PI-12",
+        "updatedOn" : "2022-12-14T10:51:54.000"
+      },
+      {
+        "changedFrom" : "AP PI-12",
+        "changedTo" : "AP v1.9.1,AP PI-12",
+        "updatedOn" : "2023-02-08T16:42:33.000"
+      },
+      {
+        "changedFrom" : "AP v1.9.1,AP PI-12",
+        "changedTo" : "AP PI-12,AP v1.10.0",
+        "updatedOn" : "2023-03-05T16:21:17.000"
+      },
+      {
+        "changedFrom" : "AP v1.10.0,AP PI-12",
+        "changedTo" : "AP 2.0.0,AP PI-12",
+        "updatedOn" : "2023-03-05T16:21:43.000"
+      },
+      {
+        "changedFrom" : "AP 2.0.0,AP PI-12",
+        "changedTo" : "AP v2.0.0,AP PI-12",
+        "updatedOn" : "2023-03-05T16:24:12.000"
+      },
+      {
+        "changedFrom" : "AP PI-12,AP v2.0.0",
+        "changedTo" : ",AP v2.0.0",
+        "updatedOn" : "2023-05-10T17:23:10.000"
+      }
+    ],
+    "labelUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Functional",
+        "updatedOn" : "2022-12-14T10:51:54.000"
+      }
+    ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-03-07T00:00",
+        "updatedOn" : "2023-03-02T20:09:07.000"
+      },
+      {
+        "changedFrom" : "2023-03-07T00:00",
+        "changedTo" : "2023-05-09T00:00",
+        "updatedOn" : "2023-05-02T12:50:24.000"
+      },
+      {
+        "changedFrom" : "2023-05-09T00:00",
+        "changedTo" : "2023-05-12T00:00",
+        "updatedOn" : "2023-05-09T17:49:47.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_12|ITR_2",
+        "updatedOn" : "2022-12-14T19:48:28.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_12|ITR_2",
+        "changedTo" : "MAP|PI_12|ITR_3",
+        "updatedOn" : "2023-01-10T12:22:51.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_12|ITR_3",
+        "changedTo" : "MAP|PI_12|ITR_4",
+        "updatedOn" : "2023-01-25T10:55:13.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_12|ITR_4",
+        "changedTo" : "MAP|PI_12|ITR_5",
+        "updatedOn" : "2023-02-08T11:56:49.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_12|ITR_5",
+        "changedTo" : "MAP|PI_12|ITR_6",
+        "updatedOn" : "2023-03-07T10:23:13.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_12|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_1",
+        "updatedOn" : "2023-03-29T13:25:25.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_1",
+        "changedTo" : "MAP|PI_13|ITR_2",
+        "updatedOn" : "2023-04-12T12:02:48.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_2",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-04-26T13:30:19.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-10T12:24:08.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:19:40.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-20993",
+    "description" : "As a user I can access the questionnaire pages once URL is clicked",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5d6",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25228",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-20993" ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-25T18:17:48.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-25T18:17:48.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-26T17:50:59.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-25T18:17:48.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P1 - Blocker",
+        "updatedOn" : "2023-05-25T18:17:48.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "AP v2.0.0",
+        "updatedOn" : "2023-05-25T18:17:48.000"
+      }
+    ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T18:17:48.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25228",
+    "description" : "Generate Survey Link CTA is not working || URL based assessment",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5d7",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-23105",
+    "storyType" : "Story",
+    "estimate" : "5.0",
+    "createdDate" : "2023-03-15T16:28:58.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-03-15T16:28:58.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-05-11T11:14:50.000"
+      },
+      {
+        "changedFrom" : "In Analysis",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-12T17:13:17.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Ready for Testing",
+        "updatedOn" : "2023-05-18T12:14:26.000"
+      },
+      {
+        "changedFrom" : "Ready for Testing",
+        "changedTo" : "In Testing",
+        "updatedOn" : "2023-05-18T12:16:09.000"
+      },
+      {
+        "changedFrom" : "In Testing",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-25T18:05:44.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2023-03-15T16:28:58.000"
+      },
+      {
+        "changedFrom" : "Pragyan Sundarray",
+        "changedTo" : "Mariadass Jesuraja",
+        "updatedOn" : "2023-05-09T19:05:32.000"
+      },
+      {
+        "changedFrom" : "Mariadass Jesuraja",
+        "changedTo" : "Raja Guru",
+        "updatedOn" : "2023-05-18T12:14:26.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-03-15T16:28:58.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-18T00:00",
+        "updatedOn" : "2023-05-10T16:23:15.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-03-23T15:24:08.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-04-26T15:26:39.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:19:49.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-23105",
+    "description" : "Feedback 3: Update the review and approval process",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5d8",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24885",
+    "storyType" : "Task",
+    "estimate" : "0",
+    "createdDate" : "2023-05-10T16:22:59.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-10T16:22:59.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Progress",
+        "updatedOn" : "2023-05-18T12:16:32.000"
+      },
+      {
+        "changedFrom" : "In Progress",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-25T18:05:01.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Raja Guru",
+        "updatedOn" : "2023-05-10T16:22:59.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-10T16:22:59.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-18T00:00",
+        "updatedOn" : "2023-05-10T16:22:59.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-10T16:22:59.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24885",
+    "description" : "Testing effort",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5d9",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25033",
+    "storyType" : "Task",
+    "estimate" : "0",
+    "createdDate" : "2023-05-17T14:15:57.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-17T14:15:57.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Progress",
+        "updatedOn" : "2023-05-25T17:07:07.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Abinaya Kannan",
+        "updatedOn" : "2023-05-17T14:15:57.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-17T14:15:57.000"
+      },
+      {
+        "changedFrom" : "P4 - Minor",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-05-17T14:21:30.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-18T00:00",
+        "updatedOn" : "2023-05-17T14:15:57.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-05-17T14:15:57.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25033",
+    "description" : "Local code setup and study the code repo",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5db",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25096",
+    "storyType" : "Story",
+    "estimate" : "2.0",
+    "createdDate" : "2023-05-23T12:27:40.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-23T12:27:40.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Anil Kumar Singh",
+        "updatedOn" : "2023-05-23T12:27:40.000"
+      },
+      {
+        "changedFrom" : "Anil Kumar Singh",
+        "changedTo" : "Agney Praseed",
+        "updatedOn" : "2023-05-24T19:39:40.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-23T12:27:40.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-23T12:27:40.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T01:54:13.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T15:46:47.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25096",
+    "description" : "Update Email Services to include Url based changes",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5dc",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-23146",
+    "storyType" : "Story",
+    "estimate" : "3.0",
+    "createdDate" : "2023-03-16T15:04:33.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-03-16T15:04:33.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Tiberiu Zatreanu",
+        "updatedOn" : "2023-03-16T15:04:33.000"
+      },
+      {
+        "changedFrom" : "Tiberiu Zatreanu",
+        "changedTo" : "Adina-Alexandra Ursache",
+        "updatedOn" : "2023-05-19T12:15:37.000"
+      },
+      {
+        "changedFrom" : "Adina-Alexandra Ursache",
+        "changedTo" : "Andreea Sirbeanu",
+        "updatedOn" : "2023-05-25T15:24:17.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-03-16T15:04:33.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-03-23T15:27:32.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-04-11T03:12:55.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-09T16:53:45.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-23146",
+    "description" : "[QE] Ramp up",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5dd",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-23162",
+    "storyType" : "Story",
+    "estimate" : "3.0",
+    "createdDate" : "2023-03-16T16:53:54.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-03-16T16:53:54.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Tiberiu Zatreanu",
+        "updatedOn" : "2023-03-16T16:53:54.000"
+      },
+      {
+        "changedFrom" : "Tiberiu Zatreanu",
+        "changedTo" : "Adina-Alexandra Ursache",
+        "updatedOn" : "2023-05-19T12:53:16.000"
+      },
+      {
+        "changedFrom" : "Adina-Alexandra Ursache",
+        "changedTo" : "Andreea Sirbeanu",
+        "updatedOn" : "2023-05-25T15:24:07.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-03-16T16:53:54.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-03-23T15:28:53.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-23162",
+    "description" : "[QE] UI testing",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5de",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-23145",
+    "storyType" : "Story",
+    "estimate" : "8.0",
+    "createdDate" : "2023-03-16T15:01:05.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-03-16T15:01:05.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Tiberiu Zatreanu",
+        "updatedOn" : "2023-03-16T15:01:05.000"
+      },
+      {
+        "changedFrom" : "Tiberiu Zatreanu",
+        "changedTo" : "Adina-Alexandra Ursache",
+        "updatedOn" : "2023-05-19T12:15:44.000"
+      },
+      {
+        "changedFrom" : "Adina-Alexandra Ursache",
+        "changedTo" : "Andreea Sirbeanu",
+        "updatedOn" : "2023-05-25T15:23:57.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-03-16T15:01:05.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-03-23T15:27:24.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-04-11T03:12:42.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-09T16:55:26.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-23145",
+    "description" : "[QE] E2E testing",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5df",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25040",
+    "storyType" : "Task",
+    "estimate" : "0",
+    "createdDate" : "2023-05-18T10:13:29.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-18T10:13:29.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Progress",
+        "updatedOn" : "2023-05-18T11:21:56.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Abinaya Kannan",
+        "updatedOn" : "2023-05-18T10:13:29.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-05-18T10:13:29.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-05-18T10:13:29.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25040",
+    "description" : "Test use cases : Question text change & Removal of question headers from survey",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5e0",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25035",
+    "storyType" : "Task",
+    "estimate" : "0",
+    "createdDate" : "2023-05-17T14:21:05.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-17T14:21:05.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Abinaya Kannan",
+        "updatedOn" : "2023-05-17T14:21:05.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-05-17T14:21:05.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-19T00:00",
+        "updatedOn" : "2023-05-17T14:21:05.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-05-17T14:21:05.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25035",
+    "description" : "Document the findings on Confluence",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5e1",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24606",
+    "storyType" : "Story",
+    "estimate" : "3.0",
+    "createdDate" : "2023-04-25T11:35:55.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-04-25T11:35:55.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-05-18T11:21:46.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2023-04-25T11:35:55.000"
+      },
+      {
+        "changedFrom" : "Pragyan Sundarray",
+        "changedTo" : "Abinaya Kannan",
+        "updatedOn" : "2023-04-26T14:37:20.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-04-25T11:35:55.000"
+      },
+      {
+        "changedFrom" : "P4 - Minor",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-05-17T11:44:08.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-19T00:00",
+        "updatedOn" : "2023-05-17T10:28:45.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-04-25T11:35:55.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-10T12:24:13.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:19:43.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24606",
+    "description" : "DFA Code self-walkthrough",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5e2",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25095",
+    "storyType" : "Story",
+    "estimate" : "1.0",
+    "createdDate" : "2023-05-23T12:25:21.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-23T12:25:21.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-05-29T11:45:56.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Anil Kumar Singh",
+        "updatedOn" : "2023-05-23T12:25:21.000"
+      },
+      {
+        "changedFrom" : "Anil Kumar Singh",
+        "changedTo" : "Agney Praseed",
+        "updatedOn" : "2023-05-25T12:37:32.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-23T12:25:21.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-23T12:25:21.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25095",
+    "description" : "Update deltaChanges Api to include url based changes",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5e3",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25077",
+    "storyType" : "Story",
+    "estimate" : "0",
+    "createdDate" : "2023-05-22T14:57:10.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-22T14:57:10.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Analysis",
+        "updatedOn" : "2023-05-25T12:30:21.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2023-05-22T14:57:10.000"
+      },
+      {
+        "changedFrom" : "Pragyan Sundarray",
+        "changedTo" : "Mariadass Jesuraja",
+        "updatedOn" : "2023-05-25T10:52:55.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-05-22T14:57:10.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-31T00:00",
+        "updatedOn" : "2023-05-25T12:30:48.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-22T14:57:10.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25077",
+    "description" : "Showrequest review",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5e4",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25197",
+    "storyType" : "Task",
+    "estimate" : "0",
+    "createdDate" : "2023-05-24T18:10:28.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-24T18:10:28.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Progress",
+        "updatedOn" : "2023-05-25T12:29:58.000"
+      },
+      {
+        "changedFrom" : "In Progress",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-26T19:08:47.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Mariadass Jesuraja",
+        "updatedOn" : "2023-05-24T18:10:28.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-05-24T18:10:28.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-26T00:00",
+        "updatedOn" : "2023-05-25T10:01:33.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T18:10:28.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25197",
+    "description" : "Backend effort",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5e5",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24472",
+    "storyType" : "Task",
+    "estimate" : "0",
+    "createdDate" : "2023-04-12T19:43:05.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-04-12T19:43:05.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Karthick P",
+        "updatedOn" : "2023-04-12T19:43:05.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-04-12T19:43:05.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-04-25T00:00",
+        "updatedOn" : "2023-04-14T09:32:54.000"
+      },
+      {
+        "changedFrom" : "2023-04-25T00:00",
+        "changedTo" : "2023-05-08T00:00",
+        "updatedOn" : "2023-05-02T11:39:12.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_2",
+        "updatedOn" : "2023-04-12T19:43:05.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24472",
+    "description" : "Execute functional test cases",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5e6",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25195",
+    "storyType" : "Task",
+    "estimate" : "0",
+    "createdDate" : "2023-05-24T18:05:14.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-24T18:05:14.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Progress",
+        "updatedOn" : "2023-05-25T11:36:58.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Karthick P",
+        "updatedOn" : "2023-05-24T18:05:14.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-05-24T18:05:14.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-26T00:00",
+        "updatedOn" : "2023-05-24T18:05:14.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T18:05:14.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25195",
+    "description" : "Update test cases in TM4J",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5e7",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24996",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-24725", "TEST-25257" ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-15T14:22:34.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-15T14:22:34.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-05-30T12:48:06.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Rishabh Shukla",
+        "updatedOn" : "2023-05-15T14:22:34.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P3 - Major",
+        "updatedOn" : "2023-05-15T14:22:34.000"
+      },
+      {
+        "changedFrom" : "P3 - Major",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-05-29T13:17:32.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-15T14:22:34.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:14.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T01:59:02.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T10:54:04.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24996",
+    "description" : "Child question title and summary missing on summary export file in sustain Eng",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5e8",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-23972",
+    "storyType" : "Story",
+    "estimate" : "5.0",
+    "createdDate" : "2023-03-23T17:08:26.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-03-23T17:08:26.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2023-03-23T17:08:26.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-03-23T17:08:26.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-19T00:00",
+        "updatedOn" : "2023-05-10T15:25:46.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_2",
+        "updatedOn" : "2023-03-23T17:08:26.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_2",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-04-26T13:30:35.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-10T12:24:26.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:19:53.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-23972",
+    "description" : "Release v2.0.0",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5e9",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24622",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-23097" ],
+    "estimate" : "0",
+    "createdDate" : "2023-04-25T19:13:18.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-04-25T19:13:18.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-04-25T19:13:18.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2023-04-27T12:46:11.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-04-25T19:13:18.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_2",
+        "updatedOn" : "2023-04-25T19:13:18.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_2",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-04-26T13:30:53.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-08T12:10:43.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_2",
+        "updatedOn" : "2023-05-10T16:50:10.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_2",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T13:38:26.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T02:00:41.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T10:43:32.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_2",
+        "updatedOn" : "2023-05-25T10:51:55.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24622",
+    "description" : "Incorrect Data on \"Previous cycle \", Option & Action taken ,\" Current cycle column\"",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5ea",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25073",
+    "storyType" : "Story",
+    "estimate" : "3.0",
+    "createdDate" : "2023-05-22T13:19:05.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-22T13:19:05.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2023-05-22T13:19:05.000"
+      },
+      {
+        "changedFrom" : "Pragyan Sundarray",
+        "changedTo" : "Rishabh Shukla",
+        "updatedOn" : "2023-05-25T10:51:32.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-05-22T13:19:05.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-29T00:00",
+        "updatedOn" : "2023-05-24T18:06:50.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-22T13:19:05.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25073",
+    "description" : "Remind users to export the assessment summary after submit/request review",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5eb",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24496",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-22613" ],
+    "estimate" : "0",
+    "createdDate" : "2023-04-14T15:18:45.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-04-14T15:18:45.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-04-19T12:20:07.000"
+      },
+      {
+        "changedFrom" : "In Investigation",
+        "changedTo" : "In Testing",
+        "updatedOn" : "2023-05-15T12:37:32.000"
+      },
+      {
+        "changedFrom" : "In Testing",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-15T12:37:35.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Rishabh Shukla",
+        "updatedOn" : "2023-04-14T15:18:45.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P3 - Major",
+        "updatedOn" : "2023-04-14T15:18:45.000"
+      },
+      {
+        "changedFrom" : "P3 - Major",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-04-26T14:06:36.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "AP v.2.0.1",
+        "updatedOn" : "2023-05-09T18:04:09.000"
+      },
+      {
+        "changedFrom" : "AP v.2.0.1",
+        "changedTo" : "AP 1.12.1",
+        "updatedOn" : "2023-05-10T17:23:52.000"
+      },
+      {
+        "changedFrom" : "AP 1.12.1",
+        "changedTo" : "AP v2.0.0",
+        "updatedOn" : "2023-05-11T12:39:25.000"
+      },
+      {
+        "changedFrom" : "AP v2.0.0",
+        "changedTo" : "AP v2.1.0",
+        "updatedOn" : "2023-05-23T12:55:19.000"
+      }
+    ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "2023-05-15T00:00",
+        "updatedOn" : "2023-05-10T15:26:52.000"
+      }
+    ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_2",
+        "updatedOn" : "2023-04-14T15:18:45.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_2",
+        "changedTo" : "MAP|PI_13|ITR_3",
+        "updatedOn" : "2023-04-26T13:30:46.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_3",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-10T12:24:27.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:19:57.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T02:02:18.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T10:51:28.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24496",
+    "description" : "Previously selected options are rendering on the trends and benchmark Tab| Reports and trends API",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5ec",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-22902",
+    "storyType" : "Enabler Story",
+    "estimate" : "3.0",
+    "createdDate" : "2023-03-09T14:01:24.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-03-09T14:01:24.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2023-03-09T14:01:24.000"
+      },
+      {
+        "changedFrom" : "Pragyan Sundarray",
+        "changedTo" : "Anmol Mishra",
+        "updatedOn" : "2023-05-25T10:50:15.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-03-09T14:01:24.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-03-23T14:37:14.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-10T12:26:10.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-22902",
+    "description" : "DFA June 2023 Cycle | Developer support Wk 1",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5ed",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25029",
+    "storyType" : "Bug",
+    "defectStoryID" : [ ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-17T13:14:49.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-17T13:14:49.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Agney Praseed",
+        "updatedOn" : "2023-05-17T13:14:49.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P3 - Major",
+        "updatedOn" : "2023-05-17T13:14:49.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-17T13:14:49.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:15.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T02:02:28.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T10:44:19.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25029",
+    "description" : "User sees Incorrect data on Stagnant Category || Insights Widgets",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5ee",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25060",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-20993" ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-19T16:31:15.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-19T16:31:15.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-05-20T14:10:35.000"
+      },
+      {
+        "changedFrom" : "In Investigation",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-26T23:41:56.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Ready for Testing",
+        "updatedOn" : "2023-05-26T23:42:03.000"
+      },
+      {
+        "changedFrom" : "Ready for Testing",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-29T11:42:18.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Investigation",
+        "updatedOn" : "2023-05-29T17:34:34.000"
+      },
+      {
+        "changedFrom" : "In Investigation",
+        "changedTo" : "In Development",
+        "updatedOn" : "2023-05-29T17:34:39.000"
+      },
+      {
+        "changedFrom" : "In Development",
+        "changedTo" : "Ready for Testing",
+        "updatedOn" : "2023-05-29T17:34:44.000"
+      },
+      {
+        "changedFrom" : "Ready for Testing",
+        "changedTo" : "In Testing",
+        "updatedOn" : "2023-05-29T17:36:48.000"
+      },
+      {
+        "changedFrom" : "In Testing",
+        "changedTo" : "On Hold",
+        "updatedOn" : "2023-05-30T12:14:45.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-19T16:31:15.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Raja Guru",
+        "updatedOn" : "2023-05-26T23:42:13.000"
+      },
+      {
+        "changedFrom" : "Raja Guru",
+        "changedTo" : "Mariadass Jesuraja",
+        "updatedOn" : "2023-05-29T11:42:06.000"
+      },
+      {
+        "changedFrom" : "Mariadass Jesuraja",
+        "changedTo" : "Raja Guru",
+        "updatedOn" : "2023-05-29T17:34:51.000"
+      },
+      {
+        "changedFrom" : "Raja Guru",
+        "changedTo" : "Mariadass Jesuraja",
+        "updatedOn" : "2023-05-30T12:56:43.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P1 - Blocker",
+        "updatedOn" : "2023-05-19T16:31:15.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "AP v2.0.0",
+        "updatedOn" : "2023-05-22T12:48:37.000"
+      }
+    ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-19T16:31:15.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:21.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T02:01:10.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T10:42:44.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25060",
+    "description" : "Unable to SUBMIT the Anonymous Assessment || getting Error Message",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5ef",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25071",
+    "storyType" : "Bug",
+    "defectStoryID" : [ ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-22T12:14:11.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-22T12:14:11.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Billa Kota Naga Sireesha",
+        "updatedOn" : "2023-05-22T12:14:11.000"
+      },
+      {
+        "changedFrom" : "Billa Kota Naga Sireesha",
+        "changedTo" : "Pragyan Sundarray",
+        "updatedOn" : "2023-05-30T12:59:54.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P2 - Critical",
+        "updatedOn" : "2023-05-22T12:14:11.000"
+      },
+      {
+        "changedFrom" : "P2 - Critical",
+        "changedTo" : "P3 - Major",
+        "updatedOn" : "2023-05-30T13:03:20.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "AP v2.0.0",
+        "updatedOn" : "2023-05-22T12:49:07.000"
+      }
+    ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-22T12:14:11.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:23.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_6",
+        "updatedOn" : "2023-05-25T02:01:43.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_6",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T10:42:22.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25071",
+    "description" : "Intermittent issue || User doesn't Navigate to Desired page || Generate URL",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f14d64e8f7725d6c5f0",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-25212",
+    "storyType" : "Studio Task",
+    "estimate" : "0",
+    "createdDate" : "2023-05-25T01:56:38.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-25T01:56:38.000"
+      },
+      {
+        "changedFrom" : "Open",
+        "changedTo" : "In Progress",
+        "updatedOn" : "2023-05-29T12:34:51.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Nicolas Iliescu",
+        "updatedOn" : "2023-05-25T01:56:38.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-25T01:56:38.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-25T01:56:38.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-25212",
+    "description" : "FE Documentation",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f20d64e8f7725d6c610",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24935",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-23093" ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-11T18:58:42.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-11T18:58:42.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Anmol Mishra",
+        "updatedOn" : "2023-05-11T18:58:42.000"
+      },
+      {
+        "changedFrom" : "Anmol Mishra",
+        "changedTo" : "Agney Praseed",
+        "updatedOn" : "2023-05-24T19:59:26.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P3 - Major",
+        "updatedOn" : "2023-05-11T18:58:42.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-11T18:58:42.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:07.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-24T20:00:34.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24935",
+    "description" : "Answer options are not aligned vertically | Sustain Eng",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  },
+
+  {
+    "_id" : "64709f20d64e8f7725d6c611",
+    "projectID" : "Iteration Status",
+    "storyID" : "TEST-24934",
+    "storyType" : "Bug",
+    "defectStoryID" : [ "TEST-23093" ],
+    "estimate" : "0",
+    "createdDate" : "2023-05-11T18:50:49.000",
+    "projectKey" : "TEST",
+    "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "statusUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Open",
+        "updatedOn" : "2023-05-11T18:50:49.000"
+      }
+    ],
+    "assigneeUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "Anmol Mishra",
+        "updatedOn" : "2023-05-11T18:50:49.000"
+      },
+      {
+        "changedFrom" : "Anmol Mishra",
+        "changedTo" : "Rishabh Shukla",
+        "updatedOn" : "2023-05-16T12:42:21.000"
+      }
+    ],
+    "priorityUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "P4 - Minor",
+        "updatedOn" : "2023-05-11T18:50:49.000"
+      }
+    ],
+    "fixVersionUpdationLog" : [ ],
+    "labelUpdationLog" : [ ],
+    "dueDateUpdationLog" : [ ],
+    "sprintUpdationLog" : [
+      {
+        "changedFrom" : "",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-11T18:50:49.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_4",
+        "changedTo" : "MAP|PI_13|ITR_5",
+        "updatedOn" : "2023-05-24T17:20:06.000"
+      },
+      {
+        "changedFrom" : "MAP|PI_13|ITR_5",
+        "changedTo" : "MAP|PI_13|ITR_4",
+        "updatedOn" : "2023-05-24T19:59:08.000"
+      }
+    ],
+    "additionalFilters" : [ ],
+    "url" : "https:tools.publicis.sapient.combrowse/TEST-24934",
+    "description" : "Child question count missing on the parent question | Sustain Eng",
+    "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory"
+  }]

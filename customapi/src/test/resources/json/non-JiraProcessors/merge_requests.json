@@ -1,0 +1,25 @@
+[
+{
+    "_id" : "63316e9467446e5ec838d057",
+    "processorItemId" : "63316e5667446e5ec838b67e",
+    "title" : "Adding changes for blank status",
+    "state" : "MERGED",
+    "count": 3415612,
+    "isOpen" : false,
+    "isClosed" : false,
+    "createdDate" : 1660037655000,
+    "updatedDate" : 1660037968000,
+    "closedDate" : 1660037968000,
+    "fromBranch" : "feature/Daya-TEST-17942",
+    "toBranch" : "develop",
+    "repoSlug" : "NA",
+    "projKey" : "KnowHow",
+    "author" : "testUser1",
+    "reviewers" : [
+      "76546582"
+    ],
+    "revisionNumber" : "1338",
+    "date": "2022-09-01",
+    "_class" : "com.publicissapient.kpidashboard.common.model.scm.MergeRequests"
+  }
+]

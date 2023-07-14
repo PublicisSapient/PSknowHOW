@@ -1,0 +1,929 @@
+[
+  {
+    "node": [
+      {
+        "groupName": "corporate",
+        "accountHierarchyKanban": {
+          "nodeName": "Corpate1",
+          "path": "",
+          "createdDate": "2022-09-27T18:26:05.568",
+          "isDeleted": "False",
+          "basicProjectConfigId": "6332f2e568b5d05cf59c42bb",
+          "labelName": "corporate",
+          "nodeId": "Corpate1_corporate"
+        },
+        "level": 1,
+        "name": "Corpate1",
+        "id": "Corpate1_corporate",
+        "parentId": null
+      },
+      {
+        "groupName": "business",
+        "accountHierarchyKanban": {
+          "nodeName": "Leve2",
+          "path": "Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "business",
+          "nodeId": "Leve2_business"
+        },
+        "level": 2,
+        "name": "Leve2",
+        "id": "Leve2_business",
+        "parentId": "Corpate1_corporate"
+      },
+      {
+        "groupName": "account",
+        "accountHierarchyKanban": {
+          "nodeName": "Org3",
+          "path": "Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "account",
+          "nodeId": "Org3_account"
+        },
+        "level": 3,
+        "name": "Org3",
+        "id": "Org3_account",
+        "parentId": "Leve2_business"
+      },
+      {
+        "groupName": "subaccount",
+        "accountHierarchyKanban": {
+          "nodeName": "S1",
+          "path": "Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "subaccount",
+          "nodeId": "S1_subaccount"
+        },
+        "level": 4,
+        "name": "S1",
+        "id": "S1_subaccount",
+        "parentId": "Org3_account"
+      },
+      {
+        "groupName": "project",
+        "accountHierarchyKanban": {
+          "nodeName": "TestKanban",
+          "path": "S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "project",
+          "nodeId": "TestKanban_63330b7068b5d05cf59c4386"
+        },
+        "level": 5,
+        "name": "TestKanban",
+        "id": "TestKanban_63330b7068b5d05cf59c4386",
+        "parentId": "S1_subaccount"
+      },
+      {
+        "groupName": "sqd",
+        "accountHierarchyKanban": {
+          "nodeName": "0.0",
+          "path": "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:49:20.265",
+          "isDeleted": null,
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "sqd",
+          "nodeId": "0.0_sqd_63330b7068b5d05cf59c4386"
+        },
+        "level": 7,
+        "name": "0.0",
+        "id": "0.0_sqd_63330b7068b5d05cf59c4386",
+        "parentId": "TestKanban_63330b7068b5d05cf59c4386"
+      }
+    ],
+    "leafNodeId": "0.0_sqd_63330b7068b5d05cf59c4386",
+    "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+    "labelName": "sqd"
+  },
+  {
+    "node": [
+      {
+        "groupName": "corporate",
+        "accountHierarchyKanban": {
+          "nodeName": "Corpate1",
+          "path": "",
+          "createdDate": "2022-09-27T18:26:05.568",
+          "isDeleted": "False",
+          "basicProjectConfigId": "6332f2e568b5d05cf59c42bb",
+          "labelName": "corporate",
+          "nodeId": "Corpate1_corporate"
+        },
+        "level": 1,
+        "name": "Corpate1",
+        "id": "Corpate1_corporate",
+        "parentId": null
+      },
+      {
+        "groupName": "business",
+        "accountHierarchyKanban": {
+          "nodeName": "Leve2",
+          "path": "Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "business",
+          "nodeId": "Leve2_business"
+        },
+        "level": 2,
+        "name": "Leve2",
+        "id": "Leve2_business",
+        "parentId": "Corpate1_corporate"
+      },
+      {
+        "groupName": "account",
+        "accountHierarchyKanban": {
+          "nodeName": "Org3",
+          "path": "Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "account",
+          "nodeId": "Org3_account"
+        },
+        "level": 3,
+        "name": "Org3",
+        "id": "Org3_account",
+        "parentId": "Leve2_business"
+      },
+      {
+        "groupName": "subaccount",
+        "accountHierarchyKanban": {
+          "nodeName": "S1",
+          "path": "Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "subaccount",
+          "nodeId": "S1_subaccount"
+        },
+        "level": 4,
+        "name": "S1",
+        "id": "S1_subaccount",
+        "parentId": "Org3_account"
+      },
+      {
+        "groupName": "project",
+        "accountHierarchyKanban": {
+          "nodeName": "TestKanban",
+          "path": "S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "project",
+          "nodeId": "TestKanban_63330b7068b5d05cf59c4386"
+        },
+        "level": 5,
+        "name": "TestKanban",
+        "id": "TestKanban_63330b7068b5d05cf59c4386",
+        "parentId": "S1_subaccount"
+      },
+      {
+        "groupName": "sqd",
+        "accountHierarchyKanban": {
+          "nodeName": "13.0",
+          "path": "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:48:53.931",
+          "isDeleted": null,
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "sqd",
+          "nodeId": "13.0_sqd_63330b7068b5d05cf59c4386"
+        },
+        "level": 7,
+        "name": "13.0",
+        "id": "13.0_sqd_63330b7068b5d05cf59c4386",
+        "parentId": "TestKanban_63330b7068b5d05cf59c4386"
+      }
+    ],
+    "leafNodeId": "13.0_sqd_63330b7068b5d05cf59c4386",
+    "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+    "labelName": "sqd"
+  },
+  {
+    "node": [
+      {
+        "groupName": "corporate",
+        "accountHierarchyKanban": {
+          "nodeName": "Corpate1",
+          "path": "",
+          "createdDate": "2022-09-27T18:26:05.568",
+          "isDeleted": "False",
+          "basicProjectConfigId": "6332f2e568b5d05cf59c42bb",
+          "labelName": "corporate",
+          "nodeId": "Corpate1_corporate"
+        },
+        "level": 1,
+        "name": "Corpate1",
+        "id": "Corpate1_corporate",
+        "parentId": null
+      },
+      {
+        "groupName": "business",
+        "accountHierarchyKanban": {
+          "nodeName": "Leve2",
+          "path": "Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "business",
+          "nodeId": "Leve2_business"
+        },
+        "level": 2,
+        "name": "Leve2",
+        "id": "Leve2_business",
+        "parentId": "Corpate1_corporate"
+      },
+      {
+        "groupName": "account",
+        "accountHierarchyKanban": {
+          "nodeName": "Org3",
+          "path": "Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "account",
+          "nodeId": "Org3_account"
+        },
+        "level": 3,
+        "name": "Org3",
+        "id": "Org3_account",
+        "parentId": "Leve2_business"
+      },
+      {
+        "groupName": "subaccount",
+        "accountHierarchyKanban": {
+          "nodeName": "S1",
+          "path": "Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "subaccount",
+          "nodeId": "S1_subaccount"
+        },
+        "level": 4,
+        "name": "S1",
+        "id": "S1_subaccount",
+        "parentId": "Org3_account"
+      },
+      {
+        "groupName": "project",
+        "accountHierarchyKanban": {
+          "nodeName": "TestKanban",
+          "path": "S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "project",
+          "nodeId": "TestKanban_63330b7068b5d05cf59c4386"
+        },
+        "level": 5,
+        "name": "TestKanban",
+        "id": "TestKanban_63330b7068b5d05cf59c4386",
+        "parentId": "S1_subaccount"
+      },
+      {
+        "groupName": "sqd",
+        "accountHierarchyKanban": {
+          "nodeName": "20.0",
+          "path": "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:48:53.939",
+          "isDeleted": null,
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "sqd",
+          "nodeId": "20.0_sqd_63330b7068b5d05cf59c4386"
+        },
+        "level": 7,
+        "name": "20.0",
+        "id": "20.0_sqd_63330b7068b5d05cf59c4386",
+        "parentId": "TestKanban_63330b7068b5d05cf59c4386"
+      }
+    ],
+    "leafNodeId": "20.0_sqd_63330b7068b5d05cf59c4386",
+    "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+    "labelName": "sqd"
+  },
+  {
+    "node": [
+      {
+        "groupName": "corporate",
+        "accountHierarchyKanban": {
+          "nodeName": "Corpate1",
+          "path": "",
+          "createdDate": "2022-09-27T18:26:05.568",
+          "isDeleted": "False",
+          "basicProjectConfigId": "6332f2e568b5d05cf59c42bb",
+          "labelName": "corporate",
+          "nodeId": "Corpate1_corporate"
+        },
+        "level": 1,
+        "name": "Corpate1",
+        "id": "Corpate1_corporate",
+        "parentId": null
+      },
+      {
+        "groupName": "business",
+        "accountHierarchyKanban": {
+          "nodeName": "Leve2",
+          "path": "Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "business",
+          "nodeId": "Leve2_business"
+        },
+        "level": 2,
+        "name": "Leve2",
+        "id": "Leve2_business",
+        "parentId": "Corpate1_corporate"
+      },
+      {
+        "groupName": "account",
+        "accountHierarchyKanban": {
+          "nodeName": "Org3",
+          "path": "Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "account",
+          "nodeId": "Org3_account"
+        },
+        "level": 3,
+        "name": "Org3",
+        "id": "Org3_account",
+        "parentId": "Leve2_business"
+      },
+      {
+        "groupName": "subaccount",
+        "accountHierarchyKanban": {
+          "nodeName": "S1",
+          "path": "Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "subaccount",
+          "nodeId": "S1_subaccount"
+        },
+        "level": 4,
+        "name": "S1",
+        "id": "S1_subaccount",
+        "parentId": "Org3_account"
+      },
+      {
+        "groupName": "project",
+        "accountHierarchyKanban": {
+          "nodeName": "TestKanban",
+          "path": "S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "project",
+          "nodeId": "TestKanban_63330b7068b5d05cf59c4386"
+        },
+        "level": 5,
+        "name": "TestKanban",
+        "id": "TestKanban_63330b7068b5d05cf59c4386",
+        "parentId": "S1_subaccount"
+      },
+      {
+        "groupName": "sqd",
+        "accountHierarchyKanban": {
+          "nodeName": "",
+          "path": "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:48:37.549",
+          "isDeleted": null,
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "sqd",
+          "nodeId": "_sqd_63330b7068b5d05cf59c4386"
+        },
+        "level": 7,
+        "name": "",
+        "id": "_sqd_63330b7068b5d05cf59c4386",
+        "parentId": "TestKanban_63330b7068b5d05cf59c4386"
+      }
+    ],
+    "leafNodeId": "_sqd_63330b7068b5d05cf59c4386",
+    "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+    "labelName": "sqd"
+  },
+  {
+    "node": [
+      {
+        "groupName": "corporate",
+        "accountHierarchyKanban": {
+          "nodeName": "Corpate1",
+          "path": "",
+          "createdDate": "2022-09-27T18:26:05.568",
+          "isDeleted": "False",
+          "basicProjectConfigId": "6332f2e568b5d05cf59c42bb",
+          "labelName": "corporate",
+          "nodeId": "Corpate1_corporate"
+        },
+        "level": 1,
+        "name": "Corpate1",
+        "id": "Corpate1_corporate",
+        "parentId": null
+      },
+      {
+        "groupName": "business",
+        "accountHierarchyKanban": {
+          "nodeName": "Leve2",
+          "path": "Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "business",
+          "nodeId": "Leve2_business"
+        },
+        "level": 2,
+        "name": "Leve2",
+        "id": "Leve2_business",
+        "parentId": "Corpate1_corporate"
+      },
+      {
+        "groupName": "account",
+        "accountHierarchyKanban": {
+          "nodeName": "Org3",
+          "path": "Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "account",
+          "nodeId": "Org3_account"
+        },
+        "level": 3,
+        "name": "Org3",
+        "id": "Org3_account",
+        "parentId": "Leve2_business"
+      },
+      {
+        "groupName": "subaccount",
+        "accountHierarchyKanban": {
+          "nodeName": "S1",
+          "path": "Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "subaccount",
+          "nodeId": "S1_subaccount"
+        },
+        "level": 4,
+        "name": "S1",
+        "id": "S1_subaccount",
+        "parentId": "Org3_account"
+      },
+      {
+        "groupName": "project",
+        "accountHierarchyKanban": {
+          "nodeName": "TestKanban",
+          "path": "S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "project",
+          "nodeId": "TestKanban_63330b7068b5d05cf59c4386"
+        },
+        "level": 5,
+        "name": "TestKanban",
+        "id": "TestKanban_63330b7068b5d05cf59c4386",
+        "parentId": "S1_subaccount"
+      },
+      {
+        "groupName": "sqd",
+        "accountHierarchyKanban": {
+          "nodeName": "2.0",
+          "path": "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:48:37.553",
+          "isDeleted": null,
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "sqd",
+          "nodeId": "2.0_sqd_63330b7068b5d05cf59c4386"
+        },
+        "level": 7,
+        "name": "2.0",
+        "id": "2.0_sqd_63330b7068b5d05cf59c4386",
+        "parentId": "TestKanban_63330b7068b5d05cf59c4386"
+      }
+    ],
+    "leafNodeId": "2.0_sqd_63330b7068b5d05cf59c4386",
+    "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+    "labelName": "sqd"
+  },
+  {
+    "node": [
+      {
+        "groupName": "corporate",
+        "accountHierarchyKanban": {
+          "nodeName": "Corpate1",
+          "path": "",
+          "createdDate": "2022-09-27T18:26:05.568",
+          "isDeleted": "False",
+          "basicProjectConfigId": "6332f2e568b5d05cf59c42bb",
+          "labelName": "corporate",
+          "nodeId": "Corpate1_corporate"
+        },
+        "level": 1,
+        "name": "Corpate1",
+        "id": "Corpate1_corporate",
+        "parentId": null
+      },
+      {
+        "groupName": "business",
+        "accountHierarchyKanban": {
+          "nodeName": "Leve2",
+          "path": "Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "business",
+          "nodeId": "Leve2_business"
+        },
+        "level": 2,
+        "name": "Leve2",
+        "id": "Leve2_business",
+        "parentId": "Corpate1_corporate"
+      },
+      {
+        "groupName": "account",
+        "accountHierarchyKanban": {
+          "nodeName": "Org3",
+          "path": "Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "account",
+          "nodeId": "Org3_account"
+        },
+        "level": 3,
+        "name": "Org3",
+        "id": "Org3_account",
+        "parentId": "Leve2_business"
+      },
+      {
+        "groupName": "subaccount",
+        "accountHierarchyKanban": {
+          "nodeName": "S1",
+          "path": "Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "subaccount",
+          "nodeId": "S1_subaccount"
+        },
+        "level": 4,
+        "name": "S1",
+        "id": "S1_subaccount",
+        "parentId": "Org3_account"
+      },
+      {
+        "groupName": "project",
+        "accountHierarchyKanban": {
+          "nodeName": "TestKanban",
+          "path": "S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "project",
+          "nodeId": "TestKanban_63330b7068b5d05cf59c4386"
+        },
+        "level": 5,
+        "name": "TestKanban",
+        "id": "TestKanban_63330b7068b5d05cf59c4386",
+        "parentId": "S1_subaccount"
+      },
+      {
+        "groupName": "sqd",
+        "accountHierarchyKanban": {
+          "nodeName": "1.0",
+          "path": "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:48:37.549",
+          "isDeleted": null,
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "sqd",
+          "nodeId": "1.0_sqd_63330b7068b5d05cf59c4386"
+        },
+        "level": 7,
+        "name": "1.0",
+        "id": "1.0_sqd_63330b7068b5d05cf59c4386",
+        "parentId": "TestKanban_63330b7068b5d05cf59c4386"
+      }
+    ],
+    "leafNodeId": "1.0_sqd_63330b7068b5d05cf59c4386",
+    "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+    "labelName": "sqd"
+  },
+  {
+    "node": [
+      {
+        "groupName": "corporate",
+        "accountHierarchyKanban": {
+          "nodeName": "Corpate1",
+          "path": "",
+          "createdDate": "2022-09-27T18:26:05.568",
+          "isDeleted": "False",
+          "basicProjectConfigId": "6332f2e568b5d05cf59c42bb",
+          "labelName": "corporate",
+          "nodeId": "Corpate1_corporate"
+        },
+        "level": 1,
+        "name": "Corpate1",
+        "id": "Corpate1_corporate",
+        "parentId": null
+      },
+      {
+        "groupName": "business",
+        "accountHierarchyKanban": {
+          "nodeName": "Leve2",
+          "path": "Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "business",
+          "nodeId": "Leve2_business"
+        },
+        "level": 2,
+        "name": "Leve2",
+        "id": "Leve2_business",
+        "parentId": "Corpate1_corporate"
+      },
+      {
+        "groupName": "account",
+        "accountHierarchyKanban": {
+          "nodeName": "Org3",
+          "path": "Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "account",
+          "nodeId": "Org3_account"
+        },
+        "level": 3,
+        "name": "Org3",
+        "id": "Org3_account",
+        "parentId": "Leve2_business"
+      },
+      {
+        "groupName": "subaccount",
+        "accountHierarchyKanban": {
+          "nodeName": "S1",
+          "path": "Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "subaccount",
+          "nodeId": "S1_subaccount"
+        },
+        "level": 4,
+        "name": "S1",
+        "id": "S1_subaccount",
+        "parentId": "Org3_account"
+      },
+      {
+        "groupName": "project",
+        "accountHierarchyKanban": {
+          "nodeName": "TestKanban",
+          "path": "S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "project",
+          "nodeId": "TestKanban_63330b7068b5d05cf59c4386"
+        },
+        "level": 5,
+        "name": "TestKanban",
+        "id": "TestKanban_63330b7068b5d05cf59c4386",
+        "parentId": "S1_subaccount"
+      },
+      {
+        "groupName": "sqd",
+        "accountHierarchyKanban": {
+          "nodeName": "8.0",
+          "path": "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:48:37.554",
+          "isDeleted": null,
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "sqd",
+          "nodeId": "8.0_sqd_63330b7068b5d05cf59c4386"
+        },
+        "level": 7,
+        "name": "8.0",
+        "id": "8.0_sqd_63330b7068b5d05cf59c4386",
+        "parentId": "TestKanban_63330b7068b5d05cf59c4386"
+      }
+    ],
+    "leafNodeId": "8.0_sqd_63330b7068b5d05cf59c4386",
+    "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+    "labelName": "sqd"
+  },
+  {
+    "node": [
+      {
+        "groupName": "corporate",
+        "accountHierarchyKanban": {
+          "nodeName": "Corpate1",
+          "path": "",
+          "createdDate": "2022-09-27T18:26:05.568",
+          "isDeleted": "False",
+          "basicProjectConfigId": "6332f2e568b5d05cf59c42bb",
+          "labelName": "corporate",
+          "nodeId": "Corpate1_corporate"
+        },
+        "level": 1,
+        "name": "Corpate1",
+        "id": "Corpate1_corporate",
+        "parentId": null
+      },
+      {
+        "groupName": "business",
+        "accountHierarchyKanban": {
+          "nodeName": "Leve2",
+          "path": "Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "business",
+          "nodeId": "Leve2_business"
+        },
+        "level": 2,
+        "name": "Leve2",
+        "id": "Leve2_business",
+        "parentId": "Corpate1_corporate"
+      },
+      {
+        "groupName": "account",
+        "accountHierarchyKanban": {
+          "nodeName": "Org3",
+          "path": "Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "account",
+          "nodeId": "Org3_account"
+        },
+        "level": 3,
+        "name": "Org3",
+        "id": "Org3_account",
+        "parentId": "Leve2_business"
+      },
+      {
+        "groupName": "subaccount",
+        "accountHierarchyKanban": {
+          "nodeName": "S1",
+          "path": "Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "subaccount",
+          "nodeId": "S1_subaccount"
+        },
+        "level": 4,
+        "name": "S1",
+        "id": "S1_subaccount",
+        "parentId": "Org3_account"
+      },
+      {
+        "groupName": "project",
+        "accountHierarchyKanban": {
+          "nodeName": "TestKanban",
+          "path": "S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "project",
+          "nodeId": "TestKanban_63330b7068b5d05cf59c4386"
+        },
+        "level": 5,
+        "name": "TestKanban",
+        "id": "TestKanban_63330b7068b5d05cf59c4386",
+        "parentId": "S1_subaccount"
+      },
+      {
+        "groupName": "sqd",
+        "accountHierarchyKanban": {
+          "nodeName": "3.0",
+          "path": "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:48:37.548",
+          "isDeleted": null,
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "sqd",
+          "nodeId": "3.0_sqd_63330b7068b5d05cf59c4386"
+        },
+        "level": 7,
+        "name": "3.0",
+        "id": "3.0_sqd_63330b7068b5d05cf59c4386",
+        "parentId": "TestKanban_63330b7068b5d05cf59c4386"
+      }
+    ],
+    "leafNodeId": "3.0_sqd_63330b7068b5d05cf59c4386",
+    "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+    "labelName": "sqd"
+  },
+  {
+    "node": [
+      {
+        "groupName": "corporate",
+        "accountHierarchyKanban": {
+          "nodeName": "Corpate1",
+          "path": "",
+          "createdDate": "2022-09-27T18:26:05.568",
+          "isDeleted": "False",
+          "basicProjectConfigId": "6332f2e568b5d05cf59c42bb",
+          "labelName": "corporate",
+          "nodeId": "Corpate1_corporate"
+        },
+        "level": 1,
+        "name": "Corpate1",
+        "id": "Corpate1_corporate",
+        "parentId": null
+      },
+      {
+        "groupName": "business",
+        "accountHierarchyKanban": {
+          "nodeName": "Leve2",
+          "path": "Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "business",
+          "nodeId": "Leve2_business"
+        },
+        "level": 2,
+        "name": "Leve2",
+        "id": "Leve2_business",
+        "parentId": "Corpate1_corporate"
+      },
+      {
+        "groupName": "account",
+        "accountHierarchyKanban": {
+          "nodeName": "Org3",
+          "path": "Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "account",
+          "nodeId": "Org3_account"
+        },
+        "level": 3,
+        "name": "Org3",
+        "id": "Org3_account",
+        "parentId": "Leve2_business"
+      },
+      {
+        "groupName": "subaccount",
+        "accountHierarchyKanban": {
+          "nodeName": "S1",
+          "path": "Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "subaccount",
+          "nodeId": "S1_subaccount"
+        },
+        "level": 4,
+        "name": "S1",
+        "id": "S1_subaccount",
+        "parentId": "Org3_account"
+      },
+      {
+        "groupName": "project",
+        "accountHierarchyKanban": {
+          "nodeName": "TestKanban",
+          "path": "S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:10:48.978",
+          "isDeleted": "False",
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "project",
+          "nodeId": "TestKanban_63330b7068b5d05cf59c4386"
+        },
+        "level": 5,
+        "name": "TestKanban",
+        "id": "TestKanban_63330b7068b5d05cf59c4386",
+        "parentId": "S1_subaccount"
+      },
+      {
+        "groupName": "sqd",
+        "accountHierarchyKanban": {
+          "nodeName": "5.0",
+          "path": "TestKanban_63330b7068b5d05cf59c4386###S1_subaccount###Org3_account###Leve2_business###Corpate1_corporate",
+          "createdDate": "2022-09-27T20:48:37.551",
+          "isDeleted": null,
+          "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+          "labelName": "sqd",
+          "nodeId": "5.0_sqd_63330b7068b5d05cf59c4386"
+        },
+        "level": 7,
+        "name": "5.0",
+        "id": "5.0_sqd_63330b7068b5d05cf59c4386",
+        "parentId": "TestKanban_63330b7068b5d05cf59c4386"
+      }
+    ],
+    "leafNodeId": "5.0_sqd_63330b7068b5d05cf59c4386",
+    "basicProjectConfigId": "63330b7068b5d05cf59c4386",
+    "labelName": "sqd"
+  }
+]

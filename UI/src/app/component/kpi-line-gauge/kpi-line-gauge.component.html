@@ -1,0 +1,164 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<span class="trend-chart-combo-box p-xl-12">
+  <h5>
+    {{ title }}
+    <div class="info-right">
+      <span class="fa fa-info-circle" aria-hidden="true"></span>
+      <span class="tooltiptext">
+        <span class="formulaleft">{{ title }} for a sprint</span>
+        <span class="inlineformula">
+          <table class="frac">
+            <tbody>
+              <tr>
+                <td>
+                  {{ formulaNumerator }}<br />––––––––––––––––––––––––––––<br />
+                  {{ formulaDenominator }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          &nbsp;
+        </span>
+        <div class="formdesc">The trend is of last 15 sprints.</div>
+        <div *ngIf="tooltip && tooltip.kpiWiseAggregationType">
+          <div class="formdesc" *ngIf="tooltip.kpiWiseAggregationType[kpi] === 'percentile'">
+            Aggregation strategy is {{ tooltip.percentile }} criteria. Example:
+          </div>
+          <div class="formdesc" *ngIf="tooltip.kpiWiseAggregationType[kpi] === 'sum'">
+            Aggregation strategy is summation. Example:
+          </div>
+          <div class="formdesc" *ngIf="tooltip.kpiWiseAggregationType[kpi] === 'median'">
+            Aggregation strategy is Median criteria. Example:
+          </div>
+          <div class="formdesc" *ngIf="tooltip.kpiWiseAggregationType[kpi] === 'average'">
+            Aggregation strategy is Average criteria. Example:
+          </div>
+        </div>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Sprint Name</th>
+              <th>{{ title }} value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>sprint1</td>
+              <td>10</td>
+            </tr>
+            <tr>
+              <td>sprint2</td>
+              <td>20</td>
+            </tr>
+          </tbody>
+        </table>
+        <br />
+        <div class="formdesc" *ngIf="tooltip && tooltip.kpiWiseAggregationType">
+          Aggregated value for above example is
+          {{
+            helperService.toolTipValue(
+              10,
+              20,
+              tooltip.kpiWiseAggregationType[kpi],
+              tooltip.percentile
+            )
+          }}
+          .
+        </div>
+        <div class="formdesc">
+          Maturity :
+        </div>
+        <div class="">
+          <span class="input-color">
+            <div class="color-box" style="background-color: #6cab61;"></div>
+            <label>M5</label>
+          </span>
+          <span class="input-color">
+            <div class="color-box" style="background-color: #AEDB76;"></div>
+            <label>M4</label>
+          </span>
+          <span class="input-color">
+            <div class="color-box" style="background-color: #eff173;"></div>
+            <label>M3</label>
+          </span>
+          <span class="input-color">
+            <div class="color-box" style="background-color: #ffc35b;"></div>
+            <label>M2</label>
+          </span>
+          <span class="input-color">
+            <div class="color-box" style="background-color: #F06667;"></div>
+            <label>M1</label>
+          </span>
+          <span class="input-color">
+            <div class="color-box" style="background-color: #44739f;"></div>
+            <label>NA</label>
+          </span>
+        </div>
+      </span>
+    </div>
+    <div class="downloadExcel" *ngIf="noOfFilterSelected !== 0">
+      <span class="fa fa-file-excel-o" aria-hidden="true" (click)="downloadExcel(kpiID, title, false)"></span>
+    </div>
+  </h5>
+  <div class="p-sm-12 p-md-12  p-lg-12 p-xl-8 leftchart">
+    <div *ngIf="!loaderArray.includes(kpiID); else loader">
+      <app-multiline [data]="jiraKpiData[kpiID].trendValueList" [thresholdValue]="jiraKpiData[kpiID].thresholdValue"
+        *ngIf="
+          jiraKpiData &&
+            jiraKpiData[kpiID] &&
+            jiraKpiData[kpiID].trendValueList &&
+            jiraKpiData[kpiID].trendValueList.length !== 0;
+          else noData
+        " [yCaption]="yAxisCaption" [isChildComponent]="true" [name]="title">
+      </app-multiline>
+      <ng-template #noData>
+        <div class="min-ht">
+          <div class="err">No Data Available</div>
+        </div>
+      </ng-template>
+    </div>
+    <ng-template #loader>
+      <div class="overlay">
+        <div class="loading-img"></div>
+      </div>
+    </ng-template>
+  </div>
+  <div class="p-md-12 p-sm-12 p-lg-12 p-xl-4 rightchart">
+    <div *ngIf="!loaderArray.includes(kpiID); else loader">
+      <app-gaugechart [value]="jiraKpiData[kpiID].value" [maxValue]="jiraKpiData[kpiID].maxValue" [type]="'DIR'" *ngIf="
+          jiraKpiData &&
+            jiraKpiData[kpiID] &&
+            jiraKpiData[kpiID].value !== 'undefined'
+          else noData
+        ">
+      </app-gaugechart>
+      <ng-template #noData>
+        <div class="min-ht">
+          <div class="err">No Data Available</div>
+        </div>
+      </ng-template>
+    </div>
+    <ng-template #loader>
+      <div class="overlay">
+        <div class="loading-img"></div>
+      </div>
+    </ng-template>
+  </div>
+</span>

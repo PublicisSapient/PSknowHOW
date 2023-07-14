@@ -1,0 +1,150 @@
+[
+  {
+    "_id": "5ecf5d77e4b0dea050961a24",
+    "sonarKpiMetrics": [
+      "lines,ncloc,violations,new_vulnerabilities,critical_violations,major_violations,blocker_violations,minor_violations,info_violations,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,alert_status,quality_gate_details,sqale_rating"
+    ],
+    "processorName": "Sonar",
+    "processorType": "SONAR_ANALYSIS",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1611057893050",
+    "isLastSuccess": true
+  },
+  {
+    "_id": "5ecf5ea0e4b04e6191203915",
+    "processorName": "Jira",
+    "processorType": "AGILE_TOOL",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1610914733369",
+    "isLastSuccess": true
+  },
+  {
+    "_id": "5ecf6170e4b0eb1af4806995",
+    "processorName": "Bitbucket",
+    "processorType": "SCM",
+    "isActive": true,
+    "isOnline": true,
+    "updatedTime": "1611057605112",
+    "isLastSuccess": false
+  },
+  {
+    "_id": "5ecf6170e4b0b922042640ea",
+    "processorName": "Jenkins",
+    "processorType": "BUILD",
+    "isActive": true,
+    "isOnline": true,
+    "updatedTime": "1610950159673",
+    "isLastSuccess": false
+  },
+  {
+    "_id": "5ecf6170e4b020516153c2db",
+    "processorName": "Excel",
+    "processorType": "EXCEL",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1611057600034",
+    "isLastSuccess": true
+  },
+  {
+    "_id": "5ecf6171e4b061f507ce5e4c",
+    "processorName": "Bamboo",
+    "processorType": "BUILD",
+    "isActive": true,
+    "isOnline": true,
+    "updatedTime": "1611057600065",
+    "isLastSuccess": true
+  },
+  {
+    "_id": "5ecf6171e4b0184c537859e7",
+    "processorName": "NewRelic",
+    "processorType": "NEW_RELIC",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1611057600065",
+    "isLastSuccess": true
+  },
+  {
+    "_id": "5ecf6171e4b010a15696bc2b",
+    "processorName": "Precalculated",
+    "processorType": "CENTRAL",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1611057600065",
+    "isLastSuccess": false
+  },
+  {
+    "_id": "5ecf6f84e4b0f60254c77b0e",
+    "processorName": "Atm",
+    "processorType": "AGILE_TOOL",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1611057600065",
+    "isLastSuccess": true
+  },
+  {
+    "_id": "5ed05e98e4b0dbf2c983f6e8",
+    "processorName": "CentralProducer",
+    "processorType": "CENTRAL",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1611057600065",
+    "isLastSuccess": true
+  },
+  {
+    "_id": "5ef59cfae4b033f16f679820",
+    "processorName": "Teamcity",
+    "processorType": "BUILD",
+    "isActive": true,
+    "isOnline": true,
+    "updatedTime": "1611057600065",
+    "isLastSuccess": true
+  },
+  {
+    "_id": "5f311e56e4b0b8002134f67a",
+    "processorName": "GitLab",
+    "processorType": "SCM",
+    "isActive": true,
+    "isOnline": true,
+    "updatedTime": "1611057600065",
+    "isLastSuccess": true
+  },
+  {
+    "_id": "5f4d8f14e4b0b49f9f2a8dec",
+    "processorName": "AzureRepository",
+    "processorType": "SCM",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1611057600065",
+    "isLastSuccess": true
+  },
+  {
+    "_id": "5f4d8f14e4b0f4977f2dfeaa",
+    "processorName": "AzurePipeline",
+    "processorType": "BUILD",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1611057600065",
+    "isLastSuccess": true
+  },
+  {
+    "_id": "5f9be420e4b00ecf7976c977",
+    "processorName": "Azure",
+    "processorType": "AGILE_TOOL",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "updatedTime": "1611057600065",
+    "isLastSuccess": true
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "id": 5,
+  "buildTypeId": "Project2_Build2",
+  "number": "3",
+  "status": "SUCCESS",
+  "state": "finished",
+  "href": "/app/rest/builds/id:5",
+  "webUrl": "http://server:port/viewLog.html?buildId=5&buildTypeId=Project2_Build2",
+  "statusText": "Success",
+  "buildType": {
+    "id": "Project2_Build2",
+    "name": "build-2",
+    "projectName": "Project-2",
+    "projectId": "Project2",
+    "href": "/app/rest/buildTypes/id:Project2_Build2",
+    "webUrl": "http://server:port/viewType.html?buildTypeId=Project2_Build2"
+  },
+  "queuedDate": "20200402T122613+0530",
+  "startDate": "20200402T122613+0530",
+  "finishDate": "20200402T122619+0530",
+  "triggered": {
+    "type": "user",
+    "date": "20200402T122613+0530",
+    "user": {
+      "name": "admin",
+      "id": 1,
+      "href": "/app/rest/users/id:1"
+    }
+  },
+  "changes": {
+    "href": "/app/rest/changes?locator=build:(id:5)",
+    "count": 0
+  },
+  "revisions": {
+    "count": 0
+  },
+  "agent": {
+    "id": 1,
+    "name": "Default Agent",
+    "typeId": 1,
+    "href": "/app/rest/agents/id:1",
+    "webUrl": "http://server:port/agentDetails.html?id=1&agentTypeId=1&realAgentName=Default%20Agent"
+  },
+  "artifacts": {
+    "count": 0,
+    "href": "/app/rest/builds/id:5/artifacts/children/"
+  },
+  "relatedIssues": {
+    "href": "/app/rest/builds/id:5/relatedIssues"
+  },
+  "statistics": {
+    "href": "/app/rest/builds/id:5/statistics"
+  }
+}
