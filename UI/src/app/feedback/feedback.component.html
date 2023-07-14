@@ -18,13 +18,13 @@
                         <p>Tell us about your experience</p>
                         <form [formGroup]="voiceForm" autocomplete="off">
                             <textarea class="comment" formControlName="feedback" pInputTextarea></textarea>
-                            <div class="p-d-flex">
-                                <button pButton pRipple type="button"
-                                class="p-element p-ripple p-button-sm p-button-success p-button-raised p-button"
-                                label="Submit" (click)="save()" [disabled]="voiceForm.invalid"></button>
+                            <div class="p-d-flex p-justify-end p-justify-between">
                                 <span [ngClass]="{'alert-success': isFeedbackSubmitted, 'alert-error': !isFeedbackSubmitted}">
                                     {{formMessage}}
                                 </span>
+                                <button pButton pRipple type="button"
+                                class="p-element p-ripple p-button-sm p-button-success p-button-raised p-button"
+                                label="Submit" (click)="save()" [disabled]="voiceForm.invalid"></button> 
                             </div>
                         </form>
                         <div class="forward p-d-flex p-justify-end p-align-center">
