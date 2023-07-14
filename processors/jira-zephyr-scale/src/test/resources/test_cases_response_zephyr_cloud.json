@@ -1,0 +1,70 @@
+{
+  "next": "https://api.test.com/v2/testcases?projectKey=TEST&folderId=678209&startAt=5&maxResults=5",
+  "startAt": 0,
+  "maxResults": 5,
+  "total": 1,
+  "isLast": false,
+  "values": [
+    {
+      "id": 4213569,
+      "key": "TEST-T685",
+      "name": "SAP MDG/ECC>SFDC:  Change an existing Site in SAP ECC",
+      "project": {
+        "id": 34935,
+        "self": "https://api.test.com/v2/projects/34935"
+      },
+      "createdOn": "2020-02-05T21:45:22Z",
+      "objective": "<strong>Agenda:</strong><br />The agenda of this test is to verify that when an existing Site is changed in SAP ECC, and it's in scope for Smart Sales, the change is automatically transferred to Salesforce and the corresponding Account is updated.<br /><br />Variants to be tested:<br />- Site with Account Group CMC<br />- Site with Account Group ADAC<br />- Site with Account Group ZABS<br />- Site with Account Group ICC<br />- Change address information<br />- Add Account Team Member<br />- Delete Account Team Member<br /><br /><strong>Data Mapping File:</strong><br />[Link|https://teams.microsoft.com/l/file/5C0EC079-B6BF-4068-B96D-F1E5A8321E63?tenantId=d2d2794a-61cc-4823-9690-8e288fd554cc&amp;fileType=xlsx&amp;objectUrl=https%3A%2F%2Ftetrapak.sharepoint.com%2Fsites%2FSmartSales-CRM%2FShared%20Documents%2FGeneral%2F09.%20Solution%20design%2FSAP%2FIntegration%20Test%2FInterface%20mapping.xlsx&amp;baseUrl=https%3A%2F%2Ftetrapak.sharepoint.com%2Fsites%2FSmartSales-CRM&amp;serviceName=teams&amp;threadId=19:fce19a2ff73e4410b248101d5049fd1a@thread.skype&amp;groupId=da1ab006-fd8d-43f7-bca4-976ca00a9616]",
+      "precondition": "The Site should exist in SAP ECC/MDG and Salesforce<br />The Site must be in scope for SmartSales, i.e.:<br />- The Marketing Classification = 10 (Core) or 17 (Intercompany Core)<br />- The Country of the Site exist in table YVTESTTSALES<br />- It's assigned to a Customer that is assigned to Master Customer<br />Core Account Members assigned to the Site must exist as Users in Salesforce<br />Account Team Leader assigned to the Customer must exist a a User in Salesforce<br />Core Account Members and Account Team Leader must have a valid HR Master in SAP (can be checked in tcode PA20 , infotype Communication must be valid)",
+      "estimatedTime": 900000,
+      "labels": [
+        "Integration|pilot"
+      ],
+      "component": {
+        "id": 10023,
+        "self": "https://test.com/rest/api/2/component/10023"
+      },
+      "priority": {
+        "id": 610337,
+        "self": "https://api.test.com/v2/priorities/610337"
+      },
+      "status": {
+        "id": 610335,
+        "self": "https://api.test.com/v2/statuses/610335"
+      },
+      "folder": {
+        "id": 588208,
+        "self": "https://api.test.com/v2/folders/588208"
+      },
+      "owner": {
+        "self": "https://test.com/rest/api/2/user?accountId=5e315421a834270cb0992ca7",
+        "accountId": "5e315421a834270cb0992ca7"
+      },
+      "testScript": {
+        "self": "https://api.test.com/v2/testcases/TEST-T685/teststeps"
+      },
+      "customFields": {
+        "Functional test type": [
+          "Regression",
+          "Manual"
+        ],
+        "Scenario type": "Functional",
+        "Execution Type": "Automation",
+        "SynapseRT TC ref.": "TEST-5332"
+      },
+      "links": {
+        "self": "https://api.test.com/v2/testcases/4213569/links",
+        "issues": [
+          {
+            "self": "https://api.test.com/v2/links/2318280",
+            "issueId": 66229,
+            "id": 2318280,
+            "target": "https://test.com/rest/api/2/issue/66229",
+            "type": "COVERAGE"
+          }
+        ],
+        "webLinks": []
+      }
+    }
+  ]
+}

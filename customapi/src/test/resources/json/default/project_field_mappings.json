@@ -1,0 +1,159 @@
+[
+  {
+    "id": "5fd9ae0fe4b04e61f110f10c",
+    "projectToolConfigId": "5fd9adf595fe13000165d0c4",
+    "basicProjectConfigId": "5fd9ab0995fe13000165d0ba",
+    "atmQueryEndpoint": "",
+    "sprintName": "customfield_12700",
+    "jiradefecttype": [
+      "Defect"
+    ],
+    "jiraIssueTypeNames": [
+      "Story",
+      "Enabler Story",
+      "Change request",
+      "Defect",
+      "Epic"
+    ],
+    "jiraIssueEpicType": [
+      "Epic"
+    ],
+    "storyFirstStatus": "Open",
+    "rootCause": "customfield_19121",
+    "jiraStatusForDevelopment": [
+      "In Development",
+      "In Analysis"
+    ],
+    "jiraAtmProjectId": "",
+    "jiraAtmProjectKey": "",
+    "jiraStatusForQa": [
+      "In Testing"
+    ],
+    "testAutomated": "",
+    "testAutomationStatusLabel": "",
+    "testRegressionLabel": "",
+    "testRegressionValue": [],
+    "jiraTestCaseType": [],
+    "jiraDefectInjectionIssueType": [
+      "Story",
+      "Enabler Story",
+      "Change request"
+    ],
+    "jiraDod": [
+      "Resolved",
+      "Ready for Delivery",
+      "Closed"
+    ],
+    "jiraDefectCreatedStatus": "Open",
+    "jiraTechDebtIssueType": [
+      "Story",
+      "Enabler Story",
+      "Epic"
+    ],
+    "jiraTechDebtIdentification": "",
+    "jiraTechDebtCustomField": "",
+    "jiraTechDebtValue": [],
+    "jiraDefectRejectionStatus": "Closed",
+    "jiraBugRaisedByIdentification": "Labels",
+    "jiraBugRaisedByValue": [
+      "Prod_Defect ",
+      "UAT_Defect"
+    ],
+    "jiraDefectSeepageIssueType": [
+      "Story",
+      "Enabler Story",
+      "Change request"
+    ],
+    "jiraBugRaisedByCustomField": "",
+    "jiraDefectRemovalStatus": [
+      "Closed",
+      "Resolved",
+      "Ready for Delivery",
+      "Ready for Release"
+    ],
+    "jiraDefectRemovalIssueType": [
+      "Story",
+      "Enabler Story",
+      "Change request"
+    ],
+    "atmFolderPath": [],
+    "jiraStoryPointsCustomField": "customfield_20803",
+    "jiraTestAutomationIssueType": [
+      "Story",
+      "Enabler Story",
+      "Change request"
+    ],
+    "jiraAutomatedTestValue": [],
+    "jiraCanNotAutomatedTestValue": [],
+    "jiraSprintVelocityIssueType": [
+      "Story",
+      "Enabler Story",
+      "Change request"
+    ],
+    "jiraSprintCapacityIssueType": [
+      "Story",
+      "Enabler Story",
+      "Change request"
+    ],
+    "jiraDefectRejectionlIssueType": [
+      "Story",
+      "Enabler Story",
+      "Change request"
+    ],
+    "jiraDefectCountlIssueType": [
+      "Story",
+      "Enabler Story",
+      "Change request"
+    ],
+    "jiraIssueDeliverdStatus": [
+      "Closed",
+      "Resolved",
+      "Ready for Delivery",
+      "Ready for Release"
+    ],
+    "jiraDor": "In Development",
+    "jiraIntakeToDorIssueType": [
+      "Story",
+      "Enabler Story",
+      "Change request"
+    ],
+    "jiraStoryIdentification": [
+      "Story",
+      "Enabler Story",
+      "Change request"
+    ],
+    "jiraLiveStatus": "Closed",
+    "regressionAutomationLabels": [],
+    "rootCauseValue": ["Coding"],
+    "pickNewATMJIRADetails": false,
+    "resolutionTypeForRejection": [
+      "Invalid",
+      "Duplicate",
+      "Unrequired"
+    ],
+    "qaRootCauseValue": [
+      "Coding",
+      "Configuration",
+      "Regression",
+      "Data"
+    ],
+    "jiraQADefectDensityIssueType": [
+      "Story",
+      "Enabler Story",
+      "Change request"
+    ],
+    "jiraBugRaisedByQACustomField": "",
+    "jiraBugRaisedByQAIdentification": "",
+    "jiraBugRaisedByQAValue": [],
+    "jiraDefectDroppedStatus": [],
+    "epicCostOfDelay": "customfield_58102",
+    "epicRiskReduction": "customfield_58101",
+    "epicUserBusinessValue": "customfield_58100",
+    "epicWsjf": "customfield_58104",
+    "epicTimeCriticality": "customfield_51002",
+    "epicJobSize": "customfield_61041",
+    "atmSubprojectField": "",
+    "estimationCriteria": "Story Point",
+    "storyPointToHourMapping": 8
+  }
+]

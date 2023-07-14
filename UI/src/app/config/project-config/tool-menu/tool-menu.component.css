@@ -1,0 +1,447 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+/** Card CSS starts **/
+.main {
+  min-height: calc(100vh - 188px);
+  position: relative;
+  background-color: var(--color-white);
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow:0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  margin: 8px;
+  width: calc(100% - 16px);
+}
+
+a.p-button-raised:hover {
+  color: var(--color-white);
+  text-decoration: none;
+}
+
+/***************************Card CSS start***********************/
+ul,
+ol {
+  list-style: none;
+  list-style-type: none;
+}
+small {
+  font-size: smaller;
+}
+
+.card__collection {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: flex-start;
+  height: calc(100vh - 190px);
+  margin: 8px;
+  width: calc(100% - 16px);
+}
+.card__collection > .card {
+margin:16px;
+}
+
+
+.card {
+  display: -webkit-box;/* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;/* OLD - Firefox 19- (doesn't work very well) */
+  display: -ms-flexbox;/* TWEENER - IE 10 */
+  display: -webkit-flex;/* NEW - Chrome */
+  display: flex;/* NEW, Spec - Opera 12.1, Firefox 20+ */
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: flex-start;
+  justify-content: flex-start;
+  -webkit-box-align: flex-start;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: flex-start;
+  align-items: flex-start;
+font-size: 16px;
+font-weight: 400;
+min-height: 20px;
+overflow: hidden;
+width:100%;
+max-width: 400px;
+z-index: 1;
+position: relative;
+border-radius: 2px;
+transition: box-shadow 0.35s cubic-bezier(0.4, 0, 1, 1);
+}
+[class*="col--"] .card + .card { margin-top: 1.5vw; }
+.p-card > .card__media {
+flex: 100%;
+  height: 190px;
+  /* background-color: rgba(0,0,0,0.26);
+  color: var(--color-white);*/
+  font-size: 36px;
+  line-height: 42px;
+  padding: 16px;
+  text-align: center;
+  margin: auto;
+}
+.card__primary__title,
+.card__secondary__title {
+color: rgba(0,0,0,0.87);
+  display: block;
+  display: -webkit-box;/* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;/* OLD - Firefox 19- (doesn't work very well) */
+  display: -ms-flexbox;/* TWEENER - IE 10 */
+  display: -webkit-flex;/* NEW - Chrome */
+  display: flex;/* NEW, Spec - Opera 12.1, Firefox 20+ */
+-webkit-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-flex: 0 0 100%;
+  flex: 0 0 100%;
+  width: 100%;
+}
+.card__primary__title {padding: 24px 16px 16px;}
+.card__primary__title__text {
+  display: block;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 24px;
+  font-weight: normal;
+  line-height: normal;
+  -webkit-transform-origin: 149px 48px;
+  -ms-transform-origin: 149px 48px;
+  transform-origin: 149px 48px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 180px;
+}
+.card__primary__title__subtext {
+margin-bottom: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 100%;
+  overflow: hidden;
+  line-height: 16px;
+}
+.card__secondary__title {
+position: relative;
+padding: 16px 16px;
+font-size: 15px;
+color: rgba(0,0,0,0.87);
+}
+.card__secondary__title.avatar {
+padding-left: 72px;
+}
+.card__secondary__title__avatar {
+position: absolute;
+width: 40px;
+height: 40px;
+  top: 20px;
+left: 16px;
+background-color: rgba(0,0,0,0.26);
+border-radius: 50%;
+}
+.card__secondary__title__avatar > .mi {
+  padding: 10px;
+  font-size: 20px;
+  color: rgba(0,0,0,0.87);
+}
+.card__secondary__title__text {
+font-weight: 600;
+color: rgba(0,0,0,.87);
+}
+.card__secondary__title__subtext {
+margin-top: 4px;
+color: rgba(0,0,0,.87);
+}
+.card__actions {
+  display: -webkit-box;/* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;/* OLD - Firefox 19- (doesn't work very well) */
+  display: -ms-flexbox;/* TWEENER - IE 10 */
+  display: -webkit-flex;/* NEW - Chrome */
+  display: flex;/* NEW, Spec - Opera 12.1, Firefox 20+ */
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-flex: 0 0 100%;
+  flex: 0 0 100%;
+  height: auto;
+  padding: 16px;
+}
+
+.card__actions .p-button {
+  margin-right: .5rem;
+  padding: 0.714rem .6rem;
+}
+
+.card__supporting__text,
+.lead__text {
+  flex: 0 0 100%;
+color: rgba(0,0,0, 0.87);
+  font-size: 14px;
+  padding: 16px 48px 16px 16px;
+}
+.supporting__text {font-size: 14px;}
+.lead__text {font-size: 16px;}
+.p-card > :first-child {
+  border-radius: 2px 2px 0 0;
+}
+.p-card > :last-child {
+border-radius: 0 0 2px 2px;
+}
+
+
+.p-card:hover {
+box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+  0 3px 14px 2px rgba(0, 0, 0, 0.12),
+  0 5px 5px -3px rgba(0, 0, 0, 0.2);
+}
+
+.card__media--view {
+display: -webkit-box;/* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;/* OLD - Firefox 19- (doesn't work very well) */
+  display: -ms-flexbox;/* TWEENER - IE 10 */
+  display: -webkit-flex;/* NEW - Chrome */
+  display: flex;/* NEW, Spec - Opera 12.1, Firefox 20+ */
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+.card__media--view .card__media__body {
+-webkit-flex: 0 0 100%;
+  flex: 0 0 100%;
+min-height: 96px;
+  padding-bottom: 16px;
+}
+.card__media--view .card__media {
+position: absolute;
+width: 156px;
+height: 100px;
+top: 0;
+right: 0;
+}
+.card__media--view .card__media > img {
+  width: 100%;
+  height: 100%;
+}
+.card__media--view.md .card__media{
+width: 112px;
+height: 112px;
+}
+.card__media--view.md .card__media__body {
+min-height: 128px;
+padding-right: 128px;
+}
+
+.card__media--view.lg .card__media__body {
+min-height: 168px;
+padding-right: 168px;
+}
+.card__media--view.lg .card__media{
+width: 152px;
+height: 152px;
+}
+.card__media--view.full {
+height: 272px;
+background: #fff;
+}
+.card__media--view.full .card__media {
+position: relative;
+right: 32px;
+left: 16px;
+flex: 0 0 80%;
+height: 240px;
+}
+.card__media--view.full .card__actions {
+-webkit-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: 48px;
+  height: 256px;
+  padding: 24px 16px 0 0;
+  margin-left: auto;
+  border-radius: 0 2px 2px 0;
+
+}
+.card__media--view.full .card__actions .mi:first-of-type {
+margin-left: 0;
+}
+.card__media--view.full .card__actions .mi {
+margin-bottom: 4px;
+}
+
+.mi.mi--primary  { color: rgb(33,150,243); }
+.mi.mi--positive { color: rgb(0,150,136);  }
+.mi.mi--warning  { color: rgb(255,87,34);  }
+
+.bg--default {
+background-color: rgb(69,90,100); }
+.bg--primary {
+background-color: #079fff; }
+.bg--positive {
+background-color: rgb(56,142,60); }
+.bg--warning {
+background-color: rgb(255,160,0); }
+.bg--negative {
+background-color: rgb(211,47,47); }
+.bg--muted {
+background-color: rgb(158,158,158); }
+/*************************CARD CSS ends*************************/
+/** Card CSS ends **/
+
+::ng-deep .p-dropdown {
+    width: 14rem;
+    font-weight: normal;
+}
+
+::ng-deep .p-dataview.p-dataview-list .p-dataview-content > .p-grid > div {
+  border: none;
+}
+.figure {
+  margin: 2rem 0 1rem;
+}
+
+::ng-deep .tool-grid-item.p-card > figure.card__media.bg--0,
+::ng-deep .tool-grid-item.p-card > figure.card__media.bg--1,
+::ng-deep .tool-grid-item.p-card > figure.card__media.bg--2,
+::ng-deep .tool-grid-item.p-card > figure.card__media.bg--3,
+::ng-deep .tool-grid-item.p-card > figure.card__media.bg--4,
+::ng-deep .tool-grid-item.p-card > figure.card__media.bg--5 {
+    height: auto;
+    flex: 0%;
+}
+
+/* ::ng-deep .tool-grid-item.card .card__primary__title {
+  max-width: 60%;
+} */
+
+::ng-deep .tool-grid-item.p-card > :first-child {
+    border-radius: 2px 2px 0 0;
+    display: inline-flex;
+    flex: 50%;
+    width: 50%;
+}
+
+::ng-deep .tool-list-item.p-card > :first-child {
+  max-width: 10%;
+}
+
+::ng-deep .p-dataview .p-paginator-bottom {
+    border: none;
+}
+
+::ng-deep .tool-list-item.p-card {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1rem;
+}
+::ng-deep .tool-list-item.p-card > figure.card__media {
+    width: 100px;
+    max-width: 100px;
+    height: 100px;
+    max-height: 100px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    margin-right: 2rem;
+    margin-bottom: 0;
+}
+
+::ng-deep .tool-list-item .card__media__body {
+    flex: 1 1 0;
+}
+::ng-deep .tool-list-item .card__actions {
+    display: flex;
+    flex-direction: column;
+    max-width: 210px;
+}
+
+.bg--0 {
+  color: rgb(69,90,100);
+ }
+.bg--1 {
+  background-color: rgb(211,47,47); }
+.bg--2 {
+  background-color: rgb(56,142,60); }
+.bg--3 {
+  background-color: #079fff; }
+.bg--4 {
+  background-color: rgb(255,160,0); }
+.bg--5 {
+  background-color: rgb(158,158,158); }
+
+.p-inputgroup-addon{
+  cursor: pointer;
+  background-color: rgb(239, 239, 239);
+}
+
+:host::ng-deep .p-inputtext:read-only{
+  background-color: rgb(239, 239, 239);
+}
+
+.color-green{
+color: rgb(56,142,60);
+background-color: rgb(239, 239, 239);
+}
+
+
+
+  ::ng-deep .p-dialog.p-confirm-dialog .p-confirm-dialog-message{
+    margin-left: 0px;
+  }
+
+  .enable-dialog-btn{
+    background-color:white;color: black;border: 1px solid;box-sizing: border-box;padding: 9px 13px;
+  }
+
+  ::ng-deep .inner-wraper .p-tooltip .ui-tooltip{
+    background-color: #fbfbfb;
+  }
+
+  ::ng-deep div.inner-content{
+    font-family: var(--font-medium);
+    color: #333;
+    background-color: #fbfbfb;
+    margin: -10px -10px;
+    padding: 5px 7px;
+    border: 1px solid #ced9d7;
+    border-radius: 5px;
+    box-shadow: 1px 1px #ced9d7;
+
+  }
+

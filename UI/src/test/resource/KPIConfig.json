@@ -1,0 +1,371 @@
+{
+    "message": "Success",
+    "success": true,
+    "data": {
+        "fields": [
+            {
+                "key": "Estimate (Raw Dev Hours)",
+                "data": "customfield_44400"
+            },
+            {
+                "key": "Demo",
+                "data": "customfield_34600"
+            },
+            {
+                "key": "Estm-FE",
+                "data": "customfield_59900"
+            },
+            {
+                "key": "Last Comment",
+                "data": "customfield_12802"
+            },
+            {
+                "key": "Reopening Counter",
+                "data": "customfield_12801"
+            },
+            {
+                "key": "Last Closer",
+                "data": "customfield_12804"
+            },
+            {
+                "key": "Last Reopener",
+                "data": "customfield_12803"
+            },
+            {
+                "key": "Last Reopen",
+                "data": "customfield_12806"
+            },
+            {
+                "key": "Last Commenter",
+                "data": "customfield_12805"
+            },
+            {
+                "key": "Last Close",
+                "data": "customfield_12807"
+            },
+            {
+                "key": "Project Environment",
+                "data": "customfield_22601"
+            },
+            {
+                "key": "Platform",
+                "data": "customfield_22600"
+            },
+            {
+                "key": "Asset Update",
+                "data": "customfield_24800"
+            }
+        ],
+        "workflow": [
+            {
+                "key": "Open",
+                "data": "Open"
+            },
+            {
+                "key": "In Progress",
+                "data": "In Progress"
+            },
+            {
+                "key": "Reopened",
+                "data": "Reopened"
+            },
+            {
+                "key": "Closed",
+                "data": "Closed"
+            },
+            {
+                "key": "Dropped",
+                "data": "Dropped"
+            },
+            {
+                "key": "In Analysis",
+                "data": "In Analysis"
+            },
+            {
+                "key": "In Development",
+                "data": "In Development"
+            },
+            {
+                "key": "Ready for Testing",
+                "data": "Ready for Testing"
+            },
+            {
+                "key": "In Testing",
+                "data": "In Testing"
+            },
+            {
+                "key": "Ready for Sign-off",
+                "data": "Ready for Sign-off"
+            },
+            {
+                "key": "Test Passed",
+                "data": "Test Passed"
+            },
+            {
+                "key": "Test Failed",
+                "data": "Test Failed"
+            },
+            {
+                "key": "On Hold",
+                "data": "On Hold"
+            },
+            {
+                "key": "Ready for Delivery",
+                "data": "Ready for Delivery"
+            },
+            {
+                "key": "Approved",
+                "data": "Approved"
+            },
+            {
+                "key": "Rejected",
+                "data": "Rejected"
+            },
+            {
+                "key": "Reviewing",
+                "data": "Reviewing"
+            },
+            {
+                "key": "Planning",
+                "data": "Planning"
+            },
+            {
+                "key": "At Risk",
+                "data": "At Risk"
+            },
+            {
+                "key": "Missed",
+                "data": "Missed"
+            },
+            {
+                "key": "Being Drafted",
+                "data": "Being Drafted"
+            },
+            {
+                "key": "Draft Completed",
+                "data": "Draft Completed"
+            },
+            {
+                "key": "Changes Needed",
+                "data": "Changes Needed"
+            },
+            {
+                "key": "More info",
+                "data": "More info"
+            },
+            {
+                "key": "READY FOR WORK",
+                "data": "READY FOR WORK"
+            },
+            {
+                "key": "Ready",
+                "data": "Ready"
+            },
+            {
+                "key": "Not Ready",
+                "data": "Not Ready"
+            },
+            {
+                "key": "Active",
+                "data": "Active"
+            },
+            {
+                "key": "Being Reviewed",
+                "data": "Being Reviewed"
+            },
+            {
+                "key": "In triage",
+                "data": "In triage"
+            },
+            {
+                "key": "Escalate",
+                "data": "Escalate"
+            },
+            {
+                "key": "Ready for Sprint Planning",
+                "data": "Ready for Sprint Planning"
+            },
+            {
+                "key": "Requirement Signed Off",
+                "data": "Requirement Signed Off"
+            },
+            {
+                "key": "Pending Owner Action",
+                "data": "Pending Owner Action"
+            },
+            {
+                "key": "In Intake",
+                "data": "In Intake"
+            },
+            {
+                "key": "Pending User Response",
+                "data": "Pending User Response"
+            },
+            {
+                "key": "In Investigation",
+                "data": "In Investigation"
+            },
+            {
+                "key": "In Backlog Refinement",
+                "data": "In Backlog Refinement"
+            },
+            {
+                "key": "Backlog",
+                "data": "Backlog"
+            },
+            {
+                "key": "Funnel",
+                "data": "Funnel"
+            },
+            {
+                "key": "Analyzing",
+                "data": "Analyzing"
+            },
+            {
+                "key": "Implementing",
+                "data": "Implementing"
+            },
+            {
+                "key": "Testing",
+                "data": "Testing"
+            },
+            {
+                "key": "Need Info",
+                "data": "Need Info"
+            }
+        ],
+        "Issue_Link": [
+            {
+                "key": "contains",
+                "data": "contains"
+            },
+            {
+                "key": "belongs to",
+                "data": "belongs to"
+            },
+            {
+                "key": "is blocked by",
+                "data": "is blocked by"
+            },
+            {
+                "key": "blocks",
+                "data": "blocks"
+            },
+            {
+                "key": "Testing discovered",
+                "data": "Testing discovered"
+            },
+            {
+                "key": "Discovered while testing",
+                "data": "Discovered while testing"
+            },
+            {
+                "key": "is child task of",
+                "data": "is child task of"
+            },
+            {
+                "key": "is parent task of",
+                "data": "is parent task of"
+            },
+            {
+                "key": "cloned to",
+                "data": "cloned to"
+            },
+            {
+                "key": "cloned from",
+                "data": "cloned from"
+            },
+            {
+                "key": "has dependency on",
+                "data": "has dependency on"
+            },
+            {
+                "key": "is dependent on",
+                "data": "is dependent on"
+            },
+            {
+                "key": "is described in detail by",
+                "data": "is described in detail by"
+            },
+            {
+                "key": "describes in detail",
+                "data": "describes in detail"
+            },
+            {
+                "key": "is duplicated by",
+                "data": "is duplicated by"
+            },
+            {
+                "key": "duplicates",
+                "data": "duplicates"
+            },
+            {
+                "key": "is implemented by",
+                "data": "is implemented by"
+            },
+            {
+                "key": "implements",
+                "data": "implements"
+            },
+            {
+                "key": "split from",
+                "data": "split from"
+            },
+            {
+                "key": "split to",
+                "data": "split to"
+            },
+            {
+                "key": "is caused by",
+                "data": "is caused by"
+            },
+            {
+                "key": "causes",
+                "data": "causes"
+            },
+            {
+                "key": "relative of",
+                "data": "relative of"
+            },
+            {
+                "key": "relates to",
+                "data": "relates to"
+            },
+            {
+                "key": "Has Ticket",
+                "data": "Has Ticket"
+            },
+            {
+                "key": "Has Sub task",
+                "data": "Has Sub task"
+            }
+        ],
+        "Issue_Type": [
+            {
+                "key": "Support Request",
+                "data": "Support Request"
+            },
+            {
+                "key": "Project Request",
+                "data": "Project Request"
+            },
+            {
+                "key": "Member Account Request",
+                "data": "Member Account Request"
+            },
+            {
+                "key": "Canned response",
+                "data": "Canned response"
+            },
+            {
+                "key": "Incident",
+                "data": "Incident"
+            },
+            {
+                "key": "Problem",
+                "data": "Problem"
+            }
+        ],
+        "predefinedValues": []
+    }
+}

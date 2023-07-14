@@ -1,0 +1,467 @@
+[
+    {
+        "kpiId": "kpi122",
+        "kpiName": "Daily Closures",
+        "unit": "Hours",
+        "maxValue": "500",
+        "chartType": "",
+        "kpiInfo": {
+            "definition": "SPRINT CAPACITY UTILIZATION depicts the maximum amount of time a team can commit within sprint",
+            "details": [
+                {
+                    "type": "paragraph",
+                    "value": "This KPI is calculated based on 2 parameters"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "Estimated Hours: It explains the total hours required to complete Sprint backlog"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "Logged Work: The amount of time team has logged within a Sprint"
+                }
+            ]
+        },
+        "id": "63033bde219ae0c09e679ece",
+        "isDeleted": "False",
+        "kpiCategory": "Speed",
+        "kpiUnit": "Hours",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "trendValueList": [
+            {
+                "data": "TestProject2",
+                "value": [
+                    {
+                        "data": "342.0",
+                        "sSprintID": "36643_TestProject2_6113b5b2adb7ac669be105b9",
+                        "sSprintName": "AP|PI_9|ITR_4| 11 May_TestProject2",
+                        "value": 342,
+                        "hoverValue": {
+                            "Estimated Hours": 342,
+                            "Logged Work": 84
+                        },
+                        "sprintIds": [
+                            "36643_TestProject2_6113b5b2adb7ac669be105b9"
+                        ],
+                        "sprintNames": [
+                            "AP|PI_9|ITR_4| 11 May_TestProject2"
+                        ],
+                        "lineValue": 84,
+                        "sprojectName": "TestProject2"
+                    },
+                    {
+                        "data": "0.0",
+                        "sSprintID": "36644_TestProject2_6113b5b2adb7ac669be105b9",
+                        "sSprintName": "AP|PI_9|ITR_5| 25 May_TestProject2",
+                        "value": 0,
+                        "hoverValue": {
+                            "Estimated Hours": 0,
+                            "Logged Work": 348
+                        },
+                        "sprintIds": [
+                            "36644_TestProject2_6113b5b2adb7ac669be105b9"
+                        ],
+                        "sprintNames": [
+                            "AP|PI_9|ITR_5| 25 May_TestProject2"
+                        ],
+                        "lineValue": 348,
+                        "sprojectName": "TestProject2"
+                    },
+                    {
+                        "data": "400.0",
+                        "sSprintID": "36646_TestProject2_6113b5b2adb7ac669be105b9",
+                        "sSprintName": "AP|PI_9|ITR_6| 8 June_TestProject2",
+                        "value": 400,
+                        "hoverValue": {
+                            "Estimated Hours": 400,
+                            "Logged Work": 116
+                        },
+                        "sprintIds": [
+                            "36646_TestProject2_6113b5b2adb7ac669be105b9"
+                        ],
+                        "sprintNames": [
+                            "AP|PI_9|ITR_6| 8 June_TestProject2"
+                        ],
+                        "lineValue": 116,
+                        "sprojectName": "TestProject2"
+                    },
+                    {
+                        "data": "0.0",
+                        "sSprintID": "38297_TestProject2_6113b5b2adb7ac669be105b9",
+                        "sSprintName": "AP|PI_10|ITR_1| 29 June_TestProject2",
+                        "value": 0,
+                        "hoverValue": {
+                            "Estimated Hours": 0,
+                            "Logged Work": 194
+                        },
+                        "sprintIds": [
+                            "38297_TestProject2_6113b5b2adb7ac669be105b9"
+                        ],
+                        "sprintNames": [
+                            "AP|PI_10|ITR_1| 29 June_TestProject2"
+                        ],
+                        "lineValue": 194,
+                        "sprojectName": "TestProject2"
+                    },
+                    {
+                        "data": "110.0",
+                        "sSprintID": "38298_TestProject2_6113b5b2adb7ac669be105b9",
+                        "sSprintName": "AP|PI_10|ITR_2| 13 July_TestProject2",
+                        "value": 110,
+                        "hoverValue": {
+                            "Estimated Hours": 110,
+                            "Logged Work": 184
+                        },
+                        "sprintIds": [
+                            "38298_TestProject2_6113b5b2adb7ac669be105b9"
+                        ],
+                        "sprintNames": [
+                            "AP|PI_10|ITR_2| 13 July_TestProject2"
+                        ],
+                        "lineValue": 184,
+                        "sprojectName": "TestProject2"
+                    }
+                ]
+            }
+        ],
+        "groupId": 1
+    },
+    {
+        "chartType": "",
+        "groupId": 1,
+        "id": "62ea6e9275bb1c0a0eb5e36d",
+        "isDeleted": "False",
+        "kanban": false,
+        "kpiCategory": "Iteration",
+        "kpiId": "kpi78",
+        "kpiInfo": {},
+        "kpiName": "Capacity",
+        "kpiSource": "Jira",
+        "kpiUnit": "Hours",
+        "maturityRange": [
+            "-20",
+            "20-40",
+            "40-60",
+            "60-80",
+            "80-"
+        ],
+        "maxValue": "100",
+        "sprint": "sprintName",
+        "trendValueList":   {
+            "value": 300,
+            "sSprintID": "38294_KanbanNew_62d4f237b37249329484acaa",
+            "sSprintName": "TestProject|PI_10|ITR_4| 10th Aug_KanbanNew",
+            "sprojectName": "KanbanNew"
+        }
+    },
+    {
+        "chartType": "",
+        "groupId": 1,
+        "id": "62ea6e9275bb1c0a0eb5e36d",
+        "isDeleted": "False",
+        "kanban": false,
+        "kpiCategory": "Iteration",
+        "kpiId": "kpi75",
+        "kpiInfo": {
+            "formula": [
+                {
+                    "lhs": "Estimate Effort for a sprint",
+                    "rhs": "# of original estimate in hours or # of story points converted to hours"
+                },
+                {
+                    "lhs": "Actual Effort for a sprint",
+                    "rhs": "# of logged hours"
+                }
+            ],
+            "details": [
+                {
+                    "type": "paragraph",
+                    "value": "Story point to hour conversion is defined in configuration. Default value is 1 SP = 8 hours"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "Graph shows data of latest Sprint only from the selected filters."
+                }
+            ]
+        },
+        "kpiName": "Estimate vs Actual",
+        "kpiSource": "Jira",
+        "kpiUnit": "Hours",
+        "maturityRange": [
+            "-20",
+            "20-40",
+            "40-60",
+            "60-80",
+            "80-"
+        ],
+        "maxValue": "100",
+        "filters": {
+            "filter1": {
+                "filterType": "Search by Issue Type",
+                "options": [
+                    "Overall",
+                    "Story",
+                    "Defect"
+                ]
+            },
+            "filter2": {
+                "filterType": "Search by Priority",
+                "options": [
+                    "Overall",
+                    "P1",
+                    "P2",
+                    "P3",
+                    "P4"
+                ]
+            }
+        },
+        "sprint": "sprintName",
+        "modalHeads": [
+            "Issue Id",
+            "Issue Description"
+        ],
+        "trendValueList": {
+			"value": [
+				{
+					"filter1": "Overall",
+					"filter2": "Overall",
+					"data": [
+						{
+							"label": "Original Estimates",
+							"value": 8
+						},
+						{
+							"label": "Logged Work",
+							"value": 6.5
+						}
+					],
+					"modalValues": [
+						{
+							"col1": {
+								"number": "DTS-15643",
+								"url": "https://"
+							},
+							"description": "This is story"
+						}
+					]
+				},
+				{
+					"filter1": "Story",
+					"filter2": "P1",
+					"data": [
+						{
+							"label": "Original Estimates",
+							"value": 5
+						},
+						{
+							"label": "Logged Work",
+							"value": 4.25
+						}
+					],
+					"modalValues": [
+						{
+							"col1": {
+								"number": "DTS-15643",
+								"url": "https://"
+							},
+							"description": "This is story"
+						}
+					]
+				},
+				{
+					"filter1": "Story",
+					"filter2": "P2",
+					"data": [
+						{
+							"label": "Original Estimates",
+							"value": 3
+						},
+						{
+							"label": "Logged Work",
+							"value": 2.25
+						}
+					],
+					"modalValues": [
+						{
+							"col1": {
+								"number": "DTS-15643",
+								"url": "https://"
+							},
+							"description": "This is story"
+						}
+					]
+				}
+			]
+		}
+    },
+    {
+        "kpiId": "kpi120",
+        "kpiName": "Scope Change",
+        "unit": "Count",
+        "maxValue": "",
+        "chartType": "",
+        "kpiInfo": {
+            "details": [
+                {
+                    "type": "paragraph",
+                    "value": "Scope change KPI highlights change in iteration scope since the start of iteration."
+                },
+                {
+                    "type": "paragraph",
+                    "value": "It showcases added as well as removed issue count and the corresponding story points"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "Source of this KPI is Jira. To see the latest data, run the Jira processor from TestProject settings"
+                }
+            ]
+        },
+        "id": "62fe019a2569e136bc90b1f3",
+        "isDeleted": "False",
+        "kpiCategory": "Iteration",
+        "kpiUnit": "Count",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "trendValueList": {
+            "value": [
+                {
+                    "filter1": "Bug",
+                    "filter2": "In Investigation",
+                    "data": [
+                        {
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 1,
+                            "labelInfo": "(Issue Count/Story Points)"
+                        }
+                    ],
+                    "modalValues": [
+                        {
+                            "col1": {
+                                "number": "DTS-18253"
+                            },
+                            "description": "DEV |Atlassian Marketplace URL's are blocked post HTTP2 implementation  on all atlassian applications "
+                        }
+                    ]
+                },
+                {
+                    "filter1": "Bug",
+                    "filter2": "Closed",
+                    "data": [
+                        {
+                            "label": "Scope added",
+                            "value": 3,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Story Points)"
+                        }
+                    ],
+                    "modalValues": [
+                        {
+                            "col1": {
+                                "number": "DTS-18265"
+                            },
+                            "description": "PM report, Raw Data sheet one Question column is missing"
+                        },
+                        {
+                            "col1": {
+                                "number": "DTS-18264"
+                            },
+                            "description": "PM report, Location summary sheet Vox link is incorrect"
+                        },
+                        {
+                            "col1": {
+                                "number": "DTS-18193"
+                            },
+                            "description": "Unable to see Confluence Analytics Header on Dev environment"
+                        }
+                    ]
+                },
+                {
+                    "filter1": "Bug",
+                    "filter2": "Open",
+                    "data": [
+                        {
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 1
+                        }
+                    ],
+                    "modalValues": [
+                        {
+                            "col1": {
+                                "number": "DTS-18254"
+                            },
+                            "description": "DEV | Crowd UI under \"Audit log\" & \"Users\" tab throws error post http2 changes in server.xml"
+                        }
+                    ]
+                },
+                {
+                    "filter1": "Overall",
+                    "filter2": "Overall",
+                    "data": [
+                        {
+                            "label": "Scope added",
+                            "value": 5,
+                            "value1": 2
+                        }
+                    ],
+                    "modalValues": [
+                        {
+                            "col1": {
+                                "number": "DTS-18253"
+                            },
+                            "description": "DEV |Atlassian Marketplace URL's are blocked post HTTP2 implementation  on all atlassian applications "
+                        },
+                        {
+                            "col1": {
+                                "number": "DTS-18265"
+                            },
+                            "description": "PM report, Raw Data sheet one Question column is missing"
+                        },
+                        {
+                            "col1": {
+                                "number": "DTS-18264"
+                            },
+                            "description": "PM report, Location summary sheet Vox link is incorrect"
+                        },
+                        {
+                            "col1": {
+                                "number": "DTS-18193"
+                            },
+                            "description": "Unable to see Confluence Analytics Header on Dev environment"
+                        },
+                        {
+                            "col1": {
+                                "number": "DTS-18254"
+                            },
+                            "description": "DEV | Crowd UI under \"Audit log\" & \"Users\" tab throws error post http2 changes in server.xml"
+                        }
+                    ]
+                }
+            ]
+        },
+        "groupId": 8,
+        "filters": {
+            "filter1": {
+                "filterType": "Search by Issue Type",
+                "options": [
+                    "Bug"
+                ]
+            },
+            "filter2": {
+                "filterType": "Search by Status",
+                "options": [
+                    "In Investigation",
+                    "Closed",
+                    "Open"
+                ]
+            }
+        },
+        "sprint": "Tools|PI_10|ITR_3|27 Jul_TestProject3",
+        "modalHeads": [
+            "Issue Id",
+            "Issue Description"
+        ]
+    }
+]

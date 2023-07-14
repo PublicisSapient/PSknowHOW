@@ -1,0 +1,27 @@
+{
+	"message": "list of tools",
+	"success": true,
+	"data": [{
+		"id": "5fc643ce11193836e6545567",
+		"toolName": "Jira",
+		"basicProjectConfigId": "5fc643cd11193836e6545559",
+		"connectionId": "5fc643cd11193836e6545560",
+		"projectId": "63102",
+		"projectKey": "Test",
+		"subprojects": [{
+			"id": "5fc643cf11193836e65455b0",
+			"toolConfigId": "5fc643ce11193836e6545567",
+			"basicProjectConfigId": "5fc643cd11193836e6545559",
+			"subProjectIdentification": "CustomField",
+			"subProjectIdentMultiValue": [],
+			"subProjectIdentSingleValue": "customfield_37903",
+			"subProjectUserProvided": [{
+				"subProjectUserProvidedDependOn": "",
+				"subProjectUserProvidedDependOnList": [],
+				"subProjectUserProvidedDependCustomField": ""
+			}]
+		}],
+		"queryEnabled": false,
+		"boardQuery": ""
+	}]
+}

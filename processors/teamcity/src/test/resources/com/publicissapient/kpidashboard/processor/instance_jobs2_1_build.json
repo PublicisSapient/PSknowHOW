@@ -1,0 +1,118 @@
+{
+  "id": "build1",
+  "name": "Build1",
+  "description": "Sample build",
+  "projectName": "Project1",
+  "projectId": "p1",
+  "href": "/app/rest/buildTypes/id:build1",
+  "webUrl": "http://server:port/viewType.html?buildTypeId=build1",
+  "project": {
+    "id": "p1",
+    "name": "Project1",
+    "parentProjectId": "_Root",
+    "description": "Sample project to test teamcity api",
+    "href": "/app/rest/projects/id:p1",
+    "webUrl": "http://server:port/project.html?projectId=p1"
+  },
+  "templates": {
+    "count": 0,
+    "buildType": []
+  },
+  "vcs-root-entries": {
+    "count": 0,
+    "vcs-root-entry": []
+  },
+  "settings": {
+    "count": 1,
+    "property": [
+      {
+        "name": "buildNumberCounter",
+        "value": "3"
+      }
+    ]
+  },
+  "parameters": {
+    "count": 0,
+    "href": "/app/rest/buildTypes/id:build1/parameters",
+    "property": []
+  },
+  "steps": {
+    "count": 1,
+    "step": [
+      {
+        "id": "RUNNER_1",
+        "name": "",
+        "type": "Maven2",
+        "properties": {
+          "count": 10,
+          "property": [
+            {
+              "name": "localRepoScope",
+              "value": "agent"
+            },
+            {
+              "name": "maven.path",
+              "value": "%teamcity.tool.maven.DEFAULT%"
+            },
+            {
+              "name": "pomLocation",
+              "value": "pom.xml"
+            },
+            {
+              "name": "teamcity.coverage.emma.include.source",
+              "value": "true"
+            },
+            {
+              "name": "teamcity.coverage.emma.instr.parameters",
+              "value": "-ix -*Test*"
+            },
+            {
+              "name": "teamcity.coverage.idea.includePatterns",
+              "value": "*"
+            },
+            {
+              "name": "teamcity.coverage.jacoco.patterns",
+              "value": "+:*"
+            },
+            {
+              "name": "teamcity.step.mode",
+              "value": "default"
+            },
+            {
+              "name": "teamcity.tool.jacoco",
+              "value": "%teamcity.tool.jacoco.DEFAULT%"
+            },
+            {
+              "name": "userSettingsSelection",
+              "value": "userSettingsSelection:default"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "features": {
+    "count": 0
+  },
+  "triggers": {
+    "count": 0
+  },
+  "snapshot-dependencies": {
+    "count": 0
+  },
+  "artifact-dependencies": {
+    "count": 0
+  },
+  "agent-requirements": {
+    "count": 0
+  },
+  "builds": {
+    "href": "/app/rest/buildTypes/id:build1/builds/"
+  },
+  "investigations": {
+    "href": "/app/rest/investigations?locator=buildType:(id:build1)"
+  },
+  "compatibleAgents": {
+    "href": "/app/rest/agents?locator=compatible:(buildType:(id:build1))"
+  }
+}

@@ -1,0 +1,73 @@
+[
+    {
+        "kpiId": "kpi17",
+        "kpiName": "Unit Test Coverage",
+        "unit": "%",
+        "maxValue": "100",
+        "chartType": "",
+        "kpiInfo": {
+            "definition": "UNIT TEST COVERAGE is a measurement of the amount of code that is run by unit tests - either lines, branches, or methods.",
+            "formula": [
+                {
+                    "lhs": "The calculation is done directly in Sonarqube"
+                }
+            ],
+            "details": [
+                {
+                    "type": "paragraph",
+                    "value": "It is calculated in ‘Percentage’. Higher the percentage, better is the ‘Quality’"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "Maturity of the KPI is calculated based on the latest value"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "A progress indicator shows trend of Unit test coverage between last 2 weeks. An upward trend is considered positive"
+                }
+            ],
+            "maturityLevels": [
+                {
+                    "level": "M5",
+                    "bgColor": "#6cab61",
+                    "range": ">80%"
+                },
+                {
+                    "level": "M4",
+                    "bgColor": "#AEDB76",
+                    "range": "60-80%"
+                },
+                {
+                    "level": "M3",
+                    "bgColor": "#eff173",
+                    "range": "40-60%"
+                },
+                {
+                    "level": "M2",
+                    "bgColor": "#ffc35b",
+                    "range": "20-40%"
+                },
+                {
+                    "level": "M1",
+                    "bgColor": "#F06667",
+                    "range": "<20%"
+                }
+            ]
+        },
+        "id": "63353ea4087f75e5147b11d0",
+        "isDeleted": "False",
+        "kpiUnit": "%",
+        "kanban": false,
+        "kpiSource": "Sonar",
+        "thresholdValue": 55,
+        "trendValueList": [],
+        "maturityRange": [
+            ">=20",
+            "20-40",
+            "40-60",
+            "60-80",
+            "80-0"
+        ],
+        "groupId": 1
+    }
+]

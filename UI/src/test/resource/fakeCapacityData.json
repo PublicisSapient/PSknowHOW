@@ -1,0 +1,166 @@
+{
+    "message": "Capacity Data",
+    "success": true,
+    "data": [
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "41412_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "TEST | KnowHOW | PI_12| ITR_6",
+            "sprintState": "FUTURE",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "41407_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "TEST | KnowHOW | PI_12| ITR_1",
+            "sprintState": "FUTURE",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "42081_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "MAP|PI_12|ITR_1",
+            "sprintState": "FUTURE",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "43305_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOW | PI_13| ITR_1",
+            "sprintState": "FUTURE",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "43306_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOW | PI_13| ITR_2",
+            "sprintState": "FUTURE",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "43307_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOW | PI_13| ITR_3",
+            "sprintState": "FUTURE",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "43308_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOW | PI_13| ITR_4",
+            "sprintState": "FUTURE",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "43310_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOW | PI_13| ITR_6",
+            "sprintState": "FUTURE",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "43309_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOW | PI_13| ITR_5",
+            "sprintState": "FUTURE",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "41411_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOW | PI_12| ITR_5",
+            "sprintState": "ACTIVE",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "42031_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOWContribution|PI_12|ITR2",
+            "sprintState": "ACTIVE",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "41410_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOW | PI_12| ITR_4",
+            "sprintState": "CLOSED",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "41409_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOW | PI_12| ITR_3",
+            "sprintState": "CLOSED",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "41408_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOW | PI_12| ITR_2",
+            "sprintState": "CLOSED",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "42030_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOWContribution|PI_12|ITR1",
+            "sprintState": "CLOSED",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        },
+        {
+            "projectNodeId": "KnowHOW_6360fefc3fa9e175755f0728",
+            "projectName": "KnowHOW",
+            "sprintNodeId": "42085_KnowHOW_6360fefc3fa9e175755f0728",
+            "sprintName": "KnowHOW | PI_12| ITR_1",
+            "sprintState": "CLOSED",
+            "capacity": 0.0,
+            "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+            "kanban": true
+        }
+    ]
+}

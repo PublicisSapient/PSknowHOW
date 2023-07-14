@@ -1,0 +1,13 @@
+{
+  "id": "5f11360e8be1c8c9dfa2958d",
+  "nodeId": "TestNode_87133_Test",
+  "nodeName": "TestNode",
+  "labelName": "Project",
+  "filterCategoryId": "5ef1c34311660690adb570b9",
+  "componentId": "87133_Test",
+  "parentId": "testParentId",
+  "configId": "5e97fb4f857aba0001487a2b",
+  "isDeleted": "False",
+  "path": "testParentId,test1,test2",
+  "configProjectName": "testProjectName"
+}

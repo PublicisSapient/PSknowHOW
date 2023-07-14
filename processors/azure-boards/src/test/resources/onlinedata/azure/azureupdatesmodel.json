@@ -1,0 +1,630 @@
+{
+  "count": 7,
+  "value": [
+    {
+      "id": 1,
+      "workItemId": 92,
+      "rev": 1,
+      "revisedDate": "2020-07-15T12:53:54.12Z",
+      "fields": {
+        "System.Id": {
+          "newValue": 92
+        },
+        "System.AreaId": {
+          "newValue": 2
+        },
+        "System.NodeName": {
+          "newValue": "TEST"
+        },
+        "System.AreaLevel1": {
+          "newValue": "TEST"
+        },
+        "System.Rev": {
+          "newValue": 1
+        },
+        "System.AuthorizedDate": {
+          "newValue": "2020-07-15T12:33:46.707Z"
+        },
+        "System.RevisedDate": {
+          "newValue": "2020-07-15T12:53:54.12Z"
+        },
+        "System.IterationId": {
+          "newValue": 7
+        },
+        "System.IterationLevel1": {
+          "newValue": "TEST"
+        },
+        "System.IterationLevel2": {
+          "newValue": "Sprint2_June15_June26"
+        },
+        "System.WorkItemType": {
+          "newValue": "User Story"
+        },
+        "System.State": {
+          "newValue": "New"
+        },
+        "System.Reason": {
+          "newValue": "New"
+        },
+        "System.AssignedTo": {
+          "newValue": {
+            "displayName": "Test Display Name",
+            "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "_links": {
+              "avatar": {
+                "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+              }
+            },
+            "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "uniqueName": "testUser@test.com",
+            "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+            "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "System.CreatedDate": {
+          "newValue": "2020-07-15T12:33:46.707Z"
+        },
+        "System.CreatedBy": {
+          "newValue": {
+            "displayName": "Test Display Name",
+            "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "_links": {
+              "avatar": {
+                "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+              }
+            },
+            "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "uniqueName": "testUser@test.com",
+            "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+            "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "System.ChangedDate": {
+          "newValue": "2020-07-15T12:33:46.707Z"
+        },
+        "System.ChangedBy": {
+          "newValue": {
+            "displayName": "Test Display Name",
+            "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "_links": {
+              "avatar": {
+                "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+              }
+            },
+            "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "uniqueName": "testUser@test.com",
+            "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+            "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "System.AuthorizedAs": {
+          "newValue": {
+            "displayName": "Test Display Name",
+            "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "_links": {
+              "avatar": {
+                "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+              }
+            },
+            "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "uniqueName": "testUser@test.com",
+            "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+            "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "System.PersonId": {
+          "newValue": 2382099
+        },
+        "System.Watermark": {
+          "newValue": 126
+        },
+        "System.IsDeleted": {
+          "newValue": false
+        },
+        "System.CommentCount": {
+          "newValue": 0
+        },
+        "System.TeamProject": {
+          "newValue": "TEST"
+        },
+        "System.AreaPath": {
+          "newValue": "TEST"
+        },
+        "System.IterationPath": {
+          "newValue": "TEST\\Sprint2_June15_June26"
+        },
+        "System.Title": {
+          "newValue": "StoryTest"
+        },
+        "System.BoardColumnDone": {
+          "newValue": false
+        },
+        "Microsoft.VSTS.Scheduling.StoryPoints": {
+          "newValue": 8
+        },
+        "Microsoft.VSTS.Common.Priority": {
+          "newValue": 2
+        },
+        "Microsoft.VSTS.Common.ValueArea": {
+          "newValue": "Business"
+        },
+        "WEF_F17611F3F80E45D2AFC8D2A78F930BDE_System.ExtensionMarker": {
+          "newValue": true
+        },
+        "WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column.Done": {
+          "newValue": false
+        },
+        "System.BoardColumn": {
+          "newValue": "New"
+        },
+        "Microsoft.VSTS.Common.StateChangeDate": {
+          "newValue": "2020-07-15T12:33:46.707Z"
+        },
+        "WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column": {
+          "newValue": "New"
+        }
+      },
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/1"
+    },
+    {
+      "id": 2,
+      "workItemId": 92,
+      "rev": 2,
+      "revisedBy": {
+        "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "name": "Test Display Name <testUser@test.com>",
+        "displayName": "Test Display Name",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "uniqueName": "testUser@test.com",
+        "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+        "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+      },
+      "revisedDate": "2020-07-15T12:55:29.99Z",
+      "fields": {
+        "System.Rev": {
+          "oldValue": 1,
+          "newValue": 2
+        },
+        "System.AuthorizedDate": {
+          "oldValue": "2020-07-15T12:33:46.707Z",
+          "newValue": "2020-07-15T12:53:54.12Z"
+        },
+        "System.RevisedDate": {
+          "oldValue": "2020-07-15T12:53:54.12Z",
+          "newValue": "2020-07-15T12:55:29.99Z"
+        },
+        "System.State": {
+          "oldValue": "New",
+          "newValue": "Active"
+        },
+        "System.Reason": {
+          "oldValue": "New",
+          "newValue": "Implementation started"
+        },
+        "System.ChangedDate": {
+          "oldValue": "2020-07-15T12:33:46.707Z",
+          "newValue": "2020-07-15T12:53:54.12Z"
+        },
+        "System.Watermark": {
+          "oldValue": 126,
+          "newValue": 127
+        },
+        "System.BoardColumn": {
+          "oldValue": "New",
+          "newValue": "Active"
+        },
+        "Microsoft.VSTS.Common.StateChangeDate": {
+          "oldValue": "2020-07-15T12:33:46.707Z",
+          "newValue": "2020-07-15T12:53:54.12Z"
+        },
+        "Microsoft.VSTS.Common.ActivatedDate": {
+          "newValue": "2020-07-15T12:53:54.12Z"
+        },
+        "Microsoft.VSTS.Common.ActivatedBy": {
+          "newValue": {
+            "displayName": "Test Display Name",
+            "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "_links": {
+              "avatar": {
+                "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+              }
+            },
+            "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "uniqueName": "testUser@test.com",
+            "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+            "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column": {
+          "oldValue": "New",
+          "newValue": "Active"
+        }
+      },
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/2"
+    },
+    {
+      "id": 3,
+      "workItemId": 92,
+      "rev": 3,
+      "revisedBy": {
+        "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "name": "Test Display Name <testUser@test.com>",
+        "displayName": "Test Display Name",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "uniqueName": "testUser@test.com",
+        "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+        "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+      },
+      "revisedDate": "2020-07-15T12:55:46.937Z",
+      "fields": {
+        "System.Rev": {
+          "oldValue": 2,
+          "newValue": 3
+        },
+        "System.AuthorizedDate": {
+          "oldValue": "2020-07-15T12:53:54.12Z",
+          "newValue": "2020-07-15T12:55:29.99Z"
+        },
+        "System.RevisedDate": {
+          "oldValue": "2020-07-15T12:55:29.99Z",
+          "newValue": "2020-07-15T12:55:46.937Z"
+        },
+        "System.IterationId": {
+          "oldValue": 7,
+          "newValue": 8
+        },
+        "System.IterationLevel2": {
+          "oldValue": "Sprint2_June15_June26",
+          "newValue": "Sprint3_June29_July10"
+        },
+        "System.ChangedDate": {
+          "oldValue": "2020-07-15T12:53:54.12Z",
+          "newValue": "2020-07-15T12:55:29.99Z"
+        },
+        "System.Watermark": {
+          "oldValue": 127,
+          "newValue": 128
+        },
+        "System.IterationPath": {
+          "oldValue": "TEST\\Sprint2_June15_June26",
+          "newValue": "TEST\\Sprint3_June29_July10"
+        }
+      },
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/3"
+    },
+    {
+      "id": 4,
+      "workItemId": 92,
+      "rev": 4,
+      "revisedBy": {
+        "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "name": "Test Display Name <testUser@test.com>",
+        "displayName": "Test Display Name",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "uniqueName": "testUser@test.com",
+        "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+        "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+      },
+      "revisedDate": "2020-07-15T19:27:45.1Z",
+      "fields": {
+        "System.Rev": {
+          "oldValue": 3,
+          "newValue": 4
+        },
+        "System.AuthorizedDate": {
+          "oldValue": "2020-07-15T12:55:29.99Z",
+          "newValue": "2020-07-15T12:55:46.937Z"
+        },
+        "System.RevisedDate": {
+          "oldValue": "2020-07-15T12:55:46.937Z",
+          "newValue": "2020-07-15T19:27:45.1Z"
+        },
+        "System.State": {
+          "oldValue": "Active",
+          "newValue": "New"
+        },
+        "System.Reason": {
+          "oldValue": "Implementation started",
+          "newValue": "Moved to the backlog"
+        },
+        "System.ChangedDate": {
+          "oldValue": "2020-07-15T12:55:29.99Z",
+          "newValue": "2020-07-15T12:55:46.937Z"
+        },
+        "System.Watermark": {
+          "oldValue": 128,
+          "newValue": 129
+        },
+        "System.BoardColumn": {
+          "oldValue": "Active",
+          "newValue": "New"
+        },
+        "Microsoft.VSTS.Common.StateChangeDate": {
+          "oldValue": "2020-07-15T12:53:54.12Z",
+          "newValue": "2020-07-15T12:55:46.937Z"
+        },
+        "Microsoft.VSTS.Common.ActivatedDate": {
+          "oldValue": "2020-07-15T12:53:54.12Z"
+        },
+        "Microsoft.VSTS.Common.ActivatedBy": {
+          "oldValue": {
+            "displayName": "Test Display Name",
+            "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "_links": {
+              "avatar": {
+                "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+              }
+            },
+            "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "uniqueName": "testUser@test.com",
+            "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+            "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column": {
+          "oldValue": "Active",
+          "newValue": "New"
+        }
+      },
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/4"
+    },
+    {
+      "id": 5,
+      "workItemId": 92,
+      "rev": 5,
+      "revisedBy": {
+        "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "name": "Test Display Name <testUser@test.com>",
+        "displayName": "Test Display Name",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "uniqueName": "testUser@test.com",
+        "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+        "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+      },
+      "revisedDate": "2020-07-15T19:28:37.66Z",
+      "fields": {
+        "System.Rev": {
+          "oldValue": 4,
+          "newValue": 5
+        },
+        "System.AuthorizedDate": {
+          "oldValue": "2020-07-15T12:55:46.937Z",
+          "newValue": "2020-07-15T19:27:45.1Z"
+        },
+        "System.RevisedDate": {
+          "oldValue": "2020-07-15T19:27:45.1Z",
+          "newValue": "2020-07-15T19:28:37.66Z"
+        },
+        "System.State": {
+          "oldValue": "New",
+          "newValue": "Active"
+        },
+        "System.Reason": {
+          "oldValue": "Moved to the backlog",
+          "newValue": "Implementation started"
+        },
+        "System.ChangedDate": {
+          "oldValue": "2020-07-15T12:55:46.937Z",
+          "newValue": "2020-07-15T19:27:45.1Z"
+        },
+        "System.Watermark": {
+          "oldValue": 129,
+          "newValue": 130
+        },
+        "Microsoft.VSTS.Common.ActivatedDate": {
+          "newValue": "2020-07-15T19:27:45.1Z"
+        },
+        "Microsoft.VSTS.Common.ActivatedBy": {
+          "newValue": {
+            "displayName": "Test Display Name",
+            "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "_links": {
+              "avatar": {
+                "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+              }
+            },
+            "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "uniqueName": "testUser@test.com",
+            "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+            "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "System.BoardColumn": {
+          "oldValue": "New",
+          "newValue": "Active"
+        },
+        "Microsoft.VSTS.Common.StateChangeDate": {
+          "oldValue": "2020-07-15T12:55:46.937Z",
+          "newValue": "2020-07-15T19:27:45.1Z"
+        },
+        "WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column": {
+          "oldValue": "New",
+          "newValue": "Active"
+        }
+      },
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/5"
+    },
+    {
+      "id": 6,
+      "workItemId": 92,
+      "rev": 6,
+      "revisedBy": {
+        "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "name": "Test Display Name <testUser@test.com>",
+        "displayName": "Test Display Name",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "uniqueName": "testUser@test.com",
+        "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+        "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+      },
+      "revisedDate": "2020-07-15T19:29:14.85Z",
+      "fields": {
+        "System.Rev": {
+          "oldValue": 5,
+          "newValue": 6
+        },
+        "System.AuthorizedDate": {
+          "oldValue": "2020-07-15T19:27:45.1Z",
+          "newValue": "2020-07-15T19:28:37.66Z"
+        },
+        "System.RevisedDate": {
+          "oldValue": "2020-07-15T19:28:37.66Z",
+          "newValue": "2020-07-15T19:29:14.85Z"
+        },
+        "System.State": {
+          "oldValue": "Active",
+          "newValue": "Resolved"
+        },
+        "System.Reason": {
+          "oldValue": "Implementation started",
+          "newValue": "Code complete and unit tests pass"
+        },
+        "System.ChangedDate": {
+          "oldValue": "2020-07-15T19:27:45.1Z",
+          "newValue": "2020-07-15T19:28:37.66Z"
+        },
+        "System.Watermark": {
+          "oldValue": 130,
+          "newValue": 132
+        },
+        "Microsoft.VSTS.Common.ResolvedDate": {
+          "newValue": "2020-07-15T19:28:37.66Z"
+        },
+        "Microsoft.VSTS.Common.ResolvedBy": {
+          "newValue": {
+            "displayName": "Test Display Name",
+            "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "_links": {
+              "avatar": {
+                "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+              }
+            },
+            "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "uniqueName": "testUser@test.com",
+            "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+            "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "System.BoardColumn": {
+          "oldValue": "Active",
+          "newValue": "Resolved"
+        },
+        "Microsoft.VSTS.Common.StateChangeDate": {
+          "oldValue": "2020-07-15T19:27:45.1Z",
+          "newValue": "2020-07-15T19:28:37.66Z"
+        },
+        "WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column": {
+          "oldValue": "Active",
+          "newValue": "Resolved"
+        }
+      },
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/6"
+    },
+    {
+      "id": 7,
+      "workItemId": 92,
+      "rev": 7,
+      "revisedBy": {
+        "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "name": "Test Display Name <testUser@test.com>",
+        "displayName": "Test Display Name",
+        "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+        "_links": {
+          "avatar": {
+            "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "uniqueName": "testUser@test.com",
+        "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+        "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+      },
+      "revisedDate": "9999-01-01T00:00:00Z",
+      "fields": {
+        "System.Rev": {
+          "oldValue": 6,
+          "newValue": 7
+        },
+        "System.AuthorizedDate": {
+          "oldValue": "2020-07-15T19:28:37.66Z",
+          "newValue": "2020-07-15T19:29:14.85Z"
+        },
+        "System.RevisedDate": {
+          "oldValue": "2020-07-15T19:29:14.85Z",
+          "newValue": "9999-01-01T00:00:00Z"
+        },
+        "System.State": {
+          "oldValue": "Resolved",
+          "newValue": "Closed"
+        },
+        "System.Reason": {
+          "oldValue": "Code complete and unit tests pass",
+          "newValue": "Acceptance tests pass"
+        },
+        "System.ChangedDate": {
+          "oldValue": "2020-07-15T19:28:37.66Z",
+          "newValue": "2020-07-15T19:29:14.85Z"
+        },
+        "System.Watermark": {
+          "oldValue": 132,
+          "newValue": 135
+        },
+        "System.BoardColumn": {
+          "oldValue": "Resolved",
+          "newValue": "Closed"
+        },
+        "Microsoft.VSTS.Common.StateChangeDate": {
+          "oldValue": "2020-07-15T19:28:37.66Z",
+          "newValue": "2020-07-15T19:29:14.85Z"
+        },
+        "Microsoft.VSTS.Common.ClosedDate": {
+          "newValue": "2020-07-15T19:29:14.85Z"
+        },
+        "Microsoft.VSTS.Common.ClosedBy": {
+          "newValue": {
+            "displayName": "Test Display Name",
+            "url": "https://abc.com/A09f50074-57bc-4f9f-a06d-e39b22c369ce/_apis/Identities/eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "_links": {
+              "avatar": {
+                "href": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+              }
+            },
+            "id": "eabcdd0e-8d1f-6e1c-b08c-3f9774a1fd42",
+            "uniqueName": "testUser@test.com",
+            "imageUrl": "https://test.com/testUser/_apis/GraphProfile/MemberAvatars/aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy",
+            "descriptor": "aad.ZWFiY2RkMGUtOGQxZi03ZTFjLWIwOGMtM2Y5Nzc0YTFmZDQy"
+          }
+        },
+        "WEF_F17611F3F80E45D2AFC8D2A78F930BDE_Kanban.Column": {
+          "oldValue": "Resolved",
+          "newValue": "Closed"
+        }
+      },
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/_apis/wit/workItems/92/updates/7"
+    }
+  ]
+}

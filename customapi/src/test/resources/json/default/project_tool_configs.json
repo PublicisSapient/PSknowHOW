@@ -1,0 +1,13 @@
+[
+  {
+    "id": "5fd9adf595fe13000165d0c4",
+    "toolName": "Jira",
+    "basicProjectConfigId": "5fd9ab0995fe13000165d0ba",
+    "connectionId": "5fd99f7bc8b51a7b55aec836",
+    "projectKey": "DTS",
+    "createdAt": "2020-12-16T06:49:25",
+    "updatedAt": "2020-12-16T10:31:26",
+    "queryEnabled": true,
+    "boardQuery": "project in (\"DTS\") and component in (KnowHOW) and type in (\"Story\", \"Defect\", \"Enabler Story\", \"Change request\", \"Epic\")"
+  }
+]

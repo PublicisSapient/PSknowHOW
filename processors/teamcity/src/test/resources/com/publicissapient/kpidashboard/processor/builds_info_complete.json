@@ -1,0 +1,33 @@
+{
+  "count": 3,
+  "href": "/app/rest/buildTypes/id:Project2_Build2/builds/",
+  "build": [
+    {
+      "id": 5,
+      "buildTypeId": "Project2_Build2",
+      "number": "3",
+      "status": "SUCCESS",
+      "state": "finished",
+      "href": "/app/rest/builds/id:5",
+      "webUrl": "http://server:port/viewLog.html?buildId=5&buildTypeId=Project2_Build2"
+    },
+    {
+      "id": 4,
+      "buildTypeId": "Project2_Build2",
+      "number": "2",
+      "status": "SUCCESS",
+      "state": "finished",
+      "href": "/app/rest/builds/id:4",
+      "webUrl": "http://server:port/viewLog.html?buildId=4&buildTypeId=Project2_Build2"
+    },
+    {
+      "id": 3,
+      "buildTypeId": "Project2_Build2",
+      "number": "1",
+      "status": "SUCCESS",
+      "state": "finished",
+      "href": "/app/rest/builds/id:3",
+      "webUrl": "http://server:port/viewLog.html?buildId=3&buildTypeId=Project2_Build2"
+    }
+  ]
+}

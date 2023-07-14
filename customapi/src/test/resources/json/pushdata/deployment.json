@@ -1,0 +1,18 @@
+[
+  {
+    "_id" : "63358b4709c7635933ad1939",
+    "processorId" : "63282180692ef17f153e70a2",
+    "basicProjectConfigId" : "632824e949794a18e8a44787",
+    "projectToolConfigId" : "63358b149a86a10a43ae481e",
+    "envName" : "10.148.240.68",
+    "startTime" : "2022-09-14T12:36:35",
+    "endTime" : "2022-09-14T12:55:27",
+    "duration" : 1131582,
+    "deploymentStatus" : "SUCCESS",
+    "jobName" : "Test",
+    "jobFolderName" : "Test",
+    "number" : "123",
+    "createdAt" : "2022-09-29T12:10:47",
+    "_class" : "com.publicissapient.kpidashboard.common.model.application.Deployment"
+  }
+]

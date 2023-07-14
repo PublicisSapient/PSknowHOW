@@ -1,0 +1,108 @@
+[
+    {
+        "kpiId": "kpi82",
+        "kpiName": "First Time Pass Rate",
+        "value": 46,
+        "unit": "%",
+        "maxValue": "100",
+        "chartType": "",
+        "id": "61516ac90dbf1e2320580502",
+        "isDeleted": "False",
+        "kpiCategory": "Quality",
+        "kpiUnit": "%",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "trendValueList": [
+            {
+                "data": "TestProject",
+                "value": [
+                    {
+                        "data": "0.0",
+                        "sSprintID": "28157_TestProject_6152bdbe47d98877965a3732",
+                        "sSprintName": "TestProject|PI_3|ITR_1|30_Sep_TestProject",
+                        "value": 0.0,
+                        "sprojectName": "TestProject"
+                    },
+                    {
+                        "data": "0.0",
+                        "sSprintID": "29731_TestProject_6152bdbe47d98877965a3732",
+                        "sSprintName": "TestProject |PI_4|ITR_6|10_Mar-30M_TestProject",
+                        "value": 0.0,
+                        "sprojectName": "TestProject"
+                    },
+                    {
+                        "data": "0.0",
+                        "sSprintID": "31223_TestProject_6152bdbe47d98877965a3732",
+                        "sSprintName": "TestProject|PI_5|ITR_2| 14 Apr_TestProject",
+                        "value": 0.0,
+                        "sprojectName": "TestProject"
+                    },
+                    {
+                        "data": "0.0",
+                        "sSprintID": "31226_TestProject_6152bdbe47d98877965a3732",
+                        "sSprintName": "TestProject|PI_5|ITR_5| 26 May_TestProject",
+                        "value": 0.0,
+                        "sprojectName": "TestProject"
+                    },
+                    {
+                        "data": "0.0",
+                        "sSprintID": "31227_TestProject_6152bdbe47d98877965a3732",
+                        "sSprintName": "TestProject|PI_5|ITR_6|9 Jun-29Jun_TestProject",
+                        "value": 0.0,
+                        "sprojectName": "TestProject"
+                    },
+                    {
+                        "data": "0.0",
+                        "sSprintID": "32573_TestProject_6152bdbe47d98877965a3732",
+                        "sSprintName": "TestProject|PI_6|ITR_1|30Jun-13Jul_TestProject",
+                        "value": 0.0,
+                        "sprojectName": "TestProject"
+                    },
+                    {
+                        "data": "4.0",
+                        "sSprintID": "32574_TestProject_6152bdbe47d98877965a3732",
+                        "sSprintName": "TestProject|PI_6|ITR_2|14Jul-27Jul_TestProject",
+                        "value": 4.0,
+                        "sprojectName": "TestProject"
+                    },
+                    {
+                        "data": "8.0",
+                        "sSprintID": "32589_TestProject_6152bdbe47d98877965a3732",
+                        "sSprintName": "TestProject|PI_6|ITR_3|28 July_TestProject",
+                        "value": 8.0,
+                        "sprojectName": "TestProject"
+                    },
+                    {
+                        "data": "9.0",
+                        "sSprintID": "32590_TestProject_6152bdbe47d98877965a3732",
+                        "sSprintName": "TestProject|PI_6|ITR_4| Aug 11_TestProject",
+                        "value": 9.0,
+                        "sprojectName": "TestProject"
+                    },
+                    {
+                        "data": "15.0",
+                        "sSprintID": "32613_TestProject_6152bdbe47d98877965a3732",
+                        "sSprintName": "TestProject|PI_6|ITR_5|Aug 25_TestProject",
+                        "value": 15.0,
+                        "sprojectName": "TestProject"
+                    },
+                    {
+                        "data": "10.0",
+                        "sSprintID": "32614_TestProject_6152bdbe47d98877965a3732",
+                        "sSprintName": "TestProject|PI_6|ITR_6|08Sep_TestProject",
+                        "value": 10.0,
+                        "sprojectName": "TestProject"
+                    },
+                    {
+                        "data": "0.0",
+                        "sSprintID": "33959_TestProject_6152bdbe47d98877965a3732",
+                        "sSprintName": "TestProject|PI_7|ITR_1|29 Sep_TestProject",
+                        "value": 0.0,
+                        "sprojectName": "TestProject"
+                    }
+                ]
+            }
+        ],
+        "groupId": 1
+    }
+]

@@ -1,0 +1,942 @@
+[
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9bd",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14110",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-25T06:14:41.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "Yes",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17490" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9bc",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14109",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-25T06:13:31.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17490" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9bb",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14108",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-25T06:12:52.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "Yes",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17490" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9ba",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14107",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-25T06:10:37.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17490" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9b9",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14106",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-25T06:08:33.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17490" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9b8",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14105",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-25T06:07:07.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17490" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9b7",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14104",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-25T05:57:58.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17490" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9b6",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14103",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-25T05:56:15.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17490" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9b5",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14102",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-25T05:54:09.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17490" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9b4",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14101",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-24T06:17:59.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14685" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9b3",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14100",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-24T06:16:59.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14685" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9b2",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14099",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-24T06:14:31.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14685" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9b1",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14098",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-24T06:13:01.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14685" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552de5d84cf3c41a5a9b0",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14097",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-24T06:09:41.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14685" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9af",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14096",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-24T06:03:31.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14685" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9ae",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14095",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-24T06:02:08.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14685" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9ad",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14094",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-24T06:01:00.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14685" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9ac",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14077",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-23T07:40:41.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14604" ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9ab",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14076",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-23T07:39:15.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14604" ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9aa",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14075",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-23T07:37:31.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14604" ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9a9",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14074",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-23T07:35:41.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14604" ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9a8",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14073",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-23T07:33:31.0000000",
+    "projectName" : "Scrum Project",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14604" ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9a7",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14072",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-23T07:31:30.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14604" ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9a6",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14043",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-18T12:48:23.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17492" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9a5",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14042",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-18T10:19:43.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14606" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9a4",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14041",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-18T10:16:00.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17495" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9a3",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14040",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-18T10:11:17.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17492" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9a2",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14039",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-18T10:01:26.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17949" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9a1",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14032",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-18T06:49:38.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17495" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a9a0",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14031",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-18T06:42:02.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17495" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a99f",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14030",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-18T06:42:01.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17495" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a99e",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14027",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-18T06:38:01.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17495" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a99d",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14026",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-18T06:35:15.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17495" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a99c",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14025",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-18T06:33:54.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17495" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a99b",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14024",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-18T06:31:59.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17495" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a99a",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14010",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T10:48:03.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14612" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a999",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14009",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T10:45:44.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a998",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14008",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T10:44:45.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14612" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a997",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14004",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T08:18:14.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14612" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a996",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14003",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T08:13:19.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14612" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a995",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14002",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T07:41:46.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14612" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a994",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14001",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T06:57:41.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14606" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+  {
+    "_id" : "633552c75d84cf3c41a5a993",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T14000",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T06:56:14.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14606" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a992",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T13999",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T06:51:14.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14606" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a991",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T13998",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T06:48:26.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14606" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+  {
+    "_id" : "633552c75d84cf3c41a5a990",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T13997",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T06:34:50.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-14606" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a98f",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T13996",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T06:21:10.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17770" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a98e",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T13995",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T06:11:25.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17770" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a98d",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T13994",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T06:07:50.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17770" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  },
+
+
+  {
+    "_id" : "633552c75d84cf3c41a5a98c",
+    "processorId" : "632821800b24926ad97f0207",
+    "number" : "TEST-T13993",
+    "typeName" : "Test",
+    "createdDate" : "2022-08-17T06:03:34.0000000",
+    "projectName" : "Scrum Project",
+    "projectID" : "Scrum Project_6335363749794a18e8a4479b",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
+    "testAutomated" : "None",
+    "isTestAutomated" : "No",
+    "isTestCanBeAutomated" : "Yes",
+    "testCaseFolderName" : "/KnowHOW/knowHowFolderwiseTestcase/Dashboard/kpi widjets/Iteration Dashboard",
+    "defectStoryID" : [ "TEST-17770" ],
+    "defectRaisedBy" : "JIRAUSER178886",
+    "_class" : "com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails"
+  }
+]

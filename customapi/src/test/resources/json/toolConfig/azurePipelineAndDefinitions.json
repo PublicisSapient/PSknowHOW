@@ -1,0 +1,69 @@
+{
+  "count": 1,
+  "value": [
+    {
+      "_links": {
+        "self": {
+          "href": "https://test.server.com/test/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_apis/build/Definitions/1?revision=1"
+        },
+        "web": {
+          "href": "https://test.server.com/test/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_build/definition?definitionId=1"
+        },
+        "editor": {
+          "href": "https://test.server.com/test/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_build/designer?id=1&_a=edit-build-definition"
+        },
+        "badge": {
+          "href": "https://test.server.com/test/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_apis/build/status/1"
+        }
+      },
+      "quality": "definition",
+      "authoredBy": {
+        "displayName": "testUser1",
+        "url": "https://testUser1.vssps.visualstudio.com/A81cdfba5-318a-4b1b-b21b-d4bbb8b35356/_apis/Identities/cf525a84-6b94-6bb4-a6f0-40632d9287f1",
+        "_links": {
+          "avatar": {
+            "href": "https://test.server.com/test/_apis/GraphProfile/MemberAvatars/aad.Y2Y1MjVhODQtNmI5NC03YmI0LWE2ZjAtNDA2MzJkOTI4N2Yx"
+          }
+        },
+        "id": "cf525a84-6b94-6bb4-a6f0-40632d9287f1",
+        "uniqueName": "test",
+        "imageUrl": "https://test.server.com/test/_apis/GraphProfile/MemberAvatars/aad.Y2Y1MjVhODQtNmI5NC03YmI0LWE2ZjAtNDA2MzJkOTI4N2Yx",
+        "descriptor": "aad.Y2Y1MjVhODQtNmI5NC03YmI0LWE2ZjAtNDA2MzJkOTI4N2Yx"
+      },
+      "drafts": [],
+      "queue": {
+        "_links": {
+          "self": {
+            "href": "https://test.server.com/test/_apis/build/Queues/8"
+          }
+        },
+        "id": 8,
+        "name": "Hosted Ubuntu 1604",
+        "url": "https://test.server.com/test/_apis/build/Queues/8",
+        "pool": {
+          "id": 8,
+          "name": "Hosted Ubuntu 1604",
+          "isHosted": true
+        }
+      },
+      "id": 1,
+      "name": "AZURE_KNOWHOW",
+      "url": "https://test.server.com/test/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b/_apis/build/Definitions/1?revision=1",
+      "uri": "vstfs:///Build/Definition/1",
+      "path": "\\",
+      "type": "build",
+      "queueStatus": "enabled",
+      "revision": 1,
+      "createdDate": "2021-09-28T06:15:31.717Z",
+      "project": {
+        "id": "8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b",
+        "name": "AZURE_KNOWHOW_Proj",
+        "url": "https://test.server.com/test/_apis/projects/8ea7cc5f-a0d9-4dd6-9930-9aa85bb4e67b",
+        "state": "wellFormed",
+        "revision": 12,
+        "visibility": "private",
+        "lastUpdateTime": "2021-11-18T05:21:21.93Z"
+      }
+    }
+  ]
+}

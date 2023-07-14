@@ -1,0 +1,783 @@
+{
+    "message": "Fetched successfully",
+    "success": true,
+    "data": {
+      "id": "63245b5f57413703ba3bf4f1",
+      "username": "SUPERADMIN",
+      "scrum": [
+        {
+          "boardId": 1,
+          "boardName": "My KnowHOW",
+          "kpis": [    {
+            "kpiId": "kpi14",
+            "kpiName": "Defect Injection Rate",
+            "isEnabled": true,
+            "order": 1,
+            "kpiDetail": {
+              "id": "63320976b7f239ac93c2683e",
+              "kpiId": "kpi14",
+              "kpiName": "Defect Injection Rate",
+              "isDeleted": "False",
+              "defaultOrder": 1,
+              "kpiUnit": "%",
+              "chartType": "line",
+              "showTrend": true,
+              "isPositiveTrend": false,
+              "calculateMaturity": true,
+              "kpiSource": "Jira",
+              "maxValue": "200",
+              "thresholdValue": 10,
+              "kanban": false,
+              "groupId": 2,
+              "kpiInfo": {
+                "definition": "DEFECT INJECTION RATE measures the total number of defects (bugs) detected for a story",
+                "formula": [
+                  {
+                    "lhs": "DIR for a sprint",
+                    "operator": "division",
+                    "operands": [
+                      "No. of defects tagged to all stories closed in a sprint",
+                      "Total no. of stories closed in the sprint"
+                    ]
+                  }
+                ],
+                "details": [
+                  {
+                    "type": "paragraph",
+                    "value": "It is calculated as a ‘Percentage’. Lower the percentage, better is the ‘Quality’"
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "A progress indicator shows trend of defect injection rate between last 2 sprints. A downward trend is considered positive"
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "Maturity of the KPI is calculated based on the average of the last 5 sprints"
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "*If the KPI data is not available for last 5 sprints, the Maturity level will not be shown"
+                  }
+                ],
+                "maturityLevels": [
+                  {
+                    "level": "M5",
+                    "bgColor": "#6cab61",
+                    "range": "25%"
+                  },
+                  {
+                    "level": "M4",
+                    "bgColor": "#AEDB76",
+                    "range": "75-25%"
+                  },
+                  {
+                    "level": "M3",
+                    "bgColor": "#eff173",
+                    "range": "125%-75%"
+                  },
+                  {
+                    "level": "M2",
+                    "bgColor": "#ffc35b",
+                    "range": "175% -125%"
+                  },
+                  {
+                    "level": "M1",
+                    "bgColor": "#F06667",
+                    "range": "> 175%"
+                  }
+                ]
+              },
+              "aggregationCriteria": "average",
+              "trendCalculative": false,
+              "squadSupport": true,
+              "xaxisLabel": "Sprints",
+              "yaxisLabel": "Percentage"
+            },
+            "shown": true
+          }]
+        },
+        {
+          "boardId": 2,
+          "boardName": "Speed",
+          "kpis":[
+            {
+                "kpiId": "kpi40",
+                "kpiName": "Story Count",
+                "isEnabled": true,
+                "order": 1,
+                "kpiDetail": {
+                  "id": "63320976b7f239ac93c2684e",
+                  "kpiId": "kpi40",
+                  "kpiName": "Story Count",
+                  "isDeleted": "False",
+                  "defaultOrder": 17,
+                  "kpiUnit": "Stories",
+                  "chartType": "line",
+                  "showTrend": false,
+                  "isPositiveTrend": true,
+                  "calculateMaturity": false,
+                  "kpiSource": "Jira",
+                  "maxValue": "",
+                  "kanban": false,
+                  "groupId": 1,
+                  "kpiInfo": {
+                    "definition": "STORY COUNT measures the overall work taken in a sprint",
+                    "formula": [
+                      {
+                        "lhs": "No. of stories tagged to a Sprint"
+                      }
+                    ]
+                  },
+                  "aggregationCriteria": "sum",
+                  "trendCalculative": false,
+                  "squadSupport": true,
+                  "xaxisLabel": "Sprints",
+                  "yaxisLabel": "Count"
+                },
+                "shown": true
+              }
+          ]
+        },
+        {
+          "boardId": 3,
+          "boardName": "Quality",
+          "kpis": [     {
+            "kpiId": "kpi14",
+            "kpiName": "Defect Injection Rate",
+            "isEnabled": true,
+            "order": 1,
+            "kpiDetail": {
+              "id": "63320976b7f239ac93c2683e",
+              "kpiId": "kpi14",
+              "kpiName": "Defect Injection Rate",
+              "isDeleted": "False",
+              "defaultOrder": 1,
+              "kpiUnit": "%",
+              "chartType": "line",
+              "showTrend": true,
+              "isPositiveTrend": false,
+              "calculateMaturity": true,
+              "kpiSource": "Jira",
+              "maxValue": "200",
+              "thresholdValue": 10,
+              "kanban": false,
+              "groupId": 2,
+              "kpiInfo": {
+                "definition": "DEFECT INJECTION RATE measures the total number of defects (bugs) detected for a story",
+                "formula": [
+                  {
+                    "lhs": "DIR for a sprint",
+                    "operator": "division",
+                    "operands": [
+                      "No. of defects tagged to all stories closed in a sprint",
+                      "Total no. of stories closed in the sprint"
+                    ]
+                  }
+                ],
+                "details": [
+                  {
+                    "type": "paragraph",
+                    "value": "It is calculated as a ‘Percentage’. Lower the percentage, better is the ‘Quality’"
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "A progress indicator shows trend of defect injection rate between last 2 sprints. A downward trend is considered positive"
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "Maturity of the KPI is calculated based on the average of the last 5 sprints"
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "*If the KPI data is not available for last 5 sprints, the Maturity level will not be shown"
+                  }
+                ],
+                "maturityLevels": [
+                  {
+                    "level": "M5",
+                    "bgColor": "#6cab61",
+                    "range": "25%"
+                  },
+                  {
+                    "level": "M4",
+                    "bgColor": "#AEDB76",
+                    "range": "75-25%"
+                  },
+                  {
+                    "level": "M3",
+                    "bgColor": "#eff173",
+                    "range": "125%-75%"
+                  },
+                  {
+                    "level": "M2",
+                    "bgColor": "#ffc35b",
+                    "range": "175% -125%"
+                  },
+                  {
+                    "level": "M1",
+                    "bgColor": "#F06667",
+                    "range": "> 175%"
+                  }
+                ]
+              },
+              "aggregationCriteria": "average",
+              "trendCalculative": false,
+              "squadSupport": true,
+              "xaxisLabel": "Sprints",
+              "yaxisLabel": "Percentage"
+            },
+            "shown": true
+          }]
+        },
+        {
+          "boardId": 4,
+          "boardName": "Value",
+          "kpis": [   {
+            "kpiId": "kpi118",
+            "kpiName": "Deployment Frequency",
+            "isEnabled": true,
+            "order": 1,
+            "kpiDetail": {
+              "id": "63320976b7f239ac93c26857",
+              "kpiId": "kpi118",
+              "kpiName": "Deployment Frequency",
+              "isDeleted": "False",
+              "defaultOrder": 26,
+              "kpiUnit": "Number",
+              "chartType": "line",
+              "showTrend": true,
+              "isPositiveTrend": true,
+              "calculateMaturity": true,
+              "kpiSource": "Jenkins",
+              "maxValue": "100",
+              "thresholdValue": 0,
+              "kanban": false,
+              "groupId": 1,
+              "kpiInfo": {
+                "definition": "DEPLOYMENT FREQUENCY measures how often code is deployed to production",
+                "formula": [
+                  {
+                    "lhs": "DEPLOYMENT FREQUENCY for a month",
+                    "rhs": "It is calculated as No. of deployments done on a environment in a month"
+                  }
+                ],
+                "details": [
+                  {
+                    "type": "paragraph",
+                    "value": "It is calculated as a 'Count'. Higher the count during a month, more valuable it is for the Business or a Project"
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "A progress indicator shows trend of Deployment frequency between last 2 months. An upward trend is considered positive"
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "Maturity of the KPI is calculated based on the latest value"
+                  }
+                ],
+                "maturityLevels": [
+                  {
+                    "level": "M5",
+                    "bgColor": "#6cab61",
+                    "range": ">10"
+                  },
+                  {
+                    "level": "M4",
+                    "bgColor": "#AEDB76",
+                    "range": "5-10"
+                  },
+                  {
+                    "level": "M3",
+                    "bgColor": "#eff173",
+                    "range": "2-5"
+                  },
+                  {
+                    "level": "M2",
+                    "bgColor": "#ffc35b",
+                    "range": "1-2"
+                  },
+                  {
+                    "level": "M1",
+                    "bgColor": "#F06667",
+                    "range": "<1"
+                  }
+                ]
+              },
+              "kpiFilter": "multiSelectDropDown",
+              "aggregationCriteria": "sum",
+              "trendCalculative": false,
+              "squadSupport": false,
+              "xaxisLabel": "Months",
+              "yaxisLabel": "Count"
+            },
+            "shown": true
+          }]
+        },
+        {
+          "boardId": 5,
+          "boardName": "Iteration",
+          "kpis": [   {
+            "kpiId": "kpi121",
+            "kpiName": "Capacity",
+            "isEnabled": true,
+            "order": 2,
+            "kpiDetail": {
+              "id": "63320976b7f239ac93c2686c",
+              "kpiId": "kpi121",
+              "kpiName": "Capacity",
+              "isDeleted": "False",
+              "defaultOrder": 2,
+              "kpiCategory": "Iteration",
+              "kpiUnit": "Hours",
+              "showTrend": false,
+              "isPositiveTrend": true,
+              "boxType": "1_column",
+              "calculateMaturity": false,
+              "kpiSource": "Jira",
+              "maxValue": "",
+              "kanban": false,
+              "groupId": 8,
+              "kpiInfo": {
+                "details": [
+                  {
+                    "type": "paragraph",
+                    "value": "Planned capacity is the development team's available time represented in Hours."
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "Source of this is KnowHOW"
+                  }
+                ]
+              },
+              "trendCalculative": false,
+              "squadSupport": false,
+              "xaxisLabel": "",
+              "yaxisLabel": ""
+            },
+            "shown": true
+          }]
+        }
+      ],
+      "kanban": [
+        {
+          "boardId": 6,
+          "boardName": "My KnowHOW",
+          "kpis": [   {
+            "kpiId": "kpi55",
+            "kpiName": "Ticket Open vs Closed rate by type",
+            "isEnabled": true,
+            "order": 1,
+            "kpiDetail": {
+              "id": "63320976b7f239ac93c2685a",
+              "kpiId": "kpi55",
+              "kpiName": "Ticket Open vs Closed rate by type",
+              "defaultOrder": 1,
+              "kpiUnit": "Tickets",
+              "chartType": "grouped_column_plus_line",
+              "showTrend": true,
+              "isPositiveTrend": false,
+              "lineLegend": "Closed Tickets",
+              "barLegend": "Open Tickets",
+              "calculateMaturity": false,
+              "kpiSource": "Jira",
+              "kanban": true,
+              "groupId": 1,
+              "kpiInfo": {
+                "definition": "Ticket open vs closed rate by type gives a comparison of new tickets getting raised vs number of tickets getting closed grouped by issue type during a defined period.",
+                "details": [
+                  {
+                    "type": "paragraph",
+                    "value": "This can be filtered based on issue type"
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "If the No. of tickets closed are more than the No. of tickets opened in the latest time period, the KPI is considered having a positive trend."
+                  }
+                ]
+              },
+              "kpiFilter": "multiSelectDropDown",
+              "aggregationCriteria": "sum",
+              "trendCalculation": [
+                {
+                  "type": "Upwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "<"
+                },
+                {
+                  "type": "Neutral",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "="
+                },
+                {
+                  "type": "Downwards",
+                  "lhs": "value",
+                  "operator": ">"
+                }
+              ],
+              "trendCalculative": true,
+              "squadSupport": true,
+              "xaxisLabel": "Weeks",
+              "yaxisLabel": "Count"
+            },
+            "shown": true
+          }]
+        },
+        {
+          "boardId": 7,
+          "boardName": "Speed",
+          "kpis": [
+            {
+                "kpiId": "kpi49",
+                "kpiName": "Ticket Velocity",
+                "isEnabled": true,
+                "order": 1,
+                "kpiDetail": {
+                  "id": "63320976b7f239ac93c26865",
+                  "kpiId": "kpi49",
+                  "kpiName": "Ticket Velocity",
+                  "isDeleted": "False",
+                  "defaultOrder": 12,
+                  "kpiUnit": "SP",
+                  "chartType": "line",
+                  "showTrend": false,
+                  "isPositiveTrend": true,
+                  "calculateMaturity": false,
+                  "kpiSource": "Jira",
+                  "maxValue": "300",
+                  "kanban": true,
+                  "groupId": 1,
+                  "kpiInfo": {
+                    "definition": "Ticket velocity measures the size of tickets (in story points) completed in a defined duration"
+                  },
+                  "aggregationCriteria": "sum",
+                  "trendCalculative": false,
+                  "squadSupport": true,
+                  "xaxisLabel": "Weeks",
+                  "yaxisLabel": "Story Points"
+                },
+                "shown": true
+              }
+          ]
+        },
+        {
+          "boardId": 8,
+          "boardName": "Quality",
+          "kpis": [  {
+            "kpiId": "kpi55",
+            "kpiName": "Ticket Open vs Closed rate by type",
+            "isEnabled": true,
+            "order": 1,
+            "kpiDetail": {
+              "id": "63320976b7f239ac93c2685a",
+              "kpiId": "kpi55",
+              "kpiName": "Ticket Open vs Closed rate by type",
+              "defaultOrder": 1,
+              "kpiUnit": "Tickets",
+              "chartType": "grouped_column_plus_line",
+              "showTrend": true,
+              "isPositiveTrend": false,
+              "lineLegend": "Closed Tickets",
+              "barLegend": "Open Tickets",
+              "calculateMaturity": false,
+              "kpiSource": "Jira",
+              "kanban": true,
+              "groupId": 1,
+              "kpiInfo": {
+                "definition": "Ticket open vs closed rate by type gives a comparison of new tickets getting raised vs number of tickets getting closed grouped by issue type during a defined period.",
+                "details": [
+                  {
+                    "type": "paragraph",
+                    "value": "This can be filtered based on issue type"
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "If the No. of tickets closed are more than the No. of tickets opened in the latest time period, the KPI is considered having a positive trend."
+                  }
+                ]
+              },
+              "kpiFilter": "multiSelectDropDown",
+              "aggregationCriteria": "sum",
+              "trendCalculation": [
+                {
+                  "type": "Upwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "<"
+                },
+                {
+                  "type": "Neutral",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "="
+                },
+                {
+                  "type": "Downwards",
+                  "lhs": "value",
+                  "operator": ">"
+                }
+              ],
+              "trendCalculative": true,
+              "squadSupport": true,
+              "xaxisLabel": "Weeks",
+              "yaxisLabel": "Count"
+            },
+            "shown": true
+          }]
+        },
+        {
+          "boardId": 9,
+          "boardName": "Value",
+          "kpis": [
+            {
+                "kpiId": "kpi74",
+                "kpiName": "Release Frequency",
+                "isEnabled": true,
+                "order": 1,
+                "kpiDetail": {
+                  "id": "63320976b7f239ac93c2686a",
+                  "kpiId": "kpi74",
+                  "kpiName": "Release Frequency",
+                  "isDeleted": "False",
+                  "defaultOrder": 17,
+                  "kpiUnit": "",
+                  "chartType": "line",
+                  "showTrend": true,
+                  "isPositiveTrend": true,
+                  "calculateMaturity": false,
+                  "kpiSource": "Jira",
+                  "maxValue": "300",
+                  "kanban": true,
+                  "groupId": 4,
+                  "kpiInfo": {
+                    "definition": "Release Frequency highlights the number of releases done in a month",
+                    "formula": [
+                      {
+                        "lhs": "Release Frequency for a month",
+                        "rhs": "Number of fix versions in JIRA for a project that have a release date falling in a particular month"
+                      }
+                    ],
+                    "details": [
+                      {
+                        "type": "paragraph",
+                        "value": "It is calculated as a ‘Count’. Higher the Release Frequency, more valuable it is for the Business or a Project"
+                      },
+                      {
+                        "type": "paragraph",
+                        "value": "A progress indicator shows trend of Release Frequency between last 2 months. An upward trend is considered positive"
+                      }
+                    ]
+                  },
+                  "aggregationCriteria": "sum",
+                  "trendCalculative": false,
+                  "squadSupport": false,
+                  "xaxisLabel": "Months",
+                  "yaxisLabel": "Count"
+                },
+                "shown": true
+              }
+          ]
+        },
+        {
+          "boardId": 10,
+          "boardName": "Iteration",
+          "kpis": []
+        }
+      ],
+      "others": [
+        {
+          "boardId": 12,
+          "boardName": "Release",
+          "kpis": [   {
+            "kpiId": "kpi121",
+            "kpiName": "Capacity",
+            "isEnabled": true,
+            "order": 2,
+            "kpiDetail": {
+              "id": "63320976b7f239ac93c2686c",
+              "kpiId": "kpi121",
+              "kpiName": "Capacity",
+              "isDeleted": "False",
+              "defaultOrder": 2,
+              "kpiCategory": "Iteration",
+              "kpiUnit": "Hours",
+              "showTrend": false,
+              "isPositiveTrend": true,
+              "boxType": "1_column",
+              "calculateMaturity": false,
+              "kpiSource": "Jira",
+              "maxValue": "",
+              "kanban": false,
+              "groupId": 8,
+              "kpiInfo": {
+                "details": [
+                  {
+                    "type": "paragraph",
+                    "value": "Planned capacity is the development team's available time represented in Hours."
+                  },
+                  {
+                    "type": "paragraph",
+                    "value": "Source of this is KnowHOW"
+                  }
+                ]
+              },
+              "trendCalculative": false,
+              "squadSupport": false,
+              "xaxisLabel": "",
+              "yaxisLabel": ""
+            },
+            "shown": true
+          }]
+        },
+        {
+          "boardId": 11,
+          "boardName": "Backlog",
+          "kpis": [
+            {
+              "kpiId": "kpi79",
+              "kpiName": "Test Cases Without Story Link",
+              "isEnabled": true,
+              "order": 1,
+              "kpiDetail": {
+                "id": "63320976b7f239ac93c26874",
+                "kpiId": "kpi79",
+                "kpiName": "Test Cases Without Story Link",
+                "isDeleted": "False",
+                "defaultOrder": 1,
+                "kpiCategory": "Backlog",
+                "kpiUnit": "",
+                "chartType": "progress-bar",
+                "showTrend": false,
+                "isPositiveTrend": false,
+                "calculateMaturity": false,
+                "kpiSource": "Zypher",
+                "maxValue": "5000",
+                "kanban": false,
+                "groupId": 2,
+                "kpiInfo": {
+                  "formula": [
+                    {
+                      "lhs": "Testcases without story link",
+                      "rhs": "# of total non-regression test cases without story link"
+                    }
+                  ],
+                  "details": [
+                    {
+                      "type": "paragraph",
+                      "value": "This KPI works only at project level. Graph shows data of the project with the latest sprint from the selected filters."
+                    }
+                  ]
+                },
+                "trendCalculative": false,
+                "squadSupport": false,
+                "xaxisLabel": "",
+                "yaxisLabel": ""
+              },
+              "shown": true
+            },
+            {
+              "kpiId": "kpi80",
+              "kpiName": "Defects Without Story Link",
+              "isEnabled": true,
+              "order": 2,
+              "kpiDetail": {
+                "id": "63320976b7f239ac93c26875",
+                "kpiId": "kpi80",
+                "kpiName": "Defects Without Story Link",
+                "isDeleted": "False",
+                "defaultOrder": 2,
+                "kpiCategory": "Backlog",
+                "kpiUnit": "",
+                "chartType": "progress-bar",
+                "showTrend": false,
+                "isPositiveTrend": false,
+                "calculateMaturity": false,
+                "kpiSource": "Jira",
+                "maxValue": "500",
+                "kanban": false,
+                "groupId": 2,
+                "kpiInfo": {
+                  "formula": [
+                    {
+                      "lhs": "Defect Count Without Story Link",
+                      "rhs": "# of total defects without Story link"
+                    }
+                  ],
+                  "details": [
+                    {
+                      "type": "paragraph",
+                      "value": "This Kpi works only on Project level."
+                    }
+                  ]
+                },
+                "kpiFilter": "multiSelectDropDown",
+                "trendCalculative": false,
+                "squadSupport": false,
+                "xaxisLabel": "",
+                "yaxisLabel": ""
+              },
+              "shown": true
+            },
+            {
+              "kpiId": "kpi127",
+              "kpiName": "Production Defects Ageing",
+              "isEnabled": true,
+              "order": 3,
+              "kpiDetail": {
+                "id": "63320976b7f239ac93c26876",
+                "kpiId": "kpi127",
+                "kpiName": "Production Defects Ageing",
+                "isDeleted": "False",
+                "defaultOrder": 3,
+                "kpiCategory": "Backlog",
+                "kpiUnit": "Number",
+                "chartType": "line",
+                "showTrend": false,
+                "isPositiveTrend": false,
+                "calculateMaturity": false,
+                "kpiSource": "Jira",
+                "kanban": false,
+                "groupId": 2,
+                "kpiInfo": {
+                  "definition": "Production Defects ageing KPI groups all the production defects which are not closed from those created in last 15 months in standard buckets that are  <1 Month, 1-3 Month, 3-6 Month, 6-12 Month, > 12 Month. These defects can be filtered based on 'Priority'. The KPI measures the effectiveness of Defect Backlog prioritization and is useful for Product Owner, Scrum Master and the development team"
+                },
+                "kpiFilter": "multiSelectDropDown",
+                "aggregationCriteria": "sum",
+                "trendCalculative": false,
+                "squadSupport": false,
+                "xaxisLabel": "Months",
+                "yaxisLabel": "Count"
+              },
+              "shown": true
+            }
+          ]
+        },
+        {
+          "boardId": 12,
+          "boardName": "Kpi Maturity",
+          "kpis": [
+            {
+              "kpiId": "kpi989",
+              "kpiName": "Kpi Maturity",
+              "isEnabled": true,
+              "order": 1,
+              "kpiDetail": {
+                "id": "63320976b7f239ac93c26877",
+                "kpiId": "kpi989",
+                "kpiName": "Kpi Maturity",
+                "isDeleted": "False",
+                "defaultOrder": 1,
+                "kpiCategory": "Kpi Maturity",
+                "showTrend": false,
+                "calculateMaturity": false,
+                "trendCalculative": false,
+                "squadSupport": false
+              },
+              "shown": true
+            }
+          ]
+        }
+      ]
+    }
+  }

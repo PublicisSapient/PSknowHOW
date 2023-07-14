@@ -1,0 +1,18 @@
+[
+  {
+    "id": "61ee308fb665a32d954da08a",
+    "type": "GitHub",
+    "connectionName": "Test GitHub",
+    "cloudEnv": false,
+    "isOAuth": false,
+    "offline": false,
+    "createdAt": "2022-01-24T10:22:31",
+    "updatedAt": "2022-01-24T12:09:26",
+    "createdBy": "SUPERADMIN",
+    "connPrivate": true,
+    "updatedBy": "SUPERADMIN",
+    "connectionUsers": [
+      "SUPERADMIN"
+    ]
+  }
+]

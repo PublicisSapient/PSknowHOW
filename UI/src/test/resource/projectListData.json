@@ -1,0 +1,369 @@
+{
+    "message": "Fetched successfully",
+    "success": true,
+    "data": [
+      {
+        "id": "631f394dcfef11709d7ddc7b",
+        "projectName": "MAP",
+        "createdAt": "2022-09-12T19:21:09",
+        "kanban": false,
+        "hierarchy": [
+          {
+            "hierarchyLevel": {
+              "level": 1,
+              "hierarchyLevelId": "country",
+              "hierarchyLevelName": "Country"
+            },
+            "value": "India"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 2,
+              "hierarchyLevelId": "state",
+              "hierarchyLevelName": "State"
+            },
+            "value": "Haryana"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 3,
+              "hierarchyLevelId": "city",
+              "hierarchyLevelName": "City"
+            },
+            "value": "Gurgaon"
+          }
+        ],
+        "isKanban": false
+      },
+      {
+        "id": "631f45d8cfef11709d7ddcda",
+        "projectName": "TestCanada",
+        "createdAt": "2022-09-12T20:14:40",
+        "kanban": false,
+        "hierarchy": [
+          {
+            "hierarchyLevel": {
+              "level": 1,
+              "hierarchyLevelId": "country",
+              "hierarchyLevelName": "Country"
+            },
+            "value": "Canada"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 2,
+              "hierarchyLevelId": "state",
+              "hierarchyLevelName": "State"
+            },
+            "value": "Ontario"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 3,
+              "hierarchyLevelId": "city",
+              "hierarchyLevelName": "City"
+            },
+            "value": "Ottawa"
+          }
+        ],
+        "isKanban": false
+      },
+      {
+        "id": "63202ccecfef11709d7ddef5",
+        "projectName": "Test4",
+        "createdAt": "2022-09-13T12:40:06",
+        "kanban": false,
+        "hierarchy": [
+          {
+            "hierarchyLevel": {
+              "level": 1,
+              "hierarchyLevelId": "country",
+              "hierarchyLevelName": "Country"
+            },
+            "value": "USA"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 2,
+              "hierarchyLevelId": "state",
+              "hierarchyLevelName": "State"
+            },
+            "value": "Washinton"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 3,
+              "hierarchyLevelId": "city",
+              "hierarchyLevelName": "City"
+            },
+            "value": "Remond"
+          }
+        ],
+        "isKanban": false
+      },
+      {
+        "id": "6321d97dcf006863f1de2c9c",
+        "projectName": "TexasTest1",
+        "createdAt": "2022-09-14T19:09:09",
+        "kanban": false,
+        "hierarchy": [
+          {
+            "hierarchyLevel": {
+              "level": 1,
+              "hierarchyLevelId": "country",
+              "hierarchyLevelName": "Country"
+            },
+            "value": "USA"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 2,
+              "hierarchyLevelId": "state",
+              "hierarchyLevelName": "State"
+            },
+            "value": "Texas"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 3,
+              "hierarchyLevelId": "city",
+              "hierarchyLevelName": "City"
+            },
+            "value": "Houston"
+          }
+        ],
+        "isKanban": false
+      },
+      {
+        "id": "6321dd14cf006863f1de2caf",
+        "projectName": "TexasTest3",
+        "createdAt": "2022-09-14T19:24:28",
+        "kanban": false,
+        "hierarchy": [
+          {
+            "hierarchyLevel": {
+              "level": 1,
+              "hierarchyLevelId": "country",
+              "hierarchyLevelName": "Country"
+            },
+            "value": "USA"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 2,
+              "hierarchyLevelId": "state",
+              "hierarchyLevelName": "State"
+            },
+            "value": "Texas"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 3,
+              "hierarchyLevelId": "city",
+              "hierarchyLevelName": "City"
+            },
+            "value": "Houston"
+          }
+        ],
+        "isKanban": false
+      },
+      {
+        "id": "63274333106fed5ba66ad748",
+        "projectName": "FieldMappingTest2",
+        "createdAt": "2022-09-18T21:41:31",
+        "kanban": false,
+        "hierarchy": [
+          {
+            "hierarchyLevel": {
+              "level": 1,
+              "hierarchyLevelId": "country",
+              "hierarchyLevelName": "Country"
+            },
+            "value": "Canada"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 2,
+              "hierarchyLevelId": "state",
+              "hierarchyLevelName": "State"
+            },
+            "value": "Ontario"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 3,
+              "hierarchyLevelId": "city",
+              "hierarchyLevelName": "City"
+            },
+            "value": "Ottawa"
+          }
+        ],
+        "isKanban": false
+      },
+      {
+        "id": "6327fcb2106fed5ba66ad750",
+        "projectName": "FieldMappingTest",
+        "createdAt": "2022-09-19T10:52:58",
+        "kanban": false,
+        "hierarchy": [
+          {
+            "hierarchyLevel": {
+              "level": 1,
+              "hierarchyLevelId": "country",
+              "hierarchyLevelName": "Country"
+            },
+            "value": "Canada"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 2,
+              "hierarchyLevelId": "state",
+              "hierarchyLevelName": "State"
+            },
+            "value": "Ontario"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 3,
+              "hierarchyLevelId": "city",
+              "hierarchyLevelName": "City"
+            },
+            "value": "Ottawa"
+          }
+        ],
+        "isKanban": false
+      },
+      {
+        "id": "6328087d22a86a5df15e53e6",
+        "projectName": "FieldMappingTest3",
+        "createdAt": "2022-09-19T11:43:17",
+        "kanban": false,
+        "hierarchy": [
+          {
+            "hierarchyLevel": {
+              "level": 1,
+              "hierarchyLevelId": "country",
+              "hierarchyLevelName": "Country"
+            },
+            "value": "Canada"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 2,
+              "hierarchyLevelId": "state",
+              "hierarchyLevelName": "State"
+            },
+            "value": "Ontario"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 3,
+              "hierarchyLevelId": "city",
+              "hierarchyLevelName": "City"
+            },
+            "value": "Ottawa"
+          }
+        ],
+        "isKanban": false
+      },
+      {
+        "id": "632814ad22a86a5df15e53ee",
+        "projectName": "KnowHOWKanban",
+        "createdAt": "2022-09-19T12:35:17",
+        "kanban": true,
+        "hierarchy": [
+          {
+            "hierarchyLevel": {
+              "level": 1,
+              "hierarchyLevelId": "country",
+              "hierarchyLevelName": "Country"
+            },
+            "value": "India"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 2,
+              "hierarchyLevelId": "state",
+              "hierarchyLevelName": "State"
+            },
+            "value": "Haryana"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 3,
+              "hierarchyLevelId": "city",
+              "hierarchyLevelName": "City"
+            },
+            "value": "Gurgaon"
+          }
+        ],
+        "isKanban": true
+      },
+      {
+        "id": "6328152622a86a5df15e53f9",
+        "projectName": "KnowHOWKanban2",
+        "createdAt": "2022-09-19T12:37:18",
+        "kanban": true,
+        "hierarchy": [
+          {
+            "hierarchyLevel": {
+              "level": 1,
+              "hierarchyLevelId": "country",
+              "hierarchyLevelName": "Country"
+            },
+            "value": "India"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 2,
+              "hierarchyLevelId": "state",
+              "hierarchyLevelName": "State"
+            },
+            "value": "Haryana"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 3,
+              "hierarchyLevelId": "city",
+              "hierarchyLevelName": "City"
+            },
+            "value": "Gurgaon"
+          }
+        ],
+        "isKanban": true
+      },
+      {
+        "id": "6335497f67af3f41656b7b42",
+        "projectName": "Test44",
+        "createdAt": "2022-09-29T13:00:07",
+        "kanban": false,
+        "hierarchy": [
+          {
+            "hierarchyLevel": {
+              "level": 1,
+              "hierarchyLevelId": "country",
+              "hierarchyLevelName": "Country"
+            },
+            "value": "Canada"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 2,
+              "hierarchyLevelId": "state",
+              "hierarchyLevelName": "State"
+            },
+            "value": "Ontario"
+          },
+          {
+            "hierarchyLevel": {
+              "level": 3,
+              "hierarchyLevelId": "city",
+              "hierarchyLevelName": "City"
+            },
+            "value": "Ottawa"
+          }
+        ],
+        "isKanban": false
+      }
+    ]
+  }

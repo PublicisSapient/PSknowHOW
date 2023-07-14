@@ -1,0 +1,60 @@
+[
+    {
+        "kpiId": "kpi84",
+        "kpiName": "Mean Time To Merge",
+        "value": [
+            {
+                "branchName": "master -> Test1repo -> Aflac MAX Phase III",
+                "weekWiseData": [
+                    {
+                        "week": "2021-11-08 to 2021-11-14",
+                        "time": 2,
+						"unit":"Hours",
+                        "hoverValue": {
+                            "Aflac MAX Phase III": "2 hrs"
+                        }
+                    }
+                ]
+            },
+            {
+                "branchName": "master -> Test1repo -> Aflac MAX Phase II",
+                "weekWiseData": [
+                    {
+                        "week": "2021-11-15 to 2021-11-30",
+                        "time": 4,
+						"unit":"Hours",
+                        "hoverValue": {
+                            "Aflac MAX Phase III": "4 hrs"
+                        }
+                    }
+                ]
+            },
+            {
+                "branchName": "aggregated",
+                "weekWiseData": [
+                    {
+                        "week": "2021-11-08 to 2021-11-14",
+                        "time": 2,
+						"unit":"Hours",
+                        "hoverValue": {
+                            "Aflac MAX Phase III": "2 hrs"
+                        }
+                    }
+                ]
+            }
+        ],
+        "unit": "Hours",
+        "maxValue": "10",
+        "chartType": "",
+        "id": "619cd5b44c088ff183c23899",
+        "isDeleted": "False",
+        "kpiCategory": "Speed",
+        "kpiUnit": "Hours",
+        "kanban": false,
+        "kpiSource": "BitBucket",
+        "thresholdValue": 55,
+        "maturityValue": "0",
+        "maturityRange": [],
+        "groupId": 1
+    }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "5ef165680ccc84d65fa295d2",
+    "isActive": true,
+    "errors": [],
+    "processorId": "5eeb595c0cccfd093afd2b43",
+    "updatedTime": 1592878560320,
+    "toolDetailsMap": {
+      "apiVersion": "5.1",
+      "scm": "AzureRepository",
+      "repositoryName": "testRepo",
+      "branch": "master",
+      "userID": null
+    },
+    "version": 2,
+    "toolConfigId": "5eeb00c3c4cf29def8a6c359"
+  }
+]

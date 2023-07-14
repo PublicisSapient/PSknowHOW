@@ -1,0 +1,35 @@
+{
+  "count": 3,
+  "value": [
+    {
+      "id": "e6ad509e-9ffb-41ed-bb6e-1c5e17eab4f1",
+      "name": "Sprint1_June1_June12",
+      "path": "TEST\\Sprint1_June1_June12",
+      "attributes": {
+      },
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/a6d538e6-c0c5-40cb-a914-7911192a93da/_apis/work/teamsettings/iterations/e6ad509e-9ffb-41ed-bb6e-1c5e17eab4f1"
+    },
+    {
+      "id": "b26bac91-77cf-40a4-9517-5d293aff6f54",
+      "name": "Sprint2_June15_June26",
+      "path": "TEST\\Sprint2_June15_June26",
+      "attributes": {
+        "startDate": "2020-06-15T00:00:00Z",
+        "finishDate": "2020-06-26T00:00:00Z",
+        "timeFrame": "past"
+      },
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/a6d538e6-c0c5-40cb-a914-7911192a93da/_apis/work/teamsettings/iterations/b26bac91-77cf-40a4-9517-5d293aff6f54"
+    },
+    {
+      "id": "7fcbef86-4047-49f2-bf04-92b529e8c69d",
+      "name": "Sprint3_June29_July10",
+      "path": "TEST\\Sprint3_June29_July10",
+      "attributes": {
+        "startDate": "2020-06-29T00:00:00Z",
+        "finishDate": "2020-07-10T00:00:00Z",
+        "timeFrame": "current"
+      },
+      "url": "https://test.com/testUser/b08688aa-7449-4b13-bc51-68bf67326d54/a6d538e6-c0c5-40cb-a914-7911192a93da/_apis/work/teamsettings/iterations/7fcbef86-4047-49f2-bf04-92b529e8c69d"
+    }
+  ]
+}

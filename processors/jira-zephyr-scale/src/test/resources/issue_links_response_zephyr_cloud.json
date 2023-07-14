@@ -1,0 +1,7 @@
+{
+  "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations,customfield_10010.requestTypePractice",
+  "id": "66229",
+  "self": "https://test.com/rest/api/2/issue/66229",
+  "key": "TEST-6659",
+  "fields": ""
+}

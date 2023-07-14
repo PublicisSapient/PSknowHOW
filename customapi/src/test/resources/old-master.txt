@@ -1,0 +1,517 @@
+[ 
+{ 
+    "groupName" : "Financials",
+    "kpiName" : "Contractual Maturity",
+    "description" : "How are we selling to the clients\n\n\nSTAGE - 2 KPI",
+    "m1Desc" : "Contract Type – FTFP/T&M/ Retainer\nMethodology – Non-Agile\nPayment Terms – Milestone (Standard)\nOutcome driven clauses - None\n\nActual revenue % : Nil",
+    "m2Desc" : "Contract Type – FTFP/T&M/ Retainer\nMethodology – Hybrid Agile\nPayment Terms – – Milestone (Standard)\nOutcome driven clauses - None\n\nActual revenue %  : <20%",
+    "m3Desc" : "Contract Type – FTFP/ T&M/ Retainer\nMethodology – Hybrid Agile / Agile\nPayment Terms – – Milestone (Standard)\nOutcome driven clauses - None\n\nActual revenue % -20-40%",
+    "m4Desc" : "Contract Type –Scrum Capacity Based\nMethodology –Agile\nPayment Terms – Sprint delivery\nOutcome driven clauses - None\n\nActual revenue % : 40-60%",
+    "m5Desc" : "Contract Type – Outcome Based\nMethodology – Pure  Agile\nPayment Terms – Linked to outcomes\n\n\n\nActual revenue % : >60%",
+    "shortName" : "Contracts"
+},
+{    "groupName" : "Financials",
+    "kpiName" : "Operations  new Dashboard\n",
+    "description" : "Measured by checking the  compliance to set of  standard operations practices – Financial forecasting, Invoices & Collections tracking, Opportunity tracker etc.",
+    "m1Desc" : "Compliance Score <=2",
+    "m2Desc" : "Compliance Score 2 – 3",
+    "m3Desc" : "Compliance Score 3 - 3.5",
+    "m4Desc" : "Compliance Score 3.5 - 4",
+    "m5Desc" : "Compliance Score > 4",
+    "shortName" : "Acount Operations"
+}
+
+,
+{
+   
+    "groupName" : "Financials",
+    "kpiName" : "Gross Margins",
+    "description" : "",
+    "m1Desc" : "GM – SAM >= -8%",
+    "m2Desc" : "GM – SAM >= -3% - < -8%",
+    "m3Desc" : "GM – SAM > -3% - <= 3%",
+    "m4Desc" : "GM – SAM  > 3% - <= 8%",
+    "m5Desc" : "GM – SAM  > 8%",
+    "shortName" : "Margins"
+}
+
+,
+{
+   
+    "groupName" : "Financials",
+    "kpiName" : "Delivery Leverage Model",
+    "description" : "Oversight – anyone in team not burning story points needed for a feature to be delivered to production",
+    "m1Desc" : "Oversight / Total Team ratio > 25%",
+    "m2Desc" : "Oversight / Total Team ratio >= 20% - < 25%",
+    "m3Desc" : "Oversight / Total Team ratio >= 15% - < 20%",
+    "m4Desc" : "Oversight / Total Team ratio >= 12% - < 15%",
+    "m5Desc" : "Oversight / Total Team ratio < 12%",
+    "shortName" : "Leverage Model\n"
+}
+
+,
+{
+   
+    "groupName" : "Ways of Working",
+    "kpiName" : "Project Methodology",
+    "description" : "How we are delivering the work to our clients",
+    "m1Desc" : "Sequential development\n\n\n\n\n\nScore : Sequential\n",
+    "m2Desc" : "Iterative Development\n\n\n\n\n\nScore : Iterative\n",
+    "m3Desc" : "Hybrid-Agile\n\n\n\n\n\nScore : Hybrid-Agile\n",
+    "m4Desc" : "Distributed Agile\nDistributed teams have their own Agile ceremonies\nAgile PODs are usually distributed by Geo\n\nScore : Distributed Agile",
+    "m5Desc" : "Optimized Agile \nOne team \nAgile PODs are distributed by features\n\n\nScore : Optimized Agile\n",
+    "shortName" : "Methodology\n"
+}
+
+,
+{
+   
+    "groupName" : "Ways of Working",
+    "kpiName" : "Testing  Methodology",
+    "description" : "How we are shifting our testing to the left in SDLC",
+    "m1Desc" : "Waterfall\nTesting after development completion\n\n\n\nScore : Waterfall\n",
+    "m2Desc" : "TDD - Iterative and Incremental \nTesting after each iteration followed by Integration testing and UAT & markets testing\n\nScore : TDD\n",
+    "m3Desc" : "FDD - Sprint based testing\nTesting within each sprint.\nHardening at then end followed by UAT and markets testing\n\nScore : FDD\n",
+    "m4Desc" : "BDD – In Sprint\nTesting based on acceptance criteria\nSprints certified by PO\nUAT at the end\n\nScore : BDD\n",
+    "m5Desc" : "BDD + In Sprint UAT\nTesting based on acceptance criteria\nSprints certified by PO & markets\n\n\nScore : BDD + In-Sprint UAT",
+    "shortName" : "Testing\n"
+}
+
+,
+{
+    "groupName" : "Ways of Working",
+    "kpiName" : "Release Cadence",
+    "description" : "How fast are we deploying a release to Production",
+    "m1Desc" : "6 Months\n\n\nScore : <20%\n",
+    "m2Desc" : "Quarterly\n\n\nScore : 20 – 40%\n",
+    "m3Desc" : "Monthly\n\n\nScore : 40 – 60%\n",
+    "m4Desc" : "Sprint (<= 3weeks)\n\n\nScore : 60 – 80%\n",
+    "m5Desc" : "Sprint (<= 2weeks)\n\n\nScore : >80%\n",
+    "shortName" : "Release Frequency\n"
+}
+
+,
+{
+    
+    "groupName" : "Ways of Working",
+    "kpiName" : "Team's ability to respond to change",
+    "description" : "Time it takes to accommodate change in scope within ongoing development\n",
+    "m1Desc" : "Development Sprint + 4(or more)\n\n\n\nScore : <20%\n",
+    "m2Desc" : "Development Sprint + 3\n\n\n\nScore : 20 – 40%\n",
+    "m3Desc" : "Development Sprint + 2\n\n\n\nScore : 40 – 60%\n",
+    "m4Desc" : "Development Sprint + 1\n\n\n\nScore : 60 – 80%\n",
+    "m5Desc" : "Within Development Sprint\n\n\n\nScore : >80%\n",
+    "shortName" : "Change Response\n"
+}
+
+,
+{
+   
+    "groupName" : "Ways of Working",
+    "kpiName" : "Team Structure",
+    "description" : "How is our team structured?",
+    "m1Desc" : "Traditional (Onshore & GDD teams) \n\n\n\n\n\nScore : NIL\n",
+    "m2Desc" : "Mixed (mix of traditional and engineering set-up)\n\n\n\n\nScore : 0 – 30%\n",
+    "m3Desc" : "Mixed (mix of traditional and engineering set-up)\nTeam works with defined DoR & DoD accountability\n\n\nScore : 30 – 50%\n",
+    "m4Desc" : "Engineering Team Structure\nEngineering Lead, Prog Director, PE teams set-up by PODs\nTeam works with DoR & DoD \n\n\nScore : 50 – 80%\n",
+    "m5Desc" : "Engineering Team Structure\nEngineering Lead, Prog Director, PE teams set-up by PODs\nTeam works with defined DoR & DoD accountability\n\nScore : > 80%\n",
+    "shortName" : "Team Structure\n\n"
+}
+
+,
+{
+   
+    "groupName" : "Ways of Working",
+    "kpiName" : "Backlog Management",
+    "description" : "Has the complete scope translated into a backlog?",
+    "m1Desc" : "Backlog is non-existent, incomplete or poorly managed. User stories are not used\n\n\n\n\n\nScore : NIL\n",
+    "m2Desc" : "Backlog is maintained with most user stories managed and tracked via backlog. \nUser Stories are not adhering to best practices (INVEST is not followed)\n\n\n\nScore : 0 -  20%\n",
+    "m3Desc" : "All user stories are defined, shaped, managed and tracked using the backlog. \nBacklog is well structured with stories are written with INVEST principle.\n\n\n\n\nScore : 20 – 40 %\n",
+    "m4Desc" : "Backlog expands to include work related to product design, shaping, development, user experience, release management etc.\nEPIC has a business value identified\n\n\n\nScore : 40 – 60%\n",
+    "m5Desc" : "All program work is funneled through a single, ordered, mixed backlog consisting of stories/tasks across business change, technology enablers, customer experience and user stories for journey.\nEach user story had a business value identified\n \nScore : >80%\n",
+    "shortName" : "Backlog Mgmt.\n"
+}
+
+,
+{
+   
+    "groupName" : "Ways of Working",
+    "kpiName" : "Metrics Driven Development",
+    "description" : "How are we complying to the engineering, productivity, quality and value KPI’s (Speedy)",
+    "m1Desc" : "Engineering Metrics Compliance  score < 1",
+    "m2Desc" : "Engineering Metrics Compliance  score : 1 - 2",
+    "m3Desc" : "Engineering Metrics Compliance  score : 2 - 3.25",
+    "m4Desc" : "Engineering Metrics Compliance  score : 3.25 - 4",
+    "m5Desc" : "Engineering Metrics Compliance  score > 4",
+    "shortName" : "Speedy\n"
+}
+
+,
+{
+    
+    "groupName" : "Ways of Working",
+    "kpiName" : "PM Tools & Process Maturity",
+    "description" : "How mature are we in usage of PM tools across the project life-cycle. Are we using all the prescribed DOJO tools",
+    "m1Desc" : "Compliance Score <=2",
+    "m2Desc" : "Compliance Score 2 – 3",
+    "m3Desc" : "Compliance Score 3 - 3.5",
+    "m4Desc" : "Compliance Score 3.5 - 4",
+    "m5Desc" : "Compliance Score > 4",
+    "shortName" : "Tools & Process\n"
+}
+
+,
+{
+   
+    "groupName" : "Ways of Working",
+    "kpiName" : "Team Awareness",
+    "description" : "Regulation and compliance framework",
+    "m1Desc" : "Regulation & compliance documentation is not available\n\n\n\nTeam Awareness - NIL\n",
+    "m2Desc" : "Regulation & compliance documentation is available in various sources\n\n\nTeam awareness – LOW (<50%)\n",
+    "m3Desc" : "Regulation & compliance documentation is available centrally\n\n\nTeam awareness – Medium (50 – 75%)\n",
+    "m4Desc" : "Regulation & compliance documentation is available centrally\n\n\nTeam awareness – High (75 – 100%)\n",
+    "m5Desc" : "Regulation & compliance documentation is available centrally\n\n\nTeam awareness – No Exception (100%)\n",
+    "shortName" : "Compliance"
+}
+
+,
+{
+    "groupName" : "Ways of Working",
+    "kpiName" : "Innovation",
+    "description" : "What is our process for innovation at the account level",
+    "m1Desc" : "No structured process for innovation\n\n\n\n\nAdoption of ideas by client - NIL\n",
+    "m2Desc" : "Multiple processes within team. \nNo consistent way\n\n\n\nAdoption of ideas by client < 20%\n",
+    "m3Desc" : "A consistent process is defined but not followed regularly. \nNot measured for success\n\n\nAdoption of ideas by client : 20 – 35%\n",
+    "m4Desc" : "A consistent process is defined & followed regularly. \nOutcomes can be measured\n\n\nAdoption of ideas by client : 35 – 50%\n",
+    "m5Desc" : "A joint innovation team with client is set-up where ideas are added to the backlog\nOutcomes are always measured\n\nAdoption of ideas by client :  > 50%\n",
+    "shortName" : "Innovation\n"
+}
+
+,
+{
+   
+    "groupName" : "People",
+    "kpiName" : "Engineering Competency",
+    "description" : "How many people in the account are aligned to the new engineering competencies",
+    "m1Desc" : "Score : <20%",
+    "m2Desc" : "Score : 20 – 30%",
+    "m3Desc" : "Score : 30 – 40%",
+    "m4Desc" : "Score : 40 – 50%",
+    "m5Desc" : "Score :  > 50%",
+    "shortName" : "Engg. Competency\n"
+}
+
+,
+{
+   
+    "groupName" : "People",
+    "kpiName" : "Trainings & Certification",
+    "m1Desc" : "People are not attending any trainings / certification. There is a lack of motivation to grow their skills\n\n\nScore : <20%\n",
+    "m2Desc" : "People are spending less than 5% of their time on skill enablement (Training / Certification)\n\n\nScore : 20 – 30%\n",
+    "m3Desc" : "People are spending 5 - 10% of their time on skill enablement (Training / Certification)\n\n\nScore : 30 – 40%\n",
+    "m4Desc" : "People are spending 10 - 15% of their time on skill enablement (Training / Certification)\n\n\nScore : 40 – 50%\n",
+    "m5Desc" : "People have a high desire to extend their skills and spending more than 20% of their time in trainings & learnings\n\n\nScore : > 50%\n",
+    "shortName" : "Trainings & Cert."
+}
+
+,
+{
+    
+    "groupName" : "People",
+    "kpiName" : "Rewards and Recognition",
+    "m1Desc" : "There is no well-defined rewards and recognition framework and the R&Rs are not happening on a regular basis. \nIndividual performance measures are not aligned to the outcomes of work. \n\n\n\n\nR&R Frequency – Adhoc / Quarterly or half-yearly\nR&R Criteria – Subjective / not KPI based\n",
+    "m2Desc" : "There is a well-defined rewards and recognition framework and the R&Rs are happening more regularly. \nR&R's are still decided by the project leads based on subjective evaluation/nominations. \nIndividual performance measures are still not aligned to the outcomes of work. \n\nR&R Frequency – Monthly or twice a quarter\nR&R Criteria – Subjective / not KPI based\n",
+    "m3Desc" : "The rewards and recognition framework is now linked to more objective evaluation & happen monthly\nThe evaluation criteria is a mix of KPI’s as well as subjective (people nominating individuals)\n\n\n\n\nR&R Frequency – Monthly\nR&R Criteria – Somewhat Objective & KPI ‘s are also used\n",
+    "m4Desc" : "There is a well defined rewards and recognition framework which is directly linked to the KPI’s\nThe recognition is done with each sprint (2 – 3 weeks)\n\n\n\n\nR&R Frequency – Every Sprint\nR&R Criteria –  Based on KPI’s\n",
+    "m5Desc" : "There is a well defined rewards and recognition framework which is directly linked to the KPI’s\nThe recognition is done with each sprint (1 –2 weeks)\nInnovation is a key factor considered in the recognition framework\n\n\nR&R Frequency – Every Sprint\nR&R Criteria –  KPI Based and takes into factor the accumulated point based system e.g. bonusly)\n",
+    "shortName" : "R&R"
+}
+
+,
+{
+    
+    "groupName" : "People",
+    "kpiName" : "Employee Satisfaction",
+    "description" : "Measured by a set of standard questions on which we seek feedback (could extend DFA or a separate survey for this)",
+    "m1Desc" : "ESAT <=2",
+    "m2Desc" : "ESAT : 2 – 3",
+    "m3Desc" : "ESAT : 3 - 3.5",
+    "m4Desc" : "ESAT : 3.5 - 4",
+    "m5Desc" : "ESAT > 4",
+    "shortName" : "ESAT\n"
+}
+,
+{
+    
+    "groupName" : "People",
+    "kpiName" : "Employee Attrition Rate",
+    "m1Desc" : "Attrition Rate >= 25%",
+    "m2Desc" : "Attrition Rate  =15 -  20%",
+    "m3Desc" : "Attrition Rate  = 10 - 15%",
+    "m4Desc" : "Attrition Rate  = 5 - 10%",
+    "m5Desc" : "Attrition Rate  < 5%",
+    "shortName" : "Attrition Rate"
+}
+
+,
+{
+   
+    "groupName" : "People",
+    "kpiName" : "Diversity",
+    "m1Desc" : "% Women < 5%",
+    "m2Desc" : "% Women  = 5 -  10%",
+    "m3Desc" : "% Women  = 10 - 15%",
+    "m4Desc" : "% Women  = 15 - 25%",
+    "m5Desc" : "% Women>25%",
+    "shortName" : "Diversity"
+}
+
+,
+{
+    
+    "groupName" : "Engineering",
+    "kpiName" : "Strategy and Vision",
+    "description" : "STAGE - 2  KPI",
+    "m1Desc" : "No defined specific  strategy articulating 1. Definition 2. Roadmap 3. Enterprise Mobile Strategy\nMinimal, or implicit linkage to business strategies or business drivers. \n\n\n\n\nCompliance Score <=2\n",
+    "m2Desc" : "Strategy is vaguely defined but rarely followed as a process,\nNo detailed procedures of validating strategy adherence. \n\n\n\n\n\nCompliance Score : 2- 2.5 \n",
+    "m3Desc" : "Documented strategy, detailed procedures, process and guidance exist. \n\n\n\n\n\n\n\nCompliance Score : 2.5 - 3 \n",
+    "m4Desc" : "Documented , approved, communicated, and implemented enterprise strategy with a process defined for change management \n\n\n\n\n\n\nCompliance Score : 3 – 4\n",
+    "m5Desc" : "Concerted efforts to optimize and continuously improve to upcoming market trend and clearly define process to communicate downstream thru the organization.\n\n\n\n\nCompliance Score : > 4\n",
+    "shortName" : "Tech. Strategy"
+}
+
+,
+{
+  
+    "groupName" : "Engineering",
+    "kpiName" : "Overall Architecture",
+    "description" : "Overall enterprise architecture maturity",
+    "m1Desc" : "Single Consolidated Platform(s) defined\nApplications follow their own architecture style, no common framework , pattern components and tech stack and high level design documented and shared with team \n\n\n\n\n\nCompliance Score <=2\n",
+    "m2Desc" : "Module/Layered Based Architecture\nDesign , framework  and Architecture in place \nDocumentation for Modular Based Architecture is in place [physically separated modules]\nViewpoints & Perspectives defined partially\n\n\n\nCompliance Score : 2- 2.5 \n",
+    "m3Desc" : "Responsive  Architecture\nConsolidated core for all platforms\nDesign patterns are implemented and dependencies minimized.\nLayered based non-dependent architecture defined.\nViewpoints & Perspectives defined\n\n\n\nCompliance Score : 2.5 - 3 \n",
+    "m4Desc" : "Business Empowerment over capabilities/services i.e. CMS, business rules, flows, parameter to support quick time to market and minimized downtime \nViewpoints & Perspectives managed\n\n\n\n\n\nCompliance Score : 3 – 4\n",
+    "m5Desc" : "Architecture process metrics are used to optimize and drive business linkages. \nBusiness involved in the continuous process improvements of IT architecture.\nArchitecture documents are referenced for any architectural refinements and trainings across organization for every IT-related business decision.\nViewpoints & Perspectives optimized\n\nCompliance Score : > 4\n",
+    "shortName" : "Architecture\n"
+}
+
+,
+{
+    
+    "groupName" : "Engineering",
+    "kpiName" : "Quality Processes",
+    "description" : "Developer code quality & processes shift ",
+    "m1Desc" : "Manual code quality checks \n-No coverage guidelines\n-No Review Checklist, \n-Inconsistent UT & Integration testing guidelines\n-No Audits and Quality Review done \n-Developer perform some functional testing\n\n\n\n\n\n\nCompliance Score :  <=2",
+    "m2Desc" : "Sonar code quality checks \n-Coverage guidelines\n-Inconsistent  review Checklist, \n-Inconsistent UT & Integration testing guidelines\n-No  standard Audits and Quality Review\n-Developer perform  functional testing\n\n\n\n\n\n\nCompliance Score : 2- 2.5",
+    "m3Desc" : "Sonar code quality checks \n-Code Coverage defined\n-Standard  review Checklist, \n-Consistent UT & Integration testing guidelines\n-Standard Audits and Quality Review\n-Developer perform some functional testing & some  non functional testing \n\n\n\n\n\nCompliance Score : 2.5 - 3 ",
+    "m4Desc" : "Sonar code quality checks  with build breaks in place\n-Code Coverage measured and actively managed\n-Consistent UT & Integration testing guidelines\n-Standard Audits and Quality Review published to the whole team\n-Developer perform full functional testing & some  non functional testing at module/component level\n\n\nCompliance Score : 3 – 4",
+    "m5Desc" : "Sonar code quality checks  with build breaks in place\n-Code quality violations reported on Jira\n-Code Coverage measured and actively managed\n-Consistent UT & Integration testing guidelines\n-Standard Audits and Quality Review\n-Developer perform full functional testing & full  non functional testing at module/component level\n\n\nCompliance Score : > 4",
+    "shortName" : "Quality Processes\n"
+}
+,
+{
+   
+    "groupName" : "Engineering",
+    "kpiName" : "NFR-abilities",
+    "description" : "The following NFR’s are defined, implemented and measured\nPerformance\nScalability\nBusiness continuity\nAccessibility\nExtensibility\nOperability",
+    "m1Desc" : "NFR’s are not documented / baselined\n\n\n\n\n\nCompliance Score : NFR-Not Documented\n",
+    "m2Desc" : "NFR’s are partially documented but not a part of DOD\n\n\n\n\nCompliance Score : NFR-Partially Documented\n",
+    "m3Desc" : "NFR’s are documented but only some are part of DOD\n\n\n\n\nCompliance Score : NFR-Documented+Not in DOD\n",
+    "m4Desc" : "NFR’s are documented and are part of DOD (either as part of applicable user story or as independent story)\n\n\n\nCompliance Score :NFR-Documented+Part of DOD\n",
+    "m5Desc" : "There is a process in place to optimize and evolve NFR’s on an ongoing basis based on business & market.\n\n\n\nCompliance Score : NFR-Optimized\n",
+    "shortName" : "NFRs\n"
+}
+
+,
+{
+   
+    "groupName" : "Engineering",
+    "kpiName" : "Operations",
+    "description" : "Overall process for managing operations and how this is set-up in the project",
+    "m1Desc" : "The process or function is either completely absent or only partially present. If the process or function is partially present, there is no structure around it, no defined responsibilities and no consistency in its operation.\n-No process or function governance exists.\n-Activities respond only reactively to appropriate triggers; there is no pro-activity.\n-Performance of the activities varies according to who undertakes them.\nThere is little, or no, automation of any activities.\n-There is no formal procedure for making improvements.\n-Performance of the activities is subject to no, or only basic, measures such as volume and failure rate.\n-Activities have a technical rather than customer or service focus.\n-No collaboration with Dev team\n-Separate Dev & Ops Teams\n\n\n\n\nCompliance Score <=2",
+    "m2Desc" : "`-The Activities are formally resourced.\n-Performance is measured and reported to at least internal stakeholders.\n-Performance is becoming more consistent but is still variable.\n-Some automation is starting to be used to improve efficiency.\n-Significant failings are recognized and remedial action taken, although in a somewhat ad hoc way.\n-Improvements are focused on The Activities rather than The stakeholder outcomes.\n-Activities have a technical rather than customer or service focus.\n-no collaboration with Dev team\n-Separate Dev & Ops Teams\n\n\n\n\n\n\n\n\n\n\n\nCompliance Score : 2- 2.5 ",
+    "m3Desc" : "`-there is starting to be a focus on operating proactively, although The majority of work is still reactive.\n-Activities are carried out with a reasonable degree of consistency.\n-Variations between people and Teams performing The Activities are minimal.\n                                                                                                                                                                                                                                                                Performance is measured using a range of metrics.\n-Performance is reported to both internal and external stakeholders.\n-at least Some of The Activities are automated.\n-Mistakes and failures to follow procedure are The exception.\n-Activities are subject to planning and rarely taken on an ad hoc or unplanned basis.\n-Routine Activities are automated.\n-Procedures and Activities are tested for compliance, and clear exceptions logged and used as The basis for improvement.\n-The internal (technical) and external (customer) focus is balanced.\n-Little collaboration with Dev team\n-Separate Dev & Ops Teams\n\nCompliance Score : 2.5- 3 ",
+    "m4Desc" : "Process documentation is consistent (based on a standard process template) and includes the policy, purpose, objectives, procedures, roles and metrics.\n-Activities are performed in a highly consistent way with only rare exceptions.\n-Most activities that can be automated are automated.\n-Changes to procedures rarely fail or have unexpected consequences.\n-The focus is more on customer and service outcomes than technical considerations.\n-Performance and activity are continuously measured and monitored.\nProcesses & Tools are integrated.\n-Metrics and measurements are used  & thresholds are established that generate warning alerts \n-Ops team actively participate during development and architecture\u000b\n\n\n\n\n\n\n\nCompliance Score : 3- 4 ",
+    "m5Desc" : "`-Activities are performed consistently and reliably across all areas of The organization in which they are used.\n-process Improvements are actively sought, registered, prioritized and implemented, based on The business value and a business case.\n-Metrics and measurements are used to assess The effectiveness and quality of The process outcomes and stakeholders’ requirements and expectations.\n-measures, monitoring, reviews, alerts and reporting are part of a coordinated commitment to continual improvement.\n-it planning and Activities are integrated with business plans and activities.\n-Processes, Procedures and functions are regularly audited for efficiency and effectiveness.\n                                                                                                                                                                                                                                                                Redundant or sub-optimized Procedures are identified and removed.\n-there is regular communication between The service provider and its stakeholders to ensure that services and Activities remain relevant and effective.\n\nCompliance Score : > 4",
+    "shortName" : "Operations"
+}
+
+,
+{
+   
+    "groupName" : "Engineering",
+    "kpiName" : "Code Branching",
+    "m1Desc" : "Manual Branch\n\n\n\nCompliance Score : Initial",
+    "m2Desc" : "Multiple branches\n\n\n\nCompliance Score : Defined",
+    "m3Desc" : "Automated versioning & release tagging strategy exists, but not fully implemented\n\n\n\nCompliance Score : Managed\n",
+    "m4Desc" : "Single Release and Dev Branch\nAutomated versioning & release tagging strategy implemented\n\nCompliance Score : Measured",
+    "m5Desc" : "Trunk based development\n\n\n\nCompliance Score : Optimized",
+    "shortName" : "Branching"
+}
+
+,
+{
+    
+    "groupName" : "Engineering",
+    "kpiName" : "Continuous Integration",
+    "m1Desc" : "Manual Builds\nManual UT Execution\n\n\n\n\n\nCompliance Score : Initial\n",
+    "m2Desc" : "Automated builds , but need manual trigger\nBuild monitoring (success/failure/timing)\nAutomated UT execution \n\n\n\nCompliance Score : Defined",
+    "m3Desc" : "CI pipeline exists with Quality Gates setup \nScheduled builds\nIntegration testing with external systems is build in CI pipeline\nEnvironment configuration validation\n\nCompliance Score : Managed",
+    "m4Desc" : "NFR testing included in CI pipeline\nPipeline as code\nCI for customization post core to publish to markets\nFramework to take it to market and publish\n\nCompliance Score : Measured",
+    "m5Desc" : "Ability to plugin in new tools with low LOE\nOptimize build time\nCI to cover customization (post core-framework build) for different markets\n\n\nCompliance Score : Optimized",
+    "shortName" : "CI"
+}
+
+,
+{
+   
+    "groupName" : "Engineering",
+    "kpiName" : "Continuous Deployment",
+    "m1Desc" : "Manual deployments to PROD \n\n\n\n\nCompliance Score : Initial",
+    "m2Desc" : "Automated deployments, but need manual trigger\n\n\n\nCompliance Score : Defined",
+    "m3Desc" : "Release management Integration with CD\n\n\n\n\nCompliance Score : Managed",
+    "m4Desc" : "Extendable CD pipeline for market specific customization deployment\nPipeline as code\n\n\nCompliance Score : Measured",
+    "m5Desc" : "Zero-downtime deployment\nAbility to plugin new components with low LOE\nOptimise deployment time\n\nCompliance Score : Optimized",
+    "shortName" : "CD"
+}
+
+,
+{
+   
+    "groupName" : "Engineering",
+    "kpiName" : "Environment Provisioning / Cloud Automation",
+    "m1Desc" : "Manual environment  provisioning\nManual operational processes (backup etc.)\n\n\n\nCompliance Score : Initial",
+    "m2Desc" : "Manual environment provisioning with runbook\nManual operational processes with runbook\n\n\nCompliance Score : Defined",
+    "m3Desc" : "Automated environment provisioning (core) with some add-on manual work\n > 75% operational processes automated\n\n\nCompliance Score : Managed",
+    "m4Desc" : "Fully automated environment provisioning (Infrastructure as code)\nAll operational processes automated\n\n\nCompliance Score : Measured",
+    "m5Desc" : "Established and in-practice process for updating environment provisioning (infrastructure as code)\nFully-automated auto-scaling implemented\n\nCompliance Score : Optimized",
+    "shortName" : "Provisioning"
+}
+
+,
+{
+    
+    "groupName" : "Engineering",
+    "kpiName" : "Environment Configuration Management",
+    "m1Desc" : "Manual infrastructure configuration management\n\n\n\nCompliance Score : Initial",
+    "m2Desc" : "Manual infrastructure configuration management with runbook\n\n\n\nCompliance Score : Defined",
+    "m3Desc" : "Infrastructure configuration externalised\nAutomated infrastructure configuration management strategy exists, but not implemented\n\nCompliance Score : Managed",
+    "m4Desc" : "Automated infrastructure configuration management implemented for NON-PROD environments, covering all components and configuration\n\nCompliance Score : Measured",
+    "m5Desc" : "Automated infrastructure configuration management implemented for PROD environment, covering all components and configuration\n\nCompliance Score : Optimized",
+    "shortName" : "Config. Mgmt"
+}
+
+,
+{
+   
+    "groupName" : "Engineering",
+    "kpiName" : "Developer Sandbox",
+    "m1Desc" : "Manual developer sandbox setup\nNo runbook\n\n\n\n\n\nCompliance Score : Initial",
+    "m2Desc" : "Manual developer sandbox setup with runbook\n\n\n\n\n\nCompliance Score : Defined",
+    "m3Desc" : "Partially automated developer sandbox setup (with < 4 hours of manual tasks\n\n\n\n\n\nCompliance Score : Managed",
+    "m4Desc" : "Fully automated developer sandbox (containerised setup)\n\n\n\n\n\nCompliance Score : Measured",
+    "m5Desc" : "> 75% of CI quality gates implemented at developer sandbox\nEstablished and implemented process for adding new tools/components to developer sandbox configuration\n\n\nCompliance Score : Optimized",
+    "shortName" : "Dev Sandbox"
+}
+,
+{
+   
+    "groupName" : "Engineering",
+    "kpiName" : "Monitoring & Log Management",
+    "m1Desc" : "Multiple tools for monitoring multiple components\nManual infrastructure monitoring\nManual application monitoring\nNo alerting\nManual reporting\nNo log aggregation\n\nCompliance Score : Initial",
+    "m2Desc" : "Single tool for monitoring\nManual application monitoring\nManual infrastructure monitoring\nBasic alerting\nScheduled reporting\nCentralized log collection (not fully automated)\n\nCompliance Score : Defined",
+    "m3Desc" : "Unified monitoring dashboard(s)\nApplication health monitoring (e.g. New Relic)\nFully automated alerting\nAutomated reporting\n\n\n\nCompliance Score : Managed",
+    "m4Desc" : "Centralised application and infrastructure monitoring (e.g. AppDynamics\nCentralised and fully automated log aggregation (e.g. Splunk / ELK)\n\n\n\n\nCompliance Score : Measured",
+    "m5Desc" : "Actionable predictive analysis available and acted upon\nAbility to add new components to monitoring and log aggregation with low LOE\n\n\n\n\nCompliance Score : Optimized",
+    "shortName" : "Monitoring"
+}
+,
+{
+   
+    "groupName" : "Engineering",
+    "kpiName" : "Highest environment to which features are released within a Sprint",
+    "m1Desc" : "DEV",
+    "m2Desc" : "QA",
+    "m3Desc" : "INT (Integration)",
+    "m4Desc" : "Staging (Pre-prod)",
+    "m5Desc" : "PROD (live)",
+    "shortName" : "Release Env"
+}
+,
+{
+   
+    "groupName" : "Engineering",
+    "kpiName" : "Agile Testing Practices",
+    "m1Desc" : "1. No pre-defined standard and no process defined\n2. No templates available for QA deliverables for the test plan, test strategy, test scenarios and test cases are not standardized.\n3. Same task is performed differently by different people\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCompliance Score : Initial",
+    "m2Desc" : "1.Initiate defining process at a high level\n2. Define and Document the Overall QA Test Automation Process and methodology\n3. No Full traceability between manual test cases, defects and requirements\n4. Standard testing process (FT, IT, PT, UAT and KPIs) is defined (Notifications are configured for each kind of testing)\n5. Peer-reviews are conducted for every requirements and automated test cases\n6. Adopt and follow an Agile methodology, i.e., Scrum, Kanban, or use Agile methods as a part of DevOps\n7. Create Automated Test Plan and Test Strategy templates\n8. Determine a test automation framework that's scalable\n\n\n\n\n\nCompliance Score : Defined",
+    "m3Desc" : "1. Develop and implement a Test Automation Framework \n2. Automated unit and acceptance tests, the latter written with test as a part of the development processes\n3. Automated tests written as a part of story development\n4. Automate smoke tests first and then individual test cases\n5. Baseline scripts and reuse each time\n6. KPIs are measured with significant coverage\n7. Production Validation using automated scripts\n8. Agile testing practices - Testers being embedded in project teams\nto coordinate testing activities and help increase levels of test automation.\n9.Automated test management tools integrated with Jira\n\n\nCompliance Score : Managed",
+    "m4Desc" : "1. Develop and implement a Test Automation Framework \n2. Automated unit and acceptance tests, the latter written with test as a part of the development processes\n3. Automated tests written as a part of story development\n4. Automate smoke tests first and then individual test cases\n5. Baseline scripts and reuse each time\n6. KPIs are measured with significant coverage\n7. Production Validation using automated scripts\n8. Agile testing practices - Testers being embedded in project teams\nto coordinate testing activities and help increase levels of test automation.\n9.Automated test management tools integrated with Jira\n\n\nCompliance Score : Measured",
+    "m5Desc" : "1. Develop innovative ways to further improve the pre-defined processes and standards. \n2.Re-engineered continuously by adding new tools technologies\n3. Stay abreast of new technologies in the market\n4. Improve the methodology, processes can be defined based on past audits\n5. Integrated Suite - Single click test automation suite which is integrated with CI/CD pipeline and APM. \n6. Alerts are being sent out to appropriate team members based on test failure points.\n7. Production Validation - Production deployment validation using automated scripts (Functional, Failover, Security)\n8. Optimization base\n\n\n\n\nCompliance Score : Optimized",
+    "shortName" : "Agile Testing"
+}
+,
+{
+   
+    "groupName" : "Engineering",
+    "kpiName" : "Functional Automation",
+    "description" : "Functional automation covers aspects of  all the functional testing",
+    "m1Desc" : "1. No Automation at this Level: \n2. Define what will be tested and what will not be tested will be defined at a high level \n3. Develop manual tests ad hoc after coding is complete \n4.  Start creating manual test cases in a format, i.e., Excel format \n5. Only Sanity UI is automated\n\n\n\n\n\n\n\n\n\n\nCompliance Score : Initial\n",
+    "m2Desc" : "1.Goal of automation is to reach 30%\n2. implement a relevant Test Automation Framework  for the application \n3. Determine Test Automation Tools, i.e., Selenium, or HP UFT \n4. Set up Test Automation Environment \n5. Determine the most critical functional flows that the majority of the users and focus only on that automation\n6. No Mobile, API automation in place\n7. No Devops Integration in place for Test Automation\n\n\n\n\n\n\nCompliance Score : Defined",
+    "m3Desc" : "1.Goal of automation is to reach 60% in all kinds of testing \n2. Quality metrics and trends are tracked for defects and leakage \n3. Implement quality attributes, i.e., Reliability, Usability, and Maintainability \n4. Execute regression test suites in automated fashion and never manual \n5. Any new scripts addition to the test suite should not take more time and should be quick and easy\n6. Automation should include Functional, APIs, Visual UI.\n7. Devops Integration in place to kick start the jobs in automated way after build is delivered\n\n\nCompliance Score : Managed",
+    "m4Desc" : "1. Goal of automation is to reach 80% in all kinds of testing \n2. Quality metrics and trends are tracked \n3. Implement quality attributes, i.e., Reliability, Usability, and Maintainability \n4. Execute regression test suites in automated fashion and never manual \n5. Easy addition of new scripts and maintenance\n6. Progressive sprint automation started \n\n\n\n\n\n\n\n\nCompliance Score : Measured",
+    "m5Desc" : "1. Goal of achieve more than 80% in all kinds of testing \n1. Processes and standards are well-defined and managed \n2.  Scalable Automation framework is being followed and standardized \n3. There is a standard procedure for selecting and evaluating automated test tools \n4. CI Build integration is a continuous part of the process \n5. Progressive sprint automation(>50%)  achieved for 90% of sprints\n6. Single click test automation suite which is integrated with CI/CD pipeline\n7. Automation is done for Functional, APIs, Backend, Visual UI and being used for UAT as well\n\nCompliance Score : Optimized",
+    "shortName" : "Functional Automation\n"
+}
+
+,
+{
+    
+    "groupName" : "Engineering",
+    "kpiName" : "Non-Functional Testing  - Performance Coverage",
+    "m1Desc" : "1. Performance testing not part of DOD\n2. Performance testing performed at the end of development cycle (after SIT or UAT)\n3. No performance testing on Dev & QA\n4. No performance testing baseline available\n\n\n\n\n\n\n\n\nCompliance Score : Initial\n",
+    "m2Desc" : "1. Unit level Performance testing part of DOD\n2. Performance testing performed at the end of development cycle (after SIT or UAT)\n3. Performance testing baseline available\n4. Performance testing not integrated in CI/CD\n5. No in sprint performance testing\n\n\n\n\n\nCompliance Score : Defined",
+    "m3Desc" : "1. Component/ Feature level Performance testing part of DOD\n2. Performance testing performed as part of the QA deployment\n3. Performance testing integrated in CI/CD pipeline\n4. Performance testing thresholds established and build failures triggered \n5. In-sprint performance testing \n\n\n\n\nCompliance Score : Managed",
+    "m4Desc" : "1. System  level Performance testing part of DOD\n2. Performance testing performed as part of the CI deployment\n3. Performance testing integrated in CI/CD pipeline \n4. Performance testing thresholds established and build failures triggered \n5. In-sprint performance testing \n6. No separate team for Performance Testing as Dev/QE should be able to carry the same in Sprints\n\nCompliance Score : Measured",
+    "m5Desc" : "1. Application  level Performance testing part of DOD\n2. Performance testing performed as part of the Developer machine\n3. Performance testing integrated in CI/CD pipeline \n4. Performance testing thresholds established and build failures triggered \n5. In-sprint performance testing \n6. Every feature / User story to be certified by Performance end of every Sprint along with Functional\n\n\nCompliance Score : Optimized\n",
+    "shortName" : "Performance Test Automation\n"
+}
+
+,
+{
+   
+    "groupName" : "Engineering",
+    "kpiName" : "Non-Functional Automation - Security",
+    "m1Desc" : "1. Any audit or compliance check results in a massive \"fire drill\" effort\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCompliance Score : Initial",
+    "m2Desc" : "1. There is some use of automated tools (typically black-box assessment scanning tools run by external consultants or security team personnel). \n2. These scans typically result in significant findings of serious defects such as XSS and SQL injection.\n3. Any documented processes or practices are focused on \"security features\" rather than \"secure features\" and are only followed sporadically\n4. Adhoc static code analysis\n5. Adhoc Pen testing\n6. No standard tools followed\n\n\nCompliance Score : Defined",
+    "m3Desc" : "1. High-value application undergo regular, systematic reviews including some manual testing\n2. Processes and practices are not solely focused on \"security features\" versus \"secure features\" and are typically followed\n3. Developers/Testers  receive some training in secure design and development techniques\n4. Automated security testing on developer machines\n5. Static code analysis regularly performed\n6. Adhoc Pen testing\nStandard tools which are CI friendly tools to be used (Burpsuite, Zaprox\n\nCompliance Score : Managed",
+    "m4Desc" : "1.Security testing tools integrated to the CI/CD pipeline\n2. Automated security testing on developer machines\n3. Static code analysis performed with automated tools without exception\n4. All security bugs are resolved through a defined SDLC process\n5. Pen testing performed regularly\n6. Security. Testing reports regularly published and actioned\n7. No separate team for Security Testing as 8. Dev/QE should be able to carry the same in Sprints\n\n\nCompliance Score : Measured",
+    "m5Desc" : "1. Security testing tools integrated to the CI/CD pipeline with threshold and build failures\n2. Automated security testing on developer machines\n3. Static code analysis performed with automated tools without exception\n4. All security bugs are resolved through a defined SDLC process\n5. Pen testing performed\n6. Every feature / User story to be certified by Security tests end of every Sprint along with Functional\n\n\n\nCompliance Score : Optimized",
+    "shortName" : "Security Test Automation\n"
+}
+
+,
+{
+   
+    "groupName" : "Engineering",
+    "kpiName" : "Non-Functional Automation - Accessibility",
+    "m1Desc" : "1. Platform permutations are identified \n2. Necessary hardware and software has been procured and is installed \n3. UAT tests are defined \n4. Level A defects identified, logged and in process of remediation \n5. Level AA color defects identified, logged, and in process of remediation\n\n\n\n\n\nCompliance Score : Initial",
+    "m2Desc" : "1. UAT tests are executed on every build released to accessibility team.  Test coverage is 25 % \n2. Keyboard-based testing initiated \n3. New level A and AA (color) defects identified, logged and in process of remediation  \n4. Remaining Level AA non-color defects identified, logged, and in process of remediation\n5. No standard tools followed\n\n\nCompliance Score : Defined",
+    "m3Desc" : "1. UAT tests are executed on every build released to accessibility team.  Test coverage is 45 % \n2. Keyboard-based testing completed \n3. New Level A and AA defects identified, logged, and in process of remediation\n4. Standard tools being followed\n5. Both tags level and voice over accessibility is testing before delivering code to Clients \n\n\n\nCompliance Score : Managed",
+    "m4Desc" : "1. UAT tests are executed on every build released to accessibility team.  Test coverage is 100% \n2. New Level A and AA defects identified, logged, and in process of remediation \n3. Standard tools being followed\n4. Both tags level and voice over accessibility is testing before delivering code to Clients\n5. Part of Sprint Testing\n\n\n\nCompliance Score : Measured",
+    "m5Desc" : "1. UAT tests are executed on every build released to accessibility team.  Test coverage is 100 % \n2. New Level A and AA defects identified, logged, and in process of remediation\n3. Standard tools being followed\n4. Both tags level and voice over accessibility is testing before delivering code to Clients\n5. Part of Sprint testing\n\n\n\nCompliance Score : Optimized\n",
+    "shortName" : "Accessibility Test Automation\n"
+}
+
+,
+{
+    "groupName" : "Engineering",
+    "kpiName" : "Test Data Management",
+    "m1Desc" : "1. Manual Preparation of Test Data for the testing. \n2. Manual Test Data Validation. \n3. Test data set up is not a coordinated effort and happens in silo. \n4. No Single point of contact for test data set up activity. \n5. Standardized process of masking the production sensitive data is not in place. \n6. Centralized Documentation/Repository not available for historical test data activities. \n\n\n\n\n\n\nCompliance Score : Initial",
+    "m2Desc" : "1. Roles and responsibility defined for Test Data Manager. \n2. Process defined for test data activities for waterfall/AGILE projects. \n3. Test Data Strategy is defined\n4. Standardized process defined for masking the production sensitive data. \n5. Process defined for usage of test environment for test data. \n6. Template of test data manager deliverables (Test Data Plan, Test Data Approach) are finalized.\n\n\n\n\n\n\nCompliance Score : Defined",
+    "m3Desc" : "1. Process implemented for test data activities for waterfall/AGILE projects. \n2. Test Data Strategy is defined\n3. Standardized process implemented for masking the production sensitive data. \n4. Process defined for usage of test environment for test data. \n5. Repository available for test data set up/defects encountered in Excel. \n6. Analyse TDM market tools for automation.\n7. Usage of central repository or DB for managing test data for functional, non - functional tests\n8. Test data issues to be tracked as part of defect management system\n\n\nCompliance Score : Managed",
+    "m4Desc" : "1. Metrics/Report for test data management activities - a. Average Test Data set up time by Project/Applications. b. Average Test Data defect resolution time by Project/Applications. C. Average Test Data Validation time by Project/Applications. \n2. Conduct POC of TDM tools\n3. Usage of central repository or DB for managing test data for functional, non - functional tests \n4. Test data issues to be tracked as part of defect management system  \n\n\n\n\n\n\nCompliance Score : Measured",
+    "m5Desc" : "1. Use tools (Optim, Informatica etc.) to manage data set up activities (Data Masking, Data Pull, Data Subsetting, Data Generation). \n2. Test data issues to be tracked as part of defect management system \n3. Automation of metrics/report generation from the data repository. \n4. Using tool (Ex. CA Lisa) to do the test data validation. \n5. Reusability of Data Set up. Test Bed Creation.\n6. Usage of central repository or DB for managing test data for functional, non - functional tests\n\n\n\nCompliance Score : Optimized\n",
+    "shortName" : "Test Data Management"
+}
+
+]
+

@@ -1,0 +1,26 @@
+{
+  "kpiList": [],
+  "ids": [
+    5
+  ],
+  "level": 4,
+  "selectedMap": {
+    "corporate": [],
+    "business": [],
+    "account": [],
+    "subaccount": [],
+    "project": [
+      "Kanban Project_6335368249794a18e8a4479f"
+    ],
+    "sqd": [],
+    "date": [
+      "WEEKS"
+    ]
+  },
+  "sprintIncluded": [
+    "CLOSED"
+  ],
+  "startDate": "",
+  "endDate": ""
+
+}

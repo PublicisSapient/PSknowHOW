@@ -1,0 +1,175 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<ruleset xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         name="Speedy Rules"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+    <description>
+        project specific ruleset
+    </description>
+
+
+    <!-- Controversial Rules Doc Link: http://www.ing.iac.es/~docs/external/java/pmd/rules/controversial.html -->
+    <!-- Controversial rules are being excluded.-->
+
+
+    <rule ref="category/java/bestpractices.xml">
+<!--        <exclude name="AbstractClassWithoutAbstractMethod"/>-->
+        <!-- Java 5 introduced the varargs parameter declaration for methods and constructors.
+        This syntactic sugar provides flexibility for users of these methods and constructors, allowing them to avoid
+        having to deal with the creation of an array.-->
+        <!-- But this should be optional and not necessarily forced. -->
+        <exclude name="UseVarargs"/>
+    </rule>
+
+    <rule ref="category/java/codestyle.xml">
+        <!-- Controversial -->
+        <exclude name="AtLeastOneConstructor"/>
+
+        <!-- this will leads to overhead-->
+        <exclude name="LocalVariableCouldBeFinal"/>
+        <!-- It is good to have long and descriptive variable names -->
+        <exclude name="LongVariable"/>
+        <!-- this will leads to overhead-->
+        <exclude name="MethodArgumentCouldBeFinal"/>
+        <!-- Controversial -->
+        <exclude name="OnlyOneReturn"/>
+        <exclude name="PrematureDeclaration"/>
+        <!-- It will increase readability -->
+        <exclude name="UselessParentheses"/>
+        <!--This rule prevent using default access modifier. Some times we need default package scope. -->
+        <exclude name="DefaultPackage"/>
+        <!-- Deprecated -->
+        <exclude name="AvoidFinalLocalVariable"/>
+
+    </rule>
+
+    <rule ref="category/java/codestyle.xml/ShortClassName">
+        <properties>
+            <!-- default minimum is 5 -->
+            <property name="minimum" value="4"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/ShortVariable">
+        <properties>
+            <!-- default minimum is 3. It will not allow us to name a variable "id" -->
+            <property name="minimum" value="2"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/ConfusingTernary">
+        <properties>
+            <property name="ignoreElseIf" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/ClassNamingConventions">
+        <properties>
+            <!-- This is to avoid pmd to complain about the Constant classes as Utils -->
+            <property name="utilityClassPattern" value="[A-Z][a-zA-Z0-9]*"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/codestyle.xml/LinguisticNaming">
+        <properties>
+            <property name="checkFields" value="false"/>
+        </properties>
+    </rule>
+
+
+    <rule ref="category/java/design.xml">
+        <!-- The Law of Demeter is a simple rule, that says "only talk to friends". It helps to reduce coupling between classes or objects.
+         This can't be resolved in current code design-->
+        <exclude name="LawOfDemeter"/>
+        <!-- deprecated -->
+        <exclude name="ModifiedCyclomaticComplexity"/>
+        <!-- deprecated -->
+        <exclude name="StdCyclomaticComplexity"/>
+        <!-- Required -->
+        <exclude name="ExcessiveImports"/>
+        <!-- Required -->
+        <exclude name="SignatureDeclareThrowsException"/>
+        <!-- PMD shwoing all the pojo model classes as data class-->
+        <exclude name="DataClass"/>
+    </rule>
+
+    <rule ref="category/java/design.xml/CyclomaticComplexity">
+        <properties>
+            <!-- Since one method is allowed to have CyclomaticComplexity threshold is 15 (default is 10)
+                 and one class os allowed to have threshold of 30 methods (default is 10)
+                 this should be increased (by default is 80) -->
+            <property name="classReportLevel" value="360"/>
+            <!-- Recommended that it is ok to allow 15 (default is 10) on wiki https://en.wikipedia.org/wiki/Cyclomatic_complexity -->
+            <property name="methodReportLevel" value="16"/>
+
+        </properties>
+    </rule>
+
+    <!-- Rule of 30: https://dzone.com/articles/rule-30-%E2%80%93-when-method-class-or -->
+    <!-- default number of lines in a class is 1000 -->
+    <!-- default number of methods in a class is 10 -->
+    <!-- default number of lines in a method is 100 -->
+    <rule ref="category/java/design.xml/TooManyMethods">
+        <properties>
+            <property name="maxmethods" value="30"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/design.xml/ExcessiveParameterList">
+        <properties>
+            <!-- To sync with sonar -->
+            <property name="minimum" value="8.0" />
+        </properties>
+    </rule>
+
+    <rule ref="category/java/design.xml/UseUtilityClass">
+        <properties>
+            <property name="violationSuppressXPath" value="//ClassOrInterfaceDeclaration['.*Application']"/>
+        </properties>
+    </rule>
+
+
+    <rule ref="category/java/design.xml/ExcessiveClassLength">
+        <properties>
+            <property name="minimum" value="1500.0"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/errorprone.xml">
+        <!-- No need -->
+        <exclude name="UseLocaleWithCaseConversions"/>
+        <!-- Controversial-->
+        <exclude name="NullAssignment"/>
+        <exclude name="DataflowAnomalyAnalysis"/>
+        <exclude name="BeanMembersShouldSerialize"/>
+        <!-- Controversial-->
+        <exclude name="AssignmentInOperand"/>
+    </rule>
+    <rule ref="category/java/errorprone.xml/AvoidLiteralsInIfCondition">
+        <properties>
+            <property name="ignoreMagicNumbers" value="-1,0,1,2"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/multithreading.xml">
+        <exclude name="UseConcurrentHashMap"/>
+    </rule>
+
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
+</ruleset>

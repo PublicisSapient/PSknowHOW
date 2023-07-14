@@ -1,0 +1,30 @@
+{
+    "message": "list of tools",
+    "success": true,
+    "data": [
+        {
+            "id": "63b5166cf33fd2360e9e72c2",
+            "toolName": "Jira",
+            "basicProjectConfigId": "63b51633f33fd2360e9e72bd",
+            "connectionId": "62fcbe4adac8a44cd2cb9576",
+            "connectionName": "Sunbelt Rental JIra",
+            "projectKey": "DOTC",
+            "createdAt": "2023-01-04T06:02:20",
+            "updatedAt": "2023-01-04T06:02:20",
+            "queryEnabled": false,
+            "boardQuery": "",
+            "boards": [
+                {
+                    "boardId": "396",
+                    "boardName": "3.2_Content Team (2) (DOTC)",
+                    "projectKey": "DOTC"
+                },
+                {
+                    "boardId": "395",
+                    "boardName": "3.1_Commerce Team (1) (DOTC)",
+                    "projectKey": "DOTC"
+                }
+            ]
+        }
+    ]
+}

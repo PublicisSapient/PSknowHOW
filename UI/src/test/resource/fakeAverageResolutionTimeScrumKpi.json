@@ -1,0 +1,165 @@
+[
+    {
+        "kpiId": "kpi83",
+        "kpiName": "Average Resolution Time",
+        "unit": "days",
+        "maxValue": "100",
+        "chartType": "",
+        "id": "612f14f73487adf313275283",
+        "isDeleted": "False",
+        "kpiCategory": "Speed",
+        "kpiUnit": "days",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "value": [
+            {
+                "kpiFilterType": "Story",
+                "value": "12"
+            },
+            {
+                "kpiFilterType": "Defect",
+                "value": "12"
+            },
+            {
+                "kpiFilterType": "ChangeRequest",
+                "value": "12"
+            },
+            {
+                "kpiFilterType": "aggregated",
+                "value": "12"
+            }
+        ],
+        "trendValueKpiFilterList": [
+            {
+                "kpiFilterType": "Defect",
+                "projectWiseData": [
+                    {
+                        "data": "Test - Data",
+                        "value": [
+                            {
+                                "data": "14.0",
+                                "sSprintID": "31224_Test - Data_612de03291cf5936cf917ed4",
+                                "sSprintName": "KnowHOW|PI_5|ITR_3| 28 Apr_Test - Data",
+                                "value": 14.0,
+                                "sprojectName": "Test - Data"
+                            },
+                            {
+                                "data": "14.0",
+                                "sSprintID": "31258_Test - Data_612de03291cf5936cf917ed4",
+                                "sSprintName": "Panthers|PI_5|ITR_3|28_April_Test - Data",
+                                "value": 14.0,
+                                "sprojectName": "Test - Data"
+                            }
+                        ]
+                    },
+                    {
+                        "data": "project-1",
+                        "value": [
+                            {
+                                "data": "14.0",
+                                "sSprintID": "31224_Test - Data_612de03291cf5936cf917ed4",
+                                "sSprintName": "KnowHOW|PI_5|ITR_3| 28 Apr_Test - Data",
+                                "value": 14.0,
+                                "sprojectName": "Test - Data"
+                            },
+                            {
+                                "data": "14.0",
+                                "sSprintID": "31258_Test - Data_612de03291cf5936cf917ed4",
+                                "sSprintName": "Panthers|PI_5|ITR_3|28_April_Test - Data",
+                                "value": 14.0,
+                                "sprojectName": "Test - Data"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "kpiFilterType": "Story",
+                "projectWiseData": [
+                    {
+                        "data": "Test - Data",
+                        "value": [
+                            {
+                                "data": "14.0",
+                                "sSprintID": "31224_Test - Data_612de03291cf5936cf917ed4",
+                                "sSprintName": "KnowHOW|PI_5|ITR_3| 28 Apr_Test - Data",
+                                "value": 14.0,
+                                "sprojectName": "Test - Data"
+                            },
+                            {
+                                "data": "14.0",
+                                "sSprintID": "31258_Test - Data_612de03291cf5936cf917ed4",
+                                "sSprintName": "Panthers|PI_5|ITR_3|28_April_Test - Data",
+                                "value": 14.0,
+                                "sprojectName": "Test - Data"
+                            }
+                        ]
+                    },
+                    {
+                        "data": "project-2",
+                        "value": [
+                            {
+                                "data": "14.0",
+                                "sSprintID": "31224_Test - Data_612de03291cf5936cf917ed4",
+                                "sSprintName": "KnowHOW|PI_5|ITR_3| 28 Apr_Test - Data",
+                                "value": 14.0,
+                                "sprojectName": "Test - Data"
+                            },
+                            {
+                                "data": "14.0",
+                                "sSprintID": "31258_Test - Data_612de03291cf5936cf917ed4",
+                                "sSprintName": "Panthers|PI_5|ITR_3|28_April_Test - Data",
+                                "value": 14.0,
+                                "sprojectName": "Test - Data"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "kpiFilterType": "aggregated",
+                "projectWiseData": [
+                    {
+                        "data": "Test - Data",
+                        "value": [
+                            {
+                                "data": "14.0",
+                                "sSprintID": "31224_Test - Data_612de03291cf5936cf917ed4",
+                                "sSprintName": "KnowHOW|PI_5|ITR_3| 28 Apr_Test - Data",
+                                "value": 14.0,
+                                "sprojectName": "Test - Data"
+                            },
+                            {
+                                "data": "14.0",
+                                "sSprintID": "31258_Test - Data_612de03291cf5936cf917ed4",
+                                "sSprintName": "Panthers|PI_5|ITR_3|28_April_Test - Data",
+                                "value": 14.0,
+                                "sprojectName": "Test - Data"
+                            }
+                        ]
+                    },
+                    {
+                        "data": "project-3",
+                        "value": [
+                            {
+                                "data": "14.0",
+                                "sSprintID": "31224_Test - Data_612de03291cf5936cf917ed4",
+                                "sSprintName": "KnowHOW|PI_5|ITR_3| 28 Apr_Test - Data",
+                                "value": 14.0,
+                                "sprojectName": "Test - Data"
+                            },
+                            {
+                                "data": "14.0",
+                                "sSprintID": "31258_Test - Data_612de03291cf5936cf917ed4",
+                                "sSprintName": "Panthers|PI_5|ITR_3|28_April_Test - Data",
+                                "value": 14.0,
+                                "sprojectName": "Test - Data"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "groupId": 1
+    }
+]

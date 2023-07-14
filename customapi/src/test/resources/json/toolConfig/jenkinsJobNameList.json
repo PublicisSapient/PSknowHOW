@@ -1,0 +1,231 @@
+{
+  "_class": "hudson.model.Hudson",
+  "jobs": [
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+      "url": "http://dummyServer.com/job/API_Build/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+      "url": "http://dummyServer.com/job/Auto_Deploy_Job_Scheduler/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+      "url": "http://dummyServer.com/job/Central-consumer/"
+    },
+    {
+      "_class": "hudson.model.FreeStyleProject",
+      "url": "http://dummyServer.com/job/Data-automation-build/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+      "url": "http://dummyServer.com/job/deployment-testing/"
+    },
+    {
+      "_class": "com.cloudbees.hudson.plugins.folder.Folder",
+      "url": "http://dummyServer.com/job/folder_testing/",
+      "jobs": [
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/folder_testing/job/QA_API_BUILD_FOLDER/"
+        },
+        {
+          "_class": "com.cloudbees.hudson.plugins.folder.Folder",
+          "url": "http://dummyServer.com/job/folder_testing/job/sub_folder_2_testing/",
+          "jobs": [
+            {
+              "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+              "url": "http://dummyServer.com/job/folder_testing/job/sub_folder_2_testing/job/sub_folder_2_Api/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_class": "hudson.model.FreeStyleProject",
+      "url": "http://dummyServer.com/job/Functional-Automation/"
+    },
+    {
+      "_class": "hudson.model.FreeStyleProject",
+      "url": "http://dummyServer.com/job/Funtional_Auto/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+      "url": "http://dummyServer.com/job/invoke_via_api/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+      "url": "http://dummyServer.com/job/invoke_via_api_2/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject",
+      "url": "http://dummyServer.com/job/multibranch-demo/",
+      "jobs": [
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/5.0.3-BOC/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/5.1.0-BOC/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/5.1.1-HSBC/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/addProjectConfigIdInFilterDataApi/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/aggregation-generalization/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/azure-changes/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/backlog-tab-backend/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/develop/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/DTS-14684-kanban-date-filter-change/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/DTS-17229_RCA-Defect/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/DTS-17247-remove-precalculated-code/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/DTS-17280-squad-filter-UI/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/DTS-17642-proper-error-msg/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/DTS-17652-latest-value-color-issue/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/feature%252FDaya-Jobs-From-Multiple-Folder-DTS-18419/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/fix-code-build-kpi/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/fix-DIR-KPI/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/fix-DTS-17282-squad-bugs/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/fix-DTS-17413-remove-unused-libraries/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/fix-jenkins-kpi-issue/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/fix-sprint-predictability-excel-data/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/grouped_column_line/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/Iteration_Dashboard/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/jira-azure-processor-remove-ps-constants-from-junit/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/JiraCloud-Issue/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/kanban-apis-refactoring/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/master/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/master_rishabh/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/mongo-script-open-source/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/mongo_scripts_cleanup/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/nonjira-processor-remove-ps-specific-constants/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/open-sourcing-branch/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/open-sourcing-branch-devops/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/open-sourcing-rishabh/"
+        },
+        {
+          "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+          "url": "http://dummyServer.com/job/multibranch-demo/job/PR-1257/"
+        }
+      ]
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+      "url": "http://dummyServer.com/job/Notification-Consumer/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+      "url": "http://dummyServer.com/job/Offline_job/"
+    },
+    {
+      "_class": "hudson.model.FreeStyleProject",
+      "url": "http://dummyServer.com/job/Performance_Testing/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+      "url": "http://dummyServer.com/job/Processors_Build/"
+    },
+    {
+      "_class": "hudson.model.FreeStyleProject",
+      "url": "http://dummyServer.com/job/Publish_S3/"
+    },
+    {
+      "_class": "org.jenkinsci.plugins.workflow.job.WorkflowJob",
+      "url": "http://dummyServer.com/job/UI_Build/"
+    }
+  ]
+}

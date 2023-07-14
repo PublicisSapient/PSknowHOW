@@ -1,0 +1,168 @@
+[
+  {
+    "_id" : "63355363bb571b720a93c23f",
+    "processorItemId" : "6335535dbb571b720a93c221",
+    "timestamp" : "1664406962000",
+    "name" : "ENGINEERING.KPIDASHBOARD.PROCESSORS",
+    "key" : "ENGINEERING.KPIDASHBOARD.PROCESSORS",
+    "date" : "1664406962000",
+    "branch" : "origin/develop",
+    "metrics" : [
+      {
+        "metricName" : "test_failures"
+      },
+      {
+        "metricName" : "test_success_density"
+      },
+      {
+        "metricName" : "coverage",
+        "metricValue" : "36.7"
+      },
+      {
+        "metricName" : "line_coverage",
+        "metricValue" : "41.2"
+      },
+      {
+        "metricName" : "blocker_violations",
+        "metricValue" : "0"
+      },
+      {
+        "metricName" : "alert_status",
+        "metricValue" : "OK"
+      },
+      {
+        "metricName" : "ncloc",
+        "metricValue" : "18995"
+      },
+      {
+        "metricName" : "quality_gate_details",
+        "metricValue" : "{\"level\":\"OK\",\"conditions\":[],\"ignoredConditions\":false}"
+      },
+      {
+        "metricName" : "lines",
+        "metricValue" : "31427"
+      },
+      {
+        "metricName" : "critical_violations",
+        "metricValue" : "0"
+      },
+      {
+        "metricName" : "major_violations",
+        "metricValue" : "12"
+      },
+      {
+        "metricName" : "minor_violations",
+        "metricValue" : "42"
+      },
+      {
+        "metricName" : "info_violations",
+        "metricValue" : "1"
+      },
+      {
+        "metricName" : "new_vulnerabilities"
+      },
+      {
+        "metricName" : "violations",
+        "metricValue" : "55"
+      },
+      {
+        "metricName" : "sqale_index",
+        "metricValue" : "326"
+      },
+      {
+        "metricName" : "sqale_rating",
+        "metricValue" : "1.0"
+      },
+      {
+        "metricName" : "tests"
+      },
+      {
+        "metricName" : "test_errors"
+      }
+    ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.sonar.SonarHistory"
+  },
+  {
+    "_id" : "63355363bb571b720a93c23e",
+    "processorItemId" : "6335535dbb571b720a93c221",
+    "timestamp" : "1664259497000",
+    "name" : "ENGINEERING.KPIDASHBOARD.PROCESSORS",
+    "key" : "ENGINEERING.KPIDASHBOARD.PROCESSORS",
+    "date" : "1664259497000",
+    "branch" : "origin/develop",
+    "metrics" : [
+      {
+        "metricName" : "test_failures"
+      },
+      {
+        "metricName" : "test_success_density"
+      },
+      {
+        "metricName" : "coverage",
+        "metricValue" : "36.7"
+      },
+      {
+        "metricName" : "line_coverage",
+        "metricValue" : "41.2"
+      },
+      {
+        "metricName" : "blocker_violations",
+        "metricValue" : "0"
+      },
+      {
+        "metricName" : "alert_status",
+        "metricValue" : "OK"
+      },
+      {
+        "metricName" : "ncloc",
+        "metricValue" : "18998"
+      },
+      {
+        "metricName" : "quality_gate_details",
+        "metricValue" : "{\"level\":\"OK\",\"conditions\":[],\"ignoredConditions\":false}"
+      },
+      {
+        "metricName" : "lines",
+        "metricValue" : "31431"
+      },
+      {
+        "metricName" : "critical_violations",
+        "metricValue" : "0"
+      },
+      {
+        "metricName" : "major_violations",
+        "metricValue" : "12"
+      },
+      {
+        "metricName" : "minor_violations",
+        "metricValue" : "43"
+      },
+      {
+        "metricName" : "info_violations",
+        "metricValue" : "1"
+      },
+      {
+        "metricName" : "new_vulnerabilities"
+      },
+      {
+        "metricName" : "violations",
+        "metricValue" : "56"
+      },
+      {
+        "metricName" : "sqale_index",
+        "metricValue" : "328"
+      },
+      {
+        "metricName" : "sqale_rating",
+        "metricValue" : "1.0"
+      },
+      {
+        "metricName" : "tests"
+      },
+      {
+        "metricName" : "test_errors"
+      }
+    ],
+    "_class" : "com.publicissapient.kpidashboard.common.model.sonar.SonarHistory"
+  }
+]

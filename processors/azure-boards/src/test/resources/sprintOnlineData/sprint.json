@@ -1,0 +1,71 @@
+{
+  "count": 6,
+  "value": [
+    {
+      "id": "47b459dc-6563-4264-a88c-c44480774a79",
+      "name": "Sprint2",
+      "path": "Test ProjectOne\\Sprint2",
+      "attributes": {
+        "startDate": "2021-06-28T00:00:00Z",
+        "finishDate": "2021-07-05T00:00:00Z",
+        "timeFrame": "past"
+      },
+      "url": "https://test.com/testUser/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/47b459dc-6563-4264-a88c-c44480774a79"
+    },
+    {
+      "id": "12e4100d-6356-4712-9d3c-39c86bdc5a06",
+      "name": "Sprint 3 Test ProjectOne",
+      "path": "Test ProjectOne\\Sprint 3 Test ProjectOne",
+      "attributes": {
+        "startDate": "2021-07-14T00:00:00Z",
+        "finishDate": "2021-07-27T00:00:00Z",
+        "timeFrame": "past"
+      },
+      "url": "https://test.com/testUser/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/12e4100d-6356-4712-9d3c-39c86bdc5a06"
+    },
+    {
+      "id": "047c37af-eeb9-4667-b9b5-e0bd8b3eaf05",
+      "name": "Sprint 4 Test ProjectOne",
+      "path": "Test ProjectOne\\Sprint 4 Test ProjectOne",
+      "attributes": {
+        "startDate": "2021-07-28T00:00:00Z",
+        "finishDate": "2021-08-10T00:00:00Z",
+        "timeFrame": "past"
+      },
+      "url": "https://test.com/testUser/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/047c37af-eeb9-4667-b9b5-e0bd8b3eaf05"
+    },
+    {
+      "id": "7610d6eb-b088-4e9a-ae64-89f3b716cdf4",
+      "name": "Sprint 5 Test ProjectOne",
+      "path": "Test ProjectOne\\Sprint 5 Test ProjectOne",
+      "attributes": {
+        "startDate": "2021-08-11T00:00:00Z",
+        "finishDate": "2021-08-24T00:00:00Z",
+        "timeFrame": "past"
+      },
+      "url": "https://test.com/testUser/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/7610d6eb-b088-4e9a-ae64-89f3b716cdf4"
+    },
+    {
+      "id": "2ce248fb-a193-4a15-a1e8-d0e20c1871e2",
+      "name": "Sprint 6 Test ProjectOne",
+      "path": "Test ProjectOne\\Sprint 6 Test ProjectOne",
+      "attributes": {
+        "startDate": "2021-08-25T00:00:00Z",
+        "finishDate": "2021-09-07T00:00:00Z",
+        "timeFrame": "current"
+      },
+      "url": "https://test.com/testUser/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/2ce248fb-a193-4a15-a1e8-d0e20c1871e2"
+    },
+    {
+      "id": "e6ee261f-b2b2-4b2e-a0f9-209a616dd738",
+      "name": "Sprint 1",
+      "path": "Test ProjectOne\\Sprint 1",
+      "attributes": {
+        "startDate": null,
+        "finishDate": null,
+        "timeFrame": "future"
+      },
+      "url": "https://test.com/testUser/e4797b72-6191-4fae-9e71-7808570ac877/b573d13f-a0c5-43a3-b30a-1893c7593402/_apis/work/teamsettings/iterations/e6ee261f-b2b2-4b2e-a0f9-209a616dd738"
+    }
+  ]
+}
