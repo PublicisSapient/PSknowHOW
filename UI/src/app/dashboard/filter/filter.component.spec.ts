@@ -959,7 +959,7 @@ describe('FilterComponent', () => {
     spyOn(sharedService, 'setDashConfigData');
     component.submitKpiConfigChange();
     tick();
-    expect(component.toggleDropdown).toBeFalse();
+    expect(component.toggleDropdown['showHide']).toBeFalse();
   }));
 
   it("should get processor trace log details",()=>{
