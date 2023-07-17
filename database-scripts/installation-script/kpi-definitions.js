@@ -576,11 +576,11 @@ db.getCollection('kpi_master').insertMany(
     "xAxisLabel": "Weeks",
     "isPositiveTrend": true,
     "showTrend": true,
-    "kpiFilter": "dropDown",
+    "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter": true,
+    "hideOverallFilter": false,
     "maturityRange": [
       "-20",
       "20-40",
@@ -2476,7 +2476,7 @@ db.getCollection('kpi_master').insertMany(
     "maxValue": "",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 1,
+    "defaultOrder": 2,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2508,7 +2508,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiName": "Production Defects Ageing",
     "kpiUnit": "Number",
     "isDeleted": "False",
-    "defaultOrder": 3,
+    "defaultOrder": 4,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2532,7 +2532,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiName": "Refinement Rejection Rate",
     "kpiUnit": "%",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 5,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2582,7 +2582,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiName": "Defect Reopen Rate",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 2,
+    "defaultOrder": 3,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2792,7 +2792,7 @@ db.getCollection('kpi_master').insertMany(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 5,
+    "defaultOrder": 8,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2800,7 +2800,20 @@ db.getCollection('kpi_master').insertMany(
     "kanban": false,
     "chartType": null,
     "kpiInfo": {
-      "definition": "Backlog Readiness KPI compares the total size of ready Product Backlog items (PBI) against the average velocity of last five sprints to ascertain if enough backlog items are always available for the team to start development. It also calculates the average time taken for Backlog items to be ready for development."
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Ready Backlog: No. of issues which are refined in the backlog. This is identified through a status configured in KnowHOW."
+        },
+        {
+          "type": "paragraph",
+          "value": "Backlog Strength: Total size of 'Refined' issues in the backlog / Average velocity of last 5 sprints. It is calculated in terms of no. of sprints. Recommended strength is 2 sprints."
+        },
+        {
+          "type": "paragraph",
+          "value": "Readiness cycle time: Average time taken for Product Backlog items (PBIs) to be refined."
+        }
+      ]
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
@@ -2819,7 +2832,7 @@ db.getCollection('kpi_master').insertMany(
     "boxType": "2_column",
     "kpiBaseLine": "0",
     "thresholdValue": "",
-    "defaultOrder": 6,
+    "defaultOrder": 1,
     "kpiUnit": "Count",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2859,65 +2872,15 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": false,
     "showTrend": false,
     "kpiFilter": "multiSelectDropDown",
-    "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-60",
-      "60-45",
-      "45-30",
-      "30-10",
-      "10-"
-    ],
-    "maturityLevel": [
-      {
-        "level": "LeadTime",
-        "range": [
-          "-60",
-          "60-45",
-          "45-30",
-          "30-10",
-          "10-"
-        ]
-      },
-      {
-        "level": "Intake-DoR",
-        "range": [
-          "-30",
-          "30-20",
-          "20-10",
-          "10-5",
-          "5-"
-        ]
-      },
-      {
-        "level": "DoR-DoD",
-        "range": [
-          "-20",
-          "20-10",
-          "10-7",
-          "7-3",
-          "3-"
-        ]
-      },
-      {
-        "level": "DoD-Live",
-        "range": [
-          "-30",
-          "30-15",
-          "15-5",
-          "5-2",
-          "2-"
-        ]
-      }
-    ]
   },
   {
     "kpiId": "kpi148",
     "kpiName": "Flow Load",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 7,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2941,7 +2904,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiName": "Flow Distribution",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 6,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -6343,7 +6306,7 @@ db.getCollection('kpi_fieldmapping').insertMany(
         kpiName: 'Defects Without Story Link',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Issue Types Mapping' : ['jiraStoryIdentification'], 'Workflow Status Mapping' : ['jiraDefectDroppedStatus'] }
+        fieldNames : { 'Issue Types Mapping' : ['jiraStoryIdentification'], 'Workflow Status Mapping' : ['excludeStatusKpi129'] }
       },
       {
         kpiId: 'kpi127',
@@ -6434,7 +6397,7 @@ db.getCollection('kpi_fieldmapping').insertMany(
           ]
         }
       },
-       {
+      {
               kpiId: 'kpi138',
               kpiName: 'Backlog Readiness Efficiency',
       		kpiSource: 'Jira',
@@ -6444,8 +6407,15 @@ db.getCollection('kpi_fieldmapping').insertMany(
             {
              kpiId: 'Kpi148',
              kpiName: 'Flow Load',
+             kpiSource: 'Jira',
              type: ['Other'],
-             fieldNames : { }
+             fieldNames: {
+                 'Workflow Status Mapping': [
+                    'storyFirstStatus',
+                    'jiraStatusForInProgress',
+                    'jiraStatusForQa'
+                ]
+             }
             },
       {
         kpiId: 'Kpi146',

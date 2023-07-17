@@ -122,6 +122,605 @@ describe('ExecutiveComponent', () => {
   let httpMock;
   let reqJira;
 
+  const hierarchyData = [
+    {
+      level: 1,
+      hierarchyLevelId: 'corporate',
+      hierarchyLevelName: 'Corporate Name',
+      suggestions: [
+        {
+          name: 'C1',
+          code: 'C1'
+        },
+        {
+          name: 'Corpate1',
+          code: 'Corpate1'
+        },
+        {
+          name: 'Leve1',
+          code: 'Leve1'
+        },
+        {
+          name: 'Org1',
+          code: 'Org1'
+        },
+        {
+          name: 'Orgc',
+          code: 'Orgc'
+        },
+        {
+          name: 'TESTS',
+          code: 'TESTS'
+        },
+        {
+          name: 'Test1',
+          code: 'Test1'
+        },
+        {
+          name: 'TestC',
+          code: 'TestC'
+        },
+        {
+          name: 'TestCorp',
+          code: 'TestCorp'
+        },
+        {
+          name: 'abcv',
+          code: 'abcv'
+        },
+        {
+          name: 'bittest',
+          code: 'bittest'
+        },
+        {
+          name: 'dfdsg',
+          code: 'dfdsg'
+        },
+        {
+          name: 'dgdfhfgjgh',
+          code: 'dgdfhfgjgh'
+        },
+        {
+          name: 'dgfdh',
+          code: 'dgfdh'
+        },
+        {
+          name: 'dgfg',
+          code: 'dgfg'
+        },
+        {
+          name: 'dghhjjh',
+          code: 'dghhjjh'
+        },
+        {
+          name: 'djfyyyyyyyyyyyyyyy',
+          code: 'djfyyyyyyyyyyyyyyy'
+        },
+        {
+          name: 'dsgfdj',
+          code: 'dsgfdj'
+        },
+        {
+          name: 'fghhhj',
+          code: 'fghhhj'
+        },
+        {
+          name: 'fhgkl',
+          code: 'fhgkl'
+        },
+        {
+          name: 'fhjjjjjj',
+          code: 'fhjjjjjj'
+        },
+        {
+          name: 'gfhygjhk',
+          code: 'gfhygjhk'
+        },
+        {
+          name: 'ghhjhkjl',
+          code: 'ghhjhkjl'
+        },
+        {
+          name: 'ghjk',
+          code: 'ghjk'
+        },
+        {
+          name: 'gjhfkjhkj',
+          code: 'gjhfkjhkj'
+        },
+        {
+          name: 'gjhjkk',
+          code: 'gjhjkk'
+        },
+        {
+          name: 'gjkjllf',
+          code: 'gjkjllf'
+        },
+        {
+          name: 'gjtykghk',
+          code: 'gjtykghk'
+        },
+        {
+          name: 'hgjhgjk',
+          code: 'hgjhgjk'
+        },
+        {
+          name: 'hjkk',
+          code: 'hjkk'
+        },
+        {
+          name: 'rduuuuuuuuu',
+          code: 'rduuuuuuuuu'
+        },
+        {
+          name: 'trrrrrrrrrrrrrrrrrrr',
+          code: 'trrrrrrrrrrrrrrrrrrr'
+        },
+        {
+          name: 'trt',
+          code: 'trt'
+        },
+        {
+          name: 'wdddddd',
+          code: 'wdddddd'
+        },
+        {
+          name: 'ytttttttttttt',
+          code: 'ytttttttttttt'
+        }
+      ],
+      value: '',
+      required: true
+    },
+    {
+      level: 2,
+      hierarchyLevelId: 'business',
+      hierarchyLevelName: 'Business Name',
+      suggestions: [
+        {
+          name: 'B1',
+          code: 'B1'
+        },
+        {
+          name: 'Bus1',
+          code: 'Bus1'
+        },
+        {
+          name: 'Leve2',
+          code: 'Leve2'
+        },
+        {
+          name: 'Org2',
+          code: 'Org2'
+        },
+        {
+          name: 'Orgb',
+          code: 'Orgb'
+        },
+        {
+          name: 'Test2',
+          code: 'Test2'
+        },
+        {
+          name: 'TestB',
+          code: 'TestB'
+        },
+        {
+          name: 'TestBus',
+          code: 'TestBus'
+        },
+        {
+          name: 'asfd',
+          code: 'asfd'
+        },
+        {
+          name: 'dcccccccccc',
+          code: 'dcccccccccc'
+        },
+        {
+          name: 'ddddddddddddd',
+          code: 'ddddddddddddd'
+        },
+        {
+          name: 'dfhhhhhhh',
+          code: 'dfhhhhhhh'
+        },
+        {
+          name: 'erhjjkkjkl',
+          code: 'erhjjkkjkl'
+        },
+        {
+          name: 'fbcncvn',
+          code: 'fbcncvn'
+        },
+        {
+          name: 'fdjfjk',
+          code: 'fdjfjk'
+        },
+        {
+          name: 'fgdsfgdh',
+          code: 'fgdsfgdh'
+        },
+        {
+          name: 'fhgjhkjk',
+          code: 'fhgjhkjk'
+        },
+        {
+          name: 'ggggggg',
+          code: 'ggggggg'
+        },
+        {
+          name: 'ghjjk',
+          code: 'ghjjk'
+        },
+        {
+          name: 'hjjhjk',
+          code: 'hjjhjk'
+        },
+        {
+          name: 'hjuy',
+          code: 'hjuy'
+        },
+        {
+          name: 'jhbjnk',
+          code: 'jhbjnk'
+        },
+        {
+          name: 'jhkjljkll',
+          code: 'jhkjljkll'
+        },
+        {
+          name: 'jhlkl',
+          code: 'jhlkl'
+        },
+        {
+          name: 'jnkmlkm',
+          code: 'jnkmlkm'
+        },
+        {
+          name: 'knj,n,m m,',
+          code: 'knj,n,m m,'
+        },
+        {
+          name: 'rrrrrrrrr',
+          code: 'rrrrrrrrr'
+        },
+        {
+          name: 'rrrrrrrrre',
+          code: 'rrrrrrrrre'
+        },
+        {
+          name: 'rytrujjjk',
+          code: 'rytrujjjk'
+        },
+        {
+          name: 'ryyhtfjghk',
+          code: 'ryyhtfjghk'
+        },
+        {
+          name: 'sdddddddddddd',
+          code: 'sdddddddddddd'
+        },
+        {
+          name: 'sgdgf',
+          code: 'sgdgf'
+        },
+        {
+          name: 't1',
+          code: 't1'
+        },
+        {
+          name: 'ttttttuiiiiiiii',
+          code: 'ttttttuiiiiiiii'
+        },
+        {
+          name: 'wAAAAAAAAAA',
+          code: 'wAAAAAAAAAA'
+        }
+      ],
+      value: '',
+      required: true
+    },
+    {
+      level: 3,
+      hierarchyLevelId: 'dummyaccount',
+      hierarchyLevelName: 'dummyAccount Name',
+      suggestions: [
+        {
+          name: 'A1',
+          code: 'A1'
+        },
+        {
+          name: 'Acc1',
+          code: 'Acc1'
+        },
+        {
+          name: 'Level3',
+          code: 'Level3'
+        },
+        {
+          name: 'Org3',
+          code: 'Org3'
+        },
+        {
+          name: 'Orga',
+          code: 'Orga'
+        },
+        {
+          name: 'Test3',
+          code: 'Test3'
+        },
+        {
+          name: 'TestAcc',
+          code: 'TestAcc'
+        },
+        {
+          name: 'TestC',
+          code: 'TestC'
+        },
+        {
+          name: 'WRRRRRRRRR',
+          code: 'WRRRRRRRRR'
+        },
+        {
+          name: 'bxccnbcvn',
+          code: 'bxccnbcvn'
+        },
+        {
+          name: 'ddddddddddddddddd',
+          code: 'ddddddddddddddddd'
+        },
+        {
+          name: 'dddst',
+          code: 'dddst'
+        },
+        {
+          name: 'dfdgfdh',
+          code: 'dfdgfdh'
+        },
+        {
+          name: 'dfsgdf',
+          code: 'dfsgdf'
+        },
+        {
+          name: 'eeeee',
+          code: 'eeeee'
+        },
+        {
+          name: 'erttyyuui',
+          code: 'erttyyuui'
+        },
+        {
+          name: 'fdddddddddddddddd',
+          code: 'fdddddddddddddddd'
+        },
+        {
+          name: 'gjhkjjl',
+          code: 'gjhkjjl'
+        },
+        {
+          name: 'gsdddddddddddg',
+          code: 'gsdddddddddddg'
+        },
+        {
+          name: 'hjl',
+          code: 'hjl'
+        },
+        {
+          name: 'hkjkjlkl',
+          code: 'hkjkjlkl'
+        },
+        {
+          name: 'hyjykjl',
+          code: 'hyjykjl'
+        },
+        {
+          name: 'jhjkhkk',
+          code: 'jhjkhkk'
+        },
+        {
+          name: 'jj,ddddw',
+          code: 'jj,ddddw'
+        },
+        {
+          name: 'jjkjkjhk',
+          code: 'jjkjkjhk'
+        },
+        {
+          name: 'kmmmk',
+          code: 'kmmmk'
+        },
+        {
+          name: 'mn',
+          code: 'mn'
+        },
+        {
+          name: 'shhhhhhhhh',
+          code: 'shhhhhhhhh'
+        },
+        {
+          name: 'sss',
+          code: 'sss'
+        },
+        {
+          name: 'ssssssssssss',
+          code: 'ssssssssssss'
+        },
+        {
+          name: 't2',
+          code: 't2'
+        },
+        {
+          name: 'tyui',
+          code: 'tyui'
+        },
+        {
+          name: 'wwgt',
+          code: 'wwgt'
+        },
+        {
+          name: 'xfnnnnnnnnn',
+          code: 'xfnnnnnnnnn'
+        },
+        {
+          name: 'yutruityi',
+          code: 'yutruityi'
+        }
+      ],
+      value: '',
+      required: true
+    },
+    {
+      level: 4,
+      hierarchyLevelId: 'dummysubaccount',
+      hierarchyLevelName: 'dummySubaccount',
+      suggestions: [
+        {
+          name: 'Level4',
+          code: 'Level4'
+        },
+        {
+          name: 'Org4',
+          code: 'Org4'
+        },
+        {
+          name: 'Orgs',
+          code: 'Orgs'
+        },
+        {
+          name: 'S1',
+          code: 'S1'
+        },
+        {
+          name: 'Sub1',
+          code: 'Sub1'
+        },
+        {
+          name: 'Test4',
+          code: 'Test4'
+        },
+        {
+          name: 'TestS',
+          code: 'TestS'
+        },
+        {
+          name: 'Testsub',
+          code: 'Testsub'
+        },
+        {
+          name: 'aaaaaaaaaaaaaaaaa',
+          code: 'aaaaaaaaaaaaaaaaa'
+        },
+        {
+          name: 'asc',
+          code: 'asc'
+        },
+        {
+          name: 'cbvcxcncvn',
+          code: 'cbvcxcncvn'
+        },
+        {
+          name: 'eeeeeeeeee',
+          code: 'eeeeeeeeee'
+        },
+        {
+          name: 'eeeeeeeeeeee',
+          code: 'eeeeeeeeeeee'
+        },
+        {
+          name: 'erweteryu',
+          code: 'erweteryu'
+        },
+        {
+          name: 'ffff',
+          code: 'ffff'
+        },
+        {
+          name: 'fhfd',
+          code: 'fhfd'
+        },
+        {
+          name: 'fhgjhk',
+          code: 'fhgjhk'
+        },
+        {
+          name: 'fhjkk',
+          code: 'fhjkk'
+        },
+        {
+          name: 'ghthhhhhhhhhht',
+          code: 'ghthhhhhhhhhht'
+        },
+        {
+          name: 'hjkhkjk',
+          code: 'hjkhkjk'
+        },
+        {
+          name: 'hkkkkkk',
+          code: 'hkkkkkk'
+        },
+        {
+          name: 'jhhjkjhkj',
+          code: 'jhhjkjhkj'
+        },
+        {
+          name: 'jhhvgvggv',
+          code: 'jhhvgvggv'
+        },
+        {
+          name: 'jkjkllk;k;',
+          code: 'jkjkllk;k;'
+        },
+        {
+          name: 'kmkkkk',
+          code: 'kmkkkk'
+        },
+        {
+          name: 'saaaaaaaaaaaaa',
+          code: 'saaaaaaaaaaaaa'
+        },
+        {
+          name: 'sasdfdgfgf',
+          code: 'sasdfdgfgf'
+        },
+        {
+          name: 'sdf',
+          code: 'sdf'
+        },
+        {
+          name: 'sdgggggggg',
+          code: 'sdgggggggg'
+        },
+        {
+          name: 'seeeeee',
+          code: 'seeeeee'
+        },
+        {
+          name: 'sytttu',
+          code: 'sytttu'
+        },
+        {
+          name: 't3',
+          code: 't3'
+        },
+        {
+          name: 'xgggggggggg',
+          code: 'xgggggggggg'
+        },
+        {
+          name: 'zfghg',
+          code: 'zfghg'
+        },
+        {
+          name: 'zzzzzzzzzzzzzzzzzzf',
+          code: 'zzzzzzzzzzzzzzzzzzf'
+        }
+      ],
+      value: '',
+      required: true
+    }
+  ];
+
   const fakeJenkins = [{ kpiId: 'kpi8', kpiName: 'Code Build Time', unit: 'min', maxValue: '100', chartType: 'gaugeChart', id: '5d3013be4020938b42c23ba7', isDeleted: 'False', kpiCategory: 'Productivity', kpiUnit: 'min', kanban: false, kpiSource: 'Jenkins', trendValueList: [], maturityValue: '0', maturityRange: ['-360', '360-240', '240-120', '120-10', '10-'] }];
 
   const fakeZypher = [{ kpiId: 'kpi16', kpiName: 'In-Sprint Automation Coverage', value: 0, unit: '', maxValue: '100', chartType: 'gaugeChart', id: '5d3013be4020938b42c23bac', isDeleted: 'False', kpiCategory: 'Quality', kpiUnit: '', kanban: false, kpiSource: 'Zypher', thresholdValue: 80.0, trendValueList: [{ data: 'Speedy 2.0', value: [{ data: '0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 5_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 5_Speedy 2.0', value: 0.0, howerValue: { 'Automated Tests': 0, 'Total Tests': 0 }, preCalculatedDataModel: { data: {} } }, { data: '0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 18_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 18_Speedy 2.0', value: 0.0, howerValue: { 'Automated Tests': 0, 'Total Tests': 0 }, preCalculatedDataModel: { data: {} } }, { data: '0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 23_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 23_Speedy 2.0', value: 0.0, howerValue: { 'Automated Tests': 0, 'Total Tests': 0 }, preCalculatedDataModel: { data: {} } }, { data: '0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 32_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 32_Speedy 2.0', value: 0.0, howerValue: { 'Automated Tests': 0, 'Total Tests': 0 }, preCalculatedDataModel: { data: {} } }, { data: '0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 33_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 33_Speedy 2.0', value: 0.0, howerValue: { 'Automated Tests': 0, 'Total Tests': 0 }, preCalculatedDataModel: { data: {} } }, { data: '0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 34_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 34_Speedy 2.0', value: 0.0, howerValue: { 'Automated Tests': 0, 'Total Tests': 0 }, preCalculatedDataModel: { data: {} } }, { data: '0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 35_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 35_Speedy 2.0', value: 0.0, howerValue: { 'Automated Tests': 0, 'Total Tests': 0 }, preCalculatedDataModel: { data: {} } }, { data: '0', sProjectName: 'Speedy 2.0', sSprintID: 'DTI | 22 Jul - 04 Aug_62503_Speedy 2.0', sSprintName: 'DTI | 22 Jul - 04 Aug_Speedy 2.0', value: 0.0, howerValue: { 'Automated Tests': 0, 'Total Tests': 0 }, preCalculatedDataModel: { data: {} } }], preCalculatedDataModel: { data: {} } }], maturityValue: '1', maturityRange: ['-20', '20-40', '40-60', '60-80', '80-'] }, { kpiId: 'kpi42', kpiName: 'Regression Automation Coverage', value: 0, unit: '%', maxValue: '100', chartType: 'gaugeChart', id: '5d3013be4020938b42c23bb9', isDeleted: 'False', kpiCategory: 'Quality', kpiUnit: '%', kanban: false, kpiSource: 'Zypher', trendValueList: [{ data: 'Speedy 2.0', value: [{ data: '0.0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 5_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 5_Speedy 2.0', value: 0.0, howerValue: {}, preCalculatedDataModel: { data: {} } }, { data: '0.0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 18_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 18_Speedy 2.0', value: 0.0, howerValue: {}, preCalculatedDataModel: { data: {} } }, { data: '0.0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 23_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 23_Speedy 2.0', value: 0.0, howerValue: {}, preCalculatedDataModel: { data: {} } }, { data: '0.0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 32_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 32_Speedy 2.0', value: 0.0, howerValue: {}, preCalculatedDataModel: { data: {} } }, { data: '0.0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 33_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 33_Speedy 2.0', value: 0.0, howerValue: {}, preCalculatedDataModel: { data: {} } }, { data: '0.0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 34_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 34_Speedy 2.0', value: 0.0, howerValue: {}, preCalculatedDataModel: { data: {} } }, { data: '0.0', sProjectName: 'Speedy 2.0', sSprintID: 'KPI dashboard Sprint 35_62503_Speedy 2.0', sSprintName: 'KPI dashboard Sprint 35_Speedy 2.0', value: 0.0, howerValue: {}, preCalculatedDataModel: { data: {} } }, { data: '0.0', sProjectName: 'Speedy 2.0', sSprintID: 'DTI | 22 Jul - 04 Aug_62503_Speedy 2.0', sSprintName: 'DTI | 22 Jul - 04 Aug_Speedy 2.0', value: 0.0, howerValue: {}, preCalculatedDataModel: { data: {} } }], preCalculatedDataModel: { data: {} } }], maturityValue: '1', maturityRange: ['-20', '20-40', '40-60', '60-80', '80-'] }];
@@ -2264,6 +2863,8 @@ describe('ExecutiveComponent', () => {
     const spyJira = spyOn(component, 'groupJiraKpi');
     const spyBitBucket = spyOn(component, 'groupBitBucketKpi');
     const spySonar = spyOn(component, 'groupSonarKpi');
+    localStorage.setItem('hierarchyData', JSON.stringify(hierarchyData));
+    spyOn(component, 'getKpiCommentsCount');
     component.receiveSharedData(event);
 
     expect(spyJenkins).toHaveBeenCalled();
@@ -2950,7 +3551,396 @@ describe('ExecutiveComponent', () => {
     const spy = spyOn(component, 'checkLatestAndTrendValue');
     component.checkLatestAndTrendValue(kpiData, item);
     expect(spy).toHaveBeenCalled();
-  })
+  });
+
+  it('should call set kpi values after SonarKpiResponseReceive', () => {
+    const response = [
+        {
+            "kpiId": "kpi17",
+            "kpiName": "Unit Test Coverage",
+            "unit": "%",
+            "maxValue": "100",
+            "chartType": "",
+            "kpiInfo": {
+                "definition": "Measure  of the amount of code that is covered by unit tests.",
+                "formula": [
+                    {
+                        "lhs": "The calculation is done directly in Sonarqube"
+                    }
+                ],
+                "details": [
+                    {
+                        "type": "link",
+                        "kpiLinkDetail": {
+                            "text": "Detailed Information at",
+                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Unit-Test-Coverage"
+                        }
+                    }
+                ]
+            },
+            "id": "64ad2860dadebadcf40c7038",
+            "isDeleted": "False",
+            "kpiUnit": "%",
+            "kanban": false,
+            "kpiSource": "Sonar",
+            "thresholdValue": 55,
+            "trendValueList": [],
+            "maturityRange": [
+                "-20",
+                "20-40",
+                "40-60",
+                "60-80",
+                "80-"
+            ],
+            "groupId": 1
+        }
+    ];
+    spyOn(helperService, 'createKpiWiseId').and.returnValue({
+        "kpi17": {
+            "kpiId": "kpi17",
+            "kpiName": "Unit Test Coverage",
+            "unit": "%",
+            "maxValue": "100",
+            "chartType": "",
+            "kpiInfo": {
+                "definition": "Measure  of the amount of code that is covered by unit tests.",
+                "formula": [
+                    {
+                        "lhs": "The calculation is done directly in Sonarqube"
+                    }
+                ],
+                "details": [
+                    {
+                        "type": "link",
+                        "kpiLinkDetail": {
+                            "text": "Detailed Information at",
+                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Unit-Test-Coverage"
+                        }
+                    }
+                ]
+            },
+            "id": "64ad2860dadebadcf40c7038",
+            "isDeleted": "False",
+            "kpiUnit": "%",
+            "kanban": false,
+            "kpiSource": "Sonar",
+            "thresholdValue": 55,
+            "trendValueList": [],
+            "maturityRange": [
+                "-20",
+                "20-40",
+                "40-60",
+                "60-80",
+                "80-"
+            ],
+            "groupId": 1
+        }
+    });
+    spyOn(helperService, 'createSonarFilter');
+    const createAllKpiArraySpy = spyOn(component, 'createAllKpiArray');
+    component.afterSonarKpiResponseReceived(response);
+    expect(component.kpiLoader).toBeFalse();
+    expect(createAllKpiArraySpy).toHaveBeenCalled();
+
+});
+
+
+
+it('should call set kpi values after Zypher KpiResponseReceive', () => {
+    const response = [
+        {
+            "kpiId": "kpi42",
+            "kpiName": "Regression Automation Coverage",
+            "unit": "%",
+            "maxValue": "100",
+            "chartType": "",
+            "kpiInfo": {
+                "definition": "Measures the progress of automation of regression test cases (the test cases which are marked as part of regression suite.",
+                "formula": [
+                    {
+                        "lhs": "Regression Automation Coverage ",
+                        "operator": "division",
+                        "operands": [
+                            "No. of regression test cases automated",
+                            "Total no. of regression test cases"
+                        ]
+                    }
+                ],
+                "details": [
+                    {
+                        "type": "link",
+                        "kpiLinkDetail": {
+                            "text": "Detailed Information at",
+                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Regression-Automation-Coverage"
+                        }
+                    }
+                ]
+            },
+            "id": "64ad2860dadebadcf40c7036",
+            "isDeleted": "False",
+            "kpiUnit": "%",
+            "kanban": false,
+            "kpiSource": "Zypher",
+            "trendValueList": [
+                {
+                    "data": "AddingIterationProject",
+                    "value": [
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_3_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 1
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_4_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 2
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_5_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 3
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_6_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 4
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_14| ITR_1_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 5
+                        }
+                    ],
+                    "maturity": "1",
+                    "maturityValue": "0.0"
+                }
+            ],
+            "maturityRange": [
+                "-20",
+                "20-40",
+                "40-60",
+                "60-80",
+                "80-"
+            ],
+            "groupId": 1
+        }
+    ];
+    component.selectedtype = 'Scrum';
+    spyOn(helperService, 'createKpiWiseId').and.returnValue({
+        kpi42: {
+            "kpiId": "kpi42",
+            "kpiName": "Regression Automation Coverage",
+            "unit": "%",
+            "maxValue": "100",
+            "chartType": "",
+            "kpiInfo": {
+                "definition": "Measures the progress of automation of regression test cases (the test cases which are marked as part of regression suite.",
+                "formula": [
+                    {
+                        "lhs": "Regression Automation Coverage ",
+                        "operator": "division",
+                        "operands": [
+                            "No. of regression test cases automated",
+                            "Total no. of regression test cases"
+                        ]
+                    }
+                ],
+                "details": [
+                    {
+                        "type": "link",
+                        "kpiLinkDetail": {
+                            "text": "Detailed Information at",
+                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Regression-Automation-Coverage"
+                        }
+                    }
+                ]
+            },
+            "id": "64ad2860dadebadcf40c7036",
+            "isDeleted": "False",
+            "kpiUnit": "%",
+            "kanban": false,
+            "kpiSource": "Zypher",
+            "trendValueList": [
+                {
+                    "data": "AddingIterationProject",
+                    "value": [
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_3_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 1
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_4_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 2
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_5_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 3
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_13| ITR_6_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 4
+                        },
+                        {
+                            "data": "0.0",
+                            "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
+                            "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {},
+                            "sprintIds": [
+                                "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
+                            ],
+                            "sprintNames": [
+                                "KnowHOW | PI_14| ITR_1_AddingIterationProject"
+                            ],
+                            "sprojectName": "AddingIterationProject",
+                            "xName": 5
+                        }
+                    ],
+                    "maturity": "1",
+                    "maturityValue": "0.0"
+                }
+            ],
+            "maturityRange": [
+                "-20",
+                "20-40",
+                "40-60",
+                "60-80",
+                "80-"
+            ],
+            "groupId": 1
+        }
+    });
+    spyOn(helperService, 'calculateTestExecutionData').and.returnValue({
+        selectedTestExecutionFilterData: [],
+        testExecutionFilterData: []
+    });
+    const createAllKpiArraySpy = spyOn(component, 'createAllKpiArray');
+    component.afterZypherKpiResponseReceived(response);
+    expect(component.kpiLoader).toBeFalse();
+    expect(createAllKpiArraySpy).toHaveBeenCalled();
+
+});
+
+it('should call zypher kpi api',()=>{
+  spyOn(httpService,'postKpi').and.returnValue(of({}));
+  const spyafterZypherKpiResponseReceived = spyOn(component,'afterZypherKpiResponseReceived');
+  component.postZypherKpi({},'Zypher');
+  fixture.detectChanges();
+  expect(spyafterZypherKpiResponseReceived).toHaveBeenCalled();
+});
+
+it('should call zypher kanban kpi api',()=>{
+  component.zypherKpiRequest  = '';
+  spyOn(httpService,'postKpiKanban').and.returnValue(of({}));
+  const spyafterZypherKpiResponseReceived = spyOn(component,'afterZypherKpiResponseReceived');
+  component.postZypherKanbanKpi({},'Zypher');
+  fixture.detectChanges();
+  expect(spyafterZypherKpiResponseReceived).toHaveBeenCalled();
+});
+
+it('should call post bitbucket kanban kpi',()=>{
+  component.bitBucketKpiRequest  = '';
+  spyOn(httpService,'postKpiKanban').and.returnValue(of({}));
+  const spycreateAllKpiArray = spyOn(component,'createAllKpiArray');
+  component.postBitBucketKanbanKpi({},'Bitbucket');
+  fixture.detectChanges();
+  expect(spycreateAllKpiArray).toHaveBeenCalled();
+})
+
 });
 
 

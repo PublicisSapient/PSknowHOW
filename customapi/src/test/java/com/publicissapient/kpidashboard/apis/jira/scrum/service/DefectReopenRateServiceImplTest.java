@@ -3,6 +3,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +63,9 @@ public class DefectReopenRateServiceImplTest {
 	private ConfigHelperService configHelperService;
 	@Mock
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+
+	@Mock
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 
@@ -101,6 +107,8 @@ public class DefectReopenRateServiceImplTest {
 		Mockito.doReturn(totalJiraIssueHistoryList).when(jiraIssueCustomHistoryRepository)
 				.findByFilterAndFromStatusMap(anyMap(), anyMap());
 		try {
+			when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(any())).thenReturn(
+					new JiraIssueReleaseStatus(new String(),new HashMap<>(),new HashMap<>(),new HashMap<>()));
 			KpiElement kpiElement = defectReopenRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertNotNull(kpiElement);

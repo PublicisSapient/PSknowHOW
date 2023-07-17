@@ -62,7 +62,7 @@ export class HelperService {
     // this is used for making request object for kpi .Here first parameter is kpi source i.e
     // sonar , jira etc and second parameter is Kanban is true or false
     // type is quality or productivity
-    groupKpiFromMaster(kpiSource, isKanban, masterData, filterApplyData, filterData, kpiIdsForCurrentBoard, type,selectedTab) {
+    groupKpiFromMaster(kpiSource, isKanban, masterData, filterApplyData, filterData, kpiIdsForCurrentBoard, type, selectedTab) {
         const kpiRequestObject = <any>{};
 
         kpiRequestObject.kpiList = <any>[];
@@ -74,8 +74,8 @@ export class HelperService {
             if (type && type !== '' && !isNaN(type)) {
                 condition = (obj.groupId && obj.groupId === type) && condition;
             }
-            if(obj?.kpiCategory){
-              condition =   obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
+            if (obj?.kpiCategory) {
+                condition = obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
             }
 
             if (condition) {
@@ -275,7 +275,7 @@ export class HelperService {
         if (aggType === 'percentile') {
             const data = [a, b];
             const array = data;
-            array.sort(function(a1, b1) {
+            array.sort(function (a1, b1) {
                 return a1 - b1;
             });
             let index = percentile / 100. * (array.length);
@@ -325,50 +325,50 @@ export class HelperService {
         }
     }
 
-        // calculate gross maturity
-        calculateGrossMaturity(data, globalConfig) {
-            if (data && Object.keys(data)?.length) {
-                const self = this;
-                self.grossMaturityObj = {};
-                Object.keys(data)?.forEach(key => {
-                    data[key]?.forEach(element => {
-                        self.grossMaturityObj[element.data] = 0;
-                    });
+    // calculate gross maturity
+    calculateGrossMaturity(data, globalConfig) {
+        if (data && Object.keys(data)?.length) {
+            const self = this;
+            self.grossMaturityObj = {};
+            Object.keys(data)?.forEach(key => {
+                data[key]?.forEach(element => {
+                    self.grossMaturityObj[element.data] = 0;
                 });
+            });
 
-                let divisor = 0;
-                Object.keys(data)?.forEach(key => {
-                    data[key]?.forEach(element => {
-                        let shouldIncludeMaturity = globalConfig.filter(configData => configData.kpiId === key);
-                        if (shouldIncludeMaturity.length) {
-                            // console.log(key, shouldIncludeMaturity[0]['kpiDetail'].kpiName, shouldIncludeMaturity[0]['kpiDetail'].calculateMaturity, parseFloat(element.maturity));
-                            shouldIncludeMaturity = shouldIncludeMaturity[0]['kpiDetail'].calculateMaturity;
+            let divisor = 0;
+            Object.keys(data)?.forEach(key => {
+                data[key]?.forEach(element => {
+                    let shouldIncludeMaturity = globalConfig.filter(configData => configData.kpiId === key);
+                    if (shouldIncludeMaturity.length) {
+                        // console.log(key, shouldIncludeMaturity[0]['kpiDetail'].kpiName, shouldIncludeMaturity[0]['kpiDetail'].calculateMaturity, parseFloat(element.maturity));
+                        shouldIncludeMaturity = shouldIncludeMaturity[0]['kpiDetail'].calculateMaturity;
 
-                            if (shouldIncludeMaturity === true) {
-                                self.grossMaturityObj[element.data] += parseFloat((element.maturity ? parseFloat(element.maturity) : 0) + '');
-                            }
+                        if (shouldIncludeMaturity === true) {
+                            self.grossMaturityObj[element.data] += parseFloat((element.maturity ? parseFloat(element.maturity) : 0) + '');
                         }
-                    });
-                    let shouldCalculateMaturity = globalConfig.filter(configData => configData.kpiId === key);
-                    if (shouldCalculateMaturity.length) {
-                        shouldCalculateMaturity = shouldCalculateMaturity[0]['kpiDetail'].calculateMaturity;
-                    }
-                    if (shouldCalculateMaturity === true) {
-                        divisor++;
                     }
                 });
+                let shouldCalculateMaturity = globalConfig.filter(configData => configData.kpiId === key);
+                if (shouldCalculateMaturity.length) {
+                    shouldCalculateMaturity = shouldCalculateMaturity[0]['kpiDetail'].calculateMaturity;
+                }
+                if (shouldCalculateMaturity === true) {
+                    divisor++;
+                }
+            });
 
-                Object.keys(self.grossMaturityObj)?.forEach(key => {
-                    // console.log(self.grossMaturityObj[key], devisor);
-                    if (divisor) {
-                        self.grossMaturityObj[key] = self.grossMaturityObj[key] / divisor;
-                    }
-                });
-                setInterval(() => {
-                    this.passMaturityToFilter.emit(self.grossMaturityObj);
-                }, 500);
-            }
+            Object.keys(self.grossMaturityObj)?.forEach(key => {
+                // console.log(self.grossMaturityObj[key], devisor);
+                if (divisor) {
+                    self.grossMaturityObj[key] = self.grossMaturityObj[key] / divisor;
+                }
+            });
+            setInterval(() => {
+                this.passMaturityToFilter.emit(self.grossMaturityObj);
+            }, 500);
         }
+    }
 
 
     sortAlphabetically(objArray) {
@@ -390,22 +390,22 @@ export class HelperService {
         }
         let aggArr = [];
         aggArr = arr?.map(item => ({
-                ...item,
-                value: item.value.map(x => ({
-                        ...x,
-                        value: (typeof x.value === 'object') ? {} : [],
-                        lineValue: x?.hasOwnProperty('lineValue') ? (typeof x.lineValue === 'object') ? {} : [] : null
-                    }))
-            }));
+            ...item,
+            value: item.value.map(x => ({
+                ...x,
+                value: (typeof x.value === 'object') ? {} : [],
+                lineValue: x?.hasOwnProperty('lineValue') ? (typeof x.lineValue === 'object') ? {} : [] : null
+            }))
+        }));
 
         aggArr = this.sortAlphabetically(aggArr);
 
-        for(const key in obj){
-            for(let i = 0; i<obj[key]?.length;i++){
+        for (const key in obj) {
+            for (let i = 0; i < obj[key]?.length; i++) {
                 const idx = aggArr?.findIndex(x => x?.data == obj[key][i]?.data);
-                if(idx != -1){
-                    for(let j =0; j<obj[key][i]?.value?.length; j++){
-                        if(!Array.isArray(aggArr[idx]?.value[j]?.value)){
+                if (idx != -1) {
+                    for (let j = 0; j < obj[key][i]?.value?.length; j++) {
+                        if (!Array.isArray(aggArr[idx]?.value[j]?.value)) {
                             aggArr[idx].value[j].value = { ...aggArr[idx]?.value[j]?.value, ...obj[key][i]?.value[j]?.value };
                             if (aggArr[idx]?.value[j]?.hasOwnProperty('lineValue') && aggArr[idx]?.value[j]?.lineValue != null) {
                                 aggArr[idx].value[j].lineValue = { ...aggArr[idx]?.value[j]?.lineValue, ...obj[key][i]?.value[j]?.lineValue };
@@ -431,7 +431,7 @@ export class HelperService {
             if (aggregationType?.toLowerCase() == 'average') {
                 for (let i = 0; i < aggArr?.length; i++) {
                     aggArr[i].value?.map(x => {
-                        x.value = parseFloat(((x.value?.reduce((partialSum=0, a) => partialSum + a, 0)) / x.value?.length).toFixed(2));
+                        x.value = parseFloat(((x.value?.reduce((partialSum = 0, a) => partialSum + a, 0)) / x.value?.length).toFixed(2));
                         x.data = x.value;
                         if (x.hasOwnProperty('lineValue') && x?.lineValue != null) {
                             x.lineValue = parseFloat(((x.lineValue?.reduce((partialSum, a) => partialSum + a, 0)) / x.lineValue?.length).toFixed(2));
@@ -473,7 +473,7 @@ export class HelperService {
             if (aggregationType?.toLowerCase() == 'percentile') {
                 for (let i = 0; i < aggArr?.length; i++) {
                     aggArr[i].value?.map(x => {
-                        x.value?.sort(function(a1, b1) {
+                        x.value?.sort(function (a1, b1) {
                             return a1 - b1;
                         });
                         let index = ((percentile / 100) * (x.value?.length));
@@ -481,7 +481,7 @@ export class HelperService {
                         x.value = index != 0 ? x.value[index - 1] : x.value[index];
                         x.data = x.value;
                         if (x.hasOwnProperty('lineValue') && x?.lineValue != null) {
-                            x.lineValue?.sort(function(a1, b1) {
+                            x.lineValue?.sort(function (a1, b1) {
                                 return a1 - b1;
                             });
                             let index = ((percentile / 100) * (x.lineValue?.length));
@@ -494,5 +494,17 @@ export class HelperService {
             }
         }
         return aggArr;
+    }
+
+    getKpiCommentsHttp(data) {
+        return new Promise((resolve, reject) => this.httpService.getCommentCount(data).subscribe((response) => {
+            if (response.success) {
+                resolve({ ...response.data });
+            }else{
+                resolve({});
+            }
+        }, error => {
+            reject(error);
+        }));
     }
 }

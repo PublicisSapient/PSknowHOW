@@ -395,7 +395,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public UserInfo save(UserInfo userInfo) {
+		if (userInfoRepository.count() == 0) {
+			UserInfo superAdminUserInfo = createSuperAdminUserInfo(userInfo.getUsername(), userInfo.getEmailAddress());
+			return userInfoRepository.save(superAdminUserInfo);
+		}
 		return userInfoRepository.save(userInfo);
+
 	}
 
 	@Override
@@ -407,6 +412,19 @@ public class UserInfoServiceImpl implements UserInfoService {
 		userInfo.setProjectsAccess(Collections.emptyList());
 		userInfo.setEmailAddress(email);
 
+		return userInfo;
+	}
+
+	/*
+	to create Super admin User info for first time user
+	 */
+	public UserInfo createSuperAdminUserInfo(String username, String email) {
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUsername(username);
+		userInfo.setAuthType(AuthType.STANDARD);
+		userInfo.setAuthorities(Collections.singletonList(Constant.ROLE_SUPERADMIN));
+		userInfo.setProjectsAccess(Collections.emptyList());
+		userInfo.setEmailAddress(email);
 		return userInfo;
 	}
 

@@ -4,12 +4,16 @@ import static com.publicissapient.kpidashboard.common.util.DateUtil.dateTimeForm
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentHistoryRepositoryCustom;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentRepositoryCustom;
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +23,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
-import com.publicissapient.kpidashboard.common.model.kpicommentshistory.KpiCommentsHistory;
+import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
 
@@ -33,10 +37,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CommentsServiceImpl implements CommentsService {
 
-	public static final String TIME_FORMAT = "dd-MMM-YYYY";
+	public static final String TIME_FORMAT = "dd-MMM-YYYY HH:mm";
 
 	@Autowired
 	private KpiCommentsRepository kpiCommentsRepository;
+
+	@Autowired
+	private KpiCommentRepositoryCustom kpiCommentsCustomRepository;
+
+	@Autowired
+	private KpiCommentHistoryRepositoryCustom kpiCommentsHistoryCustomRepository;
 
 	@Autowired
 	private KpiCommentsHistoryRepository kpiCommentsHistoryRepository;
@@ -50,22 +60,22 @@ public class CommentsServiceImpl implements CommentsService {
 	 * 
 	 * @param node
 	 * @param level
-	 * @param sprintId
+	 * @param nodeChildId
 	 * @param kpiId
 	 * @return
 	 */
 	@Override
-	public Map<String, Object> findCommentByKPIId(String node, String level, String sprintId, String kpiId) {
-
-		KPIComments kpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId);
+	public Map<String, Object> findCommentByKPIId(String node, String level, String nodeChildId, String kpiId) {
+		//fetching comments from history which are not deleted
+		KpiCommentsHistory kpiComments = kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, nodeChildId, kpiId);
 
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
 		if (null != kpiComments) {
 			log.info("Received all matching comment from DB, comments size: {}", kpiComments);
-			List<CommentsInfo> finalCommentsInfo = commentMappingOperation(kpiComments);
+			List<CommentsInfo> finalCommentsInfo = kpiComments.getCommentsInfo().stream().filter(info->!info.isDeleted()).collect(Collectors.toList());
 			mappedCollection.put("node", node);
 			mappedCollection.put("level", level);
-			mappedCollection.put("sprintId", sprintId);
+			mappedCollection.put("nodeChildId", nodeChildId);
 			mappedCollection.put("kpiId", kpiId);
 			mappedCollection.put("CommentsInfo", finalCommentsInfo);
 		}
@@ -73,26 +83,24 @@ public class CommentsServiceImpl implements CommentsService {
 		return mappedCollection;
 	}
 
-	/**
-	 * This method will filter the comments with selected KpiId on the basis of
-	 * maximum comments count to be shown on the dashboard.
-	 * 
-	 * @param kpiComments
-	 * @return
-	 */
-	private List<CommentsInfo> commentMappingOperation(KPIComments kpiComments) {
-
-		List<CommentsInfo> kpiIdMappedWithCommentsInfo = new ArrayList<>();
-		List<CommentsInfo> commentsInfo = kpiComments.getCommentsInfo();
-
-		int limitCommentsShownOnKpiDashboardCount = customApiConfig.getLimitCommentsShownOnKpiDashboardCount();
-		for (CommentsInfo commentInfo : commentsInfo) {
-			kpiIdMappedWithCommentsInfo.add(commentInfo);
-			if (kpiIdMappedWithCommentsInfo.size() == limitCommentsShownOnKpiDashboardCount) {
-				break;
-			}
+	@Override
+	public Map<String, Integer> findCommentByBoard(List<String> node, String level, String nodeChildId,
+			List<String> kpiIds) {
+		List<KpiCommentsHistory> kpiCommentsList = kpiCommentsHistoryRepository.findCommentsByBoard(node, level, nodeChildId, kpiIds);
+		Map<String, Integer> hierarchyWiseComments = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(kpiCommentsList)) {
+			kpiCommentsList.stream().collect(Collectors.groupingBy(KpiCommentsHistory::getKpiId))
+					.forEach((kpiId, commentsList) -> hierarchyWiseComments.merge(kpiId, commentsList.stream()
+									.flatMap(comment -> comment.getCommentsInfo().stream().filter(info->!info.isDeleted())).collect(Collectors.toList()).size(),
+							Integer::sum));
 		}
-		return kpiIdMappedWithCommentsInfo;
+		return hierarchyWiseComments;
+	}
+
+	@Override
+	public void deleteComments(String commentId) {
+		kpiCommentsCustomRepository.deleteByCommentId(commentId);
+		kpiCommentsHistoryCustomRepository.markCommentDelete(commentId);
 	}
 
 	/**
@@ -139,14 +147,14 @@ public class CommentsServiceImpl implements CommentsService {
 		String node = kpiComments.getNode();
 		String level = kpiComments.getLevel();
 		String kpiId = kpiComments.getKpiId();
-		String sprintId = kpiComments.getSprintId();
+		String nodeChildId = kpiComments.getNodeChildId();
 		List<CommentsInfo> newCommentsInfo = kpiComments.getCommentsInfo();
 		List<CommentsInfo> newCommentsInfoHistory = kpiCommentsHistory.getCommentsInfo();
 
 		try {
-			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, sprintId, kpiId);
+			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, nodeChildId, kpiId);
 			KpiCommentsHistory matchedKpiCommentsHistory = kpiCommentsHistoryRepository
-					.findByNodeAndLevelAndSprintIdAndKpiId(node, level, sprintId, kpiId);
+					.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, nodeChildId, kpiId);
 
 			if (Objects.isNull(matchedKpiComments)) {
 				kpiCommentsRepository.save(kpiComments);
@@ -176,7 +184,6 @@ public class CommentsServiceImpl implements CommentsService {
 	 */
 	private void reMappingOfKpiComments(KPIComments matchedKpiComment, List<CommentsInfo> newCommentsInfo) {
 		List<CommentsInfo> commentsInfo = matchedKpiComment.getCommentsInfo();
-		if (CollectionUtils.isNotEmpty(commentsInfo)) {
 			int commentsInfoSize = commentsInfo.size();
 			int perKpiMaxCommentsStoreCount = customApiConfig.getKpiCommentsMaxStoreCount();
 			if (commentsInfoSize < perKpiMaxCommentsStoreCount) {
@@ -195,7 +202,6 @@ public class CommentsServiceImpl implements CommentsService {
 						"Old comments removed, saved new comment & re-arranged comments into kpi_comments collection {}",
 						matchedKpiComment);
 			}
-		}
 	}
 
 	/**
@@ -215,4 +221,5 @@ public class CommentsServiceImpl implements CommentsService {
 		log.debug("Saved new comment and re-arranged existing comments info into kpi_comments_history collection {}",
 				kpiCommentsHistory);
 	}
+
 }
