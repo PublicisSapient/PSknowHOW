@@ -1105,10 +1105,10 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   border-right: 10px solid transparent;
   border-bottom: 12px solid #fff;
   position: absolute;
-  left: 68px;
-  -webkit-filter: drop-shadow(-1px 0px 0px #b9b9bb);
-  filter: drop-shadow(-1px 0px 0px #b9b9bb);
-  top: -12px;
+  left: 65px;
+  -webkit-filter: drop-shadow(0px -2px 1px #b9b9bb);
+  filter: drop-shadow(0px -2px 1px #b9b9bb);
+  top: -11px;
 }
 .comment-inner-section{
   max-height: 400px;

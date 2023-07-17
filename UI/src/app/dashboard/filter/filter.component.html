@@ -230,16 +230,16 @@
                         <h5 class="p-m-0 font-grey font-bold">Latest 10 comments</h5>
                         <h5 class="p-mb-2 p-mt-2 font-grey">
                            {{getNodeName(filterForm.get('selectedTrendValue')?.value)}}
-                           <span *ngIf="(selectedSprint | json) != '{}'">
+                           <span *ngIf="selectedTab?.toLowerCase() == 'iteration' && (selectedSprint | json) != '{}'">
                               {{' >> ' + selectedSprint['nodeName']}}
                            </span>
-                           <span *ngIf="(selectedRelease | json) != '{}'">
+                           <span *ngIf="selectedTab?.toLowerCase() == 'release' && (selectedRelease | json) != '{}'">
                               {{' >> ' + selectedRelease['nodeName']}}
                            </span>
                         </h5>
                         <div *ngFor="let comment of commentList">
-                           <h5 class="comment-heading font-small p-mb-1">{{comment.kpiId}}</h5>
-                           <div class="comment-author">
+                           <h5 class="comment-heading font-small p-mb-1">{{kpiObj[comment.kpiId]}}</h5>
+                           <div class="comment-author font-small">
                               <b>{{comment?.commentBy}}</b> 
                               {{comment?.commentOn}}
                            </div>
@@ -248,7 +248,7 @@
                      </ng-container>
                   </div>
                   <ng-template #noComments>
-                     <h5 class="p-m-0 font-grey" *ngIf="!showSpinner">No new comments</h5>
+                     <h5 class="p-m-0 font-grey" *ngIf="!showSpinner">No comments</h5>
                   </ng-template>
                </div>
             </div>

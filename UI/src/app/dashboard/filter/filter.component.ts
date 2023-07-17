@@ -136,6 +136,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   commentList: Array<object> = [];
   showCommentPopup:boolean = false;
   showSpinner: boolean = false;
+  kpiObj:object = {};
 
   constructor(
     private service: SharedService,
@@ -1384,11 +1385,15 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.showSpinner = true;
     let reqObj = {
       "level": this.filterApplyData?.['level'],
-      "nodeChildId": this.filterApplyData?.['selectedMap']['sprint']?.[0] || this.filterApplyData?.['selectedMap']['release']?.[0] || this.filterApplyData?.['selectedMap']['date']?.[0],
+      "nodeChildId": this.filterApplyData?.['selectedMap']['sprint']?.[0] || this.filterApplyData?.['selectedMap']['release']?.[0] || this.filterApplyData?.['selectedMap']['date']?.[0] || "",
       "kpiIds": this.showKpisList?.map((item) => item.kpiId),
       "nodes":[]
     }
 
+    this.showKpisList.forEach(x => {
+      this.kpiObj[x.kpiId] = x.kpiName;
+    });
+    
     if(this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'release'){
       reqObj['nodes'] = this.filterData.filter(x => x.nodeId == this.filterApplyData?.['ids'][0])[0]?.parentId;
     }else{
