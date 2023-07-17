@@ -207,7 +207,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 						return jiraIssue.getStoryPoints();
 					} else {
-						return jiraIssue.getOriginalEstimateMinutes();
+						return Double.valueOf(Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0));
 					}
 				}).sum());
 		releaseProgressStoryPoint.put(IN_PROGRESS, jiraIssueList.stream().filter(
@@ -217,7 +217,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 						return jiraIssue.getStoryPoints();
 					} else {
-						return jiraIssue.getOriginalEstimateMinutes();
+						return Double.valueOf(Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0));
 					}
 				}).sum());
 		releaseProgressStoryPoint.put(DONE, jiraIssueList.stream()
@@ -227,7 +227,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 						return jiraIssue.getStoryPoints();
 					} else {
-						return jiraIssue.getOriginalEstimateMinutes();
+						return Double.valueOf(Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0));
 					}
 				}).sum());
 		dataCount.setData(

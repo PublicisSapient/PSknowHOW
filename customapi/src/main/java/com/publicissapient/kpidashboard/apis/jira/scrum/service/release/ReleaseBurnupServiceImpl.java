@@ -125,7 +125,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			List<JiraHistoryChangeLog> fixVersionUpdationLog = issueHistory.getFixVersionUpdationLog();
 			Collections.sort(fixVersionUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 			int lastIndex = fixVersionUpdationLog.size() - 1;
-			fixVersionUpdationLog.stream().filter(updateLogs -> updateLogs.getChangedTo().equalsIgnoreCase(releaseName)
+			fixVersionUpdationLog.stream().filter(updateLogs -> updateLogs.getChangedTo().contains(releaseName)
 					|| updateLogs.getChangedFrom().contains(releaseName)).forEach(updateLogs -> {
 						List<JiraIssue> jiraIssueList = getRespectiveJiraIssue(releaseIssue, issueHistory);
 						LocalDate updatedLog = updateLogs.getUpdatedOn().toLocalDate();
