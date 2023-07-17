@@ -109,10 +109,11 @@ public class CommentsController {
 	public ResponseEntity<ServiceResponse> deleteComments(@PathVariable String commentId) {
 		try {
 			commentsService.deleteComments(commentId);
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Successfully Deleted Comment",commentId));
-		}
-		catch(Exception ex){
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments Not Deleted", ex.getMessage()));
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "Successfully Deleted Comment", commentId));
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(false, "Comments Not Deleted", ex.getMessage()));
 		}
 	}
 

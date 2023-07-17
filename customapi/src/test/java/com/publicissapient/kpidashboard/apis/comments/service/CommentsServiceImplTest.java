@@ -240,7 +240,6 @@ public class CommentsServiceImplTest {
 		mappedCollection.put("kpiId", kpiId);
 		mappedCollection.put("CommentsInfo", commentsInfo);
 		when(kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, sprintId, kpiId)).thenReturn(kpiComment);
-		Mockito.when(customApiConfig.getLimitCommentsShownOnKpiDashboardCount()).thenReturn(5);
 		Map<String, Object> mappedCollectionActual = commentServiceImpl.findCommentByKPIId(node, level, sprintId,
 				kpiId);
 		Assert.assertEquals(mappedCollection, mappedCollectionActual);
@@ -328,7 +327,7 @@ public class CommentsServiceImplTest {
 		commentViewResponseDTOList.add(commentViewResponseDTO);
 
 		when(kpiCommentsHistoryRepository.findCommentsByBoard(nodes, level, sprintId, kpiIds)).thenReturn(kpiCommentsList);
-		Mockito.when(customApiConfig.getLimitCommentsShownOnKpiDashboardCount()).thenReturn(5);
+		Mockito.when(customApiConfig.getLatestKpiCommentsSummary()).thenReturn(10);
 		List<CommentViewResponseDTO> commentViewResponse = commentServiceImpl.findLatestCommentSummary(nodes, level, sprintId,
 				kpiIds);
 		Assert.assertEquals(commentViewResponseDTOList, commentViewResponse);
