@@ -137,7 +137,7 @@ public final class Constant {
 	public static final String AMBER = "#FFBF00";
 	public static final String GREEN = "#00ff00";
 	public static final String DOT =".";
-	public static final String QUESTION_MARK="?";
+	public static final String STAR="*";
 
 	private Constant() {
 	}
