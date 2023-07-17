@@ -131,12 +131,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 
 		if (null != leafNode) {
 			log.info("Wastage -> Requested sprint : {}", leafNode.getName());
-			SprintDetails dbSprintDetail;
-			try {
-				dbSprintDetail = (SprintDetails) getSprintDetailsFromBaseClass().clone();
-			}catch (CloneNotSupportedException e) {
-				dbSprintDetail = null;
-			}
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
 			SprintDetails sprintDetails;
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()

@@ -130,12 +130,8 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Planned Work Status -> Requested sprint : {}", leafNode.getName());
-			SprintDetails dbSprintDetail;
-			try {
-				dbSprintDetail = (SprintDetails) getSprintDetailsFromBaseClass().clone();
-			}catch (CloneNotSupportedException e) {
-				dbSprintDetail = null;
-			}			SprintDetails sprintDetails;
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
+			SprintDetails sprintDetails;
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());

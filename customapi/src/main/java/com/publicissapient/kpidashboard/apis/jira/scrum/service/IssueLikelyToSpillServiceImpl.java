@@ -118,13 +118,9 @@ public class IssueLikelyToSpillServiceImpl extends JiraKPIService<Integer, List<
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Issue Likely to Spill -> Requested sprint : {}", leafNode.getName());
-			SprintDetails dbSprintDetail;
+
 			SprintDetails sprintDetails;
-			try {
-				dbSprintDetail = (SprintDetails) getSprintDetailsFromBaseClass().clone();
-			}catch (CloneNotSupportedException e) {
-				dbSprintDetail = null;
-			}
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());

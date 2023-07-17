@@ -123,14 +123,8 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Work Remaining -> Requested sprint : {}", leafNode.getName());
-			SprintDetails dbSprintDetail;
 			SprintDetails sprintDetails;
-			try {
-				dbSprintDetail = (SprintDetails) getSprintDetailsFromBaseClass().clone();
-			}catch (CloneNotSupportedException e) {
-				dbSprintDetail = null;
-			}
-
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());

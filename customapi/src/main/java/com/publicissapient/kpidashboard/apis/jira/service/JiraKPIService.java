@@ -270,8 +270,13 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public SprintDetails getSprintDetailsFromBaseClass() {
-		return jiraService.getCurrentSprintDetails();
-
+		SprintDetails sprintDetails;
+		try {
+			sprintDetails = (SprintDetails) jiraService.getCurrentSprintDetails().clone();
+		}catch (CloneNotSupportedException e) {
+			sprintDetails = null;
+		}
+		return sprintDetails;
 	}
 
 	public List<JiraIssue> getJiraIssuesFromBaseClass(List<String> numbersList) {

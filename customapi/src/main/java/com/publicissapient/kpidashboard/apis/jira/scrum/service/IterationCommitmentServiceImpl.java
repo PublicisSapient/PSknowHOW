@@ -111,12 +111,8 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Scope Change -> Requested sprint : {}", leafNode.getName());
-			SprintDetails dbSprintDetail;
-			try {
-				dbSprintDetail = (SprintDetails) getSprintDetailsFromBaseClass().clone();
-			}catch (CloneNotSupportedException e) {
-				dbSprintDetail = null;
-			}			SprintDetails sprintDetails;
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
+			SprintDetails sprintDetails;
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
