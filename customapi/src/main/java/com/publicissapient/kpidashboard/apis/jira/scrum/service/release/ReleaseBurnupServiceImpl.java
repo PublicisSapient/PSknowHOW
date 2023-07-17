@@ -122,8 +122,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			Map<LocalDate, List<JiraIssue>> completedReleaseMap) {
 
 		releaseName = releaseName.toLowerCase();
-		String finalReleaseName = releaseName;
-		String finalReleaseName1 = releaseName;
+		String finalReleaseName = releaseName !=null? releaseName: "";
 		allIssuesHistory.forEach(issueHistory -> {
 			List<JiraHistoryChangeLog> fixVersionUpdationLog = issueHistory.getFixVersionUpdationLog();
 			Collections.sort(fixVersionUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
@@ -132,8 +131,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 					|| updateLogs.getChangedFrom().toLowerCase().contains(finalReleaseName)).forEach(updateLogs -> {
 						List<JiraIssue> jiraIssueList = getRespectiveJiraIssue(releaseIssue, issueHistory);
 						LocalDate updatedLog = updateLogs.getUpdatedOn().toLocalDate();
-						if (updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName1)) {
-							if (fixVersionUpdationLog.get(lastIndex).getChangedTo().toLowerCase().contains(finalReleaseName1)) {
+						if (updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName)) {
+							if (fixVersionUpdationLog.get(lastIndex).getChangedTo().toLowerCase().contains(finalReleaseName)) {
 								List<JiraIssue> cloneList = new ArrayList<>(jiraIssueList);
 								fullReleaseMap.computeIfPresent(updatedLog, (k, v) -> {
 									v.addAll(cloneList);
@@ -148,7 +147,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 							});
 							addedIssuesMap.putIfAbsent(updatedLog, jiraIssueList);
 						}
-						if (updateLogs.getChangedFrom().toLowerCase().contains(finalReleaseName1)) {
+						if (updateLogs.getChangedFrom().toLowerCase().contains(finalReleaseName)) {
 							List<JiraIssue> removeJiraIssueLIst = new ArrayList<>(jiraIssueList);
 							updatedLog = updateLogs.getUpdatedOn().toLocalDate();
 							removeIssueMap.computeIfPresent(updatedLog, (k, v) -> {
