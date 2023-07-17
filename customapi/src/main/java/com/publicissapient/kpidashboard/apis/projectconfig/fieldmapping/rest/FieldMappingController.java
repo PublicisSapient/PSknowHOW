@@ -19,15 +19,8 @@
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.rest;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.common.service.MetaDataIdentifierService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.MetadataIdentifierServiceImpl;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
-import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
-import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -66,11 +59,6 @@ public class FieldMappingController {
 
 	@Autowired
 	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private MetadataIdentifierRepository metadataIdentifierRepository;
-
-	private static final String TOOL_JIRA = ProcessorConstants.JIRA;
 
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> addFieldMapping(@PathVariable String projectToolConfigId,
