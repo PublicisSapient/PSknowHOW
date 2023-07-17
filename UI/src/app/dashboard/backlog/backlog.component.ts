@@ -472,7 +472,11 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
         }
         if (preAggregatedValues?.length > 1) {
-          this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+          if(kpiId === 'kpi138'){
+            this.kpiChartData[kpiId] = this.applyAggregationLogicForkpi138(preAggregatedValues);
+          } else{
+            this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+          }
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
@@ -484,7 +488,11 @@ export class BacklogComponent implements OnInit, OnDestroy{
           preAggregatedValues = [...preAggregatedValues, ...trendValueList['value']?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
         }
         if (preAggregatedValues?.length > 1) {
-          this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+          if(kpiId === 'kpi138'){
+            this.kpiChartData[kpiId] = this.applyAggregationLogicForkpi138(preAggregatedValues);
+          } else{
+            this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+          }
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
@@ -697,6 +705,17 @@ export class BacklogComponent implements OnInit, OnDestroy{
     this.modalDetails['tableHeadings'] = this.allKpiArray[idx]?.modalHeads;
     this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
     this.modalDetails['tableValues'] = tableValues;
+  }
+
+  applyAggregationLogicForkpi138(arr){
+    const aggregatedArr = JSON.parse(JSON.stringify(arr));
+    aggregatedArr.forEach(x =>{
+      x.data[2].value = x.data[2].value * x.data[0].value;
+    });
+
+    const kpi138 = this.applyAggregationLogic(aggregatedArr);
+    kpi138[0].data[2].value = Math.round(kpi138[0].data[2].value/kpi138[0].data[0].value);
+    return kpi138;
   }
 
   applyAggregationLogic(arr) {
