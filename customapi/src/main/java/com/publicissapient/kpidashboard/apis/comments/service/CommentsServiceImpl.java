@@ -68,13 +68,15 @@ public class CommentsServiceImpl implements CommentsService {
 	 */
 	@Override
 	public Map<String, Object> findCommentByKPIId(String node, String level, String nodeChildId, String kpiId) {
-		//fetching comments from history which are not deleted
-		KpiCommentsHistory kpiComments = kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, nodeChildId, kpiId);
+		// fetching comments from history which are not deleted
+		KpiCommentsHistory kpiComments = kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node,
+				level, nodeChildId, kpiId);
 
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
 		if (null != kpiComments) {
 			log.info("Received all matching comment from DB, comments size: {}", kpiComments);
-			List<CommentsInfo> finalCommentsInfo = kpiComments.getCommentsInfo().stream().filter(info->!info.isDeleted()).collect(Collectors.toList());
+			List<CommentsInfo> finalCommentsInfo = kpiComments.getCommentsInfo().stream()
+					.filter(info -> !info.isDeleted()).collect(Collectors.toList());
 			mappedCollection.put("node", node);
 			mappedCollection.put("level", level);
 			mappedCollection.put("nodeChildId", nodeChildId);
@@ -88,13 +90,14 @@ public class CommentsServiceImpl implements CommentsService {
 	@Override
 	public Map<String, Integer> findCommentByBoard(List<String> node, String level, String nodeChildId,
 			List<String> kpiIds) {
-		List<KpiCommentsHistory> kpiCommentsList = kpiCommentsHistoryRepository.findCommentsByBoard(node, level, nodeChildId, kpiIds);
+		List<KpiCommentsHistory> kpiCommentsList = kpiCommentsHistoryRepository.findCommentsByBoard(node, level,
+				nodeChildId, kpiIds);
 		Map<String, Integer> hierarchyWiseComments = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(kpiCommentsList)) {
 			kpiCommentsList.stream().collect(Collectors.groupingBy(KpiCommentsHistory::getKpiId))
 					.forEach((kpiId, commentsList) -> hierarchyWiseComments.merge(kpiId, commentsList.stream()
-									.flatMap(comment -> comment.getCommentsInfo().stream().filter(info->!info.isDeleted())).collect(Collectors.toList()).size(),
-							Integer::sum));
+							.flatMap(comment -> comment.getCommentsInfo().stream().filter(info -> !info.isDeleted()))
+							.collect(Collectors.toList()).size(), Integer::sum));
 		}
 		return hierarchyWiseComments;
 	}
@@ -104,7 +107,7 @@ public class CommentsServiceImpl implements CommentsService {
 		kpiCommentsCustomRepository.deleteByCommentId(commentId);
 		kpiCommentsHistoryCustomRepository.markCommentDelete(commentId);
 	}
-				
+
 	/**
 	 *
 	 * @param nodes
@@ -132,33 +135,11 @@ public class CommentsServiceImpl implements CommentsService {
 						commentViewResponseDTO.setCommentOn(commentsInfo.getCommentOn());
 						commentViewResponseDTO.setCommentBy(commentsInfo.getCommentBy());
 						return commentViewResponseDTO;
-					})).sorted(Comparator.comparing(CommentViewResponseDTO::getCommentOn))
-					.limit(10).collect(Collectors.toList());
+					})).sorted(Comparator.comparing(CommentViewResponseDTO::getCommentOn).reversed())
+					.limit(customApiConfig.getLatestKpiCommentsSummary()).collect(Collectors.toList());
 		} else {
 			return new ArrayList<>();
 		}
-	}
-
-	/**
-	 * This method will filter the comments with selected KpiId on the basis of
-	 * maximum comments count to be shown on the dashboard.
-	 *
-	 * @param kpiComments
-	 * @return
-	 */
-	private List<CommentsInfo> commentMappingOperation(KPIComments kpiComments) {
-
-		List<CommentsInfo> kpiIdMappedWithCommentsInfo = new ArrayList<>();
-		List<CommentsInfo> commentsInfo = kpiComments.getCommentsInfo();
-
-		int limitCommentsShownOnKpiDashboardCount = customApiConfig.getLimitCommentsShownOnKpiDashboardCount();
-		for (CommentsInfo commentInfo : commentsInfo) {
-			kpiIdMappedWithCommentsInfo.add(commentInfo);
-			if (kpiIdMappedWithCommentsInfo.size() == limitCommentsShownOnKpiDashboardCount) {
-				break;
-			}
-		}
-		return kpiIdMappedWithCommentsInfo;
 	}
 
 	/**
@@ -210,7 +191,8 @@ public class CommentsServiceImpl implements CommentsService {
 		List<CommentsInfo> newCommentsInfoHistory = kpiCommentsHistory.getCommentsInfo();
 
 		try {
-			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, nodeChildId, kpiId);
+			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, nodeChildId,
+					kpiId);
 			KpiCommentsHistory matchedKpiCommentsHistory = kpiCommentsHistoryRepository
 					.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, nodeChildId, kpiId);
 
@@ -242,24 +224,23 @@ public class CommentsServiceImpl implements CommentsService {
 	 */
 	private void reMappingOfKpiComments(KPIComments matchedKpiComment, List<CommentsInfo> newCommentsInfo) {
 		List<CommentsInfo> commentsInfo = matchedKpiComment.getCommentsInfo();
-			int commentsInfoSize = commentsInfo.size();
-			int perKpiMaxCommentsStoreCount = customApiConfig.getKpiCommentsMaxStoreCount();
-			if (commentsInfoSize < perKpiMaxCommentsStoreCount) {
-				newCommentsInfo.addAll(commentsInfo);
-				matchedKpiComment.setCommentsInfo(newCommentsInfo);
-				kpiCommentsRepository.save(matchedKpiComment);
-				log.debug("Saved new comment & re-arranged existing comments into kpi_comments collection {}",
-						matchedKpiComment);
+		int commentsInfoSize = commentsInfo.size();
+		int perKpiMaxCommentsStoreCount = customApiConfig.getKpiCommentsMaxStoreCount();
+		if (commentsInfoSize < perKpiMaxCommentsStoreCount) {
+			newCommentsInfo.addAll(commentsInfo);
+			matchedKpiComment.setCommentsInfo(newCommentsInfo);
+			kpiCommentsRepository.save(matchedKpiComment);
+			log.debug("Saved new comment & re-arranged existing comments into kpi_comments collection {}",
+					matchedKpiComment);
 
-			} else {
-				commentsInfo.remove(commentsInfoSize - 1);
-				newCommentsInfo.addAll(commentsInfo);
-				matchedKpiComment.setCommentsInfo(newCommentsInfo);
-				kpiCommentsRepository.save(matchedKpiComment);
-				log.debug(
-						"Old comments removed, saved new comment & re-arranged comments into kpi_comments collection {}",
-						matchedKpiComment);
-			}
+		} else {
+			commentsInfo.remove(commentsInfoSize - 1);
+			newCommentsInfo.addAll(commentsInfo);
+			matchedKpiComment.setCommentsInfo(newCommentsInfo);
+			kpiCommentsRepository.save(matchedKpiComment);
+			log.debug("Old comments removed, saved new comment & re-arranged comments into kpi_comments collection {}",
+					matchedKpiComment);
+		}
 	}
 
 	/**
