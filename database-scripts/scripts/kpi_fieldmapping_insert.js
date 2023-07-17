@@ -2054,6 +2054,5 @@ db.getCollection('field_mapping_structure').insert(
          "KPI Impacted":"Jira Processor History"
        }
    }
-
 ]
 );
