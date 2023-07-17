@@ -3915,6 +3915,32 @@ it('should call set kpi values after Zypher KpiResponseReceive', () => {
 
 });
 
+it('should call zypher kpi api',()=>{
+  spyOn(httpService,'postKpi').and.returnValue(of({}));
+  const spyafterZypherKpiResponseReceived = spyOn(component,'afterZypherKpiResponseReceived');
+  component.postZypherKpi({},'Zypher');
+  fixture.detectChanges();
+  expect(spyafterZypherKpiResponseReceived).toHaveBeenCalled();
+});
+
+it('should call zypher kanban kpi api',()=>{
+  component.zypherKpiRequest  = '';
+  spyOn(httpService,'postKpiKanban').and.returnValue(of({}));
+  const spyafterZypherKpiResponseReceived = spyOn(component,'afterZypherKpiResponseReceived');
+  component.postZypherKanbanKpi({},'Zypher');
+  fixture.detectChanges();
+  expect(spyafterZypherKpiResponseReceived).toHaveBeenCalled();
+});
+
+it('should call post bitbucket kanban kpi',()=>{
+  component.bitBucketKpiRequest  = '';
+  spyOn(httpService,'postKpiKanban').and.returnValue(of({}));
+  const spycreateAllKpiArray = spyOn(component,'createAllKpiArray');
+  component.postBitBucketKanbanKpi({},'Bitbucket');
+  fixture.detectChanges();
+  expect(spycreateAllKpiArray).toHaveBeenCalled();
+})
+
 });
 
 
