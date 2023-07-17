@@ -54,24 +54,6 @@ public class FieldMapping extends BasicModel {
 	private String sprintName;
 	private String epicName;
 	private List<String> jiradefecttype;//TODO: duplicate
-	private List<String> jiradefecttypeSWE;
-	private List<String> jiradefecttypeKPI132;
-	private List<String> jiradefecttypeKPI136;
-	private List<String> jiradefecttypeKPI140;
-	private List<String> jiradefecttypeRDCA;
-	private List<String> jiradefecttypeRDCP;
-	private List<String> jiradefecttypeRDCR;
-	private List<String> jiradefecttypeRDCS;
-	private List<String> jiradefecttypeKPI133;
-	private List<String> jiradefecttypeIWS;
-	private List<String> jiradefecttypeLT;
-	private List<String> jiradefecttypeMW;
-	private List<String> jiradefecttypeKPI82;
-	private List<String> jiradefecttypeKPI135;
-	private List<String> jiradefecttypeKpi40;
-	private List<String> jiradefecttypeAVR;
-	private List<String> jiradefecttypeKPI126;
-	private List<String> jiradefecttypeBDRR;
 
 	// defectPriority
 	private List<String> defectPriority;//TODO: Extra field
@@ -81,11 +63,11 @@ public class FieldMapping extends BasicModel {
 	private List<String> defectPriorityKPI82;
 	private List<String> defectPriorityKPI133;
 
-	private String[] jiraIssueTypeNames;//TODO: Extra field
+	private String[] jiraIssueTypeNames;//TODO: duplicate
 	private String[] jiraIssueTypeNamesAVR;
 	private List<String> jiraIssueEpicType;
-	private String storyFirstStatus;//TODO: Extra field
-	private String storyFirstStatusLT;
+	private String storyFirstStatus;//TODO: duplicate
+//	private String storyFirstStatusLT;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;// TODO: Extra field
 	private List<String> jiraStatusForDevelopmentAVR;
@@ -93,6 +75,10 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForDevelopmentKPI135;
 	@Builder.Default
 	private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
+	@Builder.Default
+	private List<String> jiraStatusForQaKPI135 = Arrays.asList("Ready For Testing", "In Testing");
+	@Builder.Default
+	private List<String> jiraStatusForQaKPI82 = Arrays.asList("Ready For Testing", "In Testing");
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;//TODO: Extra field
 	private List<String> jiraDefectInjectionIssueTypeKPI14;
@@ -120,8 +106,8 @@ public class FieldMapping extends BasicModel {
 	private String jiraDefectRejectionStatusRCAKPI36;
 	private String jiraDefectRejectionStatusKPI14;
 	private String jiraDefectRejectionStatusQAKPI111;
-	private String jiraBugRaisedByIdentification;
-	private List<String> jiraBugRaisedByValue;
+	private String jiraBugRaisedByIdentification;//TODO: duplicate
+	private List<String> jiraBugRaisedByValue;//TODO: duplicate
 
 	private List<String> jiraDefectSeepageIssueType;// TODO: Extra field
 	private List<String> jiraIssueTypeKPI35;
@@ -176,7 +162,7 @@ public class FieldMapping extends BasicModel {
 	private String jiraLiveStatusNOSK;
 	private String jiraLiveStatusNORK;
 	private String jiraLiveStatusOTA;//openticketaging
-	private String jiraLiveStatusPDA;//productionissueaging
+	private String jiraLiveStatusPDA;//productionissueaging   //done till here
 
 	private List<String> ticketCountIssueType;
 

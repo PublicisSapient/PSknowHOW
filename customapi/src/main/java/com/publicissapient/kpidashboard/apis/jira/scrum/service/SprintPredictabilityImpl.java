@@ -177,13 +177,13 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				List<SprintDetails> sprintDetails = sprintDetailsList.stream()
 						.limit(Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT)
 						.collect(Collectors.toList());
-				sprintDetails.stream().forEach(sprintDetail -> {
+				sprintDetails.stream().forEach(dbSprintDetail -> {
 					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-							.get(sprintDetail.getBasicProjectConfigId());
+							.get(dbSprintDetail.getBasicProjectConfigId());
 					// to modify sprintdetails on the basis of configuration for the project
-					KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
+					SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 							fieldMapping.getJiraIterationIssuetypeKpi5(),
-							fieldMapping.getJiraIterationCompletionStatusKpi5());
+							fieldMapping.getJiraIterationCompletionStatusKpi5()).get(0);
 					if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 						List<String> sprintWiseIssueIds = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 								sprintDetail, CommonConstant.COMPLETED_ISSUES);

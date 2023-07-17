@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.jira;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -78,7 +79,26 @@ public class SprintDetails extends BasicModel implements Cloneable{
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
+		SprintDetails clonedSprintDetails = (SprintDetails) super.clone();
+
+		// Clone the lists and sets containing mutable objects (deep cloning)
+		clonedSprintDetails.setCompletedIssues(deepCloneIssueSet(this.getCompletedIssues()));
+		clonedSprintDetails.setNotCompletedIssues(deepCloneIssueSet(this.getNotCompletedIssues()));
+		clonedSprintDetails.setPuntedIssues(deepCloneIssueSet(this.getPuntedIssues()));
+		clonedSprintDetails.setCompletedIssuesAnotherSprint(deepCloneIssueSet(this.getCompletedIssuesAnotherSprint()));
+		clonedSprintDetails.setAddedIssues(new HashSet<>(this.getAddedIssues()));
+		clonedSprintDetails.setTotalIssues(deepCloneIssueSet(this.getTotalIssues()));
+
+		return clonedSprintDetails;
+	}
+
+	// Helper method to deep clone a Set<SprintIssue>
+	private Set<SprintIssue> deepCloneIssueSet(Set<SprintIssue> originalSet) throws CloneNotSupportedException {
+		Set<SprintIssue> clonedSet = new HashSet<>();
+		for (SprintIssue issue : originalSet) {
+			clonedSet.add((SprintIssue) issue.clone());
+		}
+		return clonedSet;
 	}
 
 }

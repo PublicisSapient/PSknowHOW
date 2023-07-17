@@ -200,20 +200,20 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 																	  // comparison
 					.distinct().collect(Collectors.toList());
 
-			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeKpi40(), categories,
+			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(), categories,
 					JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
 		Set<String> totalIssue = new HashSet<>();
-		sprintDetails.stream().forEach(sprintDetail -> {
+		sprintDetails.stream().forEach(dbSprintDetail -> {
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(sprintDetail.getBasicProjectConfigId());
+					.get(dbSprintDetail.getBasicProjectConfigId());
 			// to modify sprintdetails on the basis of configuration for the project
-			KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
+			SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 					new ArrayList<>(),
-					fieldMapping.getJiraIterationCompletionStatusKpi40());
+					fieldMapping.getJiraIterationCompletionStatusKpi40()).get(0);
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));

@@ -97,7 +97,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 			if (Optional.ofNullable(fieldMapping.getJiraIssueTypeLT()).isPresent()) {
 
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeLT(),
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
 						fieldMapping.getJiraIssueTypeLT(),
 						JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
@@ -366,7 +366,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 		String dor = fieldMapping.getJiraDorLT();
 		List<String> dod = fieldMapping.getJiraDodLT().stream().map(String::toLowerCase).collect(Collectors.toList());
 		String live = fieldMapping.getJiraLiveStatusLT();
-		String storyFirstStatus = fieldMapping.getStoryFirstStatusLT();
+		String storyFirstStatus = fieldMapping.getStoryFirstStatus();
 		if (cycleTime.getReadyTime() == null && null != dor && dor.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
 			cycleTime.setReadyTime(updatedOn);
 			cycleTimeValidationData.setDorDate(updatedOn);

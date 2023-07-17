@@ -130,22 +130,22 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			log.info("Quality Status  -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 
-			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			List<String> defectType = new ArrayList<>();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-
-			if (null != sprintDetails) {
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
+			SprintDetails sprintDetails;
+			if (null != dbSprintDetail) {
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
+				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusKPI133());
+						fieldMapping.getJiraIterationCompletionStatusKPI133()).get(0);
 
 				List<String> totalIssue = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				List<String> completedIssue = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
-				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttypeKPI133)
+				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
 						.orElse(Collections.emptyList());
 				Set<String> totalSprintReportDefects = new HashSet<>();
 				Set<String> totalSprintReportStories = new HashSet<>();
@@ -257,7 +257,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					fieldMapping.getResolutionTypeForRejectionKPI133(), fieldMapping.getJiraDefectRejectionStatusKPI133());
 			KpiHelperService.getDefectsWithoutDrop(droppedDefects, jiraIssueList, totalJiraIssues);
 
-			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttypeKPI133)
+			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
 					.orElse(Collections.emptyList());
 			defectTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<JiraIssue> allDefects = totalJiraIssues.stream()
@@ -438,7 +438,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			Map<String, IterationKpiModalValue> modalObjectMap, Map<String, JiraIssue> linkedIssueMap) {
 		jiraIssue.getDefectStoryID().forEach(storyNumber -> {
 			totalStoriesMap.computeIfPresent(storyNumber, (k, linkedJiraIssueStory) -> {
-				if (fieldMapping.getJiradefecttypeKPI133().contains(linkedJiraIssueStory.getTypeName())) {
+				if (fieldMapping.getJiradefecttype().contains(linkedJiraIssueStory.getTypeName())) {
 					if (!unlinkedDefect.contains(jiraIssue)) {
 						unlinkedDefect.add(jiraIssue);
 						KPIExcelUtility.populateIterationKPI(overAllUnlinkedmodalValues, new ArrayList<>(), jiraIssue,
@@ -453,7 +453,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			// fix for DTS-24813
 			totalStoriesMap.computeIfAbsent(storyNumber, k -> {
 				JiraIssue linkedIssue = linkedIssueMap.get(storyNumber);
-				if (linkedIssue != null && fieldMapping.getJiradefecttypeKPI133().contains(linkedIssue.getTypeName())
+				if (linkedIssue != null && fieldMapping.getJiradefecttype().contains(linkedIssue.getTypeName())
 						&& (!unlinkedDefect.contains(jiraIssue))) {
 					unlinkedDefect.add(jiraIssue);
 					KPIExcelUtility.populateIterationKPI(overAllUnlinkedmodalValues, new ArrayList<>(), jiraIssue,

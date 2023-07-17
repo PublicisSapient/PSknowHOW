@@ -667,7 +667,7 @@ public final class KpiDataHelper {
 	}
 
 	public static void processSprintBasedOnFieldMapping(List<SprintDetails> dbSprintDetails,
-			List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus) {
+														List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus) {
 		if (CollectionUtils.isNotEmpty(fieldMappingCompletionType)
 				|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
 			dbSprintDetails.forEach(dbSprintDetail -> {
@@ -690,6 +690,34 @@ public final class KpiDataHelper {
 				}
 			});
 		}
+	}
+
+	public static List<SprintDetails> processSprintBasedOnFieldMappings(List<SprintDetails> dbSprintDetails,
+			List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus) {
+		List<SprintDetails> updatedSprintDetails=new ArrayList<>(dbSprintDetails);
+		if (CollectionUtils.isNotEmpty(fieldMappingCompletionType)
+				|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
+			updatedSprintDetails.forEach(dbSprintDetail -> {
+				if ((CollectionUtils.isNotEmpty(fieldMappingCompletionType)
+						|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus))) {
+					dbSprintDetail.setCompletedIssues(
+							CollectionUtils.isEmpty(dbSprintDetail.getCompletedIssues()) ? new HashSet<>()
+									: dbSprintDetail.getCompletedIssues());
+					dbSprintDetail.setNotCompletedIssues(
+							CollectionUtils.isEmpty(dbSprintDetail.getNotCompletedIssues()) ? new HashSet<>()
+									: dbSprintDetail.getNotCompletedIssues());
+					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
+							fieldMappingCompletionType, fieldMappingCompletionStatus);
+					dbSprintDetail.setCompletedIssues(newCompletedSet);
+					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
+					Set<SprintIssue> totalIssue = new HashSet<>();
+					totalIssue.addAll(dbSprintDetail.getCompletedIssues());
+					totalIssue.addAll(dbSprintDetail.getNotCompletedIssues());
+					dbSprintDetail.setTotalIssues(totalIssue);
+				}
+			});
+		}
+		return updatedSprintDetails;
 	}
 
 	private static Set<SprintIssue> getCombinationalCompletedSet(Set<SprintIssue> typeWiseIssues,

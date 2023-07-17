@@ -1180,4 +1180,24 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }
         }
       }
+
+      getKpiCommentsCount(kpiId?){
+        let requestObj = {
+          "nodes": [...this.filterApplyData?.['selectedMap']['project']],
+          "level":this.filterApplyData?.level,
+          "nodeChildId": "",
+          'kpiIds': []
+        };
+        if(kpiId){
+            requestObj['kpiIds'] = [kpiId];
+            this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+                this.kpiCommentsCountObj[kpiId] = res[kpiId];
+            });
+        }else{
+            requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
+            this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+                this.kpiCommentsCountObj = res;
+            });
+        }
+    }
 }

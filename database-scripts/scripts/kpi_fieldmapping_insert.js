@@ -544,16 +544,6 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIterationIssuetypeCustomField",
-    "fieldLabel": "Iteration Board Issue types",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "kpiImpacted": "Iteration Dashboard and SPEED KPIs - Sprint Velocity, Commitment Reliability, Issue Count, Sprint Predictability"
-    }
-  },
-  {
     "fieldName": "jiraSprintVelocityIssueTypeKpi39",
     "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
@@ -1340,7 +1330,7 @@ db.getCollection('field_mapping_structure').insert(
     "processorCommon":true,
     "section": "Issue Types Mapping",
     "tooltip": {
-      "definition": "Issue Type in Jira. These issue type are fetched in PsKnowHow dashboard. <br> Example : Story, Defect, Risk, Change Request, Test<hr>"
+      "definition": "All the issue types used by a project in Jira."
     }
   },
   {
@@ -1685,193 +1675,6 @@ db.getCollection('field_mapping_structure').insert(
       }
    },
   {
-    "fieldName": "jiradefecttypeBDRR",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeKPI126",
-    "fieldLabel": "Issue type to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "Issue types that are considered as defects in Jira."
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeKpi40",
-    "fieldLabel": "Status to identify defects",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "Issue types that are considered as defects in Jira."
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeKPI135",
-    "fieldLabel": "Issue type to identify defects",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "Issue types that are considered as Defects in Jira"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeKPI82",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "Issue types that are considered as defects in Jira"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeMW",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeLT",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeIWS",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeKPI133",
-    "fieldLabel": "Issue type to be identify defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "Issue types that are considered as defects in Jira"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeRDCS",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeRDCR",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeRDCP",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeRDCA",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeKPI140",
-    "fieldLabel": "Issue type to be identify defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "Issue types that are considered as defects in Jira"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeKPI136",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "Issue types that are considered as Defects in Jira"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeSWE",
-    "fieldLabel": "Issue Type to Identify Defect",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
-    }
-  },
-  {
-    "fieldName": "jiradefecttypeKPI132",
-    "fieldLabel": "Issue type to identify defects",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Defects Mapping",
-    "processorCommon":true,
-    "tooltip": {
-      "definition": "Issue types that are considered as Defects in Jira"
-    }
-  },
-  {
     "fieldName": "jiradefecttype",
     "fieldLabel": "Status to identify defects",
     "fieldType": "chips",
@@ -1879,7 +1682,7 @@ db.getCollection('field_mapping_structure').insert(
     "section": "Defects Mapping",
     "processorCommon":true,
     "tooltip": {
-      "definition": "Issue types that are considered as Defects in Jira"
+      "definition": "All the issue types that signify a defect in Jira/Azure"
     }
   },
 {
@@ -1889,7 +1692,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldCategory": "custom",
     "section": "Custom Fields Mapping",
     "tooltip": {
-      "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Story Point is a custom field in JIRA. So User need to provide that custom field which is associated with Story point in Users JIRA/AZURE Installation. <br>Example : customfield_20803."
+      "definition": "Field used in Jira for Story points"
     }
 },
 {
@@ -1993,7 +1796,7 @@ db.getCollection('field_mapping_structure').insert(
             "fieldType": "text",
             "filterGroup": ["Story Point"],
             "tooltip": {
-              "definition": "Conversion factor for Story Point to Hour Conversion. <br>Example: If 1 Story Point is 8 hrs, enter 8."
+              "definition": "Estimation technique used by teams for e.g. story points, Hours etc."
             }
           }
         ]
@@ -2112,7 +1915,7 @@ db.getCollection('field_mapping_structure').insert(
 },
 {
     "fieldName": "additionalFilterConfig",
-    "fieldLabel": "Additional Filter Identifier",
+    "fieldLabel": "Filter that can be applied on a Project",
     "section": "Additional Filter Identifier",
     "fieldType": "dropdown",
      "tooltip": {
@@ -2228,6 +2031,26 @@ db.getCollection('field_mapping_structure').insert(
      "section": "Issue Types Mapping",
      "tooltip": {
           "definition": "Issue types that are considered as defects in Jira.",
+          }
+},{
+    "fieldName": "jiraStatusForQaKPI135",
+    "fieldLabel": "Status to Identify In Testing Status",
+     "fieldType": "chips",
+    "fieldCategory": "workflow",
+     "section": "Workflow Status Mapping",
+     "tooltip": {
+          "definition": "The status of Defect Issue Type which identifies the 'In-Testing' status in JIRA. <br> Example: Ready For Testing<hr>",
+          "Kpi Impacted": "Indiviual Filter"
+          }
+},{
+    "fieldName": "jiraStatusForQaKPI82",
+    "fieldLabel": "Status to Identify In Testing Status",
+     "fieldType": "chips",
+    "fieldCategory": "workflow",
+     "section": "Workflow Status Mapping",
+     "tooltip": {
+          "definition": "The status of Defect Issue Type which identifies the 'In-Testing' status in JIRA. <br> Example: Ready For Testing<hr>",
+          "Kpi Impacted": "Indiviual Filter"
           }
 }
 

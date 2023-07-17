@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -87,6 +88,10 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 	@Autowired
 	private ConfigHelperService configHelperService;
 
+	@Autowired
+	private SprintRepository sprintRepository;
+
+
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
@@ -118,14 +123,21 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Work Remaining -> Requested sprint : {}", leafNode.getName());
-			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
-			if (null != sprintDetails) {
+			SprintDetails dbSprintDetail;
+			SprintDetails sprintDetails;
+			try {
+				dbSprintDetail = (SprintDetails) getSprintDetailsFromBaseClass().clone();
+			}catch (CloneNotSupportedException e) {
+				dbSprintDetail = null;
+			}
+
+			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
+				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						fieldMapping.getJiraIterationIssuetypeKPI119(),
-						fieldMapping.getJiraIterationCompletionStatusKPI119());
+						fieldMapping.getJiraIterationCompletionStatusKPI119()).get(0);
 
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);

@@ -122,20 +122,20 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 			log.info("Defect count by Status -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			List<String> defectType = new ArrayList<>();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-
-			if (null != sprintDetails) {
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
+			SprintDetails sprintDetails;
+			if (null != dbSprintDetail) {
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
+				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusKPI136());
+						fieldMapping.getJiraIterationCompletionStatusKPI136()).get(0);
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
-				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttypeKPI136)
+				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
 						.orElse(Collections.emptyList());
 				Set<String> totalSprintReportDefects = new HashSet<>();
 				Set<String> totalSprintReportStories = new HashSet<>();
@@ -303,7 +303,7 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 	}
 
 	private List<JiraIssue> filterDefects(Map<String, Object> resultMap, FieldMapping fieldMapping) {
-		List<String> defectStatuses = fieldMapping.getJiradefecttypeKPI136();
+		List<String> defectStatuses = fieldMapping.getJiradefecttype();
 		// subtask defects consider as BUG type in jira_issue
 		defectStatuses.add(NormalizedJira.DEFECT_TYPE.getValue());
 		if (CollectionUtils.isNotEmpty((List<JiraIssue>) resultMap.get(CommonConstant.TOTAL_ISSUES))) {

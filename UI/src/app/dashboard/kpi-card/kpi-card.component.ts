@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy,OnChanges, SimpleChanges } from '@angular/core';
 import { faShareSquare } from '@fortawesome/free-solid-svg-icons';
 import { SharedService } from 'src/app/services/shared.service';
+import { HttpService } from 'src/app/services/http.service';
 @Component({
   selector: 'app-kpi-card',
   templateUrl: './kpi-card.component.html',
@@ -12,6 +13,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   @Output() downloadExcel = new EventEmitter<boolean>();
   @Input() dropdownArr: any;
   @Output() optionSelected = new EventEmitter<any>();
+  @Output() reloadKPITab = new EventEmitter<any>();
   faShareSquare = faShareSquare;
   isTooltip = false;
   filterTooltip = false;
@@ -59,6 +61,9 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     private http : HttpService) {
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    // changes['dropdownArr']?.currentValue ? true : this.dropdownArr = [];
+  }
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {

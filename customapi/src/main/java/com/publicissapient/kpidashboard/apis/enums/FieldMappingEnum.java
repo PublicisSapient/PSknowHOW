@@ -28,14 +28,14 @@ import java.util.List;
 public enum FieldMappingEnum {
 
 	KPI0("Processor",KPISource.JIRA.name(),
-			Arrays.asList("jiradefecttype", "jiraIssueTypeNames", "jiraIterationIssuetypeCustomField",
+			Arrays.asList("jiradefecttype", "jiraIssueTypeNames",
 					"jiraIterationCompletionStatusCustomField", "estimationCriteria", "jiraStoryPointsCustomField",
 					"jiraDod", "jiraBugRaisedByQACustomField", "jiraBugRaisedByQAIdentification",
 					"jiraBugRaisedByQAValue", "jiraBugRaisedByCustomField", "jiraBugRaisedByValue",
 					"jiraBugRaisedByIdentification", "jiraLiveStatus", "epicCostOfDelay", "epicRiskReduction",
 					"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize","additionalFilterConfig")),
 
-	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKpi40", "jiradefecttypeKpi40")),
+	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKpi40")),
 
 	KPI39("Sprint Velocity", KPISource.JIRA.name(), Arrays.asList("jiraSprintVelocityIssueTypeKpi39",
 			"jiraIterationCompletionStatusKpi39")),
@@ -48,16 +48,16 @@ public enum FieldMappingEnum {
 	KPI82("First Time Pass Rate", KPISource.JIRA.name(),
 			Arrays.asList("jiraStatusForDevelopmentKPI82", "jiraKPI82StoryIdentification", "jiraIssueDeliverdStatusKPI82",
 					"resolutionTypeForRejectionKPI82", "jiraDefectRejectionStatusKPI82", "defectPriorityKPI82",
-					"excludeRCAFromKPI82", "jiradefecttypeKPI82")),
+					"excludeRCAFromKPI82","jiraStatusForQaKPI82")),
 
 	KPI135("First Time Pass Rate (Iteration)", KPISource.JIRA.name(),
-			Arrays.asList("jiraStatusForDevelopmentKPI135", "jiraKPI135StoryIdentification", "jiradefecttypeKPI135",
-					"jiraIterationCompletionStatusKPI135","resolutionTypeForRejectionKPI135","excludeRCAFromKPI135","jiraDefectRejectionStatusKPI135","defectPriorityKPI135","jiraDefectRejectionStatusKPI135")),
+			Arrays.asList("jiraStatusForDevelopmentKPI135", "jiraKPI135StoryIdentification",
+					"jiraIterationCompletionStatusKPI135","resolutionTypeForRejectionKPI135","excludeRCAFromKPI135","jiraDefectRejectionStatusKPI135","defectPriorityKPI135","jiraDefectRejectionStatusKPI135","jiraStatusForQaKPI135")),
 
 	KPI53("Lead Time (Kanban)", KPISource.JIRA.name(),
 			Arrays.asList("jiraIssueTypeLT", "jiraDorLT", "jiraLiveStatusLTK")),
 
-	KPI3("Lead Time (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeLT", "jiraIssueTypeLT",
+	KPI3("Lead Time (Scrum)", KPISource.JIRA.name(), Arrays.asList( "jiraIssueTypeLT",
 			"jiraDorLT", "jiraDodLT", "jiraLiveStatusLT")),
 
 	KPI34("Defect Removal Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraDefectRemovalStatusKPI34",
@@ -69,24 +69,24 @@ public enum FieldMappingEnum {
 	KPI28("Defect Count By Priority (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraDefectCountlIssueTypeKPI28",
 			"resolutionTypeForRejectionKPI28", "jiraDefectRejectionStatusKPI28")),
 
-	KPI140("Defect Count by Priority (Iteration)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeKPI140",
+	KPI140("Defect Count by Priority (Iteration)", KPISource.JIRA.name(), Arrays.asList(
 			"jiraIterationCompletionStatusKPI140")),
 
-	KPI144("Defect Count by Priority (Release)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeRDCP")),
+	KPI144("Defect Count by Priority (Release)", KPISource.JIRA.name(), Arrays.asList()),
 
-	KPI143("Defect Count by Assignee (Release)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeRDCA")),
+	KPI143("Defect Count by Assignee (Release)", KPISource.JIRA.name(), Arrays.asList()),
 
-	KPI142("Defect Count by RCA (Release)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeRDCR")),
+	KPI142("Defect Count by RCA (Release)", KPISource.JIRA.name(), Arrays.asList()),
 
-	KPI141("Defect Count by Status (Release)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeRDCS")),
+	KPI141("Defect Count by Status (Release)", KPISource.JIRA.name(), Arrays.asList()),
 
 	KPI36("Defect Count by RCA (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraDefectCountlIssueTypeKPI36",
 			"resolutionTypeForRejectionRCAKPI36", "jiraDefectRejectionStatusRCAKPI36")),
 
-	KPI132("Defect Count by RCA (Iteration)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeKPI132",
+	KPI132("Defect Count by RCA (Iteration)", KPISource.JIRA.name(), Arrays.asList(
 			"jiraIterationCompletionStatusKPI132")),
 
-	KPI136("Defect Count by Status (Iteration)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeKPI136",
+	KPI136("Defect Count by Status (Iteration)", KPISource.JIRA.name(), Arrays.asList(
 			"jiraIterationCompletionStatusKPI136")),
 
 	KPI14("Defect Injection Rate", KPISource.JIRA.name(),
@@ -104,11 +104,11 @@ public enum FieldMappingEnum {
 			"resolutionTypeForRejectionKPI35", "jiraDefectRejectionStatusKPI35")),
 
 	KPI133("Quality Status", KPISource.JIRA.name(),
-			Arrays.asList("resolutionTypeForRejectionKPI133", "jiraDefectRejectionStatusKPI133", "jiradefecttypeKPI133",
+			Arrays.asList("resolutionTypeForRejectionKPI133", "jiraDefectRejectionStatusKPI133",
 					"defectPriorityKPI133", "excludeRCAFromKPI133", "jiraIterationCompletionStatusKPI133")),
 
 	KPI126("Created vs Resolved defects", KPISource.JIRA.name(),
-			Arrays.asList("jiradefecttypeKPI126", "jiraIssueDeliverdStatusKPI126")),
+			Arrays.asList( "jiraIssueDeliverdStatusKPI126")),
 
 	KPI72("Commitment Reliability", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusKpi72", "jiraIterationIssuetypeKpi72")),
@@ -152,7 +152,7 @@ public enum FieldMappingEnum {
 	KPI138("Backlog Readiness Efficiency", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusBRE", "jiraIterationIssuetypeBRE")),
 
-	KPI137("Defect Reopen Rate (Backlog)", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeBDRR")),
+	KPI137("Defect Reopen Rate (Backlog)", KPISource.JIRA.name(), Arrays.asList()),
 
 	KPI997("Open Ticket Ageing By Priority (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusOTA")),
 
@@ -162,7 +162,7 @@ public enum FieldMappingEnum {
 
 	KPI50("Net Open Ticket Count by Priority (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusNOPK")),
 
-	KPI129("Issues Without Story Link", KPISource.JIRA.name(), Arrays.asList("jiradefecttypeIWS"));
+	KPI129("Issues Without Story Link", KPISource.JIRA.name(), Arrays.asList());
 
 	// @formatter:on
 

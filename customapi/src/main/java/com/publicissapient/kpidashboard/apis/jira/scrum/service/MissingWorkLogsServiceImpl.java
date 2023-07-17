@@ -146,7 +146,7 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 					.get(leaf.getProjectFilter().getBasicProjectConfigId());
 			if (null != fieldMapping) {
 				if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
-					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjFilters, fieldMapping.getJiradefecttypeMW(),
+					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjFilters, fieldMapping.getJiradefecttype(),
 							fieldMapping.getJiraStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 				}
 				uniqueProjMap.put(basicProjectConfigId.toString(), mapOfProjFilters);

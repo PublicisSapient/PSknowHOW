@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.rest;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.MetaDataIdentifierService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.MetadataIdentifierServiceImpl;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
@@ -118,11 +119,11 @@ public class FieldMappingController {
 		boolean result = fieldMappingService.compareMappingOnSave(projectToolConfigId, fieldMapping);
 
 		ServiceResponse response = null;
-		if (result && !(projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase("10") ||
-				projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase("9"))) {
+		if (result && !(projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM) ||
+				projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN))) {
 			response = new ServiceResponse(true, "mappings are not same as default mapping", result);
-		} else if (result && (projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase("10")
-				|| projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase("9"))) {
+		} else if (result && (projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)
+				|| projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN))) {
 			response = new ServiceResponse(true, "changes are made in customize mappings", false);
 		} else {
 			response = new ServiceResponse(true, "mappings are same as already maintained mapping", result);

@@ -167,7 +167,7 @@ public class StoriesWithoutEstimateImpl extends JiraKPIService<Integer, List<Obj
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeSWE(),
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
 						fieldMapping.getJiraStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			}
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);

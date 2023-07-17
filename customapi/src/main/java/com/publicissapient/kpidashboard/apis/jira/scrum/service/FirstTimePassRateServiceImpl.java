@@ -278,7 +278,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromKPI82());
 
 			if (Optional.ofNullable(fieldMapping.getJiraKPI82StoryIdentification()).isPresent()) {
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeKPI82(),
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
 						fieldMapping.getJiraKPI82StoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			}
 
@@ -321,7 +321,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
 			FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
 			return kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory,
-					fieldMapping.getJiraStatusForDevelopmentKPI82());
+					fieldMapping.getJiraStatusForDevelopmentKPI82(), fieldMapping.getJiraStatusForQaKPI82());
 		});
 
 		List<String> storyIdList = new ArrayList<>();

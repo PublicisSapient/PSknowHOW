@@ -197,6 +197,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	private void clearCache() {
 		cacheService.clearCache(CommonConstant.JIRAKANBAN_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.JIRA_KPI_CACHE);
+		cacheService.clearAllCache();
 	}
 
 	/**
@@ -298,7 +299,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean isValueUpdated(Object value, Object value1) {
-		if (value == null) {
+		if (value == null || value1==null) {
 			return value1 != null;
 
 		} else {
@@ -431,24 +432,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			List<String> fieldNameList = Arrays.asList(
 					"sprintName",
 			"jiradefecttype",
-			"jiradefecttypeSWE",
-			"jiradefecttypeKPI132",
-			"jiradefecttypeKPI136",
-			"jiradefecttypeKPI140",
-			"jiradefecttypeRDCA",
-			"jiradefecttypeRDCP",
-			"jiradefecttypeRDCR",
-			"jiradefecttypeRDCS",
-			"jiradefecttypeKPI133",
-			"jiradefecttypeIWS",
-			"jiradefecttypeLT",
-			"jiradefecttypeMW",
-			"jiradefecttypeKPI82",
-			"jiradefecttypeKPI135",
-			"jiradefecttypeKpi40",
-			"jiradefecttypeAVR",
-			"jiradefecttypeKPI126",
-			"jiradefecttypeBDRR",
 
 			"defectPriorityKPI135",
 			"defectPriorityKPI14",
@@ -456,16 +439,18 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"defectPriorityKPI82",
 			"defectPriorityKPI133",
 
+			"jiraIssueTypeNames",
 			"jiraIssueTypeNamesAVR",
 			"jiraIssueEpicType",
 
-			"storyFirstStatusLT",
+			"storyFirstStatus",
 			"rootCause",
 
 			"jiraStatusForDevelopmentAVR",
 			"jiraStatusForDevelopmentKPI82",
 			"jiraStatusForDevelopmentKPI135",
-			"jiraStatusForQa",
+			"jiraStatusForQaKPI138",
+			"jiraStatusForQaKPI82",
 
 			"jiraDefectInjectionIssueTypeKPI14",
 
@@ -491,11 +476,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraDefectRejectionStatusRCAKPI36",
 			"jiraDefectRejectionStatusKPI14",
 			"jiraDefectRejectionStatusQAKPI111",
-			"jiraBugRaisedByIdentification",
-			"jiraBugRaisedByValue",
 
 			"jiraIssueTypeKPI35",
-			"jiraBugRaisedByCustomField",
 
 			"jiraDefectRemovalStatusKPI34",
 
@@ -566,9 +548,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"resolutionTypeForRejectionQAKPI111",
 
 			"jiraQAKPI111IssueType",
-			"jiraBugRaisedByQACustomField",
-			"jiraBugRaisedByQAIdentification",
-			"jiraBugRaisedByQAValue",
 			"jiraDefectDroppedStatus",
 			"epicCostOfDelay",
 			"epicRiskReduction",
@@ -576,13 +555,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"epicWsjf",
 			"epicTimeCriticality",
 			"epicJobSize",
-			"squadIdentifier",
-			"squadIdentMultiValue",
-			"squadIdentSingleValue",
-			"productionDefectCustomField",
-			"productionDefectIdentifier",
-			"productionDefectValue",
-			"productionDefectComponentValue",
 
 			"jiraStatusForInProgressKPI122",
 			"jiraStatusForInProgressKPI145",

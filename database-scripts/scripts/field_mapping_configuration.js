@@ -22,7 +22,6 @@ fieldMappings.forEach(function(fm) {
         const jiraStoryIdentification=fm.jiraStoryIdentification;
         const jiraStatusForInProgress=fm.jiraStatusForInProgress;
         const issueStatusExcluMissingWork=fm.issueStatusExcluMissingWork;
-        const storyFirstStatus=fm.storyFirstStatus;
         const jiraWaitStatus=fm.jiraWaitStatus;
         const jiraBlockedStatus=fm.jiraBlockedStatus;
         const jiraIncludeBlockedStatus=fm.jiraIncludeBlockedStatus;
@@ -35,27 +34,11 @@ fieldMappings.forEach(function(fm) {
         const jiraDefectRemovalIssueType=fm.jiraDefectRemovalIssueType;
         const jiraSprintCapacityIssueType=fm.jiraSprintCapacityIssueType;
         const jiraDefectRejectionlIssueType=fm.jiraDefectRejectionlIssueType;
+        const jiraStatusForQa=fm.jiraStatusForQa;
         db.field_mapping.updateOne({ "_id": fm._id }, {
           $set: {
 
             "jiradefecttypeSWE":jiradefecttype,
-            "jiradefecttypeKPI132":jiradefecttype,
-            "jiradefecttypeKPI136":jiradefecttype,
-            "jiradefecttypeKPI140":jiradefecttype,
-            "jiradefecttypeRDCA":jiradefecttype,
-            "jiradefecttypeRDCP":jiradefecttype,
-            "jiradefecttypeRDCR":jiradefecttype,
-            "jiradefecttypeRDCS":jiradefecttype,
-            "jiradefecttypeKPI133":jiradefecttype,
-            "jiradefecttypeIWS":jiradefecttype,
-            "jiradefecttypeLT":jiradefecttype,
-            "jiradefecttypeMW":jiradefecttype,
-            "jiradefecttypeKPI82":jiradefecttype,
-            "jiradefecttypeKPI135":jiradefecttype,
-            "jiradefecttypeKpi40":jiradefecttype,
-            "jiradefecttypeAVR":jiradefecttype,
-            "jiradefecttypeKPI126":jiradefecttype,
-            "jiradefecttypeBDRR":jiradefecttype,
         
             "defectPriorityKPI135":defectPriority,
             "defectPriorityKPI14":defectPriority,
@@ -64,8 +47,6 @@ fieldMappings.forEach(function(fm) {
             "defectPriorityKPI133":defectPriority,
         
             "jiraIssueTypeNamesAVR": jiraIssueTypeNames,
-        
-            "storyFirstStatusLT": storyFirstStatus,
         
             "jiraStatusForDevelopmentAVR": jiraStatusForDevelopment,
             "jiraStatusForDevelopmentKPI82": jiraStatusForDevelopment,
@@ -149,6 +130,9 @@ fieldMappings.forEach(function(fm) {
             "resolutionTypeForRejectionQAKPI111": resolutionTypeForRejection,
 
             "jiraQAKPI111IssueType": jiraQADefectDensityIssueType,
+
+            "jiraStatusForQaKPI135":jiraStatusForQa,
+            "jiraStatusForQaKPI82":jiraStatusForQa,
         
             "jiraStatusForInProgressKPI122": jiraStatusForInProgress,
             "jiraStatusForInProgressKPI145": jiraStatusForInProgress,

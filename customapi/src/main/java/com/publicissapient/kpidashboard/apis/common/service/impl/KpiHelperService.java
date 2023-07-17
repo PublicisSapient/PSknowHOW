@@ -581,13 +581,13 @@ public class KpiHelperService { // NOPMD
 
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
-			sprintDetails.stream().forEach(sprintDetail -> {
+			sprintDetails.stream().forEach(dbSprintDetail -> {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-						.get(sprintDetail.getBasicProjectConfigId());
-				//to modify sprintdetails on the basis of configuration for the project
-				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
+						.get(dbSprintDetail.getBasicProjectConfigId());
+				// to modify sprintdetails on the basis of configuration for the project
+				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusKpi39());
+						fieldMapping.getJiraIterationCompletionStatusKpi39()).get(0);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -650,13 +650,13 @@ public class KpiHelperService { // NOPMD
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
-			sprintDetails.stream().forEach(sprintDetail -> {
+			sprintDetails.stream().forEach(dbSprintDetail -> {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-						.get(sprintDetail.getBasicProjectConfigId());
-				//to modify sprintdetails on the basis of configuration for the project
-				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
+						.get(dbSprintDetail.getBasicProjectConfigId());
+				// to modify sprintdetails on the basis of configuration for the project
+				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						fieldMapping.getJiraIterationIssuetypeBRE(),
-						fieldMapping.getJiraIterationCompletionStatusBRE());
+						fieldMapping.getJiraIterationCompletionStatusBRE()).get(0);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -1475,7 +1475,7 @@ public class KpiHelperService { // NOPMD
 
 
 	public boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue,
-			List<JiraIssueCustomHistory> storiesHistory,List<String> statusForDevelopemnt) {
+			List<JiraIssueCustomHistory> storiesHistory,List<String> statusForDevelopemnt, List<String> jiraStatusForQa) {
 		JiraIssueCustomHistory jiraIssueCustomHistory = storiesHistory.stream()
 				.filter(issueHistory -> issueHistory.getStoryID().equals(issue.getNumber())).findFirst().orElse(null);
 		if (jiraIssueCustomHistory == null) {
@@ -1493,10 +1493,10 @@ public class KpiHelperService { // NOPMD
 				Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 				// if after qa field we get some status which signifies statusfor development
 				// then we will consider that as return transaction
-				List<String> jiraStatusForQa = (List<String>) CollectionUtils
-						.emptyIfNull(fieldMapping.getJiraStatusForQa());
+				List<String> jiraStatusForQa1 = (List<String>) CollectionUtils
+						.emptyIfNull(jiraStatusForQa);
 				JiraHistoryChangeLog latestQAField = statusUpdationLog.stream()
-						.filter(statusHistory -> jiraStatusForQa.contains(statusHistory.getChangedTo())).findFirst()
+						.filter(statusHistory -> jiraStatusForQa1.contains(statusHistory.getChangedTo())).findFirst()
 						.orElse(null);
 				if (latestQAField != null) {
 					List<String> jiraStatusForDevelopemnt = (List<String>) CollectionUtils

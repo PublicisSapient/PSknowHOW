@@ -111,14 +111,15 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Closure Possible Today -> Requested sprint : {}", leafNode.getName());
-			SprintDetails sprintDetail = getSprintDetailsFromBaseClass();
-			if (null != sprintDetail) {
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
+			SprintDetails sprintDetail;
+			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-						.get(sprintDetail.getBasicProjectConfigId());
+						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
+				sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						fieldMapping.getJiraIterationIssuetypeKPI122(),
-						fieldMapping.getJiraIterationCompletionStatusKPI122());
+						fieldMapping.getJiraIterationCompletionStatusKPI122()).get(0);
 				List<String> notCompletedIssues = KpiDataHelper
 						.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {

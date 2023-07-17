@@ -177,7 +177,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
 
 				if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
-					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfStoriesFilter, fieldMapping.getJiradefecttypeIWS(),
+					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfStoriesFilter, fieldMapping.getJiradefecttype(),
 							fieldMapping.getJiraStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 				}
 
@@ -277,7 +277,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 
 			if (null != fieldMapping) {
 				if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
-					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttypeIWS(),
+					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
 							fieldMapping.getJiraStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 				}
 				excludeStatusList.addAll(

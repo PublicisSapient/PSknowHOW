@@ -93,8 +93,8 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, 
 
 			if (null != fieldMapping) {
 				Map<String, Set<String>> mapOfProjectFilters = new LinkedHashMap<>();
-				if (fieldMapping.getJiradefecttypeRDCR() != null) {
-					defectType.addAll(fieldMapping.getJiradefecttypeRDCR());
+				if (fieldMapping.getJiradefecttype() != null) {
+					defectType.addAll(fieldMapping.getJiradefecttype());
 				}
 				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 				mapOfProjectFilters.put(basicProjectConfigId, defectType);

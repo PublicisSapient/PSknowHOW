@@ -106,14 +106,15 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Dev Completed Status -> Requested sprint : {}", leafNode.getName());
-			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
-			if (null != sprintDetails) {
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
+			SprintDetails sprintDetails;
+			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
+				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						fieldMapping.getJiraIterationIssuetypeKPI145(),
-						fieldMapping.getJiraIterationCompletionStatusKPI145());
+						fieldMapping.getJiraIterationCompletionStatusKPI145()).get(0);
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);

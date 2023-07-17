@@ -269,13 +269,13 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		List<SprintDetails> sprintDetails = new ArrayList<>(sprintRepository.findBySprintIDIn(sprintList));
 		Set<String> totalIssue = new HashSet<>();
-		sprintDetails.stream().forEach(sprintDetail -> {
+		sprintDetails.stream().forEach(dbSprintDetail -> {
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(sprintDetail.getBasicProjectConfigId());
+					.get(dbSprintDetail.getBasicProjectConfigId());
 			// to modify sprintdetails on the basis of configuration for the project
-			KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetail),
+			SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 					fieldMapping.getJiraIterationIssuetypeKpi72(),
-					fieldMapping.getJiraIterationCompletionStatusKpi72());
+					fieldMapping.getJiraIterationCompletionStatusKpi72()).get(0);
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));

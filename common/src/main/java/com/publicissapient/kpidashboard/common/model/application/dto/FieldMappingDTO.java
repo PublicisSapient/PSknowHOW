@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -94,6 +95,8 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraIssueEpicType;
 
 	private List<String> jiraStatusForQa;
+	private List<String> jiraStatusForQaKPI135;
+	private List<String> jiraStatusForQaKPI82;
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;//TODO: Extra field
 	private List<String> jiraDefectInjectionIssueTypeKPI14;
