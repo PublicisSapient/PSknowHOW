@@ -522,5 +522,20 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Flow Distribution',
         type: ['Other'],
         fieldNames : { }
-      }
+      },
+     {
+         kpiId: 'kpi151',
+         kpiName: 'Backlog Count By Status',
+   		 kpiSource: 'Jira',
+         type: ['Other'],
+         fieldNames : {'Workflow Status Mapping' : ['jiraDod','jiraDefectRejectionStatus'] }
+     },
+     {
+         kpiId: 'kpi152',
+         kpiName: 'Backlog Count By Issue Type',
+   		 kpiSource: 'Jira',
+         type: ['Other'],
+         fieldNames : {'Workflow Status Mapping' : ['jiraDod','jiraDefectRejectionStatus'] }
+     }
+
 	  ]);
