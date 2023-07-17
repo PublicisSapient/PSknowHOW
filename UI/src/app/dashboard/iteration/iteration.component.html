@@ -35,7 +35,7 @@
                         [dropdownArr]="kpiDropdowns[commitmentReliabilityKpi?.kpiId]"
                         (optionSelected)="handleSelectedOption($event, commitmentReliabilityKpi)" [showExport]="false"
                         [isShow]="true" [showChartView]="commitmentReliabilityKpi?.kpiDetail?.boxType == 'chart'"
-                        [showCommentIcon]="true">
+                        [showCommentIcon]="true" (reloadKPITab)="reloadKPI($event)">
                         <ng-container *ngIf="!noTabAccess else noDataAccess">
                           <div class="p-d-flex p-justify-around p-align-center w-100"
                             *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[commitmentReliabilityKpi?.kpiId]?.length > 0;else noData">

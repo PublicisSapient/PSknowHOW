@@ -69,7 +69,7 @@
                     <ng-template #noData>
                       <div class="overlay"
                         *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length && !iSAdditionalFilterSelected) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length && kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
-                        <div class="loading-img">no-data</div>
+                        <div class="loading-img"></div>
                       </div>
                       <div class="min-ht"
                         *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && !iSAdditionalFilterSelected && kpiLoader === false) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false)">
@@ -82,7 +82,7 @@
                     </ng-template>
                     <ng-template #loader>
                       <div class="overlay">
-                        <div class="loading-img">loader</div>
+                        <div class="loading-img"></div>
                       </div>
                     </ng-template>
                   </ng-container>
