@@ -213,7 +213,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			ArrayList<JiraIssue> totalDefects = new ArrayList<>(totalBugs);
 			List<JiraIssueCustomHistory> defectsCustomHistory = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(
-							totalDefects.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
+							totalSprintReportDefects.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
 							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 			setDbQueryLogger(sprintDetails, totalDefects, totalSprintReportDefects);
@@ -263,10 +263,9 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
 				kpiRequest);
 		List<JiraIssue> totalDefects = (List<JiraIssue>) storyDefectDataListMap.get(TOTAL_DEFECTS);
-		List<JiraIssue> allSubTaskBugs = (List<JiraIssue>) storyDefectDataListMap.get(SUB_TASK_BUGS);
 		List<JiraIssueCustomHistory> defectsCustomHistory = (List<JiraIssueCustomHistory>) storyDefectDataListMap.get(DEFECT_HISTORY);
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) storyDefectDataListMap.get(SPRINT_DETAILS);
-		Map<String, List<String>> projectWiseDefectRemovelStatus = (Map<String, List<String>>) storyDefectDataListMap.get(PROJECT_WISE_DEFECT_REMOVEL_STATUS);
+		Map<String, List<String>> projectWiseDefectRemovalStatus = (Map<String, List<String>>) storyDefectDataListMap.get(PROJECT_WISE_DEFECT_REMOVEL_STATUS);
 
 		Map<Pair<String, String>, Double> sprintWiseDREMap = new HashMap<>();
 		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
@@ -284,26 +283,19 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 				List<String> completedSprintIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
 						CommonConstant.COMPLETED_ISSUES);
+				List<JiraIssue> totalSubTask = new ArrayList<>();
+				getSubtasks(totalDefects, defectsCustomHistory, projectWiseDefectRemovalStatus, totalSubTask, sd);
 
-				List<JiraIssue> totalSubTask = allSubTaskBugs.stream()
-						.filter(jiraIssue -> org.apache.commons.collections.CollectionUtils
-								.isNotEmpty(jiraIssue.getSprintIdList())
-								&& jiraIssue.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
-						.collect(Collectors.toList());
-
-				List<JiraIssue> subCategoryWiseTotalDefectList = totalDefects.stream().filter(
-						defect -> org.apache.commons.collections.CollectionUtils.isNotEmpty(defect.getSprintIdList())
-								&& defect.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
-						.collect(Collectors.toList());
+				List<JiraIssue> subCategoryWiseTotalDefectList = totalSubTask;
 
 				List<JiraIssue> subCategoryWiseClosedDefectList = totalDefects.stream()
 						.filter(f -> completedSprintIssues.contains(f.getNumber()) && CollectionUtils
-								.emptyIfNull(projectWiseDefectRemovelStatus.get(f.getBasicProjectConfigId())).stream()
+								.emptyIfNull(projectWiseDefectRemovalStatus.get(f.getBasicProjectConfigId())).stream()
 								.anyMatch(s -> s.equalsIgnoreCase(f.getJiraStatus())))
 						.collect(Collectors.toList());
 
 				subCategoryWiseClosedDefectList.addAll(getCompletedSubTasksByHistory(totalSubTask, defectsCustomHistory,
-						sd, projectWiseDefectRemovelStatus));
+						sd, projectWiseDefectRemovalStatus));
 
 				double dreForCurrentLeaf = 0.0d;
 				subCategoryWiseClosedAndTotalDefectList.put(CLOSED_DEFECT_DATA, subCategoryWiseClosedDefectList);
@@ -483,4 +475,38 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		return completedSubtaskOfSprint;
 	}
 
+	private static void getSubtasks(List<JiraIssue> allSubTaskBugs, List<JiraIssueCustomHistory> defectsCustomHistory,
+									Map<String, List<String>> projectWiseDefectRemovalStatus,
+									List<JiraIssue> totalSubTask, SprintDetails sprintDetail) {
+		LocalDate sprintEndDate = sprintDetail.getCompleteDate() != null
+				? LocalDate.parse(sprintDetail.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDate sprintStartDate = sprintDetail.getActivatedDate() != null
+				? LocalDate.parse(sprintDetail.getActivatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		allSubTaskBugs.forEach(jiraIssue -> {
+			JiraIssueCustomHistory jiraIssueCustomHistoryOfClosedSubTask = defectsCustomHistory.stream()
+					.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
+							.equalsIgnoreCase(jiraIssue.getNumber())).findFirst().orElse(new JiraIssueCustomHistory());
+			JiraHistoryChangeLog jiraHistoryChangeLogOfClosedSubTask = jiraIssueCustomHistoryOfClosedSubTask.getStatusUpdationLog()
+					.stream().filter(historyChangeLog ->
+							projectWiseDefectRemovalStatus.get(jiraIssue.getBasicProjectConfigId()).stream()
+									.anyMatch(s -> s.equalsIgnoreCase(historyChangeLog.getChangedTo())))
+					.findFirst().orElse(new JiraHistoryChangeLog());
+			if (CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) && jiraIssue.getSprintIdList()
+					.contains(sprintDetail.getSprintID().split("_")[0]) &&
+					null != jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn()
+					&& !sprintStartDate.isAfter(jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn().toLocalDate())
+					&& projectWiseDefectRemovalStatus.get(jiraIssue.getBasicProjectConfigId()).stream()
+							.anyMatch(s -> !s.equalsIgnoreCase(jiraIssue.getStatus()))) {
+				totalSubTask.add(jiraIssue);
+			}
+			if (CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) && jiraIssue.getSprintIdList()
+					.contains(sprintDetail.getSprintID().split("_")[0]) && null != jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn()
+					&& DateUtil.isWithinDateRange(jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn().toLocalDate(),
+					sprintStartDate, sprintEndDate)) {
+				totalSubTask.add(jiraIssue);
+			}
+		});
+	}
 }
