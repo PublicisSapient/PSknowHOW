@@ -2055,7 +2055,5 @@ db.getCollection('field_mapping_structure').insert(
        }
    }
 
-
-
 ]
 );
