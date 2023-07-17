@@ -135,7 +135,7 @@ public class CommentsServiceImpl implements CommentsService {
 						commentViewResponseDTO.setCommentOn(commentsInfo.getCommentOn());
 						commentViewResponseDTO.setCommentBy(commentsInfo.getCommentBy());
 						return commentViewResponseDTO;
-					})).sorted(Comparator.comparing(CommentViewResponseDTO::getCommentOn))
+					})).sorted(Comparator.comparing(CommentViewResponseDTO::getCommentOn).reversed())
 					.limit(customApiConfig.getLatestKpiCommentsSummary()).collect(Collectors.toList());
 		} else {
 			return new ArrayList<>();
