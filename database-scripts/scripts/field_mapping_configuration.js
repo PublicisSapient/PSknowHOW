@@ -77,7 +77,6 @@ fieldMappings.forEach(function(fm) {
             "jiraDefectRemovalStatusKPI34": jiraDefectRemovalStatus,
             "jiraDefectRemovalIssueTypeKPI34": jiraDefectRemovalIssueType,
         
-            "jiraSprintVelocityIssueTypeKpi39": jiraSprintVelocityIssueType,
             "jiraSprintVelocityIssueTypeBR": jiraSprintVelocityIssueType,
         
             "jiraSprintCapacityIssueTypeKpi46": jiraSprintCapacityIssueType,
@@ -88,7 +87,6 @@ fieldMappings.forEach(function(fm) {
             "jiraDefectCountlIssueTypeKPI36": jiraDefectCountlIssueType,
         
             "jiraIssueDeliverdStatusBR": jiraIssueDeliverdStatus,
-            "jiraIssueDeliverdStatusKpi39": jiraIssueDeliverdStatus,
             "jiraIssueDeliverdStatusAVR": jiraIssueDeliverdStatus,
             "jiraIssueDeliverdStatusKPI126": jiraIssueDeliverdStatus,
             "jiraIssueDeliverdStatusKPI82": jiraIssueDeliverdStatus,

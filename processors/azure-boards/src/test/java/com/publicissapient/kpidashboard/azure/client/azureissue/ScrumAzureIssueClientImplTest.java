@@ -270,7 +270,6 @@ public class ScrumAzureIssueClientImplTest {
 		jiraType.add("Story");
 		jiraType.add("Feature");
 		fieldMapping.setJiraSprintVelocityIssueTypeBR(jiraType);
-		fieldMapping.setJiraSprintVelocityIssueTypeKpi39(jiraType);
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature" }));
 		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(jiraType);
@@ -281,7 +280,6 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setJiraIssueDeliverdStatusBR(jiraType);
 		fieldMapping.setJiraIssueDeliverdStatusKPI126(jiraType);
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(jiraType);
-		fieldMapping.setJiraIssueDeliverdStatusKpi39(jiraType);
 
 		fieldMapping.setJiraDorKPI3("In Progress");
 		fieldMapping.setJiraLiveStatus("Closed");

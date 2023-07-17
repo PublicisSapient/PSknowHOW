@@ -208,14 +208,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
 		Set<String> totalIssue = new HashSet<>();
 		sprintDetails.stream().forEach(dbSprintDetail -> {
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(dbSprintDetail.getBasicProjectConfigId());
-			// to modify sprintdetails on the basis of configuration for the project
-			SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-					new ArrayList<>(),
-					fieldMapping.getJiraIterationCompletionStatusKpi40()).get(0);
-			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
-				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+			if (CollectionUtils.isNotEmpty(dbSprintDetail.getTotalIssues())) {
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
 						CommonConstant.TOTAL_ISSUES));
 			}
 

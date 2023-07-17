@@ -127,7 +127,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 
 		FieldMapping mapping = fieldMappingRepository.save(fieldMapping);
-		cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 		clearCache();
 		return mapping;
 	}
@@ -195,8 +194,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	private void clearCache() {
-		cacheService.clearCache(CommonConstant.JIRAKANBAN_KPI_CACHE);
-		cacheService.clearCache(CommonConstant.JIRA_KPI_CACHE);
 		cacheService.clearAllCache();
 	}
 
@@ -486,7 +483,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraStoryPointsCustomField",
 			"jiraTestAutomationIssueType",
 
-			"jiraSprintVelocityIssueTypeKpi39",
 			"jiraSprintVelocityIssueTypeBR",
 
 			"jiraSprintCapacityIssueTypeKpi46",
@@ -497,7 +493,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraDefectCountlIssueTypeKPI36",
 
 			"jiraIssueDeliverdStatusBR",
-			"jiraIssueDeliverdStatusKpi39",
 			"jiraIssueDeliverdStatusAVR",
 			"jiraIssueDeliverdStatusKPI126",
 			"jiraIssueDeliverdStatusKPI82",
@@ -598,7 +593,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraIterationCompletionStatusKPI140",
 			"jiraIterationCompletionStatusKPI132",
 			"jiraIterationCompletionStatusKPI136",
-			"jiraIterationCompletionStatusKpi40",
 			"jiraIterationCompletionStatusKpi72",
 			"jiraIterationCompletionStatusKpi39",
 			"jiraIterationCompletionStatusKpi5",
@@ -613,7 +607,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraIterationCompletionStatusKPI131",
 			"jiraIterationCompletionStatusBRE",
 
-			"jiraIterationIssuetypeCustomField",
 			"jiraIterationIssuetypeKPI122",
 			"jiraIterationIssuetypeBRE",
 			"jiraIterationIssuetypeKPI131",

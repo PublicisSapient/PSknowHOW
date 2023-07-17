@@ -544,16 +544,6 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraSprintVelocityIssueTypeKpi39",
-    "fieldLabel": "Issue type to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-      "definition": "All issue types that are sized in story points and should be counted in Velocity calculation"
-    }
-  },
-  {
     "fieldName": "jiraSprintCapacityIssueTypeKpi46",
     "fieldLabel": "Issue type to be included",
     "fieldType": "chips",
@@ -2055,12 +2045,12 @@ db.getCollection('field_mapping_structure').insert(
 },
    {
        "fieldName": "storyFirstStatusKPI3",
-       "fieldLabel": "Story First Status - Lead Time",
+       "fieldLabel": "Status when 'Story' issue type is created",
        "fieldType": "text",
        "fieldCategory": "workflow",
        "section": "WorkFlow Status Mapping",
        "tooltip": {
-         "definition": "Default status when a Story is opened.   <br> Example: Open<hr>",
+         "definition": "All issue types that identify with a Story.",
          "KPI Impacted":"Jira Processor History"
        }
    }

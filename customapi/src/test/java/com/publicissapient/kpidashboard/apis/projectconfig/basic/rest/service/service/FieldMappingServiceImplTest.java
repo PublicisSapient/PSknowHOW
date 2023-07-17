@@ -333,7 +333,6 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraIssueTypeKPI35(Arrays.asList("Story"));
 		fieldMapping.setJiraQAKPI111IssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraDefectCountlIssueTypeKPI36(Arrays.asList("Story"));
-		fieldMapping.setJiraSprintVelocityIssueTypeKpi39(Arrays.asList("Story", "Defect"));
 		fieldMapping.setJiraDefectRemovalIssueTypeKPI34(Arrays.asList("Story"));
 		fieldMapping.setJiraIssueTypeKPI37(Arrays.asList("Story"));
 		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(Arrays.asList("Story"));

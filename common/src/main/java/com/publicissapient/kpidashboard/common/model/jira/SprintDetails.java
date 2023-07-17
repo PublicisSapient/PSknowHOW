@@ -81,7 +81,6 @@ public class SprintDetails extends BasicModel implements Cloneable{
 	public Object clone() throws CloneNotSupportedException {
 		SprintDetails clonedSprintDetails = (SprintDetails) super.clone();
 
-		// Clone the lists and sets containing mutable objects (deep cloning)
 		clonedSprintDetails.setCompletedIssues(deepCloneIssueSet(this.getCompletedIssues()));
 		clonedSprintDetails.setNotCompletedIssues(deepCloneIssueSet(this.getNotCompletedIssues()));
 		clonedSprintDetails.setPuntedIssues(deepCloneIssueSet(this.getPuntedIssues()));
@@ -92,7 +91,6 @@ public class SprintDetails extends BasicModel implements Cloneable{
 		return clonedSprintDetails;
 	}
 
-	// Helper method to deep clone a Set<SprintIssue>
 	private Set<SprintIssue> deepCloneIssueSet(Set<SprintIssue> originalSet) throws CloneNotSupportedException {
 		Set<SprintIssue> clonedSet = new HashSet<>();
 		for (SprintIssue issue : originalSet) {

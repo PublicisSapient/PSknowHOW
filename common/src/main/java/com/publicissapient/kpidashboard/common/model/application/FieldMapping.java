@@ -125,7 +125,6 @@ public class FieldMapping extends BasicModel {
 	// value of the automated test case Eg. Yes, Cannot Automate, No
 
 	private List<String> jiraSprintVelocityIssueType;// TODO: Extra field  //test done
-	private List<String> jiraSprintVelocityIssueTypeKpi39;
 	private List<String> jiraSprintVelocityIssueTypeBR;
 
 	private List<String> jiraSprintCapacityIssueType;// TODO: Extra field
@@ -140,7 +139,6 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> jiraIssueDeliverdStatus;// TODO: Extra field //test done
 	private List<String> jiraIssueDeliverdStatusBR;
-	private List<String> jiraIssueDeliverdStatusKpi39;//////
 	private List<String> jiraIssueDeliverdStatusAVR;
 	private List<String> jiraIssueDeliverdStatusKPI126;
 	private List<String> jiraIssueDeliverdStatusKPI82;
@@ -313,7 +311,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationCompletionStatusKPI140;
 	private List<String> jiraIterationCompletionStatusKPI132;
 	private List<String> jiraIterationCompletionStatusKPI136;
-	private List<String> jiraIterationCompletionStatusKpi40;
 	private List<String> jiraIterationCompletionStatusKpi72;
 	private List<String> jiraIterationCompletionStatusKpi39;
 	private List<String> jiraIterationCompletionStatusKpi5;
@@ -329,7 +326,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationCompletionStatusBRE;
 
 	private List<String> jiraIterationCompletionTypeCustomField;// TODO: Extra field  //test done
-	private List<String> jiraIterationIssuetypeCustomField;
 	private List<String> jiraIterationIssuetypeKPI122;
 	private List<String> jiraIterationIssuetypeBRE;
 	private List<String> jiraIterationIssuetypeKPI131;

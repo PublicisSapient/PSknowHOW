@@ -233,14 +233,12 @@ public class OfflineDataProcessorImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("Story");
 		jiraType.add("Feature");
-		fieldMapping.setJiraSprintVelocityIssueTypeKpi39(jiraType);
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature" }));
 		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraIssueDeliverdStatusKpi39(jiraType);
 
 		fieldMapping.setJiraDorKPI3("In Progress");
 		fieldMapping.setJiraLiveStatus("Closed");

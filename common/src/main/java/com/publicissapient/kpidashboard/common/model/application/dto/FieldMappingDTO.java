@@ -53,24 +53,6 @@ public class FieldMappingDTO extends BasicModel {
 	private String sprintName;
 	private String epicName;
 	private List<String> jiradefecttype;//TODO: duplicate
-	private List<String> jiradefecttypeSWE;
-	private List<String> jiradefecttypeKPI132;
-	private List<String> jiradefecttypeKPI136;
-	private List<String> jiradefecttypeKPI140;
-	private List<String> jiradefecttypeRDCA;
-	private List<String> jiradefecttypeRDCP;
-	private List<String> jiradefecttypeRDCR;
-	private List<String> jiradefecttypeRDCS;
-	private List<String> jiradefecttypeKPI133;
-	private List<String> jiradefecttypeIWS;
-	private List<String> jiradefecttypeLT;
-	private List<String> jiradefecttypeMW;
-	private List<String> jiradefecttypeKPI82;
-	private List<String> jiradefecttypeKPI135;
-	private List<String> jiradefecttypeKpi40;
-	private List<String> jiradefecttypeAVR;
-	private List<String> jiradefecttypeKPI126;
-	private List<String> jiradefecttypeBDRR;
 
 	// defectPriority
 	private List<String> defectPriority;//TODO: Extra field
@@ -94,7 +76,7 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraAtmProjectKey;
 	private List<String> jiraIssueEpicType;
 
-	private List<String> jiraStatusForQa;
+	private List<String> jiraStatusForQa;// TODO: duplicate
 	private List<String> jiraStatusForQaKPI135;
 	private List<String> jiraStatusForQaKPI82;
 	// type of test cases
@@ -143,7 +125,6 @@ public class FieldMappingDTO extends BasicModel {
 	// value of the automated test case Eg. Yes, Cannot Automate, No
 
 	private List<String> jiraSprintVelocityIssueType;// TODO: Extra field
-	private List<String> jiraSprintVelocityIssueTypeKpi39;
 	private List<String> jiraSprintVelocityIssueTypeBR;
 
 private List<String> jiraSprintCapacityIssueType;// TODO: Extra field
@@ -158,7 +139,6 @@ private List<String> jiraSprintCapacityIssueTypeKpi46;
 
 	private List<String> jiraIssueDeliverdStatus;// TODO: Extra field
 	private List<String> jiraIssueDeliverdStatusBR;
-	private List<String> jiraIssueDeliverdStatusKpi39;//////
 	private List<String> jiraIssueDeliverdStatusAVR;
 	private List<String> jiraIssueDeliverdStatusKPI126;
 	private List<String> jiraIssueDeliverdStatusKPI82;
@@ -337,7 +317,6 @@ private List<String> jiraIterationCompletionStatusKPI145;
 private List<String> jiraIterationCompletionStatusKPI140;
 private List<String> jiraIterationCompletionStatusKPI132;
 private List<String> jiraIterationCompletionStatusKPI136;
-private List<String> jiraIterationCompletionStatusKpi40;
 private List<String> jiraIterationCompletionStatusKpi72;
 private List<String> jiraIterationCompletionStatusKpi39;
 private List<String> jiraIterationCompletionStatusKpi5;
@@ -353,7 +332,6 @@ private List<String> jiraIterationCompletionStatusKPI131;
 private List<String> jiraIterationCompletionStatusBRE;
 
 	private List<String> jiraIterationCompletionTypeCustomField;// TODO: Extra field  //test done
-	private List<String> jiraIterationIssuetypeCustomField;
 	private List<String> jiraIterationIssuetypeKPI122;
 	private List<String> jiraIterationIssuetypeBRE;
 	private List<String> jiraIterationIssuetypeKPI131;
