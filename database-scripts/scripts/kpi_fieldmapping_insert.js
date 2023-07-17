@@ -528,14 +528,14 @@ db.getCollection('kpi_fieldmapping').insert(
          kpiName: 'Backlog Count By Status',
    		 kpiSource: 'Jira',
          type: ['Other'],
-         fieldNames : {'Workflow Status Mapping' : ['jiraDod','jiraDefectRejectionStatus'] }
+         fieldNames : {'Workflow Status Mapping' : ['jiraDod','jiraDefectRejectionStatus','jiraLiveStatus'] }
      },
      {
          kpiId: 'kpi152',
          kpiName: 'Backlog Count By Issue Type',
    		 kpiSource: 'Jira',
          type: ['Other'],
-         fieldNames : {'Workflow Status Mapping' : ['jiraDod','jiraDefectRejectionStatus'] }
+         fieldNames : {'Workflow Status Mapping' : ['jiraDod','jiraDefectRejectionStatus','jiraLiveStatus'] }
      }
 
 	  ]);
