@@ -35,11 +35,10 @@ fieldMappings.forEach(function(fm) {
         const jiraSprintCapacityIssueType=fm.jiraSprintCapacityIssueType;
         const jiraDefectRejectionlIssueType=fm.jiraDefectRejectionlIssueType;
         const jiraStatusForQa=fm.jiraStatusForQa;
+        const storyFirstStatusKPI3=fm.storyFirstStatus;
         db.field_mapping.updateOne({ "_id": fm._id }, {
           $set: {
 
-            "jiradefecttypeSWE":jiradefecttype,
-        
             "defectPriorityKPI135":defectPriority,
             "defectPriorityKPI14":defectPriority,
             "defectPriorityQAKPI111":defectPriority,
@@ -56,7 +55,7 @@ fieldMappings.forEach(function(fm) {
             
             "jiraDodKPI14":jiraDod,
             "jiraDodQAKPI111":jiraDod,
-            "jiraDodLT":jiraDod,
+            "jiraDodKPI3":jiraDod,
             "jiraDodPDA":jiraDod,
             
             "jiraDefectCreatedStatusKPI14": jiraDefectCreatedStatus,
@@ -94,16 +93,18 @@ fieldMappings.forEach(function(fm) {
             "jiraIssueDeliverdStatusKPI126": jiraIssueDeliverdStatus,
             "jiraIssueDeliverdStatusKPI82": jiraIssueDeliverdStatus,
         
-            "jiraDorLT": jiraDor,
+            "jiraDorKPI3": jiraDor,
        
-            "jiraIssueTypeLT": jiraIntakeToDorIssueType,
+            "jiraIssueTypeKPI3": jiraIntakeToDorIssueType,
+
+            "storyFirstStatusKPI3":storyFirstStatus,
         
             "jiraStoryIdentificationKpi40": jiraStoryIdentification,
 
             "jiraKPI82StoryIdentification": jiraFTPRStoryIdentification,
             "jiraKPI135StoryIdentification": jiraFTPRStoryIdentification,
         
-            "jiraLiveStatusLT": jiraLiveStatus,
+            "jiraLiveStatusKPI3": jiraLiveStatus,
             "jiraLiveStatusLTK": jiraLiveStatus,
             "jiraLiveStatusNOPK": jiraLiveStatus,
             "jiraLiveStatusNOSK": jiraLiveStatus,

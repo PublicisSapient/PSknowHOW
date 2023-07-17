@@ -268,13 +268,13 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraStatusForQaKPI135(workflowMap.get(CommonConstant.QA));
 		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(issueTypeMap.get(CommonConstant.STORY));
 		if (CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.DOR))) {
-			fieldMapping.setJiraDorLT(workflowMap.get(CommonConstant.DOR).get(0));
+			fieldMapping.setJiraDorKPI3(workflowMap.get(CommonConstant.DOR).get(0));
 		} else {
-			fieldMapping.setJiraDorLT(null);
+			fieldMapping.setJiraDorKPI3(null);
 		}
 		fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraDodLT(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodPDA(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusCustomField(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI120(workflowMap.get(CommonConstant.DOD));
@@ -317,7 +317,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraIssueDeliverdStatusKPI126(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(workflowMap.get(CommonConstant.DELIVERED));
 
-		fieldMapping.setJiraIssueTypeLT(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraIssueTypeKPI3(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraStoryIdentification(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraKPI82StoryIdentification(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraKPI135StoryIdentification(issueTypeMap.get(CommonConstant.STORY));

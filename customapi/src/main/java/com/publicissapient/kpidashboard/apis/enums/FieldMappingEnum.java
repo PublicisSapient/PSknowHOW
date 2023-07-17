@@ -57,8 +57,8 @@ public enum FieldMappingEnum {
 	KPI53("Lead Time (Kanban)", KPISource.JIRA.name(),
 			Arrays.asList("jiraIssueTypeLT", "jiraDorLT", "jiraLiveStatusLTK")),
 
-	KPI3("Lead Time (Scrum)", KPISource.JIRA.name(), Arrays.asList( "jiraIssueTypeLT",
-			"jiraDorLT", "jiraDodLT", "jiraLiveStatusLT")),
+	KPI3("Lead Time (Scrum)", KPISource.JIRA.name(), Arrays.asList( "jiraIssueTypeKPI3",
+			"jiraDorKPI3", "jiraDodKPI3", "jiraLiveStatusKPI3","storyFirstStatusKPI3")),
 
 	KPI34("Defect Removal Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraDefectRemovalStatusKPI34",
 			"resolutionTypeForRejectionKPI34", "jiraDefectRejectionStatusKPI34", "jiraDefectRemovalIssueTypeKPI34")),

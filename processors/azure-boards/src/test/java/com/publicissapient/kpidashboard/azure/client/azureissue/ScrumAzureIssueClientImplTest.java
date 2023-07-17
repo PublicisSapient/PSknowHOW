@@ -225,7 +225,7 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setJiraIssueTypeKPI37(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeKPI36(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeKPI28(jiraType);
-		fieldMapping.setJiraIssueTypeLT(jiraType);
+		fieldMapping.setJiraIssueTypeKPI3(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
 		fieldMapping.setJiradefecttype(jiraType);
 		fieldMapping.setJiraIssueEpicType(jiraType);
@@ -251,7 +251,7 @@ public class ScrumAzureIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDod(jiraType);
+		fieldMapping.setJiraDodKPI3(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
@@ -283,7 +283,7 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(jiraType);
 		fieldMapping.setJiraIssueDeliverdStatusKpi39(jiraType);
 
-		fieldMapping.setJiraDorLT("In Progress");
+		fieldMapping.setJiraDorKPI3("In Progress");
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 
@@ -294,7 +294,7 @@ public class ScrumAzureIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDod(jiraType);
+		fieldMapping.setJiraDodKPI3(jiraType);
 		fieldMapping.setStoryFirstStatus("In Analysis");
 		jiraType = new ArrayList<>();
 		jiraType.add("In Analysis");
@@ -343,7 +343,7 @@ public class ScrumAzureIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDod(jiraType);
+		fieldMapping.setJiraDodKPI3(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
@@ -385,7 +385,7 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setEpicName("customfield_14502");
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDod(jiraType);
+		fieldMapping.setJiraDodKPI3(jiraType);
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Tech Story");

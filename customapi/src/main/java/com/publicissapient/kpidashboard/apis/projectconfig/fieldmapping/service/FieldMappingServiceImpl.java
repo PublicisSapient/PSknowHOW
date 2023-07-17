@@ -456,7 +456,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 			"jiraDodKPI14",
 			"jiraDodQAKPI111",
-			"jiraDodLT",
+			"jiraDodKPI3",
 			"jiraDodPDA",
 
 			"jiraDefectCreatedStatusKPI14",
@@ -503,13 +503,14 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraIssueDeliverdStatusKPI82",
 			"readyForDevelopmentStatus",
 
-			"jiraDorLT",
+			"jiraDorKPI3",
+			"storyFirstStatusKPI3",
 
-			"jiraIssueTypeLT",
+			"jiraIssueTypeKPI3",
 			"jiraStoryIdentification",
 			"jiraStoryIdentificationKpi40",
 
-			"jiraLiveStatusLT",
+			"jiraLiveStatusKPI3",
 			"jiraLiveStatusLTK",
 			"jiraLiveStatusNOPK",
 			"jiraLiveStatusNOSK",

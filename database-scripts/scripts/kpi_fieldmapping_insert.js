@@ -973,7 +973,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDorLT",
+    "fieldName": "jiraDorKPI3",
     "fieldLabel": "Status to Identify Development Status",
     "fieldType": "chips",
     "fieldCategory": "workflow",
@@ -983,7 +983,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraIssueTypeLT",
+    "fieldName": "jiraIssueTypeKPI3",
     "fieldLabel": "Lead time issue type",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
@@ -1263,13 +1263,13 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-    "fieldName": "jiraDodLT",
+    "fieldName": "jiraDodKPI3",
     "fieldLabel": "DOD Status",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-      "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. <br> Example: In Testing <hr>"
+      "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
     }
   },
   {
@@ -1605,7 +1605,7 @@ db.getCollection('field_mapping_structure').insert(
     }
   },
   {
-      "fieldName": "jiraLiveStatusLT",
+      "fieldName": "jiraLiveStatusKPI3",
       "fieldLabel": "Live Status - Lead Time",
       "fieldType": "text",
       "fieldCategory": "workflow",
@@ -2052,7 +2052,18 @@ db.getCollection('field_mapping_structure').insert(
           "definition": "The status of Defect Issue Type which identifies the 'In-Testing' status in JIRA. <br> Example: Ready For Testing<hr>",
           "Kpi Impacted": "Indiviual Filter"
           }
-}
+},
+   {
+       "fieldName": "storyFirstStatusKPI3",
+       "fieldLabel": "Story First Status - Lead Time",
+       "fieldType": "text",
+       "fieldCategory": "workflow",
+       "section": "WorkFlow Status Mapping",
+       "tooltip": {
+         "definition": "Default status when a Story is opened.   <br> Example: Open<hr>",
+         "KPI Impacted":"Jira Processor History"
+       }
+   }
 
 
 

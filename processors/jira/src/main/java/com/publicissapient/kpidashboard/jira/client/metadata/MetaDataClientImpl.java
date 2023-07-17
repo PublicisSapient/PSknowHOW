@@ -297,9 +297,11 @@ public class MetaDataClientImpl implements MetadataClient {
 
 			if (CollectionUtils.isNotEmpty(firstStatusList)) {
 				fieldMapping.setStoryFirstStatus(firstStatusList.get(0));
+				fieldMapping.setStoryFirstStatusKPI3(firstStatusList.get(0));
 				fieldMapping.setJiraDefectCreatedStatusKPI14(firstStatusList.get(0));
 			} else {
 				fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
+				fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
 				fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
 			}
 			fieldMapping.setIssueStatusExcluMissingWorkKPI124(firstStatusList);
@@ -312,13 +314,13 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraStatusForQaKPI135(workflowMap.get(CommonConstant.QA));
 			fieldMapping.setJiraDefectInjectionIssueTypeKPI14(issueTypeMap.get(CommonConstant.STORY));
 			if (CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.DOR))) {
-				fieldMapping.setJiraDorLT(workflowMap.get(CommonConstant.DOR).get(0));
+				fieldMapping.setJiraDorKPI3(workflowMap.get(CommonConstant.DOR).get(0));
 			} else {
-				fieldMapping.setJiraDorLT(null);
+				fieldMapping.setJiraDorKPI3(null);
 			}
 			fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraDodLT(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodPDA(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.STORY));
 
@@ -372,7 +374,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping
 					.setJiraIssueDeliverdStatusKPI82(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping
-					.setJiraIssueTypeLT(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+					.setJiraIssueTypeKPI3(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKpi40(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping
@@ -456,9 +458,10 @@ public class MetaDataClientImpl implements MetadataClient {
 			} else {
 				fieldMapping.setJiraTechDebtIssueType(null);
 			}
-			fieldMapping.setJiraIssueTypeLT(
+			fieldMapping.setJiraIssueTypeKPI3(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
+			fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
 			fieldMapping
 					.setJiraIssueDeliverdStatusKpi39(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping
@@ -472,10 +475,10 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
 			fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraDodLT(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodPDA(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraLiveStatus(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusLT(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusKPI3(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusLTK(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusNOPK(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusNORK(CommonConstant.CLOSED);
@@ -483,7 +486,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraLiveStatusOTA(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusPDA(CommonConstant.CLOSED);
 			fieldMapping.setJiraDefectRemovalStatusKPI34(null);
-			fieldMapping.setJiraDorLT(CommonConstant.OPEN);
+			fieldMapping.setJiraDorKPI3(CommonConstant.OPEN);
 			fieldMapping.setResolutionTypeForRejectionAVR(
 					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionKPI28(
@@ -536,6 +539,7 @@ public class MetaDataClientImpl implements MetadataClient {
 				|| templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
 
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
+			fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
 			fieldMapping.setJiraTicketResolvedStatus(
 					workflowMap.getOrDefault(CommonConstant.TICKET_RESOLVED_STATUS, new ArrayList<>()));
 			fieldMapping.setTicketDeliverdStatus(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
@@ -548,7 +552,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraTicketClosedStatus(
 					workflowMap.getOrDefault(CommonConstant.TICKET_CLOSED_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraLiveStatus(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusLT(CommonConstant.CLOSED);
+			fieldMapping.setJiraLiveStatusKPI3(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusLTK(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusNOPK(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusNORK(CommonConstant.CLOSED);

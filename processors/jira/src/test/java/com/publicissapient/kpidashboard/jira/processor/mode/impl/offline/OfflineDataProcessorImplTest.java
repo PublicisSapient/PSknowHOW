@@ -202,7 +202,7 @@ public class OfflineDataProcessorImplTest {
 		fieldMapping.setJiraIssueTypeKPI37(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeKPI36(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeKPI28(jiraType);
-		fieldMapping.setJiraIssueTypeLT(jiraType);
+		fieldMapping.setJiraIssueTypeKPI3(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
 
 		fieldMapping.setJiraTechDebtIdentification("Labels");
@@ -215,7 +215,7 @@ public class OfflineDataProcessorImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDod(jiraType);
+		fieldMapping.setJiraDodKPI3(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
@@ -242,7 +242,7 @@ public class OfflineDataProcessorImplTest {
 		jiraType.add("Closed");
 		fieldMapping.setJiraIssueDeliverdStatusKpi39(jiraType);
 
-		fieldMapping.setJiraDorLT("In Progress");
+		fieldMapping.setJiraDorKPI3("In Progress");
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 
@@ -253,7 +253,7 @@ public class OfflineDataProcessorImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDod(jiraType);
+		fieldMapping.setJiraDodKPI3(jiraType);
 		jiraType = new ArrayList<>();
 		jiraType.add("2.1.0");
 
@@ -286,7 +286,7 @@ public class OfflineDataProcessorImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDod(jiraType);
+		fieldMapping.setJiraDodKPI3(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
@@ -325,7 +325,7 @@ public class OfflineDataProcessorImplTest {
 		fieldMapping.setEpicName("customfield_14502");
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDod(jiraType);
+		fieldMapping.setJiraDodKPI3(jiraType);
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Tech Story");

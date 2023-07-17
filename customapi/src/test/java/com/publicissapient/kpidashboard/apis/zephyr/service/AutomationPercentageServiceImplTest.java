@@ -195,7 +195,7 @@ public class AutomationPercentageServiceImplTest {
 		projectOne.setBasicProjectConfigId(new ObjectId("63284960fdd20276d60e4df5"));
 		projectOne.setJiraDefectInjectionIssueTypeKPI14(Arrays.asList("Story", "Tech Story"));
 		projectOne.setJiradefecttype(Arrays.asList("Bug"));
-		projectOne.setJiraDod(Arrays.asList("Done"));
+		projectOne.setJiraDodKPI3(Arrays.asList("Done"));
 		projectOne.setJiraDefectCreatedStatusKPI14("Open");
 		projectOne.setJiraTestAutomationIssueType(Arrays.asList("Yes", "No"));
 
@@ -203,7 +203,7 @@ public class AutomationPercentageServiceImplTest {
 		projectTwo.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
 		projectTwo.setJiraDefectInjectionIssueTypeKPI14(Arrays.asList("Story", "Tech Story"));
 		projectOne.setJiradefecttype(Arrays.asList("Bug"));
-		projectTwo.setJiraDod(Arrays.asList("Done"));
+		projectTwo.setJiraDodKPI3(Arrays.asList("Done"));
 		projectTwo.setJiraDefectCreatedStatusKPI14("Open");
 		projectTwo.setJiraTestAutomationIssueType(Arrays.asList("Yes", "No"));
 
@@ -211,7 +211,7 @@ public class AutomationPercentageServiceImplTest {
 		projectThree.setBasicProjectConfigId(new ObjectId("63284960fdd20276d60e4df5"));
 		projectThree.setJiraDefectInjectionIssueTypeKPI14(Arrays.asList("Story", "Tech Story"));
 		projectOne.setJiradefecttype(Arrays.asList("Bug"));
-		projectThree.setJiraDod(Arrays.asList("Done"));
+		projectThree.setJiraDodKPI3(Arrays.asList("Done"));
 		projectThree.setJiraDefectCreatedStatusKPI14("Open");
 		projectThree.setJiraTestAutomationIssueType(Arrays.asList("Yes", "No"));
 

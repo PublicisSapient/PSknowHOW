@@ -67,7 +67,7 @@ public class FieldMapping extends BasicModel {
 	private String[] jiraIssueTypeNamesAVR;
 	private List<String> jiraIssueEpicType;
 	private String storyFirstStatus;//TODO: duplicate
-//	private String storyFirstStatusLT;
+	private String storyFirstStatusKPI3;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;// TODO: Extra field
 	private List<String> jiraStatusForDevelopmentAVR;
@@ -85,7 +85,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDod;//TODO: Extra field
 	private List<String> jiraDodKPI14;
 	private List<String> jiraDodQAKPI111;
-	private List<String> jiraDodLT;
+	private List<String> jiraDodKPI3;
 	private List<String> jiraDodPDA;
 
 	private String jiraDefectCreatedStatus;//TODO: Extra field
@@ -147,16 +147,16 @@ public class FieldMapping extends BasicModel {
 	private String readyForDevelopmentStatus;
 
 	private String jiraDor;// TODO: Extra field
-	private String jiraDorLT;
+	private String jiraDorKPI3;
 
 	private List<String> jiraIntakeToDorIssueType;// TODO: Extra field
-	private List<String> jiraIssueTypeLT;
+	private List<String> jiraIssueTypeKPI3;
 
 	private List<String> jiraStoryIdentification;// TODO: Duplicate
 	private List<String> jiraStoryIdentificationKpi40;
 
 	private String jiraLiveStatus;//TODO: Extra field
-	private String jiraLiveStatusLT;
+	private String jiraLiveStatusKPI3;
 	private String jiraLiveStatusLTK;
 	private String jiraLiveStatusNOPK;
 	private String jiraLiveStatusNOSK;
