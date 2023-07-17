@@ -319,6 +319,20 @@ public final class CommonUtils {
 		return regexList;
 	}
 
+	public static List<Pattern> convertToPatternListForSubString(List<String> stringList) {
+		List<Pattern> regexList = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(stringList)) {
+			for (String value : stringList) {
+				regexList.add(Pattern.compile(
+						Constant.TILDA_SYMBOL + Constant.DOT + Constant.QUESTION_MARK + Pattern.quote(value)
+								+ Constant.DOT + Constant.QUESTION_MARK + Constant.DOLLAR_SYMBOL,
+						Pattern.CASE_INSENSITIVE));
+
+			}
+		}
+		return regexList;
+	}
+
 	/**
 	 * This method used to convert string list to pattern list to support ignore
 	 * case

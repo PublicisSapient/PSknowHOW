@@ -121,16 +121,19 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			Map<LocalDate, List<JiraIssue>> removeIssueMap, Map<LocalDate, List<JiraIssue>> fullReleaseMap,
 			Map<LocalDate, List<JiraIssue>> completedReleaseMap) {
 
+		releaseName = releaseName.toLowerCase();
+		String finalReleaseName = releaseName;
+		String finalReleaseName1 = releaseName;
 		allIssuesHistory.forEach(issueHistory -> {
 			List<JiraHistoryChangeLog> fixVersionUpdationLog = issueHistory.getFixVersionUpdationLog();
 			Collections.sort(fixVersionUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 			int lastIndex = fixVersionUpdationLog.size() - 1;
-			fixVersionUpdationLog.stream().filter(updateLogs -> updateLogs.getChangedTo().contains(releaseName)
-					|| updateLogs.getChangedFrom().contains(releaseName)).forEach(updateLogs -> {
+			fixVersionUpdationLog.stream().filter(updateLogs -> updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName)
+					|| updateLogs.getChangedFrom().toLowerCase().contains(finalReleaseName)).forEach(updateLogs -> {
 						List<JiraIssue> jiraIssueList = getRespectiveJiraIssue(releaseIssue, issueHistory);
 						LocalDate updatedLog = updateLogs.getUpdatedOn().toLocalDate();
-						if (updateLogs.getChangedTo().contains(releaseName)) {
-							if (fixVersionUpdationLog.get(lastIndex).getChangedTo().contains(releaseName)) {
+						if (updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName1)) {
+							if (fixVersionUpdationLog.get(lastIndex).getChangedTo().toLowerCase().contains(finalReleaseName1)) {
 								List<JiraIssue> cloneList = new ArrayList<>(jiraIssueList);
 								fullReleaseMap.computeIfPresent(updatedLog, (k, v) -> {
 									v.addAll(cloneList);
@@ -145,7 +148,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 							});
 							addedIssuesMap.putIfAbsent(updatedLog, jiraIssueList);
 						}
-						if (updateLogs.getChangedFrom().contains(releaseName)) {
+						if (updateLogs.getChangedFrom().toLowerCase().contains(finalReleaseName1)) {
 							List<JiraIssue> removeJiraIssueLIst = new ArrayList<>(jiraIssueList);
 							updatedLog = updateLogs.getUpdatedOn().toLocalDate();
 							removeIssueMap.computeIfPresent(updatedLog, (k, v) -> {

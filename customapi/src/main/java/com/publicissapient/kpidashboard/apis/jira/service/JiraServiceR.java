@@ -307,7 +307,8 @@ public class JiraServiceR {
 					Collections.singletonList(basicProjectConfigId));
 			Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			mapOfProjectFilters.put(CommonConstant.RELEASE, sprintIssuesList);
+			mapOfProjectFilters.put(CommonConstant.RELEASE,
+					CommonUtils.convertToPatternListForSubString(sprintIssuesList));
 			uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
 			jiraIssueList = jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
 		}
@@ -349,9 +350,9 @@ public class JiraServiceR {
 			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(
 					sprintIssuesList, Collections.singletonList(basicProjectConfigId));
 		} else {
-			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
-					.findByFilterAndFromReleaseMap(Collections.singletonList(basicProjectConfigId), releaseList.stream()
-							.map(s -> CommonUtils.convertToPatternText("^.*"+s+".*$")).collect(Collectors.toList()));
+			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromReleaseMap(
+					Collections.singletonList(basicProjectConfigId),
+					CommonUtils.convertToPatternListForSubString(releaseList));
 		}
 	}
 
