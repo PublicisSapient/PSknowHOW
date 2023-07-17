@@ -1569,13 +1569,11 @@ describe('FilterComponent', () => {
     expect(spy).toHaveBeenCalled();
   }));
 
-  // fit('should handle comment summary button click', () => {
-  //   component.toggleDropdown['commentSummary'] = true;
-  //   spyOn(httpService, 'getCommentSummary');
-  //   const spy = spyOn(component, 'getRecentComments').and.callFake(() => {});
-  //   console.log(spy)
-  //   component.handleBtnClick();
-  //   expect(spy).toHaveBeenCalled();
-  // })
+  it('should handle comment summary button click', () => {
+    component.toggleDropdown['commentSummary'] = false;
+    const spy = spyOn(component, 'getRecentComments');
+    component.handleBtnClick();
+    expect(spy).toHaveBeenCalled();
+  })
 
 });
