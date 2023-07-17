@@ -288,10 +288,10 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 				List<String> completedSprintIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
 						CommonConstant.COMPLETED_ISSUES);
-				List<JiraIssue> totalSubTask = new ArrayList<>();
+				Set<JiraIssue> totalSubTask = new HashSet<>();
 				getSubtasks(totalDefects, defectsCustomHistory, projectWiseDefectRemovalStatus, totalSubTask, sd);
 
-				List<JiraIssue> subCategoryWiseTotalDefectList = totalDefects.stream().filter(
+				List<JiraIssue> subCategoryWiseTotalDefectList = totalSubTask.stream().filter(
 						defect -> org.apache.commons.collections.CollectionUtils.isNotEmpty(defect.getSprintIdList())
 								&& defect.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
 						.collect(Collectors.toList());
@@ -485,7 +485,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 	private static void getSubtasks(List<JiraIssue> allSubTaskBugs, List<JiraIssueCustomHistory> defectsCustomHistory,
 									Map<String, List<String>> projectWiseDefectRemovalStatus,
-									List<JiraIssue> totalSubTask, SprintDetails sprintDetail) {
+									Set<JiraIssue> totalSubTask, SprintDetails sprintDetail) {
 		LocalDate sprintEndDate = sprintDetail.getCompleteDate() != null
 				? LocalDate.parse(sprintDetail.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
 				: LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
