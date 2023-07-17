@@ -143,6 +143,13 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 			log.info("Iteration Burnup -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+				// to modify sprintdetails on the basis of configuration for the project
+				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
+						fieldMapping.getJiraIterationIssuetypeKPI125(),
+						fieldMapping.getJiraIterationCompletionStatusKPI125());
+
 				LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
 						DATE_TIME_FORMATTER);
 
@@ -557,17 +564,17 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				KpiDataHelper.arrangeJiraIssueList(fieldMapping, jiraIssues, inProgressIssues, openIssues);
+				KpiDataHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI125(), jiraIssues, inProgressIssues, openIssues);
 				iterationPotentialDelayList
 						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
 		}
 
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI125())) {
 			List<JiraIssue> inProgressIssues = allIssues.stream()
 					.filter(jiraIssue -> (jiraIssue.getAssigneeId() == null)
 							&& StringUtils.isNotEmpty(jiraIssue.getDueDate())
-							&& (fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus())))
+							&& (fieldMapping.getJiraStatusForInProgressKPI125().contains(jiraIssue.getStatus())))
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();

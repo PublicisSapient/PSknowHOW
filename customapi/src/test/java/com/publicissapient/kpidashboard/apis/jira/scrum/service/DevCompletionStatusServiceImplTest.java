@@ -178,6 +178,7 @@ public class DevCompletionStatusServiceImplTest {
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistoryList);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> returnMap = devCompletionStatusService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertNotNull(returnMap);

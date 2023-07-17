@@ -1,0 +1,105 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
+<form [formGroup]="form" autocomplete="off">
+    <p-accordion [multiple]="true" [style]="{'width':'100%'}" #accordion [activeIndex]="[0,1,2,3,4,5,6]">
+        <p-accordionTab *ngFor="let section of fieldMappingSectionList" [header]="section">
+            <div class="p-p-0">
+                <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of formConfig[section]">
+                    <label class="field-title">{{field['fieldLabel']}}&nbsp;<span class="fa fa-info-circle"
+                            aria-hidden="true" pTooltip='<span>
+                                            Definition:
+                                            {{field.tooltip.definition}} <br><hr>
+                                            KPI Impacted:
+                                            {{field.tooltip.kpiImpacted}}
+                                            </span>' tooltipPosition="top" tooltipEvent="hover"
+                            tooltipStyleClass="tooltiptext" [escape]="false"></span>
+                    </label>
+                    <ng-container *ngIf="!field?.nestedFields else nestedFieldContainer">
+                    <div class="w-60vw">
+                        <app-field-mapping-field [fieldConfig]="field" [formControlName]="field['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
+                    </div>
+                    </ng-container>
+                    <ng-template #nestedFieldContainer>
+                        <div class="fields-container p-p-2 w-60vw">
+                            <div class="p-d-flex p-justify-between" >
+                                <app-field-mapping-field [fieldConfig]="field" [formControlName]="field['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
+                            </div>
+                            <div class="p-m-2"  *ngFor="let nestedField of field['nestedFields']">
+                                <ng-container *ngIf="!nestedField['filterGroup'] || (nestedField['filterGroup'] && nestedField['filterGroup'].includes(form.value[field['fieldName']]))">
+                                    <label class="field-title">{{nestedField['fieldLabel']}} <span class="fa fa-info-circle"
+                                        aria-hidden="true" pTooltip='<span>
+                                        Definition:
+                                        {{nestedField?.tooltip?.definition}}
+                                      <hr *ngIf="nestedField?.tooltip?.kpiImpacted">
+                                        </span>' tooltipPosition="top" tooltipEvent="hover"
+                                        tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                                <app-field-mapping-field [fieldConfig]="nestedField" [formControlName]="nestedField['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </ng-template>
+
+                </div>
+            </div>
+        </p-accordionTab>
+    </p-accordion>
+</form>
+<div class="save-container p-mt-5">
+    <button pButton pRipple type="button" class="p-button-lg p-button-success p-button-raised p-mr-3"
+        icon="pi pi-save" iconPos="left" label="Save" (click)="save()"
+        [disabled]="disableSave || form.invalid"></button>
+    <!-- <button pButton pRipple type="button" class="p-button-lg p-button-primary p-mr-3" icon="pi pi-download"
+        iconPos="left" label="Export" (click)="export()" [disabled]="form.invalid"></button> -->
+</div>
+
+<!-- Search Dialog -->
+<p-dialog header="Add Value(s)" [(visible)]="displayDialog" showEffect="fade" [modal]="true" [style]="{width: '500px'}"
+    (onShow)="recordScrollPosition()" (onHide)="scrollToPosition()">
+    <div class="dialog-panel" style="width: 450px; min-height: 450px; overflow: hidden;">
+        <div *ngIf="singleSelectionDropdown">
+            <p-dropdown *ngIf="populateDropdowns" inputId="singleSelectionDropdown" autoWidth="false"
+                [style]="{'width':'100%', 'max-width': '100%'}" [options]="fieldMappingMultiSelectValues"
+                placeholder="Select Value" [(ngModel)]="selectedValue" optionLabel="key" optionValue="data"
+                filter="true" showClear="true">
+            </p-dropdown>
+        </div>
+        <div *ngIf="!singleSelectionDropdown" class="multiselect-container p-field p-col-12">
+            <p-multiSelect *ngIf="populateDropdowns" inputId="multiSelectionDropdown"
+                [style]="{'width':'436px', 'max-width': '100%'}" [options]="fieldMappingMultiSelectValues"
+                defaultLabel="Select Values" [(ngModel)]="selectedMultiValue" optionLabel="key" display="chip">
+            </p-multiSelect>
+        </div>
+    </div>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            <button type="button" pButton pRipple icon="pi pi-times" (click)="cancelDialog()" label="Cancel"
+                class="p-button p-button-danger p-button-raised"></button>
+            <button type="button" pButton pRipple icon="fa fa-check" (click)="saveDialog()" label="Add"
+                class="p-button p-button-success p-button-raised"></button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+<!-- Confirmation Dialog while saving field mapping -->
+<p-confirmDialog #templateInfoDialog key="templateInfoDialog" [style]="{width: '50vw'}">
+    <p-footer>
+        <button type="button" (click)="templateInfoDialog.reject()" pButton label="Cancel" class="enable-dialog-btn"></button>
+        <button type="button" (click)="templateInfoDialog.accept()" pButton label="Proceed"></button>
+    </p-footer>
+</p-confirmDialog>

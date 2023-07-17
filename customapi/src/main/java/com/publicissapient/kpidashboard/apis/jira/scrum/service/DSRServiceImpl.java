@@ -143,9 +143,9 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectSeepageIssueType()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueTypeKPI35()));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping);
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping.getResolutionTypeForRejectionKPI35(),fieldMapping.getJiraDefectRejectionStatusKPI35());
 		});
 		/** additional filter **/
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, QA, flterHelperService);

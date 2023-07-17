@@ -18,6 +18,15 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.rest;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.MetaDataIdentifierService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.MetadataIdentifierServiceImpl;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
+import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
+import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +48,8 @@ import com.publicissapient.kpidashboard.common.model.application.dto.FieldMappin
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 /**
  * @author anisingh4
  */
@@ -51,6 +62,14 @@ public class FieldMappingController {
 
 	@Autowired
 	private ContextAwarePolicyEnforcement policy;
+
+	@Autowired
+	private ConfigHelperService configHelperService;
+
+	@Autowired
+	private MetadataIdentifierRepository metadataIdentifierRepository;
+
+	private static final String TOOL_JIRA = ProcessorConstants.JIRA;
 
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> addFieldMapping(@PathVariable String projectToolConfigId,
@@ -92,13 +111,21 @@ public class FieldMappingController {
 		final ModelMapper modelMapper = new ModelMapper();
 		FieldMapping fieldMapping = modelMapper.map(fieldMappingDTO, FieldMapping.class);
 
+		List<ProjectToolConfig> projectToolConfigs= (List<ProjectToolConfig>) configHelperService.loadAllProjectToolConfig();
+		String finalProjectToolConfigId = projectToolConfigId;
+		ProjectToolConfig projectToolConfig= projectToolConfigs.stream().filter(t->t.getId().toString().equals(finalProjectToolConfigId)).findFirst().get();
+
 		boolean result = fieldMappingService.compareMappingOnSave(projectToolConfigId, fieldMapping);
 
 		ServiceResponse response = null;
-		if (result) {
+		if (result && !(projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase("10") ||
+				projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase("9"))) {
 			response = new ServiceResponse(true, "mappings are not same as default mapping", result);
+		} else if (result && (projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase("10")
+				|| projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase("9"))) {
+			response = new ServiceResponse(true, "changes are made in customize mappings", false);
 		} else {
-			response = new ServiceResponse(true, "mappings are same as default mapping", result);
+			response = new ServiceResponse(true, "mappings are same as already maintained mapping", result);
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);

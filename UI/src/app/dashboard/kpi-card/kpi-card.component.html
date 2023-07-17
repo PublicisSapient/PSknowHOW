@@ -104,9 +104,9 @@
         <!--place for chart to be rendered-->
         <ng-content></ng-content>
     </div>
-    <div class="kpi-card-footer d-flex justify-content-between">
-        <div class="p-d-flex p-align-center">
-            <!-- <object class="kpi-card-type-icon" data="../../../assets/img/Jira.svg"></object> -->
+    <div class="kpi-card-footer p-d-flex justify-content-between">
+        <div class="kpi-card-icons">
+            <img src="../../../assets/img/setting-icon.svg" alt="KPI Setting" class="ico-active p-mr-1 kpi-download-icon" (click)="onOpenFieldMappingDialog();" pTooltip="Setting" tooltipPosition="top" tooltipEvent="hover" [escape]="false"/>
         </div>
         <div class="kpi-card-icons" *ngIf="showExport">
             <img src="../../../assets/img/download.svg" alt="Download" class="ico-active p-mr-1 kpi-download-icon" (click)="exportToExcel()" pTooltip="Explore" tooltipPosition="top" tooltipEvent="hover" [escape]="false"/>
@@ -157,3 +157,28 @@
        
     </div>
  </p-overlayPanel>
+
+ <p-dialog [header]="kpiData?.kpiName"  [(visible)]="displayConfigModel" [modal]="true"  styleClass="field-mapping">
+    <hr>
+    <ng-template pTemplate="content" >
+       <app-field-mapping-form #fieldMappingForm
+            *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0 && !loading"
+            [disableSave]="disableSave" 
+            [fieldMappingMetaData]="fieldMappingMetaData" 
+            [fieldMappingConfig]="fieldMappingConfig" 
+            [formData]="selectedFieldMapping"
+            [selectedConfig]="selectedConfig"
+            [selectedToolConfig]="selectedToolConfig"
+            (reloadKPI)="reloadKPI()"
+            ></app-field-mapping-form>
+      </ng-template>
+      <ng-template pTemplate="footer"></ng-template>
+      <ng-container *ngIf=" noData && !loading">
+        <h2 class="p-text-center">No Configuration Available</h2>
+      </ng-container>
+      <ng-container *ngIf="loading">
+        <div class="overlay">
+            <div class="loading-img"></div>
+        </div>
+    </ng-container>
+ </p-dialog>

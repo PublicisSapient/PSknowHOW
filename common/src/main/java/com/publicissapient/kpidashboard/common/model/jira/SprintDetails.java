@@ -36,7 +36,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "sprint_details")
-public class SprintDetails extends BasicModel {
+public class SprintDetails extends BasicModel implements Cloneable{
 
 	public static final String SPRINT_STATE_CLOSED = "CLOSED";
 	public static final String SPRINT_STATE_ACTIVE = "ACTIVE";
@@ -74,6 +74,11 @@ public class SprintDetails extends BasicModel {
 	@Override
 	public int hashCode() {
 		return Objects.hash(sprintID);
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 }

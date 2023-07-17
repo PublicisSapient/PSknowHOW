@@ -294,8 +294,8 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			basicProjectConfigIds.add(basicProjectConfigId);
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			List<String> defectTypeList = new ArrayList<>();
-			if (fieldMapping.getJiradefecttype() != null) {
-				defectTypeList.addAll(fieldMapping.getJiradefecttype());
+			if (fieldMapping.getJiradefecttypeBDRR() != null) {
+				defectTypeList.addAll(fieldMapping.getJiradefecttypeBDRR());
 			}
 			defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()

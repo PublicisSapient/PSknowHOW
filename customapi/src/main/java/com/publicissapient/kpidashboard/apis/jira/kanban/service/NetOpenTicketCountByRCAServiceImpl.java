@@ -14,8 +14,12 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,13 +45,11 @@ import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Component
 public class NetOpenTicketCountByRCAServiceImpl
 		extends JiraKPIService<Long, List<Object>, Map<String, Map<String, Map<String, Set<String>>>>> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(NetOpenTicketCountByRCAServiceImpl.class);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final String FIELD_RCA = "rca";
 	private static final String JIRA_ISSUE_HISTORY_DATA = "JiraIssueHistoryData";
@@ -82,7 +84,7 @@ public class NetOpenTicketCountByRCAServiceImpl
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		log.info("NET-OPEN-TICKET-COUNT-BY-RCA {}", kpiRequest.getRequestTrackerId());
+		LOGGER.info("NET-OPEN-TICKET-COUNT-BY-RCA {}", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes()
@@ -109,7 +111,7 @@ public class NetOpenTicketCountByRCAServiceImpl
 
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 
-		log.debug(
+		LOGGER.debug(
 				"[NET-OPEN-TICKET-COUNT-BY-RCA-KANBAN-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
 		return kpiElement;
@@ -126,9 +128,21 @@ public class NetOpenTicketCountByRCAServiceImpl
 	@Override
 	public Map<String, Map<String, Map<String, Set<String>>>> fetchKPIDataFromDb(List<Node> leafNodeList,
 			String startDate, String endDate, KpiRequest kpiRequest) {
-
+		Map<ObjectId,Map<String,Object>> projectWiseMapping=new HashMap<>();
+		leafNodeList.forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+			Map<String, Object> fieldWise = new HashMap<>();
+			fieldWise.put("LiveStatus", fieldMapping.getJiraLiveStatusNORK());
+			fieldWise.put("ClosedStatus", fieldMapping.getJiraTicketClosedStatus());
+			fieldWise.put("RejectedStatus", fieldMapping.getJiraTicketRejectedStatus());
+			fieldWise.put("RCA_Count_IssueType", fieldMapping.getKanbanRCACountIssueType());
+			fieldWise.put("Ticket_Count_IssueType", fieldMapping.getTicketCountIssueType());
+			fieldWise.put("StoryFirstStatus", fieldMapping.getStoryFirstStatus());
+			projectWiseMapping.put(basicProjectConfigId, fieldWise);
+		});
 		resultListMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList, startDate, endDate,
-				kpiRequest, FIELD_RCA);
+				kpiRequest, FIELD_RCA, projectWiseMapping);
 
 		CustomDateRange dateRangeForCumulative = KpiDataHelper.getStartAndEndDatesForCumulative(kpiRequest);
 		String startDateForCumulative = dateRangeForCumulative.getStartDate().format(DATE_FORMATTER);

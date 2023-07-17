@@ -14,10 +14,14 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,13 +48,11 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHisto
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Component
 public class NetOpenTicketCountStatusImpl
 		extends JiraKPIService<Long, List<Object>, Map<String, Map<String, Map<String, Set<String>>>>> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(NetOpenTicketCountStatusImpl.class);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private static final String FIELD_STATUS = "status";
@@ -90,7 +92,7 @@ public class NetOpenTicketCountStatusImpl
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		log.info("NET-OPEN-TICKET-COUNT-BY-STATUS {}", kpiRequest.getRequestTrackerId());
+		LOGGER.info("NET-OPEN-TICKET-COUNT-BY-STATUS {}", kpiRequest.getRequestTrackerId());
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes()
@@ -124,7 +126,7 @@ public class NetOpenTicketCountStatusImpl
 		kpiElement.setTrendValueList(dataCountGroups);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 
-		log.debug(
+		LOGGER.debug(
 				"[TOTAL-TICKET-COUNT-BY-STATUS-KANBAN-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
 		return kpiElement;
@@ -158,8 +160,21 @@ public class NetOpenTicketCountStatusImpl
 	public Map<String, Map<String, Map<String, Set<String>>>> fetchKPIDataFromDb(List<Node> leafNodeList,
 			String startDate, String endDate, KpiRequest kpiRequest) {
 
+		Map<ObjectId,Map<String,Object>> projectWiseMapping=new HashMap<>();
+		leafNodeList.forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+			Map<String, Object> fieldWise = new HashMap<>();
+			fieldWise.put("LiveStatus", fieldMapping.getJiraLiveStatusNOSK());
+			fieldWise.put("ClosedStatus", fieldMapping.getJiraTicketClosedStatus());
+			fieldWise.put("RejectedStatus", fieldMapping.getJiraTicketRejectedStatus());
+			fieldWise.put("RCA_Count_IssueType", fieldMapping.getKanbanRCACountIssueType());
+			fieldWise.put("Ticket_Count_IssueType", fieldMapping.getTicketCountIssueType());
+			fieldWise.put("StoryFirstStatus", fieldMapping.getStoryFirstStatus());
+			projectWiseMapping.put(basicProjectConfigId, fieldWise);
+		});
 		historyDataResultMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList, startDate,
-				endDate, kpiRequest, FIELD_STATUS);
+				endDate, kpiRequest, FIELD_STATUS, projectWiseMapping);
 		CustomDateRange dateRangeForCumulative = KpiDataHelper.getStartAndEndDatesForCumulative(kpiRequest);
 		// get start and end date in yyyy-mm-dd format
 		String cumulativeStartDate = dateRangeForCumulative.getStartDate().format(DATE_FORMATTER);

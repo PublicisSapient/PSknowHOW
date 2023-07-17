@@ -36,7 +36,7 @@
                         (optionSelected)="handleSelectedOption($event, commitmentReliabilityKpi)" [showExport]="false"
                         [isShow]="true" [showChartView]="commitmentReliabilityKpi?.kpiDetail?.boxType == 'chart'"
                         [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[commitmentReliabilityKpi?.kpiId]"
-                        (getCommentCountByKpi)="getKpiCommentsCount($event)">
+                        (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                         <ng-container *ngIf="!noTabAccess else noDataAccess">
                           <div class="p-d-flex p-justify-around p-align-center w-100"
                             *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[commitmentReliabilityKpi?.kpiId]?.length > 0;else noData">
@@ -66,7 +66,7 @@
                                     [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'}">{{'/' +
                                     (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ?
                                       convertToHoursIfTime(x?.value1,x?.unit1) : x?.value1)}}</span>
-                                      <span [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' 
+                                      <span [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'
                                   || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit1 == '%'}"
                                         *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
                                         {{ x?.value1 != -99 ? x?.unit1 : ''}}
@@ -110,7 +110,7 @@
                             [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                             (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="false" [isShow]="true"
                             [showChartView]="kpi?.kpiDetail?.boxType == 'chart'" [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                            (getCommentCountByKpi)="getKpiCommentsCount($event)">
+                            (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                               <div class="p-d-flex p-justify-around p-align-center w-100"
                                 *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -166,7 +166,7 @@
                               [showExport]="kpi.kpiId !== 'kpi125' ? true : false" [isShow]="true"
                               [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
                               [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)">
+                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <ng-container
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
@@ -319,7 +319,7 @@
                       <p-multiSelect resetFilterOnHide="true" autofocusFilter="true" (onPanelShow)="onFilterClick(item)"
                         (onPanelHide)="onFilterBlur(item)" [options]="this.tableColumnData[item]"
                         [placeholder]="'Select '+ item" (onChange)="filter($event.value)" [optionValue]="'value'"
-                        [optionLabel]="'name'" [ngModel]="tableColumnForm[item]">
+                        [optionLabel]="'name'" [ngModel]="tableColumnForm[item]" styleClass="column-filter">
                         <ng-template pTemplate="selectedItems">
                           <i class="pi pi-filter-icon pi-filter" style="font-size: 0.8rem"></i>
                         </ng-template>

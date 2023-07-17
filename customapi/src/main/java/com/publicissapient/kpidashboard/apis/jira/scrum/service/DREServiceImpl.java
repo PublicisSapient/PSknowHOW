@@ -146,11 +146,11 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			projectWiseDefectRemovelStatus.put(basicProjectConfigId.toString(),
-					fieldMapping.getJiraDefectRemovalStatus());
+					fieldMapping.getJiraDefectRemovalStatusKPI34());
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectRemovalIssueType()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectRemovalIssueTypeKPI34()));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping);
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionKPI34(), fieldMapping.getJiraDefectRejectionStatusKPI34());
 
 		});
 

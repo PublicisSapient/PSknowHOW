@@ -167,7 +167,7 @@ public class NetOpenTicketCountStatusImplTest {
 	public void testNetOpenTicketByStatus() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
-		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(any(), any(), any(), any(), any()))
+		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(any(), any(), any(), any(), any(), anyMap()))
 				.thenReturn(createResultMap());
 		Map<String, Map<String, Map<String, Set<String>>>> projectWiseJiraHistoryStatusAndDateWiseIssueMap = prepareProjectWiseJiraHistoryByStatusAndDate();
 		when(kpiHelperService.computeProjectWiseJiraHistoryByStatusAndDate(anyMap(), anyString(), anyMap()))
@@ -181,7 +181,7 @@ public class NetOpenTicketCountStatusImplTest {
 		resultMap.put("JiraIssueHistoryData", kanbanIssueCustomHistoryDataList);
 		resultMap.put("projectWiseClosedStoryStatus", projectWiseDoneStatus);
 		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(), any(),
-				anyString())).thenReturn(resultMap);
+				anyString(), anyMap())).thenReturn(resultMap);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))

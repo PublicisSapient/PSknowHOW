@@ -158,7 +158,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 				.limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
 
 		Map<String, Object> sprintVelocityStoryMap = kpiHelperService
-				.fetchSprintVelocityDataFromDb(sprintForStregthCalculation, kpiRequest);
+				.fetchBackLogReadinessFromdb(sprintForStregthCalculation, kpiRequest);
 
 		resultListMap.putAll(sprintVelocityStoryMap);
 

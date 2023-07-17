@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -131,6 +132,13 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 			log.info("Planned Work Status -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+				// to modify sprintdetails on the basis of configuration for the project
+				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
+						fieldMapping.getJiraIterationIssuetypeKPI128(),
+						fieldMapping.getJiraIterationCompletionStatusKPI128());
+
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
@@ -395,8 +403,8 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		filterStatusUpdationLogs.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 
 		// Getting inProgress Status
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
-			inProgressStatuses = fieldMapping.getJiraStatusForInProgress();
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI128())) {
+			inProgressStatuses = fieldMapping.getJiraStatusForInProgressKPI128();
 		}
 		LocalDate startDate = null;
 		LocalDate endDate;
@@ -459,7 +467,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 				.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
 				.findFirst().orElse(new JiraIssueCustomHistory());
 
-		String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping);
+		String devCompletionDate = getDevCompletionDate(issueCustomHistory,fieldMapping.getJiraDevDoneStatusKPI128());
 		// calling function for cal actual completion days
 		Map<String, Object> actualCompletionData = calStartAndEndDate(issueCustomHistory, sprintDetails, fieldMapping);
 
@@ -544,17 +552,17 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				KpiDataHelper.arrangeJiraIssueList(fieldMapping, jiraIssues, inProgressIssues, openIssues);
+				KpiDataHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI128(), jiraIssues, inProgressIssues, openIssues);
 				iterationPotentialDelayList
 						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
 		}
 
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI128())) {
 			List<JiraIssue> inProgressIssues = allIssues.stream()
 					.filter(jiraIssue -> (jiraIssue.getAssigneeId() == null)
 							&& StringUtils.isNotEmpty(jiraIssue.getDueDate())
-							&& (fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus())))
+							&& (fieldMapping.getJiraStatusForInProgressKPI128().contains(jiraIssue.getStatus())))
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();

@@ -297,11 +297,20 @@ public enum KPICode {
 	DEFECT_COUNT_BY_RCA_PIE_CHART("kpi132", KPISource.JIRA.name()), DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136",
 			KPISource.JIRA.name()),
 
-	DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140", KPISource.JIRA.name()), DEFECT_COUNT_BY_STATUS_RELEASE("kpi141",
-			KPISource.JIRA.name()), DEFECT_COUNT_BY_RCA_RELEASE("kpi142",
-					KPISource.JIRA.name()), DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143",
-							KPISource.JIRA.name()), DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",
-									KPISource.JIRA.name()), RELEASE_PROGRESS("kpi147", KPISource.JIRA.name()),
+	DEFECT_COUNT_BY_PRIORITY_PIE_CHART("kpi140", KPISource.JIRA.name()),
+
+	DEFECT_COUNT_BY_STATUS_RELEASE("kpi141",
+			KPISource.JIRA.name()),
+
+	DEFECT_COUNT_BY_RCA_RELEASE("kpi142",
+					KPISource.JIRA.name()),
+
+	DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143",
+							KPISource.JIRA.name()),
+	DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",
+									KPISource.JIRA.name()),
+
+	RELEASE_PROGRESS("kpi147", KPISource.JIRA.name()),
 	/**
 	 * Scope Change
 	 */
@@ -369,7 +378,9 @@ public enum KPICode {
 	/**
 	 * Issues Without Story Link
 	 */
-	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name()), BACKLOG_READINESS_EFFICIENCY("kpi138",
+	ISSUES_WITHOUT_STORY_LINK("kpi129", KPISource.JIRA.name()),
+
+	BACKLOG_READINESS_EFFICIENCY("kpi138",
 			KPISource.JIRA.name()),
 
 	/**

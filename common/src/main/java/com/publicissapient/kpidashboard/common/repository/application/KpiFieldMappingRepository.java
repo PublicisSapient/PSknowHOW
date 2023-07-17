@@ -9,4 +9,6 @@ import com.publicissapient.kpidashboard.common.model.application.KPIFieldMapping
  * Repository for {@link KPIFieldMapping}.
  */
 public interface KpiFieldMappingRepository extends MongoRepository<KPIFieldMapping, ObjectId> {
+
+    KPIFieldMapping findByKpiId(String kpiId);
 }

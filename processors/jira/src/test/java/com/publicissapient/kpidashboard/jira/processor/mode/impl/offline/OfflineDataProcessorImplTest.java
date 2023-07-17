@@ -193,15 +193,16 @@ public class OfflineDataProcessorImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Story");
-		fieldMapping.setJiraDefectInjectionIssueType(jiraType);
+		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(jiraType);
 		fieldMapping.setJiraTechDebtIssueType(jiraType);
-		fieldMapping.setJiraDefectSeepageIssueType(jiraType);
-		fieldMapping.setJiraDefectRemovalStatus(jiraType);
-		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
+		fieldMapping.setJiraIssueTypeKPI35(jiraType);
+		fieldMapping.setJiraDefectRemovalStatusKPI34(jiraType);
+		fieldMapping.setJiraIssueTypeKPI37(jiraType);
 		fieldMapping.setJiraTestAutomationIssueType(jiraType);
-		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
-		fieldMapping.setJiraDefectCountlIssueType(jiraType);
-		fieldMapping.setJiraIntakeToDorIssueType(jiraType);
+		fieldMapping.setJiraIssueTypeKPI37(jiraType);
+		fieldMapping.setJiraDefectCountlIssueTypeKPI36(jiraType);
+		fieldMapping.setJiraDefectCountlIssueTypeKPI28(jiraType);
+		fieldMapping.setJiraIssueTypeLT(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
 
 		fieldMapping.setJiraTechDebtIdentification("Labels");
@@ -209,7 +210,7 @@ public class OfflineDataProcessorImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("TECH_DEBT");
 		fieldMapping.setJiraTechDebtValue(jiraType);
-		fieldMapping.setJiraDefectRejectionStatus("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI14("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();
@@ -218,7 +219,7 @@ public class OfflineDataProcessorImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraDefectRemovalStatus(jiraType);
+		fieldMapping.setJiraDefectRemovalStatusKPI34(jiraType);
 
 		fieldMapping.setJiraStoryPointsCustomField("customfield_20803");
 
@@ -232,23 +233,23 @@ public class OfflineDataProcessorImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("Story");
 		jiraType.add("Feature");
-		fieldMapping.setJiraSprintVelocityIssueType(jiraType);
+		fieldMapping.setJiraSprintVelocityIssueTypeKpi39(jiraType);
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature" }));
-		fieldMapping.setJiraSprintCapacityIssueType(jiraType);
+		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraIssueDeliverdStatus(jiraType);
+		fieldMapping.setJiraIssueDeliverdStatusKpi39(jiraType);
 
-		fieldMapping.setJiraDor("In Progress");
+		fieldMapping.setJiraDorLT("In Progress");
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Pre Story" }));
 		fieldMapping.setJiraStoryIdentification(jiraType);
 
-		fieldMapping.setJiraDefectCreatedStatus("Open");
+		fieldMapping.setJiraDefectCreatedStatusKPI14("Open");
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
@@ -280,7 +281,7 @@ public class OfflineDataProcessorImplTest {
 
 		fieldMapping.setRootCause("customfield_19121");
 
-		fieldMapping.setJiraDefectRejectionStatus("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI14("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();
@@ -289,7 +290,7 @@ public class OfflineDataProcessorImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraDefectRemovalStatus(jiraType);
+		fieldMapping.setJiraDefectRemovalStatusKPI34(jiraType);
 
 		fieldMapping.setJiraStoryPointsCustomField("customfield_20803");
 		fieldMapping.setJiraTechDebtIdentification("CustomField");
@@ -333,7 +334,7 @@ public class OfflineDataProcessorImplTest {
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("In Analysis");
 		jiraSegData.add("In Development");
-		fieldMapping.setJiraStatusForDevelopment(jiraSegData);
+		fieldMapping.setJiraStatusForDevelopmentAVR(jiraSegData);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("AutomationAutomation");

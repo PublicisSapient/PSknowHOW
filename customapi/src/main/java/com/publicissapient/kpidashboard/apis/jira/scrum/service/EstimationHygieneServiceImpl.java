@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -103,6 +104,13 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 			log.info("Estimation Hygiene -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			if (null != sprintDetails) {
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+				// to modify sprintdetails on the basis of configuration for the project
+				KpiDataHelper.processSprintBasedOnFieldMapping(Collections.singletonList(sprintDetails),
+						fieldMapping.getJiraIterationIssuetypeKPI124(),
+						fieldMapping.getJiraIterationCompletionStatusKPI124());
+
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
@@ -227,8 +235,8 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 	private boolean checkStatus(JiraIssue jiraIssue, FieldMapping fieldMapping) {
 
 		boolean toDrop = false;
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getIssueStatusExcluMissingWork())) {
-			toDrop = fieldMapping.getIssueStatusExcluMissingWork().stream().map(String::toUpperCase)
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getIssueStatusExcluMissingWorkKPI124())) {
+			toDrop = fieldMapping.getIssueStatusExcluMissingWorkKPI124().stream().map(String::toUpperCase)
 					.collect(Collectors.toList()).contains(jiraIssue.getJiraStatus().toUpperCase());
 		}
 		return toDrop;

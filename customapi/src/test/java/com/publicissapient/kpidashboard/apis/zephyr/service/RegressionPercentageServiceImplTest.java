@@ -135,7 +135,6 @@ public class RegressionPercentageServiceImplTest {
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 		when(testCaseDetailsRepository.findTestDetails(any(), any(), any())).thenReturn(testCaseDetailsList);
 
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		String kpiRequestTrackerId = "Excel-Zephyr-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name()))
 				.thenReturn(kpiRequestTrackerId);
@@ -158,7 +157,6 @@ public class RegressionPercentageServiceImplTest {
 				leafNodeList.addAll(v);
 			}
 		});
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(testCaseDetailsRepository.findTestDetails(any(), any(), any())).thenReturn(testCaseDetailsList);
 		Map<String, Object> map = regressionPercentageServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);

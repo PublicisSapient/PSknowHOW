@@ -478,7 +478,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             if(this.sonarKpiData['kpi17']?.trendValueList?.length>0){
                 let overallObj = {
                    'filter': 'Overall',
-                   'value': [] 
+                   'value': []
                 }
                 for(let i = 0; i<this.sonarKpiData['kpi17']?.trendValueList?.length;i++){
                     for(let j = 0; j < this.sonarKpiData['kpi17']?.trendValueList[i]?.value?.length; j++){
@@ -753,7 +753,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         const kpiData = this.masterData.kpiList.find(kpiObj => kpiObj.kpiId === kpiId);
         if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
             return kpiData?.videoLink?.videoUrl;
-        } 
+        }
     }
 
     // Return boolean flag based on link is available and video is enabled
@@ -868,7 +868,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     };
                     data.push(rowData);
                 }
-                
+
                 this.kpiChartData[kpiId].data = data;
             }
             this.showKpiTrendIndicator[kpiId] = false;
@@ -1007,9 +1007,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             worksheet.getRow(1).getCell((i*3)+3).fill = { type: 'pattern', pattern: 'solid', fgColor:{argb:colorCode} };
             worksheet.getRow(1).getCell((i*3)+4).fill = { type: 'pattern', pattern: 'solid', fgColor:{argb:colorCode} };
         }
-    
+
         worksheet.columns = [...headers];
-        
+
         for(let kpi of this.updatedConfigGlobalData){
             let kpiId = kpi.kpiId;
             if(this.kpiTrendsObj[kpiId]?.length > 0){
@@ -1023,7 +1023,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 worksheet.addRow(obj);
             }
         }
-       
+
 
         worksheet.eachRow(function(row, rowNumber) {
             if (rowNumber === 1) {
@@ -1115,7 +1115,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         let latest:string = '';
         let trend:string = '';
         if(item?.value?.length > 0){
-            let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value; 
+            let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
             var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit.trim() : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
@@ -1166,8 +1166,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         "hierarchyName": this.kpiChartData[kpiId][i]?.data,
                         "value": latest,
                         "trend": trend,
-                        "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ? 
-                                    this.checkMaturity(this.kpiChartData[kpiId][i]) 
+                        "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
+                                    this.checkMaturity(this.kpiChartData[kpiId][i])
                                     : 'M'+this.kpiChartData[kpiId][i]?.maturity,
                         "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue,
                         "kpiUnit" : unit
@@ -1180,24 +1180,4 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }
         }
       }
-
-      getKpiCommentsCount(kpiId?){
-        let requestObj = {
-          "nodes": [...this.filterApplyData?.['selectedMap']['project']],
-          "level":this.filterApplyData?.level,
-          "nodeChildId": "",
-          'kpiIds': []
-        };
-        if(kpiId){
-            requestObj['kpiIds'] = [kpiId];
-            this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-                this.kpiCommentsCountObj[kpiId] = res[kpiId];
-            });
-        }else{
-            requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-            this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-                this.kpiCommentsCountObj = res;
-            }); 
-        }
-    }
 }

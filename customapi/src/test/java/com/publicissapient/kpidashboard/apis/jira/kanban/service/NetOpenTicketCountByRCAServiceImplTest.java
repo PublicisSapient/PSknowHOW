@@ -127,7 +127,7 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 		resultMap.put("JiraIssueHistoryData", kanbanIssueCustomHistoryDataList);
 		resultMap.put("projectWiseClosedStoryStatus", projectWiseDoneStatus);
 		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(), any(),
-				anyString())).thenReturn(resultMap);
+				anyString(), anyMap())).thenReturn(resultMap);
 
 		try {
 			KpiElement kpiElement = ticketRCAServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
