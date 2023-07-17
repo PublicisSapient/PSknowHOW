@@ -97,6 +97,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	public static final String PROJECT_WISE_DEFECT_REMOVEL_STATUS = "projectWiseDefectRemovelStatus";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	public static final String SUB_TASK_BUGS = "subTaskBugs";
+	public static final String SPRINT_REPORTED_BUGS = "Sprint Reported Bugs";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
@@ -156,6 +157,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Map<String, List<String>> projectWiseDefectRemovalType = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
+		List<JiraIssue> sprintReportedBugsList;
 		List<String> defectType = new ArrayList<>();
 		leafNodeList.forEach(leaf -> {
 
@@ -204,7 +206,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(totalIssue)) {
 			List<JiraIssue> totalSprintReportDefects = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
 					uniqueProjectMap);
-
+			sprintReportedBugsList = totalSprintReportDefects;
 			List<JiraIssue> totalBugs = jiraIssueRepository
 					.findLinkedDefects(mapOfFilters, totalNonBugIssues, uniqueProjectMap).stream()
 					.filter(jiraIssue -> !totalIssue.contains(jiraIssue.getNumber())).collect(Collectors.toList());
@@ -218,6 +220,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			setDbQueryLogger(sprintDetails, totalDefects, totalSprintReportDefects);
 
+			resultListMap.put(SPRINT_REPORTED_BUGS, sprintReportedBugsList);
 			resultListMap.put(TOTAL_DEFECTS, totalSprintReportDefects);
 			resultListMap.put(SUB_TASK_BUGS, totalBugs);
 			resultListMap.put(DEFECT_HISTORY, defectsCustomHistory);
@@ -263,6 +266,8 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
 				kpiRequest);
 		List<JiraIssue> totalDefects = (List<JiraIssue>) storyDefectDataListMap.get(TOTAL_DEFECTS);
+		List<JiraIssue> subTaskBugs = (List<JiraIssue>) storyDefectDataListMap.get(SUB_TASK_BUGS);
+		List<JiraIssue> sprintReportedBugs = (List<JiraIssue>) storyDefectDataListMap.get(SPRINT_REPORTED_BUGS);
 		List<JiraIssueCustomHistory> defectsCustomHistory = (List<JiraIssueCustomHistory>) storyDefectDataListMap.get(DEFECT_HISTORY);
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) storyDefectDataListMap.get(SPRINT_DETAILS);
 		Map<String, List<String>> projectWiseDefectRemovalStatus = (Map<String, List<String>>) storyDefectDataListMap.get(PROJECT_WISE_DEFECT_REMOVEL_STATUS);
@@ -286,15 +291,18 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				List<JiraIssue> totalSubTask = new ArrayList<>();
 				getSubtasks(totalDefects, defectsCustomHistory, projectWiseDefectRemovalStatus, totalSubTask, sd);
 
-				List<JiraIssue> subCategoryWiseTotalDefectList = totalSubTask;
+				List<JiraIssue> subCategoryWiseTotalDefectList = totalDefects.stream().filter(
+						defect -> org.apache.commons.collections.CollectionUtils.isNotEmpty(defect.getSprintIdList())
+								&& defect.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
+						.collect(Collectors.toList());
 
-				List<JiraIssue> subCategoryWiseClosedDefectList = totalDefects.stream()
+				List<JiraIssue> subCategoryWiseClosedDefectList = sprintReportedBugs.stream()
 						.filter(f -> completedSprintIssues.contains(f.getNumber()) && CollectionUtils
 								.emptyIfNull(projectWiseDefectRemovalStatus.get(f.getBasicProjectConfigId())).stream()
 								.anyMatch(s -> s.equalsIgnoreCase(f.getJiraStatus())))
 						.collect(Collectors.toList());
 
-				subCategoryWiseClosedDefectList.addAll(getCompletedSubTasksByHistory(totalSubTask, defectsCustomHistory,
+				subCategoryWiseClosedDefectList.addAll(getCompletedSubTasksByHistory(subTaskBugs, defectsCustomHistory,
 						sd, projectWiseDefectRemovalStatus));
 
 				double dreForCurrentLeaf = 0.0d;
