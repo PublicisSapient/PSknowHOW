@@ -121,8 +121,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			Map<LocalDate, List<JiraIssue>> removeIssueMap, Map<LocalDate, List<JiraIssue>> fullReleaseMap,
 			Map<LocalDate, List<JiraIssue>> completedReleaseMap) {
 
-		releaseName = releaseName.toLowerCase();
-		String finalReleaseName = releaseName !=null? releaseName: "";
+		releaseName = releaseName !=null? releaseName: "";
+		String finalReleaseName = releaseName.toLowerCase();
 		allIssuesHistory.forEach(issueHistory -> {
 			List<JiraHistoryChangeLog> fixVersionUpdationLog = issueHistory.getFixVersionUpdationLog();
 			Collections.sort(fixVersionUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
