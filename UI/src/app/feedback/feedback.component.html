@@ -2,11 +2,11 @@
     <div style="position: relative;">
         <div *ngIf="visibleSidebar; else elseBlock">
             <img class="icon-feedback1 cursor-pointer" src="../../../assets/img/ico-feedback-long.png" alt="feedback icon" aria-hidden="true"
-                (click)="op2.toggle($event); feedback=true" />
+                (click)="op2.toggle($event);open(); feedback=true" />
         </div>
         <ng-template #elseBlock>
             <img class="icon-feedback2 cursor-pointer" src="../../../assets/img/ico-feedback-small.png"
-                alt="feedback icon" aria-hidden="true" (click)="op2.toggle($event); feedback=true" />
+                alt="feedback icon" aria-hidden="true" (click)="op2.toggle($event);open(); feedback=true" />
         </ng-template>
         <p-overlayPanel #op2 [showCloseIcon]="true" [styleClass]="visibleSidebar ? 'feedback-overlay' : 'feedback-overlay-with-sidebar'">
             <ng-template pTemplate="content">

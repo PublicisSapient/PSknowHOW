@@ -31,7 +31,6 @@
 
 ::ng-deep .feedback-overlay-with-sidebar {
     position: fixed !important;
-    top: 495px !important;
     width: 361px;
     height: 214px;    
     left: 43px !important;
@@ -43,7 +42,6 @@
 }
 ::ng-deep .feedback-overlay {
     position: fixed !important;
-    top: 540px !important;
     left: 80px !important;
     width: 361px;
     height: 214px;

@@ -42,4 +42,8 @@ export class FeedbackComponent {
       }, 3000);
     });
   }
+
+  open(){
+    document.documentElement.scrollTop = 0;
+  }
 }
