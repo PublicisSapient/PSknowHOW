@@ -97,7 +97,7 @@
 </p-dialog>
 
 <!-- Confirmation Dialog while saving field mapping -->
-<p-confirmDialog #templateInfoDialog key="templateInfoDialog" [style]="{width: '50vw'}">
+<p-confirmDialog #templateInfoDialog key="templateInfoDialog" styleClass="config-confirmation">
     <p-footer>
         <button type="button" (click)="templateInfoDialog.reject()" pButton label="Cancel" class="enable-dialog-btn"></button>
         <button type="button" (click)="templateInfoDialog.accept()" pButton label="Proceed"></button>

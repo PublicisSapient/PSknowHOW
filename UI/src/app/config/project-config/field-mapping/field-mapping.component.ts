@@ -118,7 +118,7 @@ export class FieldMappingComponent implements OnInit {
     fileReader.onload = () => {
       const mappingData = JSON.parse(fileReader.result as string);
       this.sharedService.setSelectedFieldMapping(mappingData);
-      this.fieldMappingFormComp.setControlValueOnImport(mappingData);
+      this.fieldMappingFormComp?.setControlValueOnImport(mappingData);
     };
     fileReader.onerror = (error) => {
       console.log(error);

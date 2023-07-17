@@ -51,6 +51,10 @@
     min-width: 544px;
 }
 
+:host::ng-deep .config-confirmation.p-dialog {
+    width: 50vw !important;
+}
+
 :host ::ng-deep.p-dialog-header-icons {
     top: -8px;
     right: -8px;
