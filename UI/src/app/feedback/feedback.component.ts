@@ -12,7 +12,7 @@ export class FeedbackComponent {
   @Input() visibleSidebar: boolean;
   feedback: boolean = true;
   voiceForm = new UntypedFormGroup({
-    feedback: new UntypedFormControl('', Validators.required)
+    feedback: new UntypedFormControl('', { validators: [Validators.required, Validators.maxLength(600)] })
   });
   isFeedbackSubmitted = false;
   formMessage = '';

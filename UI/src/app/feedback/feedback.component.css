@@ -27,6 +27,7 @@
 
 .document-link {
     width: 316px;
+    margin-top: -10px;
 }
 
 ::ng-deep .feedback-overlay-with-sidebar {
@@ -70,7 +71,7 @@
 }
 
 ::ng-deep .pi{
-    font-size: 11px;
+    font-size: 9px;
 }
 
 .overlay-heading1 {
@@ -87,12 +88,12 @@
     border-radius: 0px;
 }
 
-.forward {
-    margin-top: 8px;
+.backward {
+    margin-top: 0px;
 }
 
 .backward {
-    margin-top: 23px;
+    margin-top: 0px;
 }
 
 .documentation {
@@ -110,4 +111,21 @@
 
 .click-here {
     color: #1F7EFF;
+}
+
+.doc-container{
+    width: 316px;
+    height: 130px;
+}
+
+.feedback-container{
+    width: 332px;
+    height: 177px;
+}
+::ng-deep .document-link .p-tabview .p-tabview-nav {
+    border: 0;
+}
+
+::ng-deep .document-link .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+    padding: 1rem 1rem;
 }
