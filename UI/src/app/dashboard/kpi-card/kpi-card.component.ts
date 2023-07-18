@@ -84,7 +84,6 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     if(this.kpiData?.kpiDetail?.hasOwnProperty('kpiFilter') && this.kpiData?.kpiDetail?.kpiFilter?.toLowerCase() == 'radiobutton' && this.dropdownArr?.length > 0){
       this.radioOption = this.dropdownArr[0]?.options[0];
     }
-    console.log("tttt",this.filterOption)
   }
 
   exportToExcel() {

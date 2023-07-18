@@ -194,7 +194,6 @@ export class NavComponent implements OnInit {
     }
 
     this.processKpiConfigData();
-    console.log("this.boardNameArr",this.boardNameArr)
   }
 
   isEmptyObject(value) {
