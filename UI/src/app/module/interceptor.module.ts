@@ -75,7 +75,8 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
 
         const partialRedirectExceptions = [
             environment.baseUrl + '/api/sonar/project',
-            environment.baseUrl + '/api/userinfo'
+            environment.baseUrl + '/api/userinfo',
+            environment.baseUrl + '/api/jenkins/jobName',
         ];
 
         // handling error response
