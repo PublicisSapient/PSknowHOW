@@ -22,6 +22,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -210,12 +211,11 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			List<JiraIssue> totalBugs = jiraIssueRepository
 					.findLinkedDefects(mapOfFilters, totalNonBugIssues, uniqueProjectMap).stream()
 					.filter(jiraIssue -> !totalIssue.contains(jiraIssue.getNumber())).collect(Collectors.toList());
-			totalSprintReportDefects.addAll(totalBugs);
 
 			ArrayList<JiraIssue> totalDefects = new ArrayList<>(totalBugs);
 			List<JiraIssueCustomHistory> defectsCustomHistory = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(
-							totalSprintReportDefects.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
+							totalBugs.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
 							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 			setDbQueryLogger(sprintDetails, totalDefects, totalSprintReportDefects);
@@ -289,12 +289,13 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				List<String> completedSprintIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
 						CommonConstant.COMPLETED_ISSUES);
 				Set<JiraIssue> totalSubTask = new HashSet<>();
-				getSubtasks(totalDefects, defectsCustomHistory, projectWiseDefectRemovalStatus, totalSubTask, sd);
+				getSubtasks(subTaskBugs, defectsCustomHistory, projectWiseDefectRemovalStatus, totalSubTask, sd);
 
-				List<JiraIssue> subCategoryWiseTotalDefectList = totalSubTask.stream().filter(
+				List<JiraIssue> subCategoryWiseTotalDefectList = totalDefects.stream().filter(
 						defect -> org.apache.commons.collections.CollectionUtils.isNotEmpty(defect.getSprintIdList())
 								&& defect.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
 						.collect(Collectors.toList());
+				subCategoryWiseTotalDefectList.addAll(totalSubTask);
 
 				List<JiraIssue> subCategoryWiseClosedDefectList = sprintReportedBugs.stream()
 						.filter(f -> completedSprintIssues.contains(f.getNumber()) && CollectionUtils
@@ -486,13 +487,14 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	private static void getSubtasks(List<JiraIssue> allSubTaskBugs, List<JiraIssueCustomHistory> defectsCustomHistory,
 									Map<String, List<String>> projectWiseDefectRemovalStatus,
 									Set<JiraIssue> totalSubTask, SprintDetails sprintDetail) {
-		LocalDate sprintEndDate = sprintDetail.getCompleteDate() != null
-				? LocalDate.parse(sprintDetail.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
-				: LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
-		LocalDate sprintStartDate = sprintDetail.getActivatedDate() != null
-				? LocalDate.parse(sprintDetail.getActivatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
-				: LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDateTime sprintEndDate = sprintDetail.getCompleteDate() != null
+				? LocalDateTime.parse(sprintDetail.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDateTime sprintStartDate = sprintDetail.getActivatedDate() != null
+				? LocalDateTime.parse(sprintDetail.getActivatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
 		allSubTaskBugs.forEach(jiraIssue -> {
+			LocalDateTime jiraCreatedDate = LocalDateTime.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER);
 			JiraIssueCustomHistory jiraIssueCustomHistoryOfClosedSubTask = defectsCustomHistory.stream()
 					.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
 							.equalsIgnoreCase(jiraIssue.getNumber())).findFirst().orElse(new JiraIssueCustomHistory());
@@ -502,16 +504,19 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 									.anyMatch(s -> s.equalsIgnoreCase(historyChangeLog.getChangedTo())))
 					.findFirst().orElse(new JiraHistoryChangeLog());
 			if (CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) && jiraIssue.getSprintIdList()
-					.contains(sprintDetail.getSprintID().split("_")[0]) &&
-					null != jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn()
-					&& !sprintStartDate.isAfter(jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn().toLocalDate())
+					.contains(sprintDetail.getSprintID().split("_")[0])
 					&& projectWiseDefectRemovalStatus.get(jiraIssue.getBasicProjectConfigId()).stream()
-							.anyMatch(s -> !s.equalsIgnoreCase(jiraIssue.getStatus()))) {
+							.anyMatch(s -> !s.equalsIgnoreCase(jiraIssue.getStatus()))
+					&& null != jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn()
+					&& ((sprintEndDate.isAfter(jiraCreatedDate)
+					&&  jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn().isAfter(sprintEndDate)) ||
+					(DateUtil.isWithinDateRangeWithTime(jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn(),
+							sprintStartDate, sprintEndDate)))) {
 				totalSubTask.add(jiraIssue);
 			}
 			if (CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) && jiraIssue.getSprintIdList()
 					.contains(sprintDetail.getSprintID().split("_")[0]) && null != jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn()
-					&& DateUtil.isWithinDateRange(jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn().toLocalDate(),
+					&& DateUtil.isWithinDateRangeWithTime(jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn(),
 					sprintStartDate, sprintEndDate)) {
 				totalSubTask.add(jiraIssue);
 			}
