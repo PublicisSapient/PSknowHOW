@@ -103,13 +103,13 @@ db.kpi_column_configs.insertMany([{
                                   }
                                  ]);
 
-db.getCollection('kpi_master').insert(
+db.getCollection('kpi_master').insertMany(
 [{
        "kpiId": "kpi151",
        "kpiName": "Backlog Count By Status",
        "kpiUnit": "Count",
        "isDeleted": "False",
-       "defaultOrder": 8,
+       "defaultOrder": 9,
        "kpiCategory": "Backlog",
        "kpiSource": "Jira",
        "groupId": 10,
@@ -133,7 +133,7 @@ db.getCollection('kpi_master').insert(
           "kpiName": "Backlog Count By Issue Type",
           "kpiUnit": "Count",
           "isDeleted": "False",
-          "defaultOrder": 8,
+          "defaultOrder": 10,
           "kpiCategory": "Backlog",
           "kpiSource": "Jira",
           "groupId": 10,
