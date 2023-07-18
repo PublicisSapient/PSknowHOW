@@ -243,12 +243,16 @@ public enum KPIExcelColumn {
 			"Issue Type", "Issue Status", "Root Cause", "Priority", "Assignee")),
 
 	RELEASE_PROGRESS("kpi147",
-			Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority", "Assignee",
-					"Issue Status")), HAPPINESS_INDEX_RATE("kpi149",
-							Arrays.asList("Sprint Name", "User Name", "Sprint Rating")), FLOW_DISTRIBUTION("Kpi146",
+			Arrays.asList("Issue ID", "Issue Type", "Issue Description","Size(story point/hours)", "Priority", "Assignee",
+					"Issue Status")),
+
+	HAPPINESS_INDEX_RATE("kpi149",
+							Arrays.asList("Sprint Name", "User Name", "Sprint Rating")),
+
+	FLOW_DISTRIBUTION("Kpi146",
 									Arrays.asList("Date")), FLOW_LOAD("kpi148", Arrays.asList("Date")),
 
-	RELEASE_BURNUP("kpi150", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Story Size(In story point)",
+	RELEASE_BURNUP("kpi150", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
 			"Priority", "Assignee", "Issue Status"));
 
 	// @formatter:on

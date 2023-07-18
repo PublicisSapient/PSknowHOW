@@ -146,6 +146,9 @@ public class ReleaseDefectCountByPriorityServiceImpl
 				Map<String, Integer> priorityWiseCountMap = new HashMap<>();
 				getPriorityWiseCount(priorityWiseList, priorityWiseCountMap);
 				if (MapUtils.isNotEmpty(priorityWiseCountMap)) {
+					Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
+					FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+
 					List<DataCount> trendValueListOverAll = new ArrayList<>();
 					DataCount overallData = new DataCount();
 					int sumOfDefectsCount = priorityWiseCountMap.values().stream().mapToInt(Integer::intValue).sum();
@@ -160,7 +163,7 @@ public class ReleaseDefectCountByPriorityServiceImpl
 					middleOverallData.setData(latestRelease.getProjectFilter().getName());
 					middleOverallData.setValue(trendValueListOverAll);
 					middleTrendValueListOverAll.add(middleOverallData);
-					populateExcelDataObject(requestTrackerId, excelData, totalDefects);
+					populateExcelDataObject(requestTrackerId, excelData, totalDefects,fieldMapping);
 
 					IterationKpiValue filterDataOverall = new IterationKpiValue(CommonConstant.OVERALL,
 							middleTrendValueListOverAll);
@@ -178,10 +181,10 @@ public class ReleaseDefectCountByPriorityServiceImpl
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> jiraIssueList) {
+			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
-			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData);
+			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}
 

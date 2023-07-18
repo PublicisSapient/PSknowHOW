@@ -124,7 +124,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 				Set<String> priorities = new HashSet<>();
 				createDataCountGroupMap(releaseIssues, jiraIssueReleaseStatus, assignees, priorities, fieldMapping,
 						filterDataList);
-				populateExcelDataObject(requestTrackerId, excelData, releaseIssues);
+				populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
 				List<DataCount> dataCountList = new ArrayList<>();
 				dataCountList.add(getStatusWiseCountList(releaseIssues, jiraIssueReleaseStatus));
 				dataCountList.add(getStatusWiseStoryPointList(releaseIssues, fieldMapping, jiraIssueReleaseStatus));
@@ -202,14 +202,17 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 			JiraIssueReleaseStatus jiraIssueReleaseStatus) {
 		DataCount dataCount = new DataCount();
 		Map<String, Double> releaseProgressStoryPoint = new HashMap<>();
+
 		releaseProgressStoryPoint.put(TO_DO, jiraIssueList.stream()
 				.filter(jiraIssue -> jiraIssueReleaseStatus.getToDoList().values().contains(jiraIssue.getStatus()))
 				.mapToDouble(jiraIssue -> {
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						return jiraIssue.getStoryPoints();
+						return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
 					} else {
-						return Double.valueOf(Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0));
+						Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+						int inHours = integer / 60;
+						return inHours / fieldMapping.getStoryPointToHourMapping();
 					}
 				}).sum());
 		releaseProgressStoryPoint.put(IN_PROGRESS, jiraIssueList.stream().filter(
@@ -217,9 +220,11 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 				.mapToDouble(jiraIssue -> {
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						return jiraIssue.getStoryPoints();
+						return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
 					} else {
-						return Double.valueOf(Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0));
+						Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+						int inHours = integer / 60;
+						return inHours / fieldMapping.getStoryPointToHourMapping();
 					}
 				}).sum());
 		releaseProgressStoryPoint.put(DONE, jiraIssueList.stream()
@@ -227,9 +232,11 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 				.mapToDouble(jiraIssue -> {
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						return jiraIssue.getStoryPoints();
+						return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
 					} else {
-						return Double.valueOf(Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0));
+						Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+						int inHours = integer / 60;
+						return inHours / fieldMapping.getStoryPointToHourMapping();
 					}
 				}).sum());
 		dataCount.setData(
@@ -240,10 +247,10 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> jiraIssueList) {
+			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
-			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData);
+			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}
 
