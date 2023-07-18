@@ -181,7 +181,14 @@ export class JiraConfigComponent implements OnInit {
           summary: error.message,
         });
       }
-    });
+    },(err) => {
+      console.log(err);
+      this.messenger.add({
+        severity: 'error',
+        summary: err.error.message,
+      });
+    }
+    );
   }
 
   getPlansForBamboo(connectionId) {
@@ -284,6 +291,12 @@ export class JiraConfigComponent implements OnInit {
           summary: error.message,
         });
       }
+    }, (err) => {
+      console.log(err);
+      this.messenger.add({
+        severity: 'error',
+        summary: err.error.message,
+      });
     });
   }
 
@@ -756,6 +769,12 @@ export class JiraConfigComponent implements OnInit {
               });
               this.hideLoadingOnFormElement('projectKey');
             }
+          },(err) => {
+            console.log(err);
+            this.messenger.add({
+              severity: 'error',
+              summary: err.error.message,
+            });
           });
       }
     } catch (error) {
