@@ -181,24 +181,12 @@ public enum FieldMappingEnum {
 		return kpiSource;
 	}
 
-	public void setKpiSource(String kpiSource) {
-		this.kpiSource = kpiSource;
-	}
-
 	public List<String> getFields() {
 		return fields;
 	}
 
-	public void setFields(List<String> fields) {
-		this.fields = fields;
-	}
-
 	public String getKpiName() {
 		return kpiName;
-	}
-
-	public void setKpiName(String kpiName) {
-		this.kpiName = kpiName;
 	}
 
 }

@@ -37,7 +37,7 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 
 public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFilter {
-	private CustomApiConfig customApiConfig;
+	CustomApiConfig customApiConfig;
 
 	@Autowired
 	private AuthTypesConfigService authTypesConfigService;

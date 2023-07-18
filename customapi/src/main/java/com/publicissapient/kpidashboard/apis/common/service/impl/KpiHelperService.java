@@ -137,8 +137,6 @@ public class KpiHelperService { // NOPMD
 	private SprintRepository sprintRepository;
 	@Autowired
 	private FilterHelperService flterHelperService;
-	@Autowired
-	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
 
 	public static void getDroppedDefectsFilters(Map<String, Map<String, List<String>>> droppedDefects,
 			ObjectId basicProjectConfigId, List<String> resolutionTypeForRejection, String jiraDefectRejectionStatus) {
@@ -552,12 +550,8 @@ public class KpiHelperService { // NOPMD
 		List<String> sprintList = new ArrayList<>();
 		Set<String> basicProjectConfigIds = new HashSet<>();
 
-		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-
 		projectWiseSprintsForFilter.entrySet().forEach(entry -> {
 			ObjectId basicProjectConfigId = entry.getKey();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			sprintList.addAll(entry.getValue());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
