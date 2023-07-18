@@ -108,14 +108,6 @@ export class FilterComponent implements OnInit, OnDestroy {
   projectIndex = 0;
   notificationList = [];
   items: MenuItem[]  = [
-    {
-      label: 'Help',
-      icon: 'fa fa-info-circle',
-      command: () => {
-        this.service.setSideNav(false);
-        this.router.navigate(['/dashboard/Help']);
-      },
-    },
   ];
   username: string;
   isGuest = false;
