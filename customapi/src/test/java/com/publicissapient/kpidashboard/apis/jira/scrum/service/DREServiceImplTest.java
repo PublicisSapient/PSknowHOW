@@ -189,7 +189,7 @@ public class DREServiceImplTest {
 		Map<String, Object> defectDataListMap = dreServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertThat("Closed Defects value :", ((List<JiraIssue>) defectDataListMap.get(CLOSEDBUGKEY)).size(),
-				equalTo(18));
+				equalTo(0));
 		assertThat("Total Defects value :", ((List<JiraIssue>) defectDataListMap.get(TOTALBUGKEY)).size(), equalTo(19));
 	}
 

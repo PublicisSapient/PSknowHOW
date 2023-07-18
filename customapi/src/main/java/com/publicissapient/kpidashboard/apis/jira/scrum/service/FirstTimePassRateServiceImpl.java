@@ -321,7 +321,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
 			FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
 			return kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory,
-					fieldMapping.getJiraStatusForDevelopmentKPI82(), fieldMapping.getJiraStatusForQaKPI82());
+					fieldMapping.getJiraStatusForDevelopmentKPI82(), fieldMapping.getJiraStatusForQaKPI82(),fieldMapping.getJiraFtprRejectStatusKPI82());
 		});
 
 		List<String> storyIdList = new ArrayList<>();

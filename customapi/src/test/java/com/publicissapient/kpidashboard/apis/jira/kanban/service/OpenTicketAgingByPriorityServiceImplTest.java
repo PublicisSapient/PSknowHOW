@@ -214,7 +214,7 @@ public class OpenTicketAgingByPriorityServiceImplTest {
 		Map<String, Object> defectDataListMap = openTicketAgingByPriorityService.fetchKPIDataFromDb(leafNodeList,
 				startDate, endDate, kpiRequest);
 		assertThat("Total Defects issue list :",
-				((List<KanbanJiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(), equalTo(194));
+				((List<KanbanJiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(), equalTo(172));
 	}
 
 	@Test

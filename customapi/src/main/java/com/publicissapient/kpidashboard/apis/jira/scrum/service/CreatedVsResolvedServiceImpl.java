@@ -502,9 +502,11 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 
 	private List<JiraIssue> getCompletedIssues(List<JiraIssue> sprintWiseDefects, SprintDetails sprintDetails) {
 		FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetails.getBasicProjectConfigId());
+		if(CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueDeliverdStatusKPI126()))
 		return sprintWiseDefects.stream()
 				.filter(jiraIssue -> fieldMapping.getJiraIssueDeliverdStatusKPI126().contains(jiraIssue.getStatus()))
 				.collect(Collectors.toList());
+		else return new ArrayList<>();
 	}
 
 	/**

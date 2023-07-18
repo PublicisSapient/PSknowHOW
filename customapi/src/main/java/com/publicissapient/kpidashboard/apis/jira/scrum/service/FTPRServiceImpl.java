@@ -300,7 +300,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			if (CollectionUtils.isNotEmpty(ftprStory) && CollectionUtils.isNotEmpty(storiesHistory)) {
 
 				ftprStory.removeIf(issue -> kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue,
-						storiesHistory, fieldMapping.getJiraStatusForDevelopmentKPI135(), fieldMapping.getJiraStatusForQaKPI135())
+						storiesHistory, fieldMapping.getJiraStatusForDevelopmentKPI135(), fieldMapping.getJiraStatusForQaKPI135(),fieldMapping.getJiraFtprRejectStatusKPI135())
 				);
 
 			}

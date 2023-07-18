@@ -35,7 +35,8 @@ fieldMappings.forEach(function(fm) {
         const jiraSprintCapacityIssueType=fm.jiraSprintCapacityIssueType;
         const jiraDefectRejectionlIssueType=fm.jiraDefectRejectionlIssueType;
         const jiraStatusForQa=fm.jiraStatusForQa;
-        const storyFirstStatusKPI3=fm.storyFirstStatus;
+        const storyFirstStatus=fm.storyFirstStatus;
+        const jiraFtprRejectStatus=fm.jiraFtprRejectStatus;
         db.field_mapping.updateOne({ "_id": fm._id }, {
           $set: {
 
@@ -152,6 +153,9 @@ fieldMappings.forEach(function(fm) {
             	"jiraBlockedStatusKPI131": jiraBlockedStatus,
 
             	"jiraIncludeBlockedStatusKPI131": jiraIncludeBlockedStatus,
+
+            	"jiraFtprRejectStatusKPI135":jiraFtprRejectStatus,
+            	"jiraFtprRejectStatusKPI82":jiraFtprRejectStatus,
         
             "jiraIterationCompletionStatusKPI135": jiraIterationCompletionStatusCustomField,
             "jiraIterationCompletionStatusKPI122": jiraIterationCompletionStatusCustomField,

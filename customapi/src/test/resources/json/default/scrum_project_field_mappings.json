@@ -12,198 +12,42 @@
     "jiradefecttype": [
       "Defect"
     ],
-    "jiradefecttypeSWE": [
-      "Defect"
-    ],
-    "jiradefecttypeIDCR": [
-      "Defect"
-    ],
-    "jiradefecttypeIDCS": [
-      "Defect"
-    ],
-    "jiradefecttypeIDCP": [
-      "Defect"
-    ],
-    "jiradefecttypeRDCA": [
-      "Defect"
-    ],
-    "jiradefecttypeRDCP": [
-      "Defect"
-    ],
-    "jiradefecttypeRDCR": [
-      "Defect"
-    ],
-    "jiradefecttypeRDCS": [
-      "Defect"
-    ],
-    "jiradefecttypeQS": [
-      "Defect"
-    ],
-    "jiradefecttypeIWS": [
-      "Defect"
-    ],
-    "jiradefecttypeLT": [
-      "Defect"
-    ],
-    "jiradefecttypeMW": [
-      "Defect"
-    ],
-    "jiradefecttypeFTPR": [
-      "Defect"
-    ],
-    "jiradefecttypeIFTPR": [
-      "Defect"
-    ],
-    "jiradefecttypeIC": [
-      "Defect"
-    ],
-    "jiradefecttypeAVR": [
-      "Defect"
-    ],
-    "jiradefecttypeCVR": [
-      "Defect"
-    ],
-    "jiradefecttypeBDRR": [
-      "Defect"
-    ],
     "jiraIssueTypeNames": [
-      "Story",
-      "Enabler Story",
-      "Change request",
       "Defect",
       "Epic"
     ],
     "jiraIssueTypeNamesAVR": [
-      "Story",
-      "Enabler Story",
-      "Change request",
       "Defect",
       "Epic"
     ],
     "storyFirstStatus": "Open",
     "rootCause": "customfield_19121",
-    "jiraStatusForDevelopmentAVR": [
-      "Implementing",
-      "In Development",
-      "In Analysis"
-    ],
-    "jiraStatusForDevelopmentFTPR": [
-      "Implementing",
-      "In Development",
-      "In Analysis"
-    ],
-    "jiraStatusForDevelopmentIFTPR": [
-      "Implementing",
-      "In Development",
-      "In Analysis"
-    ],
     "jiraIssueEpicType": [
       "Epic"
     ],
     "jiraStatusForQa": [
       "In Testing"
     ],
-    "jiraDefectInjectionIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
+    "jiraStatusForQaKPI135": [
+      "In Testing"
     ],
-    "jiraDodDIR": [
-      "Closed",
-      "Ready for Delivery"
+    "jiraStatusForQaKPI82": [
+      "In Testing"
     ],
-    "jiraDodQADD": [
-      "Closed",
-      "Ready for Delivery"
-    ],
-    "jiraDodLT": [
-      "Closed",
-      "Ready for Delivery"
-    ],
-    "jiraDodPDA": [
-      "Closed",
-      "Ready for Delivery"
-    ],
-    "jiraDefectCreatedStatus": "Open",
+    "jiraDod": [],
+    "jiraDodKPI14": [],
+    "jiraDodQAKPI111": [],
+    "jiraDodPDA": [],
     "jiraTechDebtIssueType": [
       "Story",
       "Enabler Story",
       "Change request"
     ],
-    "jiraDefectSeepageIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraDefectRemovalStatus": [
-      "Closed",
-      "Ready for Delivery"
-    ],
-    "jiraDefectRemovalIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraDefectClosedStatus": [],
+    "jiraBugRaisedByIdentification": "",
+    "jiraBugRaisedByValue": [],
+    "jiraBugRaisedByCustomField": "",
     "jiraStoryPointsCustomField": "customfield_20803",
     "jiraTestAutomationIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraSprintVelocityIssueTypeSV": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraSprintVelocityIssueTypeBR": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraSprintCapacityIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraDefectRejectionlIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraDefectCountlIssueTypeDC": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraDefectCountlIssueTypeRCA": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraIssueDeliverdStatusBR": [
-      "Closed",
-      "Ready for Delivery"
-    ],
-    "jiraIssueDeliverdStatusSV": [
-      "Closed",
-      "Ready for Delivery"
-    ],
-    "jiraIssueDeliverdStatusAVR": [
-      "Closed",
-      "Ready for Delivery"
-    ],
-    "jiraIssueDeliverdStatusCVR": [
-      "Closed",
-      "Ready for Delivery"
-    ],
-    "jiraIssueDeliverdStatusFTPR": [
-      "Closed",
-      "Ready for Delivery"
-    ],
-    "jiraDor": "Ready for Sprint Planning",
-    "jiraDorLT": "Ready for Sprint Planning",
-    "jiraIntakeToDorIssueTypeLT": [
       "Story",
       "Enabler Story",
       "Change request"
@@ -213,74 +57,24 @@
       "Enabler Story",
       "Change request"
     ],
-    "jiraStoryIdentificationIC": [
+    "jiraStoryIdentificationKpi40": [
       "Story",
       "Enabler Story",
       "Change request"
     ],
+    "jiraLiveStatus": "",
+    "jiraLiveStatusLTK": "",
+    "jiraLiveStatusNOPK": "",
+    "jiraLiveStatusNOSK": "",
+    "jiraLiveStatusNORK": "",
+    "jiraLiveStatusOTA": "",
+    "jiraLiveStatusPDA": "",
     "rootCauseValue": [
       "Coding"
     ],
-    "resolutionTypeForRejectionAVR": [
-      "Invalid",
-      "Duplicate",
-      "Unrequired"
-    ],
-    "resolutionTypeForRejectionDC": [
-      "Invalid",
-      "Duplicate",
-      "Unrequired"
-    ],
-    "resolutionTypeForRejectionDRE": [
-      "Invalid",
-      "Duplicate",
-      "Unrequired"
-    ],
-    "resolutionTypeForRejectionDRR": [
-      "Invalid",
-      "Duplicate",
-      "Unrequired"
-    ],
-    "resolutionTypeForRejectionDSR": [
-      "Invalid",
-      "Duplicate",
-      "Unrequired"
-    ],
-    "resolutionTypeForRejectionFTPR": [
-      "Invalid",
-      "Duplicate",
-      "Unrequired"
-    ],
-    "resolutionTypeForRejectionIFTPR": [
-      "Invalid",
-      "Duplicate",
-      "Unrequired"
-    ],
-    "resolutionTypeForRejectionQS": [
-      "Invalid",
-      "Duplicate",
-      "Unrequired"
-    ],
-    "resolutionTypeForRejectionRCA": [
-      "Invalid",
-      "Duplicate",
-      "Unrequired"
-    ],
-    "resolutionTypeForRejectionDIR": [
-      "Invalid",
-      "Duplicate",
-      "Unrequired"
-    ],
-    "resolutionTypeForRejectionQADD": [
-      "Invalid",
-      "Duplicate",
-      "Unrequired"
-    ],
-    "jiraQADefectDensityIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
+    "jiraBugRaisedByQACustomField": "",
+    "jiraBugRaisedByQAIdentification": "",
+    "jiraBugRaisedByQAValue": [],
     "epicCostOfDelay": "customfield_58102",
     "epicRiskReduction": "customfield_58101",
     "epicUserBusinessValue": "customfield_58100",
@@ -292,59 +86,67 @@
       "In Development",
       "In Progress"
     ],
-    "jiraStatusForInProgressCPT": [
+    "jiraStatusForInProgressKPI122": [
       "In Analysis",
       "In Development",
       "In Progress"
     ],
-    "jiraStatusForInProgressDCS": [
+    "jiraStatusForInProgressKPI145": [
       "In Analysis",
       "In Development",
       "In Progress"
     ],
-    "jiraStatusForInProgressIBU": [
+    "jiraStatusForInProgressKPI125": [
       "In Analysis",
       "In Development",
       "In Progress"
     ],
-    "jiraStatusForInProgressPWS": [
+    "jiraStatusForInProgressKPI128": [
       "In Analysis",
       "In Development",
       "In Progress"
     ],
-    "jiraStatusForInProgressILS": [
+    "jiraStatusForInProgressKPI123": [
       "In Analysis",
       "In Development",
       "In Progress"
     ],
-    "jiraStatusForInProgressWR": [
+    "jiraStatusForInProgressKPI119": [
       "In Analysis",
       "In Development",
       "In Progress"
     ],
     "estimationCriteria": "Story Point",
-    "storyPointToHourMapping": 8,
-    "workingHoursDayCPT": 6,
-    "issueStatusExcluMissingWorkEH": [
-      "Open"
-    ],
-    "jiraFTPRStoryIdentification": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraIFTPRStoryIdentification": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraWaitStatusIW": [
-      "Ready for Testing"
-    ],
-    "jiraBlockedStatusIW": [
-      "On Hold"
-    ],
+    "storyPointToHourMapping": 8.0,
+    "workingHoursDayCPT": 6.0,
+    "additionalFilterConfig": [],
     "jiraDueDateField": "Due Date",
-    "defectPriorityFTPR": []
+    "jiraIterationCompletionStatusCustomField": [],
+    "jiraIterationCompletionStatusKPI135": [],
+    "jiraIterationCompletionStatusKPI122": [],
+    "jiraIterationCompletionStatusKPI75": [],
+    "jiraIterationCompletionStatusKPI145": [],
+    "jiraIterationCompletionStatusKPI140": [],
+    "jiraIterationCompletionStatusKPI132": [],
+    "jiraIterationCompletionStatusKPI136": [],
+    "jiraIterationCompletionStatusKpi72": [],
+    "jiraIterationCompletionStatusKpi39": [],
+    "jiraIterationCompletionStatusKpi5": [],
+    "jiraIterationCompletionStatusKPI124": [],
+    "jiraIterationCompletionStatusKPI123": [],
+    "jiraIterationCompletionStatusKPI125": [],
+    "jiraIterationCompletionStatusKPI120": [],
+    "jiraIterationCompletionStatusKPI128": [],
+    "jiraIterationCompletionStatusKPI134": [],
+    "jiraIterationCompletionStatusKPI133": [],
+    "jiraIterationCompletionStatusKPI119": [],
+    "jiraIterationCompletionStatusKPI131": [],
+    "jiraIterationCompletionStatusBRE": [],
+    "jiraIssueDeliverdStatusKPI126": [],
+    "jiraLiveStatusNORK": "",
+    "jiraLiveStatusNOSK": "",
+    "jiraDodKPI3": [],
+    "defectPriorityKPI82": [],
+    "jiraDefectClosedStatus": ["Closed"]
   }
 ]

@@ -1409,18 +1409,6 @@ public class KpiHelperService { // NOPMD
 		return fieldWiseIssuesLatestMap;
 	}
 
-	/**
-	 * Fetchs kpi fieldmapping list KpiFieldMapping response.
-	 *
-	 * @return the KpiFieldMapping response
-	 */
-	public KPIFieldMappingResponse fetchKpiFieldMappingList() {
-		List<KPIFieldMapping> lisOfKpiFieldMapping = (List<KPIFieldMapping>) configHelperService.loadKpiFieldMapping();
-		KPIFieldMappingResponse kpiFieldMappingResponse = new KPIFieldMappingResponse();
-		kpiFieldMappingResponse.setKpiFieldMappingList(lisOfKpiFieldMapping);
-		return kpiFieldMappingResponse;
-	}
-
 	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiFieldMappingData(String projectBasicConfigId,String kpiId) {
 		FieldMappingStructureResponse fieldMappingStructureResponse = null;
 		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
@@ -1467,19 +1455,17 @@ public class KpiHelperService { // NOPMD
 
 
 	public boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue,
-			List<JiraIssueCustomHistory> storiesHistory,List<String> statusForDevelopemnt, List<String> jiraStatusForQa) {
+			List<JiraIssueCustomHistory> storiesHistory,List<String> statusForDevelopemnt, List<String> jiraStatusForQa, List<String> jiraFtprRejectStatus) {
 		JiraIssueCustomHistory jiraIssueCustomHistory = storiesHistory.stream()
 				.filter(issueHistory -> issueHistory.getStoryID().equals(issue.getNumber())).findFirst().orElse(null);
 		if (jiraIssueCustomHistory == null) {
 			return false;
 		} else {
 			List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistory.getStatusUpdationLog();
-			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
-			FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraFtprRejectStatus())) {
+			if (CollectionUtils.isNotEmpty(jiraFtprRejectStatus)) {
 				// if rejected field is mentioned then we will not calculate return transactions
 				return CollectionUtils.isNotEmpty(statusUpdationLog.stream().filter(
-						statusHistory -> fieldMapping.getJiraFtprRejectStatus().contains(statusHistory.getChangedTo()))
+						statusHistory -> jiraFtprRejectStatus.contains(statusHistory.getChangedTo()))
 						.collect(Collectors.toList()));
 			} else {
 				Collections.sort(statusUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));

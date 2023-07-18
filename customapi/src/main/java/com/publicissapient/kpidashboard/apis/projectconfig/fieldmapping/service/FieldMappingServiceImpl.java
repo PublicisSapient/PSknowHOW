@@ -127,6 +127,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 
 		FieldMapping mapping = fieldMappingRepository.save(fieldMapping);
+		cacheService.clearCache(CommonConstant.CACHE_FIELD_MAPPING_MAP);
 		clearCache();
 		return mapping;
 	}
@@ -194,7 +195,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	}
 
 	private void clearCache() {
-		cacheService.clearAllCache();
+		cacheService.clearCache(CommonConstant.JIRAKANBAN_KPI_CACHE);
+		cacheService.clearCache(CommonConstant.JIRA_KPI_CACHE);
 	}
 
 	/**
@@ -584,7 +586,10 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraRejectedInRefinement",
 			"jiraAcceptedInRefinement",
 			"jiraReadyForRefinement",
-			"jiraFtprRejectStatus",
+
+			"jiraFtprRejectStatusKPI135",
+			"jiraFtprRejectStatusKPI82",
+
 			"jiraIterationCompletionStatusCustomField",
 			"jiraIterationCompletionStatusKPI135",
 			"jiraIterationCompletionStatusKPI122",

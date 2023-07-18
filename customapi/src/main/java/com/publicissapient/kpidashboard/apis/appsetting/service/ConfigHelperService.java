@@ -287,12 +287,6 @@ public class ConfigHelperService {
 	/**
 	 * Load KPI Field Mapping.
 	 */
-	@PostConstruct
-	@Cacheable(CommonConstant.CACHE_KPI_FIELD_MAPPING)
-	public Object loadKpiFieldMapping() {
-		log.info("loading KPI FieldMapping data");
-		return kpiFieldMappingRepository.findAll();
-	}
 
 	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_FIELD_MAPPING_STUCTURE)

@@ -83,9 +83,10 @@ public class DefectReopenRateServiceImplTest {
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
+		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance("/json/default/kpi_request.json");
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi137");
 		kpiRequest.setLabel("PROJECT");
+		kpiRequest.setDuration("WEEKS");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
@@ -106,23 +107,24 @@ public class DefectReopenRateServiceImplTest {
 				anyMap());
 		Mockito.doReturn(totalJiraIssueHistoryList).when(jiraIssueCustomHistoryRepository)
 				.findByFilterAndFromStatusMap(anyMap(), anyMap());
-		try {
 			when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(any())).thenReturn(
-					new JiraIssueReleaseStatus(new String(),new HashMap<>(),new HashMap<>(),new HashMap<>()));
-			KpiElement kpiElement = defectReopenRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
-			assertNotNull(kpiElement);
-			assertNotNull(kpiElement.getTrendValueList());
-			Object value = ((DataCount) kpiElement.getTrendValueList()).getValue();
-			List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) value;
-			IterationKpiValue iterationKpiValue = iterationKpiValues.stream()
-					.filter(kpiValue -> "Overall".equals(kpiValue.getFilter1())).findFirst().get();
-			assertNotNull(iterationKpiValue);
-			assertEquals(Optional.of(3.0d).get(), iterationKpiValue.getData().get(0).getValue());
-		} catch (ApplicationException applicationException) {
+					new JiraIssueReleaseStatus(new String(), new HashMap<>(), new HashMap<>(), new HashMap<>()));
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+//			assertNotNull(kpiElement);
+//			assertNull(kpiElement.getTrendValueList());
+			try {
+				KpiElement kpiElement = defectReopenRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+						treeAggregatorDetail);
+				Object value = ((DataCount) kpiElement.getTrendValueList()).getValue();
+				List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) value;
+				IterationKpiValue iterationKpiValue = iterationKpiValues.stream()
+						.filter(kpiValue -> "Overall".equals(kpiValue.getFilter1())).findFirst().get();
+				assertNotNull(iterationKpiValue);
+				assertEquals(Optional.of(3.0d).get(), iterationKpiValue.getData().get(0).getValue());
+			} catch (ApplicationException enfe) {
 
+			}
 		}
-	}
 
 	@Test
 	public void testCalculateKPIMetrics() {

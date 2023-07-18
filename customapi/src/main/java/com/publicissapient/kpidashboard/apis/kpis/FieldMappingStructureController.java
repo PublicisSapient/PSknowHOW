@@ -38,16 +38,6 @@ public class FieldMappingStructureController {
 		this.kPIHelperService = kPIHelperService;
 	}
 
-	/**
-	 * Fetch kip fieldmapping data KpiFieldMapping response.
-	 *
-	 * @return the KpiFieldMapping response
-	 */
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public KPIFieldMappingResponse fetchKpiFieldMappingData() {
-		return kPIHelperService.fetchKpiFieldMappingList();
-	}
-
 	@RequestMapping(value = "{projectBasicConfigId}/{kpiId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiFieldMappingData(@PathVariable String projectBasicConfigId,@PathVariable String kpiId) {
 		projectBasicConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectBasicConfigId);
