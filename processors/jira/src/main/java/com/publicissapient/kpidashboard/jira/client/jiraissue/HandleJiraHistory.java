@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,9 +26,11 @@ import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
@@ -176,8 +179,12 @@ public class HandleJiraHistory {
 	}
 
 	public void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
-			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields,
+			List<ChangelogGroup> changeLogList, ProjectConfFieldMapping projectConfig, Map<String, IssueField> fields,
 			Issue issue) {
+		FieldMapping fieldMapping = projectConfig.getFieldMapping();
+		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+		Boolean cloudEnv = connectionOptional.isPresent() ? connectionOptional.map(Connection::isCloudEnv).get()
+				: Boolean.FALSE;
 		List<JiraHistoryChangeLog> statusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.STATUS);
 		List<JiraHistoryChangeLog> assigneeChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.ASSIGNEE);
 		List<JiraHistoryChangeLog> priorityChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.PRIORITY);
@@ -186,9 +193,12 @@ public class HandleJiraHistory {
 		List<JiraHistoryChangeLog> dueDateChangeLog = getDueDateChangeLog(changeLogList, fieldMapping, fields);
 		List<JiraHistoryChangeLog> sprintChangeLog = getCustomFieldChangeLog(changeLogList,
 				handleStr(fieldMapping.getSprintName()), fields);
-		List<JiraHistoryChangeLog> flagStatusChangeLog = getJiraFieldChangeLog(changeLogList,
-				JiraConstants.FLAG_STATUS);
-
+		List<JiraHistoryChangeLog> flagStatusChangeLog;
+		if (cloudEnv) {
+			flagStatusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.FLAG_STATUS_FOR_CLOUD);
+		} else {
+			flagStatusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.FLAG_STATUS_FOR_SERVER);
+		}
 		createFirstEntryOfChangeLog(statusChangeLog, issue,
 				ObjectUtils.isNotEmpty(issue.getStatus()) ? issue.getStatus().getName() : "");
 		createFirstEntryOfChangeLog(assigneeChangeLog, issue,
