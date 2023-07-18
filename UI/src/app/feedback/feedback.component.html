@@ -8,7 +8,7 @@
             <img class="icon-feedback2 cursor-pointer" src="../../../assets/img/ico-feedback-small.png"
                 alt="feedback icon" aria-hidden="true" (click)="op2.toggle($event);open(); feedback=true" />
         </ng-template>
-        <p-overlayPanel #op2 [showCloseIcon]="true"
+        <p-overlayPanel #op2 [showCloseIcon]="true" (onHide)="OnOverlayHide()"
             [styleClass]="visibleSidebar ? 'feedback-overlay' : 'feedback-overlay-with-sidebar'">
             <ng-template pTemplate="content">
                 <div *ngIf="feedback==true">

@@ -46,4 +46,8 @@ export class FeedbackComponent {
   open(){
     document.documentElement.scrollTop = 0;
   }
+
+  OnOverlayHide(){
+    this.voiceForm.reset();
+  }
 }
