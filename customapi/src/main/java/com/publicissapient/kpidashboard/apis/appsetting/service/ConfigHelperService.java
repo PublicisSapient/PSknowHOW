@@ -64,8 +64,6 @@ public class ConfigHelperService {
 	@Autowired
 	private KpiMasterRepository kpiMasterRepository;
 	@Autowired
-	private KpiFieldMappingRepository kpiFieldMappingRepository;
-	@Autowired
 	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
 	@Autowired
 	private ProjectBasicConfigService projectBasicConfigService;

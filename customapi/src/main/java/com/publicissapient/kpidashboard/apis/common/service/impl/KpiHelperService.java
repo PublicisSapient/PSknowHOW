@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -57,7 +56,6 @@ import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.FieldMappingStructureResponse;
-import com.publicissapient.kpidashboard.apis.model.KPIFieldMappingResponse;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.MasterResponse;
@@ -69,7 +67,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
-import com.publicissapient.kpidashboard.common.model.application.KPIFieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
@@ -81,7 +78,6 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLink;
-import com.publicissapient.kpidashboard.common.repository.application.KpiFieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -143,9 +139,6 @@ public class KpiHelperService { // NOPMD
 	private FilterHelperService flterHelperService;
 	@Autowired
 	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
-
-	@Autowired
-	private KpiFieldMappingRepository kpiFieldMappingRepository;
 
 	public static void getDroppedDefectsFilters(Map<String, Map<String, List<String>>> droppedDefects,
 			ObjectId basicProjectConfigId, List<String> resolutionTypeForRejection, String jiraDefectRejectionStatus) {
