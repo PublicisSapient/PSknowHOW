@@ -312,10 +312,10 @@ public final class CommonUtils {
 		List<Pattern> regexList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(stringList)) {
 			for (String value : stringList) {
-				if (StringUtils.isNotEmpty(value))
-				regexList.add(Pattern.compile(Constant.TILDA_SYMBOL + Pattern.quote(value) + Constant.DOLLAR_SYMBOL,
-						Pattern.CASE_INSENSITIVE));
-
+				if (StringUtils.isNotEmpty(value)) {
+					regexList.add(Pattern.compile(Constant.TILDA_SYMBOL + Pattern.quote(value) + Constant.DOLLAR_SYMBOL,
+							Pattern.CASE_INSENSITIVE));
+				}
 			}
 		}
 		return regexList;

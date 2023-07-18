@@ -67,6 +67,11 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	public static final String EPIC_TIME_CRITICALITY = "epicTimeCriticality";
 	public static final String EPIC_JOB_SIZE = "epicJobSize";
 	public static final String READY_FOR_DEVELOPMENT_STATUS = "readyForDevelopmentStatus";
+	public static final String ESTIMATION_CRITERIA = "estimationCriteria";
+	public static final String JIRA_ISSUE_EPIC_TYPE = "jiraIssueEpicType";
+	public static final String JIRA_TECH_DEBT_CUSTOMFIELD = "jiraTechDebtCustomField";
+	public static final String JIRA_TECH_DEBT_VALUE = "jiraTechDebtValue";
+	public static final String JIRA_DEFECT_TYPE = "jiradefecttype";
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 
@@ -91,8 +96,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
-	@Autowired
-	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
 
 	@Override
 	public FieldMapping getFieldMapping(String projectToolConfigId) {
@@ -225,7 +228,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 
 		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraTechDebtIdentification())) {
-			List<String> tachDebtFieldList = Arrays.asList("jiraTechDebtCustomField", "jiraTechDebtValue");
+			List<String> tachDebtFieldList = Arrays.asList(JIRA_TECH_DEBT_CUSTOMFIELD, JIRA_TECH_DEBT_VALUE);
 			isUpdated = checkFieldsForUpdation(unsaved, saved, tachDebtFieldList);
 		}
 
@@ -254,7 +257,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		isUpdated = checkFieldsForUpdation(unsaved, saved, fieldNameListKanban);
 
 		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraTechDebtIdentification())) {
-			List<String> tachDebtFieldList = Arrays.asList("jiraTechDebtCustomField", "jiraTechDebtValue");
+			List<String> tachDebtFieldList = Arrays.asList(JIRA_TECH_DEBT_CUSTOMFIELD, JIRA_TECH_DEBT_VALUE);
 			isUpdated = checkFieldsForUpdation(unsaved, saved, tachDebtFieldList);
 		}
 
@@ -330,7 +333,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		if (projectBasicConfigOpt.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
 
-			List<String> fieldNameList = Arrays.asList("jiradefecttype", "sprintName", JIRA_STORY_POINTS_CUSTOM_FIELD,
+			List<String> fieldNameList = Arrays.asList(JIRA_DEFECT_TYPE, "sprintName", JIRA_STORY_POINTS_CUSTOM_FIELD,
 					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION,
 					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_TIME_CRITICALITY, EPIC_JOB_SIZE,
 					READY_FOR_DEVELOPMENT_STATUS, "additionalFilterConfig", "jiraDueDateField",
@@ -411,26 +414,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		if (projectBasicConfigOpt.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
 
-//			List<String> fieldNameList = Arrays.asList("jiradefecttype", "sprintName", JIRA_STORY_POINTS_CUSTOM_FIELD,
-//					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "jiraDefectCreatedStatus",
-//					EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION, "issueStatusExcluMissingWork", "jiraIssueDeliverdStatusBR","jiraIssueDeliverdStatusSV","jiraIssueDeliverdStatusAVR","jiraIssueDeliverdStatusCVR","jiraIssueDeliverdStatusFTPR",
-//					"jiraDod", "jiraDefectRemovalStatusDRE", "jiraDefectDroppedStatus", "jiraStatusForDevelopment",
-//					"jiraStatusForQa", "jiraOnHoldStatus", "jiraBlockedStatus", "jiraWaitStatus",
-//					"jiraStatusForInProgress", "jiraDevDoneStatus", "jiraDefectSeepageIssueType",
-//					"jiraQADefectDensityIssueType", "jiraDefectCountlIssueType", "jiraSprintVelocityIssueTypeSV","jiraSprintVelocityIssueTypeBR",
-//					"jiraDefectRemovalIssueTypeDRE", "jiraDefectRejectionlIssueTypeDRR", "jiraDefectInjectionIssueType",
-//					"jiraTestAutomationIssueType", "jiraIntakeToDorIssueType", "jiraStoryIdentification","jiraStoryIdentificationIC",
-//					"jiraFTPRStoryIdentification", "jiraSprintCapacityIssueType", "jiraIssueEpicType", "defectPriority",
-//					"excludeRCAFromFTPR", "workingHoursDayCPT", "jiraDevDueDateCustomField", EPIC_USER_BUSINESS_VALUE,
-//					EPIC_WSJF, "jiraDor", "resolutionTypeForRejectionAVR","resolutionTypeForRejectionDC","resolutionTypeForRejectionDRE","resolutionTypeForRejectionDRR","resolutionTypeForRejectionDSR","resolutionTypeForRejectionFTPR","resolutionTypeForRejectionIFTPR","resolutionTypeForRejectionQS","resolutionTypeForRejectionRCA","resolutionTypeForRejectionDIR","resolutionTypeForRejectionQADD", "jiraDefectRejectionStatusAVR","jiraDefectRejectionStatusDC","jiraDefectRejectionStatusDRE","jiraDefectRejectionStatusDRR","jiraDefectRejectionStatusDSR","jiraDefectRejectionStatusFTPR","jiraDefectRejectionStatusIFTPR","jiraDefectRejectionStatusQS","jiraDefectRejectionStatusRCA","jiraDefectRejectionStatusDIR","jiraDefectRejectionStatusQADD",
-//					EPIC_TIME_CRITICALITY, "jiraLiveStatus", EPIC_JOB_SIZE, "additionalFilterConfig",
-//					"jiraDueDateField", "jiraDueDateCustomField", "jiraDefectClosedStatus", "jiraRejectedInRefinement",
-//					"jiraAcceptedInRefinement", "jiraReadyForRefinement", "jiraIterationCompletionStatusCustomField",
-//					"jiraIterationCompletionTypeCustomField", "jiraFtprRejectStatus");
-
 			List<String> fieldNameList = Arrays.asList(
-					"sprintName",
-			"jiradefecttype",
+			"sprintName",
+			JIRA_DEFECT_TYPE,
 
 			"defectPriorityKPI135",
 			"defectPriorityKPI14",
@@ -438,14 +424,12 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"defectPriorityKPI82",
 			"defectPriorityKPI133",
 
-			"jiraIssueTypeNames",
-			"jiraIssueTypeNamesAVR",
-			"jiraIssueEpicType",
+			JIRA_ISSUE_TYPE_NAMES,
+			JIRA_ISSUE_EPIC_TYPE,
 
-			"storyFirstStatus",
-			"rootCause",
+			STORY_FIRST_STATUS,
+			ROOT_CAUSE,
 
-			"jiraStatusForDevelopmentAVR",
 			"jiraStatusForDevelopmentKPI82",
 			"jiraStatusForDevelopmentKPI135",
 			"jiraStatusForQaKPI138",
@@ -461,10 +445,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraDefectCreatedStatusKPI14",
 			"jiraTechDebtIssueType",
 			"jiraTechDebtIdentification",
-			"jiraTechDebtCustomField",
-			"jiraTechDebtValue",
+			JIRA_TECH_DEBT_CUSTOMFIELD,
+			JIRA_TECH_DEBT_VALUE,
 
-			"jiraDefectRejectionStatusAVR",
 			"jiraDefectRejectionStatusKPI28",
 			"jiraDefectRejectionStatusKPI34",
 			"jiraDefectRejectionStatusKPI37",
@@ -482,7 +465,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 			"jiraDefectRemovalIssueTypeKPI34",
 			"jiraDefectClosedStatus",
-			"jiraStoryPointsCustomField",
+			JIRA_STORY_POINTS_CUSTOM_FIELD,
 			"jiraTestAutomationIssueType",
 
 			"jiraSprintVelocityIssueTypeBR",
@@ -495,10 +478,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraDefectCountlIssueTypeKPI36",
 
 			"jiraIssueDeliverdStatusBR",
-			"jiraIssueDeliverdStatusAVR",
 			"jiraIssueDeliverdStatusKPI126",
 			"jiraIssueDeliverdStatusKPI82",
-			"readyForDevelopmentStatus",
+			READY_FOR_DEVELOPMENT_STATUS,
 
 			"jiraDorKPI3",
 			"storyFirstStatusKPI3",
@@ -533,7 +515,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraProductiveStatus",
 			"jiraCommitmentReliabilityIssueType",
 
-			"resolutionTypeForRejectionAVR",
 			"resolutionTypeForRejectionKPI28",
 			"resolutionTypeForRejectionKPI34",
 			"resolutionTypeForRejectionKPI37",
@@ -547,12 +528,12 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 			"jiraQAKPI111IssueType",
 			"jiraDefectDroppedStatus",
-			"epicCostOfDelay",
-			"epicRiskReduction",
-			"epicUserBusinessValue",
-			"epicWsjf",
-			"epicTimeCriticality",
-			"epicJobSize",
+			EPIC_COST_OF_DELAY,
+			EPIC_RISK_REDUCTION,
+			EPIC_USER_BUSINESS_VALUE,
+			EPIC_WSJF,
+			EPIC_TIME_CRITICALITY,
+			EPIC_JOB_SIZE,
 
 			"jiraStatusForInProgressKPI122",
 			"jiraStatusForInProgressKPI145",
@@ -560,7 +541,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraStatusForInProgressKPI128",
 			"jiraStatusForInProgressKPI123",
 			"jiraStatusForInProgressKPI119",
-			"estimationCriteria",
+			ESTIMATION_CRITERIA,
 
 			"workingHoursDayCPT",
 			"additionalFilterConfig",
@@ -631,7 +612,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus",
 					"jiraTicketRejectedStatus", "jiraTicketClosedStatus", "jiraLiveStatus", "ticketCountIssueType",
 					"kanbanRCACountIssueType", "jiraTicketVelocityIssueType", "kanbanCycleTimeIssueType",
-					"storyPointToHourMapping", EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION, "jiraIssueEpicType",
+					"storyPointToHourMapping", EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION, JIRA_ISSUE_EPIC_TYPE,
 					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_JOB_SIZE, EPIC_TIME_CRITICALITY);
 
 			if ((!projectBasicConfig.getIsKanban()

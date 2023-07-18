@@ -1412,10 +1412,15 @@ public class KpiHelperService { // NOPMD
 				String kpiSource = FieldMappingEnum.valueOf(kpiId.toUpperCase()).getKpiSource();
 				String toolName = capitalizeWords(kpiSource);
 				List<ProjectToolConfig> projectToolConfig=configHelperService.getProjectToolConfigMap().get(new ObjectId(projectBasicConfigId)).get(toolName);
-				ObjectId projectToolConfigId=projectToolConfig.stream().filter(t->t.getBasicProjectConfigId().toString().equals(projectBasicConfigId)).findFirst().get().getId();
+				ObjectId projectToolConfigId = projectToolConfig.stream()
+						.filter(t -> t.getBasicProjectConfigId().toString().equals(projectBasicConfigId))
+						.findFirst()
+						.map(ProjectToolConfig::getId)
+						.orElse(null);
 				fieldMappingStructureResponse.setFieldConfiguration(fieldMappingStructureList.stream().filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList()));
 				fieldMappingStructureResponse.setKpiSource(kpiSource);
-				fieldMappingStructureResponse.setProjectToolConfigId(projectToolConfigId.toString());
+				fieldMappingStructureResponse.setProjectToolConfigId(
+						projectToolConfigId != null ? projectToolConfigId.toString() : null);
 			}
 			catch (Exception ex){
 				fieldMappingStructureResponse.setFieldConfiguration(new ArrayList<>());
