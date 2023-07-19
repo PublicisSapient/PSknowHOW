@@ -68,7 +68,8 @@ public class CustomAnalyticsServiceImplTest {
 	private ProjectAccessManager projectAccessManager;
 	@Mock
 	private UserInfoServiceImpl service;
-
+	@Mock
+	private UserLoginHistoryService userLoginHistoryService;
 	@Test
 	public void testAddAnalyticsData() {
 		HttpServletResponse resp = Mockito.mock(HttpServletResponse.class);
