@@ -173,7 +173,6 @@
                   ?  
                   : ""}}
                </span> -->
-               {{lastSyncData?.fetchSucessful + ' ' + lastSyncData?.isError}}
                <div class="p-d-flex p-align-center p-jc-end">
                   <img *ngIf="lastSyncData?.fetchSucessful && !lastSyncData?.isError" src="../../../assets/img/icon-success.svg" alt="Success" class="p-mr-1"/>
                   <img *ngIf="!lastSyncData?.fetchSucessful && !lastSyncData?.isError" src="../../../assets/img/icon-time.svg" alt="Time" class="p-mr-1" />

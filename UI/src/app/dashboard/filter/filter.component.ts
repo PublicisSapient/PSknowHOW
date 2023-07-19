@@ -80,7 +80,6 @@ export class FilterComponent implements OnInit, OnDestroy {
   hierarchyLevels = [];
   trendLineValueList: any = [];
   toggleDateDropdown = false;
-  filteredSprints = [];
   showDropdown = {};
   selectedDateFilter = '';
   beginningDate;
@@ -1177,6 +1176,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.selectedProjectLastSyncStatus = "";
       this.selectedProjectLastSyncDate = "NA"
    }
+   this.fetchData();
   }
   setSelectedDateType(label: string) {
     this.selectedDayType = label;
@@ -1373,25 +1373,28 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   fetchData(){
     const sprintId = this.filterForm.get('selectedSprintValue')?.value;
-    const sprintState = this.filteredSprints.filter(x => x.nodeId === sprintId)[0].sprintState;
+    const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
     if(sprintState?.toLowerCase() === 'active'){
-      // this.httpService.getData({'sprintId': sprintId}).subscribe((response) => {
-        this.lastSyncData = {
-          "fetchSucessful": true,
-          "lastSucessfulSync": new Date(),
-          "isError":false
-        }
-      // }, error => {
-      //   this.lastSyncData = {
-      //     "fetchSucessful": false,
-      //     "lastSucessfulSync": new Date(),
-      //     "isError": true
-      //   };
-      //   this.messageService.add({
-      //     severity: 'error',
-      //     summary: 'Error in syncing data. Please try after some time.',
-      //   });
-      // })
+        setInterval(() => {
+          // this.httpService.getData({'sprintId': sprintId}).subscribe((response) => {
+            this.lastSyncData = {
+              "fetchSucessful": false,
+              "lastSucessfulSync": new Date(),
+              "isError":true
+            }
+          // }, error => {
+          //   this.lastSyncData = {
+          //     "fetchSucessful": false,
+          //     "lastSucessfulSync": new Date(),
+          //     "isError": true
+          //   };
+          //   this.messageService.add({
+          //     severity: 'error',
+          //     summary: 'Error in syncing data. Please try after some time.',
+          //   });
+          // })
+        }, 3000)
+      
     }
   }
 }
