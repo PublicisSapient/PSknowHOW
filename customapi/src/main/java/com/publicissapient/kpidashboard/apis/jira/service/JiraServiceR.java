@@ -31,7 +31,6 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
@@ -56,6 +55,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -215,6 +215,12 @@ public class JiraServiceR {
 			fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
 					releaseList, CommonConstant.RELEASE);
 		}
+		else if (origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.BACKLOG)) {
+			fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), new ArrayList<>(),
+					CommonConstant.BACKLOG);
+			fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
+					new ArrayList<>(), CommonConstant.BACKLOG);
+		}
 	}
 
 	/**
@@ -301,6 +307,8 @@ public class JiraServiceR {
 		if (board.equalsIgnoreCase(CommonConstant.ITERATION)) {
 			jiraIssueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(sprintIssuesList,
 					basicProjectConfigId);
+		} else if (board.equalsIgnoreCase(CommonConstant.BACKLOG)) {
+			jiraIssueList = jiraIssueRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
 		} else if (board.equalsIgnoreCase(CommonConstant.RELEASE)) {
 			Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 			mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
@@ -349,13 +357,17 @@ public class JiraServiceR {
 		if (board.equalsIgnoreCase(CommonConstant.ITERATION)) {
 			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(
 					sprintIssuesList, Collections.singletonList(basicProjectConfigId));
-		} else {
+		}
+		else if (board.equalsIgnoreCase(CommonConstant.BACKLOG)) {
+			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
+		}
+		else {
 			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromReleaseMap(
 					Collections.singletonList(basicProjectConfigId),
 					CommonUtils.convertToPatternListForSubString(releaseList));
 		}
 	}
-
+	
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
 		return jiraIssueCustomHistoryList;
 	}
