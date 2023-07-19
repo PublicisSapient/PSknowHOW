@@ -99,8 +99,6 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
-	@Autowired
-	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 
 	/**
 	 * @return String
@@ -474,8 +472,8 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		List<String> projectList = new ArrayList<>();
 		List<String> doneStatus = new ArrayList<>();
-		Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicConfigId)
-				.getClosedList();
+		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus(basicConfigId).getClosedList();
+
 		if (doneStatusMap != null) {
 			doneStatus = doneStatusMap.values().stream().map(s -> s.toLowerCase()).collect(Collectors.toList());
 		}

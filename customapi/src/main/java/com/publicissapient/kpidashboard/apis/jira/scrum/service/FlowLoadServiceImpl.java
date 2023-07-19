@@ -71,8 +71,6 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-	@Autowired
-	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 
 	@Override
 	public String getQualifierType() {
@@ -259,8 +257,7 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 	}
 
 	private boolean isStatusValid(FieldMapping fieldMapping, String status, String basicConfigId) {
-		Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicConfigId)
-				.getClosedList();
+		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus(basicConfigId).getClosedList();
 		List<String> doneStatus = new ArrayList<>();
 		if (doneStatusMap != null)
 			doneStatus = doneStatusMap.values().stream().map(dodstatus -> dodstatus.toLowerCase())

@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -57,6 +56,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -104,9 +104,6 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 
 	/**
 	 * Methods get the data for the KPI
@@ -417,8 +414,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		List<String> doneStatus = new ArrayList<>();
-		Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository
-				.findByBasicProjectConfigId(basicProjectId.toString()).getClosedList();
+		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus(basicProjectId.toString()).getClosedList();
 		if (doneStatusMap != null) {
 			doneStatus = doneStatusMap.values().stream().map(status -> status.toLowerCase())
 					.collect(Collectors.toList());

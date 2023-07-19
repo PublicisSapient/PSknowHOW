@@ -80,9 +80,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	@Autowired
 	private KpiHelperService kpiHelperService;
 
-	@Autowired
-	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
-
 	/**
 	 * Gets qualifier type
 	 *
@@ -300,8 +297,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
 					.collect(Collectors.toList());
-			Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId.toString())
-					.getClosedList();
+			Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus(basicProjectConfigId.toString()).getClosedList();
 			if (doneStatusMap != null) {
 				List<String> doneStatus = doneStatusMap.values().stream().collect(Collectors.toList());
 				mapOfProjectFilters.put(STATUS, CommonUtils.convertToPatternList(doneStatus));
