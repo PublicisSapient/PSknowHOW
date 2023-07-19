@@ -36,6 +36,7 @@ import { HelperService } from 'src/app/services/helper.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { of, throwError } from 'rxjs';
 import { ConfigComponent } from 'src/app/config/config.component';
+import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 
 describe('FilterComponent', () => {
   let component: FilterComponent;
@@ -47,6 +48,7 @@ describe('FilterComponent', () => {
   let getAuthorizationService: GetAuthorizationService;
   let helperService: HelperService;
   let excelService: ExcelService;
+  let ga: GoogleAnalyticsService;
   const baseUrl = environment.baseUrl;  // Servers Env
 
   const fakeFilterData = require('../../../test/resource/fakeFilterData.json');
@@ -189,6 +191,24 @@ describe('FilterComponent', () => {
     },
     level: 1
   };
+
+  const fakeSelectedFilterArray =  [
+    {
+        "nodeId": "45160_ADDD_649a920fdf3e6c21e3968e30",
+        "nodeName": "KnowHOW | PI_14| ITR_1_ADDD",
+        "sprintStartDate": "2023-06-28T05:41:00.0000000",
+        "sprintEndDate": "2023-07-11T05:41:00.0000000",
+        "path": [
+            "ADDD_649a920fdf3e6c21e3968e30###2021 WLP Brand Retainer_port###ADEO_acc###Education_ver###A_bu"
+        ],
+        "labelName": "sprint",
+        "parentId": [
+            "ADDD_649a920fdf3e6c21e3968e30"
+        ],
+        "sprintState": "ACTIVE",
+        "level": 6
+    }
+]
 
   beforeEach(() => {
 
@@ -999,6 +1019,7 @@ describe('FilterComponent', () => {
     spyOn(sharedService,"setSelectedTrends");
     component.filterForm.get('selectedLevel').setValue("hierarchyLevelOne");
     component.filterForm.get('selectedTrendValue').setValue("AutoTest1_hierarchyLevelOne");
+    spyOn(component,"compileGAData");
     component.applyChanges('sprint',true);
     expect(sharedService.setSelectedLevel).toHaveBeenCalled();
     expect(sharedService.setSelectedTrends).toHaveBeenCalled();
@@ -1017,6 +1038,7 @@ describe('FilterComponent', () => {
     component.ngOnInit();
     component.filterForm?.get('selectedLevel')?.setValue("hierarchyLevelOne");
     component.filterForm?.get('selectedTrendValue')?.setValue("AutoTest1_hierarchyLevelOne");
+    spyOn(component,"compileGAData");
     component.applyChanges("date",true);
     expect(component.toggleDateDropdown).toBeFalsy();
   })
@@ -1050,6 +1072,7 @@ describe('FilterComponent', () => {
     ];
      component.filterApplyData = filterApplyData;
     spyOn(component,"resetFilterApplyObj");
+    spyOn(component,"compileGAData");
     component.createFilterApplyData();
     expect(component.filterApplyData['selectedMap']['sprint'].length).toBeGreaterThan(0)
   })
@@ -1079,6 +1102,7 @@ describe('FilterComponent', () => {
       level: 1
     };
     spyOn(component,"resetFilterApplyObj");
+    spyOn(component,"compileGAData");
     component.createFilterApplyData();
     expect(component.filterApplyData['level']).not.toBeNull();
   })
@@ -1107,6 +1131,7 @@ describe('FilterComponent', () => {
       level: 5
     };
     spyOn(component,"resetFilterApplyObj");
+    spyOn(component,"compileGAData");
     component.createFilterApplyData();
     expect(component.filterApplyData['level']).not.toBeNull();
   })
@@ -1514,6 +1539,23 @@ describe('FilterComponent', () => {
     spyOn(component,'findTraceLogForTool').and.returnValue(fakeTraceLog)
     component.showExecutionDate();
     expect(component.selectedProjectLastSyncStatus).toBe("FAILURE");
+  })
+
+  it('should compile GA data', () => {
+    component.selectedFilterArray = fakeSelectedFilterArray;
+    const gaArray = [
+      {
+          "id": "45160_ADDD_649a920fdf3e6c21e3968e30",
+          "name": "KnowHOW | PI_14| ITR_1_ADDD",
+          "level": "sprint",
+          "category1": "A",
+          "category2": "Education",
+          "category3": "ADEO",
+          "category4": "2021 WLP Brand Retainer",
+          "category5": "ADDD"
+      }
+  ]
+    expect(component.selectedFilterArray.length).toEqual(gaArray.length);
   })
 
 });

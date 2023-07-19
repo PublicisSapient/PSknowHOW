@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -317,6 +318,13 @@ public final class CommonUtils {
 			}
 		}
 		return regexList;
+	}
+
+	public static List<Pattern> convertToPatternListForSubString(List<String> stringList) {
+
+		return stringList.stream().map(value -> convertToPatternText(Constant.TILDA_SYMBOL + Constant.DOT
+				+ Constant.STAR + value + Constant.DOT + Constant.STAR + Constant.DOLLAR_SYMBOL))
+				.collect(Collectors.toList());
 	}
 
 	/**
