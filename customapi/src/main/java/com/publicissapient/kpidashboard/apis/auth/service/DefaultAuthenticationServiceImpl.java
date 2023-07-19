@@ -89,7 +89,11 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	 */
 	@Override
 	public org.springframework.security.core.Authentication create(String username, String password, String email) {
-		Authentication authentication = authenticationRepository.save(new Authentication(username, password, email));
+		Authentication authentication = new Authentication(username, password, email);
+		if (authenticationRepository.count() == 0) {
+			authentication.setApproved(true);
+		}
+		authentication = authenticationRepository.save(authentication);
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
 				authentication.getUsername(), authentication.getPassword(), new ArrayList<>());
 		token.setDetails(AuthType.STANDARD);

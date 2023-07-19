@@ -2476,7 +2476,7 @@ db.getCollection('kpi_master').insertMany(
     "maxValue": "",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 1,
+    "defaultOrder": 2,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2508,7 +2508,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiName": "Production Defects Ageing",
     "kpiUnit": "Number",
     "isDeleted": "False",
-    "defaultOrder": 3,
+    "defaultOrder": 4,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2532,7 +2532,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiName": "Refinement Rejection Rate",
     "kpiUnit": "%",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 5,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2582,7 +2582,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiName": "Defect Reopen Rate",
     "kpiUnit": "Hours",
     "isDeleted": "False",
-    "defaultOrder": 2,
+    "defaultOrder": 3,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2792,7 +2792,7 @@ db.getCollection('kpi_master').insertMany(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 5,
+    "defaultOrder": 8,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2832,7 +2832,7 @@ db.getCollection('kpi_master').insertMany(
     "boxType": "2_column",
     "kpiBaseLine": "0",
     "thresholdValue": "",
-    "defaultOrder": 6,
+    "defaultOrder": 1,
     "kpiUnit": "Count",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2872,65 +2872,15 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": false,
     "showTrend": false,
     "kpiFilter": "multiSelectDropDown",
-    "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": [
-      "-60",
-      "60-45",
-      "45-30",
-      "30-10",
-      "10-"
-    ],
-    "maturityLevel": [
-      {
-        "level": "LeadTime",
-        "range": [
-          "-60",
-          "60-45",
-          "45-30",
-          "30-10",
-          "10-"
-        ]
-      },
-      {
-        "level": "Intake-DoR",
-        "range": [
-          "-30",
-          "30-20",
-          "20-10",
-          "10-5",
-          "5-"
-        ]
-      },
-      {
-        "level": "DoR-DoD",
-        "range": [
-          "-20",
-          "20-10",
-          "10-7",
-          "7-3",
-          "3-"
-        ]
-      },
-      {
-        "level": "DoD-Live",
-        "range": [
-          "-30",
-          "30-15",
-          "15-5",
-          "5-2",
-          "2-"
-        ]
-      }
-    ]
   },
   {
     "kpiId": "kpi148",
     "kpiName": "Flow Load",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 7,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -2954,7 +2904,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiName": "Flow Distribution",
     "kpiUnit": "",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 6,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 10,
@@ -3027,6 +2977,54 @@ db.getCollection('kpi_master').insertMany(
     "kpiFilter": "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
+  },
+  {
+      "kpiId": "kpi151",
+      "kpiName": "Backlog Count By Status",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 9,
+      "kpiCategory": "Backlog",
+      "kpiSource": "Jira",
+      "groupId": 10,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "pieChart",
+      "kpiInfo": {
+          "definition": "Total count of issues in the Backlog with a breakup by Status."
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "dropdown",
+      "boxType": "chart",
+      "calculateMaturity": false
+  },
+  {
+      "kpiId": "kpi152",
+      "kpiName": "Backlog Count By Issue Type",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 10,
+      "kpiCategory": "Backlog",
+      "kpiSource": "Jira",
+      "groupId": 10,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "pieChart",
+      "kpiInfo": {
+          "definition": "Total count of issues in the backlog with a breakup by issue type."
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "dropdown",
+      "boxType": "chart",
+      "calculateMaturity": false
   }
 ]
 );
@@ -5943,10 +5941,106 @@ db.kpi_column_configs.insertMany([{
                                       isShown: true,
                                       isDefault: true
                                     }]
+                                  },
+                                  {
+                                    basicProjectConfigId: null,
+                                    kpiId: 'kpi151',
+                                    kpiColumnDetails: [{
+                                      columnName: 'Issue ID',
+                                      order: 0,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Issue Description',
+                                      order: 1,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Issue Type',
+                                      order: 2,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Issue Status',
+                                      order: 3,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Priority',
+                                      order: 4,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Created Date',
+                                      order: 5,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Updated Date',
+                                      order: 6,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Assignee',
+                                      order: 7,
+                                      isShown: true,
+                                      isDefault: true
+                                    }]
+                                  },
+                                  {
+                                    basicProjectConfigId: null,
+                                    kpiId: 'kpi152',
+                                    kpiColumnDetails: [{
+                                      columnName: 'Issue ID',
+                                      order: 0,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Issue Description',
+                                      order: 1,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Issue Type',
+                                      order: 2,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Issue Status',
+                                      order: 3,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Priority',
+                                      order: 4,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Created Date',
+                                      order: 5,
+                                      isShown: true,
+                                      isDefault: true
+                                    }, {
+                                      columnName: 'Updated Date',
+                                      order: 6,
+                                      isShown: true,
+                                      isDefault: true
+                                    },
+                                    {
+                                      columnName: 'Assignee',
+                                      order: 7,
+                                      isShown: true,
+                                      isDefault: true
+                                    }]
                                   }
                                  ]);
 
-//default fields mapping for each KPI, these fields are used to populate the config JIRA for any 
+//default fields mapping for each KPI, these fields are used to populate the config JIRA for any
 //project. these can be changed/updated in project config under setting in the KnowHOW
 
 db.getCollection('kpi_fieldmapping').insertMany(
@@ -6356,7 +6450,7 @@ db.getCollection('kpi_fieldmapping').insertMany(
         kpiName: 'Defects Without Story Link',
 		kpiSource: 'Jira',
         type: ['Other'],
-        fieldNames : { 'Issue Types Mapping' : ['jiraStoryIdentification'], 'Workflow Status Mapping' : ['jiraDefectDroppedStatus'] }
+        fieldNames : { 'Issue Types Mapping' : ['jiraStoryIdentification'], 'Workflow Status Mapping' : ['excludeStatusKpi129'] }
       },
       {
         kpiId: 'kpi127',
@@ -6463,8 +6557,7 @@ db.getCollection('kpi_fieldmapping').insertMany(
                  'Workflow Status Mapping': [
                     'storyFirstStatus',
                     'jiraStatusForInProgress',
-                    'jiraStatusForQa',
-                    'jiraLiveStatus'
+                    'jiraStatusForQa'
                 ]
              }
             },

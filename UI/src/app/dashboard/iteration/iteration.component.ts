@@ -95,11 +95,12 @@ export class IterationComponent implements OnInit, OnDestroy {
   globalConfig;
   sharedObject;
   navigationTabs:Array<object> = [
-    {'label':'Iteration Review', 'count': 0}, 
+    {'label':'Iteration Review', 'count': 0},
     {'label':'Iteration Progress', 'count': 0}
   ];
   forzenColumns = ['issue id','issue description'];
   commitmentReliabilityKpi;
+  kpiCommentsCountObj: object = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -108,6 +109,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.kpiChartData = {};
         this.kpiSelectedFilterObj = {};
         this.kpiDropdowns = {};
+        this.kpiCommentsCountObj = {};
         this.sharedObject = sharedobject;
         if(this.globalConfig || this.service.getDashConfigData()){
           this.receiveSharedData(sharedobject);
@@ -156,7 +158,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
       let board = this.upDatedConfigData[i]?.subCategoryBoard;
       let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
-      if(idx != -1) this.navigationTabs[idx]['count']++; 
+      if(idx != -1) this.navigationTabs[idx]['count']++;
     }
     if(this.commitmentReliabilityKpi?.isEnabled){
       this.navigationTabs[0]['count']++;
@@ -204,6 +206,7 @@ export class IterationComponent implements OnInit, OnDestroy {
             const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
             this.timeRemaining = this.calcBusinessDays(today, endDate);
             this.groupJiraKpi(kpiIdsForCurrentBoard);
+            this.getKpiCommentsCount();
           }
         }
       } else {
@@ -887,5 +890,26 @@ export class IterationComponent implements OnInit, OnDestroy {
 
   typeOf(value) {
     return typeof value === 'object' && value !== null;
+  }
+
+  getKpiCommentsCount(kpiId?){
+    let requestObj = {
+      "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,
+      "level":this.filterApplyData?.level,
+      "nodeChildId": this.filterApplyData['selectedMap']?.sprint[0],
+      'kpiIds': []
+    };
+    if(kpiId){
+      requestObj['kpiIds'] = [kpiId];
+      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+        this.kpiCommentsCountObj[kpiId] = res[kpiId];
+      });
+    }else{
+      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
+      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+        this.kpiCommentsCountObj = res;
+      });
+    }
+
   }
 }

@@ -31,6 +31,7 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
@@ -148,7 +149,7 @@ public class JiraServiceR {
 				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
 						groupId, kpiRequest.getSprintIncluded());
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData) {
+						&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
 					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
 					return (List<KpiElement>) cachedData;
 				}
@@ -273,11 +274,14 @@ public class JiraServiceR {
 				.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
 
 		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& sprintLevel >= kpiRequest.getLevel()) {
+				&& sprintLevel >= kpiRequest.getLevel() && isLeadTimeDuration(kpiRequest.getKpiList())) {
 			cacheService.setIntoApplicationCache(projects, responseList, KPISource.JIRA.name(), groupId,
 					kpiRequest.getSprintIncluded());
 		}
 
+	}
+	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
+		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi3");
 	}
 
 	public void fetchSprintDetails(String[] sprintId) {
@@ -303,7 +307,8 @@ public class JiraServiceR {
 					Collections.singletonList(basicProjectConfigId));
 			Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			mapOfProjectFilters.put(CommonConstant.RELEASE, sprintIssuesList);
+			mapOfProjectFilters.put(CommonConstant.RELEASE,
+					CommonUtils.convertToPatternListForSubString(sprintIssuesList));
 			uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
 			jiraIssueList = jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
 		}
@@ -345,8 +350,9 @@ public class JiraServiceR {
 			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(
 					sprintIssuesList, Collections.singletonList(basicProjectConfigId));
 		} else {
-			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
-					.findByFilterAndFromReleaseMap(Collections.singletonList(basicProjectConfigId), releaseList);
+			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromReleaseMap(
+					Collections.singletonList(basicProjectConfigId),
+					CommonUtils.convertToPatternListForSubString(releaseList));
 		}
 	}
 

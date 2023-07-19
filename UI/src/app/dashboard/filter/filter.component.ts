@@ -107,15 +107,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   isTooltip = false;
   projectIndex = 0;
   notificationList = [];
-  items: MenuItem[] = [
-    {
-      label: 'Help',
-      icon: 'fa fa-info-circle',
-      command: () => {
-        this.service.setSideNav(false);
-        this.router.navigate(['/dashboard/Help']);
-      },
-    },
+  items: MenuItem[]  = [
   ];
   username: string;
   isGuest = false;

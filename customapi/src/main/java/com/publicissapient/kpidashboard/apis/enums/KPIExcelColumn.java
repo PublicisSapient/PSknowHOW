@@ -44,7 +44,7 @@ public enum KPIExcelColumn {
 							"kpi83",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Issue Type",
 									"Resolution Time(In Days)")),
-	LEAD_TIME("kpi3", Arrays.asList("Issue Id", "Issue Description", "Intake to DOR (In Days)", "DOR to DOD (In Days)", "DOD TO Live (In Days)", "Intake to DOD (In Days)", "DOR to Live (In Days)", "Lead Time (In Days)")),
+	LEAD_TIME("kpi3", Arrays.asList("Issue Id", "Issue Description", "Intake to DOR (In Days)", "DOR to DOD (In Days)", "DOD TO Live (In Days)", "Lead Time (In Days)")),
 	LEAD_TIME_KANBAN("kpi53", Arrays.asList("Project Name", "Story ID", "Issue Description", "Open to Triage(In Days)",
 			"Triage to Complete (In Days)", "Complete TO Live (In Days)", "Lead Time (In Days)")),
 
@@ -232,6 +232,10 @@ public enum KPIExcelColumn {
 
 	DEFECT_COUNT_BY_STATUS_RELEASE("kpi141", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
 			"Issue Status", "Root Cause", "Priority", "Assignee")),
+	BACKLOG_COUNT_BY_STATUS("kpi151", Arrays.asList("Issue ID", "Issue Description", "Issue Type",
+			"Issue Status", "Priority","Created Date","Updated Date", "Assignee")),
+	BACKLOG_COUNT_BY_ISSUE_TYPE("kpi152", Arrays.asList("Issue ID", "Issue Description", "Issue Type",
+			"Issue Status", "Priority","Created Date","Updated Date", "Assignee")),
 
 	DEFECT_COUNT_BY_RCA_RELEASE("kpi142", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Issue Type",
 			"Issue Status", "Root Cause", "Priority", "Assignee")),
@@ -243,12 +247,16 @@ public enum KPIExcelColumn {
 			"Issue Type", "Issue Status", "Root Cause", "Priority", "Assignee")),
 
 	RELEASE_PROGRESS("kpi147",
-			Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority", "Assignee",
-					"Issue Status")), HAPPINESS_INDEX_RATE("kpi149",
-							Arrays.asList("Sprint Name", "User Name", "Sprint Rating")), FLOW_DISTRIBUTION("Kpi146",
+			Arrays.asList("Issue ID", "Issue Type", "Issue Description","Size(story point/hours)", "Priority", "Assignee",
+					"Issue Status")),
+
+	HAPPINESS_INDEX_RATE("kpi149",
+							Arrays.asList("Sprint Name", "User Name", "Sprint Rating")),
+
+	FLOW_DISTRIBUTION("Kpi146",
 									Arrays.asList("Date")), FLOW_LOAD("kpi148", Arrays.asList("Date")),
 
-	RELEASE_BURNUP("kpi150", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Story Size(In story point)",
+	RELEASE_BURNUP("kpi150", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
 			"Priority", "Assignee", "Issue Status"));
 
 	// @formatter:on
