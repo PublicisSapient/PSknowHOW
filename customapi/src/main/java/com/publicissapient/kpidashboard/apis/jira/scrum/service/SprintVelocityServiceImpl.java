@@ -256,13 +256,13 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 					currentSprintLeafVelocityMap.get(currentNodeIdentifier), sprintVelocityForCurrentLeaf);
 
 			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(Math.round(sprintVelocityForCurrentLeaf)));
+			dataCount.setData(String.valueOf(roundingOff(sprintVelocityForCurrentLeaf)));
 			dataCount.setSProjectName(trendLineName);
 			dataCount.setSSprintID(node.getSprintFilter().getId());
 			dataCount.setSSprintName(node.getSprintFilter().getName());
 			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
 			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setLineValue(sprintVelocityForCurrentLeaf);
+			dataCount.setLineValue(roundingOff(sprintVelocityForCurrentLeaf));
 			if (!avgVelocityCount.containsKey(projId)) {
 				avgVelocityCount.put(projId, 0);
 			}

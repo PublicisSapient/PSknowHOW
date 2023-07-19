@@ -221,7 +221,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<JiraIssueCustomHistory> findByFilterAndFromReleaseMap(List<String> basicProjectConfigId,
-			List<String> releaseList) {
+			List<Pattern> releaseList) {
 		Criteria criteria = new Criteria();
 		criteria = criteria.and(BASIC_PROJ_CONF_ID).in(basicProjectConfigId);
 		List<Criteria> projectCriteriaList = new ArrayList<>();

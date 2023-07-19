@@ -87,7 +87,6 @@ import { HorizontalStackProgressbarComponent } from './component/horizontal-stac
 import { CircularProgressWithLegendsComponent } from './component/circular-progress-with-legends/circular-progress-with-legends.component';
 import { ExternalUrlDirective } from './external-url.directive';
 import { MessageService } from 'primeng/api';
-import { HelpComponent } from './dashboard/help/help.component';
 import { DialogModule } from 'primeng/dialog';
 import { KpiCardComponent } from './dashboard/kpi-card/kpi-card.component';
 import { TrendIndicatorComponent } from './dashboard/trend-indicator/trend-indicator.component';
@@ -160,7 +159,6 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         HorizontalStackProgressbarComponent,
         CircularProgressWithLegendsComponent,
         ExternalUrlDirective,
-        HelpComponent,
         KpiCardComponent,
         TrendIndicatorComponent,
         TooltipComponent,
