@@ -128,6 +128,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   noProjects = false;
   selectedRelease ={};
   ssoLogin = environment.SSO_LOGIN;
+  lastSyncData: object = {};
 
   constructor(
     private service: SharedService,
@@ -1367,6 +1368,30 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.selectedFilterArray = [];
       this.selectedRelease={};
       this.service.setNoRelease(true);
+    }
+  }
+
+  fetchData(){
+    const sprintId = this.filterForm.get('selectedSprintValue')?.value;
+    const sprintState = this.filteredSprints.filter(x => x.nodeId === sprintId)[0].sprintState;
+    if(sprintState?.toLowerCase() === 'active'){
+      // this.httpService.getData({'sprintId': sprintId}).subscribe((response) => {
+        this.lastSyncData = {
+          "fetchSucessful": true,
+          "lastSucessfulSync": new Date(),
+          "isError":false
+        }
+      // }, error => {
+      //   this.lastSyncData = {
+      //     "fetchSucessful": false,
+      //     "lastSucessfulSync": new Date(),
+      //     "isError": true
+      //   };
+      //   this.messageService.add({
+      //     severity: 'error',
+      //     summary: 'Error in syncing data. Please try after some time.',
+      //   });
+      // })
     }
   }
 }

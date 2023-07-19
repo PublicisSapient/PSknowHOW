@@ -857,10 +857,6 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   font-weight: 500;
 }
 
-.active-state {
-  color: #63BF63;
-}
-
 .selected-node-label {
   max-width: 400px;
   line-height: 1.3;
@@ -1094,7 +1090,20 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   width: 225px;
 }
 
-.traceLog-fail-font{
-  color:  red;
+.active-state{
+  color: var(--color-green);
+  background: #d9efd9;
+  border-radius: 3px;
+  font-size: .85rem;
+}
+.refresh-state{
+  color: var(--color-white);
+  background: var(--color-cyan-blue);
+  border-radius: 3px;
+  font-size: .85rem;
+}
+.fail-state{
+  color:  var(--color-red);
+  border-radius: 3px;
 }
 
