@@ -99,6 +99,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	public static final String SUB_TASK_BUGS = "subTaskBugs";
 	public static final String SPRINT_REPORTED_BUGS = "Sprint Reported Bugs";
+	public static final String JIRA_ISSUE_CLOSED_DATE = "jiraIssueClosedDate";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
@@ -498,27 +499,42 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			JiraIssueCustomHistory jiraIssueCustomHistoryOfClosedSubTask = defectsCustomHistory.stream()
 					.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
 							.equalsIgnoreCase(jiraIssue.getNumber())).findFirst().orElse(new JiraIssueCustomHistory());
-			JiraHistoryChangeLog jiraHistoryChangeLogOfClosedSubTask = jiraIssueCustomHistoryOfClosedSubTask.getStatusUpdationLog()
-					.stream().filter(historyChangeLog ->
-							projectWiseDefectRemovalStatus.get(jiraIssue.getBasicProjectConfigId()).stream()
-									.anyMatch(s -> s.equalsIgnoreCase(historyChangeLog.getChangedTo())))
-					.findFirst().orElse(new JiraHistoryChangeLog());
+			Map<String, LocalDateTime> jiraTicketClosedDateMap = new HashMap<>();
+			getJiraIssueClosedDate(projectWiseDefectRemovalStatus, jiraIssue, jiraIssueCustomHistoryOfClosedSubTask,
+					jiraTicketClosedDateMap);
+
 			if (CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) && jiraIssue.getSprintIdList()
 					.contains(sprintDetail.getSprintID().split("_")[0])
 					&& projectWiseDefectRemovalStatus.get(jiraIssue.getBasicProjectConfigId()).stream()
-							.anyMatch(s -> !s.equalsIgnoreCase(jiraIssue.getStatus()))
-					&& null != jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn()
+					.anyMatch(s -> !s.equalsIgnoreCase(jiraIssue.getStatus()))
+					&& null != jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE)
 					&& ((sprintEndDate.isAfter(jiraCreatedDate)
-					&&  jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn().isAfter(sprintEndDate)) ||
-					(DateUtil.isWithinDateRangeWithTime(jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn(),
+					&& jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE).isAfter(sprintEndDate)) ||
+					(DateUtil.isWithinDateRangeWithTime(jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE),
 							sprintStartDate, sprintEndDate)))) {
 				totalSubTask.add(jiraIssue);
 			}
 			if (CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) && jiraIssue.getSprintIdList()
-					.contains(sprintDetail.getSprintID().split("_")[0]) && null != jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn()
-					&& DateUtil.isWithinDateRangeWithTime(jiraHistoryChangeLogOfClosedSubTask.getUpdatedOn(),
+					.contains(sprintDetail.getSprintID().split("_")[0]) && null != jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE)
+					&& DateUtil.isWithinDateRangeWithTime(jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE),
 					sprintStartDate, sprintEndDate)) {
 				totalSubTask.add(jiraIssue);
+			}
+		});
+	}
+
+	private static void getJiraIssueClosedDate(Map<String, List<String>> projectWiseDefectRemovalStatus, JiraIssue jiraIssue,
+											   JiraIssueCustomHistory jiraIssueCustomHistoryOfClosedSubTask,
+											   Map<String, LocalDateTime> jiraTicketClosedDateMap) {
+		jiraIssueCustomHistoryOfClosedSubTask.getStatusUpdationLog().forEach(historyChangeLog -> {
+			List<String> closureStatusList = projectWiseDefectRemovalStatus.get(jiraIssue.getBasicProjectConfigId());
+			LocalDateTime jiraTicketClosedDate = null;
+			if (CollectionUtils.isNotEmpty(closureStatusList)
+					&& closureStatusList.contains(historyChangeLog.getChangedTo())) {
+				jiraTicketClosedDate = historyChangeLog.getUpdatedOn();
+			}
+			if (null != jiraTicketClosedDate) {
+				jiraTicketClosedDateMap.put(JIRA_ISSUE_CLOSED_DATE, jiraTicketClosedDate);
 			}
 		});
 	}
