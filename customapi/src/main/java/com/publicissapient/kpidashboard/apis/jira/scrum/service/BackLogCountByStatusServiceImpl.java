@@ -78,8 +78,7 @@ public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, Lis
 
 		if (leafNode != null) {
 			log.info("BackLog Count By Status kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
+			List<JiraIssue> totalJiraIssue = getFilteredReleaseJiraIssuesFromBaseClass(new HashMap<>());
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 		}
 

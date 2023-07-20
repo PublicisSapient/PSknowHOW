@@ -33,9 +33,7 @@ import java.util.stream.Collectors;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -147,8 +145,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		String basicConfigId = leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString();
-		return getUnAssignedIssueDataMap(leafNodeList, startDate, endDate, basicConfigId);
+		return getUnAssignedIssueDataMap(leafNodeList, startDate, endDate);
 
 	}
 
@@ -466,13 +463,12 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	 * @param endDate
 	 * @return
 	 */
-	public Map<String, Object> getUnAssignedIssueDataMap(List<Node> leafNodeList, String startDate, String endDate,
-			String basicConfigId) {
+	public Map<String, Object> getUnAssignedIssueDataMap(List<Node> leafNodeList, String startDate, String endDate) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		List<String> projectList = new ArrayList<>();
 		List<String> doneStatus = new ArrayList<>();
-		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus(basicConfigId).getClosedList();
+		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus().getClosedList();
 
 		if (doneStatusMap != null) {
 			doneStatus = doneStatusMap.values().stream().map(s -> s.toLowerCase()).collect(Collectors.toList());

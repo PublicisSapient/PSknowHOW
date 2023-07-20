@@ -414,9 +414,9 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		List<String> doneStatus = new ArrayList<>();
-		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus(basicProjectId.toString()).getClosedList();
+		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus().getClosedList();
 		if (doneStatusMap != null) {
-			doneStatus = doneStatusMap.values().stream().map(status -> status.toLowerCase())
+			doneStatus = doneStatusMap.values().stream().map(String::toLowerCase)
 					.collect(Collectors.toList());
 		}
 

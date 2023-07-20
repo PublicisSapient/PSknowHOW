@@ -30,14 +30,15 @@ import java.util.Map;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -54,16 +55,16 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class BackLogCountByIssueTypeServiceImplTest {
 	@Mock
 	CacheService cacheService;
 	@Mock
-	private JiraIssueRepository jiraIssueRepository;
-	@Mock
 	ConfigHelperService configHelperService;
+	@Mock
+	private JiraServiceR jiraService;
 
 	@InjectMocks
 	private BackLogCountByIssueTypeServiceImpl backLogCountByIssueTypeService;
@@ -105,7 +106,7 @@ public class BackLogCountByIssueTypeServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueRepository.findByBasicProjectConfigIdIn(Mockito.any())).thenReturn(issueList);
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(issueList);
 		try {
 			KpiElement kpiElement = backLogCountByIssueTypeService.getKpiData(kpiRequest,
 					kpiRequest.getKpiList().get(0), treeAggregatorDetail);

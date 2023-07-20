@@ -132,7 +132,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		Map<String, List<String>> closedStatusMap = (Map<String, List<String>>) kpiResultDbMap
 				.get(PROJECT_CLOSED_STATUS_MAP);
 		boolean closedStatusConfigEmpty = closedStatusMap.values().stream().filter(Objects::nonNull)
-				.allMatch(closedStatusList -> closedStatusList.isEmpty());
+				.allMatch(List::isEmpty);
 		if (closedStatusConfigEmpty) {
 			return;
 		}
@@ -297,7 +297,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
 					.collect(Collectors.toList());
-			Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus(basicProjectConfigId.toString()).getClosedList();
+			Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus().getClosedList();
 			if (doneStatusMap != null) {
 				List<String> doneStatus = doneStatusMap.values().stream().collect(Collectors.toList());
 				mapOfProjectFilters.put(STATUS, CommonUtils.convertToPatternList(doneStatus));

@@ -167,8 +167,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	private void createCompletedIssuesDateWiseMap(JiraIssueCustomHistory issueHistory,
 			Map<LocalDate, List<JiraIssue>> completedIssues, List<JiraIssue> totalIssueList) {
 		List<JiraHistoryChangeLog> statusUpdationLog = issueHistory.getStatusUpdationLog();
-		JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus(
-				issueHistory.getBasicProjectConfigId());
+		JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus();
 		statusUpdationLog = statusUpdationLog.stream()
 				.filter(log -> jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedTo())
 						|| jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedFrom()))

@@ -2,7 +2,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -15,8 +14,6 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
-import org.apache.kafka.common.protocol.types.Field;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,8 +65,6 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	CacheService cacheService;
 	@InjectMocks
 	BacklogReadinessEfficiencyServiceImpl backlogReadinessEfficiencyServiceImpl;
-	@Mock
-	private JiraIssueCustomHistoryRepository jiraHistoryRepo;
 	@Mock
 	private ConfigHelperService configHelperService;
 	@Mock
@@ -143,7 +138,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		when(jiraIssueCustomHistoryRepository.findByStoryIDIn(any())).thenReturn(jiraIssueCustomHistories);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(storyList);
-		when(jiraService.getJiraIssueReleaseForProject(anyString())).thenReturn(new JiraIssueReleaseStatus());
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
 		when(backlogReadinessEfficiencyServiceImpl.getBackLogStory(new ObjectId("6335363749794a18e8a4479b")))
 				.thenReturn(storyList);
 
@@ -175,7 +170,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	public void testGetBackLogStory() {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(storyList);
-		when(jiraService.getJiraIssueReleaseForProject(anyString())).thenReturn(new JiraIssueReleaseStatus());
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
 		List<JiraIssue> backLogStory = backlogReadinessEfficiencyServiceImpl
 				.getBackLogStory(new ObjectId("6335363749794a18e8a4479b"));
 		Assert.assertEquals(backLogStory.size(), storyList.size());

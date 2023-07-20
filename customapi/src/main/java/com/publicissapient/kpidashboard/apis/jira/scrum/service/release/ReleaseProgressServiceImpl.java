@@ -80,7 +80,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 
 			List<JiraIssue> releaseIssues = getFilteredReleaseJiraIssuesFromBaseClass(null);
 			resultListMap.put(TOTAL_ISSUES, releaseIssues);
-			JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus(basicProjectConfigId);
+			JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus();
 			resultListMap.put(RELEASE_JIRA_ISSUE_STATUS, jiraIssueReleaseStatus);
 		}
 		return resultListMap;

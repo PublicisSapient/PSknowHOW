@@ -89,9 +89,7 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 
 		if (leafNode != null) {
 			log.info("Flow Load kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			List<JiraIssueCustomHistory> issuesHistory = jiraIssueCustomHistoryRepository
-					.findByBasicProjectConfigIdIn(basicProjectConfigId);
+			List<JiraIssueCustomHistory> issuesHistory = getJiraIssuesCustomHistoryFromBaseClass();
 			resultListMap.put(ISSUE_HISTORY, issuesHistory);
 		}
 
@@ -209,7 +207,7 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		if (size > 0 && statusChangeLog.get(size - 1).getUpdatedOn().toLocalDate().isBefore(startDate)) {
 			status = statusChangeLog.get(statusChangeLog.size() - 1).getChangedTo();
 			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, startDate, endDate,
-					fieldMapping, basicConfigId);
+					fieldMapping);
 		}
 
 		// When issue is created after end date
@@ -223,7 +221,7 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 				LocalDate intervalStartDate = changeLog.getUpdatedOn().toLocalDate();
 				LocalDate intervalEndDate = nextChangeLog.getUpdatedOn().toLocalDate();
 				savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, intervalStartDate,
-						intervalEndDate, fieldMapping, basicConfigId);
+						intervalEndDate, fieldMapping);
 			}
 			JiraHistoryChangeLog lastChangeLog = statusChangeLog.get(statusChangeLog.size() - 1);
 			status = lastChangeLog.getChangedTo();
@@ -232,15 +230,14 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 				return;
 			LocalDate intervalEndDate = endDate;
 			savingDateRangeInMap(startDate, endDate, statusesWithStartAndEndDate, status, intervalStartDate,
-					intervalEndDate, fieldMapping, basicConfigId);
+					intervalEndDate, fieldMapping);
 		}
 	}
 
 	private void savingDateRangeInMap(LocalDate startDate, LocalDate endDate,
 			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate, String status,
-			LocalDate intervalStartDate, LocalDate intervalEndDate, FieldMapping fieldMapping,
-			 String basicConfigId) {
-		if (isStatusValid(fieldMapping, status, basicConfigId)) {
+			LocalDate intervalStartDate, LocalDate intervalEndDate, FieldMapping fieldMapping) {
+		if (isStatusValid(fieldMapping, status)) {
 			if (intervalEndDate.isBefore(startDate) || intervalStartDate.isAfter(endDate))
 				return;
 			if (intervalStartDate.isBefore(startDate))
@@ -256,11 +253,11 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		}
 	}
 
-	private boolean isStatusValid(FieldMapping fieldMapping, String status, String basicConfigId) {
-		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus(basicConfigId).getClosedList();
+	private boolean isStatusValid(FieldMapping fieldMapping, String status) {
+		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus().getClosedList();
 		List<String> doneStatus = new ArrayList<>();
 		if (doneStatusMap != null)
-			doneStatus = doneStatusMap.values().stream().map(dodstatus -> dodstatus.toLowerCase())
+			doneStatus = doneStatusMap.values().stream().map(String::toLowerCase)
 					.collect(Collectors.toList());
 		return !doneStatus.contains(status.toLowerCase())
 				&& (fieldMapping.getStoryFirstStatus().equalsIgnoreCase(status)

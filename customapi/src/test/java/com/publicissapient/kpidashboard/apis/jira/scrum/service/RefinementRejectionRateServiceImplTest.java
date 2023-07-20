@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.bson.types.ObjectId;
@@ -93,6 +94,9 @@ public class RefinementRejectionRateServiceImplTest {
 	@Mock
 	private KpiHelperService kpiHelperService;
 	@Mock
+	private JiraServiceR jiraService;
+
+	@Mock
 	private JiraIssueRepository jiraIssueRepository;
 	@Mock
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
@@ -140,8 +144,7 @@ public class RefinementRejectionRateServiceImplTest {
 				.thenReturn(jiraIssueList);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.anyList(),
 				Mockito.anyList())).thenReturn(unassignedJiraHistoryDataList);
-		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(any())).thenReturn(
-				new JiraIssueReleaseStatus(new String(),new HashMap<>(),new HashMap<>(),new HashMap<>()));
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
 		Map<String, Object> responseRefinementList = refinementRejectionRateService.fetchKPIDataFromDb(leafNodeList,
 				customDateRange.getStartDate().toString(), customDateRange.getEndDate().toString(), kpiRequest);
 		assertNotNull(responseRefinementList);
@@ -158,15 +161,14 @@ public class RefinementRejectionRateServiceImplTest {
 	public void testGetKpiData() throws ApplicationException {
 		when(customApiConfig.getBacklogWeekCount()).thenReturn(5);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(any())).thenReturn(
-				new JiraIssueReleaseStatus(new String(),new HashMap<>(),new HashMap<>(),new HashMap<>()));
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
 		KpiElement responseKpiElement = refinementRejectionRateService.getKpiData(kpiRequest,
 				kpiRequest.getKpiList().get(0), treeAggregatorDetail);
 
 		assertNotNull(responseKpiElement);
 		assertNotNull(responseKpiElement.getTrendValueList());
 		assertEquals(responseKpiElement.getKpiId(), kpiRequest.getKpiList().get(0).getKpiId());
-		assertEquals(Arrays.asList(responseKpiElement.getTrendValueList()).size(), 1);
+		assertEquals(1, Arrays.asList(responseKpiElement.getTrendValueList()).size());
 
 		List<DataCount> dataCounts = (List<DataCount>) responseKpiElement.getTrendValueList();
 		for (DataCount dataCount : dataCounts) {
