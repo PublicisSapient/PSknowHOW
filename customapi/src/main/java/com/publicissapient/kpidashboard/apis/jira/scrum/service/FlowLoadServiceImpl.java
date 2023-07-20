@@ -129,11 +129,10 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate = new HashMap<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(node.getProjectFilter().getBasicProjectConfigId());
-			String basicConfigId = node.getProjectFilter().getBasicProjectConfigId().toString();
 			// Iterating Over All issues history's statusUpdationLog and saving start and
 			// end date for each status
 			jiraIssueCustomHistories.forEach(jiraIssueCustomHistory -> createDateRangeForStatuses(endDate, startDate,
-					statusesWithStartAndEndDate, jiraIssueCustomHistory, fieldMapping, basicConfigId));
+					statusesWithStartAndEndDate, jiraIssueCustomHistory, fieldMapping));
 
 			Map<String, Map<String, Integer>> dateWithStatusCount = new HashMap<>();
 			LocalDate tempStartDate = startDate;
@@ -197,8 +196,7 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 
 	private void createDateRangeForStatuses(LocalDate endDate, LocalDate startDate,
 			Map<String, List<Pair<LocalDate, LocalDate>>> statusesWithStartAndEndDate,
-			JiraIssueCustomHistory jiraIssueCustomHistory, FieldMapping fieldMapping,
-			String basicConfigId) {
+			JiraIssueCustomHistory jiraIssueCustomHistory, FieldMapping fieldMapping) {
 		List<JiraHistoryChangeLog> statusChangeLog = jiraIssueCustomHistory.getStatusUpdationLog();
 		int size = statusChangeLog.size();
 		String status = "";

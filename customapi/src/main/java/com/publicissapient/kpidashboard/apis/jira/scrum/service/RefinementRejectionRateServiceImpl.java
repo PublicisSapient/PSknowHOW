@@ -471,7 +471,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus().getClosedList();
 
 		if (doneStatusMap != null) {
-			doneStatus = doneStatusMap.values().stream().map(s -> s.toLowerCase()).collect(Collectors.toList());
+			doneStatus = doneStatusMap.values().stream().map(String::toLowerCase).collect(Collectors.toList());
 		}
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
