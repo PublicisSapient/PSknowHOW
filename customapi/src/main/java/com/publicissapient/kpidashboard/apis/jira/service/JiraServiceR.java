@@ -31,6 +31,7 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
@@ -304,7 +305,8 @@ public class JiraServiceR {
 					Collections.singletonList(basicProjectConfigId));
 			Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			mapOfProjectFilters.put(CommonConstant.RELEASE, sprintIssuesList);
+			mapOfProjectFilters.put(CommonConstant.RELEASE,
+					CommonUtils.convertToPatternListForSubString(sprintIssuesList));
 			uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
 			jiraIssueList = jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
 		}
@@ -346,8 +348,9 @@ public class JiraServiceR {
 			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(
 					sprintIssuesList, Collections.singletonList(basicProjectConfigId));
 		} else {
-			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
-					.findByFilterAndFromReleaseMap(Collections.singletonList(basicProjectConfigId), releaseList);
+			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromReleaseMap(
+					Collections.singletonList(basicProjectConfigId),
+					CommonUtils.convertToPatternListForSubString(releaseList));
 		}
 	}
 

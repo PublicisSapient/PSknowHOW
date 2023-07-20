@@ -520,11 +520,12 @@ public class KPIExcelUtility {
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					excelData.setStoryPoint(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+					Double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
+					excelData.setStoryPoint(roundingOff.toString());
 				} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
 					Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
-					excelData.setStoryPoint(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping() + "/"
-							+ totalOriginalEstimate + " hrs");
+					excelData.setStoryPoint(roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
+							+ roundingOff(totalOriginalEstimate) + " hrs");
 				}
 				kpiExcelData.add(excelData);
 			});
@@ -1393,7 +1394,7 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateReleaseDefectRelatedExcelData(List<JiraIssue> jiraIssues,
-			List<KPIExcelData> kpiExcelData) {
+															 List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			jiraIssues.stream().forEach(jiraIssue -> {
 				KPIExcelData excelData = new KPIExcelData();
@@ -1407,7 +1408,45 @@ public class KPIExcelUtility {
 				populateAssignee(jiraIssue, excelData);
 				excelData.setRootCause(jiraIssue.getRootCauseList());
 				excelData.setPriority(jiraIssue.getPriority());
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					Double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
+					excelData.setStoryPoint(roundingOff.toString());
+				} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+					Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+					excelData.setStoryPoint(roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
+							+ roundingOff(totalOriginalEstimate) + " hrs");
+				}
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
+
+	public static void populateBacklogCountExcelData(List<JiraIssue> jiraIssues, List<KPIExcelData> kpiExcelData) {
+		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			jiraIssues.stream().forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				Map<String, String> issueDetails = new HashMap<>();
+				issueDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setIssueID(issueDetails);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				excelData.setIssueType(jiraIssue.getTypeName());
+				populateAssignee(jiraIssue, excelData);
+				excelData.setPriority(jiraIssue.getPriority());
 				excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());
+				String date = Constant.EMPTY_STRING;
+				if (jiraIssue.getCreatedDate() != null) {
+					date = DateUtil.dateTimeConverter(jiraIssue.getCreatedDate(), DATE_FORMAT_PRODUCTION_DEFECT_AGEING,
+							DateUtil.DISPLAY_DATE_FORMAT);
+				}
+				excelData.setCreatedDate(date);
+				String updateDate = Constant.EMPTY_STRING;
+				if (jiraIssue.getUpdateDate() != null) {
+					updateDate = DateUtil.dateTimeConverter(jiraIssue.getUpdateDate(),
+							DATE_FORMAT_PRODUCTION_DEFECT_AGEING, DateUtil.DISPLAY_DATE_FORMAT);
+				}
+				excelData.setUpdatedDate(updateDate);
 				kpiExcelData.add(excelData);
 			});
 		}
@@ -1458,6 +1497,10 @@ public class KPIExcelUtility {
 			userRatings.add(user.getRating());
 			userRatingsForSprintMap.put(userIdentifier, userRatings);
 		}
+	}
+
+	public static double roundingOff(double value) {
+		return (double) Math.round(value * 100) / 100;
 	}
 
 }

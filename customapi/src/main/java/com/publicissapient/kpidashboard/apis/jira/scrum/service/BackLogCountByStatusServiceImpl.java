@@ -15,13 +15,11 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
-package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
+package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -49,30 +46,23 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final String TOTAL_DEFECT = "totalDefects";
-
+	@Autowired
+	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
 
-	@Autowired
-	private CommonServiceImpl commonService;
-
-	private static void getPriorityRCACount(Map<String, List<JiraIssue>> rcaData, Map<String, Integer> rcaCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> rcaEntry : rcaData.entrySet()) {
-			rcaCountMap.put(rcaEntry.getKey(), rcaEntry.getValue().size());
-		}
-	}
+	private static final String PROJECT_WISE_JIRA_ISSUE = "Jira Issue";
 
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -82,119 +72,136 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
+
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
-		if (null != leafNode) {
-			log.info("Defect count by RCA Release -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			Set<String> defectType = new HashSet<>();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 
-			if (null != fieldMapping) {
-				Map<String, Set<String>> mapOfProjectFilters = new LinkedHashMap<>();
-				if (fieldMapping.getJiradefecttype() != null) {
-					defectType.addAll(fieldMapping.getJiradefecttype());
-				}
-				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
-				mapOfProjectFilters.put(basicProjectConfigId, defectType);
-				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(mapOfProjectFilters);
-				resultListMap.put(TOTAL_DEFECT, releaseDefects);
-			}
+		if (leafNode != null) {
+			log.info("BackLog Count By Status kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
+			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
+			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
+			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 		}
+
 		return resultListMap;
 	}
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.DEFECT_COUNT_BY_RCA_RELEASE.name();
+		return KPICode.BACKLOG_ISSUE_COUNT_BY_STATUS.name();
 	}
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.RELEASE) {
-				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
+
+		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
+			Filters filters = Filters.getFilter(k);
+			if (Filters.PROJECT == filters) {
+				projectWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		log.info("ReleaseDefectCountByRCAServiceImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("BackLogCountByStatusServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
+	private static void getIssuesStatusCount(Map<String, List<JiraIssue>> statusData,
+			Map<String, Integer> statusWiseCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> statusEntry : statusData.entrySet()) {
+			statusWiseCountMap.put(statusEntry.getKey(), statusEntry.getValue().size());
+		}
+	}
+
 	/**
-	 * @param releaseLeafNodeList
+	 *
+	 * @param leafNodeList
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
-		String requestTrackerId = getRequestTrackerId();
-		List<KPIExcelData> excelData = new ArrayList<>();
-		List<Node> latestReleaseNode = new ArrayList<>();
-		Node latestRelease = releaseLeafNodeList.get(0);
-		Optional.ofNullable(latestRelease).ifPresent(latestReleaseNode::add);
-		if (latestRelease != null) {
-			Map<String, Object> resultMap = fetchKPIDataFromDb(latestReleaseNode, null, null, kpiRequest);
-			List<JiraIssue> totalDefects = (List<JiraIssue>) resultMap.get(TOTAL_DEFECT);
-			List<IterationKpiValue> filterDataList = new ArrayList<>();
-			if (CollectionUtils.isNotEmpty(totalDefects)) {
-				Map<String, List<JiraIssue>> rcaData = getRCAWiseList(totalDefects);
-				log.info("ReleaseDefectCountByRCAServiceImpl -> rcaDataList ->  : {}", rcaData);
-				Map<String, Integer> rcaCountMap = new HashMap<>();
-				getPriorityRCACount(rcaData, rcaCountMap);
-				if (MapUtils.isNotEmpty(rcaCountMap)) {
-					Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
-					FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
+		String requestTrackerId = getRequestTrackerId();
+
+		List<KPIExcelData> excelData = new ArrayList<>();
+
+		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
+
+		if (leafNode != null) {
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+
+			Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, "", "", kpiRequest);
+
+			List<JiraIssue> jiraIssues = (List<JiraIssue>) resultMap.get(PROJECT_WISE_JIRA_ISSUE);
+			List<IterationKpiValue> filterDataList = new ArrayList<>();
+			Set<String> excludeStatuses = new HashSet<>();
+
+			excludeStatuses.add(Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatus()).orElse(""));
+
+			if (Optional.ofNullable(fieldMapping.getJiraDod()).isPresent()) {
+				excludeStatuses.addAll(fieldMapping.getJiraDod());
+			}
+
+			if (Optional.ofNullable(fieldMapping.getJiraLiveStatus()).isPresent()) {
+				excludeStatuses.add(fieldMapping.getJiraLiveStatus());
+			}
+
+			// exclude the issue from total jiraIssues based on DOD status and Defect
+			// Rejection Status
+			if (CollectionUtils.isNotEmpty(excludeStatuses)) {
+				Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase).collect(Collectors.toSet());
+				jiraIssues = jiraIssues.stream()
+						.filter(jiraIssue -> !excludeStatus.contains(jiraIssue.getJiraStatus().toUpperCase()))
+						.collect(Collectors.toList());
+			}
+
+			if (CollectionUtils.isNotEmpty(jiraIssues)) {
+
+				log.info("Backlog Count By Status -> request id : {} total jira Issues : {}", requestTrackerId,
+						jiraIssues.size());
+
+				Map<String, List<JiraIssue>> statusWiseIssuesList = jiraIssues.stream()
+						.collect(Collectors.groupingBy(JiraIssue::getStatus));
+
+				log.info("statusWiseIssuesList ->  : {}", statusWiseIssuesList);
+				Map<String, Integer> statusWiseCountMap = new HashMap<>();
+				getIssuesStatusCount(statusWiseIssuesList, statusWiseCountMap);
+				if (MapUtils.isNotEmpty(statusWiseCountMap)) {
 					List<DataCount> trendValueListOverAll = new ArrayList<>();
 					DataCount overallData = new DataCount();
-					int sumOfDefectsCount = rcaCountMap.values().stream().mapToInt(Integer::intValue).sum();
+					int sumOfDefectsCount = statusWiseCountMap.values().stream().mapToInt(Integer::intValue).sum();
 					overallData.setData(String.valueOf(sumOfDefectsCount));
-					overallData.setValue(rcaCountMap);
+					overallData.setValue(statusWiseCountMap);
 					overallData.setKpiGroup(CommonConstant.OVERALL);
-					overallData.setSProjectName(latestRelease.getProjectFilter().getName());
+					overallData.setSProjectName(leafNode.getProjectFilter().getName());
 					trendValueListOverAll.add(overallData);
 
 					List<DataCount> middleTrendValueListOverAll = new ArrayList<>();
 					DataCount middleOverallData = new DataCount();
-					middleOverallData.setData(latestRelease.getProjectFilter().getName());
+					middleOverallData.setData(leafNode.getProjectFilter().getName());
 					middleOverallData.setValue(trendValueListOverAll);
 					middleTrendValueListOverAll.add(middleOverallData);
-					populateExcelDataObject(requestTrackerId, excelData, totalDefects,fieldMapping);
-
+					populateExcelDataObject(requestTrackerId, excelData, jiraIssues);
 					IterationKpiValue filterDataOverall = new IterationKpiValue(CommonConstant.OVERALL,
 							middleTrendValueListOverAll);
 					filterDataList.add(filterDataOverall);
-					kpiElement.setSprint(latestRelease.getName());
-					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_RCA_RELEASE.getColumns());
-					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA_RELEASE.getColumns());
+					kpiElement.setModalHeads(KPIExcelColumn.BACKLOG_COUNT_BY_STATUS.getColumns());
+					kpiElement.setExcelColumns(KPIExcelColumn.BACKLOG_COUNT_BY_STATUS.getColumns());
 					kpiElement.setExcelData(excelData);
-					kpiElement.setTrendValueList(filterDataList);
-					log.info("ReleaseDefectCountByRCAServiceImpl -> request id : {} total jira Issues : {}",
-							requestTrackerId, filterDataList.get(0));
+					log.info("BacklogCountByStatusServiceImpl -> request id : {} total jira Issues : {}", requestTrackerId,
+							filterDataList.get(0));
 				}
+
 			}
 			kpiElement.setTrendValueList(filterDataList);
 		}
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+			List<JiraIssue> jiraIssueList) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
-			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
+			KPIExcelUtility.populateBacklogCountExcelData(jiraIssueList, excelData);
 		}
-	}
-
-	private Map<String, List<JiraIssue>> getRCAWiseList(List<JiraIssue> defectList) {
-		return defectList.stream().filter(jiraIssue -> {
-			if (CollectionUtils.isEmpty(jiraIssue.getRootCauseList())) {
-				List<String> rcaDummy = new ArrayList<>();
-				rcaDummy.add("-");
-				jiraIssue.setRootCauseList(rcaDummy);
-			}
-			return true;
-		}).collect(Collectors.groupingBy(jiraIssue -> jiraIssue.getRootCauseList().get(0)));
 	}
 }

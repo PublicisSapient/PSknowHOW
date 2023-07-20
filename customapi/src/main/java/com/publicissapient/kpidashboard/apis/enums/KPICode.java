@@ -416,7 +416,10 @@ public enum KPICode {
 	 */
 	FLOW_LOAD("kpi148", KPISource.JIRA.name()),
 
-	RELEASE_BURNUP("kpi150", KPISource.JIRA.name());
+	RELEASE_BURNUP("kpi150", KPISource.JIRA.name()),
+	BACKLOG_ISSUE_COUNT_BY_STATUS("kpi151", KPISource.JIRA.name()),
+	BACKLOG_COUNT_BY_ISSUE_TYPE("kpi152", KPISource.JIRA.name());
+
 
 	// @formatter:on
 

@@ -1,49 +1,30 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
-import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-feedback',
   templateUrl: './feedback.component.html',
   styleUrls: ['./feedback.component.css']
 })
-export class FeedbackComponent implements OnInit {
-  showForm: boolean = false;
+
+export class FeedbackComponent {
+  @Input() visibleSidebar: boolean;
+  feedback: boolean = true;
   voiceForm = new UntypedFormGroup({
-    feedbackType: new UntypedFormControl('', Validators.required),
-    category: new UntypedFormControl('', Validators.required),
     feedback: new UntypedFormControl('', { validators: [Validators.required, Validators.maxLength(600)] })
   });
   isFeedbackSubmitted = false;
   formMessage = '';
-  userName: string;
-  area;
 
-  constructor(private httpService: HttpService, private sharedService: SharedService) { }
+  constructor(private httpService: HttpService) { }
 
-  ngOnInit(): void {
-    this.sharedService.currentUserDetailsObs.subscribe(details => {
-      if(details){
-        this.userName = details['user_name'];
-      }
-    });
-    // this.getCategory();
+  toggleFlag() {
+    this.feedback = !this.feedback;
   }
-
-  // getCategory() {
-  //   this.httpService.getFeedbackCategory().subscribe((response) => {
-  //     if(response.data){
-  //       this.area = response.data;
-  //     }
-  //   }, error => {
-  //     console.log(error);
-  //   });
-  // }
 
   save() {
     const postObj = this.voiceForm.value;
-    postObj['username'] = this.userName;
     this.httpService.submitFeedbackData(postObj).subscribe((response) => {
       if (response.message) {
         this.isFeedbackSubmitted = true;
@@ -60,5 +41,13 @@ export class FeedbackComponent implements OnInit {
         this.formMessage = '';
       }, 3000);
     });
+  }
+
+  open(){
+    document.documentElement.scrollTop = 0;
+  }
+
+  OnOverlayHide(){
+    this.voiceForm.reset();
   }
 }
