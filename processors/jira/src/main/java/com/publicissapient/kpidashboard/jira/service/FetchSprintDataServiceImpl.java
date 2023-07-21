@@ -44,7 +44,6 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectToolConf
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.ActiveItrFetchRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
@@ -72,7 +71,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class FetchSprintData extends ModeBasedProcessor {
+public class FetchSprintDataServiceImpl extends ModeBasedProcessor {
 	@Autowired
 	SprintClientImpl sprintClient;
 	@Autowired

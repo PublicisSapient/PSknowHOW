@@ -26,7 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.jira.service.FetchSprintData;
+import com.publicissapient.kpidashboard.jira.service.FetchSprintDataServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +81,7 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	}
 
 	@Autowired
-	FetchSprintData fetchSprintData;
+	FetchSprintDataServiceImpl fetchSprintDataServiceImpl;
 
 	@Override
 	public JiraProcessor getProcessor() {
@@ -159,7 +159,7 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		psLogData.setProcessorStartTime(DateUtil.convertMillisToDateTime(start));
 		log.info("Jira Processor Started for sprint fetch", kv(CommonConstant.PSLOGDATA, psLogData));
 
-		boolean executionStatus = fetchSprintData.fetchSprintData(sprintId);
+		boolean executionStatus = fetchSprintDataServiceImpl.fetchSprintData(sprintId);
 
 		long endTime = System.currentTimeMillis();
 		psLogData.setProcessorEndTime(DateUtil.convertMillisToDateTime(endTime));
