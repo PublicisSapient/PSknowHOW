@@ -127,8 +127,8 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraSprintVelocityIssueType;
 	private List<String> jiraSprintVelocityIssueTypeBR;
 
-private List<String> jiraSprintCapacityIssueType;
-private List<String> jiraSprintCapacityIssueTypeKpi46;
+	private List<String> jiraSprintCapacityIssueType;
+	private List<String> jiraSprintCapacityIssueTypeKpi46;
 
 	private List<String> jiraDefectRejectionlIssueType;
 	private List<String> jiraIssueTypeKPI37;
@@ -147,20 +147,20 @@ private List<String> jiraSprintCapacityIssueTypeKpi46;
 	private String jiraDor;
 	private String jiraDorLT;
 
-private List<String> jiraIntakeToDorIssueType;
-private List<String> jiraIssueTypeLT;
+	private List<String> jiraIntakeToDorIssueType;
+	private List<String> jiraIssueTypeLT;
 
-private List<String> jiraStoryIdentification;
-private List<String> jiraStoryIdentificationKpi40;
+	private List<String> jiraStoryIdentification;
+	private List<String> jiraStoryIdentificationKpi40;
 
-private String jiraLiveStatus;
-private String jiraLiveStatusLT;
-private String jiraLiveStatusLTK;
-private String jiraLiveStatusNOPK;
-private String jiraLiveStatusNOSK;
-private String jiraLiveStatusNORK;
-private String jiraLiveStatusOTA;//openticketaging
-private String jiraLiveStatusPDA;//productionissueaging
+	private String jiraLiveStatus;
+	private String jiraLiveStatusLT;
+	private String jiraLiveStatusLTK;
+	private String jiraLiveStatusNOPK;
+	private String jiraLiveStatusNOSK;
+	private String jiraLiveStatusNORK;
+	private String jiraLiveStatusOTA;// openticketaging
+	private String jiraLiveStatusPDA;// productionissueaging
 
 	private List<String> ticketCountIssueType;
 
@@ -184,13 +184,13 @@ private String jiraLiveStatusPDA;//productionissueaging
 	private String jiraStatusMappingCustomField;
 	private List<String> excludeStatusKpi129;
 
-private List<String> rootCauseValue;
-private List<String> excludeRCAFromFTPR; // test done
-private List<String> excludeRCAFromKPI82;
-private List<String> excludeRCAFromKPI135;
-private List<String> excludeRCAFromKPI14;
-private List<String> excludeRCAFromQAKPI111;
-private List<String> excludeRCAFromKPI133;
+	private List<String> rootCauseValue;
+	private List<String> excludeRCAFromFTPR; // test done
+	private List<String> excludeRCAFromKPI82;
+	private List<String> excludeRCAFromKPI135;
+	private List<String> excludeRCAFromKPI14;
+	private List<String> excludeRCAFromQAKPI111;
+	private List<String> excludeRCAFromKPI133;
 
 	private Boolean pickNewATMJIRADetails;
 
@@ -244,14 +244,14 @@ private List<String> excludeRCAFromKPI133;
 	// issue status to exclude missing worklogs
 	private List<String> issueStatusToBeExcludedFromMissingWorklogs;
 
-// field for In Progress status
-private List<String> jiraStatusForInProgress;
-private List<String> jiraStatusForInProgressKPI122;
-private List<String> jiraStatusForInProgressKPI145;
-private List<String> jiraStatusForInProgressKPI125;
-private List<String> jiraStatusForInProgressKPI128;
-private List<String> jiraStatusForInProgressKPI123;
-private List<String> jiraStatusForInProgressKPI119;
+	// field for In Progress status
+	private List<String> jiraStatusForInProgress;
+	private List<String> jiraStatusForInProgressKPI122;
+	private List<String> jiraStatusForInProgressKPI145;
+	private List<String> jiraStatusForInProgressKPI125;
+	private List<String> jiraStatusForInProgressKPI128;
+	private List<String> jiraStatusForInProgressKPI123;
+	private List<String> jiraStatusForInProgressKPI119;
 
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
@@ -265,39 +265,39 @@ private List<String> jiraStatusForInProgressKPI119;
 	// additional filter config fields
 	private List<AdditionalFilterConfig> additionalFilterConfig;
 
-// issue status to exclude missing worklogs
-private List<String> issueStatusExcluMissingWork;
-private List<String> issueStatusExcluMissingWorkKPI124;
+	// issue status to exclude missing worklogs
+	private List<String> issueStatusExcluMissingWork;
+	private List<String> issueStatusExcluMissingWorkKPI124;
 
 	// issue On Hold status to exclude Closure possible
 	private List<String> jiraOnHoldStatus;
 
-// field for FTPR
-private List<String> jiraFTPRStoryIdentification;
-private List<String> jiraKPI82StoryIdentification;
-private List<String> jiraKPI135StoryIdentification;
+	// field for FTPR
+	private List<String> jiraFTPRStoryIdentification;
+	private List<String> jiraKPI82StoryIdentification;
+	private List<String> jiraKPI135StoryIdentification;
 
-// field for Wasting - wait status
-private List<String> jiraWaitStatus;
-private List<String> jiraWaitStatusKPI131;
+	// field for Wasting - wait status
+	private List<String> jiraWaitStatus;
+	private List<String> jiraWaitStatusKPI131;
 
-// field for Wasting - block status
-private List<String> jiraBlockedStatus;
-private List<String> jiraBlockedStatusKPI131;
+	// field for Wasting - block status
+	private List<String> jiraBlockedStatus;
+	private List<String> jiraBlockedStatusKPI131;
 
-// field for Wasting - Include Blocked Status
-private String jiraIncludeBlockedStatus; 
-private String jiraIncludeBlockedStatusKPI131;
+	// field for Wasting - Include Blocked Status
+	private String jiraIncludeBlockedStatus;
+	private String jiraIncludeBlockedStatusKPI131;
 
-// for for JiraDueDate
-@Builder.Default
-private String jiraDueDateField = CommonConstant.DUE_DATE;
-private String jiraDueDateCustomField;
-private String jiraDevDueDateCustomField;
-private List<String> jiraDevDoneStatus;
-private List<String> jiraDevDoneStatusKPI119;
-private List<String> jiraDevDoneStatusKPI145;
-private List<String> jiraDevDoneStatusKPI128;
+	// for for JiraDueDate
+	@Builder.Default
+	private String jiraDueDateField = CommonConstant.DUE_DATE;
+	private String jiraDueDateCustomField;
+	private String jiraDevDueDateCustomField;
+	private List<String> jiraDevDoneStatus;
+	private List<String> jiraDevDoneStatusKPI119;
+	private List<String> jiraDevDoneStatusKPI145;
+	private List<String> jiraDevDoneStatusKPI128;
 
 	// For DTS_21154 - field for Team refinement status
 	private List<String> jiraRejectedInRefinement;
@@ -312,29 +312,29 @@ private List<String> jiraDevDoneStatusKPI128;
 	private List<String> jiraFtprRejectStatusKPI135;
 	private List<String> jiraFtprRejectStatusKPI82;
 
-private List<String> jiraIterationCompletionStatusCustomField;
-private List<String> jiraIterationCompletionStatusKPI135;
-private List<String> jiraIterationCompletionStatusKPI122;
-private List<String> jiraIterationCompletionStatusKPI75;
-private List<String> jiraIterationCompletionStatusKPI145;
-private List<String> jiraIterationCompletionStatusKPI140;
-private List<String> jiraIterationCompletionStatusKPI132;
-private List<String> jiraIterationCompletionStatusKPI136;
-private List<String> jiraIterationCompletionStatusKpi72;
-private List<String> jiraIterationCompletionStatusKpi39;
-private List<String> jiraIterationCompletionStatusKpi5;
-private List<String> jiraIterationCompletionStatusKPI124;
-private List<String> jiraIterationCompletionStatusKPI123;
-private List<String> jiraIterationCompletionStatusKPI125;
-private List<String> jiraIterationCompletionStatusKPI120;
-private List<String> jiraIterationCompletionStatusKPI128;
-private List<String> jiraIterationCompletionStatusKPI134;
-private List<String> jiraIterationCompletionStatusKPI133;
-private List<String> jiraIterationCompletionStatusKPI119;
-private List<String> jiraIterationCompletionStatusKPI131;
-private List<String> jiraIterationCompletionStatusBRE;
+	private List<String> jiraIterationCompletionStatusCustomField;
+	private List<String> jiraIterationCompletionStatusKPI135;
+	private List<String> jiraIterationCompletionStatusKPI122;
+	private List<String> jiraIterationCompletionStatusKPI75;
+	private List<String> jiraIterationCompletionStatusKPI145;
+	private List<String> jiraIterationCompletionStatusKPI140;
+	private List<String> jiraIterationCompletionStatusKPI132;
+	private List<String> jiraIterationCompletionStatusKPI136;
+	private List<String> jiraIterationCompletionStatusKpi72;
+	private List<String> jiraIterationCompletionStatusKpi39;
+	private List<String> jiraIterationCompletionStatusKpi5;
+	private List<String> jiraIterationCompletionStatusKPI124;
+	private List<String> jiraIterationCompletionStatusKPI123;
+	private List<String> jiraIterationCompletionStatusKPI125;
+	private List<String> jiraIterationCompletionStatusKPI120;
+	private List<String> jiraIterationCompletionStatusKPI128;
+	private List<String> jiraIterationCompletionStatusKPI134;
+	private List<String> jiraIterationCompletionStatusKPI133;
+	private List<String> jiraIterationCompletionStatusKPI119;
+	private List<String> jiraIterationCompletionStatusKPI131;
+	private List<String> jiraIterationCompletionStatusBRE;
 
-	private List<String> jiraIterationCompletionTypeCustomField;  
+	private List<String> jiraIterationCompletionTypeCustomField;
 	private List<String> jiraIterationIssuetypeKPI122;
 	private List<String> jiraIterationIssuetypeBRE;
 	private List<String> jiraIterationIssuetypeKPI131;
@@ -349,8 +349,6 @@ private List<String> jiraIterationCompletionStatusBRE;
 	private List<String> jiraIterationIssuetypeKPI125;
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
-
-
 
 	/**
 	 * Get jira issue type names string [ ].

@@ -261,7 +261,7 @@ public class KanbanJiraIssueClientImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("Story");
 		jiraType.add("Feature");
-		fieldMapping.setJiraSprintVelocityIssueTypeBR(jiraType);
+		fieldMapping.setJiraSprintVelocityIssueTypeKPI138(jiraType);
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature" }));
 		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(jiraType);
@@ -269,7 +269,7 @@ public class KanbanJiraIssueClientImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
 		fieldMapping.setJiraIssueDeliverdStatusAVR(jiraType);
-		fieldMapping.setJiraIssueDeliverdStatusBR(jiraType);
+		fieldMapping.setJiraIssueDeliverdStatusKPI138(jiraType);
 		fieldMapping.setJiraIssueDeliverdStatusKPI126(jiraType);
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(jiraType);
 
@@ -293,7 +293,7 @@ public class KanbanJiraIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Testing");
-		fieldMapping.setJiraStatusForQa(jiraType);
+		fieldMapping.setJiraStatusForQaKPI148(jiraType);
 
 		List<String> jiraSegData = new ArrayList<>();
 		jiraSegData.add("Tech Story");
@@ -388,7 +388,7 @@ public class KanbanJiraIssueClientImplTest {
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Ready for Testing");
-		fieldMapping.setJiraStatusForQa(jiraSegData);
+		fieldMapping.setJiraStatusForQaKPI148(jiraSegData);
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("segregationLabel");

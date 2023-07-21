@@ -666,32 +666,6 @@ public final class KpiDataHelper {
 				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IterationKpiModalValue()));
 	}
 
-	public static void processSprintBasedOnFieldMapping(List<SprintDetails> dbSprintDetails,
-														List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus) {
-		if (CollectionUtils.isNotEmpty(fieldMappingCompletionType)
-				|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
-			dbSprintDetails.forEach(dbSprintDetail -> {
-				if ((CollectionUtils.isNotEmpty(fieldMappingCompletionType)
-						|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus))) {
-					dbSprintDetail.setCompletedIssues(
-							CollectionUtils.isEmpty(dbSprintDetail.getCompletedIssues()) ? new HashSet<>()
-									: dbSprintDetail.getCompletedIssues());
-					dbSprintDetail.setNotCompletedIssues(
-							CollectionUtils.isEmpty(dbSprintDetail.getNotCompletedIssues()) ? new HashSet<>()
-									: dbSprintDetail.getNotCompletedIssues());
-					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
-							fieldMappingCompletionType, fieldMappingCompletionStatus);
-					dbSprintDetail.setCompletedIssues(newCompletedSet);
-					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
-					Set<SprintIssue> totalIssue = new HashSet<>();
-					totalIssue.addAll(dbSprintDetail.getCompletedIssues());
-					totalIssue.addAll(dbSprintDetail.getNotCompletedIssues());
-					dbSprintDetail.setTotalIssues(totalIssue);
-				}
-			});
-		}
-	}
-
 	public static List<SprintDetails> processSprintBasedOnFieldMappings(List<SprintDetails> dbSprintDetails,
 			List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus) {
 		List<SprintDetails> updatedSprintDetails=new ArrayList<>(dbSprintDetails);

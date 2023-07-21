@@ -3,7 +3,6 @@ const fieldMappings = db.field_mapping.find({});
 fieldMappings.forEach(function(fm) {
     if (!fm.createdDate) {
         const defectPriority = fm.defectPriority;
-        const jiradefecttype = fm.jiradefecttype;
         const jiraStatusForDevelopment = fm.jiraStatusForDevelopment;
         const jiraDod = fm.jiraDod;
         const jiraDefectRejectionStatus = fm.jiraDefectRejectionStatus;
@@ -37,6 +36,12 @@ fieldMappings.forEach(function(fm) {
         const jiraStatusForQa=fm.jiraStatusForQa;
         const storyFirstStatus=fm.storyFirstStatus;
         const jiraFtprRejectStatus=fm.jiraFtprRejectStatus;
+        const jiraDefectClosedStatus=fm.jiraDefectClosedStatus;
+        const jiraDefectDroppedStatus=fm.jiraDefectDroppedStatus;
+        const jiraAcceptedInRefinement=fm.jiraAcceptedInRefinement;
+        const jiraReadyForRefinement=fm.jiraReadyForRefinement;
+        const jiraRejectedInRefinement=fm.jiraRejectedInRefinement;
+        const readyForDevelopmentStatus=fm.readyForDevelopmentStatus;
         db.field_mapping.updateOne({ "_id": fm._id }, {
           $set: {
 
@@ -57,8 +62,10 @@ fieldMappings.forEach(function(fm) {
             "jiraDodKPI14":jiraDod,
             "jiraDodQAKPI111":jiraDod,
             "jiraDodKPI3":jiraDod,
-            "jiraDodPDA":jiraDod,
-            
+            "jiraDodKPI127":jiraDod,
+            "jiraDodKPI152":jiraDod,
+            "jiraDodKPI151":jiraDod,
+
             "jiraDefectCreatedStatusKPI14": jiraDefectCreatedStatus,
        
             "jiraDefectRejectionStatusAVR":jiraDefectRejectionStatus,
@@ -72,7 +79,9 @@ fieldMappings.forEach(function(fm) {
             "jiraDefectRejectionStatusRCAKPI36":jiraDefectRejectionStatus,
             "jiraDefectRejectionStatusKPI14":jiraDefectRejectionStatus,
             "jiraDefectRejectionStatusQAKPI111":jiraDefectRejectionStatus,
-        
+            "jiraDefectRejectionStatusKPI152":jiraDefectRejectionStatus,
+            "jiraDefectRejectionStatusKPI151":jiraDefectRejectionStatus,
+
             "jiraIssueTypeKPI35": jiraDefectSeepageIssueType,
         
             "jiraDefectRemovalStatusKPI34": jiraDefectRemovalStatus,
@@ -87,7 +96,7 @@ fieldMappings.forEach(function(fm) {
             "jiraDefectCountlIssueTypeKPI28": jiraDefectCountlIssueType,
             "jiraDefectCountlIssueTypeKPI36": jiraDefectCountlIssueType,
         
-            "jiraIssueDeliverdStatusBR": jiraIssueDeliverdStatus,
+            "jiraIssueDeliverdStatusKPI138": jiraIssueDeliverdStatus,
             "jiraIssueDeliverdStatusAVR": jiraIssueDeliverdStatus,
             "jiraIssueDeliverdStatusKPI126": jiraIssueDeliverdStatus,
             "jiraIssueDeliverdStatusKPI82": jiraIssueDeliverdStatus,
@@ -97,8 +106,12 @@ fieldMappings.forEach(function(fm) {
             "jiraIssueTypeKPI3": jiraIntakeToDorIssueType,
 
             "storyFirstStatusKPI3":storyFirstStatus,
-        
+            "storyFirstStatusKPI148":storyFirstStatus,
+
             "jiraStoryIdentificationKpi40": jiraStoryIdentification,
+            "jiraStoryIdentificationKPI129": jiraStoryIdentification,
+
+            "jiraDefectClosedStatusKPI137":jiraDefectClosedStatus,
 
             "jiraKPI82StoryIdentification": jiraFTPRStoryIdentification,
             "jiraKPI135StoryIdentification": jiraFTPRStoryIdentification,
@@ -109,8 +122,10 @@ fieldMappings.forEach(function(fm) {
             "jiraLiveStatusNOSK": jiraLiveStatus,
             "jiraLiveStatusNORK": jiraLiveStatus,
             "jiraLiveStatusOTA": jiraLiveStatus,
-            "jiraLiveStatusPDA": jiraLiveStatus,
-        
+            "jiraLiveStatusKPI127": jiraLiveStatus,
+            "jiraLiveStatusKPI152": jiraLiveStatus,
+            "jiraLiveStatusKPI151": jiraLiveStatus,
+
             "excludeRCAFromKPI82": excludeRCAFromFTPR,
             "excludeRCAFromKPI135": excludeRCAFromFTPR,
             "excludeRCAFromKPI14": excludeRCAFromFTPR,
@@ -133,14 +148,16 @@ fieldMappings.forEach(function(fm) {
 
             "jiraStatusForQaKPI135":jiraStatusForQa,
             "jiraStatusForQaKPI82":jiraStatusForQa,
-        
+            "jiraStatusForQaKPI48":jiraStatusForQa,
+
             "jiraStatusForInProgressKPI122": jiraStatusForInProgress,
             "jiraStatusForInProgressKPI145": jiraStatusForInProgress,
             "jiraStatusForInProgressKPI125": jiraStatusForInProgress,
             "jiraStatusForInProgressKPI128": jiraStatusForInProgress,
             "jiraStatusForInProgressKPI123": jiraStatusForInProgress,
             "jiraStatusForInProgressKPI119": jiraStatusForInProgress,
-        
+            "jiraStatusForInProgressKPI148": jiraStatusForInProgress,
+
             "issueStatusExcluMissingWorkKPI124": issueStatusExcluMissingWork,
         
             "jiraDevDoneStatusKPI119": jiraDevDoneStatus,
@@ -177,10 +194,10 @@ fieldMappings.forEach(function(fm) {
             "jiraIterationCompletionStatusKPI133": jiraIterationCompletionStatusCustomField,
             "jiraIterationCompletionStatusKPI119": jiraIterationCompletionStatusCustomField,
             "jiraIterationCompletionStatusKPI131": jiraIterationCompletionStatusCustomField,
-            "jiraIterationCompletionStatusBRE": jiraIterationCompletionStatusCustomField,
+            "jiraIterationCompletionStatusKPI138": jiraIterationCompletionStatusCustomField,
         
             "jiraIterationIssuetypeKPI122": jiraIterationCompletionTypeCustomField,
-            "jiraIterationIssuetypeBRE": jiraIterationCompletionTypeCustomField,
+            "jiraIterationIssuetypeKPI138": jiraIterationCompletionTypeCustomField,
             "jiraIterationIssuetypeKPI131": jiraIterationCompletionTypeCustomField,
             "jiraIterationIssuetypeKPI128": jiraIterationCompletionTypeCustomField,
             "jiraIterationIssuetypeKPI134": jiraIterationCompletionTypeCustomField,
@@ -193,6 +210,16 @@ fieldMappings.forEach(function(fm) {
             "jiraIterationIssuetypeKPI125": jiraIterationCompletionTypeCustomField,
             "jiraIterationIssuetypeKPI120": jiraIterationCompletionTypeCustomField,
             "jiraIterationIssuetypeKPI124": jiraIterationCompletionTypeCustomField,
+
+            "jiraDefectDroppedStatusKPI127":jiraDefectDroppedStatus,
+
+            "jiraAcceptedInRefinementKPI139":jiraAcceptedInRefinement,
+
+            "jiraReadyForRefinementKPI139":jiraReadyForRefinement,
+
+            "jiraRejectedInRefinementKPI139":jiraRejectedInRefinement,
+            
+            "readyForDevelopmentStatusKPI138":readyForDevelopmentStatus
           }
 //            $unset: {
 //                "defectPriority": "",

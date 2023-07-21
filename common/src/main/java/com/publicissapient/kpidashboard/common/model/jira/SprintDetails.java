@@ -83,11 +83,21 @@ public class SprintDetails extends BasicModel implements Cloneable{
 	public Object clone() throws CloneNotSupportedException {
 		SprintDetails clonedSprintDetails = (SprintDetails) super.clone();
 
-		clonedSprintDetails.setCompletedIssues(deepCloneIssueSet(this.getCompletedIssues()));
-		clonedSprintDetails.setNotCompletedIssues(deepCloneIssueSet(this.getNotCompletedIssues()));
-		clonedSprintDetails.setPuntedIssues(deepCloneIssueSet(this.getPuntedIssues()));
-		clonedSprintDetails.setCompletedIssuesAnotherSprint(deepCloneIssueSet(this.getCompletedIssuesAnotherSprint()));
-		clonedSprintDetails.setTotalIssues(deepCloneIssueSet(this.getTotalIssues()));
+		if(CollectionUtils.isNotEmpty(this.getCompletedIssues())) {
+			clonedSprintDetails.setCompletedIssues(deepCloneIssueSet(this.getCompletedIssues()));
+		}
+		if(CollectionUtils.isNotEmpty(this.getNotCompletedIssues())) {
+			clonedSprintDetails.setNotCompletedIssues(deepCloneIssueSet(this.getNotCompletedIssues()));
+		}
+		if(CollectionUtils.isNotEmpty(this.getPuntedIssues())) {
+			clonedSprintDetails.setPuntedIssues(deepCloneIssueSet(this.getPuntedIssues()));
+		}
+		if(CollectionUtils.isNotEmpty(this.getCompletedIssuesAnotherSprint())) {
+			clonedSprintDetails.setCompletedIssuesAnotherSprint(deepCloneIssueSet(this.getCompletedIssuesAnotherSprint()));
+		}
+		if(CollectionUtils.isNotEmpty(this.getTotalIssues())) {
+			clonedSprintDetails.setTotalIssues(deepCloneIssueSet(this.getTotalIssues()));
+		}
 
 		if (this.originBoardId != null) {
 			clonedSprintDetails.originBoardId = new ArrayList<>(this.originBoardId);

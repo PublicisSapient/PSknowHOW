@@ -254,16 +254,20 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
 		if (CollectionUtils.isNotEmpty(firstStatusList)) {
 			fieldMapping.setStoryFirstStatus(firstStatusList.get(0));
+			fieldMapping.setStoryFirstStatusKPI3(firstStatusList.get(0));
+			fieldMapping.setStoryFirstStatusKPI148(firstStatusList.get(0));
 			fieldMapping.setJiraDefectCreatedStatusKPI14(firstStatusList.get(0));
 		} else {
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
+			fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
+			fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
 			fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
 		}
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping.setJiraStatusForDevelopmentAVR(workflowMap.get(CommonConstant.DEVELOPMENT));
 		fieldMapping.setJiraStatusForDevelopmentKPI82(workflowMap.get(CommonConstant.DEVELOPMENT));
 		fieldMapping.setJiraStatusForDevelopmentKPI135(workflowMap.get(CommonConstant.DEVELOPMENT));
-		fieldMapping.setJiraStatusForQa(workflowMap.get(CommonConstant.QA));
+		fieldMapping.setJiraStatusForQaKPI148(workflowMap.get(CommonConstant.QA));
 		fieldMapping.setJiraStatusForQaKPI82(workflowMap.get(CommonConstant.QA));
 		fieldMapping.setJiraStatusForQaKPI135(workflowMap.get(CommonConstant.QA));
 		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(issueTypeMap.get(CommonConstant.STORY));
@@ -275,7 +279,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraDodPDA(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusCustomField(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI120(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI119(workflowMap.get(CommonConstant.DOD));
@@ -297,19 +301,19 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraIterationCompletionStatusKpi5(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI124(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraIterationCompletionStatusKPI125(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraIterationCompletionStatusBRE(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraIterationCompletionStatusKPI138(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraIssueTypeKPI35(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraDefectRemovalStatusKPI34(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraDefectRemovalIssueTypeKPI34(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraStoryPointsCustomField(customField.get(CommonConstant.STORYPOINT));
 		fieldMapping.setJiraTestAutomationIssueType(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraSprintVelocityIssueTypeBR(issueTypeMap.get(CommonConstant.STORY));
+		fieldMapping.setJiraSprintVelocityIssueTypeKPI138(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraIssueTypeKPI37(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraDefectCountlIssueTypeKPI28(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraDefectCountlIssueTypeKPI36(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraIssueDeliverdStatusBR(workflowMap.get(CommonConstant.DELIVERED));
+		fieldMapping.setJiraIssueDeliverdStatusKPI138(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIssueDeliverdStatusAVR(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIssueDeliverdStatusKPI126(workflowMap.get(CommonConstant.DELIVERED));
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(workflowMap.get(CommonConstant.DELIVERED));

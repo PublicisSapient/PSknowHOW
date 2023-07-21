@@ -66,7 +66,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	public static final String EPIC_WSJF = "epicWsjf";
 	public static final String EPIC_TIME_CRITICALITY = "epicTimeCriticality";
 	public static final String EPIC_JOB_SIZE = "epicJobSize";
-	public static final String READY_FOR_DEVELOPMENT_STATUS = "readyForDevelopmentStatus";
+	public static final String READY_FOR_DEVELOPMENT_STATUS = "readyForDevelopmentStatusKPI138";
 	public static final String ESTIMATION_CRITERIA = "estimationCriteria";
 	public static final String JIRA_ISSUE_EPIC_TYPE = "jiraIssueEpicType";
 	public static final String JIRA_TECH_DEBT_CUSTOMFIELD = "jiraTechDebtCustomField";
@@ -428,10 +428,14 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			JIRA_ISSUE_EPIC_TYPE,
 
 			STORY_FIRST_STATUS,
+			"storyFirstStatusKPI148",
+			"storyFirstStatusKPI3",
 			ROOT_CAUSE,
 
 			"jiraStatusForDevelopmentKPI82",
 			"jiraStatusForDevelopmentKPI135",
+
+			"jiraStatusForQaKPI148",
 			"jiraStatusForQaKPI138",
 			"jiraStatusForQaKPI82",
 
@@ -441,12 +445,10 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraDodQAKPI111",
 			"jiraDodKPI3",
 			"jiraDodPDA",
+			"jiraDodKPI152",
+			"jiraDodKPI151",
 
 			"jiraDefectCreatedStatusKPI14",
-			"jiraTechDebtIssueType",
-			"jiraTechDebtIdentification",
-			JIRA_TECH_DEBT_CUSTOMFIELD,
-			JIRA_TECH_DEBT_VALUE,
 
 			"jiraDefectRejectionStatusKPI28",
 			"jiraDefectRejectionStatusKPI34",
@@ -458,17 +460,19 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraDefectRejectionStatusRCAKPI36",
 			"jiraDefectRejectionStatusKPI14",
 			"jiraDefectRejectionStatusQAKPI111",
+			"jiraDefectRejectionStatusKPI152",
+			"jiraDefectRejectionStatusKPI151",
 
 			"jiraIssueTypeKPI35",
 
 			"jiraDefectRemovalStatusKPI34",
-
 			"jiraDefectRemovalIssueTypeKPI34",
-			"jiraDefectClosedStatus",
+
+			"jiraDefectClosedStatusKPI137",
 			JIRA_STORY_POINTS_CUSTOM_FIELD,
 			"jiraTestAutomationIssueType",
 
-			"jiraSprintVelocityIssueTypeBR",
+			"jiraSprintVelocityIssueTypeKPI138",
 
 			"jiraSprintCapacityIssueTypeKpi46",
 
@@ -477,7 +481,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraDefectCountlIssueTypeKPI28",
 			"jiraDefectCountlIssueTypeKPI36",
 
-			"jiraIssueDeliverdStatusBR",
+			"jiraIssueDeliverdStatusKPI138",
 			"jiraIssueDeliverdStatusKPI126",
 			"jiraIssueDeliverdStatusKPI82",
 			READY_FOR_DEVELOPMENT_STATUS,
@@ -488,6 +492,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraIssueTypeKPI3",
 			"jiraStoryIdentification",
 			"jiraStoryIdentificationKpi40",
+			"jiraStoryIdentificationKPI129",
 
 			"jiraLiveStatusKPI3",
 			"jiraLiveStatusLTK",
@@ -496,24 +501,14 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraLiveStatusNORK",
 			"jiraLiveStatusOTA",
 			"jiraLiveStatusPDA",
-
-			"ticketReopenStatus",
-
-			"jiraTicketResolvedStatus",
-
-			"jiraTicketWipStatus",
-
-			"jiraStatusMappingCustomField",
-			"rootCauseValue",
+			"jiraLiveStatusKPI152",
+			"jiraLiveStatusKPI151",
 
 			"excludeRCAFromKPI82",
 			"excludeRCAFromKPI135",
 			"excludeRCAFromKPI14",
 			"excludeRCAFromQAKPI111",
 			"excludeRCAFromKPI133",
-			"jiraDorToLiveIssueType",
-			"jiraProductiveStatus",
-			"jiraCommitmentReliabilityIssueType",
 
 			"resolutionTypeForRejectionKPI28",
 			"resolutionTypeForRejectionKPI34",
@@ -527,7 +522,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"resolutionTypeForRejectionQAKPI111",
 
 			"jiraQAKPI111IssueType",
-			"jiraDefectDroppedStatus",
+			"jiraDefectDroppedStatusKPI127",
+
 			EPIC_COST_OF_DELAY,
 			EPIC_RISK_REDUCTION,
 			EPIC_USER_BUSINESS_VALUE,
@@ -541,9 +537,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraStatusForInProgressKPI128",
 			"jiraStatusForInProgressKPI123",
 			"jiraStatusForInProgressKPI119",
+			"jiraStatusForInProgressKPI148",
 			ESTIMATION_CRITERIA,
 
-			"workingHoursDayCPT",
 			"additionalFilterConfig",
 
 			"issueStatusExcluMissingWorkKPI124",
@@ -564,9 +560,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraDevDoneStatusKPI119",
 			"jiraDevDoneStatusKPI145",
 			"jiraDevDoneStatusKPI128",
-			"jiraRejectedInRefinement",
-			"jiraAcceptedInRefinement",
-			"jiraReadyForRefinement",
+			"jiraRejectedInRefinementKPI139",
+			"jiraAcceptedInRefinementKPI139",
+			"jiraReadyForRefinementKPI139",
 
 			"jiraFtprRejectStatusKPI135",
 			"jiraFtprRejectStatusKPI82",
@@ -591,10 +587,10 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraIterationCompletionStatusKPI133",
 			"jiraIterationCompletionStatusKPI119",
 			"jiraIterationCompletionStatusKPI131",
-			"jiraIterationCompletionStatusBRE",
+			"jiraIterationCompletionStatusKPI138",
 
 			"jiraIterationIssuetypeKPI122",
-			"jiraIterationIssuetypeBRE",
+			"jiraIterationIssuetypeKPI138",
 			"jiraIterationIssuetypeKPI131",
 			"jiraIterationIssuetypeKPI128",
 			"jiraIterationIssuetypeKPI134",

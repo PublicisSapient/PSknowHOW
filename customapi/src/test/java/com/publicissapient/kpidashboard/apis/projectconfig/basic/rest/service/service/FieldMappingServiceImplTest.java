@@ -355,7 +355,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraStatusForDevelopmentAVR(Arrays.asList("In Development"));
 		fieldMapping.setJiraStatusForDevelopmentKPI82(Arrays.asList("In Development"));
 		fieldMapping.setJiraStatusForDevelopmentKPI135(Arrays.asList("In Development"));
-		fieldMapping.setJiraStatusForQa(Arrays.asList("In Testing"));
+		fieldMapping.setJiraStatusForQaKPI148(Arrays.asList("In Testing"));
 		// customField
 		fieldMapping.setSprintName("customfield_12700");
 		fieldMapping.setJiraStoryPointsCustomField("customfield_20803");

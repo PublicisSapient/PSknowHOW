@@ -83,7 +83,6 @@ import com.publicissapient.kpidashboard.common.repository.excel.KanbanCapacityRe
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
 
@@ -617,10 +616,10 @@ public class KpiHelperService { // NOPMD
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueTypeBR()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraSprintVelocityIssueTypeKPI138()));
 
 			mapOfProjectFilters.put(JiraFeature.STATUS.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatusBR()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueDeliverdStatusKPI138()));
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
@@ -634,8 +633,8 @@ public class KpiHelperService { // NOPMD
 						.get(dbSprintDetail.getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-						fieldMapping.getJiraIterationIssuetypeBRE(),
-						fieldMapping.getJiraIterationCompletionStatusBRE()).get(0);
+						fieldMapping.getJiraIterationIssuetypeKPI138(),
+						fieldMapping.getJiraIterationCompletionStatusKPI138()).get(0);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
