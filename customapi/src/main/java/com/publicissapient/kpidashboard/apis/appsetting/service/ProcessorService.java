@@ -44,5 +44,12 @@ public interface ProcessorService {
 	 */
 	ServiceResponse runProcessor(String processorName, ProcessorExecutionBasicConfig processorExecutionBasicConfig);
 
+	/**
+	 * Fetches the active sprint data for the project
+	 * 
+	 * @param sprintId
+	 *            id of the sprint
+	 * @return {@code ServiceResponse}
+	 */
 	ServiceResponse fetchActiveSprint(String sprintId);
 }

@@ -142,7 +142,7 @@ public class SprintClientImpl implements SprintClient {
 							|| !sprint.getState().equalsIgnoreCase(dbSprintDetails.getState())) {
 						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
-					}
+					} // fetching for only Iteration data don't change the state of sprint
 					else if (!sprint.getState().equalsIgnoreCase(dbSprintDetails.getState()) && isSprintFetch) {
 						sprint.setState(dbSprintDetails.getState());
 						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());

@@ -1648,6 +1648,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 	}
 
+	// for fetch, parse & update based on issuesKeys
 	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter,
 			boolean isOffline, List<String> issueKeys) {
 		PSLogData psLogData = new PSLogData();
