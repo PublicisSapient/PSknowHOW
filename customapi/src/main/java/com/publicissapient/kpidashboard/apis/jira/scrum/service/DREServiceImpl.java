@@ -304,7 +304,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 								.anyMatch(s -> s.equalsIgnoreCase(f.getJiraStatus())))
 						.collect(Collectors.toList());
 
-				subCategoryWiseClosedDefectList.addAll(getCompletedSubTasksByHistory(subTaskBugs, defectsCustomHistory,
+				subCategoryWiseClosedDefectList.addAll(getCompletedSubTasksByHistory(totalSubTask, defectsCustomHistory,
 						sd, projectWiseDefectRemovalStatus));
 
 				double dreForCurrentLeaf = 0.0d;
@@ -459,7 +459,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		return calculateKpiValueForDouble(valueList, kpiName);
 	}
 
-	public List<JiraIssue> getCompletedSubTasksByHistory(List<JiraIssue> totalSubTask,
+	public List<JiraIssue> getCompletedSubTasksByHistory(Set<JiraIssue> totalSubTask,
 			List<JiraIssueCustomHistory> subTaskHistory, SprintDetails sprintDetail,
 			Map<String, List<String>> projectWiseDefectRemovelStatus) {
 		List<JiraIssue> completedSubtaskOfSprint = new ArrayList<>();
