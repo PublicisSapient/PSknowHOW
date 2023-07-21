@@ -79,7 +79,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private static final String INITIALISSUE_ORIGINAL_ESTIMATE = "initialIssueOriginalEstimate";
 	private static final String INITIALCMPLTD_ORIGINAL_ESTIMATE = "initialCompletedIssueOriginalEstimate";
 	private static final String SPECIAL_SYMBOL ="#";
-	private static  final String ALL ="overAll";
+	private static  final String ALL ="overall";
 	@Autowired
 	private SprintRepository sprintRepository;
 	@Autowired
@@ -137,7 +137,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			List<DataCount> dataList = new ArrayList<>();
 			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
 			String[] issueFilter = issueType.split("#");
-			dataCountGroup.setFilter(issueFilter[0]);
+			dataCountGroup.setFilter1(issueFilter[0]);
 			dataCountGroup.setFilter2(issueFilter[1]);
 			dataCountGroup.setValue(dataList);
 			dataCountGroups.add(dataCountGroup);
