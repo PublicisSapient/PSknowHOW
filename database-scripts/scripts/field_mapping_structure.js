@@ -1089,7 +1089,7 @@ db.getCollection('field_mapping_structure').insert(
     },
     {
         "fieldName": "jiraIterationCompletionStatusKPI138",
-        "fieldLabel": "Iteration Dashboard & SPEED KPIs Completion Status",
+        "fieldLabel": "Status to identify completed issues",
         "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
