@@ -724,7 +724,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
-				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
+				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, projectConfig, fields );
 				if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
 					jiraIssuesToSave.add(jiraIssue);
 					jiraIssueHistoryToSave.add(jiraIssueHistory);
@@ -1036,7 +1036,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	private void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,
-			FieldMapping fieldMapping, Map<String, IssueField> fields) {
+			ProjectConfFieldMapping projectConfig, Map<String, IssueField> fields) {
 
 		jiraIssueHistory.setProjectID(jiraIssue.getProjectName());
 		jiraIssueHistory.setProjectComponentId(jiraIssue.getProjectID());
@@ -1047,7 +1047,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		jiraIssueHistory.setDescription(jiraIssue.getName());
 		// This method is not setup method. write it to keep
 		// custom history
-		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
+		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, projectConfig, fields);
 
 		jiraIssueHistory.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
 	}
@@ -1329,14 +1329,13 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 *            JiraIssue
 	 * @param issue
 	 *            Atlassain issue
-	 * @param fieldMapping
+	 * @param projectConfig
 	 *            Project field Mapping
 	 */
 	private void processJiraIssueHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue,
-			Issue issue, FieldMapping fieldMapping, Map<String, IssueField> fields) {
+			Issue issue, ProjectConfFieldMapping projectConfig, Map<String, IssueField> fields) {
 		List<ChangelogGroup> changeLogList = JiraIssueClientUtil.sortChangeLogGroup(issue);
 		List<ChangelogGroup> modChangeLogList = new ArrayList<>();
-
 		for (ChangelogGroup changeLog : changeLogList) {
 			List<ChangelogItem> changeLogCollection = Lists.newArrayList(changeLog.getItems().iterator());
 			ChangelogGroup grp = new ChangelogGroup(changeLog.getAuthor(), changeLog.getCreated(), changeLogCollection);
@@ -1347,12 +1346,12 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			jiraIssueCustomHistory.setDevicePlatform(jiraIssue.getDevicePlatform());
 		}
 		if (null == jiraIssueCustomHistory.getStoryID()) {
-			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, fieldMapping, fields);
+			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, projectConfig, fields);
 		} else {
 			if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 				jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 			}
-			handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping,
+			handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, projectConfig,
 					fields, issue);
 		}
 
@@ -1371,8 +1370,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 *            Change Log list
 	 */
 	private void addStoryHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue, Issue issue,
-			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields) {
-		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping,
+			List<ChangelogGroup> changeLogList, ProjectConfFieldMapping projectConfig, Map<String, IssueField> fields) {
+		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, projectConfig,
 				fields, issue);
 		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
 		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());

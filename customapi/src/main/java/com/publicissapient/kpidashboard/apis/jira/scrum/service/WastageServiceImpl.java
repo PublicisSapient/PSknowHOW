@@ -365,7 +365,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 		LocalDateTime sprintEndDate = DateUtil.convertingStringToLocalDateTime(sprintDetails.getEndDate(),
 				DateUtil.TIME_FORMAT);
 		LocalDateTime entryActivityDate = entry.getUpdatedOn();
-		if (entry.getChangedTo().equalsIgnoreCase(CommonConstant.REQUIRED_ATTENTION_FLAG)) {
+		if (entry.getChangedTo().equalsIgnoreCase(CommonConstant.FLAG_STATUS_FOR_SERVER)
+				|| entry.getChangedTo().equalsIgnoreCase(CommonConstant.FLAG_STATUS_FOR_CLOUD)) {
 			long hours = 0;
 			// Checking for indexOutOfBound in flagStatusUpdationLog list
 			if (flagStatusUpdationLog.size() == index + 1) {
@@ -374,7 +375,8 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			} else {
 				// Find fetch the next element of flagStatusUpdationLog
 				JiraHistoryChangeLog nextEntry = flagStatusUpdationLog.get(index + 1);
-				if (!nextEntry.getChangedTo().equalsIgnoreCase(CommonConstant.REQUIRED_ATTENTION_FLAG)) {
+				if (!nextEntry.getChangedTo().equalsIgnoreCase(CommonConstant.FLAG_STATUS_FOR_SERVER)
+						|| !entry.getChangedTo().equalsIgnoreCase(CommonConstant.FLAG_STATUS_FOR_CLOUD)) {
 					LocalDateTime nextEntryActivityDate = nextEntry.getUpdatedOn();
 					// Checking if both alternate element are inside the sprint start and end date
 					if (!(entryActivityDate.isBefore(sprintStartDate)
