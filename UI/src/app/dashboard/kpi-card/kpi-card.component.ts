@@ -214,7 +214,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     const selectedTab = this.service.getSelectedTab().toLowerCase();
     const selectedType = this.service.getSelectedType().toLowerCase();
     const selectedTrend = this.service.getSelectedTrends();
-    if (selectedType === 'scrum' && selectedTrend.length == 1 && selectedTab !== 'backlog' && selectedTab !== 'release') {
+    if (selectedType === 'scrum' && selectedTrend.length == 1  && selectedTab !== 'release') {
       this.loading = true;
       this.displayConfigModel = true;
       this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`).subscribe(data => {

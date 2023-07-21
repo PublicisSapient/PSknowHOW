@@ -78,7 +78,7 @@ private setting = {
         fieldMappingConfigration[field.section].push(field);
       }
     });
-    this.fieldMappingSectionList = [...new Set(fieldMappingSections)];
+    this.fieldMappingSectionList = [...new Set(fieldMappingSections)].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).reverse();
     this.formConfig = fieldMappingConfigration;
     
   }

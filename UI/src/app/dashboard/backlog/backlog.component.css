@@ -63,3 +63,7 @@
     top: 14px;
 }
 
+:host::ng-deep .config-confirmation.p-dialog {
+    width: 50vw !important;
+}
+

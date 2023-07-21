@@ -90,7 +90,7 @@ input[type="file"].btn-import {
 label.btn-import-label {
   color: #ffffff;
   background: #06a0ff;
-  padding: 0.8925rem 1.25rem;
+  padding: 0.82rem 1.25rem;
   border-radius:4px;
   cursor: pointer;
 }
