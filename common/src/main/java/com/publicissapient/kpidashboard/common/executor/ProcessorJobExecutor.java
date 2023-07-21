@@ -24,7 +24,7 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import com.querydsl.core.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -113,7 +113,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 			processor = getProcessorRepository().save(newProcessor);
 		}
 
-		if (processor.isActive() && StringUtils.isNullOrEmpty(sprintId)) {
+		if (processor.isActive() && StringUtils.isEmpty(sprintId)) {
 			// Do collection run
 			processor.setLastSuccess(execute(processor));
 			log.debug("Saving the last executed status as: {} for {} processor!", processor.isLastSuccess(),
@@ -123,7 +123,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 			getProcessorRepository().save(processor);
 		}
 
-		if (!StringUtils.isNullOrEmpty(sprintId)) {
+		if (!StringUtils.isEmpty(sprintId)) {
 			boolean isSuccess = executeSprint(sprintId);
 			log.debug("Saving the last executed status as: {} for {} sprint!", isSuccess, sprintId);
 
