@@ -77,4 +77,6 @@ public class JiraProcessorConfig {
 	private String jiraServerVersionReportApi;
 	private String jiraCloudVersionReportApi;
 	private Integer prevMonthCountToFetchData;
+	private String jiraSubtaskApi;
+	private String jiraCloudSubtaskApi;
 }

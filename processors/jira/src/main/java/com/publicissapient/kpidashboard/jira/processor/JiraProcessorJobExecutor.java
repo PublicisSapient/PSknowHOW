@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.jira.service.FetchSprintData;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -78,6 +79,9 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	public JiraProcessorJobExecutor(TaskScheduler taskScheduler) {
 		super(taskScheduler, ProcessorConstants.JIRA);
 	}
+
+	@Autowired
+	FetchSprintData fetchSprintData;
 
 	@Override
 	public JiraProcessor getProcessor() {
@@ -140,6 +144,34 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		destroyLogContext();
 		MDC.clear();
 		return executionStatus;
+	}
+
+	@Override
+	public boolean executeSprint(String sprintId) {
+
+		long start = System.currentTimeMillis();
+		String uid = UUID.randomUUID().toString();
+		ExecutionLogContext fetchSprintExecutionContext = new ExecutionLogContext();
+		fetchSprintExecutionContext.setRequestId(uid);
+		fetchSprintExecutionContext.setIsCron("false");
+		setExecutionLogContext(fetchSprintExecutionContext);
+
+		psLogData.setProcessorStartTime(DateUtil.convertMillisToDateTime(start));
+		log.info("Jira Processor Started for sprint fetch", kv(CommonConstant.PSLOGDATA, psLogData));
+
+		boolean executionStatus = fetchSprintData.fetchSprintData(sprintId);
+
+		long endTime = System.currentTimeMillis();
+		psLogData.setProcessorEndTime(DateUtil.convertMillisToDateTime(endTime));
+		psLogData.setTimeTaken(String.valueOf(endTime - start));
+		psLogData.setExecutionStatus(String.valueOf(executionStatus));
+		log.info("Jira execution completed for sprint fetch", kv(CommonConstant.PSLOGDATA, psLogData));
+
+		ExecutionLogContext.getContext().destroy();
+		destroyLogContext();
+		MDC.clear();
+		return executionStatus;
+
 	}
 
 	/**

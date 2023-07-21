@@ -24,6 +24,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -56,6 +58,7 @@ import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 @Slf4j
 public class ProcessorServiceImpl implements ProcessorService {
 
+	public static final String AUTHORIZATION = "Authorization";
 	@Context
 	HttpServletRequest httpServletRequest;
 	@Autowired
@@ -85,16 +88,49 @@ public class ProcessorServiceImpl implements ProcessorService {
 		boolean isSuccess = true;
 
 		httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-		String token = httpServletRequest.getHeader("Authorization");
+		String token = httpServletRequest.getHeader(AUTHORIZATION);
 		token = CommonUtils.handleCrossScriptingTaintedValue(token);
 		int statuscode = HttpStatus.NOT_FOUND.value();
 		if (StringUtils.isNotEmpty(url)) {
 			try {
 				HttpHeaders headers = new HttpHeaders();
-				headers.add("Authorization", token);
+				headers.add(AUTHORIZATION, token);
 
 				HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(
 						processorExecutionBasicConfig, headers);
+				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+				statuscode = resp.getStatusCode().value();
+			} catch (HttpClientErrorException ex) {
+				statuscode = ex.getStatusCode().value();
+				isSuccess = false;
+			} catch (ResourceAccessException ex) {
+				isSuccess = false;
+			}
+		}
+		if (HttpStatus.NOT_FOUND.value() == statuscode || HttpStatus.INTERNAL_SERVER_ERROR.value() == statuscode) {
+			isSuccess = false;
+		}
+		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);
+	}
+
+	@Override
+	public ServiceResponse fetchActiveSprint(String sprintId) {
+
+		String url = processorUrlConfig.getProcessorUrl(ProcessorConstants.JIRA).replaceFirst("/processor/run",
+				"/activeIteration/fetch");
+
+		boolean isSuccess = true;
+
+		httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+		String token = httpServletRequest.getHeader(AUTHORIZATION);
+		token = CommonUtils.handleCrossScriptingTaintedValue(token);
+		int statuscode = HttpStatus.NOT_FOUND.value();
+		if (StringUtils.isNotEmpty(url)) {
+			try {
+				HttpHeaders headers = new HttpHeaders();
+				headers.add(AUTHORIZATION, token);
+
+				HttpEntity<String> requestEntity = new HttpEntity<>(sprintId, headers);
 				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 				statuscode = resp.getStatusCode().value();
 			} catch (HttpClientErrorException ex) {

@@ -156,6 +156,7 @@ public final class CommonConstant {
 	public static final String PROJECT_EXECUTION_STATUS = "projectExecutionStatus";
 	public static final String SPRINT_DATA = "collectSprintData";
 	public static final String RELEASE_DATA = "collectReleaseData";
+	public static final String SUBTASK_DATA = "collectSubtaskData";
 	public static final String JIRAISSUE_DATA = "collectJiraIssueData";
 	public static final String EPIC_DATA = "collectEpicData";
 	public static final String METADATA = "collectMetaData";

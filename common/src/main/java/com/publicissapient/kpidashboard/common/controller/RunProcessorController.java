@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.common.context.ExecutionLogContext;
 import com.publicissapient.kpidashboard.common.executor.ProcessorJobExecutor;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,6 +53,8 @@ public class RunProcessorController {
 
 	@Autowired(required = false)
 	private ProcessorJobExecutor<?> jobExecuter;
+	@Autowired
+	SprintRepository sprintRepository;
 
 	@RequestMapping(value = "/processor/run", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map> runProcessorForProjects(
@@ -71,6 +74,25 @@ public class RunProcessorController {
 		log.info("Processor execution called");
 		ExecutionLogContext.getContext().destroy();
 		jobExecuter.getExecutionLogContext().destroy();
+		MDC.clear();
+		Map response = new HashMap();
+		response.put("status", "processing");
+		return ResponseEntity.ok().body(response);
+	}
+
+	@RequestMapping(value = "/activeIteration/fetch", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map> activeIterationDataFetch(@RequestBody String sprintId) {
+		//NOSONAR
+		MDC.put("Processor Name", jobExecuter.getProcessor().getProcessorName());
+		MDC.put("RequestStartTime", String.valueOf(System.currentTimeMillis()));
+
+		log.info("Received request to fetch the sprint: {}", sprintId);
+		jobExecuter.setSprintId(sprintId);
+		PROCESSOR_EXECUTORS.execute(jobExecuter);
+
+		MDC.put("RequestEndTime", String.valueOf(System.currentTimeMillis()));
+		log.info("Processor execution called for fetch sprint {}", sprintId);
+
 		MDC.clear();
 		Map response = new HashMap();
 		response.put("status", "processing");

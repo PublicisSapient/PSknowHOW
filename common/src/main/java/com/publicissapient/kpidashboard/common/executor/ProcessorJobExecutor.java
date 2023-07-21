@@ -24,6 +24,7 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import com.querydsl.core.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -52,6 +53,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 	private final String processorName;
 	private List<String> projectsBasicConfigIds;
 	private ExecutionLogContext executionLogContext;
+	private String sprintId;
 
 	@Autowired
 	protected ProcessorJobExecutor(TaskScheduler taskScheduler, String processorName) {
@@ -81,6 +83,14 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 		this.projectsBasicConfigIds = projectsBasicConfigIds;
 	}
 
+	public String getSprintId() {
+		return sprintId;
+	}
+
+	public void setSprintId(String sprintId) {
+		this.sprintId = sprintId;
+	}
+
 	@Override
 	public final synchronized void run() {
 		setMDCContext();
@@ -103,7 +113,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 			processor = getProcessorRepository().save(newProcessor);
 		}
 
-		if (processor.isActive()) {
+		if (processor.isActive() && StringUtils.isNullOrEmpty(sprintId)) {
 			// Do collection run
 			processor.setLastSuccess(execute(processor));
 			log.debug("Saving the last executed status as: {} for {} processor!", processor.isLastSuccess(),
@@ -111,6 +121,12 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 			// Update lastUpdate timestamp in Processor
 			processor.setUpdatedTime(System.currentTimeMillis());
 			getProcessorRepository().save(processor);
+		}
+
+		if (!StringUtils.isNullOrEmpty(sprintId)) {
+			boolean isSuccess = executeSprint(sprintId);
+			log.debug("Saving the last executed status as: {} for {} sprint!", isSuccess, sprintId);
+
 		}
 	}
 
@@ -133,6 +149,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 	public abstract String getCron();
 
 	public abstract boolean execute(T processor);
+	public abstract boolean executeSprint(String sprintId);
 
 	private void setOnline(boolean online) {
 		T processor = getProcessorRepository().findByProcessorName(processorName);

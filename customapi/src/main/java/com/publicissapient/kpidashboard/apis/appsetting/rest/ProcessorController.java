@@ -117,4 +117,21 @@ public class ProcessorController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 
 	}
+
+	@PostMapping(path = "/fetch/{sprintId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasPermission(#spintId, 'TRIGGER_SPRINT_FETCH')")
+	public ResponseEntity<ServiceResponse> triggerSprintFetch(@PathVariable String sprintId) {
+
+
+		ServiceResponse response = processorService.fetchActiveSprint(sprintId);
+
+		HttpStatus responseStatus = HttpStatus.OK;
+		if (null == response) {
+			responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+			log.warn("Did not get successful reponse from the service: {}", response);
+		}
+		return ResponseEntity.status(responseStatus).body(response);
+
+	}
+
 }

@@ -16,33 +16,15 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.appsetting.service;
+package com.publicissapient.kpidashboard.apis.activeitrfetch.service;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 
-/**
- *
- * @author pansharm5
- *
- */
-public interface ProcessorService {
+public interface ActiveItrFetchService {
 	/**
-	 * Gets details of all processors on the running instance including: Last
-	 * executed time of the processor to fetch new data and Status Success/Failure
-	 *
-	 * @return {@code ServiceResponse}
+	 *  return the latest fetch status of sprintId
+	 * @param sprintId
+	 * @return
 	 */
-	ServiceResponse getAllProcessorDetails();
-
-	/**
-	 * Triggers the processor to fetch the latest data based on the processor name
-	 * 
-	 * @param processorName
-	 *            name of the processor same as in the processor collection
-	 * @return {@code ServiceResponse}
-	 */
-	ServiceResponse runProcessor(String processorName, ProcessorExecutionBasicConfig processorExecutionBasicConfig);
-
-	ServiceResponse fetchActiveSprint(String sprintId);
+	ServiceResponse getActiveSprintFetchStatus(String sprintId);
 }

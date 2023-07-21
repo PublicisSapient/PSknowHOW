@@ -39,6 +39,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -215,4 +216,23 @@ public class ProcessorServiceImplTest {
 		assertFalse(response.getSuccess());
 	}
 
+	@Test
+	public void fetchActiveSprint() {
+		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
+		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
+		ServiceResponse response = processorService.fetchActiveSprint("132_TestSprint");
+		assertTrue(response.getSuccess());
+	}
+
+	@Test
+	public void fetchActiveSprint_HttpClientErrorException() {
+		Mockito.when(processorUrlConfig.getProcessorUrl(Mockito.anyString())).thenReturn("validUrlToJiraProcessor");
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
+				Mockito.<Class<String>>any()))
+				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request"));
+		ServiceResponse response = processorService.fetchActiveSprint("132_TestSprint");
+		assertFalse(response.getSuccess());
+	}
 }

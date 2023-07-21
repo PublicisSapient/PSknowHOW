@@ -24,9 +24,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -1074,4 +1076,113 @@ public class OnlineAdapter implements JiraAdapter {
 		}
 		return res.toString();
 	}
+
+	public SearchResult getIssuesSprint(ProjectConfFieldMapping projectConfig, int pageStart, List<String> issueKeys)
+			throws InterruptedException {
+		SearchResult searchResult = null;
+
+		if (client == null) {
+			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
+		} else if (StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())) {
+			log.info("Project key is empty {}", projectConfig.getProjectToolConfig().getProjectKey());
+		} else {
+			StringBuilder query = new StringBuilder("project in (")
+					.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") AND ");
+			try {
+				query.append(JiraProcessorUtil.processJqlForSprintFetch(issueKeys));
+				psLogData.setSprintId(null);
+				psLogData.setJql(query.toString());
+				Instant start = Instant.now();
+				Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
+						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
+				searchResult = promisedRs.claim();
+				psLogData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
+				log.debug("jql query processed for JQL", kv(CommonConstant.PSLOGDATA, psLogData));
+				if (searchResult != null) {
+					psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
+					psLogData.setAction(CommonConstant.FETCHING_ISSUE);
+					log.info(String.format("Processing issues %d - %d out of %d", pageStart,
+							Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
+							kv(CommonConstant.PSLOGDATA, psLogData));
+				}
+				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+			} catch (RestClientException e) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+					log.error(ERROR_MSG_401);
+				} else {
+					log.info(NO_RESULT_QUERY, query);
+					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+				}
+			}
+
+		}
+
+		return searchResult;
+	}
+
+	public List<String> getSubtask(ProjectConfFieldMapping projectConfig, List<String> issueKeyList) {
+		List<String> subtaskKeyList = new ArrayList<>();
+		PSLogData subtaskLog = new PSLogData();
+		subtaskLog.setAction(CommonConstant.SUBTASK_DATA);
+		try {
+			JiraToolConfig jiraToolConfig = projectConfig.getJira();
+			if (null != jiraToolConfig) {
+				subtaskLog.setProjectKey(jiraToolConfig.getProjectKey());
+				Instant start = Instant.now();
+				URL url = getSubtaskUrl(projectConfig, issueKeyList);
+				subtaskLog.setUrl(url.toString());
+				parseSubtaskData(getDataFromClient(projectConfig, url), subtaskKeyList);
+				subtaskLog.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
+			}
+		} catch (RestClientException rce) {
+			log.error("Client exception when fetching versions " + rce, kv(CommonConstant.PSLOGDATA, subtaskLog));
+		} catch (MalformedURLException mfe) {
+			log.error("Malformed url for fetching versions", mfe, kv(CommonConstant.PSLOGDATA, subtaskLog));
+		} catch (UnsupportedEncodingException uee) {
+			log.error("Unsupproted Encoding Exception", uee, kv(CommonConstant.PSLOGDATA, subtaskLog));
+		} catch (IOException ioe) {
+			log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, subtaskLog));
+		}
+		return subtaskKeyList;
+	}
+
+	private URL getSubtaskUrl(ProjectConfFieldMapping projectConfig, List<String> issueKeyList)
+			throws MalformedURLException, UnsupportedEncodingException {
+
+		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+		boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
+		String serverURL = jiraProcessorConfig.getJiraSubtaskApi();
+		if (isCloudEnv) {
+			serverURL = jiraProcessorConfig.getJiraCloudSubtaskApi();
+		}
+		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+		String jql = "parent in " + issueKeyList.toString().replace("[", "(").replace("]", ")");
+		String url = baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL + URLEncoder.encode(jql, "UTF-8");
+
+		return new URL(url);
+	}
+
+	private void parseSubtaskData(String dataFromServer, List<String> subtaskKeyList) {
+		if (StringUtils.isNotBlank(dataFromServer)) {
+			JSONArray issuesJson = new JSONArray();
+			try {
+				JSONObject obj = (JSONObject) new JSONParser().parse(dataFromServer);
+				if (null != obj) {
+					issuesJson = (JSONArray) obj.get("issues");
+					issuesJson.forEach(values -> {
+						JSONObject subtaskJson = (JSONObject) values;
+						if (null != subtaskJson) {
+							String key = getOptionalString(subtaskJson, "key");
+							if (key != null) {
+								subtaskKeyList.add(key);
+							}
+						}
+					});
+				}
+			} catch (ParseException pe) {
+				log.error("Parser exception when parsing statuses", pe);
+			}
+		}
+	}
+
 }
