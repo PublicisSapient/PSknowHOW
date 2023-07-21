@@ -149,6 +149,7 @@
     "jiraDodKPI3": [],
     "defectPriorityKPI82": [],
     "jiraDefectClosedStatus": ["Closed"],
+    "jiraDefectClosedStatusKPI137": ["Closed"],
     "jiraDefectRejectionStatus":"Open",
     "jiraDefectRejectionStatusAVR":"Open",
     "jiraDefectRejectionStatusKPI28":"Open",
