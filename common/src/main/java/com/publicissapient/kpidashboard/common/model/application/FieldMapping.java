@@ -62,7 +62,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> defectPriorityQAKPI111;
 	private List<String> defectPriorityKPI82;
 	private List<String> defectPriorityKPI133;
-
 	private String[] jiraIssueTypeNames;
 	private String[] jiraIssueTypeNamesAVR;
 	private List<String> jiraIssueEpicType;
