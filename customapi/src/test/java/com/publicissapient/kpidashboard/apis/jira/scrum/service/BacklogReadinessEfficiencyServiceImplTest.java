@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
-import org.apache.kafka.common.protocol.types.Field;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -136,7 +135,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		Map<String, Object> sprintVelocityStoryMap = new HashMap<>();
 		sprintVelocityStoryMap.put("sprintVelocityKey", storyList);
 
-		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any())).thenReturn(sprintVelocityStoryMap);
+		when(kpiHelperService.fetchBacklogReadinessDataFromDb(any(), any())).thenReturn(sprintVelocityStoryMap);
 
 		when(jiraIssueCustomHistoryRepository.findByStoryIDIn(any())).thenReturn(jiraIssueCustomHistories);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);

@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.model.jira;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -36,7 +38,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "sprint_details")
-public class SprintDetails extends BasicModel {
+public class SprintDetails extends BasicModel implements Cloneable {
 
 	public static final String SPRINT_STATE_CLOSED = "CLOSED";
 	public static final String SPRINT_STATE_ACTIVE = "ACTIVE";
@@ -74,6 +76,28 @@ public class SprintDetails extends BasicModel {
 	@Override
 	public int hashCode() {
 		return Objects.hash(sprintID);
+	}
+
+	@Override
+	public SprintDetails clone() throws CloneNotSupportedException {
+		SprintDetails clonedSprintDetails = (SprintDetails) super.clone();
+		clonedSprintDetails.setOriginBoardId(new ArrayList<>(this.getOriginBoardId()));
+		clonedSprintDetails.setCompletedIssues(deepCloneSprintIssueSet(this.getCompletedIssues()));
+		clonedSprintDetails.setNotCompletedIssues(deepCloneSprintIssueSet(this.getNotCompletedIssues()));
+		clonedSprintDetails.setPuntedIssues(deepCloneSprintIssueSet(this.getPuntedIssues()));
+		clonedSprintDetails.setCompletedIssuesAnotherSprint(deepCloneSprintIssueSet(this.getCompletedIssuesAnotherSprint()));
+		clonedSprintDetails.setAddedIssues(new HashSet<>(this.getAddedIssues()));
+		clonedSprintDetails.setTotalIssues(deepCloneSprintIssueSet(this.getTotalIssues()));
+
+		return clonedSprintDetails;
+	}
+
+	private Set<SprintIssue> deepCloneSprintIssueSet(Set<SprintIssue> sprintIssueSet) throws CloneNotSupportedException {
+		Set<SprintIssue> clonedSet = new HashSet<>();
+		for (SprintIssue issue : sprintIssueSet) {
+			clonedSet.add((SprintIssue) issue.clone());
+		}
+		return clonedSet;
 	}
 
 }

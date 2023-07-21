@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -11,6 +12,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +67,9 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
+
+	@Autowired
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -154,12 +161,11 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 			basicProjectConfigObjectIds.add(basicProjectConfigId);
-
 		});
+
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
 		List<SprintDetails> totalSprintDetails = sprintRepository
@@ -167,6 +173,12 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 						sprintStatusList);
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
+			List<String> totalIssueSet = totalSprintDetails.stream().flatMap(sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(new HashSet<>()).stream()).map(SprintIssue::getNumber).collect(Collectors.toList());
+			mapOfFilters.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(),totalIssueSet);
+			mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+					basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMap(mapOfFilters, new HashMap<>());
+			mapOfFilters.clear();
 
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = totalSprintDetails.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
@@ -176,23 +188,26 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				List<SprintDetails> sprintDetails = sprintDetailsList.stream()
 						.limit(Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT)
 						.collect(Collectors.toList());
-				getModifiedSprintDetailsFromBaseClass(sprintDetails, configHelperService);
-				sprintDetails.stream().forEach(sprintDetail -> {
+
+				sprintDetails.stream().forEach(dbSprintDetail -> {
+					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+							.get(dbSprintDetail.getBasicProjectConfigId());
+					// to modify sprintdetails on the basis of configuration for the project
+					SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+							new ArrayList<>(),
+							fieldMapping.getJiraIterationCompletionStatusCustomField(),jiraIssueCustomHistoryList).get(0);
 					if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 						List<String> sprintWiseIssueIds = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 								sprintDetail, CommonConstant.COMPLETED_ISSUES);
 						totalIssueIds.addAll(sprintWiseIssueIds);
 					}
-					projectWiseSprintDetails.addAll(sprintDetails);
+					projectWiseSprintDetails.add(sprintDetail);
 				});
 				resultListMap.put(SPRINT_WISE_SPRINT_DETAILS, projectWiseSprintDetails);
 				mapOfFilters.put(JiraFeature.ISSUE_NUMBER.getFieldValueInFeature(),
 						totalIssueIds.stream().distinct().collect(Collectors.toList()));
 
 			});
-		} else {
-			mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
-					sprintList.stream().distinct().collect(Collectors.toList()));
 		}
 
 		/** additional filter **/

@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -36,14 +37,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.poi.ss.formula.functions.T;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -560,8 +563,21 @@ public class KpiHelperService { // NOPMD
 
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
-			jiraKPIService.processSprintBasedOnFieldMapping(sprintDetails, configHelperService);
-			sprintDetails.stream().forEach(sprintDetail -> {
+			List<String> totalIssueSet = sprintDetails.stream().flatMap(sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(new HashSet<>()).stream()).map(SprintIssue::getNumber).collect(Collectors.toList());
+			mapOfFilters.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(),totalIssueSet);
+			mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+					basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMap(mapOfFilters, new HashMap<>());
+			mapOfFilters.clear();
+
+			sprintDetails.stream().forEach(dbSprintDetail -> {
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(dbSprintDetail.getBasicProjectConfigId());
+			//	Map<String, Boolean> storyWiseDuplicate = projectWiseDuplicateIssues.get(dbSprintDetail.getBasicProjectConfigId().toString());
+				// to modify sprintdetails on the basis of configuration for the project
+				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+						new ArrayList<>(),
+						fieldMapping.getJiraIterationCompletionStatusCustomField(),jiraIssueCustomHistoryList).get(0);
 
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
@@ -582,16 +598,13 @@ public class KpiHelperService { // NOPMD
 		if (CollectionUtils.isNotEmpty(totalIssueIds)) {
 			List<JiraIssue> sprintVelocityList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 					new HashMap<>());
-
 			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
-
 		}
-
 		return resultListMap;
 	}
 
-	public Map<String, Object> fetchSprintVelocityDataFromDb(List<Node> leafNodeList, KpiRequest kpiRequest) {
+	public Map<String, Object> fetchBacklogReadinessDataFromDb(List<Node> leafNodeList, KpiRequest kpiRequest) {
 
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();

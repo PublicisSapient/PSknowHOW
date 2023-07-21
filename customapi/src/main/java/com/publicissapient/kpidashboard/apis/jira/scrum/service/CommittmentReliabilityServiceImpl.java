@@ -9,9 +9,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -82,6 +87,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private SprintRepository sprintRepository;
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
+	@Autowired
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
@@ -268,9 +275,22 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
-		getModifiedSprintDetailsFromBaseClass(sprintDetails, configHelperService);
+		List<String> totalIssueSet = sprintDetails.stream().flatMap(sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(new HashSet<>()).stream()).map(SprintIssue::getNumber).collect(Collectors.toList());
+		mapOfFilters.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(),totalIssueSet);
+		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMap(mapOfFilters, new HashMap<>());
+		mapOfFilters.clear();
+
 		Set<String> totalIssue = new HashSet<>();
-		sprintDetails.stream().forEach(sprintDetail -> {
+		sprintDetails.stream().forEach(dbSprintDetail -> {
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(dbSprintDetail.getBasicProjectConfigId());
+			// to modify sprintdetails on the basis of configuration for the project
+			SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+					new ArrayList<>(),
+					fieldMapping.getJiraIterationCompletionStatusCustomField(),jiraIssueCustomHistoryList).get(0);
+
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));

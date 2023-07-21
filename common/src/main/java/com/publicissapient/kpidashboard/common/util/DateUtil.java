@@ -162,6 +162,10 @@ public class DateUtil {
 		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
 	}
 
+	public static boolean isWithinDateTimeRange(LocalDateTime targetDate, LocalDateTime startDate, LocalDateTime endDate) {
+		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
+	}
+
 	public static String convertMillisToDateTime(long milliSeconds) {
 		return convertMillisToLocalDateTime(milliSeconds).toString();
 	}

@@ -308,11 +308,6 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return jiraService.getJiraIssueReleaseForProject(basicProjectConfigId);
 	}
 
-	public void getModifiedSprintDetailsFromBaseClass(List<SprintDetails> sprintDetails,
-			ConfigHelperService configHelperService) {
-		jiraService.processSprintBasedOnFieldMapping(sprintDetails, configHelperService);
-	}
-
 	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
 		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
