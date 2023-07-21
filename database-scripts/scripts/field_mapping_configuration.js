@@ -219,7 +219,9 @@ fieldMappings.forEach(function(fm) {
 
             "jiraRejectedInRefinementKPI139":jiraRejectedInRefinement,
             
-            "readyForDevelopmentStatusKPI138":readyForDevelopmentStatus
+            "readyForDevelopmentStatusKPI138":readyForDevelopmentStatus,
+
+//            "createdDate": new Date().toISOString()
           }
 //            $unset: {
 //                "defectPriority": "",
