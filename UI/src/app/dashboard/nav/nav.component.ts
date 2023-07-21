@@ -124,7 +124,6 @@ export class NavComponent implements OnInit {
       // Create a new
       this.worker = new Worker(new URL('../../app.worker',import.meta.url), { type: 'module' });
       this.worker.onmessage = ({ data }) => {
-        this.ga.setProjectList(data);
         this.stopWorker();
       };
       this.worker.postMessage(localStorage.getItem('auth_token'));
