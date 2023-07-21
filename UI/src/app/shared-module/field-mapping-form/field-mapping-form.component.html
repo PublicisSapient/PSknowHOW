@@ -22,12 +22,12 @@
             <div class="p-p-0">
                 <div class="p-mb-3 p-d-flex p-align-center p-justify-between" *ngFor="let field of formConfig[section]">
                     <label class="field-title">{{field['fieldLabel']}}&nbsp;<span class="fa fa-info-circle"
-                            aria-hidden="true" pTooltip='<span>
+                            aria-hidden="true" pTooltip="<span>
                                             Definition:
-                                            {{field.tooltip.definition}} <br><hr>
-                                            KPI Impacted:
-                                            {{field.tooltip.kpiImpacted}}
-                                            </span>' tooltipPosition="top" tooltipEvent="hover"
+                                            {{field.tooltip.definition}} <br>
+                                            {{field.tooltip.kpiImpacted ? '<hr>KPI Impacted:' : '' }}
+                                             {{field.tooltip.kpiImpacted ? field.tooltip.kpiImpacted : '' }}
+                                            </span>" tooltipPosition="top" tooltipEvent="hover"
                             tooltipStyleClass="tooltiptext" [escape]="false"></span>
                     </label>
                     <ng-container *ngIf="!field?.nestedFields else nestedFieldContainer">
