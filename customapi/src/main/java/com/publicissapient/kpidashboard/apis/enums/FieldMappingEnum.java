@@ -38,29 +38,39 @@ public enum FieldMappingEnum {
 					"storyFirstStatus",
 	"jiraTestAutomationIssueType",
 	"jiraStoryIdentification",
-	"jiraLiveStatusLTK",
-	"jiraLiveStatusNOPK",
-	"jiraLiveStatusNOSK",
-	"jiraLiveStatusNORK",
-	"jiraLiveStatusOTA", 
-	"ticketCountIssueType",
-
-	"kanbanRCACountIssueType",
-
-	"jiraTicketVelocityIssueType",
-
-	"ticketDeliverdStatus",
-	"jiraTicketClosedStatus",
-	"kanbanCycleTimeIssueType",
-	"jiraTicketTriagedStatus",
-
-	"jiraTicketRejectedStatus",
 
 	"jiraDefectDroppedStatus",
 	"productionDefectCustomField",
 	"productionDefectIdentifier",
 	"productionDefectValue",
 	"productionDefectComponentValue")),
+
+	KPI1("Issue Count", KPISource.JIRA.name(), Arrays.asList(
+			"jiraIssueTypeNames",
+			"storyFirstStatus",
+			"epicCostOfDelay", "epicRiskReduction",
+			"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize"
+			,"jiraIssueEpicType",
+			"rootCause"
+			,"additionalFilterConfig",
+			"estimationCriteria", "jiraStoryPointsCustomField",
+			"jiraLiveStatusLTK",
+			"jiraLiveStatusNOPK",
+			"jiraLiveStatusNOSK",
+			"jiraLiveStatusNORK",
+			"jiraLiveStatusOTA",
+			"ticketCountIssueType",
+
+			"kanbanRCACountIssueType",
+
+			"jiraTicketVelocityIssueType",
+
+			"ticketDeliverdStatus",
+			"jiraTicketClosedStatus",
+			"kanbanCycleTimeIssueType",
+			"jiraTicketTriagedStatus",
+
+			"jiraTicketRejectedStatus")),
 
 	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKpi40")),
 

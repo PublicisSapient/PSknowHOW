@@ -1148,7 +1148,7 @@ db.getCollection('field_mapping_structure').insert(
     },
     {
         "fieldName": "jiraLiveStatusNOPK",
-        "fieldLabel": "Live Status - Lead Time",
+        "fieldLabel": "Live Status - NOPK",
         "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
@@ -1158,7 +1158,7 @@ db.getCollection('field_mapping_structure').insert(
     },
     {
         "fieldName": "jiraLiveStatusNOSK",
-        "fieldLabel": "Live Status - Lead Time",
+        "fieldLabel": "Live Status - NOSK",
         "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
@@ -1168,7 +1168,7 @@ db.getCollection('field_mapping_structure').insert(
     },
     {
         "fieldName": "jiraLiveStatusNORK",
-        "fieldLabel": "Live Status - Lead Time",
+        "fieldLabel": "Live Status - NORK",
         "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
@@ -1178,7 +1178,7 @@ db.getCollection('field_mapping_structure').insert(
     },
     {
         "fieldName": "jiraLiveStatusOTA",
-        "fieldLabel": "Live Status - Lead Time",
+        "fieldLabel": "Live Status - OTA",
         "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
@@ -1559,7 +1559,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldLabel": "Status to Identify In Testing Status",
         "fieldType": "chips",
         "fieldCategory": "workflow",
-        "section": "Workflow Status Mapping",
+        "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "The status of Defect Issue Type which identifies the 'In-Testing' status in JIRA. <br> Example: Ready For Testing<hr>",
             "Kpi Impacted": "Indiviual Filter"
@@ -1569,7 +1569,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldLabel": "Status to Identify In Testing Status",
         "fieldType": "chips",
         "fieldCategory": "workflow",
-        "section": "Workflow Status Mapping",
+        "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "The status of Defect Issue Type which identifies the 'In-Testing' status in JIRA. <br> Example: Ready For Testing<hr>",
             "Kpi Impacted": "Indiviual Filter"
@@ -1579,7 +1579,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldLabel": "Status to Identify In Testing Status",
         "fieldType": "chips",
         "fieldCategory": "workflow",
-        "section": "Workflow Status Mapping",
+        "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "The status of Defect Issue Type which identifies the 'In-Testing' status in JIRA. <br> Example: Ready For Testing<hr>",
             "Kpi Impacted": "Indiviual Filter"
@@ -1773,33 +1773,6 @@ db.getCollection('field_mapping_structure').insert(
 }, {
     "fieldName": "jiraLiveStatusNOPK",
     "fieldLabel": "Live Status - NOPK",
-    "fieldType": "text",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "",
-    }
-}, {
-    "fieldName": "jiraLiveStatusNOSK",
-    "fieldLabel": "Live Status - NOSK",
-    "fieldType": "text",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "",
-    }
-}, {
-    "fieldName": "jiraLiveStatusNORK",
-    "fieldLabel": "Live Status - NORK",
-    "fieldType": "text",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "",
-    }
-}, {
-    "fieldName": "jiraLiveStatusOTA",
-    "fieldLabel": "Live Status - OTA",
     "fieldType": "text",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
