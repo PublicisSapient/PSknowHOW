@@ -22,7 +22,7 @@
         <div class="p-d-flex p-align-center">
             <a routerLink="/dashboard/Config/ToolMenu" pButton pRipple type="button" icon="pi pi-arrow-left"
                 class="p-button-raised p-button-secondary back-button p-mr-4"></a>
-            <h5 class="card__primary__title__text p-m-0">Field Mappings (Scrum)</h5>
+            <h5 class="card__primary__title__text p-m-0">Field Mappings ({{selectedConfig?.Type?.toLowerCase() === 'kanban' ? 'Kanban' : 'Scrum'}})</h5>
         </div>
         <div>
             <input type="button" class="btn-export p-mr-3" value="Export" (click)="export()" />

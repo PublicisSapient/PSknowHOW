@@ -3941,6 +3941,24 @@ it('should call post bitbucket kanban kpi',()=>{
   expect(spycreateAllKpiArray).toHaveBeenCalled();
 })
 
+it('should reload KPI once jira mapping saved ',()=>{
+  const KPiList = [{
+    id : "kpi1"
+  }];
+  const fakeKPiDetails = {
+    kpiDetails : {
+      kpiSource : 'jira',
+      kanban : true,
+      groupId : 1
+    }
+  }
+  spyOn(service,'getSelectedType').and.returnValue('kanban');
+  spyOn(helperService,'groupKpiFromMaster').and.returnValue({kpiList : KPiList})
+  const spy = spyOn(component,'postJiraKanbanKpi');
+  component.reloadKPI(fakeKPiDetails);
+  expect(spy).toBeDefined();
+})
+
 });
 
 

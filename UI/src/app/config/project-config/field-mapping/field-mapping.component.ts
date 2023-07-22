@@ -92,7 +92,8 @@ export class FieldMappingComponent implements OnInit {
   }
 
   getKPIFieldMappingRelationships() {
-    this.http.getKPIFieldMappingConfig(`${this.selectedConfig.id}/kpi0`).subscribe(response => {
+    const finalMappingURL = this.selectedConfig?.Type?.toLowerCase() === 'kanban' ? `${this.selectedConfig.id}/kpi1` : `${this.selectedConfig.id}/kpi0`
+    this.http.getKPIFieldMappingConfig(finalMappingURL).subscribe(response => {
       if(response?.fieldConfiguration){
         this.fieldMappingConfig = response.fieldConfiguration;
       }

@@ -1201,10 +1201,38 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }
     }
 
-    reloadKPI(event){
-        const currentKPIGroup  = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event['kpiDetail']['groupId'],'');
-                if (currentKPIGroup?.kpiList?.length > 0) {
-                    this.postJiraKpi(currentKPIGroup, 'jira');
+    reloadKPI(event) {
+        const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, '');
+        if (currentKPIGroup?.kpiList?.length > 0) {
+            const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
+            if (this.service.getSelectedType().toLowerCase() === 'kanban') {
+                switch (kpiSource) {
+                    case 'sonar':
+                        this.postSonarKanbanKpi(currentKPIGroup, 'sonar');
+                    case 'jenkins':
+                        this.postJenkinsKanbanKpi(currentKPIGroup, 'jenkins');
+                    case 'zypher':
+                        this.postZypherKanbanKpi(currentKPIGroup, 'zypher');
+                    case 'bitbucket':
+                        this.postBitBucketKanbanKpi(currentKPIGroup, 'bitbucket');
+                    default:
+                        this.postJiraKanbanKpi(currentKPIGroup, 'jira');
                 }
-      }
+            } else {
+                switch (kpiSource) {
+                    case 'sonar':
+                        this.postSonarKpi(currentKPIGroup, 'sonar');
+                    case 'jenkins':
+                        this.postJenkinsKpi(currentKPIGroup, 'jenkins');
+                    case 'zypher':
+                        this.postZypherKpi(currentKPIGroup, 'zypher');
+                    case 'bitbucket':
+                        this.postBitBucketKpi(currentKPIGroup, 'bitbucket');
+                    default:
+                        this.postJiraKpi(currentKPIGroup, 'jira');
+
+                }
+            }
+        }
+    }
 }
