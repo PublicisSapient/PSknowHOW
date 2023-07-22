@@ -1209,12 +1209,16 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 switch (kpiSource) {
                     case 'sonar':
                         this.postSonarKanbanKpi(currentKPIGroup, 'sonar');
+                        break;
                     case 'jenkins':
                         this.postJenkinsKanbanKpi(currentKPIGroup, 'jenkins');
+                        break;
                     case 'zypher':
                         this.postZypherKanbanKpi(currentKPIGroup, 'zypher');
+                        break;
                     case 'bitbucket':
                         this.postBitBucketKanbanKpi(currentKPIGroup, 'bitbucket');
+                        break;
                     default:
                         this.postJiraKanbanKpi(currentKPIGroup, 'jira');
                 }
@@ -1222,12 +1226,16 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 switch (kpiSource) {
                     case 'sonar':
                         this.postSonarKpi(currentKPIGroup, 'sonar');
+                        break;
                     case 'jenkins':
                         this.postJenkinsKpi(currentKPIGroup, 'jenkins');
+                        break;
                     case 'zypher':
                         this.postZypherKpi(currentKPIGroup, 'zypher');
+                        break;
                     case 'bitbucket':
                         this.postBitBucketKpi(currentKPIGroup, 'bitbucket');
+                        break;
                     default:
                         this.postJiraKpi(currentKPIGroup, 'jira');
 
