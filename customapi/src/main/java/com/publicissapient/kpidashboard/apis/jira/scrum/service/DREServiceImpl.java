@@ -187,8 +187,8 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		getModifiedSprintDetailsFromBaseClass(sprintDetails, configHelperService);
 		Set<String> totalNonBugIssues = new HashSet<>();
 		Set<String> totalIssue = new HashSet<>();
-		sprintDetails.stream().forEach(sprintDetail -> {
-			if (org.apache.commons.collections.CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
+		sprintDetails.forEach(sprintDetail -> {
+			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetail.getBasicProjectConfigId());
 				totalNonBugIssues.addAll(sprintDetail.getTotalIssues().stream()
 						.filter(sprintIssue -> !fieldMapping.getJiradefecttype().contains(sprintIssue.getTypeName()))
@@ -196,6 +196,11 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));
 			}
+			if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssuesAnotherSprint())) {
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+						CommonConstant.COMPLETED_ISSUES_ANOTHER_SPRINT));
+			}
+
 
 		});
 
