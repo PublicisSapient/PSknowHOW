@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -34,9 +35,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -68,6 +69,7 @@ import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
@@ -76,6 +78,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.model.kpivideolink.KPIVideoLink;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
@@ -559,13 +562,19 @@ public class KpiHelperService { // NOPMD
 
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
+			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
+					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
+
+			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = getMinimumClosedDateFromConfiguration(
+					projectWiseTotalSprintDetails);
+
 			sprintDetails.stream().forEach(dbSprintDetail -> {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(dbSprintDetail.getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusKpi39()).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKpi39(), projectWiseDuplicateIssuesWithMinCloseDate).get(0);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -634,7 +643,7 @@ public class KpiHelperService { // NOPMD
 				// to modify sprintdetails on the basis of configuration for the project
 				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						fieldMapping.getJiraIterationIssuetypeKPI138(),
-						fieldMapping.getJiraIterationCompletionStatusKPI138()).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKPI138(), null).get(0);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -1479,6 +1488,93 @@ public class KpiHelperService { // NOPMD
 			}
 			return false;
 		}
+	}
+
+	public Map<ObjectId, Map<String, List<LocalDateTime>>> getMinimumClosedDateFromConfiguration(
+			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails) {
+		Map<ObjectId, Set<String>> duplicateIssues = new HashMap<>();
+		Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
+		projectWiseTotalSprintDetails.forEach((key, value) -> {
+			List<String> allIssues = value.stream().flatMap(
+					sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(Collections.emptySet()).stream())
+					.map(SprintIssue::getNumber).collect(Collectors.toList());
+
+			Set<String> duplicate = allIssues.stream()
+					.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet().stream()
+					.filter(m -> m.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
+
+			duplicateIssues.put(key, duplicate);
+		});
+
+		if (!configHelperService.getFieldMappingMap().isEmpty() && !duplicateIssues.isEmpty()) {
+			Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
+					.filter(key -> configHelperService.getFieldMappingMap().containsKey(key))
+					.collect(Collectors.toMap(Function.identity(), key -> configHelperService.getFieldMappingMap()
+							.get(key).getJiraIterationCompletionStatusCustomField()));
+
+			projectWiseDuplicateIssuesWithMinCloseDate = getMinimumClosedDateFromCongiguration(duplicateIssues,
+					customFieldMapping);
+		}
+		return projectWiseDuplicateIssuesWithMinCloseDate;
+	}
+
+	private Map<ObjectId, Map<String, List<LocalDateTime>>> getMinimumClosedDateFromCongiguration(
+			Map<ObjectId, Set<String>> duplicateIssues, Map<ObjectId, List<String>> customFieldMapping) {
+		Map<ObjectId, Map<String, List<LocalDateTime>>> pair = new HashMap<>();
+		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+		mapOfFilters.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(),
+				duplicateIssues.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
+		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+				duplicateIssues.keySet().stream().map(ObjectId::toString).collect(Collectors.toList()));
+		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
+				.findByFilterAndFromStatusMap(mapOfFilters, new HashMap<>());
+
+		duplicateIssues.forEach((objectId, issues) -> {
+			List<String> customFields = customFieldMapping.getOrDefault(objectId, Collections.emptyList());
+			if (!customFields.isEmpty()) {
+				Map<String, List<LocalDateTime>> issueWiseMinDateTime = new HashMap<>();
+				for (String issue : issues) {
+					List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistoryList.stream()
+							.filter(history -> history.getStoryID().equalsIgnoreCase(issue)
+									&& objectId.toString().equalsIgnoreCase(history.getBasicProjectConfigId()))
+							.flatMap(history -> history.getStatusUpdationLog().stream())
+							.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn))
+							.collect(Collectors.toList());
+
+					if (!statusUpdationLog.isEmpty()) {
+						Map<String, LocalDateTime> minimumCompletedStatusWiseMap = new HashMap<>();
+						List<LocalDateTime> minimumDate = new ArrayList<>();
+
+						for (JiraHistoryChangeLog log : statusUpdationLog) {
+							String changedTo = log.getChangedTo();
+							if (customFields.contains(changedTo)) {
+								LocalDateTime updatedOn = log.getUpdatedOn();
+								minimumCompletedStatusWiseMap.put(changedTo, updatedOn);
+							} else if (!minimumCompletedStatusWiseMap.isEmpty()) {
+								LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream()
+										.min(LocalDateTime::compareTo).orElse(null);
+								if (minDate != null) {
+									minimumDate.add(minDate);
+									minimumCompletedStatusWiseMap.clear();
+								}
+							}
+						}
+
+						if (CollectionUtils.isEmpty(minimumDate)) {
+							LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream()
+									.min(LocalDateTime::compareTo).orElse(null);
+							if (minDate != null) {
+								minimumDate.add(minDate);
+								minimumCompletedStatusWiseMap.clear();
+							}
+						}
+						issueWiseMinDateTime.put(issue, minimumDate);
+					}
+				}
+				pair.put(objectId, issueWiseMinDateTime);
+			}
+		});
+		return pair;
 	}
 
 }

@@ -131,7 +131,7 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 				// to modify sprintdetails on the basis of configuration for the project
 				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						fieldMapping.getJiraIterationIssuetypeKPI119(),
-						fieldMapping.getJiraIterationCompletionStatusKPI119()).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKPI119(), null).get(0);
 
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);

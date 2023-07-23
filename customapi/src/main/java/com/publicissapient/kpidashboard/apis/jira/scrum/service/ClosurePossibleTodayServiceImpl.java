@@ -119,7 +119,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				// to modify sprintdetails on the basis of configuration for the project
 				sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						fieldMapping.getJiraIterationIssuetypeKPI122(),
-						fieldMapping.getJiraIterationCompletionStatusKPI122()).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKPI122(), null).get(0);
 				List<String> notCompletedIssues = KpiDataHelper
 						.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {

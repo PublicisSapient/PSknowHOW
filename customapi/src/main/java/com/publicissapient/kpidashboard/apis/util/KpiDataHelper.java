@@ -19,8 +19,11 @@
 package com.publicissapient.kpidashboard.apis.util;
 
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,13 +36,12 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Hours;
@@ -53,10 +55,11 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -667,8 +670,9 @@ public final class KpiDataHelper {
 	}
 
 	public static List<SprintDetails> processSprintBasedOnFieldMappings(List<SprintDetails> dbSprintDetails,
-			List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus) {
-		List<SprintDetails> updatedSprintDetails=new ArrayList<>(dbSprintDetails);
+			List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus,
+			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate) {
+		List<SprintDetails> updatedSprintDetails = new ArrayList<>(dbSprintDetails);
 		if (CollectionUtils.isNotEmpty(fieldMappingCompletionType)
 				|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
 			updatedSprintDetails.forEach(dbSprintDetail -> {
@@ -682,6 +686,7 @@ public final class KpiDataHelper {
 									: dbSprintDetail.getNotCompletedIssues());
 					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
 							fieldMappingCompletionType, fieldMappingCompletionStatus);
+					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus, projectWiseDuplicateIssuesWithMinCloseDate);
 					dbSprintDetail.setCompletedIssues(newCompletedSet);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
 					Set<SprintIssue> totalIssue = new HashSet<>();
@@ -693,6 +698,31 @@ public final class KpiDataHelper {
 		}
 		return updatedSprintDetails;
 	}
+
+	public static Set<SprintIssue> changeSprintDetails(SprintDetails sprintDetail, Set<SprintIssue> completedIssues,
+													   List<String> customCompleteStatus, Map<ObjectId, Map<String, List<LocalDateTime>>> issueWiseMinimumDates) {
+		if (CollectionUtils.isNotEmpty(customCompleteStatus) && CollectionUtils.isNotEmpty(completedIssues)
+				&& MapUtils.isNotEmpty(issueWiseMinimumDates)) {
+			ObjectId projectId = sprintDetail.getBasicProjectConfigId();
+			Map<String, List<LocalDateTime>> stringListMap = issueWiseMinimumDates.get(projectId);
+			if (MapUtils.isNotEmpty(stringListMap)) {
+				return completedIssues.stream().filter(completedIssue -> {
+					List<LocalDateTime> issueDateMap = stringListMap.get(completedIssue.getNumber());
+					if (CollectionUtils.isNotEmpty(issueDateMap)) {
+						return issueDateMap.stream()
+								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime,
+										LocalDateTime.ofInstant(Instant.parse(sprintDetail.getStartDate()),
+												ZoneId.systemDefault()),
+										LocalDateTime.ofInstant(Instant.parse(sprintDetail.getCompleteDate()),
+												ZoneId.systemDefault())));
+					}
+					return true;
+				}).collect(Collectors.toSet());
+			}
+		}
+		return completedIssues;
+	}
+
 
 	private static Set<SprintIssue> getCombinationalCompletedSet(Set<SprintIssue> typeWiseIssues,
 			Set<SprintIssue> statusWiseIssues) {

@@ -139,7 +139,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 				// to modify sprintdetails on the basis of configuration for the project
 				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						fieldMapping.getJiraIterationIssuetypeKPI131(),
-						fieldMapping.getJiraIterationCompletionStatusKPI131()).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKPI131(), null).get(0);
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);

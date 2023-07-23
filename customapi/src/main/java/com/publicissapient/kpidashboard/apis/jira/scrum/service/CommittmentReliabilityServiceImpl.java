@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -86,6 +88,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private KpiHelperService kpiHelperService;
 
 	@Autowired
 	private FilterHelperService flterHelperService;
@@ -268,6 +272,12 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		});
 
 		List<SprintDetails> sprintDetails = new ArrayList<>(sprintRepository.findBySprintIDIn(sprintList));
+		Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
+				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
+
+		Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService.getMinimumClosedDateFromConfiguration(
+				projectWiseTotalSprintDetails);
+
 		Set<String> totalIssue = new HashSet<>();
 		sprintDetails.stream().forEach(dbSprintDetail -> {
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -275,7 +285,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			// to modify sprintdetails on the basis of configuration for the project
 			SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 					fieldMapping.getJiraIterationIssuetypeKpi72(),
-					fieldMapping.getJiraIterationCompletionStatusKpi72()).get(0);
+					fieldMapping.getJiraIterationCompletionStatusKpi72(),projectWiseDuplicateIssuesWithMinCloseDate).get(0);
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));
