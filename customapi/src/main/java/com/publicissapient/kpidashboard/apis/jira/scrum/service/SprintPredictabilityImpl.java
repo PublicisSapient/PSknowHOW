@@ -1,5 +1,8 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.processSprintBasedOnFieldMappings;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,9 +15,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +51,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
@@ -173,15 +174,11 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 						sprintStatusList);
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
-			List<String> totalIssueSet = totalSprintDetails.stream().flatMap(sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(new HashSet<>()).stream()).map(SprintIssue::getNumber).collect(Collectors.toList());
-			mapOfFilters.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(),totalIssueSet);
-			mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-					basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMap(mapOfFilters, new HashMap<>());
-			mapOfFilters.clear();
-
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = totalSprintDetails.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
+
+			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService
+					.getMinimumClosedDateFromConfiguration(projectWiseTotalSprintDetails);
 
 			List<SprintDetails> projectWiseSprintDetails = new ArrayList<>();
 			projectWiseTotalSprintDetails.forEach((basicProjectConfigId, sprintDetailsList) -> {
@@ -193,9 +190,10 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 							.get(dbSprintDetail.getBasicProjectConfigId());
 					// to modify sprintdetails on the basis of configuration for the project
-					SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-							new ArrayList<>(),
-							fieldMapping.getJiraIterationCompletionStatusCustomField(),jiraIssueCustomHistoryList).get(0);
+					SprintDetails sprintDetail = processSprintBasedOnFieldMappings(
+							Collections.singletonList(dbSprintDetail), new ArrayList<>(),
+							fieldMapping.getJiraIterationCompletionStatusCustomField(),
+							projectWiseDuplicateIssuesWithMinCloseDate).get(0);
 					if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 						List<String> sprintWiseIssueIds = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 								sprintDetail, CommonConstant.COMPLETED_ISSUES);

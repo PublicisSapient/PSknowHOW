@@ -26,7 +26,6 @@ import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +41,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Hours;
@@ -59,7 +59,6 @@ import com.publicissapient.kpidashboard.common.model.application.CycleTimeValida
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -755,7 +754,7 @@ public final class KpiDataHelper {
 	}
 
 	public static List<SprintDetails> processSprintBasedOnFieldMappings(List<SprintDetails> dbSprintDetails,
-																		List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus, List<JiraIssueCustomHistory> jiraIssueCustomHistoryList) {
+																		List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus, Map<ObjectId, Map<String, List<LocalDateTime>>> minimumDates) {
 		List<SprintDetails> updatedSprintDetails=new ArrayList<>(dbSprintDetails);
 		if (CollectionUtils.isNotEmpty(fieldMappingCompletionType)
 				|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
@@ -770,8 +769,7 @@ public final class KpiDataHelper {
 									: dbSprintDetail.getNotCompletedIssues());
 					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
 							fieldMappingCompletionType, fieldMappingCompletionStatus);
-					//newCompletedSet=changeSprintDetails(newCompletedSet,jiraIssueCustomHistoryList,fieldMappingCompletionStatus);
-					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus, jiraIssueCustomHistoryList);
+					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus, minimumDates);
 					dbSprintDetail.setCompletedIssues(newCompletedSet);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
 					Set<SprintIssue> totalIssue = new HashSet<>();
@@ -784,29 +782,8 @@ public final class KpiDataHelper {
 		return updatedSprintDetails;
 	}
 
-	private static Set<SprintIssue> changeSprintDetails(Set<SprintIssue> newCompletedSet, Map<String, Boolean> jiraIssueCustomHistoryList, List<String> fieldMappingCompletionStatus) {
-		if (CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
-			Set<SprintIssue> completedSet= new HashSet<>();
-			for (SprintIssue sprintIssue : newCompletedSet) {
-				if(fieldMappingCompletionStatus.contains(sprintIssue.getStatus())) {
-					if (Boolean.TRUE.equals(!jiraIssueCustomHistoryList.get(sprintIssue.getNumber()))) {
-						completedSet.add(sprintIssue);
-
-						jiraIssueCustomHistoryList.put(sprintIssue.getNumber(), Boolean.TRUE);
-
-					}
-				}else{
-					jiraIssueCustomHistoryList.put(sprintIssue.getNumber(), Boolean.FALSE);
-				}
-
-		}
-
-	}
-		return newCompletedSet;
-	}
-
 	private static Set<SprintIssue> getCombinationalCompletedSet(Set<SprintIssue> typeWiseIssues,
-																 Set<SprintIssue> statusWiseIssues) {
+			Set<SprintIssue> statusWiseIssues) {
 		Set<SprintIssue> newCompletedSet;
 		if (CollectionUtils.isNotEmpty(typeWiseIssues) && CollectionUtils.isNotEmpty(statusWiseIssues)) {
 			newCompletedSet = new HashSet<>(CollectionUtils.intersection(typeWiseIssues, statusWiseIssues));
@@ -819,7 +796,7 @@ public final class KpiDataHelper {
 	}
 
 	private static Set<SprintIssue> filteringByFieldMapping(SprintDetails dbSprintDetail,
-															List<String> fieldMapingCompletionType, List<String> fieldMappingCompletionStatus) {
+			List<String> fieldMapingCompletionType, List<String> fieldMappingCompletionStatus) {
 		Set<SprintIssue> typeWiseIssues = new HashSet<>();
 		Set<SprintIssue> statusWiseIssues = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)
@@ -851,69 +828,29 @@ public final class KpiDataHelper {
 		return getCombinationalCompletedSet(typeWiseIssues, statusWiseIssues);
 	}
 
-
-
-
-	public static Set<SprintIssue> changeSprintDetails(SprintDetails sprintDetail,Set<SprintIssue> completedIssues,  List<String> customCompleteStatus,
-			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList) {
-		if (CollectionUtils.isNotEmpty(customCompleteStatus) && CollectionUtils.isNotEmpty(completedIssues)) {
-			Map<String, Map<LocalDateTime, String>> issueMap = checkIssueWiseCompletedMap(completedIssues,
-					customCompleteStatus, jiraIssueCustomHistoryList,sprintDetail);
-			Set<SprintIssue> newCompletedIssues = new HashSet<>();
-			for (SprintIssue completedIssue : completedIssues) {
-				Map<LocalDateTime, String> issueDateMap = issueMap.get(completedIssue.getNumber());
-				if (issueDateMap.keySet().stream()
-						.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime,
-								LocalDateTime.ofInstant(Instant.parse(sprintDetail.getStartDate()),
-										ZoneId.systemDefault()),
-								LocalDateTime.ofInstant(Instant.parse(sprintDetail.getCompleteDate()),
-										ZoneId.systemDefault())))) {
-					newCompletedIssues.add(completedIssue);
-				}
+	public static Set<SprintIssue> changeSprintDetails(SprintDetails sprintDetail, Set<SprintIssue> completedIssues,
+			List<String> customCompleteStatus, Map<ObjectId, Map<String, List<LocalDateTime>>> issueWiseMinimumDates) {
+		if (CollectionUtils.isNotEmpty(customCompleteStatus) && CollectionUtils.isNotEmpty(completedIssues)
+				&& MapUtils.isNotEmpty(issueWiseMinimumDates)) {
+			ObjectId projectId = sprintDetail.getBasicProjectConfigId();
+			Map<String, List<LocalDateTime>> stringListMap = issueWiseMinimumDates.get(projectId);
+			if (MapUtils.isNotEmpty(stringListMap)) {
+				return completedIssues.stream().filter(completedIssue -> {
+					List<LocalDateTime> issueDateMap = stringListMap.get(completedIssue.getNumber());
+					if (CollectionUtils.isNotEmpty(issueDateMap)) {
+						return issueDateMap.stream()
+								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime,
+										LocalDateTime.ofInstant(Instant.parse(sprintDetail.getStartDate()),
+												ZoneId.systemDefault()),
+										LocalDateTime.ofInstant(Instant.parse(sprintDetail.getCompleteDate()),
+												ZoneId.systemDefault())));
+					}
+					return true;
+				}).collect(Collectors.toSet());
 			}
-			return newCompletedIssues;
 		}
 		return completedIssues;
 	}
 
-	private static Map<String, Map<LocalDateTime, String>> checkIssueWiseCompletedMap(Set<SprintIssue> completedIssues,
-			List<String> jiraIterationCompletionStatusCustomField,
-			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList, SprintDetails sprintDetail) {
-
-		Map<String, Map<LocalDateTime, String>> issueWiseMinimumDate = new HashMap<>();
-
-		for (SprintIssue completedIssue : completedIssues) {
-			Map<LocalDateTime, String> minimumDate = new HashMap<>();
-			List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistoryList.stream()
-					.filter(history -> history.getStoryID().equalsIgnoreCase(completedIssue.getNumber()) && sprintDetail
-							.getBasicProjectConfigId().toString().equalsIgnoreCase(history.getBasicProjectConfigId()))
-					.flatMap(history -> history.getStatusUpdationLog().stream())
-					.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).collect(Collectors.toList());
-
-			Map<String, LocalDateTime> minimumCompletedStatusWiseMap = new HashMap<>();
-
-			for (JiraHistoryChangeLog log : statusUpdationLog) {
-				String changedTo = log.getChangedTo();
-
-				if (jiraIterationCompletionStatusCustomField.contains(changedTo)) {
-					minimumCompletedStatusWiseMap.put(changedTo, log.getUpdatedOn());
-				} else if (!minimumCompletedStatusWiseMap.isEmpty()) {
-					Map.Entry<String, LocalDateTime> entry = minimumCompletedStatusWiseMap.entrySet().stream()
-							.min(Map.Entry.comparingByValue()).orElse(null);
-
-					minimumDate.put(entry.getValue(), entry.getKey());
-					minimumCompletedStatusWiseMap.clear();
-				}
-			}
-			if(MapUtils.isEmpty(minimumDate)){
-				Map.Entry<String, LocalDateTime> entry = minimumCompletedStatusWiseMap.entrySet().stream()
-						.min(Map.Entry.comparingByValue()).orElse(null);
-				minimumDate.put(entry.getValue(), entry.getKey());
-				minimumCompletedStatusWiseMap.clear();
-			}
-			issueWiseMinimumDate.put(completedIssue.getNumber(), minimumDate);
-		}
-		return issueWiseMinimumDate;
-	}
 
 }

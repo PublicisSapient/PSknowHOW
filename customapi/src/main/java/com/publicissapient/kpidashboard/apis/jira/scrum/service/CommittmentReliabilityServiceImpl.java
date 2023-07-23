@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
@@ -93,6 +95,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private KpiHelperService kpiHelperService;
 
 	@Autowired
 	private FilterHelperService flterHelperService;
@@ -275,12 +279,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
-		List<String> totalIssueSet = sprintDetails.stream().flatMap(sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(new HashSet<>()).stream()).map(SprintIssue::getNumber).collect(Collectors.toList());
-		mapOfFilters.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(),totalIssueSet);
-		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMap(mapOfFilters, new HashMap<>());
-		mapOfFilters.clear();
+		Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
+				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
+
+		Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService.getMinimumClosedDateFromConfiguration(
+				projectWiseTotalSprintDetails);
 
 		Set<String> totalIssue = new HashSet<>();
 		sprintDetails.stream().forEach(dbSprintDetail -> {
@@ -289,7 +292,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			// to modify sprintdetails on the basis of configuration for the project
 			SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 					new ArrayList<>(),
-					fieldMapping.getJiraIterationCompletionStatusCustomField(),jiraIssueCustomHistoryList).get(0);
+					fieldMapping.getJiraIterationCompletionStatusCustomField(),projectWiseDuplicateIssuesWithMinCloseDate).get(0);
 
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
