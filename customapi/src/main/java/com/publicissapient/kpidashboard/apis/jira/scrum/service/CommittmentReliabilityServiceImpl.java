@@ -79,7 +79,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private static final String INITIALISSUE_ORIGINAL_ESTIMATE = "initialIssueOriginalEstimate";
 	private static final String INITIALCMPLTD_ORIGINAL_ESTIMATE = "initialCompletedIssueOriginalEstimate";
 	private static final String SPECIAL_SYMBOL ="#";
-	private static  final String ALL ="Overall";
+
 	@Autowired
 	private SprintRepository sprintRepository;
 	@Autowired
@@ -136,7 +136,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			DataCountGroup dataCountGroup = new DataCountGroup();
 			List<DataCount> dataList = new ArrayList<>();
 			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
-			String[] issueFilter = issueType.split("#");
+			//split for filters
+			String[] issueFilter = issueType.split(SPECIAL_SYMBOL);
 			dataCountGroup.setFilter1(issueFilter[0]);
 			dataCountGroup.setFilter2(issueFilter[1]);
 			dataCountGroup.setValue(dataList);
@@ -233,22 +234,25 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			}
 
 			Map<String, Double> commitmentHowerMap = new HashMap<>();
-			List<String> uniqueIssues = totalPresentJiraIssue.stream().distinct().map(JiraIssue::getTypeName).distinct().collect(Collectors.toList());
+			List<String> uniqueIssues = allJiraIssue .stream().distinct().map(JiraIssue::getTypeName).distinct()
+					.collect(Collectors.toList());
 			Map<String, List<JiraIssue>> totalPresentJiraIssueGroup = getGroupByAllIssues(totalPresentJiraIssue);
-			Map<String, List<JiraIssue>> totalPresentCompletedIssueGroup = getGroupByAllIssues(totalPresentCompletedIssue);
+			Map<String, List<JiraIssue>> totalPresentCompletedIssueGroup = getGroupByAllIssues(
+					totalPresentCompletedIssue);
 			Map<String, List<JiraIssue>> totalPresentInitialIssueGroup = getGroupByAllIssues(totalPresentInitialIssue);
-			Map<String, List<JiraIssue>> totalPresentCompltdInitialIssueGroup = getGroupByAllIssues(totalPresentCompltdInitialIssue);
-			Map<String, Long> commitmentMap= null;
+			Map<String, List<JiraIssue>> totalPresentCompltdInitialIssueGroup = getGroupByAllIssues(
+					totalPresentCompltdInitialIssue);
+			Map<String, Long> commitmentMap = null;
 			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
-		         for(String issues : uniqueIssues ) {
-					 commitmentMap = getCommitmentMap(totalPresentJiraIssueGroup.getOrDefault(issues, new ArrayList<>()), totalPresentCompletedIssueGroup.getOrDefault(issues, new ArrayList<>()),
-							 commitmentHowerMap, fieldMapping, totalPresentInitialIssueGroup.getOrDefault(issues, new ArrayList<>()),
-							 totalPresentCompltdInitialIssueGroup.getOrDefault(issues, new ArrayList<>()),issues);
-					 prepareDataCount( commitmentHowerMap,commitmentMap,trendLineName,node,fieldMapping, dataCountMap );
-				 }
-			commitmentMap = getCommitmentMap(totalPresentJiraIssue, totalPresentCompletedIssue,
-					 commitmentHowerMap, fieldMapping, totalPresentInitialIssue,
-					totalPresentCompltdInitialIssue,ALL);
+			for (String issueType : uniqueIssues) {
+				commitmentMap = getCommitmentMap(totalPresentJiraIssueGroup.getOrDefault(issueType, new ArrayList<>()),
+						totalPresentCompletedIssueGroup.getOrDefault(issueType, new ArrayList<>()), commitmentHowerMap,
+						fieldMapping, totalPresentInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()),
+						totalPresentCompltdInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()), issueType);
+				prepareDataCount(commitmentHowerMap, commitmentMap, trendLineName, node, fieldMapping, dataCountMap);
+			}
+			commitmentMap = getCommitmentMap(totalPresentJiraIssue, totalPresentCompletedIssue, commitmentHowerMap,
+					fieldMapping, totalPresentInitialIssue, totalPresentCompltdInitialIssue, CommonConstant.OVERALL);
 			CommitmentReliabilityValidationData reliabilityValidationData = new CommitmentReliabilityValidationData();
 			reliabilityValidationData.setTotalIssueNumbers(totalPresentJiraIssue);
 			reliabilityValidationData.setCompletedIssueNumber(totalPresentCompletedIssue);
@@ -256,8 +260,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			reliabilityValidationData.setInitialCompletedIssueNumber(totalPresentCompltdInitialIssue);
 			validationDataList.add(reliabilityValidationData);
 			populateExcelData(requestTrackerId, excelData, validationDataList, node, fieldMapping);
-			prepareDataCount( commitmentHowerMap,commitmentMap,trendLineName,node,fieldMapping, dataCountMap )  ;
-
+			prepareDataCount(commitmentHowerMap, commitmentMap, trendLineName, node, fieldMapping, dataCountMap);
 
 			mapTmp.get(node.getId()).setValue(dataCountMap);
 
@@ -280,7 +283,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			dataCount.setSSprintName(node.getSprintFilter().getName());
 			dataCount.setValue(map.getValue());
 			dataCount.setKpiGroup(map.getKey());
-			String[] keyIssues = map.getKey().split("#");
+			//split for filter
+			String[] keyIssues = map.getKey().split(SPECIAL_SYMBOL);
 			dataCount.setHoverValue(generateHowerMap(commitmentHowerMap, keyIssues[0], fieldMapping));
 			dataCountMap.put(map.getKey(), new ArrayList<>(Arrays.asList(dataCount)));
 		}
