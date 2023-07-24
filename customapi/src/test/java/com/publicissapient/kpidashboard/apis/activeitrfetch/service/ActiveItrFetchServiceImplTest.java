@@ -60,7 +60,7 @@ public class ActiveItrFetchServiceImplTest {
 
 
         // Mock repository method call
-        when(activeItrFetchRepository.findFirstBySprintIdOrderByLastSyncDateTimeDesc(validSprintId))
+        when(activeItrFetchRepository.findBySprintId(validSprintId))
                 .thenReturn(fetchRecord);
 
         // Call the method under test
@@ -94,7 +94,7 @@ public class ActiveItrFetchServiceImplTest {
 		String validSprintId = "Sprint456";
 
 		// Mock repository method call (returning null)
-		when(activeItrFetchRepository.findFirstBySprintIdOrderByLastSyncDateTimeDesc(validSprintId)).thenReturn(null);
+		when(activeItrFetchRepository.findBySprintId(validSprintId)).thenReturn(null);
 
 		// Call the method under test
 		ServiceResponse response = activeItrFetchService.getActiveSprintFetchStatus(validSprintId);

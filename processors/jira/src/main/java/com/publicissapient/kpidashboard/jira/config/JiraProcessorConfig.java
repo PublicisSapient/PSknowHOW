@@ -79,4 +79,5 @@ public class JiraProcessorConfig {
 	private Integer prevMonthCountToFetchData;
 	private String jiraSubtaskApi;
 	private String jiraCloudSubtaskApi;
+	private List<String> typeValueForSubTask;
 }

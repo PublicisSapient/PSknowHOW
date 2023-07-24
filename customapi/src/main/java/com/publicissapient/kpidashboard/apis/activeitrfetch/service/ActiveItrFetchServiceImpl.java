@@ -43,7 +43,7 @@ public class ActiveItrFetchServiceImpl implements ActiveItrFetchService {
 		}
 		// fetching the latest record from db
 		ActiveItrFetchDetails fetchRecord = activeItrFetchRepository
-				.findFirstBySprintIdOrderByLastSyncDateTimeDesc(sprintId);
+				.findBySprintId(sprintId);
 
 		// checking if fetchRecord is not null
 		if (fetchRecord != null) {

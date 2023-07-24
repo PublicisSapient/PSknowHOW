@@ -22,13 +22,17 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -69,6 +73,8 @@ import com.publicissapient.kpidashboard.jira.processor.mode.ModeBasedProcessor;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 @Component
 @Slf4j
 public class FetchSprintDataServiceImpl extends ModeBasedProcessor {
@@ -99,9 +105,8 @@ public class FetchSprintDataServiceImpl extends ModeBasedProcessor {
 	SprintRepository sprintRepository;
 	@Autowired
 	ScrumJiraIssueClientImpl scrumJiraIssueClientImpl;
-    @Autowired
-    ActiveItrFetchRepository activeItrFetchRepository;
-
+	@Autowired
+	ActiveItrFetchRepository activeItrFetchRepository;
 
 	public boolean fetchSprintData(String sprintID) {
 		boolean executionStatus = true;
@@ -110,11 +115,85 @@ public class FetchSprintDataServiceImpl extends ModeBasedProcessor {
 
 		Optional<ProjectBasicConfig> projectBasicConfig = projectBasicConfigRepository
 				.findById(sprintDetails.getBasicProjectConfigId());
+
 		FieldMapping fieldMapping = fieldMappingRepository
 				.findByBasicProjectConfigId(sprintDetails.getBasicProjectConfigId());
+
 		Map<String, ProjectConfFieldMapping> projectMapConfig = createProjectConfigMap(
 				Collections.singletonList(projectBasicConfig.get()), Collections.singletonList(fieldMapping));
+
 		ProjectConfFieldMapping projectConfig = projectMapConfig.get(projectBasicConfig.get().getProjectName());
+
+		JiraAdapter jiraAdapter = getJiraAdapter(projectConfig);
+
+		try {
+			// fetching the sprint details
+			for (String boardId : originalBoardIds) {
+				List<SprintDetails> sprintDetailsList = sprintClient.getSprints(projectConfig, boardId, jiraAdapter);
+				if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
+					Set<SprintDetails> sprintDetailSet = sprintDetailsList.stream()
+							.filter(s -> s.getSprintID().equalsIgnoreCase(sprintID)).collect(Collectors.toSet());
+					sprintClient.processSprints(projectConfig, sprintDetailSet, jiraAdapter, true);
+				}
+			}
+			log.info("Done sprint fetching");
+
+			SprintDetails updatedSprintDetails = sprintRepository.findBySprintID(sprintID);
+
+			// collecting the jiraIssue & history of to be updated
+			Set<String> issuesToUpdate = Optional.ofNullable(updatedSprintDetails.getTotalIssues())
+					.map(Collection::stream).orElse(Stream.empty()).map(SprintIssue::getNumber)
+					.collect(Collectors.toSet());
+
+			issuesToUpdate.addAll(Optional.ofNullable(updatedSprintDetails.getPuntedIssues()).map(Collection::stream)
+					.orElse(Stream.empty()).map(SprintIssue::getNumber).collect(Collectors.toSet()));
+
+			issuesToUpdate.addAll(
+					Optional.ofNullable(updatedSprintDetails.getCompletedIssuesAnotherSprint()).map(Collection::stream)
+							.orElse(Stream.empty()).map(SprintIssue::getNumber).collect(Collectors.toSet()));
+
+			// checking if subtask as a bug in fieldMapping
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && !Collections
+					.disjoint(fieldMapping.getJiradefecttype(), jiraProcessorConfig.getTypeValueForSubTask())) {
+
+				List<String> allSubtaskKeys = ((OnlineAdapter) jiraAdapter).getSubtask(projectConfig,
+						new ArrayList<>(issuesToUpdate));
+				issuesToUpdate.addAll(allSubtaskKeys);
+			}
+
+			// fetching & updating the jira_issue & jira_issue_history
+			scrumJiraIssueClientImpl.processesJiraIssuesSprintFetch(projectConfig, jiraAdapter, false,
+					new ArrayList<>(issuesToUpdate));
+
+		} catch (InterruptedException e) {
+			executionStatus = false;
+			log.error("Interruption thrown while sprint fetch for sprint {}", sprintID);
+		} catch (Exception e) {
+			log.error("Got error while fetching sprint data.", e);
+			executionStatus = false;
+		}
+		long endTime = System.currentTimeMillis();
+		LocalDateTime time = DateUtil.convertMillisToLocalDateTime(endTime);
+		// saving the execution details
+		ActiveItrFetchDetails fetchDetails = activeItrFetchRepository.findBySprintId(sprintID);
+		fetchDetails = fetchDetails == null ? new ActiveItrFetchDetails() : fetchDetails;
+		fetchDetails.setSprintId(sprintID);
+		fetchDetails.setLastSyncDateTime(time);
+		if (executionStatus) {
+			fetchDetails.setErrorInFetch(false);
+			fetchDetails.setFetchSuccessful(true);
+			// clearing cache
+			jiraRestClientFactory.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
+
+		} else {
+			fetchDetails.setErrorInFetch(true);
+			fetchDetails.setFetchSuccessful(false);
+		}
+		activeItrFetchRepository.save(fetchDetails);
+		return executionStatus;
+	}
+
+	private JiraAdapter getJiraAdapter(ProjectConfFieldMapping projectConfig) {
 		JiraAdapter jiraAdapter = null;
 		ProcessorJiraRestClient client;
 		List<ProjectToolConfig> jiraDetails = toolRepository.findByToolNameAndBasicProjectConfigId(
@@ -130,74 +209,14 @@ public class FetchSprintDataServiceImpl extends ModeBasedProcessor {
 					KerberosClient krb5Client = new KerberosClient(conn.getJaasConfigFilePath(),
 							conn.getKrb5ConfigFilePath(), conn.getJaasUser(), conn.getSamlEndPoint(),
 							conn.getBaseUrl());
-					client = getProcessorRestClient(Collections.singletonList(projectBasicConfig.get()), projectConfig,
-							isOauth, conn, krb5Client);
+					client = getProcessorRestClient(projectConfig, isOauth, conn, krb5Client);
 
 					jiraAdapter = new OnlineAdapter(jiraProcessorConfig, client, aesEncryptionService,
 							toolCredentialProvider, krb5Client);
 				}
 			}
 		}
-		try {
-			// fetching the sprint details
-			for (String boardId : originalBoardIds) {
-				List<SprintDetails> sprintDetailsList = sprintClient.getSprints(projectConfig, boardId, jiraAdapter);
-				if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
-					Set<SprintDetails> sprintDetailSet = sprintDetailsList.stream()
-							.filter(s -> s.getSprintID().equalsIgnoreCase(sprintID)).collect(Collectors.toSet());
-					try {
-						sprintClient.processSprints(projectConfig, sprintDetailSet, jiraAdapter, true);
-					} catch (InterruptedException e) {
-						executionStatus = false;
-                        log.error("Got error while fetching sprintDetails.", e);
-					}
-				}
-			}
-			log.info("Done sprint fetching");
-
-			SprintDetails updatedSprintDetails = sprintRepository.findBySprintID(sprintID);
-
-			//updating the jiraIssue & history of the sprint
-			Set<String> issuesToUpdate = updatedSprintDetails.getTotalIssues().stream().map(SprintIssue::getNumber)
-					.collect(Collectors.toSet());
-			issuesToUpdate.addAll(updatedSprintDetails.getPuntedIssues().stream().map(SprintIssue::getNumber)
-					.collect(Collectors.toSet()));
-			issuesToUpdate.addAll(updatedSprintDetails.getCompletedIssuesAnotherSprint().stream()
-					.map(SprintIssue::getNumber).collect(Collectors.toSet()));
-
-			// checking if subtask as a bug in fieldMapping
-			FieldMapping projFieldMapping = projectConfig.getFieldMapping();
-			if (CollectionUtils.isNotEmpty(projFieldMapping.getJiradefecttype()) &&
-					(fieldMapping.getJiradefecttype().contains("Studio Task") ||
-							fieldMapping.getJiradefecttype().contains("Task"))) {
-
-				List<String> allSubtaskKeys = ((OnlineAdapter) jiraAdapter).getSubtask(projectConfig,
-						new ArrayList<>(issuesToUpdate));
-				issuesToUpdate.addAll(allSubtaskKeys);
-			}
-
-			// fetching & updating the jira_issue & jira_issue_history
-			 scrumJiraIssueClientImpl.processesJiraIssuesSprintFetch(projectConfig,jiraAdapter,false,
-			 new ArrayList<>(issuesToUpdate));
-
-		} catch (Exception e) {
-			log.error("Got error while fetching sprint data.", e);
-			executionStatus = false;
-		}
-		long endTime = System.currentTimeMillis();
-		LocalDateTime time = DateUtil.convertMillisToLocalDateTime(endTime);
-		ActiveItrFetchDetails fetchDetails = new ActiveItrFetchDetails();
-		fetchDetails.setSprintId(sprintID);
-		fetchDetails.setLastSyncDateTime(time);
-		if (executionStatus) {
-			fetchDetails.setErrorInFetch(false);
-			fetchDetails.setFetchSuccessful(true);
-		} else {
-			fetchDetails.setErrorInFetch(true);
-			fetchDetails.setFetchSuccessful(false);
-		}
-        activeItrFetchRepository.save(fetchDetails);
-		return executionStatus;
+		return jiraAdapter;
 	}
 
 	@Override
@@ -210,17 +229,17 @@ public class FetchSprintDataServiceImpl extends ModeBasedProcessor {
 		return null;
 	}
 
-	private ProcessorJiraRestClient getProcessorRestClient(List<ProjectBasicConfig> projectConfigList,
-			ProjectConfFieldMapping entry, boolean isOauth, Connection conn, KerberosClient krb5Client) {
+	private ProcessorJiraRestClient getProcessorRestClient(ProjectConfFieldMapping entry, boolean isOauth,
+			Connection conn, KerberosClient krb5Client) {
 		if (conn.isJaasKrbAuth()) {
 			return jiraRestClientFactory.getSpnegoSamlClient(krb5Client);
 		} else {
-			return getProcessorJiraRestClient(projectConfigList, entry, isOauth, conn);
+			return getProcessorJiraRestClient(entry, isOauth, conn);
 		}
 	}
 
-	private ProcessorJiraRestClient getProcessorJiraRestClient(List<ProjectBasicConfig> projectConfigList,
-			ProjectConfFieldMapping entry, boolean isOauth, Connection conn) {
+	private ProcessorJiraRestClient getProcessorJiraRestClient(ProjectConfFieldMapping entry, boolean isOauth,
+			Connection conn) {
 		ProcessorJiraRestClient client;
 
 		String username = "";

@@ -25,6 +25,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ActiveItrFetchRepository extends MongoRepository<ActiveItrFetchDetails, ObjectId> {
-	ActiveItrFetchDetails findFirstBySprintIdOrderByLastSyncDateTimeDesc(String sprintId);
+	ActiveItrFetchDetails findBySprintId(String sprintId);
 
 }
