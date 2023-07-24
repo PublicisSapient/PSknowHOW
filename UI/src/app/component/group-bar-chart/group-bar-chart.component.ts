@@ -342,7 +342,7 @@ export class GroupBarChartComponent implements OnChanges {
     })
 
     legendDiv.html(htmlString)
-      .style('left', 40 + 'px')
+      .style('left', 25 + 'px')
       .style('bottom', 20 + 'px')
       .style('top', y[0] + 30 + 'px');
   }

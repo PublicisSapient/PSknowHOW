@@ -159,3 +159,7 @@ label.btn-import-label {
 .w-60vw{
   width: 60vw;
 }
+
+::ng-deep .mapping-selection-popup .p-dialog-content{
+  overflow-y: hidden;;
+}
