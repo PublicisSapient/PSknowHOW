@@ -1107,24 +1107,9 @@ export class HttpService {
 
   getActiveIterationStatus(postData){
     return this.http.post(this.activeIterationUrl + '/'+ postData.sprintId,{});
-  //   return of({
-  //     "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
-  //     "success": true
-  // });
   }
 
   getactiveIterationfetchStatus(sprintId){
     return this.http.get(this.activeIterationfetchStatusUrl+'/' + sprintId);
-  //   return of({
-  //     "message": "Successfully fetched last sync details from db",
-  //     "success": true,
-  //     "data": {
-  //         "id": "64ba0f5f56af7e18da9da925",
-  //         "sprintId": "42842_KnowHOW_6360fefc3fa9e175755f0728",
-  //         "fetchSuccessful": true,
-  //        "errorInFetch": true,
-  //         "lastSyncDateTime": "2023-07-21T10:23:51.845"
-  //     }
-  // },delay(2000));
   }
 }

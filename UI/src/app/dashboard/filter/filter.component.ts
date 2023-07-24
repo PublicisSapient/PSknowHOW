@@ -44,6 +44,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
 
+  subject = new Subject();
   isSuperAdmin = false;
   masterData: any = {};
   filterData: any = [];
@@ -160,6 +161,8 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {
+        this.lastSyncData ={};
+        this.subject.next(true);
         this.selectedTab = data.selectedTab;
         if (this.selectedTab?.toLowerCase() === 'iteration') {
           this.service.setEmptyFilter();
@@ -1047,6 +1050,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     1: onload
     2: onchange */
   handleIterationFilters(level) {
+    this.lastSyncData={};
+    this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
       this.service.setNoSprints(false);
       if (level?.toLowerCase() === 'project') {
@@ -1168,9 +1173,10 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     } else {
       this.selectedProjectLastSyncStatus = "";
-      this.selectedProjectLastSyncDate = "NA"
+      this.selectedProjectLastSyncDate = "NA";
    }
-   this.fetchData();
+  //  this.fetchData();
+  this.fetchActiveIterationStatus();
   }
   setSelectedDateType(label: string) {
     this.selectedDayType = label;
@@ -1365,44 +1371,54 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
-  fetchData(){
+  fetchActiveIterationStatus(){
+    const sprintId = this.filterForm.get('selectedSprintValue')?.value;
+    const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
+    if (sprintState?.toLowerCase() === 'active') {
+      this.httpService.getactiveIterationfetchStatus(sprintId).subscribe(response =>{
+        if(response['data']?.fetchSuccessful === true){
+          this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+          this.selectedProjectLastSyncStatus = 'SUCCESS';
+        }else if(response['data']?.errorInFetch === true){
+          this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+          this.selectedProjectLastSyncStatus = 'FAILURE';
+        }
+      });
+    }
+  }
+
+  fetchData() {
     const sprintId = this.filterForm.get('selectedSprintValue')?.value;
     const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
     if (sprintState?.toLowerCase() === 'active') {
       this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
         if (activeSprintStatus['success']) {
-          const subject = new Subject();
-          interval(3000).pipe(switchMap(()=> this.httpService.getactiveIterationfetchStatus(sprintId)),takeUntil(subject)).subscribe((response) => {
-              if(response?.['success']){
-                this.lastSyncData = response['data'];
-                if(response['data']?.errorInFetch){
-                  if (response['data']?.fetchSuccessful === true) {
-                    this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
-                    this.selectedProjectLastSyncStatus = 'SUCCESS';
-                  } else {
-                    //check if previous sync also failed in that case show lastest fail date and time
-                    if (!this.selectedProjectLastSyncDetails.executionSuccess) {
-                      const selectedProjectLastSyncDateTime = new Date(this.selectedProjectLastSyncDetails.executionEndedAt);
-                      const updatedLastSyncDateTime = new Date(response['data'].lastSyncDateTime);
-                      if (updatedLastSyncDateTime.getTime() - selectedProjectLastSyncDateTime.getTime() > 0) {
-                        this.selectedProjectLastSyncDate = updatedLastSyncDateTime;
-                      }
-                    }
-                  }
-                  subject.next(true);
-                }
-              }else{
-                subject.next(true);
-                this.lastSyncData ={};
+          interval(10000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
+            if (response?.['success']) {
+              this.selectedProjectLastSyncStatus = '';
+              this.lastSyncData = response['data'];
+              if (response['data']?.fetchSuccessful === true) {
+                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+                this.selectedProjectLastSyncStatus = 'SUCCESS';
+                this.subject.next(true);
+              }else if(response['data']?.errorInFetch){
+                this.lastSyncData = {};
+                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+                this.selectedProjectLastSyncStatus = 'FAILURE';
+                this.subject.next(true);
               }
-            }, error => {
-              subject.next(true);
-              this.lastSyncData ={};
-              this.messageService.add({
-                severity: 'error',
-                summary: 'Error in syncing data. Please try after some time.',
-              });
+            } else {
+              this.subject.next(true);
+              this.lastSyncData = {};
+            }
+          }, error => {
+            this.subject.next(true);
+            this.lastSyncData = {};
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error in syncing data. Please try after some time.',
             });
+          });
         } else {
           this.lastSyncData = {};
         }
