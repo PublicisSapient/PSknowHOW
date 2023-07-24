@@ -100,7 +100,7 @@ public class SprintTraceLogServiceImplTest {
 		ServiceResponse response = activeItrFetchService.getActiveSprintFetchStatus(validSprintId);
 
 		// Assert the response
-		assertFalse(response.getSuccess());
+		assertTrue(response.getSuccess());
 		assertEquals(response.getMessage(), "No sync record found.");
 		assertNull(response.getData());
 	}
