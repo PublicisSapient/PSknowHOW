@@ -24,7 +24,7 @@ import {
   HttpErrorResponse,
 } from '@angular/common/http';
 import { Observable, of, forkJoin, BehaviorSubject } from 'rxjs';
-import { catchError, map, mapTo, tap } from 'rxjs/operators';
+import { catchError, delay, map, mapTo, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { APP_CONFIG, IAppConfig } from './app.config';
 import { Router } from '@angular/router';
@@ -171,6 +171,8 @@ export class HttpService {
     this.baseUrl + '/api/capacity/jira/happiness';
   userName: string;
   userEmail: string;
+  private activeIterationUrl =  this.baseUrl + '/api/activeIteration/fetch';
+  private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -1101,5 +1103,28 @@ export class HttpService {
       `${this.gitActionWorkflowNameUrl}/${data.connectionID}`,
       data,
     );
+  }
+
+  getActiveIterationStatus(postData){
+    return this.http.post(this.activeIterationUrl, postData);
+  //   return of({
+  //     "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
+  //     "success": true
+  // });
+  }
+
+  getactiveIterationfetchStatus(sprintId){
+    return this.http.get(this.activeIterationfetchStatusUrl+'/' + sprintId);
+  //   return of({
+  //     "message": "Successfully fetched last sync details from db",
+  //     "success": true,
+  //     "data": {
+  //         "id": "64ba0f5f56af7e18da9da925",
+  //         "sprintId": "42842_KnowHOW_6360fefc3fa9e175755f0728",
+  //         "fetchSuccessful": true,
+  //        "errorInFetch": true,
+  //         "lastSyncDateTime": "2023-07-21T10:23:51.845"
+  //     }
+  // },delay(2000));
   }
 }

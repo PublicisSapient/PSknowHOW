@@ -28,8 +28,9 @@ import { MessageService, MenuItem } from 'primeng/api';
 import { faRotateRight } from '@fortawesome/fontawesome-free';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
-import { first } from 'rxjs/operators';
+import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { interval, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-filter',
@@ -1367,29 +1368,53 @@ export class FilterComponent implements OnInit, OnDestroy {
   fetchData(){
     const sprintId = this.filterForm.get('selectedSprintValue')?.value;
     const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
-    if(sprintState?.toLowerCase() === 'active'){
-        setInterval(() => {
-          // this.httpService.getData({'sprintId': sprintId}).subscribe((response) => {
-            this.lastSyncData = {
-              "fetchSucessful": false,
-              "lastSucessfulSync": new Date(),
-              "isError":true
-            }
-          // }, error => {
-          //   this.lastSyncData = {
-          //     "fetchSucessful": false,
-          //     "lastSucessfulSync": new Date(),
-          //     "isError": true
-          //   };
-          //   this.messageService.add({
-          //     severity: 'error',
-          //     summary: 'Error in syncing data. Please try after some time.',
-          //   });
-          // })
-        }, 3000)
-      
+    if (sprintState?.toLowerCase() === 'active') {
+      this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
+        if (activeSprintStatus['success']) {
+          const subject = new Subject();
+          interval(3000).pipe(switchMap(()=> this.httpService.getactiveIterationfetchStatus(sprintId)),takeUntil(subject)).subscribe((response) => {
+              if(response?.['success']){
+                this.lastSyncData = response['data'];
+                if(response['data']?.errorInFetch){
+                  if (response['data']?.fetchSuccessful === true) {
+                    this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+                    this.selectedProjectLastSyncStatus = 'SUCCESS';
+                  } else {
+                    //check if previous sync also failed in that case show lastest fail date and time
+                    if (!this.selectedProjectLastSyncDetails.executionSuccess) {
+                      const selectedProjectLastSyncDateTime = new Date(this.selectedProjectLastSyncDetails.executionEndedAt);
+                      const updatedLastSyncDateTime = new Date(response['data'].lastSyncDateTime);
+                      if (updatedLastSyncDateTime.getTime() - selectedProjectLastSyncDateTime.getTime() > 0) {
+                        this.selectedProjectLastSyncDate = updatedLastSyncDateTime;
+                      }
+                    }
+                  }
+                  subject.next(true);
+                }
+              }else{
+                subject.next(true);
+                this.lastSyncData ={};
+              }
+            }, error => {
+              subject.next(true);
+              this.lastSyncData ={};
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Error in syncing data. Please try after some time.',
+              });
+            });
+        } else {
+          this.lastSyncData = {};
+        }
+      });
     }
   }
+
+  onUpdateKPI(){
+    this.lastSyncData ={};
+    this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+  }
+
   compileGAData() {
     const gaArray = this.selectedFilterArray.map((item) => {
       const catArr = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6'];
