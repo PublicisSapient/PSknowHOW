@@ -190,6 +190,11 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 
 	}
 
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
+
 	private void processDeployJob(GitHubActionClient gitHubActionClient, ProcessorToolConnection gitHubActions,
 			GitHubActionProcessor processor, ProjectBasicConfig projectBasicConfig, List<Deployment> deploymentJobs,
 			ProcessorExecutionTraceLog processorExecutionTraceLog) throws FetchingBuildException {
