@@ -1561,7 +1561,8 @@ public class KpiHelperService { // NOPMD
 							}
 						}
 
-						if (CollectionUtils.isEmpty(minimumDate)) {
+						//if some status is lifet in the last cycle then that has to added in the minimum set
+						if (MapUtils.isNotEmpty(minimumCompletedStatusWiseMap)) {
 							LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream()
 									.min(LocalDateTime::compareTo).orElse(null);
 							if (minDate != null) {
