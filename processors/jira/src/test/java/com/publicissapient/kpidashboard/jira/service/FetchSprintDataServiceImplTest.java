@@ -13,7 +13,9 @@ import java.util.Set;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.jira.data.SprintDetailsDataFactory;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -81,6 +83,8 @@ class FetchSprintDataServiceImplTest {
 	private FieldMapping fieldMapping;
 	@Mock
 	private SprintDetails sprintDetails;
+	@Mock
+	private JiraIssueRepository jiraIssueRepository;
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -124,7 +128,7 @@ class FetchSprintDataServiceImplTest {
 		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigList);
 		when(connectionRepository.findById(any())).thenReturn(conn);
 		when(sprintClient.getSprints(any(), any(), any())).thenReturn(new ArrayList<>(getSprintDetails()));
-
+		when(sprintTraceLogRepository.findBySprintId(anyString())).thenReturn(new SprintTraceLog());
 		boolean result = fetchSprintDataService.fetchSprintData(sprintID);
 
 		assertTrue(result);
