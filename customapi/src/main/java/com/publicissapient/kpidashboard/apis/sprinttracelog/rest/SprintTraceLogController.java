@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/activeIteration")
-public class ActiveItrFetchController {
+public class SprintTraceLogController {
 	@Autowired
 	SprintTraceLogService sprintTraceLogService;
 
