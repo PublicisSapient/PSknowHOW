@@ -53,7 +53,7 @@ public class ActiveItrFetchServiceImpl implements ActiveItrFetchService {
 			return new ServiceResponse(true, "Successfully fetched last sync details from db", activeItrFetchDetailDTO);
 		} else {
 			log.info("fetchRecord is null");
-			return new ServiceResponse(false, "No sync record found.", null);
+			return new ServiceResponse(true, "No sync record found.", null);
 		}
 
 	}
