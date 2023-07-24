@@ -151,67 +151,74 @@ db.getCollection('kpi_master').insertMany(
           "kpiFilter": "dropdown",
           "boxType": "chart",
           "calculateMaturity": false
-      },
-      {
-        "kpiId": "kpi34",
-        "kpiName": "Defect Removal Efficiency",
-        "maxValue": "100",
-        "kpiUnit": "%",
-        "isDeleted": "False",
-        "defaultOrder": 5,
-        "kpiSource": "Jira",
-        "groupId": 3,
-        "thresholdValue": "90",
-        "kanban": false,
-        "chartType": "line",
-        "kpiInfo": {
-          "definition": "Measure of percentage of story linked defects fixed against the total number of defects raised in  the sprint.",
-          "formula": [
-            {
-              "lhs": "DRE for a sprint",
-              "operator": "division",
-              "operands": [
-                "No. of defects in the iteration that are fixed",
-                "Total no. of defects in a iteration"
-              ]
-            }
-          ],
-          "details": [
-            {
-              "type": "link",
-              "kpiLinkDetail": {
-                "text": "Detailed Information at",
-                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Removal-Efficiency"
-              }
-            }
-          ]
-        },
-        "xAxisLabel": "Sprints",
-        "yAxisLabel": "Percentage",
-        "isPositiveTrend": true,
-        "showTrend": true,
-        "aggregationCriteria": "average",
-        "isAdditionalFilterSupport": true,
-        "calculateMaturity": true,
-        "maturityRange": [
-          "-25",
-          "25-50",
-          "50-75",
-          "75-90",
-          "90-"
-        ]
-     }
+      }
+ ]);
+
+
+ //7.4 changes
+
+ //-------------------- insert new kpi details -------
+ db.getCollection('kpi_master').insertMany(
+ [{
+         "kpiId": "kpi34",
+         "kpiName": "Defect Removal Efficiency",
+         "maxValue": "100",
+         "kpiUnit": "%",
+         "isDeleted": "False",
+         "defaultOrder": 5,
+         "kpiSource": "Jira",
+         "groupId": 3,
+         "thresholdValue": "90",
+         "kanban": false,
+         "chartType": "line",
+         "kpiInfo": {
+           "definition": "Measure of percentage of story linked defects fixed against the total number of defects raised in  the sprint.",
+           "formula": [
+             {
+               "lhs": "DRE for a sprint",
+               "operator": "division",
+               "operands": [
+                 "No. of defects in the iteration that are fixed",
+                 "Total no. of defects in a iteration"
+               ]
+             }
+           ],
+           "details": [
+             {
+               "type": "link",
+               "kpiLinkDetail": {
+                 "text": "Detailed Information at",
+                 "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Removal-Efficiency"
+               }
+             }
+           ]
+         },
+         "xAxisLabel": "Sprints",
+         "yAxisLabel": "Percentage",
+         "isPositiveTrend": true,
+         "showTrend": true,
+         "aggregationCriteria": "average",
+         "isAdditionalFilterSupport": true,
+         "calculateMaturity": true,
+         "maturityRange": [
+           "-25",
+           "25-50",
+           "50-75",
+           "75-90",
+           "90-"
+         ]
+      }
  ]);
 
  db.getCollection('kpi_fieldmapping').insertMany(
-     [{
-         kpiId: 'kpi34',
-         kpiName: 'Defect Removal Efficiency',
-         kpiSource: 'Jira',
-         type: ['Scrum'],
-         fieldNames: {
-             'Workflow Status Mapping': ['jiraDefectRemovalStatus', 'resolutionTypeForRejection', 'jiraDefectRejectionStatus'],
-             'Issue Types Mapping': ['jiraDefectRemovalIssueType']
-         }
-     }
- ]);
+      [{
+          kpiId: 'kpi34',
+          kpiName: 'Defect Removal Efficiency',
+          kpiSource: 'Jira',
+          type: ['Scrum'],
+          fieldNames: {
+              'Workflow Status Mapping': ['jiraDefectRemovalStatus', 'resolutionTypeForRejection', 'jiraDefectRejectionStatus'],
+              'Issue Types Mapping': ['jiraDefectRemovalIssueType']
+          }
+      }
+  ]);
