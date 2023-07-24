@@ -797,7 +797,8 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
   /** Reload KPI once field mappoing updated */
   reloadKPI(event){
-    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event['kpiDetail']['groupId'],'Backlog');
+    this.kpiChartData[event.kpiDetail?.kpiId] = [];
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId,'Backlog');
     if (currentKPIGroup?.kpiList?.length > 0) {
         this.postJiraKpi(this.kpiJira, 'jira');
     }

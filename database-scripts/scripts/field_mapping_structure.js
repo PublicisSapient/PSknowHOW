@@ -9,7 +9,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "Issue Types Mapping",
         "tooltip": {
             "definition": "All issue types that are used as/equivalent to Story.",
-            "kpiImpacted": "Issue Count Kpi"
+            
         }
     }, {
         "fieldName": "jiraStoryIdentificationKPI129",
@@ -19,7 +19,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "Issue Types Mapping",
         "tooltip": {
             "definition": "All issue types that are used as/equivalent to Story.",
-            "kpiImpacted": "Issue Count Kpi"
+            
         }
     },
     {
@@ -468,7 +468,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": " Definition of Readiness. Provide any status from workflow on which DOR is considered. <br>Example: In Sprint<hr>KPI Impacted:Lead Time - Intake to DOR and DOR to DOD"
+            "definition": " Definition of Readiness. Provide any status from workflow on which DOR is considered."
         }
     },
     {
@@ -478,7 +478,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldCategory": "Issue_Type",
         "section": "Issue Types Mapping",
         "tooltip": {
-            "definition": "The issue type which is to be considered while calculating lead time KPIs, i.e. intake to DOR and DOR and DOD ... <br> Example: Story, Change Request <hr>"
+            "definition": "The issue type which is to be considered while calculating lead time KPIs, i.e. intake to DOR and DOR and DOD."
         }
     },
     {
@@ -723,7 +723,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. <br> Example: In Testing <hr>"
+            "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered."
         }
     },
     {
@@ -758,12 +758,12 @@ db.getCollection('field_mapping_structure').insert(
     },
     {
         "fieldName": "jiraDodKPI127",
-        "fieldLabel": "DOD Status",
+        "fieldLabel": "Status to identify completed issues",
         "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. <br> Example: In Testing <hr>"
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
         }
     },
     {
@@ -1105,7 +1105,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+            "definition": "Provide any status from workflow on which Live is considered."
         }
     }, {
         "fieldName": "jiraLiveStatusKPI152",
@@ -1114,7 +1114,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+            "definition": "Provide any status from workflow on which Live is considered."
         }
     }, {
         "fieldName": "jiraLiveStatusKPI151",
@@ -1123,7 +1123,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+            "definition": "Provide any status from workflow on which Live is considered."
         }
     },
     {
@@ -1133,17 +1133,17 @@ db.getCollection('field_mapping_structure').insert(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+            "definition": "Provide any status from workflow on which Live is considered."
         }
     },
     {
         "fieldName": "jiraLiveStatusLTK",
-        "fieldLabel": "Live Status - Lead Time",
+        "fieldLabel": "Live Status - LTK",
         "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+            "definition": "Provide any status from workflow on which Live is considered."
         }
     },
     {
@@ -1153,7 +1153,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+            "definition": "Provide any status from workflow on which Live is considered."
         }
     },
     {
@@ -1163,7 +1163,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+            "definition": "Provide any status from workflow on which Live is considered."
         }
     },
     {
@@ -1173,7 +1173,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+            "definition": "Provide any status from workflow on which Live is considered."
         }
     },
     {
@@ -1183,17 +1183,17 @@ db.getCollection('field_mapping_structure').insert(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+            "definition": "Provide any status from workflow on which Live is considered."
         }
     },
     {
         "fieldName": "jiraLiveStatusKPI127",
-        "fieldLabel": "Live Status - Lead Time",
+        "fieldLabel": "Status to identify live issues",
         "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Provide any status from workflow on which Live is considered. <br>Example: Live<hr>"
+            "definition": "Status/es that identify that an issue is LIVE in Production."
         }
     },
     {
@@ -1235,7 +1235,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Provide value of Cost Of delay field for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
-            "kpiImpacted": "Cost of delay"
+            
         }
     },
     {
@@ -1246,7 +1246,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Risk reduction/ Enablement value for Epic that is required to calculated Cost of delay <br> Example: customfield_11111<hr>",
-            "kpiImpacted": "Cost of delay"
+            
         }
     },
     {
@@ -1257,7 +1257,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of User-Business Value for Epic that is required to calculated Cost of delay. <br>Example:customfield_11111<hr>",
-            "kpiImpacted": "Cost of delay"
+            
         }
     },
     {
@@ -1268,7 +1268,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of WSJF value that is required to calculated Cost of delay <br />Example:customfield_11111<hr>",
-            "kpiImpacted": "Cost of delay"
+            
         }
     },
     {
@@ -1279,7 +1279,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Time Criticality value on Epic that is required to calculated Cost of delay .<br />Example:customfield_11111<hr>",
-            "kpiImpacted": "Cost of delay"
+            
         }
     },
     {
@@ -1290,7 +1290,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Job size on EPIC that is required to calculated WSJF. <br>Example:customfield_11111<hr>",
-            "kpiImpacted": "Cost of delay"
+            
         }
     },
     {
@@ -1344,7 +1344,7 @@ db.getCollection('field_mapping_structure').insert(
             "fieldType": "chips",
             "filterGroup": ["Blocked Status"],
             "tooltip": {
-                "definition": "Provide Status to Identify Blocked Issues<br />Example: On_Hold <hr> KPI Impacted : Iteration Board - Wastage KPI"
+                "definition": "Provide Status to Identify Blocked Issues."
             }
         }]
     },
@@ -1433,7 +1433,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldType": "dropdown",
         "tooltip": {
             "definition": "This field is used to identify Additional Filters. <br> Example: SQUAD<br>",
-            "kpiImpacted": "Filters"
+            
         }
     },
     {
@@ -1562,7 +1562,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "The status of Defect Issue Type which identifies the 'In-Testing' status in JIRA. <br> Example: Ready For Testing<hr>",
-            "Kpi Impacted": "Indiviual Filter"
+            
         }
     }, {
         "fieldName": "jiraStatusForQaKPI82",
@@ -1572,7 +1572,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "The status of Defect Issue Type which identifies the 'In-Testing' status in JIRA. <br> Example: Ready For Testing<hr>",
-            "Kpi Impacted": "Indiviual Filter"
+            
         }
     }, {
         "fieldName": "jiraStatusForQaKPI148",
@@ -1582,7 +1582,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "The status of Defect Issue Type which identifies the 'In-Testing' status in JIRA. <br> Example: Ready For Testing<hr>",
-            "Kpi Impacted": "Indiviual Filter"
+            
         }
     },
     {
@@ -1593,7 +1593,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "All issue types that identify with a Story.",
-            "KPI Impacted": "Jira Processor History"
+            
         }
     },
     {
@@ -1604,7 +1604,7 @@ db.getCollection('field_mapping_structure').insert(
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "All issue types that identify with a Story.",
-            "KPI Impacted": "Jira Processor History"
+            
         }
     },
     {
@@ -1676,8 +1676,8 @@ db.getCollection('field_mapping_structure').insert(
         "tooltip": {
             "definition": "Status to identify Ready for development from the backlog.",
         }
-    }
-}, {
+    },
+    {
     "fieldName": "jiraDueDateField",
     "fieldLabel": "Due Date",
     "fieldType": "radiobutton",
@@ -1759,25 +1759,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {
-        "definition": "",
-    }
-}, {
-    "fieldName": "jiraLiveStatusLTK",
-    "fieldLabel": "Live Status - Lead Time",
-    "fieldType": "text",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "",
-    }
-}, {
-    "fieldName": "jiraLiveStatusNOPK",
-    "fieldLabel": "Live Status - NOPK",
-    "fieldType": "text",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "",
+        "definition": "Value to identify kind of stories which are used for identification for story count.",
     }
 }, {
     "fieldName": "jiraDefectDroppedStatus",
@@ -1786,7 +1768,16 @@ db.getCollection('field_mapping_structure').insert(
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-        "definition": "",
+        "definition": "All issue types with which defect is linked.",
+    }
+}, {
+    "fieldName": "jiraDefectDroppedStatusKPI127",
+    "fieldLabel": "Defect Dropped Status",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "All issue types with which defect is linked.",
     }
 }, {
     "fieldName": "productionDefectIdentifier",
@@ -1848,7 +1839,7 @@ db.getCollection('field_mapping_structure').insert(
     "section": "Issue Types Mapping",
     "tooltip": {
         "definition": "",
-        "kpi Impacted": " Ticket Count by Priority, Ticket Open Rate by Priority, Total ticket count, Total Ticket Aging"
+        
     }
 }, {
     "fieldName": "kanbanRCACountIssueType",
@@ -1858,7 +1849,7 @@ db.getCollection('field_mapping_structure').insert(
     "section": "Issue Types Mapping",
     "tooltip": {
         "definition": "",
-        "Kpi Impacted": "Net Open Ticket Count By RCA"
+        
 
     }
 }, {
@@ -1869,7 +1860,7 @@ db.getCollection('field_mapping_structure').insert(
     "section": "Issue Types Mapping",
     "tooltip": {
         "definition": "",
-        "Kpi Impacted": "Ticket Velocity"
+        
 
     }
 }, {
@@ -1880,7 +1871,7 @@ db.getCollection('field_mapping_structure').insert(
     "section": "Issue Types Mapping",
     "tooltip": {
         "definition": "",
-        "Kpi Impacted": "Lead time"
+        
 
     }
 }, {
@@ -1909,15 +1900,6 @@ db.getCollection('field_mapping_structure').insert(
     "section": "WorkFlow Status Mapping",
     "tooltip": {
         "definition": "Status from workflow on which ticket is considered as Triaged."
-    }
-}, {
-    "fieldName": "jiraTicketRejectedStatus",
-    "fieldLabel": "Ticket Rejected/Dropped Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "Status from workflow on which ticket is considered as Rejected/Dropped."
     }
 }, {
     "fieldName": "jiraTicketRejectedStatus",

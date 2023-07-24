@@ -1202,6 +1202,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     }
 
     reloadKPI(event) {
+        const idx = this.ifKpiExist(event?.kpiDetail?.kpiId)
+        if(idx !== -1){
+            this.allKpiArray.splice(idx,1);
+        }
         const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, '');
         if (currentKPIGroup?.kpiList?.length > 0) {
             const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
