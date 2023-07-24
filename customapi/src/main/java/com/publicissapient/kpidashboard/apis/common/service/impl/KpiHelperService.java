@@ -565,16 +565,28 @@ public class KpiHelperService { // NOPMD
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
 
-			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = getMinimumClosedDateFromConfiguration(
+			Map<ObjectId, Set<String>> duplicateIssues = getProjectWiseDuplicateIssueInSprintDetails(
 					projectWiseTotalSprintDetails);
+			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
+			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
 
+			if (MapUtils.isNotEmpty(fieldMappingMap) && !duplicateIssues.isEmpty()) {
+				Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
+						.filter(fieldMappingMap::containsKey)
+						.collect(Collectors.toMap(Function.identity(), key -> fieldMappingMap
+								.get(key).getJiraIterationCompletionStatusKpi39()));
+				projectWiseDuplicateIssuesWithMinCloseDate = getMinimumClosedDateFromConfiguration(duplicateIssues,
+						customFieldMapping);
+			}
+
+			Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
 			sprintDetails.stream().forEach(dbSprintDetail -> {
-				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				FieldMapping fieldMapping = fieldMappingMap
 						.get(dbSprintDetail.getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 						new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusKpi39(), projectWiseDuplicateIssuesWithMinCloseDate).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKpi39(), finalProjectWiseDuplicateIssuesWithMinCloseDate).get(0);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -1490,10 +1502,9 @@ public class KpiHelperService { // NOPMD
 		}
 	}
 
-	public Map<ObjectId, Map<String, List<LocalDateTime>>> getMinimumClosedDateFromConfiguration(
+	public Map<ObjectId, Set<String>> getProjectWiseDuplicateIssueInSprintDetails(
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails) {
 		Map<ObjectId, Set<String>> duplicateIssues = new HashMap<>();
-		Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
 		projectWiseTotalSprintDetails.forEach((key, value) -> {
 			List<String> allIssues = value.stream().flatMap(
 					sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(Collections.emptySet()).stream())
@@ -1505,20 +1516,10 @@ public class KpiHelperService { // NOPMD
 
 			duplicateIssues.put(key, duplicate);
 		});
-
-		if (!configHelperService.getFieldMappingMap().isEmpty() && !duplicateIssues.isEmpty()) {
-			Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
-					.filter(key -> configHelperService.getFieldMappingMap().containsKey(key))
-					.collect(Collectors.toMap(Function.identity(), key -> configHelperService.getFieldMappingMap()
-							.get(key).getJiraIterationCompletionStatusCustomField()));
-
-			projectWiseDuplicateIssuesWithMinCloseDate = getMinimumClosedDateFromCongiguration(duplicateIssues,
-					customFieldMapping);
-		}
-		return projectWiseDuplicateIssuesWithMinCloseDate;
+		return duplicateIssues;
 	}
 
-	private Map<ObjectId, Map<String, List<LocalDateTime>>> getMinimumClosedDateFromCongiguration(
+	public Map<ObjectId, Map<String, List<LocalDateTime>>> getMinimumClosedDateFromConfiguration(
 			Map<ObjectId, Set<String>> duplicateIssues, Map<ObjectId, List<String>> customFieldMapping) {
 		Map<ObjectId, Map<String, List<LocalDateTime>>> pair = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
