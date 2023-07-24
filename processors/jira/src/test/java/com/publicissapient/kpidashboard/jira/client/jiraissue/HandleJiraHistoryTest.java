@@ -9,8 +9,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,8 +33,12 @@ import com.atlassian.jira.rest.client.api.domain.Priority;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.jira.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 @ExtendWith(SpringExtension.class)
 public class HandleJiraHistoryTest {
@@ -47,6 +53,8 @@ public class HandleJiraHistoryTest {
 	private List<ChangelogGroup> changeLogList = new ArrayList<>();
 	private Issue issue;
 
+	private ProjectConfFieldMapping	projectConfFieldMapping;
+
 	@BeforeEach
 	public void setUp() throws URISyntaxException {
 
@@ -54,6 +62,8 @@ public class HandleJiraHistoryTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/field_mapping.json");
 		fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+
+		projectConfFieldMapping =  getProjectConfFieldMapping(fieldMapping);
 
 		ChangelogGroup changelogGroup;
 		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""),
@@ -113,7 +123,7 @@ public class HandleJiraHistoryTest {
 	@Test
 	public void testSetJiraFieldChangeLog1() {
 
-		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping,
+		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, projectConfFieldMapping,
 				fields, issue);
 		Assert.assertEquals(jiraIssueCustomHistory.getStatusUpdationLog().size(), 2);
 		Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 2);
@@ -129,7 +139,7 @@ public class HandleJiraHistoryTest {
 	public void testSetJiraFieldChangeLog2() {
 		if (ObjectUtils.isNotEmpty(changeLogList))
 			changeLogList.clear();
-		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping,
+		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, projectConfFieldMapping,
 				fields, issue);
 		Assert.assertEquals(jiraIssueCustomHistory.getStatusUpdationLog().size(), 1);
 		Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 1);
@@ -148,7 +158,7 @@ public class HandleJiraHistoryTest {
 				new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA, "dueDate",
 						"2023-02-21", "2023-02-21 00:00:00.0", "2023-02-24", "2023-02-24 00:00:00.0")));
 		changeLogList.add(changelogGroup);
-		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping,
+		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, projectConfFieldMapping,
 				fields, issue);
 		Assert.assertEquals(jiraIssueCustomHistory.getStatusUpdationLog().size(), 2);
 		Assert.assertEquals(jiraIssueCustomHistory.getAssigneeUpdationLog().size(), 2);
@@ -157,5 +167,72 @@ public class HandleJiraHistoryTest {
 		Assert.assertEquals(jiraIssueCustomHistory.getPriorityUpdationLog().size(), 2);
 		Assert.assertEquals(jiraIssueCustomHistory.getSprintUpdationLog().size(), 1);
 		Assert.assertEquals(jiraIssueCustomHistory.getDueDateUpdationLog().size(), 2);
+	}
+
+	private static ProjectConfFieldMapping getProjectConfFieldMapping(FieldMapping fieldMapping) {
+		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
+		projectConfFieldMapping.setJira(getJiraToolConfig(fieldMapping));
+		projectConfFieldMapping.setFieldMapping(fieldMapping);
+		projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
+		projectConfFieldMapping.setIssueCount(2);
+		projectConfFieldMapping.setKanban(true);
+		projectConfFieldMapping.setSprintCount(12);
+		projectConfFieldMapping.setProjectName("TestHOW");
+		projectConfFieldMapping.setJiraToolConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
+		projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
+		return projectConfFieldMapping;
+	}
+
+	private static JiraToolConfig getJiraToolConfig(FieldMapping fieldMapping) {
+		JiraToolConfig jiraToolConfig = new JiraToolConfig();
+		jiraToolConfig.setBasicProjectConfigId("632eb205e0fd283f9bb747ad");
+		jiraToolConfig.setProjectId("123");
+		jiraToolConfig.setProjectKey("123");
+		jiraToolConfig.setFieldMapping(fieldMapping);
+		jiraToolConfig.setCreatedAt("2021-07-26T10:22:12.0000000");
+		jiraToolConfig.setUpdatedAt("2021-07-26T10:22:12.0000000");
+		jiraToolConfig.setQueryEnabled(false);
+		jiraToolConfig.setBoardQuery("query");
+		Connection connection = getConnectionObject();
+		jiraToolConfig.setConnection(Optional.of(connection));
+		BoardDetails boardDetails = new BoardDetails();
+		boardDetails.setBoardName("TestHOW");
+		boardDetails.setBoardId("123");
+		ArrayList<BoardDetails> al = new ArrayList<>();
+		al.add(boardDetails);
+		jiraToolConfig.setBoards(al);
+		return jiraToolConfig;
+	}
+
+	private static Connection getConnectionObject() {
+		Connection connection = new Connection();
+		connection.setType("Defect");
+		connection.setConnectionName("TEST");
+		connection.setCloudEnv(true);
+		connection.setBaseUrl("url");
+		connection.setUsername("test");
+		connection.setPassword("testPassword");
+		connection.setApiEndPoint("url");
+		connection.setConsumerKey("123");
+		connection.setPrivateKey("123");
+		connection.setApiKey("123");
+		connection.setClientSecretKey("999");
+		connection.setIsOAuth(true);
+		connection.setClientId("111");
+		connection.setTenantId("111");
+		connection.setPat("pat");
+		connection.setApiKeyFieldName("apiKey");
+		connection.setAccessToken("accessToken");
+		connection.setOffline(true);
+		connection.setOfflineFilePath("offlineFilePath");
+		connection.setCreatedAt("now");
+		connection.setUpdatedAt("later");
+		connection.setUpdatedBy("TestHOW");
+		connection.setConnPrivate(true);
+		connection.setUpdatedBy("TestHOW");
+		ArrayList<String> alStrings = new ArrayList<>();
+		alStrings.add("TestHOW");
+		connection.setConnectionUsers(alStrings);
+		return connection;
 	}
 }
