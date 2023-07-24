@@ -171,7 +171,7 @@ export class HttpService {
     this.baseUrl + '/api/capacity/jira/happiness';
   userName: string;
   userEmail: string;
-  private activeIterationUrl =  this.baseUrl + '/processor/fetch';
+  private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
   constructor(
     private router: Router,
@@ -1106,7 +1106,7 @@ export class HttpService {
   }
 
   getActiveIterationStatus(postData){
-    return this.http.post(this.activeIterationUrl, postData);
+    return this.http.post(this.activeIterationUrl + '/'+ postData.sprintId,{});
   //   return of({
   //     "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
   //     "success": true
