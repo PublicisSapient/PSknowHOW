@@ -79,7 +79,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private static final String INITIALISSUE_ORIGINAL_ESTIMATE = "initialIssueOriginalEstimate";
 	private static final String INITIALCMPLTD_ORIGINAL_ESTIMATE = "initialCompletedIssueOriginalEstimate";
 	private static final String SPECIAL_SYMBOL ="#";
-	private static  final String ALL ="overall";
+	private static  final String ALL ="Overall";
 	@Autowired
 	private SprintRepository sprintRepository;
 	@Autowired
