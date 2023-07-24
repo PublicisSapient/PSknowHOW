@@ -171,7 +171,7 @@ export class HttpService {
     this.baseUrl + '/api/capacity/jira/happiness';
   userName: string;
   userEmail: string;
-  private activeIterationUrl =  this.baseUrl + '/api/activeIteration/fetch';
+  private activeIterationUrl =  this.baseUrl + '/processor/fetch';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
   constructor(
     private router: Router,
