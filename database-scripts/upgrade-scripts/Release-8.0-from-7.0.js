@@ -157,7 +157,7 @@ db.getCollection('kpi_master').insertMany(
 
  //7.4 changes
 
- //-------------------- insert new kpi details-------
+ //-------------------- kpi detail changes for DTS-25745 change in both the DRE operands and field names in field mappings-------
  const bulkUpdateKpiMaster = [];
  bulkUpdateKpiMaster.push({
      updateMany: {
