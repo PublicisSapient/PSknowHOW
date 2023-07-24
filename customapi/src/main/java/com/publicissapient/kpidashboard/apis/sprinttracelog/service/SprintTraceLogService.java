@@ -16,15 +16,15 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository.application;
+package com.publicissapient.kpidashboard.apis.sprinttracelog.service;
 
-import com.publicissapient.kpidashboard.common.model.application.ActiveItrFetchDetails;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
-@Repository
-public interface ActiveItrFetchRepository extends MongoRepository<ActiveItrFetchDetails, ObjectId> {
-	ActiveItrFetchDetails findBySprintId(String sprintId);
-
+public interface SprintTraceLogService {
+	/**
+	 *  return the latest fetch status of sprintId
+	 * @param sprintId
+	 * @return
+	 */
+	ServiceResponse getActiveSprintFetchStatus(String sprintId);
 }

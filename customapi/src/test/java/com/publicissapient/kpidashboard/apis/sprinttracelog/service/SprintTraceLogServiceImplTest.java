@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.activeitrfetch.service;
+package com.publicissapient.kpidashboard.apis.sprinttracelog.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -25,9 +25,9 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
-import com.publicissapient.kpidashboard.common.model.application.ActiveItrFetchDetailDTO;
-import com.publicissapient.kpidashboard.common.model.application.ActiveItrFetchDetails;
-import com.publicissapient.kpidashboard.common.repository.application.ActiveItrFetchRepository;
+import com.publicissapient.kpidashboard.common.model.application.SprintTraceLogDTO;
+import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
+import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,20 +38,20 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ActiveItrFetchServiceImplTest {
+public class SprintTraceLogServiceImplTest {
 	@InjectMocks
-	private ActiveItrFetchServiceImpl activeItrFetchService;
+	private SprintTraceLogServiceImpl activeItrFetchService;
 
 	@Mock
-	private ActiveItrFetchRepository activeItrFetchRepository;
+	private SprintTraceLogRepository sprintTraceLogRepository;
 
-	private ActiveItrFetchDetails fetchRecord;
+	private SprintTraceLog fetchRecord;
 	private String validSprintId = "Sprint123";
 
 	@Before
 	public void setUp() {
 
-		fetchRecord = new ActiveItrFetchDetails();
+		fetchRecord = new SprintTraceLog();
 		fetchRecord.setSprintId(validSprintId);
 	}
 
@@ -60,7 +60,7 @@ public class ActiveItrFetchServiceImplTest {
 
 
         // Mock repository method call
-        when(activeItrFetchRepository.findBySprintId(validSprintId))
+        when(sprintTraceLogRepository.findBySprintId(validSprintId))
                 .thenReturn(fetchRecord);
 
         // Call the method under test
@@ -69,7 +69,7 @@ public class ActiveItrFetchServiceImplTest {
         // Assert the response
         assertTrue(response.getSuccess().booleanValue());
         assertEquals(response.getMessage(),"Successfully fetched last sync details from db");
-        assertEquals(validSprintId, ((ActiveItrFetchDetailDTO) response.getData()).getSprintId());
+        assertEquals(validSprintId, ((SprintTraceLogDTO) response.getData()).getSprintId());
 
     }
 
@@ -94,7 +94,7 @@ public class ActiveItrFetchServiceImplTest {
 		String validSprintId = "Sprint456";
 
 		// Mock repository method call (returning null)
-		when(activeItrFetchRepository.findBySprintId(validSprintId)).thenReturn(null);
+		when(sprintTraceLogRepository.findBySprintId(validSprintId)).thenReturn(null);
 
 		// Call the method under test
 		ServiceResponse response = activeItrFetchService.getActiveSprintFetchStatus(validSprintId);

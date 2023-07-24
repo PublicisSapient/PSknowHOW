@@ -40,8 +40,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "fetch_active_itr")
-public class ActiveItrFetchDetails extends BasicModel {
+@Document(collection = "sprint_trace_log")
+public class SprintTraceLog extends BasicModel {
 	private String sprintId;
 	private boolean fetchSuccessful;
 	private boolean errorInFetch;

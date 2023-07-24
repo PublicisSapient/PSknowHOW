@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.querydsl.core.types.Constant;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -117,8 +118,9 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
+public class ScrumJiraIssueClientImpl extends JiraIssueClient {
 
+	public static final String FALSE = "false";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -225,7 +227,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			boolean isOffline) {
 		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
-		psLogData.setKanban("false");
+		psLogData.setKanban(FALSE);
 		int savedIsuesCount = 0;
 		int total = 0;
 
@@ -285,7 +287,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
 					latestDataFetched = cleanCache();
 					setForCacheClean.clear();
-					log.info("latest sprint fetched cache cleaned.");
+					log.info("latest sprint fetched cache and cleaned.");
 				}
 				// will result in an extra call if number of results == pageSize
 				// but I would rather do that then complicate the jira client
@@ -328,7 +330,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			boolean isOffline) {
 		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
-		psLogData.setKanban("false");
+		psLogData.setKanban(FALSE);
 		int savedIsuesCount = 0;
 		int total = 0;
 
@@ -1649,12 +1651,12 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	// for fetch, parse & update based on issuesKeys
-	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter,
+	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, //NOSONAR
 			boolean isOffline, List<String> issueKeys) {
 		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
-		psLogData.setKanban("false");
-		int savedIsuesCount = 0;
+		psLogData.setKanban(FALSE);
+		int savedIssuesCount = 0;
 		int total = 0;
 
 		boolean processorFetchingComplete = false;
@@ -1691,8 +1693,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					List<JiraIssue> jiraIssues = saveJiraIssueDetails(issues, projectConfig, setForCacheClean,
 							jiraAdapter, true, true);
 
-					savedIsuesCount += issues.size();
-					savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues, false, psLogData);
+					savedIssuesCount += issues.size();
+					savingIssueLogs(savedIssuesCount, jiraIssues, startProcessingJiraIssues, false, psLogData);
 				}
 
 				if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
@@ -1711,21 +1713,21 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			}
 			processorFetchingComplete = true;
 		} catch (JSONException e) {
-			log.error("Error while updating Story information in scrum client", e,
+			log.error("Error while updating Story information in sprintFetch", e,
 					kv(CommonConstant.PSLOGDATA, psLogData));
-		} catch (InterruptedException e) {
-			log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
+		} catch (InterruptedException e) { //NOSONAR
+			log.error("Interrupted exception thrown during sprintFetch", e, kv(CommonConstant.PSLOGDATA, psLogData));
 			processorFetchingComplete = false;
 		} finally {
-			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete, psLogData);
-			psLogData.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIssuesCount, processorFetchingComplete, psLogData);
+			psLogData.setAction(CommonConstant.FETCHING_ISSUE);
 			if (!isAttemptSuccess) {
 				psLogData.setProjectExecutionStatus(String.valueOf(isAttemptSuccess));
-				log.error("Error in Fetching Issues through JQL", kv(CommonConstant.PSLOGDATA, psLogData));
+				log.error("Error in Fetching Issues through JQL during active SprintFetch", kv(CommonConstant.PSLOGDATA, psLogData));
 			}
 		}
 
-		return savedIsuesCount;
+		return savedIssuesCount;
 	}
 
 }

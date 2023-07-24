@@ -27,7 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.application.ActiveItrFetchRepository;
+import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
@@ -76,7 +76,7 @@ class FetchSprintDataServiceImplTest {
 	@Mock
 	ScrumJiraIssueClientImpl scrumJiraIssueClientImpl;
 	@Mock
-	ActiveItrFetchRepository activeItrFetchRepository;
+	SprintTraceLogRepository sprintTraceLogRepository;
 	@Mock
 	private FieldMapping fieldMapping;
 	@Mock

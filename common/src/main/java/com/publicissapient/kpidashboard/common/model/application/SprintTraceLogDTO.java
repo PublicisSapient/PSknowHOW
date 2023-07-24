@@ -16,15 +16,26 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.activeitrfetch.service;
+package com.publicissapient.kpidashboard.common.model.application;
 
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.bson.types.ObjectId;
 
-public interface ActiveItrFetchService {
-	/**
-	 *  return the latest fetch status of sprintId
-	 * @param sprintId
-	 * @return
-	 */
-	ServiceResponse getActiveSprintFetchStatus(String sprintId);
+@Data
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class SprintTraceLogDTO {
+	private ObjectId id;
+	private String sprintId;
+	private boolean fetchSuccessful;
+	private boolean errorInFetch;
+	private String lastSyncDateTime;
 }

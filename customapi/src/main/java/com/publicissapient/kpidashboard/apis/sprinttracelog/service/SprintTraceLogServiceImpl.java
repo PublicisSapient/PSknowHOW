@@ -16,12 +16,12 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.activeitrfetch.service;
+package com.publicissapient.kpidashboard.apis.sprinttracelog.service;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.model.application.ActiveItrFetchDetails;
-import com.publicissapient.kpidashboard.common.model.application.ActiveItrFetchDetailDTO;
-import com.publicissapient.kpidashboard.common.repository.application.ActiveItrFetchRepository;
+import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.SprintTraceLogDTO;
+import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -30,9 +30,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class ActiveItrFetchServiceImpl implements ActiveItrFetchService {
+public class SprintTraceLogServiceImpl implements SprintTraceLogService {
 	@Autowired
-	ActiveItrFetchRepository activeItrFetchRepository;
+	SprintTraceLogRepository sprintTraceLogRepository;
 
 	@Override
 	public ServiceResponse getActiveSprintFetchStatus(String sprintId) {
@@ -42,15 +42,15 @@ public class ActiveItrFetchServiceImpl implements ActiveItrFetchService {
 			return new ServiceResponse(false, "sprintId cannot be empty", null);
 		}
 		// fetching the latest record from db
-		ActiveItrFetchDetails fetchRecord = activeItrFetchRepository
+		SprintTraceLog fetchRecord = sprintTraceLogRepository
 				.findBySprintId(sprintId);
 
 		// checking if fetchRecord is not null
 		if (fetchRecord != null) {
 			ModelMapper mapper = new ModelMapper();
-			ActiveItrFetchDetailDTO activeItrFetchDetailDTO = mapper.map(fetchRecord, ActiveItrFetchDetailDTO.class);
+			SprintTraceLogDTO sprintTraceLogDTO = mapper.map(fetchRecord, SprintTraceLogDTO.class);
 			log.info("Successfully fetched fetchRecord from db for sprint {}", sprintId);
-			return new ServiceResponse(true, "Successfully fetched last sync details from db", activeItrFetchDetailDTO);
+			return new ServiceResponse(true, "Successfully fetched last sync details from db", sprintTraceLogDTO);
 		} else {
 			log.info("fetchRecord is null");
 			return new ServiceResponse(true, "No sync record found.", null);

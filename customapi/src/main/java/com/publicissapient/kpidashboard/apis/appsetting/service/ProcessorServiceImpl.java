@@ -26,6 +26,8 @@ import javax.ws.rs.core.Context;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
+import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -67,6 +69,8 @@ public class ProcessorServiceImpl implements ProcessorService {
 	private RestTemplate restTemplate;
 	@Autowired
 	private ProcessorUrlConfig processorUrlConfig;
+	@Autowired
+	SprintTraceLogRepository sprintTraceLogRepository;
 
 	@Override
 	public ServiceResponse getAllProcessorDetails() {
@@ -142,6 +146,14 @@ public class ProcessorServiceImpl implements ProcessorService {
 		}
 		if (HttpStatus.NOT_FOUND.value() == statuscode || HttpStatus.INTERNAL_SERVER_ERROR.value() == statuscode) {
 			isSuccess = false;
+		}
+		// setting the fetchStatus as false for the fetch sprint
+		if (HttpStatus.OK.value() == statuscode) {
+			SprintTraceLog sprintTrace = sprintTraceLogRepository.findBySprintId(sprintId);
+			sprintTrace = sprintTrace == null ? new SprintTraceLog() : sprintTrace;
+			sprintTrace.setSprintId(sprintId);
+			sprintTrace.setFetchSuccessful(false);
+			sprintTraceLogRepository.save(sprintTrace);
 		}
 		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);
 	}

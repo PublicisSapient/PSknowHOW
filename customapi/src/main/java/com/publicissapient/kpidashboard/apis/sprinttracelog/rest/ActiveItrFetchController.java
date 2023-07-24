@@ -16,9 +16,9 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.activeitrfetch.rest;
+package com.publicissapient.kpidashboard.apis.sprinttracelog.rest;
 
-import com.publicissapient.kpidashboard.apis.activeitrfetch.service.ActiveItrFetchService;
+import com.publicissapient.kpidashboard.apis.sprinttracelog.service.SprintTraceLogService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,11 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/activeIteration")
 public class ActiveItrFetchController {
 	@Autowired
-	ActiveItrFetchService activeItrFetchService;
+	SprintTraceLogService sprintTraceLogService;
 
 	@GetMapping("/fetchStatus/{sprintId}")
 	public ResponseEntity<ServiceResponse> getActiveItrFetchStatus(@PathVariable String sprintId) {
-		ServiceResponse response = activeItrFetchService.getActiveSprintFetchStatus(sprintId);
+		ServiceResponse response = sprintTraceLogService.getActiveSprintFetchStatus(sprintId);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
