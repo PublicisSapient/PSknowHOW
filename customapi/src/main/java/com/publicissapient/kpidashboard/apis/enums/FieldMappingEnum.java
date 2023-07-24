@@ -45,7 +45,7 @@ public enum FieldMappingEnum {
 	"productionDefectValue",
 	"productionDefectComponentValue")),
 
-	KPI1("Issue Count", KPISource.JIRA.name(), Arrays.asList(
+	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList(
 			"jiraIssueTypeNames",
 			"storyFirstStatus",
 			"epicCostOfDelay", "epicRiskReduction",
@@ -93,8 +93,8 @@ public enum FieldMappingEnum {
 					"jiraDefectRejectionStatusKPI135", "defectPriorityKPI135", "jiraDefectRejectionStatusKPI135",
 					"jiraStatusForQaKPI135", "jiraFtprRejectStatusKPI135")),
 
-	KPI53("Lead Time (Kanban)", KPISource.JIRA.name(),
-			Arrays.asList("jiraIssueTypeLT", "jiraDorLT", "jiraLiveStatusLTK")),
+//	KPI53("Lead Time (Kanban)", KPISource.JIRA.name(),
+//			Arrays.asList("jiraIssueTypeLT", "jiraDorLT", "jiraLiveStatusLTK")),
 
 	KPI3("Lead Time (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeKPI3", "jiraDorKPI3", "jiraDodKPI3",
 			"jiraLiveStatusKPI3", "storyFirstStatusKPI3")),
@@ -190,13 +190,13 @@ public enum FieldMappingEnum {
 
 	KPI137("Defect Reopen Rate (Backlog)", KPISource.JIRA.name(), Arrays.asList("jiraDefectClosedStatusKPI137")),
 
-	KPI997("Open Ticket Ageing By Priority (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusOTA")),
-
-	KPI51("Net Open Ticket Count By RCA (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusNORK")),
-
-	KPI48("Net Open Ticket Count By Status (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusNOSK")),
-
-	KPI50("Net Open Ticket Count by Priority (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusNOPK")),
+//	KPI997("Open Ticket Ageing By Priority (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusOTA")),
+//
+//	KPI51("Net Open Ticket Count By RCA (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusNORK")),
+//
+//	KPI48("Net Open Ticket Count By Status (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusNOSK")),
+//
+//	KPI50("Net Open Ticket Count by Priority (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraLiveStatusNOPK")),
 
 	KPI129("Issues Without Story Link", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI129","excludeStatusKpi129")),
 
