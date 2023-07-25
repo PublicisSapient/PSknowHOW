@@ -86,7 +86,7 @@ public class RunProcessorController {
 		MDC.put("Processor Name", jobExecuter.getProcessor().getProcessorName());
 		MDC.put("RequestStartTime", String.valueOf(System.currentTimeMillis()));
 
-		log.info("Received request to fetch the sprint: {}", sprintId);
+		log.info("Received request to fetch the active sprint: {}", sprintId);
 		jobExecuter.setSprintId(sprintId);
 		PROCESSOR_EXECUTORS.execute(jobExecuter);
 

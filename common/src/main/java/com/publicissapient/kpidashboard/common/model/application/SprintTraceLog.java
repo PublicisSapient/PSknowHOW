@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
-import java.time.LocalDateTime;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -45,5 +44,6 @@ public class SprintTraceLog extends BasicModel {
 	private String sprintId;
 	private boolean fetchSuccessful;
 	private boolean errorInFetch;
-	private LocalDateTime lastSyncDateTime;
+	// in millisecond
+	private long lastSyncDateTime;
 }

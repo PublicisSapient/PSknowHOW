@@ -184,10 +184,9 @@ public class FetchSprintDataServiceImpl {
 			executionStatus = false;
 		}
 		long endTime = System.currentTimeMillis();
-		LocalDateTime time = DateUtil.convertMillisToLocalDateTime(endTime);
 		// saving the execution details
 		SprintTraceLog fetchDetails = sprintTraceLogRepository.findBySprintId(sprintID);
-		fetchDetails.setLastSyncDateTime(time);
+		fetchDetails.setLastSyncDateTime(endTime);
 		if (executionStatus) {
 			fetchDetails.setErrorInFetch(false);
 			fetchDetails.setFetchSuccessful(true);

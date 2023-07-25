@@ -20,11 +20,9 @@ package com.publicissapient.kpidashboard.apis.sprinttracelog.service;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.SprintTraceLogDTO;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,10 +45,8 @@ public class SprintTraceLogServiceImpl implements SprintTraceLogService {
 
 		// checking if fetchRecord is not null
 		if (fetchRecord != null) {
-			ModelMapper mapper = new ModelMapper();
-			SprintTraceLogDTO sprintTraceLogDTO = mapper.map(fetchRecord, SprintTraceLogDTO.class);
 			log.info("Successfully fetched sprintTraceLog from db for sprint {}", sprintId);
-			return new ServiceResponse(true, "Successfully fetched last sync details from db", sprintTraceLogDTO);
+			return new ServiceResponse(true, "Sprint trace log", fetchRecord);
 		} else {
 			log.info("fetchRecord is null");
 			return new ServiceResponse(true, "No sync record found.", null);

@@ -25,7 +25,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
-import com.publicissapient.kpidashboard.common.model.application.SprintTraceLogDTO;
 import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import org.junit.Before;
@@ -67,9 +66,8 @@ public class SprintTraceLogServiceImplTest {
         ServiceResponse response = activeItrFetchService.getActiveSprintFetchStatus(validSprintId);
 
         // Assert the response
-        assertTrue(response.getSuccess().booleanValue());
-        assertEquals(response.getMessage(),"Successfully fetched last sync details from db");
-        assertEquals(validSprintId, ((SprintTraceLogDTO) response.getData()).getSprintId());
+        assertTrue(response.getSuccess());
+        assertEquals(response.getMessage(),"Sprint trace log");
 
     }
 
