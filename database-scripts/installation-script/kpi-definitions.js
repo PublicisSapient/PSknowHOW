@@ -6432,7 +6432,7 @@ db.getCollection('kpi_fieldmapping').insertMany(
         fieldNames : {'Workflow Status Mapping' : ['jiraStatusForInProgress', 'jiraDevDoneStatus','jiraIterationCompletionStatusCustomField'],'Issue Types Mapping' : ['jiraIterationCompletionTypeCustomField']}
       },
       {
-//         kpiId: 'kpi145',
+         kpiId: 'kpi145',
          kpiName: 'Dev Completion Status',
       	 kpiSource: 'Jira',
          type: ['Other'],
@@ -6568,12 +6568,3 @@ db.getCollection('kpi_fieldmapping').insertMany(
         fieldNames : { }
       }
 	  ]);
-
-
-
-
-
-
-
-
-
