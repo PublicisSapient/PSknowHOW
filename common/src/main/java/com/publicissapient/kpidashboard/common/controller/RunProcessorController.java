@@ -53,8 +53,6 @@ public class RunProcessorController {
 
 	@Autowired(required = false)
 	private ProcessorJobExecutor<?> jobExecuter;
-	@Autowired
-	SprintRepository sprintRepository;
 
 	@RequestMapping(value = "/processor/run", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map> runProcessorForProjects(

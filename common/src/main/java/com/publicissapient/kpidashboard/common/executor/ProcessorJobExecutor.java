@@ -92,7 +92,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 	}
 
 	@Override
-	public final synchronized void run() {
+	public final void run() {
 		setMDCContext();
 		log.debug("Running Processor: {}", processorName);
 		T processor = getProcessorRepository().findByProcessorName(processorName);
@@ -114,18 +114,22 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 		}
 
 		if (processor.isActive() && StringUtils.isEmpty(sprintId)) {
-			// Do collection run
-			processor.setLastSuccess(execute(processor));
-			log.debug("Saving the last executed status as: {} for {} processor!", processor.isLastSuccess(),
-					processorName);
-			// Update lastUpdate timestamp in Processor
-			processor.setUpdatedTime(System.currentTimeMillis());
-			getProcessorRepository().save(processor);
+			// Do collection run in synchronized way
+			synchronized (this) {
+				processor.setLastSuccess(execute(processor));
+				log.debug("Saving the last executed status as: {} for {} processor!", processor.isLastSuccess(),
+						processorName);
+				// Update lastUpdate timestamp in Processor
+				processor.setUpdatedTime(System.currentTimeMillis());
+				getProcessorRepository().save(processor);
+			}
 		}
 
 		if (!StringUtils.isEmpty(sprintId)) {
-			boolean isSuccess = executeSprint(sprintId);
-			log.debug("Saving the last executed status as: {} for {} sprint!", isSuccess, sprintId);
+			String sprintID = getSprintId();
+			setSprintId(null);
+			boolean isSuccess = executeSprint(sprintID);
+			log.debug("Saving the last executed status as: {} for {} sprint!", isSuccess, sprintID);
 
 		}
 	}
