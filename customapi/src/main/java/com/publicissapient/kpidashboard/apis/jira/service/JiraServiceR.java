@@ -71,8 +71,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static com.publicissapient.kpidashboard.common.model.userboardconfig.QBoard.board;
-
 /**
  * This class handle all Scrum JIRA based KPI request and call each KPIs service
  * in thread. It is responsible for cache of KPI data at different level.
@@ -219,9 +217,8 @@ public class JiraServiceR {
 			fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
 					releaseList, CommonConstant.RELEASE);
 			fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
-					 CommonConstant.RELEASE);
-		}
-		else if (origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.BACKLOG)) {
+					CommonConstant.RELEASE);
+		} else if (origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.BACKLOG)) {
 			fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), new ArrayList<>(),
 					CommonConstant.BACKLOG);
 			fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
@@ -294,6 +291,7 @@ public class JiraServiceR {
 		}
 
 	}
+
 	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
 		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi3");
 	}
@@ -365,17 +363,16 @@ public class JiraServiceR {
 		if (board.equalsIgnoreCase(CommonConstant.ITERATION)) {
 			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(
 					sprintIssuesList, Collections.singletonList(basicProjectConfigId));
-		}
-		else if (board.equalsIgnoreCase(CommonConstant.BACKLOG)) {
-			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
-		}
-		else {
+		} else if (board.equalsIgnoreCase(CommonConstant.BACKLOG)) {
+			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
+					.findByBasicProjectConfigIdIn(basicProjectConfigId);
+		} else {
 			jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromReleaseMap(
 					Collections.singletonList(basicProjectConfigId),
 					CommonUtils.convertToPatternListForSubString(releaseList));
 		}
 	}
-	
+
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
 		return jiraIssueCustomHistoryList;
 	}
