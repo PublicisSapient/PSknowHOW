@@ -1212,7 +1212,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldName": "jiraStoryPointsCustomField",
         "fieldLabel": "Story Points Custom Field",
         "fieldType": "text",
-        "fieldCategory": "custom",
+        "fieldCategory": "fields",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Field used in Jira for Story points"
@@ -1222,7 +1222,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldName": "workingHoursDayCPT",
         "fieldLabel": "Working Hours in a Day",
         "fieldType": "text",
-        "fieldCategory": "custom",
+        "fieldCategory": "fields",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Working hours in a day"
@@ -1232,7 +1232,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldName": "epicCostOfDelay",
         "fieldLabel": "Custom field for COD",
         "fieldType": "text",
-        "fieldCategory": "custom",
+        "fieldCategory": "fields",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Provide value of Cost Of delay field for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
@@ -1243,7 +1243,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldName": "epicRiskReduction",
         "fieldLabel": "Custom field for Risk Reduction",
         "fieldType": "text",
-        "fieldCategory": "custom",
+        "fieldCategory": "fields",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Risk reduction/ Enablement value for Epic that is required to calculated Cost of delay <br> Example: customfield_11111<hr>",
@@ -1265,7 +1265,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldName": "epicWsjf",
         "fieldLabel": "Custom field for WSJF",
         "fieldType": "text",
-        "fieldCategory": "custom",
+        "fieldCategory": "fields",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of WSJF value that is required to calculated Cost of delay <br />Example:customfield_11111<hr>",
@@ -1276,7 +1276,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldName": "epicTimeCriticality",
         "fieldLabel": "Custom field for Time Criticality",
         "fieldType": "text",
-        "fieldCategory": "custom",
+        "fieldCategory": "fields",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Time Criticality value on Epic that is required to calculated Cost of delay .<br />Example:customfield_11111<hr>",
@@ -1287,7 +1287,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldName": "epicJobSize",
         "fieldLabel": "Custom field for Job Size",
         "fieldType": "text",
-        "fieldCategory": "custom",
+        "fieldCategory": "fields",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Job size on EPIC that is required to calculated WSJF. <br>Example:customfield_11111<hr>",
@@ -1379,7 +1379,7 @@ db.getCollection('field_mapping_structure').insert(
                 "fieldName": "jiraBugRaisedByQACustomField",
                 "fieldLabel": "QA Defect Custom Field",
                 "fieldType": "text",
-                "fieldCategory": "custom",
+                "fieldCategory": "fields",
                 "filterGroup": ["CustomField"],
                 "tooltip": {
                     "definition": "Provide customfield name to identify QA raised defects. <br>Example: customfield_13907"
@@ -1410,7 +1410,7 @@ db.getCollection('field_mapping_structure').insert(
                 "fieldName": "jiraBugRaisedByCustomField",
                 "fieldLabel": "UAT Defect Custom Field",
                 "fieldType": "text",
-                "fieldCategory": "custom",
+                "fieldCategory": "fields",
                 "filterGroup": ["CustomField"],
                 "tooltip": {
                     "definition": "Provide customfield name to identify UAT or client raised defects. <br> Example: customfield_13907<hr>"
@@ -1701,7 +1701,7 @@ db.getCollection('field_mapping_structure').insert(
             "fieldName": "jiraDueDateCustomField",
             "fieldLabel": "Due Date Custom Field",
             "fieldType": "text",
-            "fieldCategory": "custom",
+            "fieldCategory": "fields",
             "filterGroup": ["CustomField"],
             "tooltip": {
                 "definition": "This field is to track due date of issues tagged in the iteration."
@@ -1712,7 +1712,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "jiraDevDueDateCustomField",
     "fieldLabel": "Dev Due Date",
     "fieldType": "text",
-    "fieldCategory": "custom",
+    "fieldCategory": "fields",
     "section": "Custom Fields Mapping",
     "tooltip": {
         "definition": "This field is to track dev due date of issues tagged in the iteration."
@@ -1730,7 +1730,7 @@ db.getCollection('field_mapping_structure').insert(
     "fieldName": "rootCause",
     "fieldLabel": "Root Cause",
     "fieldType": "text",
-    "fieldCategory": "custom",
+    "fieldCategory": "fields",
     "section": "Custom Fields Mapping",
     "tooltip": {
         "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Root Cause is a custom field in JIRA. So User need to provide that custom field which is associated with Root Cause in Users JIRA Installation.",
@@ -1807,7 +1807,7 @@ db.getCollection('field_mapping_structure').insert(
             "fieldName": "productionDefectCustomField",
             "fieldLabel": "Production Defect CustomField",
             "fieldType": "text",
-            "fieldCategory": "custom",
+            "fieldCategory": "fields",
             "filterGroup": ["CustomField"],
             "tooltip": {
                 "definition": " Provide customfield name to identify Production raised defects."
