@@ -49,5 +49,6 @@ describe('Pipe: Default', () => {
     localStorage.setItem('hierarchyData', JSON.stringify(hierarchyData));
     expect(pipe.transform('')).toBe('');
     expect(pipe.transform('Project')).toBe('Project');
+    expect(pipe.transform('hierarchyLevelTwo')).toBe('Level Two');
   });
 });

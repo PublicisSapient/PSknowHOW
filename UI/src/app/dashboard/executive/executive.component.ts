@@ -779,12 +779,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }
     }
 
-    checkTime(time) {
-        if (time % 1 !== 0) {
-            time = time.toFixed(2);
-        }
-        return time < 1 ? (time * 60).toFixed(2) + ' mins' : time + ' hrs';
-    }
+    // checkTime(time) {
+    //     if (time % 1 !== 0) {
+    //         time = time.toFixed(2);
+    //     }
+    //     return time < 1 ? (time * 60).toFixed(2) + ' mins' : time + ' hrs';
+    // }
 
     sortAlphabetically(objArray) {
         if (objArray && objArray?.length > 1) {

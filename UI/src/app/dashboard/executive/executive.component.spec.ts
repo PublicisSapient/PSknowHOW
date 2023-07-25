@@ -113,8 +113,8 @@ describe('ExecutiveComponent', () => {
     }
   ];
   const filterApplyDataWithNoFilter = {};
-  const filterApplyDataWithScrum = { kpiList: [{ id: '5d3013be4020938b42c23ba7', kpiId: 'kpi8', kpiName: 'Code Build Time', isDeleted: 'False', kpiCategory: 'Productivity', kpiUnit: 'min', kpiSource: 'Jenkins', maxValue: '100', kanban: false, chartType: 'gaugeChart' }], ids: ['Speedy 2.0_62503_Speedy 2.0'], level: 3, selectedMap: { hierarchyLevelOne :['ASDFG_hierarchyLevelOne'], Project: ['Speedy 2.0_62503_Speedy 2.0'], SubProject: [], Sprint: [], Build: [], Release: [], Squad: [], Individual: [] } };
-  const filterApplyDataWithKanban = { kpiList: [{ id: '5d3013be4020938b42c23bd0', kpiId: 'kpi66', kpiName: 'Code Build Time', isDeleted: 'False', kpiCategory: 'Productivity', kpiUnit: 'min', kpiSource: 'Jenkins', maxValue: '100', kanban: true, chartType: 'gaugeChart' }], ids: ['Date Range'], level: 5, selectedMap: { hierarchyLevelOne :['ASDFG_hierarchyLevelOne'], Project: [], SubProject: [], Date: ['Date Range'], Build: [], Release: [], Squad: [], Individual: [] }, startDate: '2019-04-30T18:30:00.000Z', endDate: '2019-08-08T11:00:24.000Z' };
+  const filterApplyDataWithScrum = { kpiList: [{ id: '5d3013be4020938b42c23ba7', kpiId: 'kpi8', kpiName: 'Code Build Time', isDeleted: 'False', kpiCategory: 'Productivity', kpiUnit: 'min', kpiSource: 'Jenkins', maxValue: '100', kanban: false, chartType: 'gaugeChart' }], ids: ['Speedy 2.0_62503_Speedy 2.0'], level: 3, selectedMap: { hierarchyLevelOne: ['ASDFG_hierarchyLevelOne'], Project: ['Speedy 2.0_62503_Speedy 2.0'], SubProject: [], Sprint: [], Build: [], Release: [], Squad: [], Individual: [] } };
+  const filterApplyDataWithKanban = { kpiList: [{ id: '5d3013be4020938b42c23bd0', kpiId: 'kpi66', kpiName: 'Code Build Time', isDeleted: 'False', kpiCategory: 'Productivity', kpiUnit: 'min', kpiSource: 'Jenkins', maxValue: '100', kanban: true, chartType: 'gaugeChart' }], ids: ['Date Range'], level: 5, selectedMap: { hierarchyLevelOne: ['ASDFG_hierarchyLevelOne'], Project: [], SubProject: [], Date: ['Date Range'], Build: [], Release: [], Squad: [], Individual: [] }, startDate: '2019-04-30T18:30:00.000Z', endDate: '2019-08-08T11:00:24.000Z' };
   const selectedTab = 'mydashboard';
 
   const dashConfigData = require('../../../test/resource/fakeShowHideApi.json');
@@ -737,1680 +737,1680 @@ describe('ExecutiveComponent', () => {
 
   const fakejiraKanban = [
     {
-        kpiId: 'kpi82',
-        kpiName: 'First Time Pass Rate',
-        unit: '%',
-        maxValue: '100',
-        chartType: '',
-        kpiInfo: {
-            definition: 'FIRST TIME PASS RATE measures the percentage of tickets that pass QA first time (without stimulating a return transition or defect tagged)',
-            formula: [
-                {
-                    lhs: 'First time pass rate (FTPR) for a Sprint',
-                    operator: 'division',
-                    operands: [
-                        'No. of issues closed in a sprint which do not have a return transition or any defects tagged',
-                        'Total no. of issues closed in the sprint'
-                    ]
-                }
-            ],
-            details: [
-                {
-                    type: 'paragraph',
-                    value: 'It is calculated as a ‘Percentage’. Higher the percentage, better is the ‘Quality’'
-                },
-                {
-                    type: 'paragraph',
-                    value: 'A progress indicator shows trend of first time pass rate between last 2 sprints. An upward trend is considered positive'
-                },
-                {
-                    type: 'paragraph',
-                    value: 'Maturity of the KPI is calculated based on the average of the last 5 sprints'
-                },
-                {
-                    type: 'paragraph',
-                    value: '*If the KPI data is not available for last 5 sprints, the Maturity level will not be shown'
-                }
-            ],
-            maturityLevels: [
-                {
-                    level: 'M5',
-                    bgColor: '#6cab61',
-                    range: '>=90%'
-                },
-                {
-                    level: 'M4',
-                    bgColor: '#AEDB76',
-                    range: '>=75-90%'
-                },
-                {
-                    level: 'M3',
-                    bgColor: '#eff173',
-                    range: '>=50-75%'
-                },
-                {
-                    level: 'M2',
-                    bgColor: '#ffc35b',
-                    range: '>=25-50%'
-                },
-                {
-                    level: 'M1',
-                    bgColor: '#F06667',
-                    range: '< 25%'
-                }
+      kpiId: 'kpi82',
+      kpiName: 'First Time Pass Rate',
+      unit: '%',
+      maxValue: '100',
+      chartType: '',
+      kpiInfo: {
+        definition: 'FIRST TIME PASS RATE measures the percentage of tickets that pass QA first time (without stimulating a return transition or defect tagged)',
+        formula: [
+          {
+            lhs: 'First time pass rate (FTPR) for a Sprint',
+            operator: 'division',
+            operands: [
+              'No. of issues closed in a sprint which do not have a return transition or any defects tagged',
+              'Total no. of issues closed in the sprint'
             ]
-        },
-        id: '633545fb9d3ee24be23d2865',
-        isDeleted: 'False',
-        kpiUnit: '%',
-        kanban: false,
-        kpiSource: 'Jira',
-        trendValueList: [
+          }
+        ],
+        details: [
+          {
+            type: 'paragraph',
+            value: 'It is calculated as a ‘Percentage’. Higher the percentage, better is the ‘Quality’'
+          },
+          {
+            type: 'paragraph',
+            value: 'A progress indicator shows trend of first time pass rate between last 2 sprints. An upward trend is considered positive'
+          },
+          {
+            type: 'paragraph',
+            value: 'Maturity of the KPI is calculated based on the average of the last 5 sprints'
+          },
+          {
+            type: 'paragraph',
+            value: '*If the KPI data is not available for last 5 sprints, the Maturity level will not be shown'
+          }
+        ],
+        maturityLevels: [
+          {
+            level: 'M5',
+            bgColor: '#6cab61',
+            range: '>=90%'
+          },
+          {
+            level: 'M4',
+            bgColor: '#AEDB76',
+            range: '>=75-90%'
+          },
+          {
+            level: 'M3',
+            bgColor: '#eff173',
+            range: '>=50-75%'
+          },
+          {
+            level: 'M2',
+            bgColor: '#ffc35b',
+            range: '>=25-50%'
+          },
+          {
+            level: 'M1',
+            bgColor: '#F06667',
+            range: '< 25%'
+          }
+        ]
+      },
+      id: '633545fb9d3ee24be23d2865',
+      isDeleted: 'False',
+      kpiUnit: '%',
+      kanban: false,
+      kpiSource: 'Jira',
+      trendValueList: [
+        {
+          data: 'Scrum Project',
+          value: [
             {
-                data: 'Scrum Project',
-                value: [
-                    {
-                        data: '100',
-                        sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                        value: 100,
-                        hoverValue: {
-                            'FTP Stories': 9,
-                            'Closed Stories': 9
-                        },
-                        sprintIds: [
-                            '40203_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '67',
-                        sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                        value: 66.67,
-                        hoverValue: {
-                            'FTP Stories': 2,
-                            'Closed Stories': 3
-                        },
-                        sprintIds: [
-                            '38295_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '0',
-                        sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                        value: 0,
-                        sprintIds: [
-                            '38294_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '100',
-                        sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                        value: 100,
-                        hoverValue: {
-                            'FTP Stories': 5,
-                            'Closed Stories': 5
-                        },
-                        sprintIds: [
-                            '38296_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '70',
-                        sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                        value: 70,
-                        hoverValue: {
-                            'FTP Stories': 14,
-                            'Closed Stories': 20
-                        },
-                        sprintIds: [
-                            '40345_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST| Test1|PI_10|Opensource_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    }
-                ],
-                maturity: '3'
-            }
-        ],
-        maturityRange: [
-            '-25',
-            '25-50',
-            '50-75',
-            '75-90',
-            '90-'
-        ],
-        groupId: 1
-    },
-    {
-        kpiId: 'kpi111',
-        kpiName: 'Defect Density',
-        unit: '%',
-        maxValue: '500',
-        chartType: '',
-        kpiInfo: {
-            definition: 'DEFECT DENSITY measures the total number of defects against the size of a story',
-            formula: [
-                {
-                    lhs: 'Defect Density',
-                    operator: 'division',
-                    operands: [
-                        'No. of defects tagged to all stories closed in a sprint',
-                        'Total size of stories closed in the sprint'
-                    ]
-                }
-            ],
-            details: [
-                {
-                    type: 'paragraph',
-                    value: 'The KPI is applicable only if the estimation is being done in \'STory Points\''
-                },
-                {
-                    type: 'paragraph',
-                    value: 'It is calculated as a ‘Percentage’. Lower the percentage, better is the ‘Quality’'
-                },
-                {
-                    type: 'paragraph',
-                    value: 'A progress indicator shows trend of defect density between last 2 sprints. A downward trend is considered positive'
-                },
-                {
-                    type: 'paragraph',
-                    value: 'Maturity of the KPI is calculated based on the average of the last 5 sprints'
-                },
-                {
-                    type: 'paragraph',
-                    value: 'If the KPI data is not available for last 5 sprints, the Maturity level will not be shown'
-                }
-            ],
-            maturityLevels: [
-                {
-                    level: 'M5',
-                    bgColor: '#6cab61',
-                    range: '<10%'
-                },
-                {
-                    level: 'M4',
-                    bgColor: '#AEDB76',
-                    range: '10%-25%'
-                },
-                {
-                    level: 'M3',
-                    bgColor: '#eff173',
-                    range: '25%-60%'
-                },
-                {
-                    level: 'M2',
-                    bgColor: '#ffc35b',
-                    range: '60% -90%'
-                },
-                {
-                    level: 'M1',
-                    bgColor: '#F06667',
-                    range: '>90%'
-                }
-            ]
-        },
-        id: '633545fb9d3ee24be23d2866',
-        isDeleted: 'False',
-        kpiUnit: '%',
-        kanban: false,
-        kpiSource: 'Jira',
-        trendValueList: [
-            {
-                data: 'Scrum Project',
-                value: [
-                    {
-                        data: '0',
-                        sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                        value: 0,
-                        hoverValue: {
-                            Defects: 0,
-                            'Size of Closed Stories': 25
-                        },
-                        sprintIds: [
-                            '40203_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '74',
-                        sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                        value: 74.07,
-                        hoverValue: {
-                            Defects: 11,
-                            'Size of Closed Stories': 27
-                        },
-                        sprintIds: [
-                            '38295_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '67',
-                        sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                        value: 66.67,
-                        hoverValue: {
-                            Defects: 1,
-                            'Size of Closed Stories': 3
-                        },
-                        sprintIds: [
-                            '38294_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '13',
-                        sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                        value: 13.33,
-                        hoverValue: {
-                            Defects: 1,
-                            'Size of Closed Stories': 15
-                        },
-                        sprintIds: [
-                            '38296_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '59',
-                        sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                        value: 58.54,
-                        hoverValue: {
-                            Defects: 12,
-                            'Size of Closed Stories': 41
-                        },
-                        sprintIds: [
-                            '40345_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST| Test1|PI_10|Opensource_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    }
-                ],
-                maturity: '3'
-            }
-        ],
-        maturityRange: [
-            '-90',
-            '90-60',
-            '60-25',
-            '25-10',
-            '10-'
-        ],
-        groupId: 1
-    },
-    {
-        kpiId: 'kpi35',
-        kpiName: 'Defect Seepage Rate',
-        unit: '%',
-        maxValue: '100',
-        chartType: '',
-        kpiInfo: {
-            definition: 'DEFECT SEEPAGE RATE measures the percentage of defects leaked from the current testing stage to the subsequent stage',
-            formula: [
-                {
-                    lhs: 'DSR for a sprint',
-                    operator: 'division',
-                    operands: [
-                        'No. of  valid defects reported at a stage (e.g. UAT)',
-                        ' Total no. of defects reported in the current stage and previous stage (UAT & QA)'
-                    ]
-                }
-            ],
-            details: [
-                {
-                    type: 'paragraph',
-                    value: 'It is calculated as a ‘Percentage’. Lesser the percentage, better is the ‘Quality’'
-                },
-                {
-                    type: 'paragraph',
-                    value: 'A progress indicator shows trend of defect seepage rate between last 2 sprints. A downward trend is considered positive'
-                },
-                {
-                    type: 'paragraph',
-                    value: 'Maturity of the KPI is calculated based on the average of the last 5 sprints'
-                },
-                {
-                    type: 'paragraph',
-                    value: '*If the KPI data is not available for last 5 sprints, the Maturity level will not be shown'
-                }
-            ],
-            maturityLevels: [
-                {
-                    level: 'M5',
-                    bgColor: '#6cab61',
-                    range: '<25%'
-                },
-                {
-                    level: 'M4',
-                    bgColor: '#AEDB76',
-                    range: '>=25-50%'
-                },
-                {
-                    level: 'M3',
-                    bgColor: '#eff173',
-                    range: '>=50-75%'
-                },
-                {
-                    level: 'M2',
-                    bgColor: '#ffc35b',
-                    range: '>=75-90%'
-                },
-                {
-                    level: 'M1',
-                    bgColor: '#F06667',
-                    range: '>=90%'
-                }
-            ]
-        },
-        id: '633545fb9d3ee24be23d2867',
-        isDeleted: 'False',
-        kpiUnit: '%',
-        kanban: false,
-        kpiSource: 'Jira',
-        thresholdValue: 10,
-        trendValueList: [
-            {
-                data: 'Scrum Project',
-                value: [
-                    {
-                        data: '0',
-                        sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                        value: 0,
-                        hoverValue: {
-                            'Escaped Defects': 0,
-                            'Total Defects': 0
-                        },
-                        sprintIds: [
-                            '40203_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '0',
-                        sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                        value: 0,
-                        hoverValue: {
-                            'Escaped Defects': 0,
-                            'Total Defects': 11
-                        },
-                        sprintIds: [
-                            '38295_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '0',
-                        sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                        value: 0,
-                        hoverValue: {
-                            'Escaped Defects': 0,
-                            'Total Defects': 1
-                        },
-                        sprintIds: [
-                            '38294_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '0',
-                        sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                        value: 0,
-                        hoverValue: {
-                            'Escaped Defects': 0,
-                            'Total Defects': 1
-                        },
-                        sprintIds: [
-                            '38296_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '0',
-                        sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                        value: 0,
-                        hoverValue: {
-                            'Escaped Defects': 0,
-                            'Total Defects': 12
-                        },
-                        sprintIds: [
-                            '40345_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST| Test1|PI_10|Opensource_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    }
-                ],
-                maturity: '5'
-            }
-        ],
-        maturityRange: [
-            '-90',
-            '90-75',
-            '75-50',
-            '50-25',
-            '25-'
-        ],
-        groupId: 1
-    },
-    {
-        kpiId: 'kpi28',
-        kpiName: 'Defect Count By Priority',
-        unit: 'Number',
-        maxValue: '90',
-        chartType: '',
-        kpiInfo: {
-            definition: 'DEFECT COUNT BY PRIORITY measures number of defects for each priority defined in a project',
-            formula: [
-                {
-                    lhs: 'Defect Count By Priority'
-                },
-                {
-                    rhs: 'No. of defects linked to stories grouped by priority'
-                }
-            ],
-            details: [
-                {
-                    type: 'paragraph',
-                    value: 'It is calculated as ‘Count’. Lower the count, better is the ‘Quality’'
-                },
-                {
-                    type: 'paragraph',
-                    value: 'A progress indicator shows trend of defect count by priority between last 2 sprints. A downward trend is considered positive'
-                }
-            ]
-        },
-        id: '633545fb9d3ee24be23d286a',
-        isDeleted: 'False',
-        kpiUnit: 'Number',
-        kanban: false,
-        kpiSource: 'Jira',
-        thresholdValue: 55,
-        trendValueList: [
-            {
-                filter: 'Overall',
-                value: [
-                    {
-                        data: 'Scrum Project',
-                        value: [
-                            {
-                                data: '0',
-                                sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                                value: 0,
-                                hoverValue: {
-                                    P2: 0,
-                                    P3: 0,
-                                    P4: 0
-                                },
-                                kpiGroup: 'Overall',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '11',
-                                sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                                value: 11,
-                                hoverValue: {
-                                    P2: 3,
-                                    P3: 5,
-                                    P4: 3
-                                },
-                                kpiGroup: 'Overall',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '1',
-                                sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                                value: 1,
-                                hoverValue: {
-                                    P2: 0,
-                                    P3: 1,
-                                    P4: 0
-                                },
-                                kpiGroup: 'Overall',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '1',
-                                sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                                value: 1,
-                                hoverValue: {
-                                    P2: 0,
-                                    P3: 1,
-                                    P4: 0
-                                },
-                                kpiGroup: 'Overall',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '12',
-                                sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                                value: 12,
-                                hoverValue: {
-                                    P2: 0,
-                                    P3: 3,
-                                    P4: 9
-                                },
-                                kpiGroup: 'Overall',
-                                sprojectName: 'Scrum Project'
-                            }
-                        ]
-                    }
-                ]
+              data: '100',
+              sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+              value: 100,
+              hoverValue: {
+                'FTP Stories': 9,
+                'Closed Stories': 9
+              },
+              sprintIds: [
+                '40203_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
             },
             {
-                filter: 'P2',
-                value: [
-                    {
-                        data: 'Scrum Project',
-                        value: [
-                            {
-                                data: '0',
-                                sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                                value: 0,
-                                hoverValue: {
-                                    P2: 0
-                                },
-                                kpiGroup: 'P2',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '3',
-                                sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                                value: 3,
-                                hoverValue: {
-                                    P2: 3
-                                },
-                                kpiGroup: 'P2',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                                value: 0,
-                                hoverValue: {
-                                    P2: 0
-                                },
-                                kpiGroup: 'P2',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                                value: 0,
-                                hoverValue: {
-                                    P2: 0
-                                },
-                                kpiGroup: 'P2',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                                value: 0,
-                                hoverValue: {
-                                    P2: 0
-                                },
-                                kpiGroup: 'P2',
-                                sprojectName: 'Scrum Project'
-                            }
-                        ]
-                    }
-                ]
+              data: '67',
+              sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+              value: 66.67,
+              hoverValue: {
+                'FTP Stories': 2,
+                'Closed Stories': 3
+              },
+              sprintIds: [
+                '38295_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
             },
             {
-                filter: 'P3',
-                value: [
-                    {
-                        data: 'Scrum Project',
-                        value: [
-                            {
-                                data: '0',
-                                sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                                value: 0,
-                                hoverValue: {
-                                    P3: 0
-                                },
-                                kpiGroup: 'P3',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '5',
-                                sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                                value: 5,
-                                hoverValue: {
-                                    P3: 5
-                                },
-                                kpiGroup: 'P3',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '1',
-                                sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                                value: 1,
-                                hoverValue: {
-                                    P3: 1
-                                },
-                                kpiGroup: 'P3',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '1',
-                                sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                                value: 1,
-                                hoverValue: {
-                                    P3: 1
-                                },
-                                kpiGroup: 'P3',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '3',
-                                sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                                value: 3,
-                                hoverValue: {
-                                    P3: 3
-                                },
-                                kpiGroup: 'P3',
-                                sprojectName: 'Scrum Project'
-                            }
-                        ]
-                    }
-                ]
+              data: '0',
+              sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+              value: 0,
+              sprintIds: [
+                '38294_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
             },
             {
-                filter: 'P4',
-                value: [
-                    {
-                        data: 'Scrum Project',
-                        value: [
-                            {
-                                data: '0',
-                                sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                                value: 0,
-                                hoverValue: {
-                                    P4: 0
-                                },
-                                kpiGroup: 'P4',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '3',
-                                sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                                value: 3,
-                                hoverValue: {
-                                    P4: 3
-                                },
-                                kpiGroup: 'P4',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                                value: 0,
-                                hoverValue: {
-                                    P4: 0
-                                },
-                                kpiGroup: 'P4',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                                value: 0,
-                                hoverValue: {
-                                    P4: 0
-                                },
-                                kpiGroup: 'P4',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '9',
-                                sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                                value: 9,
-                                hoverValue: {
-                                    P4: 9
-                                },
-                                kpiGroup: 'P4',
-                                sprojectName: 'Scrum Project'
-                            }
-                        ]
-                    }
-                ]
+              data: '100',
+              sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+              value: 100,
+              hoverValue: {
+                'FTP Stories': 5,
+                'Closed Stories': 5
+              },
+              sprintIds: [
+                '38296_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '70',
+              sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+              value: 70,
+              hoverValue: {
+                'FTP Stories': 14,
+                'Closed Stories': 20
+              },
+              sprintIds: [
+                '40345_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST| Test1|PI_10|Opensource_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
             }
-        ],
-        groupId: 1
+          ],
+          maturity: '3'
+        }
+      ],
+      maturityRange: [
+        '-25',
+        '25-50',
+        '50-75',
+        '75-90',
+        '90-'
+      ],
+      groupId: 1
     },
     {
-        kpiId: 'kpi83',
-        kpiName: 'Average Resolution Time',
-        unit: 'Days',
-        maxValue: '100',
-        chartType: '',
-        kpiInfo: {
-            definition: 'AVERAGE RESOLUTION TIME measures average time taken to complete an issue that could be a story or bug etc.',
-            formula: [
-                {
-                    lhs: 'Sum of resolution times of all issues completed in the Sprint/No. of issues completed within a sprint'
-                }
-            ],
-            details: [
-                {
-                    type: 'paragraph',
-                    value: 'It is calculated as a ‘Days’. Fewer the days better is the ‘Speed’'
-                },
-                {
-                    type: 'paragraph',
-                    value: 'A progress indicator shows trend of Average Resolution Time between last 2 sprints. A downward trend is considered positive'
-                },
-                {
-                    type: 'paragraph',
-                    value: 'Maturity of the KPI is calculated based on the average of the last 5 sprints'
-                },
-                {
-                    type: 'paragraph',
-                    value: '*If the KPI data is not available for last 5 sprints, the Maturity level will not be shown'
-                }
-            ],
-            maturityLevels: [
-                {
-                    level: 'M5',
-                    bgColor: '#6cab61',
-                    range: '<= 3 days'
-                },
-                {
-                    level: 'M4',
-                    bgColor: '#AEDB76',
-                    range: '3-5 days'
-                },
-                {
-                    level: 'M3',
-                    bgColor: '#eff173',
-                    range: '5-8 days'
-                },
-                {
-                    level: 'M2',
-                    bgColor: '#ffc35b',
-                    range: '8-10 days'
-                },
-                {
-                    level: 'M1',
-                    bgColor: '#F06667',
-                    range: '=> 10 days'
-                }
+      kpiId: 'kpi111',
+      kpiName: 'Defect Density',
+      unit: '%',
+      maxValue: '500',
+      chartType: '',
+      kpiInfo: {
+        definition: 'DEFECT DENSITY measures the total number of defects against the size of a story',
+        formula: [
+          {
+            lhs: 'Defect Density',
+            operator: 'division',
+            operands: [
+              'No. of defects tagged to all stories closed in a sprint',
+              'Total size of stories closed in the sprint'
             ]
-        },
-        id: '633545fb9d3ee24be23d2878',
-        isDeleted: 'False',
-        kpiUnit: 'Days',
-        kanban: false,
-        kpiSource: 'Jira',
-        trendValueList: [
+          }
+        ],
+        details: [
+          {
+            type: 'paragraph',
+            value: 'The KPI is applicable only if the estimation is being done in \'STory Points\''
+          },
+          {
+            type: 'paragraph',
+            value: 'It is calculated as a ‘Percentage’. Lower the percentage, better is the ‘Quality’'
+          },
+          {
+            type: 'paragraph',
+            value: 'A progress indicator shows trend of defect density between last 2 sprints. A downward trend is considered positive'
+          },
+          {
+            type: 'paragraph',
+            value: 'Maturity of the KPI is calculated based on the average of the last 5 sprints'
+          },
+          {
+            type: 'paragraph',
+            value: 'If the KPI data is not available for last 5 sprints, the Maturity level will not be shown'
+          }
+        ],
+        maturityLevels: [
+          {
+            level: 'M5',
+            bgColor: '#6cab61',
+            range: '<10%'
+          },
+          {
+            level: 'M4',
+            bgColor: '#AEDB76',
+            range: '10%-25%'
+          },
+          {
+            level: 'M3',
+            bgColor: '#eff173',
+            range: '25%-60%'
+          },
+          {
+            level: 'M2',
+            bgColor: '#ffc35b',
+            range: '60% -90%'
+          },
+          {
+            level: 'M1',
+            bgColor: '#F06667',
+            range: '>90%'
+          }
+        ]
+      },
+      id: '633545fb9d3ee24be23d2866',
+      isDeleted: 'False',
+      kpiUnit: '%',
+      kanban: false,
+      kpiSource: 'Jira',
+      trendValueList: [
+        {
+          data: 'Scrum Project',
+          value: [
             {
-                filter: 'Overall',
-                value: [
-                    {
-                        data: 'Scrum Project',
-                        value: [
-                            {
-                                data: '4',
-                                sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                                value: 3.67,
-                                hoverValue: {},
-                                kpiGroup: 'Overall',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '2',
-                                sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                                value: 1.76,
-                                hoverValue: {},
-                                kpiGroup: 'Overall',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '2',
-                                sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                                value: 1.54,
-                                hoverValue: {},
-                                kpiGroup: 'Overall',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '3',
-                                sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                                value: 2.62,
-                                hoverValue: {},
-                                kpiGroup: 'Overall',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '5',
-                                sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                                value: 5.18,
-                                hoverValue: {},
-                                kpiGroup: 'Overall',
-                                sprojectName: 'Scrum Project'
-                            }
-                        ],
-                        maturity: '5'
-                    }
-                ]
+              data: '0',
+              sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+              value: 0,
+              hoverValue: {
+                Defects: 0,
+                'Size of Closed Stories': 25
+              },
+              sprintIds: [
+                '40203_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
             },
             {
-                filter: 'Bug',
-                value: [
-                    {
-                        data: 'Scrum Project',
-                        value: [
-                            {
-                                data: '0',
-                                sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Bug',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '1',
-                                sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                                value: 1.44,
-                                hoverValue: {},
-                                kpiGroup: 'Bug',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '2',
-                                sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                                value: 1.54,
-                                hoverValue: {},
-                                kpiGroup: 'Bug',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '1',
-                                sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                                value: 1.38,
-                                hoverValue: {},
-                                kpiGroup: 'Bug',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '1',
-                                sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                                value: 1.43,
-                                hoverValue: {},
-                                kpiGroup: 'Bug',
-                                sprojectName: 'Scrum Project'
-                            }
-                        ],
-                        maturity: '5'
-                    }
-                ]
+              data: '74',
+              sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+              value: 74.07,
+              hoverValue: {
+                Defects: 11,
+                'Size of Closed Stories': 27
+              },
+              sprintIds: [
+                '38295_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
             },
             {
-                filter: 'Change request',
-                value: [
-                    {
-                        data: 'Scrum Project',
-                        value: [
-                            {
-                                data: '0',
-                                sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Change request',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Change request',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Change request',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Change request',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Change request',
-                                sprojectName: 'Scrum Project'
-                            }
-                        ],
-                        maturity: '5'
-                    }
-                ]
+              data: '67',
+              sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+              value: 66.67,
+              hoverValue: {
+                Defects: 1,
+                'Size of Closed Stories': 3
+              },
+              sprintIds: [
+                '38294_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
             },
             {
-                filter: 'Enabler Story',
-                value: [
-                    {
-                        data: 'Scrum Project',
-                        value: [
-                            {
-                                data: '0',
-                                sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Enabler Story',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '8',
-                                sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                                value: 8,
-                                hoverValue: {},
-                                kpiGroup: 'Enabler Story',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Enabler Story',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Enabler Story',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Enabler Story',
-                                sprojectName: 'Scrum Project'
-                            }
-                        ],
-                        maturity: '5'
-                    }
-                ]
+              data: '13',
+              sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+              value: 13.33,
+              hoverValue: {
+                Defects: 1,
+                'Size of Closed Stories': 15
+              },
+              sprintIds: [
+                '38296_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
             },
             {
-                filter: 'Epic',
-                value: [
-                    {
-                        data: 'Scrum Project',
-                        value: [
-                            {
-                                data: '0',
-                                sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Epic',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Epic',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Epic',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Epic',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Epic',
-                                sprojectName: 'Scrum Project'
-                            }
-                        ],
-                        maturity: '5'
-                    }
-                ]
-            },
-            {
-                filter: 'Story',
-                value: [
-                    {
-                        data: 'Scrum Project',
-                        value: [
-                            {
-                                data: '4',
-                                sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                                value: 3.67,
-                                hoverValue: {},
-                                kpiGroup: 'Story',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '4',
-                                sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                                value: 4,
-                                hoverValue: {},
-                                kpiGroup: 'Story',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '0',
-                                sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                                value: 0,
-                                hoverValue: {},
-                                kpiGroup: 'Story',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '5',
-                                sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                                value: 4.6,
-                                hoverValue: {},
-                                kpiGroup: 'Story',
-                                sprojectName: 'Scrum Project'
-                            },
-                            {
-                                data: '8',
-                                sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                                sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                                value: 7.8,
-                                hoverValue: {},
-                                kpiGroup: 'Story',
-                                sprojectName: 'Scrum Project'
-                            }
-                        ],
-                        maturity: '4'
-                    }
-                ]
+              data: '59',
+              sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+              value: 58.54,
+              hoverValue: {
+                Defects: 12,
+                'Size of Closed Stories': 41
+              },
+              sprintIds: [
+                '40345_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST| Test1|PI_10|Opensource_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
             }
-        ],
-        maturityRange: [
-            '-10',
-            '10-8',
-            '8-5',
-            '5-3',
-            '3-'
-        ],
-        groupId: 1
+          ],
+          maturity: '3'
+        }
+      ],
+      maturityRange: [
+        '-90',
+        '90-60',
+        '60-25',
+        '25-10',
+        '10-'
+      ],
+      groupId: 1
     },
     {
-        kpiId: 'kpi126',
-        kpiName: 'Created vs Resolved defects',
-        unit: 'Number',
-        maxValue: '300',
-        chartType: '',
-        kpiInfo: {
-            definition: 'Created vs Resolved defects gives a view of closed defects in an iteration vs planned + added defects in the iteration. The aim is to close all the defects that are in the iteration.',
-            details: [
-                {
-                    type: 'paragraph',
-                    value: 'If the No. of defects resolved are equal to the No. of defects created in the latest sprint, the KPI is considered having a positive trend.'
-                }
+      kpiId: 'kpi35',
+      kpiName: 'Defect Seepage Rate',
+      unit: '%',
+      maxValue: '100',
+      chartType: '',
+      kpiInfo: {
+        definition: 'DEFECT SEEPAGE RATE measures the percentage of defects leaked from the current testing stage to the subsequent stage',
+        formula: [
+          {
+            lhs: 'DSR for a sprint',
+            operator: 'division',
+            operands: [
+              'No. of  valid defects reported at a stage (e.g. UAT)',
+              ' Total no. of defects reported in the current stage and previous stage (UAT & QA)'
             ]
-        },
-        id: '633545fb9d3ee24be23d286c',
-        isDeleted: 'False',
-        kpiUnit: 'Number',
-        kanban: false,
-        kpiSource: 'Jira',
-        trendValueList: [
-            {
-                data: 'Scrum Project',
-                value: [
-                    {
-                        data: '1',
-                        sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                        value: 1,
-                        hoverValue: {
-                            resolvedDefects: 0,
-                            createdDefects: 1
-                        },
-                        sprintIds: [
-                            '40203_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
-                        ],
-                        lineValue: 0,
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '31',
-                        sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                        value: 31,
-                        hoverValue: {
-                            resolvedDefects: 29,
-                            createdDefects: 31
-                        },
-                        sprintIds: [
-                            '38295_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
-                        ],
-                        lineValue: 29,
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '30',
-                        sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                        value: 30,
-                        hoverValue: {
-                            resolvedDefects: 22,
-                            createdDefects: 30
-                        },
-                        sprintIds: [
-                            '38294_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
-                        ],
-                        lineValue: 22,
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '10',
-                        sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                        value: 10,
-                        hoverValue: {
-                            resolvedDefects: 7,
-                            createdDefects: 10
-                        },
-                        sprintIds: [
-                            '38296_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
-                        ],
-                        lineValue: 7,
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '20',
-                        sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                        value: 20,
-                        hoverValue: {
-                            resolvedDefects: 14,
-                            createdDefects: 20
-                        },
-                        sprintIds: [
-                            '40345_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST| Test1|PI_10|Opensource_Scrum Project'
-                        ],
-                        lineValue: 14,
-                        sprojectName: 'Scrum Project'
-                    }
-                ]
-            }
+          }
         ],
-        groupId: 1
+        details: [
+          {
+            type: 'paragraph',
+            value: 'It is calculated as a ‘Percentage’. Lesser the percentage, better is the ‘Quality’'
+          },
+          {
+            type: 'paragraph',
+            value: 'A progress indicator shows trend of defect seepage rate between last 2 sprints. A downward trend is considered positive'
+          },
+          {
+            type: 'paragraph',
+            value: 'Maturity of the KPI is calculated based on the average of the last 5 sprints'
+          },
+          {
+            type: 'paragraph',
+            value: '*If the KPI data is not available for last 5 sprints, the Maturity level will not be shown'
+          }
+        ],
+        maturityLevels: [
+          {
+            level: 'M5',
+            bgColor: '#6cab61',
+            range: '<25%'
+          },
+          {
+            level: 'M4',
+            bgColor: '#AEDB76',
+            range: '>=25-50%'
+          },
+          {
+            level: 'M3',
+            bgColor: '#eff173',
+            range: '>=50-75%'
+          },
+          {
+            level: 'M2',
+            bgColor: '#ffc35b',
+            range: '>=75-90%'
+          },
+          {
+            level: 'M1',
+            bgColor: '#F06667',
+            range: '>=90%'
+          }
+        ]
+      },
+      id: '633545fb9d3ee24be23d2867',
+      isDeleted: 'False',
+      kpiUnit: '%',
+      kanban: false,
+      kpiSource: 'Jira',
+      thresholdValue: 10,
+      trendValueList: [
+        {
+          data: 'Scrum Project',
+          value: [
+            {
+              data: '0',
+              sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+              value: 0,
+              hoverValue: {
+                'Escaped Defects': 0,
+                'Total Defects': 0
+              },
+              sprintIds: [
+                '40203_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '0',
+              sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+              value: 0,
+              hoverValue: {
+                'Escaped Defects': 0,
+                'Total Defects': 11
+              },
+              sprintIds: [
+                '38295_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '0',
+              sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+              value: 0,
+              hoverValue: {
+                'Escaped Defects': 0,
+                'Total Defects': 1
+              },
+              sprintIds: [
+                '38294_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '0',
+              sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+              value: 0,
+              hoverValue: {
+                'Escaped Defects': 0,
+                'Total Defects': 1
+              },
+              sprintIds: [
+                '38296_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '0',
+              sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+              value: 0,
+              hoverValue: {
+                'Escaped Defects': 0,
+                'Total Defects': 12
+              },
+              sprintIds: [
+                '40345_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST| Test1|PI_10|Opensource_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            }
+          ],
+          maturity: '5'
+        }
+      ],
+      maturityRange: [
+        '-90',
+        '90-75',
+        '75-50',
+        '50-25',
+        '25-'
+      ],
+      groupId: 1
     },
     {
-        kpiId: 'kpi46',
-        kpiName: 'Sprint Capacity Utilization',
-        unit: 'Hours',
-        maxValue: '500',
-        chartType: '',
-        kpiInfo: {
-            definition: 'SPRINT CAPACITY UTILIZATION depicts the maximum amount of time a team can commit within sprint',
-            details: [
+      kpiId: 'kpi28',
+      kpiName: 'Defect Count By Priority',
+      unit: 'Number',
+      maxValue: '90',
+      chartType: '',
+      kpiInfo: {
+        definition: 'DEFECT COUNT BY PRIORITY measures number of defects for each priority defined in a project',
+        formula: [
+          {
+            lhs: 'Defect Count By Priority'
+          },
+          {
+            rhs: 'No. of defects linked to stories grouped by priority'
+          }
+        ],
+        details: [
+          {
+            type: 'paragraph',
+            value: 'It is calculated as ‘Count’. Lower the count, better is the ‘Quality’'
+          },
+          {
+            type: 'paragraph',
+            value: 'A progress indicator shows trend of defect count by priority between last 2 sprints. A downward trend is considered positive'
+          }
+        ]
+      },
+      id: '633545fb9d3ee24be23d286a',
+      isDeleted: 'False',
+      kpiUnit: 'Number',
+      kanban: false,
+      kpiSource: 'Jira',
+      thresholdValue: 55,
+      trendValueList: [
+        {
+          filter: 'Overall',
+          value: [
+            {
+              data: 'Scrum Project',
+              value: [
                 {
-                    type: 'paragraph',
-                    value: 'This KPI is calculated based on 2 parameters'
+                  data: '0',
+                  sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+                  value: 0,
+                  hoverValue: {
+                    P2: 0,
+                    P3: 0,
+                    P4: 0
+                  },
+                  kpiGroup: 'Overall',
+                  sprojectName: 'Scrum Project'
                 },
                 {
-                    type: 'paragraph',
-                    value: 'Estimated Hours: It explains the total hours required to complete Sprint backlog'
+                  data: '11',
+                  sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+                  value: 11,
+                  hoverValue: {
+                    P2: 3,
+                    P3: 5,
+                    P4: 3
+                  },
+                  kpiGroup: 'Overall',
+                  sprojectName: 'Scrum Project'
                 },
                 {
-                    type: 'paragraph',
-                    value: 'Logged Work: The amount of time team has logged within a Sprint'
+                  data: '1',
+                  sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+                  value: 1,
+                  hoverValue: {
+                    P2: 0,
+                    P3: 1,
+                    P4: 0
+                  },
+                  kpiGroup: 'Overall',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '1',
+                  sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+                  value: 1,
+                  hoverValue: {
+                    P2: 0,
+                    P3: 1,
+                    P4: 0
+                  },
+                  kpiGroup: 'Overall',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '12',
+                  sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+                  value: 12,
+                  hoverValue: {
+                    P2: 0,
+                    P3: 3,
+                    P4: 9
+                  },
+                  kpiGroup: 'Overall',
+                  sprojectName: 'Scrum Project'
                 }
-            ]
-        },
-        id: '633545fb9d3ee24be23d2877',
-        isDeleted: 'False',
-        kpiUnit: 'Hours',
-        kanban: false,
-        kpiSource: 'Jira',
-        trendValueList: [
-            {
-                data: 'Scrum Project',
-                value: [
-                    {
-                        data: '0.0',
-                        sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                        value: 0,
-                        hoverValue: {
-                            'Estimated Hours': 0,
-                            'Logged Work': 68
-                        },
-                        sprintIds: [
-                            '40203_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
-                        ],
-                        lineValue: 68,
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '20.0',
-                        sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                        value: 20,
-                        hoverValue: {
-                            'Estimated Hours': 20,
-                            'Logged Work': 189
-                        },
-                        sprintIds: [
-                            '38295_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
-                        ],
-                        lineValue: 189,
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '0.0',
-                        sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                        value: 0,
-                        hoverValue: {
-                            'Estimated Hours': 0,
-                            'Logged Work': 1
-                        },
-                        sprintIds: [
-                            '38294_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
-                        ],
-                        lineValue: 1,
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '40.0',
-                        sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                        value: 40,
-                        hoverValue: {
-                            'Estimated Hours': 40,
-                            'Logged Work': 57
-                        },
-                        sprintIds: [
-                            '38296_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
-                        ],
-                        lineValue: 57,
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '50.0',
-                        sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                        value: 50,
-                        hoverValue: {
-                            'Estimated Hours': 50,
-                            'Logged Work': 139
-                        },
-                        sprintIds: [
-                            '40345_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST| Test1|PI_10|Opensource_Scrum Project'
-                        ],
-                        lineValue: 139,
-                        sprojectName: 'Scrum Project'
-                    }
-                ]
+              ]
             }
-        ],
-        groupId: 1
+          ]
+        },
+        {
+          filter: 'P2',
+          value: [
+            {
+              data: 'Scrum Project',
+              value: [
+                {
+                  data: '0',
+                  sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+                  value: 0,
+                  hoverValue: {
+                    P2: 0
+                  },
+                  kpiGroup: 'P2',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '3',
+                  sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+                  value: 3,
+                  hoverValue: {
+                    P2: 3
+                  },
+                  kpiGroup: 'P2',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+                  value: 0,
+                  hoverValue: {
+                    P2: 0
+                  },
+                  kpiGroup: 'P2',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+                  value: 0,
+                  hoverValue: {
+                    P2: 0
+                  },
+                  kpiGroup: 'P2',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+                  value: 0,
+                  hoverValue: {
+                    P2: 0
+                  },
+                  kpiGroup: 'P2',
+                  sprojectName: 'Scrum Project'
+                }
+              ]
+            }
+          ]
+        },
+        {
+          filter: 'P3',
+          value: [
+            {
+              data: 'Scrum Project',
+              value: [
+                {
+                  data: '0',
+                  sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+                  value: 0,
+                  hoverValue: {
+                    P3: 0
+                  },
+                  kpiGroup: 'P3',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '5',
+                  sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+                  value: 5,
+                  hoverValue: {
+                    P3: 5
+                  },
+                  kpiGroup: 'P3',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '1',
+                  sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+                  value: 1,
+                  hoverValue: {
+                    P3: 1
+                  },
+                  kpiGroup: 'P3',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '1',
+                  sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+                  value: 1,
+                  hoverValue: {
+                    P3: 1
+                  },
+                  kpiGroup: 'P3',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '3',
+                  sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+                  value: 3,
+                  hoverValue: {
+                    P3: 3
+                  },
+                  kpiGroup: 'P3',
+                  sprojectName: 'Scrum Project'
+                }
+              ]
+            }
+          ]
+        },
+        {
+          filter: 'P4',
+          value: [
+            {
+              data: 'Scrum Project',
+              value: [
+                {
+                  data: '0',
+                  sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+                  value: 0,
+                  hoverValue: {
+                    P4: 0
+                  },
+                  kpiGroup: 'P4',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '3',
+                  sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+                  value: 3,
+                  hoverValue: {
+                    P4: 3
+                  },
+                  kpiGroup: 'P4',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+                  value: 0,
+                  hoverValue: {
+                    P4: 0
+                  },
+                  kpiGroup: 'P4',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+                  value: 0,
+                  hoverValue: {
+                    P4: 0
+                  },
+                  kpiGroup: 'P4',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '9',
+                  sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+                  value: 9,
+                  hoverValue: {
+                    P4: 9
+                  },
+                  kpiGroup: 'P4',
+                  sprojectName: 'Scrum Project'
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      groupId: 1
     },
     {
-        kpiId: 'kpi40',
-        kpiName: 'Story Count',
-        unit: 'Stories',
-        maxValue: '',
-        chartType: '',
-        kpiInfo: {
-            definition: 'STORY COUNT measures the overall work taken in a sprint',
-            formula: [
-                {
-                    lhs: 'No. of stories tagged to a Sprint'
-                }
-            ]
-        },
-        id: '633545fb9d3ee24be23d2874',
-        isDeleted: 'False',
-        kpiUnit: 'Stories',
-        kanban: false,
-        kpiSource: 'Jira',
-        trendValueList: [
-            {
-                data: 'Scrum Project',
-                value: [
-                    {
-                        data: '22.0',
-                        sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                        value: 22,
-                        hoverValue: {},
-                        sprintIds: [
-                            '40203_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '16.0',
-                        sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                        value: 16,
-                        hoverValue: {},
-                        sprintIds: [
-                            '38295_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '11.0',
-                        sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                        value: 11,
-                        hoverValue: {},
-                        sprintIds: [
-                            '38294_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '14.0',
-                        sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                        value: 14,
-                        hoverValue: {},
-                        sprintIds: [
-                            '38296_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '33.0',
-                        sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                        value: 33,
-                        hoverValue: {},
-                        sprintIds: [
-                            '40345_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST| Test1|PI_10|Opensource_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    }
-                ]
-            }
+      kpiId: 'kpi83',
+      kpiName: 'Average Resolution Time',
+      unit: 'Days',
+      maxValue: '100',
+      chartType: '',
+      kpiInfo: {
+        definition: 'AVERAGE RESOLUTION TIME measures average time taken to complete an issue that could be a story or bug etc.',
+        formula: [
+          {
+            lhs: 'Sum of resolution times of all issues completed in the Sprint/No. of issues completed within a sprint'
+          }
         ],
-        groupId: 1
+        details: [
+          {
+            type: 'paragraph',
+            value: 'It is calculated as a ‘Days’. Fewer the days better is the ‘Speed’'
+          },
+          {
+            type: 'paragraph',
+            value: 'A progress indicator shows trend of Average Resolution Time between last 2 sprints. A downward trend is considered positive'
+          },
+          {
+            type: 'paragraph',
+            value: 'Maturity of the KPI is calculated based on the average of the last 5 sprints'
+          },
+          {
+            type: 'paragraph',
+            value: '*If the KPI data is not available for last 5 sprints, the Maturity level will not be shown'
+          }
+        ],
+        maturityLevels: [
+          {
+            level: 'M5',
+            bgColor: '#6cab61',
+            range: '<= 3 days'
+          },
+          {
+            level: 'M4',
+            bgColor: '#AEDB76',
+            range: '3-5 days'
+          },
+          {
+            level: 'M3',
+            bgColor: '#eff173',
+            range: '5-8 days'
+          },
+          {
+            level: 'M2',
+            bgColor: '#ffc35b',
+            range: '8-10 days'
+          },
+          {
+            level: 'M1',
+            bgColor: '#F06667',
+            range: '=> 10 days'
+          }
+        ]
+      },
+      id: '633545fb9d3ee24be23d2878',
+      isDeleted: 'False',
+      kpiUnit: 'Days',
+      kanban: false,
+      kpiSource: 'Jira',
+      trendValueList: [
+        {
+          filter: 'Overall',
+          value: [
+            {
+              data: 'Scrum Project',
+              value: [
+                {
+                  data: '4',
+                  sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+                  value: 3.67,
+                  hoverValue: {},
+                  kpiGroup: 'Overall',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '2',
+                  sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+                  value: 1.76,
+                  hoverValue: {},
+                  kpiGroup: 'Overall',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '2',
+                  sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+                  value: 1.54,
+                  hoverValue: {},
+                  kpiGroup: 'Overall',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '3',
+                  sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+                  value: 2.62,
+                  hoverValue: {},
+                  kpiGroup: 'Overall',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '5',
+                  sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+                  value: 5.18,
+                  hoverValue: {},
+                  kpiGroup: 'Overall',
+                  sprojectName: 'Scrum Project'
+                }
+              ],
+              maturity: '5'
+            }
+          ]
+        },
+        {
+          filter: 'Bug',
+          value: [
+            {
+              data: 'Scrum Project',
+              value: [
+                {
+                  data: '0',
+                  sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Bug',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '1',
+                  sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+                  value: 1.44,
+                  hoverValue: {},
+                  kpiGroup: 'Bug',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '2',
+                  sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+                  value: 1.54,
+                  hoverValue: {},
+                  kpiGroup: 'Bug',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '1',
+                  sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+                  value: 1.38,
+                  hoverValue: {},
+                  kpiGroup: 'Bug',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '1',
+                  sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+                  value: 1.43,
+                  hoverValue: {},
+                  kpiGroup: 'Bug',
+                  sprojectName: 'Scrum Project'
+                }
+              ],
+              maturity: '5'
+            }
+          ]
+        },
+        {
+          filter: 'Change request',
+          value: [
+            {
+              data: 'Scrum Project',
+              value: [
+                {
+                  data: '0',
+                  sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Change request',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Change request',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Change request',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Change request',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Change request',
+                  sprojectName: 'Scrum Project'
+                }
+              ],
+              maturity: '5'
+            }
+          ]
+        },
+        {
+          filter: 'Enabler Story',
+          value: [
+            {
+              data: 'Scrum Project',
+              value: [
+                {
+                  data: '0',
+                  sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Enabler Story',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '8',
+                  sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+                  value: 8,
+                  hoverValue: {},
+                  kpiGroup: 'Enabler Story',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Enabler Story',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Enabler Story',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Enabler Story',
+                  sprojectName: 'Scrum Project'
+                }
+              ],
+              maturity: '5'
+            }
+          ]
+        },
+        {
+          filter: 'Epic',
+          value: [
+            {
+              data: 'Scrum Project',
+              value: [
+                {
+                  data: '0',
+                  sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Epic',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Epic',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Epic',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Epic',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Epic',
+                  sprojectName: 'Scrum Project'
+                }
+              ],
+              maturity: '5'
+            }
+          ]
+        },
+        {
+          filter: 'Story',
+          value: [
+            {
+              data: 'Scrum Project',
+              value: [
+                {
+                  data: '4',
+                  sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+                  value: 3.67,
+                  hoverValue: {},
+                  kpiGroup: 'Story',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '4',
+                  sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+                  value: 4,
+                  hoverValue: {},
+                  kpiGroup: 'Story',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '0',
+                  sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+                  value: 0,
+                  hoverValue: {},
+                  kpiGroup: 'Story',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '5',
+                  sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+                  value: 4.6,
+                  hoverValue: {},
+                  kpiGroup: 'Story',
+                  sprojectName: 'Scrum Project'
+                },
+                {
+                  data: '8',
+                  sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+                  sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+                  value: 7.8,
+                  hoverValue: {},
+                  kpiGroup: 'Story',
+                  sprojectName: 'Scrum Project'
+                }
+              ],
+              maturity: '4'
+            }
+          ]
+        }
+      ],
+      maturityRange: [
+        '-10',
+        '10-8',
+        '8-5',
+        '5-3',
+        '3-'
+      ],
+      groupId: 1
     },
     {
-        kpiId: 'kpi39',
-        kpiName: 'Sprint Velocity',
-        unit: 'SP',
-        maxValue: '300',
-        chartType: '',
-        kpiInfo: {
-            definition: 'SPRINT VELOCITY measures the rate at which a team can deliver every Sprint',
-            formula: [
-                {
-                    lhs: 'Sum of story points of all stories completed within a Sprint'
-                }
-            ]
-        },
-        id: '633545fb9d3ee24be23d2876',
-        isDeleted: 'False',
-        kpiUnit: 'SP',
-        kanban: false,
-        kpiSource: 'Jira',
-        trendValueList: [
+      kpiId: 'kpi126',
+      kpiName: 'Created vs Resolved defects',
+      unit: 'Number',
+      maxValue: '300',
+      chartType: '',
+      kpiInfo: {
+        definition: 'Created vs Resolved defects gives a view of closed defects in an iteration vs planned + added defects in the iteration. The aim is to close all the defects that are in the iteration.',
+        details: [
+          {
+            type: 'paragraph',
+            value: 'If the No. of defects resolved are equal to the No. of defects created in the latest sprint, the KPI is considered having a positive trend.'
+          }
+        ]
+      },
+      id: '633545fb9d3ee24be23d286c',
+      isDeleted: 'False',
+      kpiUnit: 'Number',
+      kanban: false,
+      kpiSource: 'Jira',
+      trendValueList: [
+        {
+          data: 'Scrum Project',
+          value: [
             {
-                data: 'Scrum Project',
-                value: [
-                    {
-                        data: '61',
-                        sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
-                        value: 61,
-                        hoverValue: {},
-                        sprintIds: [
-                            '40203_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '45',
-                        sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
-                        value: 45,
-                        hoverValue: {},
-                        sprintIds: [
-                            '38295_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '23',
-                        sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
-                        value: 23,
-                        hoverValue: {},
-                        sprintIds: [
-                            '38294_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '22',
-                        sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
-                        value: 22,
-                        hoverValue: {},
-                        sprintIds: [
-                            '38296_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    },
-                    {
-                        data: '116',
-                        sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
-                        sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
-                        value: 116,
-                        hoverValue: {},
-                        sprintIds: [
-                            '40345_Scrum Project_6335363749794a18e8a4479b'
-                        ],
-                        sprintNames: [
-                            'TEST| Test1|PI_10|Opensource_Scrum Project'
-                        ],
-                        sprojectName: 'Scrum Project'
-                    }
-                ]
+              data: '1',
+              sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+              value: 1,
+              hoverValue: {
+                resolvedDefects: 0,
+                createdDefects: 1
+              },
+              sprintIds: [
+                '40203_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
+              ],
+              lineValue: 0,
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '31',
+              sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+              value: 31,
+              hoverValue: {
+                resolvedDefects: 29,
+                createdDefects: 31
+              },
+              sprintIds: [
+                '38295_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
+              ],
+              lineValue: 29,
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '30',
+              sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+              value: 30,
+              hoverValue: {
+                resolvedDefects: 22,
+                createdDefects: 30
+              },
+              sprintIds: [
+                '38294_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
+              ],
+              lineValue: 22,
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '10',
+              sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+              value: 10,
+              hoverValue: {
+                resolvedDefects: 7,
+                createdDefects: 10
+              },
+              sprintIds: [
+                '38296_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
+              ],
+              lineValue: 7,
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '20',
+              sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+              value: 20,
+              hoverValue: {
+                resolvedDefects: 14,
+                createdDefects: 20
+              },
+              sprintIds: [
+                '40345_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST| Test1|PI_10|Opensource_Scrum Project'
+              ],
+              lineValue: 14,
+              sprojectName: 'Scrum Project'
             }
-        ],
-        groupId: 1
+          ]
+        }
+      ],
+      groupId: 1
+    },
+    {
+      kpiId: 'kpi46',
+      kpiName: 'Sprint Capacity Utilization',
+      unit: 'Hours',
+      maxValue: '500',
+      chartType: '',
+      kpiInfo: {
+        definition: 'SPRINT CAPACITY UTILIZATION depicts the maximum amount of time a team can commit within sprint',
+        details: [
+          {
+            type: 'paragraph',
+            value: 'This KPI is calculated based on 2 parameters'
+          },
+          {
+            type: 'paragraph',
+            value: 'Estimated Hours: It explains the total hours required to complete Sprint backlog'
+          },
+          {
+            type: 'paragraph',
+            value: 'Logged Work: The amount of time team has logged within a Sprint'
+          }
+        ]
+      },
+      id: '633545fb9d3ee24be23d2877',
+      isDeleted: 'False',
+      kpiUnit: 'Hours',
+      kanban: false,
+      kpiSource: 'Jira',
+      trendValueList: [
+        {
+          data: 'Scrum Project',
+          value: [
+            {
+              data: '0.0',
+              sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+              value: 0,
+              hoverValue: {
+                'Estimated Hours': 0,
+                'Logged Work': 68
+              },
+              sprintIds: [
+                '40203_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
+              ],
+              lineValue: 68,
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '20.0',
+              sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+              value: 20,
+              hoverValue: {
+                'Estimated Hours': 20,
+                'Logged Work': 189
+              },
+              sprintIds: [
+                '38295_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
+              ],
+              lineValue: 189,
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '0.0',
+              sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+              value: 0,
+              hoverValue: {
+                'Estimated Hours': 0,
+                'Logged Work': 1
+              },
+              sprintIds: [
+                '38294_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
+              ],
+              lineValue: 1,
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '40.0',
+              sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+              value: 40,
+              hoverValue: {
+                'Estimated Hours': 40,
+                'Logged Work': 57
+              },
+              sprintIds: [
+                '38296_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
+              ],
+              lineValue: 57,
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '50.0',
+              sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+              value: 50,
+              hoverValue: {
+                'Estimated Hours': 50,
+                'Logged Work': 139
+              },
+              sprintIds: [
+                '40345_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST| Test1|PI_10|Opensource_Scrum Project'
+              ],
+              lineValue: 139,
+              sprojectName: 'Scrum Project'
+            }
+          ]
+        }
+      ],
+      groupId: 1
+    },
+    {
+      kpiId: 'kpi40',
+      kpiName: 'Story Count',
+      unit: 'Stories',
+      maxValue: '',
+      chartType: '',
+      kpiInfo: {
+        definition: 'STORY COUNT measures the overall work taken in a sprint',
+        formula: [
+          {
+            lhs: 'No. of stories tagged to a Sprint'
+          }
+        ]
+      },
+      id: '633545fb9d3ee24be23d2874',
+      isDeleted: 'False',
+      kpiUnit: 'Stories',
+      kanban: false,
+      kpiSource: 'Jira',
+      trendValueList: [
+        {
+          data: 'Scrum Project',
+          value: [
+            {
+              data: '22.0',
+              sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+              value: 22,
+              hoverValue: {},
+              sprintIds: [
+                '40203_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '16.0',
+              sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+              value: 16,
+              hoverValue: {},
+              sprintIds: [
+                '38295_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '11.0',
+              sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+              value: 11,
+              hoverValue: {},
+              sprintIds: [
+                '38294_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '14.0',
+              sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+              value: 14,
+              hoverValue: {},
+              sprintIds: [
+                '38296_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '33.0',
+              sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+              value: 33,
+              hoverValue: {},
+              sprintIds: [
+                '40345_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST| Test1|PI_10|Opensource_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            }
+          ]
+        }
+      ],
+      groupId: 1
+    },
+    {
+      kpiId: 'kpi39',
+      kpiName: 'Sprint Velocity',
+      unit: 'SP',
+      maxValue: '300',
+      chartType: '',
+      kpiInfo: {
+        definition: 'SPRINT VELOCITY measures the rate at which a team can deliver every Sprint',
+        formula: [
+          {
+            lhs: 'Sum of story points of all stories completed within a Sprint'
+          }
+        ]
+      },
+      id: '633545fb9d3ee24be23d2876',
+      isDeleted: 'False',
+      kpiUnit: 'SP',
+      kanban: false,
+      kpiSource: 'Jira',
+      trendValueList: [
+        {
+          data: 'Scrum Project',
+          value: [
+            {
+              data: '61',
+              sSprintID: '40203_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST |Test1 |ITR_1|OpenSource_Scrum Project',
+              value: 61,
+              hoverValue: {},
+              sprintIds: [
+                '40203_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST |Test1 |ITR_1|OpenSource_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '45',
+              sSprintID: '38295_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_5| 24th Aug_Scrum Project',
+              value: 45,
+              hoverValue: {},
+              sprintIds: [
+                '38295_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_5| 24th Aug_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '23',
+              sSprintID: '38294_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_4| 10th Aug_Scrum Project',
+              value: 23,
+              hoverValue: {},
+              sprintIds: [
+                '38294_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_4| 10th Aug_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '22',
+              sSprintID: '38296_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'Test1|PI_10|ITR_6| 07th Sep_Scrum Project',
+              value: 22,
+              hoverValue: {},
+              sprintIds: [
+                '38296_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'Test1|PI_10|ITR_6| 07th Sep_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            },
+            {
+              data: '116',
+              sSprintID: '40345_Scrum Project_6335363749794a18e8a4479b',
+              sSprintName: 'TEST| Test1|PI_10|Opensource_Scrum Project',
+              value: 116,
+              hoverValue: {},
+              sprintIds: [
+                '40345_Scrum Project_6335363749794a18e8a4479b'
+              ],
+              sprintNames: [
+                'TEST| Test1|PI_10|Opensource_Scrum Project'
+              ],
+              sprojectName: 'Scrum Project'
+            }
+          ]
+        }
+      ],
+      groupId: 1
     }
-];
+  ];
 
   const fakeJiraGroupId1 = require('../../../test/resource/fakeJiraGroupId1.json');
 
@@ -2469,13 +2469,11 @@ describe('ExecutiveComponent', () => {
 
 
   beforeEach(() => {
-
-
     fixture = TestBed.createComponent(ExecutiveComponent);
     component = fixture.componentInstance;
 
     const type = 'Scrum';
-    service.selectedtype=type;
+    service.selectedtype = type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     service.setDashConfigData(dashConfigData.data);
 
@@ -2502,42 +2500,42 @@ describe('ExecutiveComponent', () => {
   it('check whether scrum', (done) => {
     const type = 'Scrum';
     component.selectedtype = 'Scrum';
-    spyOn(httpService,'postKpi').and.returnValue(of(fakeJiraGroupId1));
+    spyOn(httpService, 'postKpi').and.returnValue(of(fakeJiraGroupId1));
     fixture.detectChanges();
     expect(component.selectedtype).toBe(type);
     done();
 
   });
 
-    it('download excel functionality', fakeAsync(() => {
-        const excelData = {
-            kpiName: 'Defect Injection Rate',
-            kpiId: 'kpi14',
-            columns: ['sprintName','storyID','issueDescription','linkedDefects'],
-            excelData: [
-                {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    sprintName: 'AP|PI_10|ITR_5| 24 Aug',
-                    storyID: {
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        'TEST-17970': 'http://testabc.com/jira/browse/TEST-17970'
-                    },
-                    issueDescription: 'This is second Story',
-                    linkedDefects: {
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        'TEST-18675': 'http://testabc.com/jira/browse/TEST-18675',
-                    }
-                }]
-        };
-        const spy = spyOn(component.exportExcelComponent, 'downloadExcel');
-        component.iSAdditionalFilterSelected =false;
-        component.downloadExcel('kpi35', 'Defect Seepage Rate', false,false);
-        expect(spy).toHaveBeenCalled();
-    }));
+  it('download excel functionality', fakeAsync(() => {
+    const excelData = {
+      kpiName: 'Defect Injection Rate',
+      kpiId: 'kpi14',
+      columns: ['sprintName', 'storyID', 'issueDescription', 'linkedDefects'],
+      excelData: [
+        {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          sprintName: 'AP|PI_10|ITR_5| 24 Aug',
+          storyID: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'TEST-17970': 'http://testabc.com/jira/browse/TEST-17970'
+          },
+          issueDescription: 'This is second Story',
+          linkedDefects: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'TEST-18675': 'http://testabc.com/jira/browse/TEST-18675',
+          }
+        }]
+    };
+    const spy = spyOn(component.exportExcelComponent, 'downloadExcel');
+    component.iSAdditionalFilterSelected = false;
+    component.downloadExcel('kpi35', 'Defect Seepage Rate', false, false);
+    expect(spy).toHaveBeenCalled();
+  }));
 
   xit('Scrum with filter applied', (done) => {
     const type = 'Scrum';
-    service.selectedtype =type;
+    service.selectedtype = type;
 
     service.select(masterData, filterData, filterApplyDataWithScrum, selectedTab);
     fixture.detectChanges();
@@ -2553,7 +2551,7 @@ describe('ExecutiveComponent', () => {
 
   xit('kanban without filter applied', ((done) => {
     const type = 'Kanban';
-    service.selectedtype=type;
+    service.selectedtype = type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
     httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
@@ -2567,10 +2565,10 @@ describe('ExecutiveComponent', () => {
 
   it('kanban with filter applied only Date', (done) => {
     const type = 'Kanban';
-    service.setSelectedTypeOrTabRefresh('Category One','Kanban');
+    service.setSelectedTypeOrTabRefresh('Category One', 'Kanban');
     service.select(masterData, filterData, filterApplyDataWithKanban, selectedTab);
     fixture.detectChanges();
-    spyOn(httpService,'postKpiKanban').and.returnValue(of(fakejiraKanban));
+    spyOn(httpService, 'postKpiKanban').and.returnValue(of(fakejiraKanban));
     // httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
     // httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
     // httpMock.match(baseUrl + '/api/zypherkanban/kpi')[0].flush(fakeZypherKanban);
@@ -2594,9 +2592,9 @@ describe('ExecutiveComponent', () => {
     httpMock.match(baseUrl + '/api/zypherkanban/kpi')[0].flush(fakeZypherKanban);
     httpMock.match(baseUrl + '/api/bitbucketkanban/kpi')[0].flush(fakeBitBucket);
     httpMock.match(baseUrl + '/api/sonarkanban/kpi')[0].flush(fakeSonarKanban);
- component.getPriorityColor(0);
+    component.getPriorityColor(0);
 
-   done();
+    done();
 
   }));
 
@@ -2604,131 +2602,131 @@ describe('ExecutiveComponent', () => {
 
   it('color acc to maturity check ', waitForAsync(() => {
     const returnBlue = component.returnColorAccToMaturity(0);
-    spyOn(component,'receiveSharedData');
+    spyOn(component, 'receiveSharedData');
     expect(returnBlue).toBe('#44739f');
     // done();
   }));
 
   it('color acc to maturity check array', (done) => {
     component.colorAccToMaturity('1-2-3');
-    spyOn(component,'receiveSharedData');
+    spyOn(component, 'receiveSharedData');
     expect(component.maturityColorCycleTime[0]).toBe('#44739f');
     done();
   });
 
   it('should create', (done) => {
-    spyOn(component,'receiveSharedData');
+    spyOn(component, 'receiveSharedData');
     expect(component).toBeTruthy();
     done();
   });
 
 
 
-  it('should process kpi config Data',()=>{
-    component.configGlobalData =  configGlobalData;
+  it('should process kpi config Data', () => {
+    component.configGlobalData = configGlobalData;
     component.processKpiConfigData();
     expect(component.noKpis).toBeFalse();
-    component.configGlobalData[0]['isEnabled']=false;
-    component.configGlobalData[0]['shown']=false;
+    component.configGlobalData[0]['isEnabled'] = false;
+    component.configGlobalData[0]['shown'] = false;
     component.processKpiConfigData();
     expect(component.noKpis).toBeTrue();
   });
 
-  it('should make post call when kpi available for Sonar for Scrum',()=>{
-    const kpiListSonar =[{
+  it('should make post call when kpi available for Sonar for Scrum', () => {
+    const kpiListSonar = [{
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
-  }];
-    const spy=spyOn(helperService,'groupKpiFromMaster').and.returnValue({kpiList : kpiListSonar});
-    const postSonarSpy=spyOn(component,'postSonarKpi');
+    }];
+    const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListSonar });
+    const postSonarSpy = spyOn(component, 'postSonarKpi');
     component.groupSonarKpi(['kpi17']);
     expect(postSonarSpy).toHaveBeenCalled();
   });
 
 
-  it('should make post call when kpi available for Jenkins for Scrum',()=>{
-    const kpiListJenkins =[{
+  it('should make post call when kpi available for Jenkins for Scrum', () => {
+    const kpiListJenkins = [{
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
-  }];
-    const spy=spyOn(helperService,'groupKpiFromMaster').and.returnValue({kpiList : kpiListJenkins});
-    const postJenkinsSpy=spyOn(component,'postJenkinsKpi');
+    }];
+    const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJenkins });
+    const postJenkinsSpy = spyOn(component, 'postJenkinsKpi');
     component.groupJenkinsKpi(['kpi17']);
     expect(postJenkinsSpy).toHaveBeenCalled();
   });
 
-  it('should make post call when kpi available for Zypher for Scrum',()=>{
-    const kpiListZypher =[{
+  it('should make post call when kpi available for Zypher for Scrum', () => {
+    const kpiListZypher = [{
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
-  }];
-  component.masterData ={
-    kpiList :[{
-      kpiId: 'kpi17',
-      kanban:false,
-      kpiSource:'Zypher',
-      groupId:1
-    }]
-  };
-    const spy=spyOn(helperService,'groupKpiFromMaster').and.returnValue({kpiList : kpiListZypher});
-    const postZypherSpy=spyOn(component,'postZypherKpi');
+    }];
+    component.masterData = {
+      kpiList: [{
+        kpiId: 'kpi17',
+        kanban: false,
+        kpiSource: 'Zypher',
+        groupId: 1
+      }]
+    };
+    const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListZypher });
+    const postZypherSpy = spyOn(component, 'postZypherKpi');
     component.groupZypherKpi(['kpi17']);
     expect(postZypherSpy).toHaveBeenCalled();
   });
 
-  it('should make post call when kpi available for Jira for Scrum',()=>{
-    const kpiListJira =[{
+  it('should make post call when kpi available for Jira for Scrum', () => {
+    const kpiListJira = [{
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
-  }];
-  component.masterData ={
-    kpiList :[{
-      kpiId: 'kpi17',
-      kanban:false,
-      kpiSource:'Jira',
-      groupId:1
-    }]
-  };
-    const spy=spyOn(helperService,'groupKpiFromMaster').and.returnValue({kpiList : kpiListJira});
-    const postJiraSpy=spyOn(component,'postJiraKpi');
+    }];
+    component.masterData = {
+      kpiList: [{
+        kpiId: 'kpi17',
+        kanban: false,
+        kpiSource: 'Jira',
+        groupId: 1
+      }]
+    };
+    const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
+    const postJiraSpy = spyOn(component, 'postJiraKpi');
     component.groupJiraKpi(['kpi17']);
     expect(postJiraSpy).toHaveBeenCalled();
   });
 
 
-  it('should make post call when kpi available for BitBucket for Scrum',()=>{
-    const kpiListBitBucket =[{
+  it('should make post call when kpi available for BitBucket for Scrum', () => {
+    const kpiListBitBucket = [{
       id: '6332dd4b82451128f9939a29',
       kpiId: 'kpi17',
       kpiName: 'Unit Test Coverage'
-  }];
-    const spy=spyOn(helperService,'groupKpiFromMaster').and.returnValue({kpiList : kpiListBitBucket});
-    const postBitBucketSpy=spyOn(component,'postBitBucketKpi');
+    }];
+    const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListBitBucket });
+    const postBitBucketSpy = spyOn(component, 'postBitBucketKpi');
     component.groupBitBucketKpi(['kpi17']);
     expect(postBitBucketSpy).toHaveBeenCalled();
   });
 
-  it('should check if kpi exists',()=>{
-    component.allKpiArray =[{
-      kpiId:'kpi13'
+  it('should check if kpi exists', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi13'
     }];
     const result = component.ifKpiExist('kpi13');
     expect(result).toEqual(0);
   });
 
 
-  it('should refresh values onTypeRefresh',()=>{
-    spyOn(service,'getSelectedType');
-    spyOn(service,'getDashConfigData').and.returnValue(globalData['data']);
-    const spy =spyOn(component,'processKpiConfigData');
-    service.onTypeOrTabRefresh.next({selectedTab:'Caterory One',selectedType:'Scrum'});
-    component.kanbanActivated =false;
+  it('should refresh values onTypeRefresh', () => {
+    spyOn(service, 'getSelectedType');
+    spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
+    const spy = spyOn(component, 'processKpiConfigData');
+    service.onTypeOrTabRefresh.next({ selectedTab: 'Caterory One', selectedType: 'Scrum' });
+    component.kanbanActivated = false;
     fixture.detectChanges();
-   expect(component.selectedBranchFilter).toBe('Select');
+    expect(component.selectedBranchFilter).toBe('Select');
   });
 
   it('should set noTabAccess to true when no filterData', () => {
@@ -2945,6 +2943,35 @@ describe('ExecutiveComponent', () => {
     expect(spy).toHaveBeenCalledWith(postData.kpiList);
   }));
 
+  it('should make post Sonar Kanban Kpi call', fakeAsync(() => {
+    const postData = {
+      kpiList: [
+        {
+          id: '633ed17f2c2d5abef2451fe3',
+          kpiId: 'kpi17',
+          kpiName: 'Unit Test Coverage',
+        },
+        {
+          id: '633ed17f2c2d5abef2451fe4',
+          kpiId: 'kpi38',
+          kpiName: 'Sonar Violations'
+        },
+        {
+          id: '633ed17f2c2d5abef2451fe5',
+          kpiId: 'kpi27',
+          kpiName: 'Sonar Tech Debt',
+        }
+      ]
+    };
+
+    component.sonarKpiRequest = '';
+    spyOn(httpService, 'postKpiKanban').and.returnValue(of(postData.kpiList));
+    const spy = spyOn(component, 'afterSonarKpiResponseReceived');
+    component.postSonarKanbanKpi(postData, 'sonar');
+    tick();
+    expect(spy).toHaveBeenCalledWith(postData.kpiList);
+  }));
+
   it('should make post Jenkins call', fakeAsync(() => {
     const postData = {
       kpiList: [
@@ -2970,6 +2997,35 @@ describe('ExecutiveComponent', () => {
     spyOn(httpService, 'postKpi').and.returnValue(of(postData.kpiList));
     const spy = spyOn(component, 'createAllKpiArray');
     component.postJenkinsKpi(postData, 'Jenkins');
+    tick();
+    expect(spy).toHaveBeenCalledWith(postData.kpiList);
+  }));
+
+  it('should make post Jenkins Kanban call', fakeAsync(() => {
+    const postData = {
+      kpiList: [
+        {
+          id: '633ed17f2c2d5abef2451fe3',
+          kpiId: 'kpi17',
+          kpiName: 'Unit Test Coverage',
+        },
+        {
+          id: '633ed17f2c2d5abef2451fe4',
+          kpiId: 'kpi38',
+          kpiName: 'Sonar Violations'
+        },
+        {
+          id: '633ed17f2c2d5abef2451fe5',
+          kpiId: 'kpi27',
+          kpiName: 'Sonar Tech Debt',
+        }
+      ]
+    };
+
+    component.jenkinsKpiRequest = '';
+    spyOn(httpService, 'postKpiKanban').and.returnValue(of(postData.kpiList));
+    const spy = spyOn(component, 'createAllKpiArray');
+    component.postJenkinsKanbanKpi(postData, 'Jenkins');
     tick();
     expect(spy).toHaveBeenCalledWith(postData.kpiList);
   }));
@@ -3019,6 +3075,54 @@ describe('ExecutiveComponent', () => {
     tick();
     expect(spy).toHaveBeenCalled();
   }));
+
+  it('should make post Jira Kanban call', fakeAsync(() => {
+    const postData = {
+      kpiList: [
+        {
+          id: '633ed17f2c2d5abef2451fe3',
+          kpiId: 'kpi17',
+          kpiName: 'Unit Test Coverage',
+        },
+        {
+          id: '633ed17f2c2d5abef2451fe4',
+          kpiId: 'kpi38',
+          kpiName: 'Sonar Violations'
+        },
+        {
+          id: '633ed17f2c2d5abef2451fe5',
+          kpiId: 'kpi27',
+          kpiName: 'Sonar Tech Debt',
+        }
+      ]
+    };
+
+    const kpiWiseData = {
+      kpi27: {
+        id: '633ed17f2c2d5abef2451fe5',
+        kpiName: 'Sonar Tech Debt',
+      },
+      kpi38: {
+        id: '633ed17f2c2d5abef2451fe4',
+        kpiName: 'Sonar Violations'
+      },
+      kpi17: {
+        id: '633ed17f2c2d5abef2451fe3',
+        kpiName: 'Unit Test Coverage',
+      }
+    };
+    component.jiraKpiRequest = '';
+    component.loaderJiraArray = [];
+    spyOn(helperService, 'createKpiWiseId').and.returnValue(kpiWiseData);
+    spyOn(httpService, 'postKpiKanban').and.returnValue(of(postData.kpiList));
+    const spy = spyOn(component, 'createAllKpiArray');
+    component.postJiraKanbanKpi(postData, 'Jira');
+    component.jiraKpiData = {};
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }));
+
+
 
   it('should make post BitBucket call', fakeAsync(() => {
     const postData = {
@@ -3426,42 +3530,42 @@ describe('ExecutiveComponent', () => {
 
   it('should check maturity', () => {
     const item = [
-        {
-            "data": "EU",
-            "value": [
-                {
-                    "data": "27.33",
-                    "value": 27.33,
+      {
+        "data": "EU",
+        "value": [
+          {
+            "data": "27.33",
+            "value": 27.33,
 
-                    "sprojectName": "EU"
-                },
-                {
-                    "data": "0.15",
-                    "value": 0.15,
+            "sprojectName": "EU"
+          },
+          {
+            "data": "0.15",
+            "value": 0.15,
 
-                    "sprojectName": "EU"
-                },
-                {
-                    "data": "8.66",
-                    "value": 8.66,
+            "sprojectName": "EU"
+          },
+          {
+            "data": "8.66",
+            "value": 8.66,
 
-                    "sprojectName": "EU"
-                },
-                {
-                    "data": "93.86",
-                    "value": 93.86,
+            "sprojectName": "EU"
+          },
+          {
+            "data": "93.86",
+            "value": 93.86,
 
-                    "sprojectName": "EU"
-                },
-                {
-                    "data": "15.1",
-                    "value": 15.1,
+            "sprojectName": "EU"
+          },
+          {
+            "data": "15.1",
+            "value": 15.1,
 
-                    "sprojectName": "EU"
-                }
-            ],
-            "maturity": "4"
-        }
+            "sprojectName": "EU"
+          }
+        ],
+        "maturity": "4"
+      }
     ];
     const spy = spyOn(component, 'checkMaturity').and.returnValue(of('M4'))
     component.checkMaturity(item);
@@ -3470,83 +3574,83 @@ describe('ExecutiveComponent', () => {
 
   it('should check latest trend and maturity', () => {
     const item = [
-        {
-            "data": "EU",
-            "value": [
-                {
-                    "data": "27.33",
-                    "value": 27.33,
+      {
+        "data": "EU",
+        "value": [
+          {
+            "data": "27.33",
+            "value": 27.33,
 
-                    "sprojectName": "EU"
-                },
-                {
-                    "data": "0.15",
-                    "value": 0.15,
+            "sprojectName": "EU"
+          },
+          {
+            "data": "0.15",
+            "value": 0.15,
 
-                    "sprojectName": "EU"
-                },
-                {
-                    "data": "8.66",
-                    "value": 8.66,
+            "sprojectName": "EU"
+          },
+          {
+            "data": "8.66",
+            "value": 8.66,
 
-                    "sprojectName": "EU"
-                },
-                {
-                    "data": "93.86",
-                    "value": 93.86,
+            "sprojectName": "EU"
+          },
+          {
+            "data": "93.86",
+            "value": 93.86,
 
-                    "sprojectName": "EU"
-                },
-                {
-                    "data": "15.1",
-                    "value": 15.1,
+            "sprojectName": "EU"
+          },
+          {
+            "data": "15.1",
+            "value": 15.1,
 
-                    "sprojectName": "EU"
-                }
-            ],
-            "maturity": "4"
-        }
+            "sprojectName": "EU"
+          }
+        ],
+        "maturity": "4"
+      }
     ];
     const kpiData = {
+      "kpiId": "kpi121",
+      "kpiName": "Capacity",
+      "isEnabled": true,
+      "order": 2,
+      "kpiDetail": {
+        "id": "6407068ba59c6c0bdeb427ae",
         "kpiId": "kpi121",
         "kpiName": "Capacity",
-        "isEnabled": true,
-        "order": 2,
-        "kpiDetail": {
-            "id": "6407068ba59c6c0bdeb427ae",
-            "kpiId": "kpi121",
-            "kpiName": "Capacity",
-            "isDeleted": "False",
-            "defaultOrder": 2,
-            "kpiCategory": "Iteration",
-            "kpiUnit": "",
-            "showTrend": false,
-            "isPositiveTrend": true,
-            "boxType": "1_column",
-            "calculateMaturity": false,
-            "hideOverallFilter": false,
-            "kpiSource": "Jira",
-            "maxValue": "",
-            "kanban": false,
-            "groupId": 8,
-            "kpiInfo": {
-                "details": [
-                    {
-                        "type": "paragraph",
-                        "value": "Planned capacity is the development team's available time."
-                    },
-                    {
-                        "type": "paragraph",
-                        "value": "Source of this is KnowHOW"
-                    }
-                ]
+        "isDeleted": "False",
+        "defaultOrder": 2,
+        "kpiCategory": "Iteration",
+        "kpiUnit": "",
+        "showTrend": false,
+        "isPositiveTrend": true,
+        "boxType": "1_column",
+        "calculateMaturity": false,
+        "hideOverallFilter": false,
+        "kpiSource": "Jira",
+        "maxValue": "",
+        "kanban": false,
+        "groupId": 8,
+        "kpiInfo": {
+          "details": [
+            {
+              "type": "paragraph",
+              "value": "Planned capacity is the development team's available time."
             },
-            "trendCalculative": false,
-            "additionalFilterSupport": false,
-            "xaxisLabel": "",
-            "yaxisLabel": ""
+            {
+              "type": "paragraph",
+              "value": "Source of this is KnowHOW"
+            }
+          ]
         },
-        "shown": true
+        "trendCalculative": false,
+        "additionalFilterSupport": false,
+        "xaxisLabel": "",
+        "yaxisLabel": ""
+      },
+      "shown": true
     }
     const spy = spyOn(component, 'checkLatestAndTrendValue');
     component.checkLatestAndTrendValue(kpiData, item);
@@ -3555,86 +3659,86 @@ describe('ExecutiveComponent', () => {
 
   it('should call set kpi values after SonarKpiResponseReceive', () => {
     const response = [
-        {
-            "kpiId": "kpi17",
-            "kpiName": "Unit Test Coverage",
-            "unit": "%",
-            "maxValue": "100",
-            "chartType": "",
-            "kpiInfo": {
-                "definition": "Measure  of the amount of code that is covered by unit tests.",
-                "formula": [
-                    {
-                        "lhs": "The calculation is done directly in Sonarqube"
-                    }
-                ],
-                "details": [
-                    {
-                        "type": "link",
-                        "kpiLinkDetail": {
-                            "text": "Detailed Information at",
-                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Unit-Test-Coverage"
-                        }
-                    }
-                ]
-            },
-            "id": "64ad2860dadebadcf40c7038",
-            "isDeleted": "False",
-            "kpiUnit": "%",
-            "kanban": false,
-            "kpiSource": "Sonar",
-            "thresholdValue": 55,
-            "trendValueList": [],
-            "maturityRange": [
-                "-20",
-                "20-40",
-                "40-60",
-                "60-80",
-                "80-"
-            ],
-            "groupId": 1
-        }
+      {
+        "kpiId": "kpi17",
+        "kpiName": "Unit Test Coverage",
+        "unit": "%",
+        "maxValue": "100",
+        "chartType": "",
+        "kpiInfo": {
+          "definition": "Measure  of the amount of code that is covered by unit tests.",
+          "formula": [
+            {
+              "lhs": "The calculation is done directly in Sonarqube"
+            }
+          ],
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Unit-Test-Coverage"
+              }
+            }
+          ]
+        },
+        "id": "64ad2860dadebadcf40c7038",
+        "isDeleted": "False",
+        "kpiUnit": "%",
+        "kanban": false,
+        "kpiSource": "Sonar",
+        "thresholdValue": 55,
+        "trendValueList": [],
+        "maturityRange": [
+          "-20",
+          "20-40",
+          "40-60",
+          "60-80",
+          "80-"
+        ],
+        "groupId": 1
+      }
     ];
     spyOn(helperService, 'createKpiWiseId').and.returnValue({
-        "kpi17": {
-            "kpiId": "kpi17",
-            "kpiName": "Unit Test Coverage",
-            "unit": "%",
-            "maxValue": "100",
-            "chartType": "",
-            "kpiInfo": {
-                "definition": "Measure  of the amount of code that is covered by unit tests.",
-                "formula": [
-                    {
-                        "lhs": "The calculation is done directly in Sonarqube"
-                    }
-                ],
-                "details": [
-                    {
-                        "type": "link",
-                        "kpiLinkDetail": {
-                            "text": "Detailed Information at",
-                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Unit-Test-Coverage"
-                        }
-                    }
-                ]
-            },
-            "id": "64ad2860dadebadcf40c7038",
-            "isDeleted": "False",
-            "kpiUnit": "%",
-            "kanban": false,
-            "kpiSource": "Sonar",
-            "thresholdValue": 55,
-            "trendValueList": [],
-            "maturityRange": [
-                "-20",
-                "20-40",
-                "40-60",
-                "60-80",
-                "80-"
-            ],
-            "groupId": 1
-        }
+      "kpi17": {
+        "kpiId": "kpi17",
+        "kpiName": "Unit Test Coverage",
+        "unit": "%",
+        "maxValue": "100",
+        "chartType": "",
+        "kpiInfo": {
+          "definition": "Measure  of the amount of code that is covered by unit tests.",
+          "formula": [
+            {
+              "lhs": "The calculation is done directly in Sonarqube"
+            }
+          ],
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Unit-Test-Coverage"
+              }
+            }
+          ]
+        },
+        "id": "64ad2860dadebadcf40c7038",
+        "isDeleted": "False",
+        "kpiUnit": "%",
+        "kanban": false,
+        "kpiSource": "Sonar",
+        "thresholdValue": 55,
+        "trendValueList": [],
+        "maturityRange": [
+          "-20",
+          "20-40",
+          "40-60",
+          "60-80",
+          "80-"
+        ],
+        "groupId": 1
+      }
     });
     spyOn(helperService, 'createSonarFilter');
     const createAllKpiArraySpy = spyOn(component, 'createAllKpiArray');
@@ -3642,305 +3746,2038 @@ describe('ExecutiveComponent', () => {
     expect(component.kpiLoader).toBeFalse();
     expect(createAllKpiArraySpy).toHaveBeenCalled();
 
-});
+  });
 
 
 
-it('should call set kpi values after Zypher KpiResponseReceive', () => {
+  it('should call set kpi values after Zypher KpiResponseReceive', () => {
     const response = [
-        {
-            "kpiId": "kpi42",
-            "kpiName": "Regression Automation Coverage",
-            "unit": "%",
-            "maxValue": "100",
-            "chartType": "",
-            "kpiInfo": {
-                "definition": "Measures the progress of automation of regression test cases (the test cases which are marked as part of regression suite.",
-                "formula": [
-                    {
-                        "lhs": "Regression Automation Coverage ",
-                        "operator": "division",
-                        "operands": [
-                            "No. of regression test cases automated",
-                            "Total no. of regression test cases"
-                        ]
-                    }
+      {
+        "kpiId": "kpi42",
+        "kpiName": "Regression Automation Coverage",
+        "unit": "%",
+        "maxValue": "100",
+        "chartType": "",
+        "kpiInfo": {
+          "definition": "Measures the progress of automation of regression test cases (the test cases which are marked as part of regression suite.",
+          "formula": [
+            {
+              "lhs": "Regression Automation Coverage ",
+              "operator": "division",
+              "operands": [
+                "No. of regression test cases automated",
+                "Total no. of regression test cases"
+              ]
+            }
+          ],
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Regression-Automation-Coverage"
+              }
+            }
+          ]
+        },
+        "id": "64ad2860dadebadcf40c7036",
+        "isDeleted": "False",
+        "kpiUnit": "%",
+        "kanban": false,
+        "kpiSource": "Zypher",
+        "trendValueList": [
+          {
+            "data": "AddingIterationProject",
+            "value": [
+              {
+                "data": "0.0",
+                "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                "value": 0,
+                "hoverValue": {},
+                "sprintIds": [
+                  "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
                 ],
-                "details": [
-                    {
-                        "type": "link",
-                        "kpiLinkDetail": {
-                            "text": "Detailed Information at",
-                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Regression-Automation-Coverage"
-                        }
-                    }
-                ]
-            },
-            "id": "64ad2860dadebadcf40c7036",
-            "isDeleted": "False",
-            "kpiUnit": "%",
-            "kanban": false,
-            "kpiSource": "Zypher",
-            "trendValueList": [
-                {
-                    "data": "AddingIterationProject",
-                    "value": [
-                        {
-                            "data": "0.0",
-                            "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                            "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                            "value": 0,
-                            "hoverValue": {},
-                            "sprintIds": [
-                                "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
-                            ],
-                            "sprintNames": [
-                                "KnowHOW | PI_13| ITR_3_AddingIterationProject"
-                            ],
-                            "sprojectName": "AddingIterationProject",
-                            "xName": 1
-                        },
-                        {
-                            "data": "0.0",
-                            "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                            "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                            "value": 0,
-                            "hoverValue": {},
-                            "sprintIds": [
-                                "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
-                            ],
-                            "sprintNames": [
-                                "KnowHOW | PI_13| ITR_4_AddingIterationProject"
-                            ],
-                            "sprojectName": "AddingIterationProject",
-                            "xName": 2
-                        },
-                        {
-                            "data": "0.0",
-                            "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                            "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                            "value": 0,
-                            "hoverValue": {},
-                            "sprintIds": [
-                                "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
-                            ],
-                            "sprintNames": [
-                                "KnowHOW | PI_13| ITR_5_AddingIterationProject"
-                            ],
-                            "sprojectName": "AddingIterationProject",
-                            "xName": 3
-                        },
-                        {
-                            "data": "0.0",
-                            "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                            "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                            "value": 0,
-                            "hoverValue": {},
-                            "sprintIds": [
-                                "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
-                            ],
-                            "sprintNames": [
-                                "KnowHOW | PI_13| ITR_6_AddingIterationProject"
-                            ],
-                            "sprojectName": "AddingIterationProject",
-                            "xName": 4
-                        },
-                        {
-                            "data": "0.0",
-                            "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
-                            "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
-                            "value": 0,
-                            "hoverValue": {},
-                            "sprintIds": [
-                                "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
-                            ],
-                            "sprintNames": [
-                                "KnowHOW | PI_14| ITR_1_AddingIterationProject"
-                            ],
-                            "sprojectName": "AddingIterationProject",
-                            "xName": 5
-                        }
-                    ],
-                    "maturity": "1",
-                    "maturityValue": "0.0"
-                }
+                "sprintNames": [
+                  "KnowHOW | PI_13| ITR_3_AddingIterationProject"
+                ],
+                "sprojectName": "AddingIterationProject",
+                "xName": 1
+              },
+              {
+                "data": "0.0",
+                "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                "value": 0,
+                "hoverValue": {},
+                "sprintIds": [
+                  "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
+                ],
+                "sprintNames": [
+                  "KnowHOW | PI_13| ITR_4_AddingIterationProject"
+                ],
+                "sprojectName": "AddingIterationProject",
+                "xName": 2
+              },
+              {
+                "data": "0.0",
+                "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                "value": 0,
+                "hoverValue": {},
+                "sprintIds": [
+                  "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
+                ],
+                "sprintNames": [
+                  "KnowHOW | PI_13| ITR_5_AddingIterationProject"
+                ],
+                "sprojectName": "AddingIterationProject",
+                "xName": 3
+              },
+              {
+                "data": "0.0",
+                "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                "value": 0,
+                "hoverValue": {},
+                "sprintIds": [
+                  "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
+                ],
+                "sprintNames": [
+                  "KnowHOW | PI_13| ITR_6_AddingIterationProject"
+                ],
+                "sprojectName": "AddingIterationProject",
+                "xName": 4
+              },
+              {
+                "data": "0.0",
+                "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
+                "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
+                "value": 0,
+                "hoverValue": {},
+                "sprintIds": [
+                  "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
+                ],
+                "sprintNames": [
+                  "KnowHOW | PI_14| ITR_1_AddingIterationProject"
+                ],
+                "sprojectName": "AddingIterationProject",
+                "xName": 5
+              }
             ],
-            "maturityRange": [
-                "-20",
-                "20-40",
-                "40-60",
-                "60-80",
-                "80-"
-            ],
-            "groupId": 1
-        }
+            "maturity": "1",
+            "maturityValue": "0.0"
+          }
+        ],
+        "maturityRange": [
+          "-20",
+          "20-40",
+          "40-60",
+          "60-80",
+          "80-"
+        ],
+        "groupId": 1
+      }
     ];
     component.selectedtype = 'Scrum';
     spyOn(helperService, 'createKpiWiseId').and.returnValue({
-        kpi42: {
-            "kpiId": "kpi42",
-            "kpiName": "Regression Automation Coverage",
-            "unit": "%",
-            "maxValue": "100",
-            "chartType": "",
-            "kpiInfo": {
-                "definition": "Measures the progress of automation of regression test cases (the test cases which are marked as part of regression suite.",
-                "formula": [
-                    {
-                        "lhs": "Regression Automation Coverage ",
-                        "operator": "division",
-                        "operands": [
-                            "No. of regression test cases automated",
-                            "Total no. of regression test cases"
-                        ]
-                    }
+      kpi42: {
+        "kpiId": "kpi42",
+        "kpiName": "Regression Automation Coverage",
+        "unit": "%",
+        "maxValue": "100",
+        "chartType": "",
+        "kpiInfo": {
+          "definition": "Measures the progress of automation of regression test cases (the test cases which are marked as part of regression suite.",
+          "formula": [
+            {
+              "lhs": "Regression Automation Coverage ",
+              "operator": "division",
+              "operands": [
+                "No. of regression test cases automated",
+                "Total no. of regression test cases"
+              ]
+            }
+          ],
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Regression-Automation-Coverage"
+              }
+            }
+          ]
+        },
+        "id": "64ad2860dadebadcf40c7036",
+        "isDeleted": "False",
+        "kpiUnit": "%",
+        "kanban": false,
+        "kpiSource": "Zypher",
+        "trendValueList": [
+          {
+            "data": "AddingIterationProject",
+            "value": [
+              {
+                "data": "0.0",
+                "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                "value": 0,
+                "hoverValue": {},
+                "sprintIds": [
+                  "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
                 ],
-                "details": [
-                    {
-                        "type": "link",
-                        "kpiLinkDetail": {
-                            "text": "Detailed Information at",
-                            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Regression-Automation-Coverage"
-                        }
-                    }
-                ]
-            },
-            "id": "64ad2860dadebadcf40c7036",
-            "isDeleted": "False",
-            "kpiUnit": "%",
-            "kanban": false,
-            "kpiSource": "Zypher",
-            "trendValueList": [
-                {
-                    "data": "AddingIterationProject",
-                    "value": [
-                        {
-                            "data": "0.0",
-                            "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                            "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                            "value": 0,
-                            "hoverValue": {},
-                            "sprintIds": [
-                                "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
-                            ],
-                            "sprintNames": [
-                                "KnowHOW | PI_13| ITR_3_AddingIterationProject"
-                            ],
-                            "sprojectName": "AddingIterationProject",
-                            "xName": 1
-                        },
-                        {
-                            "data": "0.0",
-                            "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                            "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                            "value": 0,
-                            "hoverValue": {},
-                            "sprintIds": [
-                                "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
-                            ],
-                            "sprintNames": [
-                                "KnowHOW | PI_13| ITR_4_AddingIterationProject"
-                            ],
-                            "sprojectName": "AddingIterationProject",
-                            "xName": 2
-                        },
-                        {
-                            "data": "0.0",
-                            "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                            "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                            "value": 0,
-                            "hoverValue": {},
-                            "sprintIds": [
-                                "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
-                            ],
-                            "sprintNames": [
-                                "KnowHOW | PI_13| ITR_5_AddingIterationProject"
-                            ],
-                            "sprojectName": "AddingIterationProject",
-                            "xName": 3
-                        },
-                        {
-                            "data": "0.0",
-                            "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                            "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                            "value": 0,
-                            "hoverValue": {},
-                            "sprintIds": [
-                                "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
-                            ],
-                            "sprintNames": [
-                                "KnowHOW | PI_13| ITR_6_AddingIterationProject"
-                            ],
-                            "sprojectName": "AddingIterationProject",
-                            "xName": 4
-                        },
-                        {
-                            "data": "0.0",
-                            "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
-                            "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
-                            "value": 0,
-                            "hoverValue": {},
-                            "sprintIds": [
-                                "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
-                            ],
-                            "sprintNames": [
-                                "KnowHOW | PI_14| ITR_1_AddingIterationProject"
-                            ],
-                            "sprojectName": "AddingIterationProject",
-                            "xName": 5
-                        }
-                    ],
-                    "maturity": "1",
-                    "maturityValue": "0.0"
-                }
+                "sprintNames": [
+                  "KnowHOW | PI_13| ITR_3_AddingIterationProject"
+                ],
+                "sprojectName": "AddingIterationProject",
+                "xName": 1
+              },
+              {
+                "data": "0.0",
+                "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                "value": 0,
+                "hoverValue": {},
+                "sprintIds": [
+                  "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
+                ],
+                "sprintNames": [
+                  "KnowHOW | PI_13| ITR_4_AddingIterationProject"
+                ],
+                "sprojectName": "AddingIterationProject",
+                "xName": 2
+              },
+              {
+                "data": "0.0",
+                "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                "value": 0,
+                "hoverValue": {},
+                "sprintIds": [
+                  "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
+                ],
+                "sprintNames": [
+                  "KnowHOW | PI_13| ITR_5_AddingIterationProject"
+                ],
+                "sprojectName": "AddingIterationProject",
+                "xName": 3
+              },
+              {
+                "data": "0.0",
+                "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                "value": 0,
+                "hoverValue": {},
+                "sprintIds": [
+                  "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
+                ],
+                "sprintNames": [
+                  "KnowHOW | PI_13| ITR_6_AddingIterationProject"
+                ],
+                "sprojectName": "AddingIterationProject",
+                "xName": 4
+              },
+              {
+                "data": "0.0",
+                "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
+                "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
+                "value": 0,
+                "hoverValue": {},
+                "sprintIds": [
+                  "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
+                ],
+                "sprintNames": [
+                  "KnowHOW | PI_14| ITR_1_AddingIterationProject"
+                ],
+                "sprojectName": "AddingIterationProject",
+                "xName": 5
+              }
             ],
-            "maturityRange": [
-                "-20",
-                "20-40",
-                "40-60",
-                "60-80",
-                "80-"
-            ],
-            "groupId": 1
-        }
+            "maturity": "1",
+            "maturityValue": "0.0"
+          }
+        ],
+        "maturityRange": [
+          "-20",
+          "20-40",
+          "40-60",
+          "60-80",
+          "80-"
+        ],
+        "groupId": 1
+      }
     });
     spyOn(helperService, 'calculateTestExecutionData').and.returnValue({
-        selectedTestExecutionFilterData: [],
-        testExecutionFilterData: []
+      selectedTestExecutionFilterData: [],
+      testExecutionFilterData: []
     });
     const createAllKpiArraySpy = spyOn(component, 'createAllKpiArray');
     component.afterZypherKpiResponseReceived(response);
     expect(component.kpiLoader).toBeFalse();
     expect(createAllKpiArraySpy).toHaveBeenCalled();
 
+  });
+
+  it('should call zypher kpi api', () => {
+    spyOn(httpService, 'postKpi').and.returnValue(of({}));
+    const spyafterZypherKpiResponseReceived = spyOn(component, 'afterZypherKpiResponseReceived');
+    component.postZypherKpi({}, 'Zypher');
+    fixture.detectChanges();
+    expect(spyafterZypherKpiResponseReceived).toHaveBeenCalled();
+  });
+
+  it('should call createCombinations', () => {
+    const t1 = ['Initial Commitment (Story Points)']
+    const t2 = ['Overall']
+    const response = component.createCombinations(t1, t2);
+    const t3 = [
+      {
+        "filter1": "Initial Commitment (Story Points)",
+        "filter2": "Overall"
+      }
+    ]
+    expect(response).toEqual(t3);
+  });
+
+  it('should call zypher kanban kpi api', () => {
+    component.zypherKpiRequest = '';
+    spyOn(httpService, 'postKpiKanban').and.returnValue(of({}));
+    const spyafterZypherKpiResponseReceived = spyOn(component, 'afterZypherKpiResponseReceived');
+    component.postZypherKanbanKpi({}, 'Zypher');
+    fixture.detectChanges();
+    expect(spyafterZypherKpiResponseReceived).toHaveBeenCalled();
+  });
+
+  it('should call post bitbucket kanban kpi', () => {
+    component.bitBucketKpiRequest = '';
+    spyOn(httpService, 'postKpiKanban').and.returnValue(of({}));
+    const spycreateAllKpiArray = spyOn(component, 'createAllKpiArray');
+    component.postBitBucketKanbanKpi({}, 'Bitbucket');
+    fixture.detectChanges();
+    expect(spycreateAllKpiArray).toHaveBeenCalled();
+  });
+
+  it('should call checkLatestAndTrendValue for trendCalculation false', () => {
+    const kpiData = {
+      "kpiId": "kpi72",
+      "kpiName": "Commitment Reliability",
+      "isEnabled": true,
+      "order": 18,
+      "kpiDetail": {
+        "id": "64b70909097ae57dfd51c080",
+        "kpiId": "kpi72",
+        "kpiName": "Commitment Reliability",
+        "isDeleted": "False",
+        "defaultOrder": 18,
+        "kpiUnit": "%",
+        "chartType": "line",
+        "showTrend": true,
+        "isPositiveTrend": true,
+        "calculateMaturity": true,
+        "hideOverallFilter": false,
+        "kpiSource": "Jira",
+        "maxValue": "200",
+        "thresholdValue": 85,
+        "kanban": false,
+        "groupId": 2,
+        "kpiInfo": {
+          "definition": "Measures the percentage of work completed at the end of a iteration in comparison to the initial scope and the final scope",
+          "formula": [
+            {
+              "lhs": "Commitment reliability",
+              "operator": "division",
+              "operands": [
+                "No. of issues or Size of issues completed",
+                "No. of issues or Size of issues committed"
+              ]
+            }
+          ],
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Commitment-Reliability"
+              }
+            }
+          ]
+        },
+        "kpiFilter": "dropDown",
+        "aggregationCriteria": "average",
+        "maturityRange": [
+          "-40",
+          "40-60",
+          "60-75",
+          "75-90",
+          "90-"
+        ],
+        "xaxisLabel": "Sprints",
+        "yaxisLabel": "Percentage",
+        "trendCalculative": false,
+        "additionalFilterSupport": true
+      },
+      "shown": true
+    };
+    const item = {
+      "data": "AddingIterationProject",
+      "value": [
+        {
+          "data": "43",
+          "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+          "value": 43,
+          "hoverValue": {
+            "Delivered": 78.5,
+            "Initially Commited": 181.5
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 1
+        },
+        {
+          "data": "37",
+          "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+          "value": 37,
+          "hoverValue": {
+            "Delivered": 87,
+            "Initially Commited": 229
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 2
+        },
+        {
+          "data": "39",
+          "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+          "value": 39,
+          "hoverValue": {
+            "Delivered": 78,
+            "Initially Commited": 200
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 3
+        },
+        {
+          "data": "38",
+          "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+          "value": 38,
+          "hoverValue": {
+            "Delivered": 83.5,
+            "Initially Commited": 217.5
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 4
+        },
+        {
+          "data": "66",
+          "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+          "value": 66,
+          "hoverValue": {
+            "Delivered": 125,
+            "Initially Commited": 189
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 5
+        }
+      ],
+      "maturity": "2",
+      "maturityValue": "45"
+    };
+    const spyData = component.checkLatestAndTrendValue(kpiData, item);
+    const result = ['66 %', '+ve', '%']
+    expect(spyData).toEqual(result);
+  });
+
+  it('should call checkLatestAndTrendValue for trendCalculation true', () => {
+    const kpiData = {
+      "kpiId": "kpi72",
+      "kpiName": "Commitment Reliability",
+      "isEnabled": true,
+      "order": 18,
+      "kpiDetail": {
+        "id": "64b70909097ae57dfd51c080",
+        "kpiId": "kpi72",
+        "kpiName": "Commitment Reliability",
+        "isDeleted": "False",
+        "defaultOrder": 18,
+        "kpiUnit": "%",
+        "chartType": "line",
+        "showTrend": true,
+        "isPositiveTrend": true,
+        "calculateMaturity": true,
+        "hideOverallFilter": false,
+        "kpiSource": "Jira",
+        "maxValue": "200",
+        "thresholdValue": 85,
+        "kanban": false,
+        "groupId": 2,
+        "kpiInfo": {
+          "definition": "Measures the percentage of work completed at the end of a iteration in comparison to the initial scope and the final scope",
+          "formula": [
+            {
+              "lhs": "Commitment reliability",
+              "operator": "division",
+              "operands": [
+                "No. of issues or Size of issues completed",
+                "No. of issues or Size of issues committed"
+              ]
+            }
+          ],
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Commitment-Reliability"
+              }
+            }
+          ]
+        },
+        "kpiFilter": "dropDown",
+        "aggregationCriteria": "average",
+        "maturityRange": [
+          "-40",
+          "40-60",
+          "60-75",
+          "75-90",
+          "90-"
+        ],
+        "xaxisLabel": "Sprints",
+        "yaxisLabel": "Percentage",
+        "trendCalculative": true,
+        "additionalFilterSupport": true
+      },
+      "shown": true
+    };
+    const item = {
+      "data": "AddingIterationProject",
+      "value": [
+        {
+          "data": "43",
+          "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+          "value": 43,
+          "hoverValue": {
+            "Delivered": 78.5,
+            "Initially Commited": 181.5
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 1
+        },
+        {
+          "data": "37",
+          "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+          "value": 37,
+          "hoverValue": {
+            "Delivered": 87,
+            "Initially Commited": 229
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 2
+        },
+        {
+          "data": "39",
+          "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+          "value": 39,
+          "hoverValue": {
+            "Delivered": 78,
+            "Initially Commited": 200
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 3
+        },
+        {
+          "data": "38",
+          "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+          "value": 38,
+          "hoverValue": {
+            "Delivered": 83.5,
+            "Initially Commited": 217.5
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 4
+        },
+        {
+          "data": "66",
+          "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+          "value": 66,
+          "hoverValue": {
+            "Delivered": 125,
+            "Initially Commited": 189
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 5
+        }
+      ],
+      "maturity": "2",
+      "maturityValue": "45"
+    };
+    const spyData = component.checkLatestAndTrendValue(kpiData, item);
+    const result = ['66 %', 'NA', '%']
+    expect(spyData).toEqual(result);
+  });
+
+  it('should call checkMaturity', () => {
+    const item = {
+      "data": "AddingIterationProject",
+      "value": [
+        {
+          "data": "43",
+          "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+          "value": 43,
+          "hoverValue": {
+            "Delivered": 78.5,
+            "Initially Commited": 181.5
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 1
+        },
+        {
+          "data": "37",
+          "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+          "value": 37,
+          "hoverValue": {
+            "Delivered": 87,
+            "Initially Commited": 229
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 2
+        },
+        {
+          "data": "39",
+          "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+          "value": 39,
+          "hoverValue": {
+            "Delivered": 78,
+            "Initially Commited": 200
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 3
+        },
+        {
+          "data": "38",
+          "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+          "value": 38,
+          "hoverValue": {
+            "Delivered": 83.5,
+            "Initially Commited": 217.5
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 4
+        },
+        {
+          "data": "66",
+          "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+          "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+          "value": 66,
+          "hoverValue": {
+            "Delivered": 125,
+            "Initially Commited": 189
+          },
+          "kpiGroup": "Initial Commitment (Story Points)#overAll",
+          "sprojectName": "AddingIterationProject",
+          "xName": 5
+        }
+      ],
+      "maturity": "2",
+      "maturityValue": "45"
+    };
+    const response = "M2"
+    const spyData = component.checkMaturity(item);
+    expect(spyData).toEqual(response);
+  });
+
+  it('should call handleSelectedOption for kpi72', () => {
+    const event = {
+      "filter1": "Initial Commitment (Count)",
+      "filter2": "Enabler Story"
+    };
+    const kpi = {
+      "kpiId": "kpi72",
+      "kpiName": "Commitment Reliability",
+      "isEnabled": true,
+      "order": 18,
+      "kpiDetail": {
+        "id": "64b70909097ae57dfd51c080",
+        "kpiId": "kpi72",
+        "kpiName": "Commitment Reliability",
+        "isDeleted": "False",
+        "defaultOrder": 18,
+        "kpiUnit": "%",
+        "chartType": "line",
+        "showTrend": true,
+        "isPositiveTrend": true,
+        "calculateMaturity": true,
+        "hideOverallFilter": false,
+        "kpiSource": "Jira",
+        "maxValue": "200",
+        "thresholdValue": 85,
+        "kanban": false,
+        "groupId": 2,
+        "kpiInfo": {
+          "definition": "Measures the percentage of work completed at the end of a iteration in comparison to the initial scope and the final scope",
+          "formula": [
+            {
+              "lhs": "Commitment reliability",
+              "operator": "division",
+              "operands": [
+                "No. of issues or Size of issues completed",
+                "No. of issues or Size of issues committed"
+              ]
+            }
+          ],
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Commitment-Reliability"
+              }
+            }
+          ]
+        },
+        "kpiFilter": "dropDown",
+        "aggregationCriteria": "average",
+        "maturityRange": [
+          "-40",
+          "40-60",
+          "60-75",
+          "75-90",
+          "90-"
+        ],
+        "xaxisLabel": "Sprints",
+        "yaxisLabel": "Percentage",
+        "trendCalculative": false,
+        "additionalFilterSupport": true
+      },
+      "shown": true
+    };
+    const response = {
+      "filter1": [
+        "Initial Commitment (Count)"
+      ],
+      "filter2": [
+        "Enabler Story"
+      ]
+    }
+    const spyData = component.handleSelectedOption(event, kpi);
+    expect(component.kpiSelectedFilterObj["kpi72"]).toEqual(response);
+  });
+
+  it('should call handleSelectedOption for non kpi72', () => {
+    const event = {
+      "filter1": [
+        "P3"
+      ]
+    };
+    const kpi = {
+      "kpiId": "kpi28",
+      "kpiName": "Defect Count By Priority",
+      "isEnabled": true,
+      "order": 7,
+      "kpiDetail": {
+        "id": "64b70909097ae57dfd51c075",
+        "kpiId": "kpi28",
+        "kpiName": "Defect Count By Priority",
+        "isDeleted": "False",
+        "defaultOrder": 7,
+        "kpiUnit": "Number",
+        "chartType": "line",
+        "showTrend": true,
+        "isPositiveTrend": false,
+        "calculateMaturity": false,
+        "hideOverallFilter": false,
+        "kpiSource": "Jira",
+        "maxValue": "90",
+        "thresholdValue": 55,
+        "kanban": false,
+        "groupId": 1,
+        "kpiInfo": {
+          "definition": "Measures the number of defects grouped by priority in an iteration",
+          "formula": [
+            {
+              "lhs": "Defect Count By Priority=No. of defects linked to stories grouped by priority"
+            }
+          ],
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Count-by-Priority"
+              }
+            }
+          ]
+        },
+        "kpiFilter": "multiSelectDropDown",
+        "aggregationCriteria": "sum",
+        "xaxisLabel": "Sprints",
+        "yaxisLabel": "Count",
+        "trendCalculative": false,
+        "additionalFilterSupport": true
+      },
+      "shown": true
+    };
+    const response = [
+      "P3"
+    ]
+    const spyData = component.handleSelectedOption(event, kpi);
+    expect(component.kpiSelectedFilterObj["kpi28"]).toEqual(response);
+  });
+
+  it('should call getDropdownArray', () => {
+    const kpiId = "kpi72";
+    component.allKpiArray = [
+      {
+          "kpiId": "kpi72",
+          "kpiName": "Commitment Reliability",
+          "unit": "%",
+          "maxValue": "200",
+          "chartType": "",
+          "kpiInfo": {
+              "definition": "Measures the percentage of work completed at the end of a iteration in comparison to the initial scope and the final scope",
+              "formula": [
+                  {
+                      "lhs": "Commitment reliability",
+                      "operator": "division",
+                      "operands": [
+                          "No. of issues or Size of issues completed",
+                          "No. of issues or Size of issues committed"
+                      ]
+                  }
+              ],
+              "details": [
+                  {
+                      "type": "link",
+                      "kpiLinkDetail": {
+                          "text": "Detailed Information at",
+                          "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Commitment-Reliability"
+                      }
+                  }
+              ]
+          },
+          "id": "64a58c54600c3151b16a1196",
+          "isDeleted": "False",
+          "kpiUnit": "%",
+          "kanban": false,
+          "kpiSource": "Jira",
+          "thresholdValue": 85,
+          "trendValueList": [
+              {
+                  "filter1": "Initial Commitment (Story Points)",
+                  "filter2": "Overall",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "43",
+                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                                  "value": 43,
+                                  "hoverValue": {
+                                      "Delivered": 78.5,
+                                      "Initially Commited": 181.5
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "37",
+                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                                  "value": 37,
+                                  "hoverValue": {
+                                      "Delivered": 87,
+                                      "Initially Commited": 229
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "39",
+                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                                  "value": 39,
+                                  "hoverValue": {
+                                      "Delivered": 78,
+                                      "Initially Commited": 200
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "38",
+                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                                  "value": 38,
+                                  "hoverValue": {
+                                      "Delivered": 83.5,
+                                      "Initially Commited": 217.5
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "66",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 66,
+                                  "hoverValue": {
+                                      "Delivered": 125,
+                                      "Initially Commited": 189
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "2",
+                          "maturityValue": "45"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Initial Commitment (Story Points)",
+                  "filter2": "Story",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "42",
+                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                                  "value": 42,
+                                  "hoverValue": {
+                                      "Delivered": 77.5,
+                                      "Initially Commited": 180.5
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "37",
+                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                                  "value": 37,
+                                  "hoverValue": {
+                                      "Delivered": 83,
+                                      "Initially Commited": 222
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "39",
+                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                                  "value": 39,
+                                  "hoverValue": {
+                                      "Delivered": 78,
+                                      "Initially Commited": 198
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "37",
+                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                                  "value": 37,
+                                  "hoverValue": {
+                                      "Delivered": 79.5,
+                                      "Initially Commited": 211.5
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "65",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 65,
+                                  "hoverValue": {
+                                      "Delivered": 123,
+                                      "Initially Commited": 187
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "2",
+                          "maturityValue": "44"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Initial Commitment (Story Points)",
+                  "filter2": "Enabler Story",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "0",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 0,
+                                  "hoverValue": {
+                                      "Delivered": 0,
+                                      "Initially Commited": 0
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#Enabler Story",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "1",
+                          "maturityValue": "0"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Initial Commitment (Story Points)",
+                  "filter2": "Defect",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "100",
+                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                                  "value": 100,
+                                  "hoverValue": {
+                                      "Delivered": 1,
+                                      "Initially Commited": 1
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "57",
+                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                                  "value": 57,
+                                  "hoverValue": {
+                                      "Delivered": 4,
+                                      "Initially Commited": 7
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "0",
+                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                                  "value": 0,
+                                  "hoverValue": {
+                                      "Delivered": 0,
+                                      "Initially Commited": 2
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "66",
+                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                                  "value": 66,
+                                  "hoverValue": {
+                                      "Delivered": 4,
+                                      "Initially Commited": 6
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "100",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 100,
+                                  "hoverValue": {
+                                      "Delivered": 2,
+                                      "Initially Commited": 2
+                                  },
+                                  "kpiGroup": "Initial Commitment (Story Points)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "3",
+                          "maturityValue": "65"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Initial Commitment (Count)",
+                  "filter2": "Overall",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "53",
+                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                                  "value": 53,
+                                  "hoverValue": {
+                                      "Delivered": 26,
+                                      "Initially Commited": 49
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "43",
+                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                                  "value": 43,
+                                  "hoverValue": {
+                                      "Delivered": 24,
+                                      "Initially Commited": 55
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "46",
+                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                                  "value": 46,
+                                  "hoverValue": {
+                                      "Delivered": 29,
+                                      "Initially Commited": 62
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "42",
+                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                                  "value": 42,
+                                  "hoverValue": {
+                                      "Delivered": 27,
+                                      "Initially Commited": 63
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "64",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 64,
+                                  "hoverValue": {
+                                      "Delivered": 37,
+                                      "Initially Commited": 57
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "2",
+                          "maturityValue": "50"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Initial Commitment (Count)",
+                  "filter2": "Story",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "48",
+                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                                  "value": 48,
+                                  "hoverValue": {
+                                      "Delivered": 22,
+                                      "Initially Commited": 45
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "40",
+                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                                  "value": 40,
+                                  "hoverValue": {
+                                      "Delivered": 20,
+                                      "Initially Commited": 49
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "45",
+                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                                  "value": 45,
+                                  "hoverValue": {
+                                      "Delivered": 26,
+                                      "Initially Commited": 57
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "36",
+                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                                  "value": 36,
+                                  "hoverValue": {
+                                      "Delivered": 20,
+                                      "Initially Commited": 55
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "65",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 65,
+                                  "hoverValue": {
+                                      "Delivered": 34,
+                                      "Initially Commited": 52
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "2",
+                          "maturityValue": "47"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Initial Commitment (Count)",
+                  "filter2": "Enabler Story",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "0",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 0,
+                                  "hoverValue": {
+                                      "Delivered": 0,
+                                      "Initially Commited": 0
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#Enabler Story",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "1",
+                          "maturityValue": "0"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Initial Commitment (Count)",
+                  "filter2": "Defect",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "100",
+                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                                  "value": 100,
+                                  "hoverValue": {
+                                      "Delivered": 4,
+                                      "Initially Commited": 4
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "66",
+                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                                  "value": 66,
+                                  "hoverValue": {
+                                      "Delivered": 4,
+                                      "Initially Commited": 6
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "60",
+                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                                  "value": 60,
+                                  "hoverValue": {
+                                      "Delivered": 3,
+                                      "Initially Commited": 5
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "87",
+                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                                  "value": 87,
+                                  "hoverValue": {
+                                      "Delivered": 7,
+                                      "Initially Commited": 8
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "60",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 60,
+                                  "hoverValue": {
+                                      "Delivered": 3,
+                                      "Initially Commited": 5
+                                  },
+                                  "kpiGroup": "Initial Commitment (Count)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "4",
+                          "maturityValue": "75"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Final Scope (Story Points)",
+                  "filter2": "Overall",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "47",
+                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                                  "value": 47,
+                                  "hoverValue": {
+                                      "Delivered": 91.5,
+                                      "Final Scope": 193.5
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "38",
+                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                                  "value": 38,
+                                  "hoverValue": {
+                                      "Delivered": 92.5,
+                                      "Final Scope": 241.5
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "43",
+                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                                  "value": 43,
+                                  "hoverValue": {
+                                      "Delivered": 101,
+                                      "Final Scope": 231.2
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "37",
+                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                                  "value": 37,
+                                  "hoverValue": {
+                                      "Delivered": 85.5,
+                                      "Final Scope": 228.5
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "59",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 59,
+                                  "hoverValue": {
+                                      "Delivered": 131,
+                                      "Final Scope": 222
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "2",
+                          "maturityValue": "45"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Final Scope (Story Points)",
+                  "filter2": "Story",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "46",
+                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                                  "value": 46,
+                                  "hoverValue": {
+                                      "Delivered": 88.5,
+                                      "Final Scope": 189.5
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "37",
+                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                                  "value": 37,
+                                  "hoverValue": {
+                                      "Delivered": 88.5,
+                                      "Final Scope": 234.5
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "44",
+                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                                  "value": 44,
+                                  "hoverValue": {
+                                      "Delivered": 101,
+                                      "Final Scope": 229.2
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "36",
+                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                                  "value": 36,
+                                  "hoverValue": {
+                                      "Delivered": 81.5,
+                                      "Final Scope": 222.5
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "58",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 58,
+                                  "hoverValue": {
+                                      "Delivered": 129,
+                                      "Final Scope": 219
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "2",
+                          "maturityValue": "44"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Final Scope (Story Points)",
+                  "filter2": "Enabler Story",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "0",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 0,
+                                  "hoverValue": {
+                                      "Delivered": 0,
+                                      "Final Scope": 0
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#Enabler Story",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "1",
+                          "maturityValue": "0"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Final Scope (Story Points)",
+                  "filter2": "Defect",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "75",
+                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                                  "value": 75,
+                                  "hoverValue": {
+                                      "Delivered": 3,
+                                      "Final Scope": 4
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "57",
+                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                                  "value": 57,
+                                  "hoverValue": {
+                                      "Delivered": 4,
+                                      "Final Scope": 7
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "0",
+                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                                  "value": 0,
+                                  "hoverValue": {
+                                      "Delivered": 0,
+                                      "Final Scope": 2
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "66",
+                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                                  "value": 66,
+                                  "hoverValue": {
+                                      "Delivered": 4,
+                                      "Final Scope": 6
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "66",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 66,
+                                  "hoverValue": {
+                                      "Delivered": 2,
+                                      "Final Scope": 3
+                                  },
+                                  "kpiGroup": "Final Scope (Story Points)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "2",
+                          "maturityValue": "53"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Final Scope (Count)",
+                  "filter2": "Overall",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "63",
+                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                                  "value": 63,
+                                  "hoverValue": {
+                                      "Delivered": 41,
+                                      "Final Scope": 65
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "42",
+                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                                  "value": 42,
+                                  "hoverValue": {
+                                      "Delivered": 30,
+                                      "Final Scope": 71
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "52",
+                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                                  "value": 52,
+                                  "hoverValue": {
+                                      "Delivered": 47,
+                                      "Final Scope": 89
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "45",
+                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                                  "value": 45,
+                                  "hoverValue": {
+                                      "Delivered": 38,
+                                      "Final Scope": 83
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "64",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 64,
+                                  "hoverValue": {
+                                      "Delivered": 53,
+                                      "Final Scope": 82
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#overAll",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "2",
+                          "maturityValue": "53"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Final Scope (Count)",
+                  "filter2": "Story",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "58",
+                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                                  "value": 58,
+                                  "hoverValue": {
+                                      "Delivered": 32,
+                                      "Final Scope": 55
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "40",
+                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                                  "value": 40,
+                                  "hoverValue": {
+                                      "Delivered": 24,
+                                      "Final Scope": 60
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "46",
+                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                                  "value": 46,
+                                  "hoverValue": {
+                                      "Delivered": 32,
+                                      "Final Scope": 69
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "35",
+                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                                  "value": 35,
+                                  "hoverValue": {
+                                      "Delivered": 23,
+                                      "Final Scope": 65
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "62",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 62,
+                                  "hoverValue": {
+                                      "Delivered": 37,
+                                      "Final Scope": 59
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#Story",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "2",
+                          "maturityValue": "48"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Final Scope (Count)",
+                  "filter2": "Enabler Story",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "0",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 0,
+                                  "hoverValue": {
+                                      "Delivered": 0,
+                                      "Final Scope": 1
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#Enabler Story",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "1",
+                          "maturityValue": "0"
+                      }
+                  ]
+              },
+              {
+                  "filter1": "Final Scope (Count)",
+                  "filter2": "Defect",
+                  "value": [
+                      {
+                          "data": "AddingIterationProject",
+                          "value": [
+                              {
+                                  "data": "90",
+                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                                  "value": 90,
+                                  "hoverValue": {
+                                      "Delivered": 9,
+                                      "Final Scope": 10
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "54",
+                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                                  "value": 54,
+                                  "hoverValue": {
+                                      "Delivered": 6,
+                                      "Final Scope": 11
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "75",
+                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                                  "value": 75,
+                                  "hoverValue": {
+                                      "Delivered": 15,
+                                      "Final Scope": 20
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "83",
+                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                                  "value": 83,
+                                  "hoverValue": {
+                                      "Delivered": 15,
+                                      "Final Scope": 18
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              },
+                              {
+                                  "data": "72",
+                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                                  "value": 72,
+                                  "hoverValue": {
+                                      "Delivered": 16,
+                                      "Final Scope": 22
+                                  },
+                                  "kpiGroup": "Final Scope (Count)#Defect",
+                                  "sprojectName": "AddingIterationProject"
+                              }
+                          ],
+                          "maturity": "4",
+                          "maturityValue": "75"
+                      }
+                  ]
+              }
+          ],
+          "maturityRange": [
+              "-40",
+              "40-60",
+              "60-75",
+              "75-90",
+              "90-"
+          ],
+          "groupId": 2
+      }
+  ];
+    component.colorObj = {
+      "AddingIterationProject_64a4ff265b5fdd437756f904": {
+          "nodeName": "AddingIterationProject",
+          "color": "#079FFF"
+      }
+  };
+
+  const response = [
+    {
+        "filterType": "Select a filter",
+        "options": [
+            "Initial Commitment (Story Points)",
+            "Initial Commitment (Count)",
+            "Final Scope (Story Points)",
+            "Final Scope (Count)"
+        ]
+    },
+    {
+        "filterType": "Filter by issue type",
+        "options": [
+            "Story",
+            "Enabler Story",
+            "Defect"
+        ]
+    }
+]
+    const spyData = component.getDropdownArray(kpiId);
+    expect(component.kpiDropdowns["kpi72"]).toEqual(response);
+  });
+
+  it('should sort Alphabetically', () => {
+    const objArray = [
+      {
+        "data": "AddingIterationProject",
+        "value": [
+          {
+            "data": "0.0",
+            "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+            "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+            "value": 0,
+            "hoverValue": {},
+            "sprintIds": [
+              "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
+            ],
+            "sprintNames": [
+              "KnowHOW | PI_13| ITR_3_AddingIterationProject"
+            ],
+            "sprojectName": "AddingIterationProject",
+            "xName": 1
+          },
+          {
+            "data": "0.0",
+            "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+            "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+            "value": 0,
+            "hoverValue": {},
+            "sprintIds": [
+              "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
+            ],
+            "sprintNames": [
+              "KnowHOW | PI_13| ITR_4_AddingIterationProject"
+            ],
+            "sprojectName": "AddingIterationProject",
+            "xName": 2
+          },
+          {
+            "data": "0.0",
+            "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+            "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+            "value": 0,
+            "hoverValue": {},
+            "sprintIds": [
+              "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
+            ],
+            "sprintNames": [
+              "KnowHOW | PI_13| ITR_5_AddingIterationProject"
+            ],
+            "sprojectName": "AddingIterationProject",
+            "xName": 3
+          },
+          {
+            "data": "0.0",
+            "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+            "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+            "value": 0,
+            "hoverValue": {},
+            "sprintIds": [
+              "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
+            ],
+            "sprintNames": [
+              "KnowHOW | PI_13| ITR_6_AddingIterationProject"
+            ],
+            "sprojectName": "AddingIterationProject",
+            "xName": 4
+          },
+          {
+            "data": "0.0",
+            "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
+            "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
+            "value": 0,
+            "hoverValue": {},
+            "sprintIds": [
+              "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
+            ],
+            "sprintNames": [
+              "KnowHOW | PI_14| ITR_1_AddingIterationProject"
+            ],
+            "sprojectName": "AddingIterationProject",
+            "xName": 5
+          }
+        ],
+        "maturity": "1",
+        "maturityValue": "0.0"
+      }
+    ];
+
+    const value = [
+      {
+        "data": "AddingIterationProject",
+        "value": [
+          {
+            "data": "0.0",
+            "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+            "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+            "value": 0,
+            "hoverValue": {},
+            "sprintIds": [
+              "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
+            ],
+            "sprintNames": [
+              "KnowHOW | PI_13| ITR_3_AddingIterationProject"
+            ],
+            "sprojectName": "AddingIterationProject",
+            "xName": 1
+          },
+          {
+            "data": "0.0",
+            "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+            "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+            "value": 0,
+            "hoverValue": {},
+            "sprintIds": [
+              "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
+            ],
+            "sprintNames": [
+              "KnowHOW | PI_13| ITR_4_AddingIterationProject"
+            ],
+            "sprojectName": "AddingIterationProject",
+            "xName": 2
+          },
+          {
+            "data": "0.0",
+            "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+            "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+            "value": 0,
+            "hoverValue": {},
+            "sprintIds": [
+              "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
+            ],
+            "sprintNames": [
+              "KnowHOW | PI_13| ITR_5_AddingIterationProject"
+            ],
+            "sprojectName": "AddingIterationProject",
+            "xName": 3
+          },
+          {
+            "data": "0.0",
+            "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+            "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+            "value": 0,
+            "hoverValue": {},
+            "sprintIds": [
+              "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
+            ],
+            "sprintNames": [
+              "KnowHOW | PI_13| ITR_6_AddingIterationProject"
+            ],
+            "sprojectName": "AddingIterationProject",
+            "xName": 4
+          },
+          {
+            "data": "0.0",
+            "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
+            "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
+            "value": 0,
+            "hoverValue": {},
+            "sprintIds": [
+              "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
+            ],
+            "sprintNames": [
+              "KnowHOW | PI_14| ITR_1_AddingIterationProject"
+            ],
+            "sprojectName": "AddingIterationProject",
+            "xName": 5
+          }
+        ],
+        "maturity": "1",
+        "maturityValue": "0.0"
+      }
+    ]
+    const result = component.sortAlphabetically(objArray);
+    expect(result).toEqual(value);
+
+  });
+
 });
-
-it('should call zypher kpi api',()=>{
-  spyOn(httpService,'postKpi').and.returnValue(of({}));
-  const spyafterZypherKpiResponseReceived = spyOn(component,'afterZypherKpiResponseReceived');
-  component.postZypherKpi({},'Zypher');
-  fixture.detectChanges();
-  expect(spyafterZypherKpiResponseReceived).toHaveBeenCalled();
-});
-
-it('should call zypher kanban kpi api',()=>{
-  component.zypherKpiRequest  = '';
-  spyOn(httpService,'postKpiKanban').and.returnValue(of({}));
-  const spyafterZypherKpiResponseReceived = spyOn(component,'afterZypherKpiResponseReceived');
-  component.postZypherKanbanKpi({},'Zypher');
-  fixture.detectChanges();
-  expect(spyafterZypherKpiResponseReceived).toHaveBeenCalled();
-});
-
-it('should call post bitbucket kanban kpi',()=>{
-  component.bitBucketKpiRequest  = '';
-  spyOn(httpService,'postKpiKanban').and.returnValue(of({}));
-  const spycreateAllKpiArray = spyOn(component,'createAllKpiArray');
-  component.postBitBucketKanbanKpi({},'Bitbucket');
-  fixture.detectChanges();
-  expect(spycreateAllKpiArray).toHaveBeenCalled();
-})
-
-});
-
-
