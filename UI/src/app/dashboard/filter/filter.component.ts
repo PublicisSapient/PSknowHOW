@@ -177,6 +177,9 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {
         this.selectedTab = data.selectedTab;
+        if(this.toggleDropdown['commentSummary']){
+          this.toggleDropdown['commentSummary'] = false;
+        }
         if (this.selectedTab?.toLowerCase() === 'iteration') {
           this.service.setEmptyFilter();
         }
@@ -1385,7 +1388,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.showSpinner = true;
     let reqObj = {
       "level": this.filterApplyData?.['level'],
-      "nodeChildId": this.filterApplyData?.['selectedMap']['sprint']?.[0] || this.filterApplyData?.['selectedMap']['release']?.[0] || this.filterApplyData?.['selectedMap']['date']?.[0] || "",
+      "nodeChildId": this.filterApplyData?.['selectedMap']['sprint']?.[0] || this.filterApplyData?.['selectedMap']['release']?.[0] || "",
       "kpiIds": this.showKpisList?.map((item) => item.kpiId),
       "nodes":[]
     }
