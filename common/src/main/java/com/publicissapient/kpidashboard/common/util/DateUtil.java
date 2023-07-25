@@ -237,4 +237,8 @@ public class DateUtil {
 		return strDate;
 	}
 
+	public static boolean isWithinDateRangeWithTime(LocalDateTime targetDate, LocalDateTime startDate, LocalDateTime endDate) {
+		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
+	}
+
 }
