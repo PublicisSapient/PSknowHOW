@@ -464,11 +464,11 @@ db.getCollection('field_mapping_structure').insert(
     {
         "fieldName": "jiraDorKPI3",
         "fieldLabel": "Status to Identify Development Status",
-        "fieldType": "chips",
+        "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": " Definition of Readiness. Provide any status from workflow on which DOR is considered."
+            "definition": "Definition of Readiness. Provide any status from workflow on which DOR is considered."
         }
     },
     {
@@ -870,7 +870,7 @@ db.getCollection('field_mapping_structure').insert(
     {
         "fieldName": "jiraDefectRejectionStatusKPI35",
         "fieldLabel": "Status to be excluded",
-        "fieldType": "chips",
+        "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
@@ -1138,7 +1138,7 @@ db.getCollection('field_mapping_structure').insert(
     },
     {
         "fieldName": "jiraLiveStatusLTK",
-        "fieldLabel": "Live Status - LTK",
+        "fieldLabel": "Live Status - Lead Time",
         "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
@@ -1148,7 +1148,7 @@ db.getCollection('field_mapping_structure').insert(
     },
     {
         "fieldName": "jiraLiveStatusNOPK",
-        "fieldLabel": "Live Status - NOPK",
+        "fieldLabel": "Live Status - Net Open Ticket Count by Priority",
         "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
@@ -1158,7 +1158,7 @@ db.getCollection('field_mapping_structure').insert(
     },
     {
         "fieldName": "jiraLiveStatusNOSK",
-        "fieldLabel": "Live Status - NOSK",
+        "fieldLabel": "Live Status - Net Open Ticket by Status",
         "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
@@ -1168,7 +1168,7 @@ db.getCollection('field_mapping_structure').insert(
     },
     {
         "fieldName": "jiraLiveStatusNORK",
-        "fieldLabel": "Live Status - NORK",
+        "fieldLabel": "Live Status - Net Open Ticket Count By RCA",
         "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
@@ -1178,7 +1178,7 @@ db.getCollection('field_mapping_structure').insert(
     },
     {
         "fieldName": "jiraLiveStatusOTA",
-        "fieldLabel": "Live Status - OTA",
+        "fieldLabel": "Live Status - Open Ticket Ageing",
         "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
