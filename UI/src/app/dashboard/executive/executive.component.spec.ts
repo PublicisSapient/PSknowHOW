@@ -5595,6 +5595,7 @@ describe('ExecutiveComponent', () => {
     {
         "filterType": "Filter by issue type",
         "options": [
+            "Overall",
             "Story",
             "Enabler Story",
             "Defect"
