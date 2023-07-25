@@ -321,6 +321,7 @@ db.getCollection('field_mapping_structure').insert(
             "definition": "Resolutions for defects which are to be excluded from 'Defect Density' calculation."
         }
     },
+
     {
         "fieldName": "jiraDefectRejectionStatusKPI28",
         "fieldLabel": "Status to be excluded",
@@ -1253,7 +1254,7 @@ db.getCollection('field_mapping_structure').insert(
         "fieldName": "epicUserBusinessValue",
         "fieldLabel": "Custom field for BV",
         "fieldType": "text",
-        "fieldCategory": "custom",
+        "fieldCategory": "fields",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of User-Business Value for Epic that is required to calculated Cost of delay. <br>Example:customfield_11111<hr>",
