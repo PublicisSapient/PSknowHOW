@@ -209,7 +209,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 		
-		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(totalIssue)) {
+		if (CollectionUtils.isNotEmpty(totalIssue)) {
 			List<JiraIssue> totalSprintReportDefects = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
 					uniqueProjectMap);
 			sprintReportedBugsList = totalSprintReportDefects;
@@ -282,7 +282,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseTotaldDefectListMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseCloseddDefectListMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(sprintDetails)) {
+		if (CollectionUtils.isNotEmpty(sprintDetails)) {
 
 			sprintDetails.forEach(sd -> {
 				List<JiraIssue> sprintWiseClosedDefectList = new ArrayList<>();
@@ -297,7 +297,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				getSubtasks(subTaskBugs, defectsCustomHistory, projectWiseDefectRemovalStatus, totalSubTask, sd);
 
 				List<JiraIssue> subCategoryWiseTotalDefectList = totalDefects.stream().filter(
-						defect -> org.apache.commons.collections.CollectionUtils.isNotEmpty(defect.getSprintIdList())
+						defect -> CollectionUtils.isNotEmpty(defect.getSprintIdList())
 								&& defect.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
 						.collect(Collectors.toList());
 				subCategoryWiseTotalDefectList.addAll(totalSubTask);
