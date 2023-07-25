@@ -1092,6 +1092,10 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 
 .active-state{
   color: var(--color-green);
+}
+
+.success-state{
+  color: var(--color-green);
   background: #d9efd9;
   border-radius: 3px;
   font-size: .85rem;

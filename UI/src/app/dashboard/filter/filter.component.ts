@@ -1391,6 +1391,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     const sprintId = this.filterForm.get('selectedSprintValue')?.value;
     const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
     if (sprintState?.toLowerCase() === 'active') {
+      this.lastSyncData = {
+        fetchSuccessful: false,
+        errorInFetch: false
+      };
+      this.selectedProjectLastSyncStatus = '';
       this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
         if (activeSprintStatus['success']) {
           interval(10000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
