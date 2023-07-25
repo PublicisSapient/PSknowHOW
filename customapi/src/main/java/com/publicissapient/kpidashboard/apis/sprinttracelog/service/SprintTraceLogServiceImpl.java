@@ -49,7 +49,7 @@ public class SprintTraceLogServiceImpl implements SprintTraceLogService {
 		if (fetchRecord != null) {
 			ModelMapper mapper = new ModelMapper();
 			SprintTraceLogDTO sprintTraceLogDTO = mapper.map(fetchRecord, SprintTraceLogDTO.class);
-			log.info("Successfully fetched fetchRecord from db for sprint {}", sprintId);
+			log.info("Successfully fetched sprintTraceLog from db for sprint {}", sprintId);
 			return new ServiceResponse(true, "Successfully fetched last sync details from db", sprintTraceLogDTO);
 		} else {
 			log.info("fetchRecord is null");

@@ -153,6 +153,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 			sprintTrace = sprintTrace == null ? new SprintTraceLog() : sprintTrace;
 			sprintTrace.setSprintId(sprintId);
 			sprintTrace.setFetchSuccessful(false);
+			sprintTrace.setErrorInFetch(false);
 			sprintTraceLogRepository.save(sprintTrace);
 		}
 		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);

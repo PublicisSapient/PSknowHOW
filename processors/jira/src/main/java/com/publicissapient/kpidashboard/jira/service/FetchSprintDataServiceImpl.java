@@ -43,6 +43,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -135,6 +136,7 @@ public class FetchSprintDataServiceImpl {
 				Collections.singletonList(projectBasicConfig), Collections.singletonList(fieldMapping));
 
 		ProjectConfFieldMapping projectConfig = projectMapConfig.get(projectBasicConfig.getProjectName());
+		MDC.put(CommonConstant.PROJECTNAME,projectBasicConfig.getProjectName());
 
 		JiraAdapter jiraAdapter = getJiraAdapter(projectConfig);
 
