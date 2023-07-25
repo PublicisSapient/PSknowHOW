@@ -572,9 +572,12 @@ public class KpiHelperService { // NOPMD
 
 			if (MapUtils.isNotEmpty(fieldMappingMap) && !duplicateIssues.isEmpty()) {
 				Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
-						.filter(fieldMappingMap::containsKey)
-						.collect(Collectors.toMap(Function.identity(), key -> fieldMappingMap
-								.get(key).getJiraIterationCompletionStatusKpi39()));
+						.filter(fieldMappingMap::containsKey).collect(Collectors.toMap(Function.identity(), key -> {
+							FieldMapping fieldMapping = fieldMappingMap.get(key);
+							return Optional.ofNullable(fieldMapping)
+									.map(FieldMapping::getJiraIterationCompletionStatusKpi39)
+									.orElse(Collections.emptyList());
+						}));
 				projectWiseDuplicateIssuesWithMinCloseDate = getMinimumClosedDateFromConfiguration(duplicateIssues,
 						customFieldMapping);
 			}
@@ -1550,7 +1553,7 @@ public class KpiHelperService { // NOPMD
 							String changedTo = log.getChangedTo();
 							if (customFields.contains(changedTo)) {
 								LocalDateTime updatedOn = log.getUpdatedOn();
-								minimumCompletedStatusWiseMap.put(changedTo, updatedOn);
+								minimumCompletedStatusWiseMap.putIfAbsent(changedTo, updatedOn);
 							} else if (!minimumCompletedStatusWiseMap.isEmpty()) {
 								LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream()
 										.min(LocalDateTime::compareTo).orElse(null);
