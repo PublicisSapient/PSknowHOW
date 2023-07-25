@@ -212,13 +212,3 @@ bulkUpdateKpiFieldMapping.push({
 if (bulkUpdateKpiFieldMapping.length > 0) {
     db.kpi_fieldmapping.bulkWrite(bulkUpdateKpiFieldMapping);
 }
-
-// update groupID for some backlog KPI's to fix the backlog performance issue .
-const kpiIdsToUpdate = ["kpi129", "kpi138", "kpi3", "kpi148", "kpi152"];
-const newGroupId = 11;
-
-db.getCollection("kpi_master").updateMany(
-  { "kpiId": { $in: kpiIdsToUpdate } },
-  { $set: { "groupId": newGroupId } }
-);
-
