@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormGroup,UntypedFormControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -211,5 +211,86 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
     });
     component.handleAdditionalFilters();
     expect(component.additionalFilterConfig.length).toEqual(1);
+  });
+
+  it('should open/close the dropdown dialog and set values', () => {
+    component.selectedField = 'jiraDefectRejectionStatusDIR';
+    component.fieldMappingForm = new UntypedFormGroup({
+      'jiraDefectRejectionStatusDIR' : new UntypedFormControl()
+    });
+    const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
+    component.fieldMappingForm.controls['jiraDefectRejectionStatusDIR']?.setValue("fake value")
+    component.fieldMappingMetaData = dropDownMetaData.data;
+    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','fields');
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','fields');
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData.data;
+    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','workflow');
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+    
+    component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','workflow');
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData.data;
+    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','Issue_Link');
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+    
+    component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','Issue_Link');
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData.data;
+    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','Issue_Type');
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+    
+    component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','Issue_Type');
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData;
+    component.showDialogToAddValue(true,'jiraDefectRejectionStatusDIR','default');
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+
+    component.fieldMappingMetaData = dropDownMetaData.data;
+    component.showDialogToAddValue(false,'jiraDefectRejectionStatusDIR','fields');
+    expect(component.fieldMappingMultiSelectValues).not.toBeNull();
+  });
+
+  it('should close dialog',()=>{
+    component.cancelDialog()
+   expect(component.displayDialog).toBeFalsy();
+  })
+
+  it('should select values from popup', () => {
+    component.singleSelectionDropdown = false;
+    component.selectedField = 'jiraDefectRejectionStatusDIR';
+    spyOn(component,'handleAdditionalFilters');
+    component.fieldMappingForm = new UntypedFormGroup({
+      'jiraDefectRejectionStatusDIR' : new UntypedFormControl()
+    });
+    component.fieldMappingMultiSelectValues = [{
+      key: 'New',
+      data: 'New'
+    }, {
+      key: 'Active',
+      data: 'Active'
+    }, {
+      key: 'Resolved',
+      data: 'Resolved'
+    }, {
+      key: 'Closed',
+      data: 'Closed'
+    }, {
+      key: 'Removed',
+      data: 'Removed'
+    }];
+    component.saveDialog();
+    expect(component.populateDropdowns).toBeFalsy();
+    expect(component.displayDialog).toBeFalsy();
   });
 });
