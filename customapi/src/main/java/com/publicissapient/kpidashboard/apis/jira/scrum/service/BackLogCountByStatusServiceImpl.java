@@ -148,7 +148,8 @@ public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, Lis
 			// exclude the issue from total jiraIssues based on DOD status and Defect
 			// Rejection Status
 			if (CollectionUtils.isNotEmpty(excludeStatuses)) {
-				Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase).collect(Collectors.toSet());
+				Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase)
+						.collect(Collectors.toSet());
 				jiraIssues = jiraIssues.stream()
 						.filter(jiraIssue -> !excludeStatus.contains(jiraIssue.getJiraStatus().toUpperCase()))
 						.collect(Collectors.toList());
@@ -187,8 +188,8 @@ public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, Lis
 					kpiElement.setModalHeads(KPIExcelColumn.BACKLOG_COUNT_BY_STATUS.getColumns());
 					kpiElement.setExcelColumns(KPIExcelColumn.BACKLOG_COUNT_BY_STATUS.getColumns());
 					kpiElement.setExcelData(excelData);
-					log.info("BacklogCountByStatusServiceImpl -> request id : {} total jira Issues : {}", requestTrackerId,
-							filterDataList.get(0));
+					log.info("BacklogCountByStatusServiceImpl -> request id : {} total jira Issues : {}",
+							requestTrackerId, filterDataList.get(0));
 				}
 
 			}

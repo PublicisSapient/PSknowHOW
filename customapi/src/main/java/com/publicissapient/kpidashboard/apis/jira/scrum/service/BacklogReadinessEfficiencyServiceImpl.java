@@ -56,7 +56,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -194,8 +193,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		if (CollectionUtils.isNotEmpty(allIssues)) {
-			log.info("Backlog items ready for development -> request id : {} total jira Issues : {}",
-					requestTrackerId, allIssues.size());
+			log.info("Backlog items ready for development -> request id : {} total jira Issues : {}", requestTrackerId,
+					allIssues.size());
 			List<JiraIssueCustomHistory> historyForIssues = (List<JiraIssueCustomHistory>) resultMap.get(HISTORY);
 			Map<String, Map<String, List<JiraIssue>>> typeAndPriorityWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getPriority)));
@@ -416,8 +415,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		List<String> doneStatus = new ArrayList<>();
 		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus().getClosedList();
 		if (doneStatusMap != null) {
-			doneStatus = doneStatusMap.values().stream().map(String::toLowerCase)
-					.collect(Collectors.toList());
+			doneStatus = doneStatusMap.values().stream().map(String::toLowerCase).collect(Collectors.toList());
 		}
 
 		List<String> basicProjectConfigIds = new ArrayList<>();

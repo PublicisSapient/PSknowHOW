@@ -11,10 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,10 +25,12 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -40,7 +38,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FlowLoadServiceImplTest {
@@ -112,6 +110,7 @@ public class FlowLoadServiceImplTest {
 		assertNotNull(responseKpiElement.getTrendValueList());
 		assertEquals(responseKpiElement.getKpiId(), kpiRequest.getKpiList().get(0).getKpiId());
 	}
+
 	@Test
 	public void testGetQualifierType() {
 		assertThat(flowLoadService.getQualifierType(), equalTo("FLOW_LOAD"));

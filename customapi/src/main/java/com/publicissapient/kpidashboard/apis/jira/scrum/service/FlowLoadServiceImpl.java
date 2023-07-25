@@ -29,12 +29,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -255,8 +252,7 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus().getClosedList();
 		List<String> doneStatus = new ArrayList<>();
 		if (doneStatusMap != null)
-			doneStatus = doneStatusMap.values().stream().map(String::toLowerCase)
-					.collect(Collectors.toList());
+			doneStatus = doneStatusMap.values().stream().map(String::toLowerCase).collect(Collectors.toList());
 		return !doneStatus.contains(status.toLowerCase())
 				&& (fieldMapping.getStoryFirstStatus().equalsIgnoreCase(status)
 						|| (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgress())

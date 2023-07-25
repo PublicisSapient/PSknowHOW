@@ -27,13 +27,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -49,6 +48,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
@@ -152,7 +152,8 @@ public class BackLogCountByIssueTypeServiceImpl extends JiraKPIService<Integer, 
 			// exclude the issue from total jiraIssues based on DOD status and Defect
 			// Rejection Status
 			if (CollectionUtils.isNotEmpty(excludeStatuses)) {
-				Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase).collect(Collectors.toSet());
+				Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase)
+						.collect(Collectors.toSet());
 				jiraIssues = jiraIssues.stream()
 						.filter(jiraIssue -> !excludeStatus.contains(jiraIssue.getJiraStatus().toUpperCase()))
 						.collect(Collectors.toList());

@@ -147,9 +147,8 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	public void createDataCountGroupMap(List<JiraIssue> jiraIssueList, JiraIssueReleaseStatus jiraIssueReleaseStatus,
 			Set<String> assigneeNames, Set<String> priorities, FieldMapping fieldMapping,
 			List<IterationKpiValue> iterationKpiValues) {
-		Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = jiraIssueList.stream()
-				.collect(Collectors.groupingBy(
-						jiraIssue -> Optional.ofNullable(jiraIssue.getAssigneeName()).orElse("-"),
+		Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = jiraIssueList.stream().collect(
+				Collectors.groupingBy(jiraIssue -> Optional.ofNullable(jiraIssue.getAssigneeName()).orElse("-"),
 						Collectors.groupingBy(JiraIssue::getPriority)));
 		typeAndStatusWiseIssues
 				.forEach((assigneeName, priorityWiseIssue) -> priorityWiseIssue.forEach((priority, issues) -> {
