@@ -69,7 +69,7 @@
 </div>
 
 <!-- Search Dialog -->
-<p-dialog header="Add Value(s)" [(visible)]="displayDialog" showEffect="fade" [modal]="true" [style]="{width: '500px'}"
+<p-dialog header="Add Value(s)" [(visible)]="displayDialog" showEffect="fade" [modal]="true" [style]="{'min-height': '480px'}" styleClass="mapping-selection-popup"
     (onShow)="recordScrollPosition()" (onHide)="scrollToPosition()">
     <div class="dialog-panel" style="width: 450px; min-height: 450px; overflow: hidden;">
         <div *ngIf="singleSelectionDropdown">

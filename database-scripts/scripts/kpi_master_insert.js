@@ -217,8 +217,8 @@ db.getCollection('kpi_master').insert(
           "lhs": "DRE for a sprint",
           "operator": "division",
           "operands": [
-            "No. of defects tagged to stories in the iteration that are fixed",
-            "Total no. of defects tagged to stories in a iteration"
+            "No. of defects in the iteration that are fixed",
+            "Total no. of defects in a iteration"
           ]
         }
       ],

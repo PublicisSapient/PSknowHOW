@@ -11,9 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -275,9 +277,21 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
 				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
 
-		Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService.getMinimumClosedDateFromConfiguration(
+		Map<ObjectId, Set<String>> duplicateIssues = kpiHelperService.getProjectWiseDuplicateIssueInSprintDetails(
 				projectWiseTotalSprintDetails);
+		Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
+		Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
 
+		if (MapUtils.isNotEmpty(fieldMappingMap) && !duplicateIssues.isEmpty()) {
+			Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
+					.filter(fieldMappingMap::containsKey)
+					.collect(Collectors.toMap(Function.identity(), key -> fieldMappingMap
+							.get(key).getJiraIterationCompletionStatusKpi72()));
+			projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService.getMinimumClosedDateFromConfiguration(duplicateIssues,
+					customFieldMapping);
+		}
+
+		Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
 		Set<String> totalIssue = new HashSet<>();
 		sprintDetails.stream().forEach(dbSprintDetail -> {
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -285,7 +299,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			// to modify sprintdetails on the basis of configuration for the project
 			SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
 					fieldMapping.getJiraIterationIssuetypeKpi72(),
-					fieldMapping.getJiraIterationCompletionStatusKpi72(),projectWiseDuplicateIssuesWithMinCloseDate).get(0);
+					fieldMapping.getJiraIterationCompletionStatusKpi72(),finalProjectWiseDuplicateIssuesWithMinCloseDate).get(0);
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));
