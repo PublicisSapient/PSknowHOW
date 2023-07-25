@@ -50,6 +50,6 @@
     </div>
 
     <div *ngSwitchCase="'dropdown'">
-        <app-additional-filter-field (additionalFilterChange)="setAdditionalFilterValue($event)"></app-additional-filter-field>
+        <app-additional-filter-field [fieldMappingMetaData]="fieldMappingMetaData"  (additionalFilterChange)="setAdditionalFilterValue($event)"></app-additional-filter-field>
     </div>
 </div>

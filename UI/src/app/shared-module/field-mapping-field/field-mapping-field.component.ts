@@ -32,6 +32,7 @@ export class FieldMappingFieldComponent implements OnInit,ControlValueAccessor {
 
   @Input() fieldConfig;
   @Output() onSearch = new EventEmitter();
+  @Input() fieldMappingMetaData;
   value;
   isDisabled = false;
 

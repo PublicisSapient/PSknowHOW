@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output,Input } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { SharedService } from 'src/app/services/shared.service';
@@ -27,6 +27,7 @@ import { SharedService } from 'src/app/services/shared.service';
 })
 export class AdditionalFilterFieldComponent implements OnInit {
   @Output() additionalFilterChange = new EventEmitter();
+  @Input() fieldMappingMetaData ;
   additionalFilterIdentifier: any = {};
   disableAdditionalFilterAdd =true;
   additionalFiltersArray: any = [];
@@ -36,6 +37,15 @@ export class AdditionalFilterFieldComponent implements OnInit {
   selectedFieldMapping: any = {};
   additionalFilterOptions: any = [];
   additionalFilterConfig = [];
+  
+  populateDropdowns = true;
+  selectedField = '';
+  singleSelectionDropdown = false;
+  fieldMappingMultiSelectValues: any = [];
+  selectedValue = [];
+  selectedMultiValue = [];
+  displayDialog = false;
+  bodyScrollPosition = 0;
 
   constructor(private formBuilder: UntypedFormBuilder,private messenger: MessageService,private sharedService: SharedService) { }
 
@@ -188,5 +198,90 @@ resetRadioButton(fieldName){
   this.fieldMappingForm.patchValue({[fieldName]: ''});
   this.handleAdditionalFilters();
 }
+
+  /** once user willl click on search btn, assign the search options based on field category */
+  showDialogToAddValue(isSingle, fieldName, type) {
+    this.populateDropdowns = true;
+    this.selectedField = fieldName;
+
+    if (isSingle) {
+      this.singleSelectionDropdown = true;
+    } else {
+      this.singleSelectionDropdown = false;
+    }
+
+    switch (type) {
+      case 'fields':
+        if (this.fieldMappingMetaData && this.fieldMappingMetaData.fields) {
+          this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.fields;
+        } else {
+          this.fieldMappingMultiSelectValues = [];
+        }
+        break;
+      case 'workflow':
+        if (this.fieldMappingMetaData && this.fieldMappingMetaData.workflow) {
+          this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.workflow;
+        } else {
+          this.fieldMappingMultiSelectValues = [];
+        }
+        break;
+      case 'Issue_Link':
+        if (this.fieldMappingMetaData && this.fieldMappingMetaData.Issue_Link) {
+          this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.Issue_Link;
+        } else {
+          this.fieldMappingMultiSelectValues = [];
+        }
+        break;
+      case 'Issue_Type':
+        if (this.fieldMappingMetaData && this.fieldMappingMetaData.Issue_Type) {
+          this.fieldMappingMultiSelectValues = this.fieldMappingMetaData.Issue_Type;
+        } else {
+          this.fieldMappingMultiSelectValues = [];
+        }
+        break;
+      default:
+        this.fieldMappingMultiSelectValues = [];
+        break;
+    }
+
+    if (isSingle) {
+      if (this.fieldMappingForm.controls[this.selectedField].value) {
+        this.selectedValue = this.fieldMappingMultiSelectValues.filter(fieldMappingMultiSelectValue => (fieldMappingMultiSelectValue.data === this.fieldMappingForm.controls[this.selectedField].value));
+        if (this.selectedValue && this.selectedValue.length) {
+          if (this.selectedValue[0].data) {
+            this.selectedValue = this.selectedValue[0].data;
+          }
+        }
+      }
+    }
+    this.displayDialog = true;
+  }
+
+  /** close search dialog */
+  cancelDialog() {
+    this.populateDropdowns = false;
+    this.displayDialog = false;
+  }
+
+  /** Once user select value and click on save then selected option will be populated on chip/textbox */
+  saveDialog() {
+    if (this.singleSelectionDropdown) {
+      if (this.selectedValue.length) {
+        this.fieldMappingForm.controls[this.selectedField].setValue(this.selectedValue);
+      }
+    } 
+    this.handleAdditionalFilters()
+    this.populateDropdowns = false;
+    this.displayDialog = false;
+  }
+
+  recordScrollPosition() {
+    this.bodyScrollPosition = document.documentElement.scrollTop;
+  }
+
+  scrollToPosition() {
+    this.populateDropdowns = false;
+    document.documentElement.scrollTop = this.bodyScrollPosition;
+  }
 
 }
