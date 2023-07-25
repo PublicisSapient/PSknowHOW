@@ -22,7 +22,7 @@
                     <ng-container *ngFor="let filter of dropdownArr;let k = index">
                         <ng-select [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'" (change)="handleChange('single',k)"
                             *ngIf="dropdownArr?.length && filter?.options?.length" [placeholder]="filter?.filterType"
-                            [clearable]="false" class="p-pb-0 kpi-dropdown" style="margin-left: 10px;">
+                            [clearable]="false" class="p-pb-0 kpi-dropdown" style="margin-left: 5px; width: 115px;">
                             <ng-option *ngFor="let item of filter?.options" [value]="item">
                                 <span [attr.title]="item">{{item}}</span>
                             </ng-option>

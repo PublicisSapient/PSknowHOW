@@ -1004,7 +1004,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             }
                             if (trendValueList[i]?.hasOwnProperty('filter2')) {
                                 let ifF1Exist = optionsArr2.findIndex(x => x == trendValueList[i]?.filter2);
-                                if (ifF1Exist == -1 && trendValueList[i]?.filter2?.toLowerCase() !=="overall") {
+                                // if (ifF1Exist == -1 && trendValueList[i]?.filter2?.toLowerCase() !=="overall") {
+                                    if (ifF1Exist == -1 ) {
                                     optionsArr2?.push(trendValueList[i]?.filter2);
                                     
                                 }
@@ -1025,6 +1026,15 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 this.kpiDropdowns[kpiId].push(obj);
 
                 if (optionsArr2.length > 0) {
+                    optionsArr2.sort((a, b) => {
+                        if (a === "Overall") {
+                          return -1; // "Overall" should be moved to the beginning (0 index)
+                        } else if (b === "Overall") {
+                          return 1; // "Overall" should be moved to the beginning (0 index)
+                        } else {
+                          return 0; // Maintain the original order of other elements
+                        }
+                    });
                     obj2['filterType'] = 'Filter by issue type';
                     obj2['options'] = optionsArr2;
                     this.kpiDropdowns[kpiId].push(obj2);
