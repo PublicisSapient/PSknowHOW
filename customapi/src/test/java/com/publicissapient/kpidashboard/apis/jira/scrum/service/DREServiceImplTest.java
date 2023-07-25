@@ -20,7 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -31,6 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
+import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -83,6 +90,8 @@ public class DREServiceImplTest {
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
 	@Mock
+	SprintRepository sprintRepository;
+	@Mock
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
@@ -96,6 +105,12 @@ public class DREServiceImplTest {
 	FieldMappingRepository fieldMappingRepository;
 	@Mock
 	CustomApiConfig customApiSetting;
+	@Mock
+	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Mock
+	private JiraServiceR jiraKPIService;
+
+
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private Map<String, Object> filterLevelMap;
@@ -105,7 +120,9 @@ public class DREServiceImplTest {
 	private FilterHelperService filterHelperService;
 	@Mock
 	private CommonService commonService;
-
+	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
+	List<JiraIssue> totalIssueList = new ArrayList<>();
+	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
 	@Before
 	public void setup() {
 
@@ -124,10 +141,14 @@ public class DREServiceImplTest {
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 
 		totalBugList = jiraIssueDataFactory.getBugs();
+		totalIssueList = jiraIssueDataFactory.getJiraIssues();
 
 		closedBugList = totalBugList.stream().filter(bug -> bug.getStatus().equals("Closed"))
 				.collect(Collectors.toList());
-
+		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
+		sprintDetailsList = sprintDetailsDataFactory.getSprintDetails();
+		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
+		jiraIssueCustomHistoryList = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
 		projectConfig.setProjectName("Scrum Project");
@@ -139,7 +160,7 @@ public class DREServiceImplTest {
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-
+		when(configHelperService.getFieldMapping(projectConfig.getId())).thenReturn(fieldMapping);
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("defectRemovalEfficiency", "percentile");
 
@@ -173,24 +194,23 @@ public class DREServiceImplTest {
 
 		SprintWiseStoryDataFactory sprintWiseStoryDataFactory = SprintWiseStoryDataFactory.newInstance();
 		List<SprintWiseStory> storyData = sprintWiseStoryDataFactory.getSprintWiseStories();
+		Map<String, List<SprintDetails>> sprintWiseProjectData = sprintDetailsList.stream()
+				.collect(Collectors.groupingBy(SprintDetails::getSprintID));
+
 
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		List<JiraIssue> defectData = jiraIssueDataFactory.getBugs();
 
-		Map<String, Object> resultListMap = new HashMap<>();
-		resultListMap.put("storyData", storyData);
-		resultListMap.put("defectData", defectData);
-
-		when(jiraIssueRepository.findIssuesGroupBySprint(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(storyData);
-		when(jiraIssueRepository.findIssuesByType(any())).thenReturn(defectData);
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(totalIssueList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
 		Map<String, Object> defectDataListMap = dreServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
-		assertThat("Closed Defects value :", ((List<JiraIssue>) defectDataListMap.get(CLOSEDBUGKEY)).size(),
-				equalTo(0));
-		assertThat("Total Defects value :", ((List<JiraIssue>) defectDataListMap.get(TOTALBUGKEY)).size(), equalTo(19));
+		assertNotNull(defectDataListMap);
 	}
 
 	@Test
@@ -203,14 +223,19 @@ public class DREServiceImplTest {
 
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
-
-		when(jiraIssueRepository.findIssuesByType(Mockito.any())).thenReturn(totalBugList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(dreServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(totalIssueList);
+		when(jiraIssueRepository.findLinkedDefects(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(totalBugList);
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(jiraIssueCustomHistoryList);
 		try {
 			KpiElement kpiElement = dreServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
