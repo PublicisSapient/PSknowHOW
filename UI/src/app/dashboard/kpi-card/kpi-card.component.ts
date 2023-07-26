@@ -59,28 +59,41 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
           if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
-            if(key === "filter1"){this.filterOptions["filter1"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];}
-            else if(key === "filter2"){this.filterOptions["filter2"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter2'][0];}
-            else{
-              this.filterOptions = {...this.filterOptions};
-              this.filterOption = 'Overall';
-            }
-          } else {
-            if(this.kpiData?.kpiId==="kpi72"){
-              if(key === "filter1"){this.filterOptions["filter1"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];
-            }
-              else{
+            if (this.kpiData?.kpiId === "kpi72") {
+              if (key === "filter1") {
+                this.filterOptions["filter1"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];
+              }
+              else if (key === "filter2") {
                 this.filterOptions["filter2"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter2'][0];
               }
-              
+              else {
+                this.filterOptions = { ...this.filterOptions };
+                this.filterOption = 'Overall';
+              }
             }
-            else{this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+            else{
+              this.filterOptions = {...this.filterOptions };
+              this.filterOption = 'Overall';
             }
-            if(!this.filterOption){
-              this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'] ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+          }else {
+            if (this.kpiData?.kpiId === "kpi72") {
+              if (key === "filter1") {
+                this.filterOptions["filter1"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];
+              }
+              else {
+                this.filterOptions["filter2"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter2'][0];
+              }
+
             }
-            if(this.kpiData.kpiId === 'kpi3'){
-              this.filterOptions = {...this.filterOptions, [key]: this.kpiSelectedFilterObj[this.kpiData?.kpiId][key]};
+            else {
+              this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+
+              if (!this.filterOption) {
+                this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'] ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+              }
+              if (this.kpiData.kpiId === 'kpi3') {
+                this.filterOptions = { ...this.filterOptions, [key]: this.kpiSelectedFilterObj[this.kpiData?.kpiId][key] };
+              }
             }
           }
         }
