@@ -118,7 +118,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class ScrumJiraIssueClientImpl extends JiraIssueClient {
+public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 	public static final String FALSE = "false";
 	@Autowired
@@ -1651,7 +1651,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {
 	}
 
 	// for fetch, parse & update based on issuesKeys
-	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, //NOSONAR
+	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, // NOSONAR
 			boolean isOffline, List<String> issueKeys) {
 		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
@@ -1715,7 +1715,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {
 		} catch (JSONException e) {
 			log.error("Error while updating Story information in sprintFetch", e,
 					kv(CommonConstant.PSLOGDATA, psLogData));
-		} catch (InterruptedException e) { //NOSONAR
+		} catch (InterruptedException e) { // NOSONAR
 			log.error("Interrupted exception thrown during sprintFetch", e, kv(CommonConstant.PSLOGDATA, psLogData));
 			processorFetchingComplete = false;
 		} finally {
@@ -1723,7 +1723,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {
 			psLogData.setAction(CommonConstant.FETCHING_ISSUE);
 			if (!isAttemptSuccess) {
 				psLogData.setProjectExecutionStatus(String.valueOf(isAttemptSuccess));
-				log.error("Error in Fetching Issues through JQL during active SprintFetch", kv(CommonConstant.PSLOGDATA, psLogData));
+				log.error("Error in Fetching Issues through JQL during active SprintFetch",
+						kv(CommonConstant.PSLOGDATA, psLogData));
 			}
 		}
 

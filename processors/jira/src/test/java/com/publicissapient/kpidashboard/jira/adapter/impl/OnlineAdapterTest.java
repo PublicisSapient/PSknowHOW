@@ -115,12 +115,4 @@ public class OnlineAdapterTest {
 
 		projectConfFieldMapping2.setJira(jiraConfig);
 	}
-
-    @Test
-    void getIssuesSprint() {
-    }
-
-    @Test
-    void getSubtask() {
-    }
 }
