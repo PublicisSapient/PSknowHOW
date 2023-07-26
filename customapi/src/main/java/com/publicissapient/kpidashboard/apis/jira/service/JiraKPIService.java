@@ -310,8 +310,8 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return filteredJiraIssue;
 	}
 
-	public JiraIssueReleaseStatus getJiraIssueReleaseStatus(String basicProjectConfigId) {
-		return jiraService.getJiraIssueReleaseForProject(basicProjectConfigId);
+	public JiraIssueReleaseStatus getJiraIssueReleaseStatus() {
+		return jiraService.getJiraIssueReleaseForProject();
 	}
 
 	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
