@@ -233,10 +233,13 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			}
 
 			Map<String, Double> commitmentHowerMap = new HashMap<>();
-			List<String> uniqueIssues = allJiraIssue.stream()
-					.map(JiraIssue::getTypeName)
-					.map(item -> item.equalsIgnoreCase("Bug") ? "Defect" : item)
-					.distinct()
+			List<JiraIssue> totalSumIssues = new ArrayList<>();
+			totalSumIssues.addAll(totalPresentJiraIssue);
+			totalSumIssues.addAll(totalPresentCompletedIssue);
+			totalSumIssues.addAll(totalPresentInitialIssue);
+			totalSumIssues.addAll(totalPresentCompltdInitialIssue);
+
+			List<String> uniqueIssues = totalSumIssues.stream().map(JiraIssue::getTypeName).distinct()
 					.collect(Collectors.toList());
 			Map<String, List<JiraIssue>> totalPresentJiraIssueGroup = getGroupByAllIssues(totalPresentJiraIssue);
 			Map<String, List<JiraIssue>> totalPresentCompletedIssueGroup = getGroupByAllIssues(
