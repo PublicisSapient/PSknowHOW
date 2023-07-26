@@ -74,6 +74,7 @@ describe('FilterComponent', () => {
       level: 3,
     },
   ];
+  const fakeCommentList = require('../../../test/resource/fakeCommentList.json');
 
   const additionalFiltersDdn =  {
     selectedLevel: [{
@@ -979,7 +980,7 @@ describe('FilterComponent', () => {
     spyOn(sharedService, 'setDashConfigData');
     component.submitKpiConfigChange();
     tick();
-    expect(component.toggleDropdown).toBeFalse();
+    expect(component.toggleDropdown['showHide']).toBeFalse();
   }));
 
   it("should get processor trace log details",()=>{
@@ -1541,6 +1542,65 @@ describe('FilterComponent', () => {
     expect(component.selectedProjectLastSyncStatus).toBe("FAILURE");
   })
 
+  it('should get comment summary', fakeAsync(() => {
+    component.showSpinner = true;
+    const reqObj = {
+        "level": 5,
+        "kpiIds": [
+            "kpi14",
+            "kpi82",
+            "kpi111",
+            "kpi35",
+            "kpi34",
+            "kpi37",
+            "kpi28",
+            "kpi36",
+            "kpi126",
+            "kpi42",
+            "kpi16",
+            "kpi17",
+            "kpi38",
+            "kpi27",
+            "kpi116",
+            "kpi70",
+            "kpi40",
+            "kpi72",
+            "kpi5",
+            "kpi39",
+            "kpi46",
+            "kpi84",
+            "kpi11",
+            "kpi8",
+            "kpi118",
+            "kpi73",
+            "kpi113",
+            "kpi149"
+        ],
+        "nodes": [
+            "ADDD_649a920fdf3e6c21e3968e30"
+        ],
+        "nodeChildId": ''
+    }
+    component.filterApplyData['selectedMap'] = {
+      'sprint': [],
+      'release': [],
+      'project': ['ADDD_649a920fdf3e6c21e3968e30']
+    }
+    component.selectedTab = 'my-knowhow';
+    const spy = spyOn(httpService, 'getCommentSummary').and.returnValue(of(fakeCommentList['data']));
+    
+    component.getRecentComments();
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }));
+
+  it('should handle comment summary button click', () => {
+    component.toggleDropdown['commentSummary'] = false;
+    const spy = spyOn(component, 'getRecentComments');
+    component.handleBtnClick();
+    expect(spy).toHaveBeenCalled();
+  });
+
   it('should compile GA data', () => {
     component.selectedFilterArray = fakeSelectedFilterArray;
     const gaArray = [
@@ -1556,6 +1616,6 @@ describe('FilterComponent', () => {
       }
   ]
     expect(component.selectedFilterArray.length).toEqual(gaArray.length);
-  })
+  });
 
 });
