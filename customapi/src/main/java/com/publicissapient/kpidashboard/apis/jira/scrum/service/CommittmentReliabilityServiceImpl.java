@@ -10,11 +10,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -284,11 +285,14 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		if (MapUtils.isNotEmpty(fieldMappingMap) && !duplicateIssues.isEmpty()) {
 			Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
-					.filter(fieldMappingMap::containsKey)
-					.collect(Collectors.toMap(Function.identity(), key -> fieldMappingMap
-							.get(key).getJiraIterationCompletionStatusKpi72()));
-			projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService.getMinimumClosedDateFromConfiguration(duplicateIssues,
-					customFieldMapping);
+					.filter(fieldMappingMap::containsKey).collect(Collectors.toMap(Function.identity(), key -> {
+						FieldMapping fieldMapping = fieldMappingMap.get(key);
+						return Optional.ofNullable(fieldMapping)
+								.map(FieldMapping::getJiraIterationCompletionStatusKpi72)
+								.orElse(Collections.emptyList());
+					}));
+			projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService
+					.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping);
 		}
 
 		Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
