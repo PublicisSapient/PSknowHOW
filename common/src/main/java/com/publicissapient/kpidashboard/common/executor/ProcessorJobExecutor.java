@@ -24,7 +24,6 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -53,7 +52,6 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 	private final String processorName;
 	private List<String> projectsBasicConfigIds;
 	private ExecutionLogContext executionLogContext;
-	private String sprintId;
 
 	@Autowired
 	protected ProcessorJobExecutor(TaskScheduler taskScheduler, String processorName) {
@@ -83,16 +81,8 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 		this.projectsBasicConfigIds = projectsBasicConfigIds;
 	}
 
-	public String getSprintId() {
-		return sprintId;
-	}
-
-	public void setSprintId(String sprintId) {
-		this.sprintId = sprintId;
-	}
-
 	@Override
-	public final void run() {
+	public final synchronized void run() {
 		setMDCContext();
 		log.debug("Running Processor: {}", processorName);
 		T processor = getProcessorRepository().findByProcessorName(processorName);
@@ -113,25 +103,20 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 			processor = getProcessorRepository().save(newProcessor);
 		}
 
-		if (processor.isActive() && StringUtils.isEmpty(sprintId)) {
-			// Do collection run in synchronized way
-			synchronized (this) {
-				processor.setLastSuccess(execute(processor));
-				log.debug("Saving the last executed status as: {} for {} processor!", processor.isLastSuccess(),
-						processorName);
-				// Update lastUpdate timestamp in Processor
-				processor.setUpdatedTime(System.currentTimeMillis());
-				getProcessorRepository().save(processor);
-			}
+		if (processor.isActive()) {
+			// Do collection run
+			processor.setLastSuccess(execute(processor));
+			log.debug("Saving the last executed status as: {} for {} processor!", processor.isLastSuccess(),
+					processorName);
+			// Update lastUpdate timestamp in Processor
+			processor.setUpdatedTime(System.currentTimeMillis());
+			getProcessorRepository().save(processor);
 		}
+	}
 
-		if (!StringUtils.isEmpty(sprintId)) {
-			String sprintID = getSprintId();
-			setSprintId(null);
-			boolean isSuccess = executeSprint(sprintID);
-			log.debug("Saving the last executed status as: {} for {} sprint!", isSuccess, sprintID);
-
-		}
+	public void runSprint(String sprintId) {
+		boolean isSuccess = executeSprint(sprintId);
+		log.debug("Saving the last executed status as: {} for {} sprint!", isSuccess, sprintId);
 	}
 
 	@PostConstruct

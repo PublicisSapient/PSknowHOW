@@ -150,11 +150,6 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 	public boolean executeSprint(String sprintId) {
 
 		long start = System.currentTimeMillis();
-		String uid = UUID.randomUUID().toString();
-		ExecutionLogContext fetchSprintExecutionContext = new ExecutionLogContext();
-		fetchSprintExecutionContext.setRequestId(uid);
-		fetchSprintExecutionContext.setIsCron("false");
-		setExecutionLogContext(fetchSprintExecutionContext);
 
 		psLogData.setProcessorStartTime(DateUtil.convertMillisToDateTime(start));
 		log.info("Jira Processor Started for sprint fetch", kv(CommonConstant.PSLOGDATA, psLogData));
@@ -167,8 +162,6 @@ public class JiraProcessorJobExecutor extends ProcessorJobExecutor<JiraProcessor
 		psLogData.setExecutionStatus(String.valueOf(executionStatus));
 		log.info("Jira execution completed for sprint fetch", kv(CommonConstant.PSLOGDATA, psLogData));
 
-		ExecutionLogContext.getContext().destroy();
-		destroyLogContext();
 		MDC.clear();
 		return executionStatus;
 
