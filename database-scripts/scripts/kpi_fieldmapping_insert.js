@@ -35,7 +35,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Defect Removal Efficiency',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames : {'Workflow Status Mapping' :  ['jiraDefectRemovalStatus'], 'Issue Types Mapping' : ['jiraDefectRemovalIssueType'] }
+        fieldNames : {'Workflow Status Mapping' :  ['jiraDefectRemovalStatus','resolutionTypeForRejection','jiraDefectRejectionStatus'], 'Issue Types Mapping' : ['jiraDefectRemovalIssueType'] }
       },
       {
         kpiId: 'kpi37',
