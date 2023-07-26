@@ -193,7 +193,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 				Set<JiraIssue> totalCompltdInitialIssues = new HashSet<>(totalInitialIssues);
 				totalCompltdInitialIssues = new HashSet<>(
 						CollectionUtils.intersection(totalCompltdInitialIssues, completedIssues));
-
 				sprintWiseCreatedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 						new ArrayList<>(totalIssues));
 				sprintWiseClosedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
@@ -234,7 +233,10 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			}
 
 			Map<String, Double> commitmentHowerMap = new HashMap<>();
-			List<String> uniqueIssues = allJiraIssue .stream().distinct().map(JiraIssue::getTypeName).distinct()
+			List<String> uniqueIssues = allJiraIssue.stream()
+					.map(JiraIssue::getTypeName)
+					.map(item -> item.equalsIgnoreCase("Bug") ? "Defect" : item)
+					.distinct()
 					.collect(Collectors.toList());
 			Map<String, List<JiraIssue>> totalPresentJiraIssueGroup = getGroupByAllIssues(totalPresentJiraIssue);
 			Map<String, List<JiraIssue>> totalPresentCompletedIssueGroup = getGroupByAllIssues(
