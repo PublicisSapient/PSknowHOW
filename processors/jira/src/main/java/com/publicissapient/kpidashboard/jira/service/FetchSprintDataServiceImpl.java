@@ -136,7 +136,7 @@ public class FetchSprintDataServiceImpl {
 				Collections.singletonList(projectBasicConfig), Collections.singletonList(fieldMapping));
 
 		ProjectConfFieldMapping projectConfig = projectMapConfig.get(projectBasicConfig.getProjectName());
-		MDC.put(CommonConstant.PROJECTNAME,projectBasicConfig.getProjectName());
+		MDC.put(CommonConstant.PROJECTNAME, projectBasicConfig.getProjectName());
 
 		JiraAdapter jiraAdapter = getJiraAdapter(projectConfig);
 
@@ -151,7 +151,7 @@ public class FetchSprintDataServiceImpl {
 					sprintClient.processSprints(projectConfig, sprintDetailSet, jiraAdapter, true);
 				}
 			}
-			log.info("Fetched & updated the active sprint {} of proj {}", sprintID,
+			log.debug("Fetched & updated the active sprint {} of proj {}", sprintID,
 					projectBasicConfig.getProjectName());
 
 			SprintDetails updatedSprintDetails = sprintRepository.findBySprintID(sprintID);
@@ -171,10 +171,13 @@ public class FetchSprintDataServiceImpl {
 			// checking if subtask is configured as bug
 			getSubTaskAsBug(fieldMapping, updatedSprintDetails, issuesToUpdate);
 
+			log.debug("Initiating fetch of Jira issues and history of active sprintId: {}", sprintID);
+
 			// fetching & updating the jira_issue & jira_issue_history
 			int count = scrumJiraIssueClientImpl.processesJiraIssuesSprintFetch(projectConfig, jiraAdapter, false,
 					new ArrayList<>(issuesToUpdate));
-			log.info("Fetched & updated {} jira issues of active sprint {}", count, sprintID);
+
+			log.debug("Successfully fetched {} Jira issues and history of active sprintId: {}", count, sprintID);
 
 		} catch (InterruptedException e) {// NOSONAR
 			executionStatus = false;
@@ -266,6 +269,7 @@ public class FetchSprintDataServiceImpl {
 		}
 		return jiraAdapter;
 	}
+
 	private ProcessorJiraRestClient getProcessorRestClient(ProjectConfFieldMapping entry, boolean isOauth,
 			Connection conn, KerberosClient krb5Client) {
 		if (conn.isJaasKrbAuth()) {
