@@ -42,7 +42,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.querydsl.core.types.Constant;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -1651,7 +1650,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	// for fetch, parse & update based on issuesKeys
-	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, // NOSONAR
+	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, //NOSONAR
 			boolean isOffline, List<String> issueKeys) {
 		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
@@ -1715,7 +1714,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		} catch (JSONException e) {
 			log.error("Error while updating Story information in sprintFetch", e,
 					kv(CommonConstant.PSLOGDATA, psLogData));
-		} catch (InterruptedException e) { // NOSONAR
+		} catch (InterruptedException e) { //NOSONAR
 			log.error("Interrupted exception thrown during sprintFetch", e, kv(CommonConstant.PSLOGDATA, psLogData));
 			processorFetchingComplete = false;
 		} finally {
