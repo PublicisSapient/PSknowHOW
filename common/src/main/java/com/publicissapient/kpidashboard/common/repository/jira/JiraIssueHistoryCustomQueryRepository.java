@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.repository.jira;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Repository;
 
@@ -67,7 +68,7 @@ public interface JiraIssueHistoryCustomQueryRepository {
 			Map<String, Map<String, Object>> uniqueProjectMap);
 
 	List<JiraIssueCustomHistory> findByFilterAndFromReleaseMap(List<String> basicProjectConfigId,
-			List<String> releaseList);
+			List<Pattern> releaseList);
 	/**
 	 *  find jira issue based on filter and date
 	 * @param mapOfFilters

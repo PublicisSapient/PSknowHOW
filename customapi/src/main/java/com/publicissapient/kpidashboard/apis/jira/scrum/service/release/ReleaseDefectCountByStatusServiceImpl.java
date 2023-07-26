@@ -146,6 +146,9 @@ public class ReleaseDefectCountByStatusServiceImpl extends JiraKPIService<Intege
 				Map<String, Integer> statusCountMap = new HashMap<>();
 				getStatusWiseCount(statusWiseList, statusCountMap);
 				if (MapUtils.isNotEmpty(statusCountMap)) {
+					Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
+					FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+
 					List<DataCount> trendValueListOverAll = new ArrayList<>();
 					DataCount overallData = new DataCount();
 					int sumOfDefectsCount = statusCountMap.values().stream().mapToInt(Integer::intValue).sum();
@@ -160,7 +163,7 @@ public class ReleaseDefectCountByStatusServiceImpl extends JiraKPIService<Intege
 					middleOverallData.setData(latestRelease.getProjectFilter().getName());
 					middleOverallData.setValue(trendValueListOverAll);
 					middleTrendValueListOverAll.add(middleOverallData);
-					populateExcelDataObject(requestTrackerId, excelData, totalDefects);
+					populateExcelDataObject(requestTrackerId, excelData, totalDefects,fieldMapping);
 					IterationKpiValue filterDataOverall = new IterationKpiValue(CommonConstant.OVERALL,
 							middleTrendValueListOverAll);
 					filterDataList.add(filterDataOverall);
@@ -177,10 +180,10 @@ public class ReleaseDefectCountByStatusServiceImpl extends JiraKPIService<Intege
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> jiraIssueList) {
+			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
-			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData);
+			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}
 

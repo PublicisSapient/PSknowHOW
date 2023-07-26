@@ -35,7 +35,7 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Defect Removal Efficiency',
 		kpiSource:'Jira',
         type: ['Scrum'],
-        fieldNames : {'Workflow Status Mapping' :  ['jiraDefectRemovalStatus'], 'Issue Types Mapping' : ['jiraDefectRemovalIssueType'] }
+        fieldNames : {'Workflow Status Mapping' :  ['jiraDefectRemovalStatus','resolutionTypeForRejection','jiraDefectRejectionStatus'], 'Issue Types Mapping' : ['jiraDefectRemovalIssueType'] }
       },
       {
         kpiId: 'kpi37',
@@ -522,5 +522,20 @@ db.getCollection('kpi_fieldmapping').insert(
         kpiName: 'Flow Distribution',
         type: ['Other'],
         fieldNames : { }
-      }
+      },
+     {
+         kpiId: 'kpi151',
+         kpiName: 'Backlog Count By Status',
+   		 kpiSource: 'Jira',
+         type: ['Other'],
+         fieldNames : {'Workflow Status Mapping' : ['jiraDod','jiraDefectRejectionStatus','jiraLiveStatus'] }
+     },
+     {
+         kpiId: 'kpi152',
+         kpiName: 'Backlog Count By Issue Type',
+   		 kpiSource: 'Jira',
+         type: ['Other'],
+         fieldNames : {'Workflow Status Mapping' : ['jiraDod','jiraDefectRejectionStatus','jiraLiveStatus'] }
+     }
+
 	  ]);

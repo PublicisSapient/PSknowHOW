@@ -34,14 +34,10 @@ describe('FeedbackComponent', () => {
   });
 
   it('should save feedback successfully', fakeAsync(() => {
-    component.userName = "dummy name";
     const obj = {
-      "feedbackType": "feedback",
-      "category": "UI",
       "feedback": "test",
-      "username": "SUPERADMIN"
     };
-    const res = { "message": "Your request has been submitted", "success": true, "data": { "username": "SUPERADMIN", "feedback": "test", "category": "UI", "feedbackType": "feedback" } }
+    const res = { "message": "Your request has been submitted", "success": true, "data": { "feedback": "test" } }
     spyOn(httpService, 'submitFeedbackData').and.returnValue(of(res));
     component.save();
     tick(3000);
@@ -49,22 +45,9 @@ describe('FeedbackComponent', () => {
     expect(component.formMessage).toEqual('');
   }))
 
-  // it('should set category Info', fakeAsync(() => {
-  //   const response = {
-  //     message: 'Found all feedback categories',
-  //     success: true,
-  //     data: [
-  //       'EMM',
-  //       'Additional KPI',
-  //       'Tool Integration',
-  //       'Admin',
-  //       'UI',
-  //       'Other'
-  //     ]
-  //   };
-  //   const spy = spyOn(httpService, 'getFeedbackCategory').and.returnValue(of(response));
-  //   component.getCategory();
-  //   tick();
-  //   expect(component.area).toEqual(response.data);
-  // }));
+  it('should toggle flag value', fakeAsync(() => {
+    component.feedback = true;
+    component.toggleFlag();
+    expect(component.feedback).toBe(false);
+  }));
 });

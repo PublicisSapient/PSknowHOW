@@ -34,6 +34,7 @@ import { environment } from 'src/environments/environment';
 import { SharedService } from '../../services/shared.service';
 import { MyprofileComponent } from '../../config/profile/myprofile/myprofile.component';
 import { of } from 'rxjs';
+import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 
 describe('LoginComponent', () => {
 
@@ -44,6 +45,7 @@ describe('LoginComponent', () => {
   let httpreq;
   let httpService;
   let sharedService;
+  let ga;
   const fakeLogin = {
     instance_owner: 'kbakshi@sapient.com',
     user_email: 'test@gmail.com',
@@ -102,6 +104,7 @@ describe('LoginComponent', () => {
       httpService = TestBed.get(HttpService);
       sharedService = TestBed.get(SharedService);
       httpMock = TestBed.get(HttpTestingController);
+      ga = TestBed.get(GoogleAnalyticsService);
       fixture.detectChanges();
   }));
 
@@ -202,5 +205,38 @@ describe('LoginComponent', () => {
     expect(component.redirectToProfile).toBeTruthy();
   });
 
-
+  it('should perform login successfully', ()=>{
+    let data = {
+      "headers": {
+          "normalizedNames": {},
+          "lazyUpdate": null,
+          "lazyInit": null,
+          "headers": {}
+      },
+      "status": 200,
+      "statusText": "OK",
+      "url": "https://domain-name/api/login",
+      "ok": true,
+      "type": 4,
+      "body": {
+          "user_email": "test@gmail.com",
+          "projectsAccess": [],
+          "user_name": "dummy_user",
+          "X-Authentication-Token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJTVVBFUkFETUlOIiwiZGV0YWlscyI6IlNUQU5EQVJEIiwicm9sZXMiOlsiUk9MRV9TVVBFUkFETUlOIl0sImV4cCI6MTY4OTE0Nzc1OX0.y9uAnMjyNfsqeCxHXQb2zX6akOD_kAeM2AmmbHEyrPcAi7eKtS6yyChwtLQ_BsNM3u56ChdovxBXjNA2LjdLyQ",
+          "authorities": [
+              "ROLE_SUPERADMIN"
+          ]
+      }
+  }
+    const loginType = 'AD';
+    localStorage.setItem('loginType', loginType);
+    component.adLogin = true;
+    spyOn(ga, 'setLoginMethod');
+    sharedService.setCurrentUserDetails({user_email:"abc@gmail.com"});
+    sharedService.setCurrentUserDetails({'projectsAccess':[]});
+    sharedService.setCurrentUserDetails({authorities: ['ROLE_SUPERADMIN']});
+    const isRedirect = spyOn(component, 'redirectToProfile').and.returnValue(false);
+    component.performLogin(data, 'dummy_user', 'dummy_password', 'AD')
+    expect(isRedirect).toHaveBeenCalled();
+  })
 });
