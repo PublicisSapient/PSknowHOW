@@ -39,8 +39,10 @@ import { interval, Subject } from 'rxjs';
 })
 export class FilterComponent implements OnInit, OnDestroy {
   @ViewChild('selector') ngselect: NgSelectComponent;
-  @ViewChild('toggleButton') toggleButton: ElementRef;
-  @ViewChild('drpmenu') drpmenu: ElementRef;
+  @ViewChild('showHide') showHide: ElementRef;
+  @ViewChild('commentSummary') commentSummary: ElementRef;
+  @ViewChild('showHideDdn') showHideDdn: ElementRef;
+  @ViewChild('commentSummaryDdn') commentSummaryDdn: ElementRef;
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
 
@@ -62,7 +64,10 @@ export class FilterComponent implements OnInit, OnDestroy {
   filterType = 'Default';
   maxDate = new Date(); // setting max date user can select in calendar
   showIndicator = false;
-  toggleDropdown = false;
+  toggleDropdown: object = {
+    'showHide': false,
+    'commentSummary': false
+  };
   kpiListData: any = {};
   kpiList = [];
   showKpisList = [];
@@ -122,6 +127,10 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedRelease = {};
   ssoLogin = environment.SSO_LOGIN;
   lastSyncData: object = {};
+  commentList: Array<object> = [];
+  showCommentPopup:boolean = false;
+  showSpinner: boolean = false;
+  kpiObj:object = {};
 
   constructor(
     private service: SharedService,
@@ -164,6 +173,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.lastSyncData ={};
         this.subject.next(true);
         this.selectedTab = data.selectedTab;
+        if(this.toggleDropdown['commentSummary']){
+          this.toggleDropdown['commentSummary'] = false;
+        }
         if (this.selectedTab?.toLowerCase() === 'iteration') {
           this.service.setEmptyFilter();
         }
@@ -245,8 +257,10 @@ export class FilterComponent implements OnInit, OnDestroy {
   toggleFilter() {
     // getting document click event from dashboard and check if it is outside click of the filter and if filter is open then closing it
     this.service.getClickedItem().subscribe((target) => {
-      if (target && target !== this.toggleButton?.nativeElement && target?.closest('.kpi-dropdown') !== this.drpmenu?.nativeElement) {
-        this.toggleDropdown = false;
+      for(let key in this.toggleDropdown){
+        if(target && target !== this[key].nativeElement && target?.closest('.'+key+'Ddn') !== this[key+'Ddn']?.nativeElement){
+          this.toggleDropdown[key] = false;
+        }
       }
       if (Object.keys(this.toggleDropdownObj)?.length > 0) {
         for (const key in this.toggleDropdownObj) {
@@ -779,7 +793,7 @@ export class FilterComponent implements OnInit, OnDestroy {
             detail: '',
           });
           this.service.setDashConfigData(this.kpiListData);
-          this.toggleDropdown = false;
+          this.toggleDropdown['showHide'] = false;
         } else {
           this.messageService.add({
             severity: 'error',
@@ -1434,6 +1448,50 @@ export class FilterComponent implements OnInit, OnDestroy {
   onUpdateKPI(){
     this.lastSyncData ={};
     this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+  }
+
+  getRecentComments(){
+    this.showSpinner = true;
+    let reqObj = {
+      "level": this.filterApplyData?.['level'],
+      "nodeChildId": this.filterApplyData?.['selectedMap']['sprint']?.[0] || this.filterApplyData?.['selectedMap']['release']?.[0] || "",
+      "kpiIds": this.showKpisList?.map((item) => item.kpiId),
+      "nodes":[]
+    }
+
+    this.showKpisList.forEach(x => {
+      this.kpiObj[x.kpiId] = x.kpiName;
+    });
+    
+    if(this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'release'){
+      reqObj['nodes'] = this.filterData.filter(x => x.nodeId == this.filterApplyData?.['ids'][0])[0]?.parentId;
+    }else{
+      reqObj['nodes'] = [...this.filterApplyData?.['selectedMap']['project']];
+    }
+
+    this.httpService.getCommentSummary(reqObj).subscribe((response) => {
+      if(response['success']){
+        this.commentList = response['data'];
+      }else{
+        this.commentList = [];
+      }
+      this.showSpinner = false;
+    }, error => {
+      console.log(error);
+      this.commentList = [];
+      this.showSpinner = false;
+    })
+  }
+
+  getNodeName(nodeId){
+    return this.trendLineValueList.filter((x) => x.nodeId == nodeId)[0]?.nodeName;
+  }
+
+  handleBtnClick(){
+    this.toggleDropdown['commentSummary'] = !this.toggleDropdown['commentSummary'];
+    if(this.toggleDropdown['commentSummary']){
+      this.getRecentComments(); 
+    }
   }
 
   compileGAData() {

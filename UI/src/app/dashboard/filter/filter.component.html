@@ -203,12 +203,12 @@
             <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration' || selectedTab?.toLowerCase() === 'release')"
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
-                  class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn p-mr-2"
-                  #toggleButton [ngClass]="{'active': toggleDropdown,'disabled': noProjects}" (click)="toggleDropdown = !toggleDropdown">
+                  class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn"
+                  #showHide [ngClass]="{'active': toggleDropdown['showHide'],'disabled': noProjects}" (click)="toggleDropdown['showHide'] = !toggleDropdown['showHide']">
                   Show/Hide
                </div>
-               <div *ngIf="toggleDropdown && showKpisList && showKpisList?.length > 0"
-                  class="position-absolute kpi-dropdown" #drpmenu>
+               <div *ngIf="toggleDropdown['showHide'] && showKpisList && showKpisList?.length > 0"
+                  class="position-absolute showHideDdn" #showHideDdn>
                   <form [formGroup]="kpiForm" (ngSubmit)="submitKpiConfigChange()">
 
                      <div class="p-d-flex p-align-center p-p-3 border-bottom">
@@ -227,7 +227,7 @@
                      <div class="p-p-3 border-top p-text-right">
                         <button pButton pRipple label="Cancel" icon="pi pi-times"
                            class="p-button-secondary p-button-text p-mr-2 p-button-sm"
-                           (click)="toggleDropdown = false"></button>
+                           (click)="toggleDropdown['showHide'] = false"></button>
 
                         <button type="submit" pButton pRipple class="p-button-sm p-button-success p-button-raised"
                            icon="pi pi-check" iconPos="left" label="Save"></button>
@@ -238,6 +238,44 @@
             </div>
 
             <!-- /show/hide kpi's ends -->
+            <!-- comments icon start -->
+            <div class="position-relative">
+               <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn p-ml-2"  *ngIf="selectedTab?.toLowerCase() != 'maturity'"
+                  [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project' 
+               || (filterForm.get('selectedLevel')?.value == 'project' && selectedFilterArray?.length > 1)}">
+                  <img #commentSummary class="p-p-2 " (click)="handleBtnClick();"
+                  src="../../../assets/img/ico-comments.svg" alt="Comments"/>
+               </div>
+               <div #commentSummaryDdn id="comment-popup" class="commentSummaryDdn" *ngIf="toggleDropdown['commentSummary']">
+                  <div class="comment-inner-section">
+                     <i *ngIf="showSpinner" class="fas fa-circle-notch icon-spinner"></i>
+                     <ng-container *ngIf="commentList?.length > 0 && !showSpinner; else noComments">
+                        <h5 class="p-m-0 font-grey font-bold">Latest 10 comments</h5>
+                        <h5 class="p-mb-2 p-mt-2 font-grey">
+                           {{getNodeName(filterForm.get('selectedTrendValue')?.value)}}
+                           <span *ngIf="selectedTab?.toLowerCase() == 'iteration' && (selectedSprint | json) != '{}'">
+                              {{' >> ' + selectedSprint['nodeName']}}
+                           </span>
+                           <span *ngIf="selectedTab?.toLowerCase() == 'release' && (selectedRelease | json) != '{}'">
+                              {{' >> ' + selectedRelease['nodeName']}}
+                           </span>
+                        </h5>
+                        <div *ngFor="let comment of commentList">
+                           <h5 class="comment-heading font-small p-mb-1">{{kpiObj[comment.kpiId]}}</h5>
+                           <div class="comment-author font-small">
+                              <b>{{comment?.commentBy}}</b> 
+                              {{comment?.commentOn}}
+                           </div>
+                           <p class="comment-msg p-mt-1">{{comment?.comment}}</p>
+                        </div>
+                     </ng-container>
+                  </div>
+                  <ng-template #noComments>
+                     <h5 class="p-m-0 font-grey" *ngIf="!showSpinner">No comments</h5>
+                  </ng-template>
+               </div>
+            </div>
+            <!-- /comments icon end -->
             <!-- Notification button start -->
             <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn noti-btn-wraper"
                (click)="notification.toggle($event)" role="button">
@@ -321,11 +359,11 @@
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
                   class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn p-mr-2"
-                  #toggleButton [ngClass]="{'active': toggleDropdown,'disabled': noProjects}" (click)="toggleDropdown = !toggleDropdown">
+                  #showHide [ngClass]="{'active': toggleDropdown['showHide'],'disabled': noProjects}" (click)="toggleDropdown = !toggleDropdown">
                   Show/Hide
                </div>
-               <div *ngIf="toggleDropdown && showKpisList && showKpisList?.length > 0"
-                  class="position-absolute kpi-dropdown" #drpmenu>
+               <div *ngIf="toggleDropdown['showHide'] && showKpisList && showKpisList?.length > 0"
+                  class="position-absolute showHideDdn" #showHideDdn>
                   <form [formGroup]="kpiForm" (ngSubmit)="submitKpiConfigChange()">
 
                      <div class="p-d-flex p-align-center p-p-3 border-bottom">
@@ -344,7 +382,7 @@
                      <div class="p-p-3 border-top p-text-right">
                         <button pButton pRipple label="Cancel" icon="pi pi-times"
                            class="p-button-secondary p-button-text p-mr-2 p-button-sm"
-                           (click)="toggleDropdown = false"></button>
+                           (click)="toggleDropdown['showHide'] = false"></button>
 
                         <button type="submit" pButton pRipple class="p-button-sm p-button-success p-button-raised"
                            icon="pi pi-check" iconPos="left" label="Save"></button>

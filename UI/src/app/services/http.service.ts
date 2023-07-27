@@ -159,7 +159,7 @@ export class HttpService {
   private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
   private saveAssigneeForProjectUrl = this.baseUrl + '/api/capacity/assignee';
   private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
-
+  private commentsSummaryUrl = this.baseUrl + '/api/comments/commentsSummary';
   private jiraTemplateUrl = this.baseUrl + '/api/templates';
   private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData';
   private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
@@ -1111,5 +1111,8 @@ export class HttpService {
 
   getactiveIterationfetchStatus(sprintId){
     return this.http.get(this.activeIterationfetchStatusUrl+'/' + sprintId);
+  }
+  getCommentSummary(data) {
+    return this.http.post<object>(this.commentsSummaryUrl, data);
   }
 }

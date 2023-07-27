@@ -78,8 +78,7 @@ public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, Lis
 
 		if (leafNode != null) {
 			log.info("BackLog Count By Status kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
+			List<JiraIssue> totalJiraIssue = getFilteredReleaseJiraIssuesFromBaseClass(new HashMap<>());
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 		}
 
@@ -149,7 +148,8 @@ public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, Lis
 			// exclude the issue from total jiraIssues based on DOD status and Defect
 			// Rejection Status
 			if (CollectionUtils.isNotEmpty(excludeStatuses)) {
-				Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase).collect(Collectors.toSet());
+				Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase)
+						.collect(Collectors.toSet());
 				jiraIssues = jiraIssues.stream()
 						.filter(jiraIssue -> !excludeStatus.contains(jiraIssue.getJiraStatus().toUpperCase()))
 						.collect(Collectors.toList());
@@ -188,8 +188,8 @@ public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, Lis
 					kpiElement.setModalHeads(KPIExcelColumn.BACKLOG_COUNT_BY_STATUS.getColumns());
 					kpiElement.setExcelColumns(KPIExcelColumn.BACKLOG_COUNT_BY_STATUS.getColumns());
 					kpiElement.setExcelData(excelData);
-					log.info("BacklogCountByStatusServiceImpl -> request id : {} total jira Issues : {}", requestTrackerId,
-							filterDataList.get(0));
+					log.info("BacklogCountByStatusServiceImpl -> request id : {} total jira Issues : {}",
+							requestTrackerId, filterDataList.get(0));
 				}
 
 			}
