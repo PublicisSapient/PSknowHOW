@@ -20,7 +20,7 @@ import { ComponentFixture, ComponentFixtureAutoDetect, fakeAsync, inject, TestBe
 
 import { FilterComponent } from './filter.component';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';

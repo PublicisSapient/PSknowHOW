@@ -167,12 +167,6 @@
 
          <div class="p-d-flex p-align-center">
             <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
-               <!-- <span [ngClass]="{'active-state':(selectedProjectLastSyncStatus && selectedProjectLastSyncStatus == 'SUCCESS'),
-                  'traceLog-fail-font': (selectedProjectLastSyncStatus && selectedProjectLastSyncStatus != 'SUCCESS')}"> 
-                  {{selectedProjectLastSyncStatus && selectedProjectLastSyncStatus != '' 
-                  ?  
-                  : ""}}
-               </span> -->
                <div class="p-d-flex p-align-center p-jc-end">
                   <img *ngIf="selectedProjectLastSyncStatus === 'SUCCESS'" src="../../../assets/img/icon-success.svg" alt="Success" class="p-mr-1"/>
                   <img *ngIf="!((lastSyncData | json) == '{}') && !lastSyncData?.fetchSuccessful && !lastSyncData?.errorInFetch" src="../../../assets/img/icon-time.svg" alt="Time" class="p-mr-1" />

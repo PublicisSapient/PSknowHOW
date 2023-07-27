@@ -851,6 +851,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.subject.next(true);
     this.filterApplyData = [];
     this.service.setEmptyFilter();
     this.service.setSelectedLevel({});
@@ -1189,7 +1190,6 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.selectedProjectLastSyncStatus = "";
       this.selectedProjectLastSyncDate = "NA";
    }
-  //  this.fetchData();
   this.fetchActiveIterationStatus();
   }
   setSelectedDateType(label: string) {
