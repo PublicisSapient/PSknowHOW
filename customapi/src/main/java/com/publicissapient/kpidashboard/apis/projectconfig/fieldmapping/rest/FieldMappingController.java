@@ -120,6 +120,7 @@ public class FieldMappingController {
 		} else {
 			response = new ServiceResponse(true, "mappings are " + (result ? "not " : "") + "same as "
 					+ (projectToolConfig != null ? "already maintained" : "default") + " mapping", result);
+
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
