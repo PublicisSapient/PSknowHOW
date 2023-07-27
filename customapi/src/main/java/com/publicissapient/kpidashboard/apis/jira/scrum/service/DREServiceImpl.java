@@ -514,13 +514,13 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					&& null != jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE)
 					&& ((sprintEndDate.isAfter(jiraCreatedDate)
 					&& jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE).isAfter(sprintEndDate)) ||
-					(DateUtil.isWithinDateRangeWithTime(jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE),
+					(DateUtil.isWithinDateTimeRange(jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE),
 							sprintStartDate, sprintEndDate)))) {
 				totalSubTask.add(jiraIssue);
 			}
 			if (CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) && jiraIssue.getSprintIdList()
 					.contains(sprintDetail.getSprintID().split("_")[0]) && null != jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE)
-					&& DateUtil.isWithinDateRangeWithTime(jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE),
+					&& DateUtil.isWithinDateTimeRange(jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE),
 					sprintStartDate, sprintEndDate)) {
 				totalSubTask.add(jiraIssue);
 			}

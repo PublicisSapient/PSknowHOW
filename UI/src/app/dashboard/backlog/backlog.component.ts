@@ -186,9 +186,14 @@ export class BacklogComponent implements OnInit, OnDestroy{
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Backlog');
-        if (this.kpiJira?.kpiList?.length > 0) {
-          this.postJiraKpi(this.kpiJira, 'jira');
+        const currentPayload = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Backlog');
+        if(Object.keys(this.kpiJira).length){
+          this.kpiJira = {...currentPayload,kpiList : currentPayload.kpiList.concat(this.kpiJira.kpiList)}
+        }else{
+          this.kpiJira = {...currentPayload}
+        }
+        if (currentPayload?.kpiList?.length > 0) {
+          this.postJiraKpi(currentPayload, 'jira');
         }
       }
     });
@@ -202,10 +207,11 @@ export class BacklogComponent implements OnInit, OnDestroy{
     });
 
     const kpi3 = postData.kpiList.find(kpi => kpi.kpiId === 'kpi3');
+    if(kpi3)(
     kpi3['filterDuration'] = {
       duration:'WEEKS',
       value:2
-    };
+    });
 
     this.jiraKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {

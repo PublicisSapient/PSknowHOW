@@ -32,13 +32,13 @@
                     </label>
                     <ng-container *ngIf="!field?.nestedFields else nestedFieldContainer">
                     <div class="w-60vw">
-                        <app-field-mapping-field [fieldConfig]="field" [formControlName]="field['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
+                        <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData"  [fieldConfig]="field" [formControlName]="field['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
                     </div>
                     </ng-container>
                     <ng-template #nestedFieldContainer>
                         <div class="fields-container p-p-2 w-60vw">
                             <div class="p-d-flex p-justify-between" >
-                                <app-field-mapping-field [fieldConfig]="field" [formControlName]="field['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
+                                <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData"  [fieldConfig]="field" [formControlName]="field['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
                             </div>
                             <div class="p-m-2"  *ngFor="let nestedField of field['nestedFields']">
                                 <ng-container *ngIf="!nestedField['filterGroup'] || (nestedField['filterGroup'] && nestedField['filterGroup'].includes(form.value[field['fieldName']]))">
@@ -49,7 +49,7 @@
                                       <hr *ngIf="nestedField?.tooltip?.kpiImpacted">
                                         </span>' tooltipPosition="top" tooltipEvent="hover"
                                         tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
-                                <app-field-mapping-field [fieldConfig]="nestedField" [formControlName]="nestedField['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
+                                <app-field-mapping-field [fieldMappingMetaData]="fieldMappingMetaData"  [fieldConfig]="nestedField" [formControlName]="nestedField['fieldName']" (onSearch)="showDialogToAddValue($event)"></app-field-mapping-field>
                                 </ng-container>
                             </div>
                         </div>

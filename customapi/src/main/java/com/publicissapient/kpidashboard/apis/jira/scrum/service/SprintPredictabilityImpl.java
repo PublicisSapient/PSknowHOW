@@ -181,11 +181,14 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 			if (MapUtils.isNotEmpty(fieldMappingMap) && !duplicateIssues.isEmpty()) {
 				Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
-						.filter(fieldMappingMap::containsKey)
-						.collect(Collectors.toMap(Function.identity(), key -> fieldMappingMap
-								.get(key).getJiraIterationCompletionStatusKpi5()));
-				projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService.getMinimumClosedDateFromConfiguration(duplicateIssues,
-						customFieldMapping);
+						.filter(fieldMappingMap::containsKey).collect(Collectors.toMap(Function.identity(), key -> {
+							FieldMapping fieldMapping = fieldMappingMap.get(key);
+							return Optional.ofNullable(fieldMapping)
+									.map(FieldMapping::getJiraIterationCompletionStatusKpi5)
+									.orElse(Collections.emptyList());
+						}));
+				projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService
+						.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping);
 			}
 
 			Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;

@@ -164,7 +164,7 @@ describe('KpiCardComponent', () => {
       shown: true
     };
 
-    const response = { kpi3: ['default'] };
+    const response = { kpi3: ['default'],action : "update" };
     sharedService.setKpiSubFilterObj(response);
     component.ngOnInit();
     tick();

@@ -2,6 +2,8 @@ package com.publicissapient.kpidashboard.apis.comments.service;
 
 import static com.publicissapient.kpidashboard.common.util.DateUtil.dateTimeFormatter;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -11,8 +13,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentHistoryRepositoryCustom;
-import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentRepositoryCustom;
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,12 @@ import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
+import com.publicissapient.kpidashboard.common.model.comments.CommentViewResponseDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
 import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentHistoryRepositoryCustom;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentRepositoryCustom;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
 
@@ -65,13 +68,15 @@ public class CommentsServiceImpl implements CommentsService {
 	 */
 	@Override
 	public Map<String, Object> findCommentByKPIId(String node, String level, String nodeChildId, String kpiId) {
-		//fetching comments from history which are not deleted
-		KpiCommentsHistory kpiComments = kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, nodeChildId, kpiId);
+		// fetching comments from history which are not deleted
+		KpiCommentsHistory kpiComments = kpiCommentsHistoryRepository.findByNodeAndLevelAndNodeChildIdAndKpiId(node,
+				level, nodeChildId, kpiId);
 
 		Map<String, Object> mappedCollection = new LinkedHashMap<>();
 		if (null != kpiComments) {
 			log.info("Received all matching comment from DB, comments size: {}", kpiComments);
-			List<CommentsInfo> finalCommentsInfo = kpiComments.getCommentsInfo().stream().filter(info->!info.isDeleted()).collect(Collectors.toList());
+			List<CommentsInfo> finalCommentsInfo = kpiComments.getCommentsInfo().stream()
+					.filter(info -> !info.isDeleted()).collect(Collectors.toList());
 			mappedCollection.put("node", node);
 			mappedCollection.put("level", level);
 			mappedCollection.put("nodeChildId", nodeChildId);
@@ -85,13 +90,14 @@ public class CommentsServiceImpl implements CommentsService {
 	@Override
 	public Map<String, Integer> findCommentByBoard(List<String> node, String level, String nodeChildId,
 			List<String> kpiIds) {
-		List<KpiCommentsHistory> kpiCommentsList = kpiCommentsHistoryRepository.findCommentsByBoard(node, level, nodeChildId, kpiIds);
+		List<KpiCommentsHistory> kpiCommentsList = kpiCommentsHistoryRepository.findCommentsByBoard(node, level,
+				nodeChildId, kpiIds);
 		Map<String, Integer> hierarchyWiseComments = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(kpiCommentsList)) {
 			kpiCommentsList.stream().collect(Collectors.groupingBy(KpiCommentsHistory::getKpiId))
 					.forEach((kpiId, commentsList) -> hierarchyWiseComments.merge(kpiId, commentsList.stream()
-									.flatMap(comment -> comment.getCommentsInfo().stream().filter(info->!info.isDeleted())).collect(Collectors.toList()).size(),
-							Integer::sum));
+							.flatMap(comment -> comment.getCommentsInfo().stream().filter(info -> !info.isDeleted()))
+							.collect(Collectors.toList()).size(), Integer::sum));
 		}
 		return hierarchyWiseComments;
 	}
@@ -100,6 +106,40 @@ public class CommentsServiceImpl implements CommentsService {
 	public void deleteComments(String commentId) {
 		kpiCommentsCustomRepository.deleteByCommentId(commentId);
 		kpiCommentsHistoryCustomRepository.markCommentDelete(commentId);
+	}
+
+	/**
+	 *
+	 * @param nodes
+	 * @param level
+	 * @param nodeChildId
+	 * @param kpiIds
+	 * @return
+	 */
+	@Override
+	public List<CommentViewResponseDTO> findLatestCommentSummary(List<String> nodes, String level, String nodeChildId,
+			List<String> kpiIds) {
+		List<KpiCommentsHistory> kpiCommentsList = kpiCommentsHistoryRepository.findCommentsByBoard(nodes, level,
+				nodeChildId, kpiIds);
+
+		if (CollectionUtils.isNotEmpty(kpiCommentsList)) {
+			return kpiCommentsList.stream().flatMap(kpiComment -> kpiComment.getCommentsInfo().stream()
+					.filter(commentsInfo -> !commentsInfo.isDeleted()).map(commentsInfo -> {
+						CommentViewResponseDTO commentViewResponseDTO = new CommentViewResponseDTO();
+						commentViewResponseDTO.setKpiId(kpiComment.getKpiId());
+						commentViewResponseDTO.setNode(kpiComment.getNode());
+						commentViewResponseDTO.setLevel(kpiComment.getLevel());
+						commentViewResponseDTO.setNodeChildId(kpiComment.getNodeChildId());
+						commentViewResponseDTO.setComment(commentsInfo.getComment());
+						commentViewResponseDTO.setCommentId(commentsInfo.getCommentId());
+						commentViewResponseDTO.setCommentOn(commentsInfo.getCommentOn());
+						commentViewResponseDTO.setCommentBy(commentsInfo.getCommentBy());
+						return commentViewResponseDTO;
+					})).sorted(Comparator.comparing(CommentViewResponseDTO::getCommentOn).reversed())
+					.limit(customApiConfig.getLatestKpiCommentsSummary()).collect(Collectors.toList());
+		} else {
+			return new ArrayList<>();
+		}
 	}
 
 	/**
@@ -151,7 +191,8 @@ public class CommentsServiceImpl implements CommentsService {
 		List<CommentsInfo> newCommentsInfoHistory = kpiCommentsHistory.getCommentsInfo();
 
 		try {
-			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, nodeChildId, kpiId);
+			KPIComments matchedKpiComments = kpiCommentsRepository.findCommentsByFilter(node, level, nodeChildId,
+					kpiId);
 			KpiCommentsHistory matchedKpiCommentsHistory = kpiCommentsHistoryRepository
 					.findByNodeAndLevelAndNodeChildIdAndKpiId(node, level, nodeChildId, kpiId);
 
@@ -183,24 +224,23 @@ public class CommentsServiceImpl implements CommentsService {
 	 */
 	private void reMappingOfKpiComments(KPIComments matchedKpiComment, List<CommentsInfo> newCommentsInfo) {
 		List<CommentsInfo> commentsInfo = matchedKpiComment.getCommentsInfo();
-			int commentsInfoSize = commentsInfo.size();
-			int perKpiMaxCommentsStoreCount = customApiConfig.getKpiCommentsMaxStoreCount();
-			if (commentsInfoSize < perKpiMaxCommentsStoreCount) {
-				newCommentsInfo.addAll(commentsInfo);
-				matchedKpiComment.setCommentsInfo(newCommentsInfo);
-				kpiCommentsRepository.save(matchedKpiComment);
-				log.debug("Saved new comment & re-arranged existing comments into kpi_comments collection {}",
-						matchedKpiComment);
+		int commentsInfoSize = commentsInfo.size();
+		int perKpiMaxCommentsStoreCount = customApiConfig.getKpiCommentsMaxStoreCount();
+		if (commentsInfoSize < perKpiMaxCommentsStoreCount) {
+			newCommentsInfo.addAll(commentsInfo);
+			matchedKpiComment.setCommentsInfo(newCommentsInfo);
+			kpiCommentsRepository.save(matchedKpiComment);
+			log.debug("Saved new comment & re-arranged existing comments into kpi_comments collection {}",
+					matchedKpiComment);
 
-			} else {
-				commentsInfo.remove(commentsInfoSize - 1);
-				newCommentsInfo.addAll(commentsInfo);
-				matchedKpiComment.setCommentsInfo(newCommentsInfo);
-				kpiCommentsRepository.save(matchedKpiComment);
-				log.debug(
-						"Old comments removed, saved new comment & re-arranged comments into kpi_comments collection {}",
-						matchedKpiComment);
-			}
+		} else {
+			commentsInfo.remove(commentsInfoSize - 1);
+			newCommentsInfo.addAll(commentsInfo);
+			matchedKpiComment.setCommentsInfo(newCommentsInfo);
+			kpiCommentsRepository.save(matchedKpiComment);
+			log.debug("Old comments removed, saved new comment & re-arranged comments into kpi_comments collection {}",
+					matchedKpiComment);
+		}
 	}
 
 	/**

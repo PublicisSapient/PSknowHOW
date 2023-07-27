@@ -158,7 +158,11 @@ db.getCollection('kpi_master').insertMany(
  //7.4 changes
 
  //-------------------- kpi detail changes for DTS-25745 change in both the DRE operands and field names in field mappings-------
+ //-------------------- Backlog KPI divided in two groups to fix performace issue
  const bulkUpdateKpiMaster = [];
+ const kpiIdsToUpdate = ["kpi129", "kpi138", "kpi3", "kpi148", "kpi152"];
+ const newGroupId = 11;
+
  bulkUpdateKpiMaster.push({
      updateMany: {
          filter: {
@@ -170,6 +174,17 @@ db.getCollection('kpi_master').insertMany(
          }
      }
  });
+
+ bulkUpdateKpiMaster.push({
+     updateMany: {
+         filter: {
+             "kpiId": { $in: kpiIdsToUpdate }
+         },
+         update: {
+             { $set: { "groupId": newGroupId } }
+         }
+     }
+});
 
  //bulk write to update kpiMaster
  if (bulkUpdateKpiMaster.length > 0) {

@@ -2479,7 +2479,7 @@ db.getCollection('kpi_master').insertMany(
     "defaultOrder": 2,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
-    "groupId": 10,
+    "groupId": 11,
     "thresholdValue": "",
     "kanban": false,
     "chartType": null,
@@ -2795,7 +2795,7 @@ db.getCollection('kpi_master').insertMany(
     "defaultOrder": 8,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
-    "groupId": 10,
+    "groupId": 11,
     "thresholdValue": "",
     "kanban": false,
     "chartType": null,
@@ -2835,7 +2835,7 @@ db.getCollection('kpi_master').insertMany(
     "defaultOrder": 1,
     "kpiUnit": "Count",
     "kpiSource": "Jira",
-    "groupId": 10,
+    "groupId": 11,
     "kanban": false,
     "chartType": "",
     "kpiInfo": {
@@ -2883,7 +2883,7 @@ db.getCollection('kpi_master').insertMany(
     "defaultOrder": 7,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
-    "groupId": 10,
+    "groupId": 11,
     "thresholdValue": "",
     "kanban": false,
     "chartType": "stacked-area",
@@ -3010,7 +3010,7 @@ db.getCollection('kpi_master').insertMany(
       "defaultOrder": 10,
       "kpiCategory": "Backlog",
       "kpiSource": "Jira",
-      "groupId": 10,
+      "groupId": 11,
       "thresholdValue": "",
       "kanban": false,
       "chartType": "pieChart",
@@ -6568,8 +6568,3 @@ db.getCollection('kpi_fieldmapping').insertMany(
         fieldNames : { }
       }
 	  ]);
-
-
-
-
-
