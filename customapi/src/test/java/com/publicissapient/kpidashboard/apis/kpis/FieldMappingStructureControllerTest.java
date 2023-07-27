@@ -52,8 +52,8 @@ public class FieldMappingStructureControllerTest {
     }
 
     @Test
-    public void fetchFieldMappingStructureByKpiFieldMappingData() throws Exception {
-        when(kpiHelperService.fetchFieldMappingStructureByKpiFieldMappingData("1234","kpi0")).thenReturn(fieldMappingStructureResponse);
+    public void fetchFieldMappingStructureByKpiId() throws Exception {
+        when(kpiHelperService.fetchFieldMappingStructureByKpiId("1234","kpi0")).thenReturn(fieldMappingStructureResponse);
         mockMvc.perform(get("/kpiFieldMapping/1234/kpi0")).andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType("application/json"));
     }

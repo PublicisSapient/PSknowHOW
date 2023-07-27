@@ -1421,6 +1421,7 @@ public class KpiHelperService { // NOPMD
 
 	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiId(String projectBasicConfigId,
 			String kpiId) {
+
 		FieldMappingStructureResponse fieldMappingStructureResponse = null;
 		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService
 				.loadFieldMappingStructure();

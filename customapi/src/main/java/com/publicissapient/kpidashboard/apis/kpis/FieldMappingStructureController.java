@@ -40,7 +40,7 @@ public class FieldMappingStructureController {
 	public ResponseEntity<ServiceResponse> fetchFieldMappingStructureByKpiFieldMappingData(
 			@PathVariable String projectBasicConfigId, @PathVariable String kpiId) {
 		projectBasicConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectBasicConfigId);
-		FieldMappingStructureResponse result = kPIHelperService.fetchFieldMappingStructureByKpiFieldMappingData(projectBasicConfigId, kpiId);
+		FieldMappingStructureResponse result = kPIHelperService.fetchFieldMappingStructureByKpiId(projectBasicConfigId, kpiId);
 		ServiceResponse response = null;
 		if (result == null) {
 			response = new ServiceResponse(false, "no field mapping stucture found", null);
