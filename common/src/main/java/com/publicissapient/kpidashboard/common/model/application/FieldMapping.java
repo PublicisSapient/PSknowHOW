@@ -18,7 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -363,7 +364,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationIssuetypeKPI125;
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
-	private String createdDate;
+	private LocalDateTime createdDate;
 
 	/**
 	 * Get jira issue type names string [ ].

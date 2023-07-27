@@ -22,7 +22,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -275,7 +275,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));
 		fieldMapping
 				.setJiraStoryPointsCustomField(customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));
-		fieldMapping.setCreatedDate(LocalDate.now().toString());
+		fieldMapping.setCreatedDate(LocalDateTime.now());
 
 		if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE) || templateName.equalsIgnoreCase(DOJO_SAFE_TEMPLATE)
 				|| templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
@@ -287,8 +287,8 @@ public class MetaDataClientImpl implements MetadataClient {
 
 			fieldMapping
 					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
-			fieldMapping
-					.setJiraIssueTypeNamesAVR(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
+			fieldMapping.setJiraIssueTypeNamesAVR(
+					issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 
 			fieldMapping
 					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
@@ -326,13 +326,12 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.STORY));
 
-			fieldMapping
-					.setJiraIssueTypeKPI35(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeKPI35(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 
-			fieldMapping
-					.setJiraDefectRemovalStatusKPI34(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping
-					.setJiraWaitStatusKPI131(workflowMap.getOrDefault(CommonConstant.JIRA_WAIT_STATUS, new ArrayList<>()));
+			fieldMapping.setJiraDefectRemovalStatusKPI34(
+					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping.setJiraWaitStatusKPI131(
+					workflowMap.getOrDefault(CommonConstant.JIRA_WAIT_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraBlockedStatusKPI131(
 					workflowMap.getOrDefault(CommonConstant.JIRA_BLOCKED_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraStatusForInProgressKPI148(
@@ -349,37 +348,37 @@ public class MetaDataClientImpl implements MetadataClient {
 					workflowMap.getOrDefault(CommonConstant.JIRA_IN_PROGRESS_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraStatusForInProgressKPI119(
 					workflowMap.getOrDefault(CommonConstant.JIRA_IN_PROGRESS_STATUS, new ArrayList<>()));
-			fieldMapping
-					.setJiraDefectRemovalIssueTypeKPI34(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping
-					.setJiraTestAutomationIssueType(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping
-					.setJiraSprintVelocityIssueTypeKPI138(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping
-					.setJiraSprintCapacityIssueTypeKpi46(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeKPI37(
+			fieldMapping.setJiraDefectRemovalIssueTypeKPI34(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping
-					.setJiraDefectCountlIssueTypeKPI28(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping
-					.setJiraDefectCountlIssueTypeKPI36(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping
-					.setJiraIssueDeliverdStatusKPI138(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping
-					.setJiraIssueDeliverdStatusAVR(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping
-					.setJiraIssueDeliverdStatusKPI126(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping
-					.setJiraIssueDeliverdStatusKPI82(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping
-					.setJiraIssueTypeKPI3(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+					.setJiraTestAutomationIssueType(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraSprintVelocityIssueTypeKPI138(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraSprintCapacityIssueTypeKpi46(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeKPI37(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraDefectCountlIssueTypeKPI28(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraDefectCountlIssueTypeKPI36(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraIssueDeliverdStatusKPI138(
+					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping.setJiraIssueDeliverdStatusAVR(
+					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping.setJiraIssueDeliverdStatusKPI126(
+					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping.setJiraIssueDeliverdStatusKPI82(
+					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeKPI3(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentificationKPI129(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentificationKpi40(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping
-					.setJiraKPI82StoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping
-					.setJiraKPI135StoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraStoryIdentificationKPI129(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraStoryIdentificationKpi40(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraKPI82StoryIdentification(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraKPI135StoryIdentification(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setRootCauseValue(valuesToIdentifyMap.get(CommonConstant.ROOT_CAUSE_VALUE));
 			fieldMapping.setResolutionTypeForRejectionAVR(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
@@ -403,8 +402,7 @@ public class MetaDataClientImpl implements MetadataClient {
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionKPI35(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setJiraQAKPI111IssueType(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraQAKPI111IssueType(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraDefectClosedStatusKPI137(
 					workflowMap.getOrDefault(CommonConstant.JIRA_STATUS_FOR_CLOSED, new ArrayList<>()));
 
@@ -424,28 +422,29 @@ public class MetaDataClientImpl implements MetadataClient {
 		} else {
 			fieldMapping
 					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
-			fieldMapping.setJiraIssueTypeNamesAVR(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
+			fieldMapping.setJiraIssueTypeNamesAVR(
+					issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 			fieldMapping.setJiraSprintCapacityIssueTypeKpi46(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeKPI37(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeKPI37(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setJiraDefectCountlIssueTypeKPI28(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setJiraDefectCountlIssueTypeKPI36(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setJiraDefectInjectionIssueTypeKPI14(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeKPI35(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeKPI35(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setJiraTestAutomationIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraQAKPI111IssueType(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping
+					.setJiraQAKPI111IssueType(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentificationKPI129(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraStoryIdentificationKPI129(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraSprintVelocityIssueTypeKPI138(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentificationKpi40(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraStoryIdentificationKpi40(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraDefectRemovalIssueTypeKPI34(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping
@@ -456,19 +455,18 @@ public class MetaDataClientImpl implements MetadataClient {
 			} else {
 				fieldMapping.setJiraTechDebtIssueType(null);
 			}
-			fieldMapping.setJiraIssueTypeKPI3(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeKPI3(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
-			fieldMapping
-					.setJiraIssueDeliverdStatusKPI138(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping
-					.setJiraIssueDeliverdStatusAVR(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping
-					.setJiraIssueDeliverdStatusKPI126(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping
-					.setJiraIssueDeliverdStatusKPI82(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping.setJiraIssueDeliverdStatusKPI138(
+					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping.setJiraIssueDeliverdStatusAVR(
+					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping.setJiraIssueDeliverdStatusKPI126(
+					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
+			fieldMapping.setJiraIssueDeliverdStatusKPI82(
+					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
 			fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
@@ -535,6 +533,7 @@ public class MetaDataClientImpl implements MetadataClient {
 	private void populateKanbanFieldMappingData(FieldMapping fieldMapping, Map<String, List<String>> workflowMap,
 			Map<String, List<String>> issueTypeMap, String templateName) {
 
+		fieldMapping.setCreatedDate(null);// setting null until kpi config not done for kanban kpis
 		if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE) || templateName.equalsIgnoreCase(DOJO_SAFE_TEMPLATE)
 				|| templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
 
@@ -564,8 +563,8 @@ public class MetaDataClientImpl implements MetadataClient {
 
 			fieldMapping
 					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
-			fieldMapping
-					.setJiraIssueTypeNamesAVR(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
+			fieldMapping.setJiraIssueTypeNamesAVR(
+					issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 			fieldMapping.setTicketCountIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.TICKET_COUNT_ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setKanbanRCACountIssueType(
