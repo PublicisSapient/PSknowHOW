@@ -18,6 +18,36 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -58,35 +88,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Duration;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Helper class for kpi requests . Utility to process for kpi requests.
@@ -1418,55 +1419,50 @@ public class KpiHelperService { // NOPMD
 		return fieldWiseIssuesLatestMap;
 	}
 
-	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiId(String projectBasicConfigId,
-			String kpiId) {
+	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiId(String projectBasicConfigId, String kpiId) {
+		FieldMappingStructureResponse fieldMappingStructureResponse = new FieldMappingStructureResponse();
+		try {
+			List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
+			if (fieldMappingStructureList == null || fieldMappingStructureList.isEmpty()) {
+				return null; // or return an appropriate response for an empty list
+			}
 
-		FieldMappingStructureResponse fieldMappingStructureResponse = null;
-		List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService
-				.loadFieldMappingStructure();
-		if (CollectionUtils.isNotEmpty(fieldMappingStructureList)) {
-			fieldMappingStructureResponse = new FieldMappingStructureResponse();
+			FieldMappingEnum fieldMappingEnum = FieldMappingEnum.valueOf(kpiId.toUpperCase());
+			List<String> fieldList = fieldMappingEnum.getFields();
+			String kpiSource = fieldMappingEnum.getKpiSource();
 
-			List<String> fieldList = FieldMappingEnum.valueOf(kpiId.toUpperCase()).getFields();
-			String kpiSource = FieldMappingEnum.valueOf(kpiId.toUpperCase()).getKpiSource();
-			String toolName = capitalizeWords(kpiSource);
-			List<ProjectToolConfig> projectToolConfig = configHelperService.getProjectToolConfigMap()
-					.get(new ObjectId(projectBasicConfigId)).get(toolName);
+			Map<String, List<ProjectToolConfig>> projectToolMap = configHelperService.getProjectToolConfigMap()
+					.get(new ObjectId(projectBasicConfigId));
+			List<ProjectToolConfig> projectToolConfig = null;
+			if (MapUtils.isNotEmpty(projectToolMap)) {
+				projectToolConfig = projectToolMap.get("Jira");
+				if (CollectionUtils.isEmpty(projectToolConfig)) {
+					projectToolConfig = projectToolMap.get("Azure");
+				}
+			}
+
+			if (CollectionUtils.isEmpty(projectToolConfig)) {
+				return null; // or return an appropriate response when projectToolConfig is empty
+			}
+
 			ObjectId projectToolConfigId = projectToolConfig.stream()
-					.filter(t -> t.getBasicProjectConfigId().toString().equals(projectBasicConfigId)).findFirst()
-					.map(ProjectToolConfig::getId).orElse(null);
+					.filter(t -> t.getBasicProjectConfigId().toString().equals(projectBasicConfigId))
+					.map(ProjectToolConfig::getId).findFirst().orElse(null);
 
 			List<FieldMappingStructure> fieldMappingStructureList1 = fieldMappingStructureList.stream()
 					.filter(f -> fieldList.contains(f.getFieldName())).collect(Collectors.toList());
+
 			fieldMappingStructureResponse.setFieldConfiguration(
 					CollectionUtils.isNotEmpty(fieldMappingStructureList1) ? fieldMappingStructureList1
 							: new ArrayList<>());
-			fieldMappingStructureResponse.setKpiSource(kpiSource != null ? kpiSource : null);
+			fieldMappingStructureResponse.setKpiSource(kpiSource);
 			fieldMappingStructureResponse
 					.setProjectToolConfigId(projectToolConfigId != null ? projectToolConfigId.toString() : null);
+		}catch(IllegalArgumentException e){
+			fieldMappingStructureResponse.setFieldConfiguration(new ArrayList<>());
 		}
 		return fieldMappingStructureResponse;
 	}
-
-	public static String capitalizeWords(String input) {
-		if (input == null || input.isEmpty()) {
-			return input;
-		}
-
-		StringBuilder result = new StringBuilder();
-		String[] words = input.trim().split("\\s+");
-
-		for (String word : words) {
-			if (!word.isEmpty()) {
-				String firstLetter = word.substring(0, 1).toUpperCase();
-				String restOfWord = word.substring(1).toLowerCase();
-				result.append(firstLetter).append(restOfWord).append(" ");
-			}
-		}
-
-		return result.toString().trim();
-	}
-
 
 	public boolean hasReturnTransactionOrFTPRRejectedStatus(JiraIssue issue,
 			List<JiraIssueCustomHistory> storiesHistory,List<String> statusForDevelopemnt, List<String> jiraStatusForQa, List<String> jiraFtprRejectStatus) {
