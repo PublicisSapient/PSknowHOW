@@ -18,36 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Duration;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -88,6 +58,35 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Helper class for kpi requests . Utility to process for kpi requests.
@@ -1505,26 +1504,37 @@ public class KpiHelperService { // NOPMD
 		}
 	}
 
+	/**
+	 * get duplicate issues from all the sprints selected
+	 * @param projectWiseTotalSprintDetails
+	 * @return
+	 */
 	public Map<ObjectId, Set<String>> getProjectWiseDuplicateIssueInSprintDetails(
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails) {
 		Map<ObjectId, Set<String>> duplicateIssues = new HashMap<>();
-		projectWiseTotalSprintDetails.forEach((key, value) -> {
-			List<String> allIssues = value.stream().flatMap(
-					sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(Collections.emptySet()).stream())
+		projectWiseTotalSprintDetails.forEach((projectId, sprintDetails) -> {
+			List<String> allIssues = sprintDetails.stream().flatMap(
+							sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(Collections.emptySet()).stream())
 					.map(SprintIssue::getNumber).collect(Collectors.toList());
 
 			Set<String> duplicate = allIssues.stream()
 					.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet().stream()
 					.filter(m -> m.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
 
-			duplicateIssues.put(key, duplicate);
+			duplicateIssues.put(projectId, duplicate);
 		});
 		return duplicateIssues;
 	}
 
+	/**
+	 * for all the duplicate issues, present in sprintdetails find out the minimum closed dates
+	 * @param duplicateIssues
+	 * @param customFieldMapping
+	 * @return
+	 */
 	public Map<ObjectId, Map<String, List<LocalDateTime>>> getMinimumClosedDateFromConfiguration(
 			Map<ObjectId, Set<String>> duplicateIssues, Map<ObjectId, List<String>> customFieldMapping) {
-		Map<ObjectId, Map<String, List<LocalDateTime>>> pair = new HashMap<>();
+		Map<ObjectId, Map<String, List<LocalDateTime>>> projectIssueWiseClosedDates = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		mapOfFilters.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(),
 				duplicateIssues.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
@@ -1544,8 +1554,12 @@ public class KpiHelperService { // NOPMD
 							.flatMap(history -> history.getStatusUpdationLog().stream())
 							.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn))
 							.collect(Collectors.toList());
-
-					if (!statusUpdationLog.isEmpty()) {
+					/*
+					iterate over status logs and if some not completed status appears then that has to be considered as
+					reopen scenario, and at that time whatever statuses present in  minimumCompletedStatusWiseMap, out of them
+					the minimum date has to be considered of that closed cycle.
+					 */
+					if (CollectionUtils.isNotEmpty(statusUpdationLog)) {
 						Map<String, LocalDateTime> minimumCompletedStatusWiseMap = new HashMap<>();
 						List<LocalDateTime> minimumDate = new ArrayList<>();
 
@@ -1564,7 +1578,7 @@ public class KpiHelperService { // NOPMD
 							}
 						}
 
-						//if some status is lifet in the last cycle then that has to added in the minimum set
+						//if some status is left in the last cycle then that has to added in the minimum set
 						if (MapUtils.isNotEmpty(minimumCompletedStatusWiseMap)) {
 							LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream()
 									.min(LocalDateTime::compareTo).orElse(null);
@@ -1576,10 +1590,10 @@ public class KpiHelperService { // NOPMD
 						issueWiseMinDateTime.put(issue, minimumDate);
 					}
 				}
-				pair.put(objectId, issueWiseMinDateTime);
+				projectIssueWiseClosedDates.put(objectId, issueWiseMinDateTime);
 			}
 		});
-		return pair;
+		return projectIssueWiseClosedDates;
 	}
 
 }

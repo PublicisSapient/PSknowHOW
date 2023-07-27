@@ -141,7 +141,6 @@ public final class CommonConstant {
 	public static final String PUNTED_ISSUES = "puntedIssues";
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
-	public static final String CACHE_KPI_FIELD_MAPPING = "cache_kpi_field_mapping";
 
 	public static final String PSLOGDATA = "PSLogData";
 	public static final String REQUESTID = "requestId";
@@ -186,9 +185,7 @@ public final class CommonConstant {
 	public static final String RELEASED = "Released";
 	public static final String UNRELEASED = "Unreleased";
     public static final String CACHE_FIELD_MAPPING_STUCTURE = "cache_field_mapping_stucture";
-
 	public static final String CACHE_PROJECT_TOOL_CONFIG= "cache_project_tool_config";
-
 	public static final String CUSTOM_TEMPLATE_CODE_SCRUM="10";
 	public static final String CUSTOM_TEMPLATE_CODE_KANBAN="9";
 
