@@ -372,9 +372,6 @@ export class AccessMgmtComponent implements OnInit {
 			icon: 'pi pi-info-circle',
 			accept: () => {
 				this.deleteAccessReq(userName, isSuperAdmin);
-			},
-			reject: () => {
-
 			}
 		});
 	}
@@ -407,11 +404,7 @@ export class AccessMgmtComponent implements OnInit {
 		this.confirmationService.confirm({
 			message,
 			header: 'Access Deletion Status',
-			icon,
-			accept: () => {
-			},
-			reject: () => {
-			}
+			icon
 		});
 	}
 
