@@ -1710,7 +1710,7 @@ describe('FilterComponent', () => {
       "sprintState": "ACTIVE",
       "level": 6
     };
-
+    component.selectedProjectLastSyncDate = '2023-06-21T10:23:51.845';
     const getactiveIterationfetchStatusSpy = spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(of({
       "message": "Successfully fetched last sync details from db",
       "success": true,
@@ -1752,6 +1752,7 @@ describe('FilterComponent', () => {
         "lastSyncDateTime": "2023-07-21T10:23:51.845"
       }
     }));
+    component.selectedProjectLastSyncDate = '2023-06-21T10:23:51.845';
     component.fetchActiveIterationStatus();
     fixture.detectChanges();
     expect(component.selectedProjectLastSyncStatus).toEqual('FAILURE');

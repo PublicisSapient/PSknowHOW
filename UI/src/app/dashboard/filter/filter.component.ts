@@ -1385,18 +1385,24 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
-  fetchActiveIterationStatus(){
+  fetchActiveIterationStatus() {
     const sprintId = this.filterForm.get('selectedSprintValue')?.value;
     const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
     if (sprintState?.toLowerCase() === 'active') {
-      this.httpService.getactiveIterationfetchStatus(sprintId).subscribe(response =>{
-        if(response['data']?.fetchSuccessful === true){
-          this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
-          this.selectedProjectLastSyncStatus = 'SUCCESS';
-        }else if(response['data']?.errorInFetch === true){
-          this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
-          this.selectedProjectLastSyncStatus = 'FAILURE';
+      this.httpService.getactiveIterationfetchStatus(sprintId).subscribe(response => {
+        if (response['success']) {
+          const lastSyncDateTime = new Date(response['data'].lastSyncDateTime).getTime();
+          const lastRunProcessorDateTime = new Date(this.selectedProjectLastSyncDate).getTime();
+          if (lastSyncDateTime - lastRunProcessorDateTime > 0) {
+            this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+            if (response['data']?.fetchSuccessful === true) {
+              this.selectedProjectLastSyncStatus = 'SUCCESS';
+            } else if (response['data']?.errorInFetch === true) {
+              this.selectedProjectLastSyncStatus = 'FAILURE';
+            }
+          }
         }
+
       });
     }
   }
