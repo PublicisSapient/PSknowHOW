@@ -104,7 +104,6 @@ public class FieldMappingController {
 		List<ProjectToolConfig> projectToolConfigs = (List<ProjectToolConfig>) configHelperService
 				.loadAllProjectToolConfig();
 
-		// Using Optional to get the specific ProjectToolConfig based on its id
 		String finalProjectToolConfigId = projectToolConfigId;
 		Optional<ProjectToolConfig> projectToolConfigOptional = projectToolConfigs.stream()
 				.filter(t -> t.getId().toString().equals(finalProjectToolConfigId))
@@ -119,7 +118,6 @@ public class FieldMappingController {
 						|| projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN))) {
 			response = new ServiceResponse(true, "changes are made in customize mappings", false);
 		} else {
-			// Default case when projectToolConfig is null or metadataTemplateCode is not 'Scrum' or 'Kanban'
 			response = new ServiceResponse(true, "mappings are " + (result ? "not " : "") + "same as "
 					+ (projectToolConfig != null ? "already maintained" : "default") + " mapping", result);
 		}
