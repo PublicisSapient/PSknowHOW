@@ -425,8 +425,7 @@ fieldMappings.forEach(function(fm) {
 
 //--------insert field_mapping_structure
 db.kpi_fieldmapping.drop();
-if(db.getCollection('field_mapping_structure')!==null){
-db.getCollection('field_mapping_structure').remove({});
+if(db.getCollection('field_mapping_structure')===null){
 db.getCollection('field_mapping_structure').insert(
     [{
             "fieldName": "jiraStoryIdentificationKpi40",
