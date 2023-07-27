@@ -26,10 +26,6 @@
     border: none;
 }
 
-:host ::ng-deep .p-dialog-header-close-icon {
-    color: white;
-}
-
 ::ng-deep .p-overlaypanel .p-overlaypanel-content {
     padding: 1rem !important;
 }
@@ -116,7 +112,6 @@ textarea:focus-visible {
     background: var(--color-cyan-blue);
     color: #fff;
     border-radius: 50px;
-    display: inline-block;
     line-height: 1;
     display: flex;
     align-items: center;

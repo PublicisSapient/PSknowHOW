@@ -263,9 +263,6 @@ export class AdvancedSettingsComponent implements OnInit {
 			icon: 'pi pi-info-circle',
 			accept: () => {
 				this.deleteProcessorDataReq(processorDetails,this.selectedProject);
-			},
-			reject: () => {
-
 			}
 		});
   }
