@@ -398,8 +398,10 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
 			if (projectBasicConfig.getIsKanban()) {
 				projectToolConfig.setMetadataTemplateCode("9");
+				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			} else {
 				projectToolConfig.setMetadataTemplateCode("10");
+				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			}
 
 			toolConfigRepository.save(projectToolConfig);
