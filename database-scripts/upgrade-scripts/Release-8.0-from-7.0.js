@@ -191,7 +191,7 @@ db.getCollection('kpi_master').insertMany(
      db.kpi_master.bulkWrite(bulkUpdateKpiMaster);
  }
 
-//--------------field mapping config update
+//-------------field mapping config update
 
 const fieldMappings = db.field_mapping.find({});
 fieldMappings.forEach(function(fm) {
