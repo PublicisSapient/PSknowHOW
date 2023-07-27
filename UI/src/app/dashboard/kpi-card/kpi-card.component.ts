@@ -73,15 +73,41 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
           if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
-            this.filterOptions = {...this.filterOptions};
-            this.filterOption = 'Overall';
-          } else {
-            this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
-            if(!this.filterOption){
-              this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'] ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+            if (this.kpiData?.kpiId === "kpi72") {
+              if (key === "filter1") {
+                this.filterOptions["filter1"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];
+              }
+              else if (key === "filter2") {
+                this.filterOptions["filter2"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter2'][0];
+              }
+              else {
+                this.filterOptions = { ...this.filterOptions };
+                this.filterOption = 'Overall';
+              }
             }
-            if(this.kpiData.kpiId === 'kpi3'){
-              this.filterOptions = {...this.filterOptions, [key]: this.kpiSelectedFilterObj[this.kpiData?.kpiId][key]};
+            else{
+              this.filterOptions = {...this.filterOptions };
+              this.filterOption = 'Overall';
+            }
+          }else {
+            if (this.kpiData?.kpiId === "kpi72") {
+              if (key === "filter1") {
+                this.filterOptions["filter1"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0];
+              }
+              else {
+                this.filterOptions["filter2"] = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter2'][0];
+              }
+
+            }
+            else {
+              this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+
+              if (!this.filterOption) {
+                this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'] ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
+              }
+              if (this.kpiData.kpiId === 'kpi3') {
+                this.filterOptions = { ...this.filterOptions, [key]: this.kpiSelectedFilterObj[this.kpiData?.kpiId][key] };
+              }
             }
           }
         }
@@ -112,11 +138,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     if (value && type?.toLowerCase() == 'radio') {
       this.optionSelected.emit(value);
     } else if (type?.toLowerCase() == 'single') {
-      const obj = {
-        filter1: []
-      };
-      obj['filter1'].push(this.filterOption);
-      this.optionSelected.emit(obj);
+      this.optionSelected.emit(this.filterOptions);
     } else {
       if (this.filterOptions && Object.keys(this.filterOptions)?.length == 0) {
         this.optionSelected.emit(['Overall']);

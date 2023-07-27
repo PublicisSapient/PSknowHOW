@@ -3617,14 +3617,22 @@ db.kpi_column_configs.insertMany([{
                                  			order: 2,
                                  			isShown: true,
                                  			isDefault: false
-                                 		}, {
+                                 		},
+                                 		 {
+                                            columnName: 'Issue Type',
+                                            order: 3,
+                                            isShown: true,
+                                            isDefault: true
+                                           },
+                                           {
                                  			columnName: 'Initial Commitment',
-                                 			order: 3,
+                                 			order: 4,
                                  			isShown: true,
                                  			isDefault: true
-                                 		}, {
+                                 		},
+                                 		{
                                  			columnName: 'Size(story point/hours)',
-                                 			order: 4,
+                                 			order: 5,
                                  			isShown: true,
                                  			isDefault: true
                                  		}

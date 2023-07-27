@@ -18,15 +18,17 @@
         <!-- kpiFilter -->
         <div *ngIf="isShow">
             <div [ngSwitch]="kpiData?.kpiDetail?.kpiFilter?.toLowerCase()" class="kpi-filter">
-                <ng-container *ngSwitchCase="'dropdown'">
-                    <ng-select [(ngModel)]="filterOption" [dropdownPosition]="'bottom'"
-                        (change)="handleChange('single')" *ngIf="dropdownArr?.length && dropdownArr[0]?.options?.length"
-                        [placeholder]="dropdownArr[0]?.filterType" [clearable]="false" class="p-pb-0 kpi-dropdown">
-                        <ng-option *ngFor="let item of dropdownArr[0]?.options" [value]="item">
-                            <span [attr.title]="item">{{item}}</span>
-                        </ng-option>
-                    </ng-select>
-                </ng-container>
+                <div *ngSwitchCase="'dropdown'" class="p-d-flex p-justify-between">
+                    <ng-container *ngFor="let filter of dropdownArr;let k = index">
+                        <ng-select [(ngModel)]="filterOptions['filter'+(k+1)]" [dropdownPosition]="'bottom'" (change)="handleChange('single',k)"
+                            *ngIf="dropdownArr?.length && filter?.options?.length" [placeholder]="filter?.filterType"
+                            [clearable]="false" class="p-pb-0 kpi-dropdown" style="margin-left: 5px; width: 115px;">
+                            <ng-option *ngFor="let item of filter?.options" [value]="item">
+                                <span [attr.title]="item">{{item}}</span>
+                            </ng-option>
+                        </ng-select>
+                    </ng-container>
+                </div>
                 <div *ngSwitchCase="'multiselectdropdown'" class="p-d-flex p-justify-between">
                     <ng-container *ngFor="let filter of dropdownArr;let k = index">
                         <ng-select *ngIf="filter?.options?.length && filter.filterType === 'Duration'"

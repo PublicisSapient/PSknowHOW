@@ -239,8 +239,7 @@ fieldMappings.forEach(function(fm) {
         db.field_mapping.updateOne({
             "_id": fm._id
         }, {
-            $set: {
-
+             $set: {
                 "defectPriorityKPI135": defectPriority,
                 "defectPriorityKPI14": defectPriority,
                 "defectPriorityQAKPI111": defectPriority,
@@ -1706,7 +1705,6 @@ db.getCollection('field_mapping_structure').insert(
             "section": "Custom Fields Mapping",
             "tooltip": {
                 "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields.Provide value of Time Criticality value on Epic that is required to calculated Cost of delay .<br />Example:customfield_11111<hr>",
-
             }
         },
         {
@@ -2341,3 +2339,51 @@ db.getCollection('field_mapping_structure').insert(
     ]
 );
 }
+
+
+//DTS-25767 Commitment Reliability - Add Filter by Issue type (add one column for issue type in excel)
+ db.kpi_column_configs.updateOne(
+   { "kpiId": "kpi72" },
+   {
+     $set: {
+       "kpiColumnDetails": [
+         {
+           "columnName": "Sprint Name",
+           "order": 0,
+           "isShown": true,
+           "isDefault": false
+         },
+         {
+           "columnName": "Story ID",
+           "order": 1,
+           "isShown": true,
+           "isDefault": false
+         },
+         {
+           "columnName": "Issue Status",
+           "order": 2,
+           "isShown": true,
+           "isDefault": false
+         },
+         {
+           "columnName": "Issue Type",
+           "order": 3,
+           "isShown": true,
+           "isDefault": true
+         },
+         {
+           "columnName": "Initial Commitment",
+           "order": 4,
+           "isShown": true,
+           "isDefault": true
+         },
+         {
+           "columnName": "Size(story point/hours)",
+           "order": 5,
+           "isShown": true,
+           "isDefault": true
+         }
+       ]
+     }
+   }
+ );
