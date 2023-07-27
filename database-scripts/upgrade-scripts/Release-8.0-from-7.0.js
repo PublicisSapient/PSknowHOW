@@ -212,3 +212,51 @@ bulkUpdateKpiFieldMapping.push({
 if (bulkUpdateKpiFieldMapping.length > 0) {
     db.kpi_fieldmapping.bulkWrite(bulkUpdateKpiFieldMapping);
 }
+
+
+ //DTS-25767 Commitment Reliability - Add Filter by Issue type (add one column for issue type in excel)
+ db.kpi_column_configs.updateOne(
+   { "kpiId": "kpi72" },
+   {
+     $set: {
+       "kpiColumnDetails": [
+         {
+           "columnName": "Sprint Name",
+           "order": 0,
+           "isShown": true,
+           "isDefault": false
+         },
+         {
+           "columnName": "Story ID",
+           "order": 1,
+           "isShown": true,
+           "isDefault": false
+         },
+         {
+           "columnName": "Issue Status",
+           "order": 2,
+           "isShown": true,
+           "isDefault": false
+         },
+         {
+           "columnName": "Issue Type",
+           "order": 3,
+           "isShown": true,
+           "isDefault": true
+         },
+         {
+           "columnName": "Initial Commitment",
+           "order": 4,
+           "isShown": true,
+           "isDefault": true
+         },
+         {
+           "columnName": "Size(story point/hours)",
+           "order": 5,
+           "isShown": true,
+           "isDefault": true
+         }
+       ]
+     }
+   }
+ );
