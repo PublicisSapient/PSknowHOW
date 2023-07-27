@@ -28,6 +28,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.apis.comments.service.CommentsService;
 import com.publicissapient.kpidashboard.common.model.comments.CommentRequestDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
+import com.publicissapient.kpidashboard.common.model.comments.CommentViewRequestDTO;
+import com.publicissapient.kpidashboard.common.model.comments.CommentViewResponseDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -115,6 +117,38 @@ public class CommentsControllerTest {
 		mockMvc.perform(post("/comments/getCommentsByKpiId").content(mapper.writeValueAsString(commentRequestDTO))
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
 				.andExpect(MockMvcResultMatchers.content().json(expectedResponse));
+
+	}
+
+	@Test
+	public void getCommentsViewSummaryTest() throws Exception {
+
+		CommentViewRequestDTO commentViewRequestDTO = new CommentViewRequestDTO();
+		List<String> nodes = new ArrayList<>();
+		nodes.add("xyz_project_node_id");
+		commentViewRequestDTO.setNodes(nodes);
+		commentViewRequestDTO.setLevel(level);
+		commentViewRequestDTO.setNodeChildId(sprintId);
+		List<String> kpiIds = new ArrayList<>();
+		kpiIds.add("kpi3");
+		kpiIds.add("kpi5");
+		commentViewRequestDTO.setKpiIds(kpiIds);
+
+		List<CommentViewResponseDTO> commentViewResponseDTOList = new ArrayList<>();
+		CommentViewResponseDTO commentViewResponseDTO = new CommentViewResponseDTO();
+		commentViewResponseDTO.setKpiId(kpiId);
+		commentViewResponseDTO.setNode(node);
+		commentViewResponseDTO.setLevel(level);
+		commentViewResponseDTO.setNodeChildId(sprintId);
+		commentViewResponseDTO.setComment("test data");
+		commentViewResponseDTO.setCommentId("UUID");
+		commentViewResponseDTO.setCommentOn("16-May-2023 15:33");
+		commentViewResponseDTO.setCommentBy("SUPERADMIN");
+
+		commentViewResponseDTOList.add(commentViewResponseDTO);
+		when(commentsService.findLatestCommentSummary(nodes, level, sprintId, kpiIds)).thenReturn(commentViewResponseDTOList);
+		mockMvc.perform(post("/comments/commentsSummary").content(mapper.writeValueAsString(commentViewRequestDTO))
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 
 	}
 

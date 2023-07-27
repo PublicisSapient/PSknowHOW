@@ -154,6 +154,66 @@ db.getCollection('kpi_master').insertMany(
       }
  ]);
 
+
+ //7.4 changes
+
+ //-------------------- kpi detail changes for DTS-25745 change in both the DRE operands and field names in field mappings-------
+ //-------------------- Backlog KPI divided in two groups to fix performace issue
+ const bulkUpdateKpiMaster = [];
+ const kpiIdsToUpdate = ["kpi129", "kpi138", "kpi3", "kpi148", "kpi152"];
+ const newGroupId = 11;
+
+ bulkUpdateKpiMaster.push({
+     updateMany: {
+         filter: {
+             "kpiId": "kpi34"
+         },
+         update: {
+             $set: {"kpiInfo.formula.$[].operands":  ["No. of defects in the iteration that are fixed",
+                                                                               "Total no. of defects in a iteration"]}
+         }
+     }
+ });
+
+ bulkUpdateKpiMaster.push({
+     updateMany: {
+         filter: {
+             "kpiId": { $in: kpiIdsToUpdate }
+         },
+         update: {
+             { $set: { "groupId": newGroupId } }
+         }
+     }
+});
+
+ //bulk write to update kpiMaster
+ if (bulkUpdateKpiMaster.length > 0) {
+     db.kpi_master.bulkWrite(bulkUpdateKpiMaster);
+ }
+
+const bulkUpdateKpiFieldMapping = [];
+bulkUpdateKpiFieldMapping.push({
+    updateMany: {
+        filter: {
+            "kpiId": "kpi34"
+        },
+        update: {
+            $set: {
+                fieldNames: {
+                              'Workflow Status Mapping': ['jiraDefectRemovalStatus', 'resolutionTypeForRejection', 'jiraDefectRejectionStatus'],
+                              'Issue Types Mapping': ['jiraDefectRemovalIssueType']
+                          }
+            }
+        }
+    }
+});
+
+//bulk write to update kpiFieldMapping
+if (bulkUpdateKpiFieldMapping.length > 0) {
+    db.kpi_fieldmapping.bulkWrite(bulkUpdateKpiFieldMapping);
+}
+
+
  //7.4 changes
  db.kpi_column_configs.updateOne(
    { "kpiId": "kpi72" },

@@ -90,7 +90,7 @@ public class ReleaseProgressServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(bugList);
-		when(jiraService.getJiraIssueReleaseForProject("6335363749794a18e8a4479b"))
+		when(jiraService.getJiraIssueReleaseForProject())
 				.thenReturn(jiraIssueReleaseStatusList.get(0));
 		KpiElement kpiElement = releaseProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);

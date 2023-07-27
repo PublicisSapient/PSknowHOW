@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -45,6 +44,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -59,6 +59,8 @@ public class FlowDistributionServiceImplTest {
 	CustomApiConfig customApiConfig;
 	@Mock
 	CacheService cacheService;
+	@Mock
+	private JiraServiceR jiraService;
 	List<JiraIssueCustomHistory> customHistoryList = new ArrayList<>();
 	@InjectMocks
 	private FlowDistributionServiceImpl flowDistributionService;
@@ -91,10 +93,10 @@ public class FlowDistributionServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		when(customApiConfig.getFlowKpiMonthCount()).thenReturn(1);
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(customHistoryList);
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(Mockito.any()))
-				.thenReturn(customHistoryList);
+
 		customHistoryList.get(0).setCreatedDate(DateTime.now());
 		try {
 			KpiElement kpiElement = flowDistributionService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

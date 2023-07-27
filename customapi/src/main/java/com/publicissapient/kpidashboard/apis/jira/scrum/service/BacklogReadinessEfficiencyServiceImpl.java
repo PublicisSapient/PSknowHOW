@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -104,9 +103,6 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 
 	/**
 	 * Methods get the data for the KPI
@@ -197,8 +193,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		if (CollectionUtils.isNotEmpty(allIssues)) {
-			log.info("Backlog items ready for development -> request id : {} total jira Issues : {}",
-					requestTrackerId, allIssues.size());
+			log.info("Backlog items ready for development -> request id : {} total jira Issues : {}", requestTrackerId,
+					allIssues.size());
 			List<JiraIssueCustomHistory> historyForIssues = (List<JiraIssueCustomHistory>) resultMap.get(HISTORY);
 			Map<String, Map<String, List<JiraIssue>>> typeAndPriorityWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getPriority)));
@@ -417,11 +413,9 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		List<String> doneStatus = new ArrayList<>();
-		Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository
-				.findByBasicProjectConfigId(basicProjectId.toString()).getClosedList();
+		Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus().getClosedList();
 		if (doneStatusMap != null) {
-			doneStatus = doneStatusMap.values().stream().map(status -> status.toLowerCase())
-					.collect(Collectors.toList());
+			doneStatus = doneStatusMap.values().stream().map(String::toLowerCase).collect(Collectors.toList());
 		}
 
 		List<String> basicProjectConfigIds = new ArrayList<>();
