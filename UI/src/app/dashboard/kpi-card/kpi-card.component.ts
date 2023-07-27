@@ -274,13 +274,11 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     this.http.getFieldMappings(this.selectedToolConfig[0].id).subscribe(mappings => {
       if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 2) {
         this.selectedFieldMapping = mappings['data'];
-        this.noData = false;
         this.displayConfigModel = true;
         this.loading = false;
 
       } else {
         this.loading = false;
-        this.noData = true;
       }
     });
   }
