@@ -417,7 +417,7 @@ fieldMappings.forEach(function(fm) {
 
                 "readyForDevelopmentStatusKPI138": readyForDevelopmentStatus,
 
-                "createdDate": "Date"
+                "createdDate": new Date(Date.now())
             }
         })
     }
@@ -425,6 +425,7 @@ fieldMappings.forEach(function(fm) {
 
 //--------insert field_mapping_structure
 db.kpi_fieldmapping.drop();
+if(db.getCollection('field_mapping_structure')!==null){
 db.getCollection('field_mapping_structure').remove({});
 db.getCollection('field_mapping_structure').insert(
     [{
@@ -2340,3 +2341,4 @@ db.getCollection('field_mapping_structure').insert(
         }
     ]
 );
+}
