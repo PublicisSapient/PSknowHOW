@@ -869,7 +869,7 @@ describe('FieldMappingComponent', () => {
     spyOn(httpService, 'getKPIFieldMappingConfig').and.returnValue(of(fakeKpiFieldMappingList));
     component.getKPIFieldMappingRelationships();
     tick();
-    expect(component.fieldMappingConfig.length).toEqual(fakeKpiFieldMappingList.fieldConfiguration.length);
+    expect(component.fieldMappingConfig.length).toEqual(fakeKpiFieldMappingList.data.fieldConfiguration.length);
   }));
 
   // it('should save field mapping', () => {

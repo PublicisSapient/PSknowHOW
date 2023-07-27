@@ -259,7 +259,7 @@ describe('KpiCardComponent', () => {
     ]
     spyOn(sharedService,'getFieldMappingMetaData').and.returnValue(fakeMetaDataList);
     component.getKPIFieldMappingConfig();
-    expect(component.fieldMappingConfig.length).toEqual(fakeKpiFieldMappingList.fieldConfiguration.length);
+    expect(component.fieldMappingConfig.length).toEqual(fakeKpiFieldMappingList.data.fieldConfiguration.length);
   })
 
   it('should get FieldMapping',()=>{

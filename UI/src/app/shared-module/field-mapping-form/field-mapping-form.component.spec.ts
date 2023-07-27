@@ -414,21 +414,21 @@ describe('FieldMappingFormComponent', () => {
   });
 
   it('should initialize the form', () => {
-    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.fieldConfiguration;
+    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.data.fieldConfiguration;
     component.formData = fakeSelectedFieldMapping;
     component.initializeForm();
     expect(component.form).toBeDefined();
   });
 
   it('should create group configurations based on section', () => {
-    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.fieldConfiguration;
+    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.data.fieldConfiguration;
     component.formData = fakeSelectedFieldMapping;
     component.generateFieldMappingConfiguration();
     expect(component.fieldMappingSectionList).toBeDefined();
   });
 
   xit('should select values from popup', () => {
-    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.fieldConfiguration;
+    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.data.fieldConfiguration;
     component.formData = fakeSelectedFieldMapping;
     component.singleSelectionDropdown = false;
     component.selectedField = 'jiraIssueDeliverdStatus';
@@ -469,7 +469,7 @@ describe('FieldMappingFormComponent', () => {
   });
 
   it('should check for template info popup', () => {
-    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.fieldConfiguration;
+    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.data.fieldConfiguration;
     component.formData = fakeSelectedFieldMapping;
     component.selectedConfig = {id:'123'};
     component.selectedToolConfig = [{id:'123',toolName:'JIRA'}];
@@ -480,7 +480,7 @@ describe('FieldMappingFormComponent', () => {
   });
 
   it('should save field mapping', () => {
-    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.fieldConfiguration;
+    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.data.fieldConfiguration;
     component.formData = fakeSelectedFieldMapping;
     component.selectedConfig = {id:'123'};
     component.selectedToolConfig = [{id:'123',toolName:'JIRA'}];
@@ -491,7 +491,7 @@ describe('FieldMappingFormComponent', () => {
   });
 
   it('should populate value on import',()=>{
-    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.fieldConfiguration;
+    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.data.fieldConfiguration;
     component.formData = fakeSelectedFieldMapping;
     component.selectedConfig = {id:'1233'};
     component.selectedToolConfig = [{id:'1233',toolName:'JIRA'}];
@@ -509,7 +509,7 @@ describe('FieldMappingFormComponent', () => {
 
   it('should open/close the dropdown dialog and set values', () => {
     component.selectedField = 'jiraDefectRejectionStatusDIR';
-    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.fieldConfiguration;
+    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.data.fieldConfiguration;
     component.formData = fakeSelectedFieldMapping;
     component.selectedConfig = {id:'1233'};
     component.selectedToolConfig = [{id:'1233',toolName:'JIRA'}];
@@ -559,7 +559,7 @@ describe('FieldMappingFormComponent', () => {
    it('should select values from popup', () => {
     component.singleSelectionDropdown = false;
     component.selectedField = 'jiraDefectRejectionStatusDIR';
-    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.fieldConfiguration;
+    component.fieldMappingConfig = fakeKpiFieldMappingConfigList.data.fieldConfiguration;
     component.formData = fakeSelectedFieldMapping;
     component.selectedConfig = {id:'1233'};
     component.selectedToolConfig = [{id:'1233',toolName:'JIRA'}];

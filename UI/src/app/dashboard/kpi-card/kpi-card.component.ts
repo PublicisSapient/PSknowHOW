@@ -220,27 +220,29 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
       this.loading = true;
       this.displayConfigModel = true;
       this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`).subscribe(data => {
-        this.fieldMappingConfig = data['fieldConfiguration'];
-        const kpiSource = data['kpiSource']?.toLowerCase();
-        const toolConfigID = data['projectToolConfigId'];
-        this.selectedToolConfig = [{ id: toolConfigID, toolName: kpiSource }];
-        if (this.fieldMappingConfig.length > 0) {
-          this.selectedConfig = { ...selectedTrend[0], id: selectedTrend[0]?.basicProjectConfigId }
-          this.getFieldMapping();
-          if (this.service.getFieldMappingMetaData().length) {
-            const metaDataList = this.service.getFieldMappingMetaData();
-            const metaData = metaDataList.find(data => data.projectID === selectedTrend[0]?.basicProjectConfigId && data.kpiSource === kpiSource);
-            if (metaData && metaData.metaData) {
-              this.fieldMappingMetaData = metaData.metaData;
+        if(data && data['success']){
+          this.fieldMappingConfig = data?.data['fieldConfiguration'];
+          const kpiSource = data?.data['kpiSource']?.toLowerCase();
+          const toolConfigID = data?.data['projectToolConfigId'];
+          this.selectedToolConfig = [{ id: toolConfigID, toolName: kpiSource }];
+          if (this.fieldMappingConfig.length > 0) {
+            this.selectedConfig = { ...selectedTrend[0], id: selectedTrend[0]?.basicProjectConfigId }
+            this.getFieldMapping();
+            if (this.service.getFieldMappingMetaData().length) {
+              const metaDataList = this.service.getFieldMappingMetaData();
+              const metaData = metaDataList.find(data => data.projectID === selectedTrend[0]?.basicProjectConfigId && data.kpiSource === kpiSource);
+              if (metaData && metaData.metaData) {
+                this.fieldMappingMetaData = metaData.metaData;
+              } else {
+                this.getFieldMappingMetaData(kpiSource);
+              }
             } else {
               this.getFieldMappingMetaData(kpiSource);
             }
           } else {
-            this.getFieldMappingMetaData(kpiSource);
+            this.loading = false;
+            this.noData = true;
           }
-        } else {
-          this.loading = false;
-          this.noData = true;
         }
       })
     }
