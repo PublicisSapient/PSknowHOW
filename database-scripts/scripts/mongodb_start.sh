@@ -101,9 +101,6 @@ function running_js()
   echo "########## insert processors to show on run processor screen `date` ############"
 	mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/insert_processors.js
 
-	echo "########## insert field_mapping_structure to show kpiwise field mapping `date`############"
-  mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/field_mapping_structure.js
-
   echo "########## insert jira test tool added for existing user using testing field mapping `date` ############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/test_tool_backward_compatibility.js
 
@@ -127,9 +124,6 @@ function running_js()
 
   echo "########## Removing Backlog collections `date`############"
   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/remove_backlog_collections.js
-
-  echo "########## Field mapping configuration compatibility ############"
-   mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/field_mapping_configuration.js
 
   echo "########## Adding New FieldMapping for Backlog.js `date`############"
     mongo localhost:27017/${MONGODB_APPLICATION_DATABASE} --username=${MONGODB_APPLICATION_USER} --password=${MONGODB_APPLICATION_PASS} < /docker-entrypoint-initdb.d/adding_new_fieldMapping_for_backlog.js
