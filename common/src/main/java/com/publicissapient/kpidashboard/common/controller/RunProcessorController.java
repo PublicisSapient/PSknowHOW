@@ -49,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RunProcessorController {
 
 	private static final ExecutorService PROCESSOR_EXECUTORS = Executors.newFixedThreadPool(5);
+	private static final ExecutorService ACTIVE_ITERATION_EXECUTORS = Executors.newFixedThreadPool(5);
 
 	@Autowired(required = false)
 	private ProcessorJobExecutor<?> jobExecuter;
@@ -71,6 +72,24 @@ public class RunProcessorController {
 		log.info("Processor execution called");
 		ExecutionLogContext.getContext().destroy();
 		jobExecuter.getExecutionLogContext().destroy();
+		MDC.clear();
+		Map response = new HashMap();
+		response.put("status", "processing");
+		return ResponseEntity.ok().body(response);
+	}
+
+	@RequestMapping(value = "/activeIteration/fetch", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map> activeIterationDataFetch(@RequestBody String sprintId) {
+
+		MDC.put("Processor Name", jobExecuter.getProcessor().getProcessorName());
+		MDC.put("RequestStartTime", String.valueOf(System.currentTimeMillis()));
+
+		log.info("Received request to fetch the active sprint: {}", sprintId);
+		ACTIVE_ITERATION_EXECUTORS.execute(() -> jobExecuter.runSprint(sprintId));
+
+		MDC.put("RequestEndTime", String.valueOf(System.currentTimeMillis()));
+		log.info("Processor execution called for fetch sprint {}", sprintId);
+
 		MDC.clear();
 		Map response = new HashMap();
 		response.put("status", "processing");

@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -223,4 +224,16 @@ public class JiraProcessorUtilTest {
 
 	}
 
+	@Test
+	void processJqlForSprintFetch() {
+		// Arrange
+		List<String> issueKeys = Arrays.asList("KEY-1", "KEY-2", "KEY-3");
+		String expected = "issueKey in (KEY-1, KEY-2, KEY-3)";
+
+		// Act
+		String actual = JiraProcessorUtil.processJqlForSprintFetch(issueKeys);
+
+		// Assert
+		assertEquals(expected, actual);
+	}
 }

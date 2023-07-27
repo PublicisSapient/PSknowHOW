@@ -171,6 +171,8 @@ export class HttpService {
     this.baseUrl + '/api/capacity/jira/happiness';
   userName: string;
   userEmail: string;
+  private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
+  private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -1103,6 +1105,13 @@ export class HttpService {
     );
   }
 
+  getActiveIterationStatus(postData){
+    return this.http.post(this.activeIterationUrl + '/'+ postData.sprintId,{});
+  }
+
+  getactiveIterationfetchStatus(sprintId){
+    return this.http.get(this.activeIterationfetchStatusUrl+'/' + sprintId);
+  }
   getCommentSummary(data) {
     return this.http.post<object>(this.commentsSummaryUrl, data);
   }

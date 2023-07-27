@@ -28,8 +28,9 @@ import { MessageService, MenuItem } from 'primeng/api';
 import { faRotateRight } from '@fortawesome/fontawesome-free';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
-import { first } from 'rxjs/operators';
+import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { interval, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-filter',
@@ -45,6 +46,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
 
+  subject = new Subject();
   isSuperAdmin = false;
   masterData: any = {};
   filterData: any = [];
@@ -85,7 +87,6 @@ export class FilterComponent implements OnInit, OnDestroy {
   hierarchyLevels = [];
   trendLineValueList: any = [];
   toggleDateDropdown = false;
-  filteredSprints = [];
   showDropdown = {};
   selectedDateFilter = '';
   beginningDate;
@@ -125,6 +126,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   noProjects = false;
   selectedRelease = {};
   ssoLogin = environment.SSO_LOGIN;
+  lastSyncData: object = {};
   commentList: Array<object> = [];
   showCommentPopup:boolean = false;
   showSpinner: boolean = false;
@@ -168,6 +170,8 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {
+        this.lastSyncData ={};
+        this.subject.next(true);
         this.selectedTab = data.selectedTab;
         if(this.toggleDropdown['commentSummary']){
           this.toggleDropdown['commentSummary'] = false;
@@ -847,6 +851,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.subject.next(true);
     this.filterApplyData = [];
     this.service.setEmptyFilter();
     this.service.setSelectedLevel({});
@@ -1060,6 +1065,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     1: onload
     2: onchange */
   handleIterationFilters(level) {
+    this.lastSyncData={};
+    this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
       this.service.setNoSprints(false);
       if (level?.toLowerCase() === 'project') {
@@ -1181,8 +1188,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     } else {
       this.selectedProjectLastSyncStatus = "";
-      this.selectedProjectLastSyncDate = "NA"
-    }
+      this.selectedProjectLastSyncDate = "NA";
+   }
+  this.fetchActiveIterationStatus();
   }
   setSelectedDateType(label: string) {
     this.selectedDayType = label;
@@ -1375,6 +1383,77 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.selectedRelease = {};
       this.service.setNoRelease(true);
     }
+  }
+
+  fetchActiveIterationStatus() {
+    const sprintId = this.filterForm.get('selectedSprintValue')?.value;
+    const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
+    if (sprintState?.toLowerCase() === 'active') {
+      this.httpService.getactiveIterationfetchStatus(sprintId).subscribe(response => {
+        if (response['success']) {
+          const lastSyncDateTime = new Date(response['data'].lastSyncDateTime).getTime();
+          const lastRunProcessorDateTime = new Date(this.selectedProjectLastSyncDate).getTime();
+          if (lastSyncDateTime - lastRunProcessorDateTime > 0) {
+            this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+            if (response['data']?.fetchSuccessful === true) {
+              this.selectedProjectLastSyncStatus = 'SUCCESS';
+            } else if (response['data']?.errorInFetch === true) {
+              this.selectedProjectLastSyncStatus = 'FAILURE';
+            }
+          }
+        }
+
+      });
+    }
+  }
+
+  fetchData() {
+    const sprintId = this.filterForm.get('selectedSprintValue')?.value;
+    const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
+    if (sprintState?.toLowerCase() === 'active') {
+      this.lastSyncData = {
+        fetchSuccessful: false,
+        errorInFetch: false
+      };
+      this.selectedProjectLastSyncStatus = '';
+      this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
+        if (activeSprintStatus['success']) {
+          interval(10000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
+            if (response?.['success']) {
+              this.selectedProjectLastSyncStatus = '';
+              this.lastSyncData = response['data'];
+              if (response['data']?.fetchSuccessful === true) {
+                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+                this.selectedProjectLastSyncStatus = 'SUCCESS';
+                this.subject.next(true);
+              }else if(response['data']?.errorInFetch){
+                this.lastSyncData = {};
+                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+                this.selectedProjectLastSyncStatus = 'FAILURE';
+                this.subject.next(true);
+              }
+            } else {
+              this.subject.next(true);
+              this.lastSyncData = {};
+            }
+          }, error => {
+            this.subject.next(true);
+            this.lastSyncData = {};
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error in syncing data. Please try after some time.',
+            });
+          });
+        } else {
+          this.lastSyncData = {};
+        }
+      });
+    }
+  }
+
+  onUpdateKPI(){
+    this.lastSyncData ={};
+    this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
   }
 
   getRecentComments(){

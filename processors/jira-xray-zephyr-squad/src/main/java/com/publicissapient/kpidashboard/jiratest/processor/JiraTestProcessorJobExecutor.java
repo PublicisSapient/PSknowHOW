@@ -203,6 +203,11 @@ public class JiraTestProcessorJobExecutor extends ProcessorJobExecutor<JiraTestP
 
 	}
 
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
+
 	/**
 	 * Gets project conf Field Mapping
 	 *

@@ -136,5 +136,10 @@ public class ProcessorTaskTests {
 		public boolean execute(Processor processor) {
 			return true;
 		}
+
+		@Override
+		public boolean executeSprint(String sprintId) {
+			return false;
+		}
 	}
 }

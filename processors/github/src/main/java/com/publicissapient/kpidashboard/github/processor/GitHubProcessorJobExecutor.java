@@ -244,6 +244,10 @@ public class GitHubProcessorJobExecutor extends ProcessorJobExecutor<GitHubProce
 		MDC.clear();
 		return executionStatus;
 	}
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
 
 	private void updateAssigneeNameForCommits(boolean assigneeFlag, GitHubProcessorItem gitHubProcessorItem,
 			List<CommitDetails> commitDetailList, Set<CommitDetails> unsavedCommits) {

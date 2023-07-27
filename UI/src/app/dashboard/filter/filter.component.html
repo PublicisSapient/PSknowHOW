@@ -167,9 +167,26 @@
 
          <div class="p-d-flex p-align-center">
             <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
-               <h4 class="label-text p-text-right p-mt-0 p-mb-2">Last Sync of Data
-                  <span [ngClass]="(selectedProjectLastSyncStatus && selectedProjectLastSyncStatus == 'SUCCESS') ? 'active-state' : 'traceLog-fail-font'"> {{selectedProjectLastSyncStatus && selectedProjectLastSyncStatus != '' ? '('+selectedProjectLastSyncStatus+')' : ""}}</span>
-               </h4>
+               <div class="p-d-flex p-align-center p-jc-end">
+                  <img *ngIf="selectedProjectLastSyncStatus === 'SUCCESS'" src="../../../assets/img/icon-success.svg" alt="Success" class="p-mr-1"/>
+                  <img *ngIf="!((lastSyncData | json) == '{}') && !lastSyncData?.fetchSuccessful && !lastSyncData?.errorInFetch" src="../../../assets/img/icon-time.svg" alt="Time" class="p-mr-1" />
+                  <img *ngIf="selectedProjectLastSyncStatus === 'FAILURE'" src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />
+                  <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
+                     Last Sync
+                  </h4>
+                  <ng-container *ngIf="this.selectedSprint['sprintState'] === 'ACTIVE'">
+                     <span class="refresh-state p-p-1" (click)="fetchData()" *ngIf=" (lastSyncData | json) == '{}' || lastSyncData.errorInFetch">
+                        <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh"/>Refresh
+                     </span>
+                     <span class="refresh-state p-p-1" *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
+                        <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync"/>Syncing
+                     </span>
+                     <span class="success-state p-p-1" *ngIf="!((lastSyncData | json) == '{}') && lastSyncData?.fetchSuccessful" (click)="onUpdateKPI()">
+                        <img src="../../../assets/img/icon-update.svg" class="p-mr-1" alt="Update"/>Update
+                     </span>
+                  </ng-container>
+                
+               </div>  
                <p class="last-sync-date p-m-0 p-text-right">
                   {{selectedProjectLastSyncDate != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
                </p>
