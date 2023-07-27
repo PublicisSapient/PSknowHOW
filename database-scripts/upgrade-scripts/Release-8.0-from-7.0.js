@@ -181,9 +181,9 @@ db.getCollection('kpi_master').insertMany(
              "kpiId": { $in: kpiIdsToUpdate }
          },
          update: {
-             { $set: { "groupId": newGroupId } }
+              $set: { "groupId": newGroupId } }
          }
-     }
+
 });
 
  //bulk write to update kpiMaster
@@ -424,7 +424,7 @@ fieldMappings.forEach(function(fm) {
 
 //--------insert field_mapping_structure
 db.kpi_fieldmapping.drop();
-if(db.getCollection('field_mapping_structure')===null){
+if(db.field_mapping_structure.find().count()==0){
 db.getCollection('field_mapping_structure').insert(
     [{
             "fieldName": "jiraStoryIdentificationKpi40",

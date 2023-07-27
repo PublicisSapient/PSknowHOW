@@ -6052,7 +6052,7 @@ db.kpi_column_configs.insertMany([{
 //project. these can be changed/updated in project config under setting in the KnowHOW
 
 //field_mapping_structure
-db.getCollection('field_mapping_structure').insert(
+db.getCollection('field_mapping_structure').insertMany(
 [{
         "fieldName": "jiraStoryIdentificationKpi40",
         "fieldLabel": "Issue type to identify Story",
