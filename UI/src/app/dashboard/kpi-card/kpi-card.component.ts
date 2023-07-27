@@ -67,7 +67,9 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
-      if (Object.keys(x)?.length > 0) {
+       /** Refreshing multiselect filter when project/sprint/release are changing from the boards */
+       this.filterOptions = x?.action === 'new' ? {} : {...this.filterOptions};
+      if (Object.keys(x)?.length > 1) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
           if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {

@@ -901,6 +901,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 } else {
                     this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
                 }
+                this.kpiSelectedFilterObj['action']='new';
                 this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
             }
             const agType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.aggregationCriteria;
@@ -986,6 +987,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
         }
         this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
+        this.kpiSelectedFilterObj['action']='update';
         this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
     }
     downloadGlobalExcel(){
