@@ -158,6 +158,7 @@ public class UnplannedWorkStatusServiceImplTest {
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> returnMap = unplannedWorkStatusService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertNotNull(returnMap);

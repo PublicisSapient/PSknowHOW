@@ -1106,4 +1106,10 @@ export class HttpService {
   getCommentSummary(data) {
     return this.http.post<object>(this.commentsSummaryUrl, data);
   }
+
+  /** This method is responsible for getting field mapping configuration for specfic KPI and processor */
+  getKPIFieldMappingConfig(KPIID) {
+    return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
+  }
+
 }

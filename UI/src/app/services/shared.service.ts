@@ -86,6 +86,8 @@ export class SharedService {
   public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
   noRelease = new BehaviorSubject<any>(false);
   noReleaseObs = this.noRelease.asObservable();
+  fieldMappingOptionsMetaData : any = []
+
   constructor() {
     this.passDataToDashboard = new EventEmitter();
     this.globalDashConfigData = new EventEmitter();
@@ -335,6 +337,14 @@ export class SharedService {
 
   setNoRelease(value){
     this.noRelease.next(value)
+  }
+
+  setFieldMappingMetaData(metaDataObj){
+    this.fieldMappingOptionsMetaData = [...this.fieldMappingOptionsMetaData,metaDataObj];
+  }
+
+  getFieldMappingMetaData(){
+    return this.fieldMappingOptionsMetaData;
   }
 }
 

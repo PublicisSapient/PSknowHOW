@@ -74,6 +74,7 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 
 	public static final String UNCHECKED = "unchecked";
 	private static final String TOTAL_ISSUES = "Total Issues";
+	private static final String SPRINT_DETAILS = "SprintDetails";
 	private static final String CREATED_DURING_ITERATION = "Created during Iteration";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	@Autowired
@@ -121,12 +122,17 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 			log.info("Defect count by Status -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			String sprintId = leafNode.getSprintFilter().getId();
-			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
 			List<String> defectType = new ArrayList<>();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
+			SprintDetails sprintDetails;
+			if (null != dbSprintDetail) {
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+				// to modify sprintdetails on the basis of configuration for the project
+				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+						new ArrayList<>(),
+						fieldMapping.getJiraIterationCompletionStatusKPI136(), null).get(0);
 
-			if (null != sprintDetails) {
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
@@ -177,6 +183,7 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 
 					resultListMap.put(CommonConstant.TOTAL_ISSUES, new ArrayList<>(allIssues));
 				}
+				resultListMap.put(SPRINT_DETAILS, sprintDetails);
 			}
 		}
 		return resultListMap;
@@ -212,7 +219,7 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 			if (fieldMapping != null) {
-				SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
+				SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT_DETAILS);
 				List<JiraIssue> allCompletedDefects = filterDefects(resultMap, fieldMapping);
 				List<JiraIssue> createDuringIteration = allCompletedDefects.stream()
 						.filter(jiraIssue -> DateUtil.isWithinDateRange(

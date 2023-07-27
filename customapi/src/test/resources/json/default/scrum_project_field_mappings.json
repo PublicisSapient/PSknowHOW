@@ -1,115 +1,54 @@
 [
   {
-    "_id": 
+    "_id":
     "63354cf89a86a10a43ae4802"
-    ,
-    "projectToolConfigId": 
+  ,
+    "projectToolConfigId":
     "6335378549794a18e8a447a4"
-    ,
-    "basicProjectConfigId": 
-    "6335363749794a18e8a4479b"
-    ,
+  ,
+    "basicProjectConfigId":
+    "6335363749794a18e8a4479b",
     "sprintName": "customfield_12700",
     "jiradefecttype": [
       "Defect"
     ],
-    "defectPriority": [],
     "jiraIssueTypeNames": [
-      "Story",
-      "Enabler Story",
-      "Change request",
       "Defect",
       "Epic"
     ],
-    "jiraIssueEpicType": [
+    "jiraIssueTypeNamesAVR": [
+      "Defect",
       "Epic"
     ],
     "storyFirstStatus": "Open",
-    "readyForDevelopmentStatus": "Ready for Development",
+    "storyFirstStatusKPI148": "Open",
     "rootCause": "customfield_19121",
-    "jiraStatusForDevelopment": [
-      "Implementing",
-      "In Development",
-      "In Analysis"
+    "jiraIssueEpicType": [
+      "Epic"
     ],
     "jiraStatusForQa": [
       "In Testing"
     ],
-    "jiraDefectInjectionIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
+    "jiraStatusForQaKPI135": [
+      "In Testing"
     ],
-    "jiraDod": [
-      "Closed",
-      "Ready for Delivery"
+    "jiraStatusForQaKPI82": [
+      "In Testing"
     ],
-    "jiraDefectCreatedStatus": "Open",
+    "jiraDod": ["Closed"],
+    "jiraDodKPI14": ["Closed"],
+    "jiraDodQAKPI111": ["Closed"],
+    "jiraDodPDA": ["Closed"],
     "jiraTechDebtIssueType": [
       "Story",
       "Enabler Story",
       "Change request"
     ],
-    "jiraStatusForInProgress": [
-      "On Progress",
-      "In Development",
-      "In Testing"
-    ],
-    "jiraTechDebtIdentification": "",
-    "jiraTechDebtCustomField": "",
-    "jiraTechDebtValue": [],
-    "jiraDefectRejectionStatus": "Closed",
     "jiraBugRaisedByIdentification": "",
     "jiraBugRaisedByValue": [],
-    "jiraDefectSeepageIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
     "jiraBugRaisedByCustomField": "",
-    "jiraDefectRemovalStatus": [
-      "Closed",
-      "Ready for Delivery"
-    ],
-    "jiraDefectRemovalIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
     "jiraStoryPointsCustomField": "customfield_20803",
     "jiraTestAutomationIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraCanNotAutomatedTestValue": [],
-    "jiraSprintVelocityIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraSprintCapacityIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraDefectRejectionlIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request",
-      "Bug"
-    ],
-    "jiraDefectCountlIssueType": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraIssueDeliverdStatus": [
-      "Closed",
-      "Ready for Delivery"
-    ],
-    "jiraDor": "Ready for Sprint Planning",
-    "jiraIntakeToDorIssueType": [
       "Story",
       "Enabler Story",
       "Change request"
@@ -119,93 +58,133 @@
       "Enabler Story",
       "Change request"
     ],
-    "jiraLiveStatus": "Live",
-    "regressionAutomationLabels": [],
-    "rootCauseValue": [
-      "Coding"
-    ],
-    "excludeRCAFromFTPR": [],
-    "resolutionTypeForRejection": [
-      "Invalid",
-      "Duplicate",
-      "Unrequired",
-      "Fixed or Completed"
-    ],
-    "jiraQADefectDensityIssueType": [
+    "jiraStoryIdentificationKpi40": [
       "Story",
       "Enabler Story",
       "Change request"
     ],
+    "jiraLiveStatus": "",
+    "jiraLiveStatusLTK": "",
+    "jiraLiveStatusNOPK": "",
+    "jiraLiveStatusNOSK": "",
+    "jiraLiveStatusNORK": "",
+    "jiraLiveStatusOTA": "",
+    "jiraLiveStatusPDA": "",
+    "rootCauseValue": [
+      "Coding"
+    ],
     "jiraBugRaisedByQACustomField": "",
     "jiraBugRaisedByQAIdentification": "",
     "jiraBugRaisedByQAValue": [],
-    "jiraDefectDroppedStatus": [],
     "epicCostOfDelay": "customfield_58102",
     "epicRiskReduction": "customfield_58101",
     "epicUserBusinessValue": "customfield_58100",
     "epicWsjf": "customfield_58104",
     "epicTimeCriticality": "customfield_51002",
     "epicJobSize": "customfield_61041",
-    "productionDefectCustomField": "",
-    "productionDefectIdentifier": "",
-    "productionDefectValue": [],
-    "productionDefectComponentValue": "",
-    "jiraTestCaseType": [
-      "Defect"
-    ],
-    "testAutomatedIdentification": "Labels",
-    "testAutomationCompletedIdentification": "Labels",
-    "testRegressionIdentification": "Labels",
-    "testAutomated": "",
-    "testAutomationCompletedByCustomField": "",
-    "testRegressionByCustomField": "",
-    "jiraAutomatedTestValue": [
-      "UI"
-    ],
-    "jiraRegressionTestValue": [
-      "JAVA",
-      "UI"
-    ],
-    "jiraCanBeAutomatedTestValue": [
-      "JAVA"
-    ],
-    "jiraFTPRStoryIdentification": [
-      "Story",
-      "Enabler Story",
-      "Change request"
-    ],
-    "jiraWaitStatus": [
-      "Ready for Testing",
+    "jiraStatusForInProgress": [
+      "In Analysis",
       "In Development",
-      "Closed"
+      "In Progress"
     ],
-    "jiraBlockedStatus": [
-      "On Hold",
-      "In Investigation",
-      "Open"
+    "jiraStatusForInProgressKPI122": [
+      "In Analysis",
+      "In Development",
+      "In Progress"
     ],
-    "jiraIncludeBlockedStatus": "Include Flagged Issue",
-    "jiraDefectClosedStatus": [
-      "Closed"
+    "jiraStatusForInProgressKPI145": [
+      "In Analysis",
+      "In Development",
+      "In Progress"
+    ],
+    "jiraStatusForInProgressKPI125": [
+      "In Analysis",
+      "In Development",
+      "In Progress"
+    ],
+    "jiraStatusForInProgressKPI128": [
+      "In Analysis",
+      "In Development",
+      "In Progress"
+    ],
+    "jiraStatusForInProgressKPI123": [
+      "In Analysis",
+      "In Development",
+      "In Progress"
+    ],
+    "jiraStatusForInProgressKPI119": [
+      "In Analysis",
+      "In Development",
+      "In Progress"
     ],
     "estimationCriteria": "Story Point",
-    "storyPointToHourMapping": 
-    "8"
-    ,
-    "workingHoursDayCPT": 
-    "6"
-    ,
-    "additionalFilterConfig": [
-      {
-        "filterId": "afOne",
-        "identifyFrom": "Labels",
-        "identificationField": "",
-        "values": [
-          "JAVA",
-          "UI"
-        ]
-      }
-    ],
-    "_class": "com.publicissapient.kpidashboard.common.model.application.FieldMapping"
+    "storyPointToHourMapping": 8.0,
+    "workingHoursDayCPT": 6.0,
+    "additionalFilterConfig": [],
+    "jiraDueDateField": "Due Date",
+    "jiraIterationCompletionStatusCustomField": [],
+    "jiraIterationCompletionStatusKPI135": [],
+    "jiraIterationCompletionStatusKPI122": [],
+    "jiraIterationCompletionStatusKPI75": [],
+    "jiraIterationCompletionStatusKPI145": [],
+    "jiraIterationCompletionStatusKPI140": [],
+    "jiraIterationCompletionStatusKPI132": [],
+    "jiraIterationCompletionStatusKPI136": [],
+    "jiraIterationCompletionStatusKpi72": [],
+    "jiraIterationCompletionStatusKpi39": [],
+    "jiraIterationCompletionStatusKpi5": [],
+    "jiraIterationCompletionStatusKPI124": [],
+    "jiraIterationCompletionStatusKPI123": [],
+    "jiraIterationCompletionStatusKPI125": [],
+    "jiraIterationCompletionStatusKPI120": [],
+    "jiraIterationCompletionStatusKPI128": [],
+    "jiraIterationCompletionStatusKPI134": [],
+    "jiraIterationCompletionStatusKPI133": [],
+    "jiraIterationCompletionStatusKPI119": [],
+    "jiraIterationCompletionStatusKPI131": [],
+    "jiraIterationCompletionStatusBRE": [],
+    "jiraIssueDeliverdStatusKPI126": [],
+    "jiraLiveStatusNORK": "",
+    "jiraLiveStatusNOSK": "",
+    "jiraDodKPI3": [],
+    "defectPriorityKPI82": [],
+    "jiraDefectClosedStatus": ["Closed"],
+    "jiraDefectClosedStatusKPI137": ["Closed"],
+    "jiraDefectRejectionStatus":"Open",
+    "jiraDefectRejectionStatusAVR":"Open",
+    "jiraDefectRejectionStatusKPI28":"Open",
+    "jiraDefectRejectionStatusKPI34":"Open",
+    "jiraDefectRejectionStatusKPI37":"Open",
+    "jiraDefectRejectionStatusKPI35":"Open",
+    "jiraDefectRejectionStatusKPI82":"Open",
+    "jiraDefectRejectionStatusKPI135":"Open",
+    "jiraDefectRejectionStatusKPI133":"Open",
+    "jiraDefectRejectionStatusRCAKPI36":"Open",
+    "jiraDefectRejectionStatusKPI14":"Open",
+    "jiraDefectRejectionStatusQAKPI111":"Open",
+    "excludeRCAFromFTPR":["coding", "code"],
+    "excludeRCAFromKPI82":["coding", "code"],
+    "excludeRCAFromKPI135":["coding", "code"],
+    "excludeRCAFromKPI14":["coding", "code"],
+    "excludeRCAFromQAKPI111":["coding", "code"],
+    "excludeRCAFromKPI133":["coding", "code"],
+    "defectPriority":["p1"],
+    "defectPriorityKPI135":["p1"],
+    "defectPriorityKPI14":["p1"],
+    "defectPriorityQAKPI111":["p1"],
+    "defectPriorityKPI82":["p1"],
+    "defectPriorityKPI133":["p1"],
+    "resolutionTypeForRejection":["Invalid"],
+    "resolutionTypeForRejectionAVR":["Invalid"],
+    "resolutionTypeForRejectionKPI28":["Invalid"],
+    "resolutionTypeForRejectionKPI34":["Invalid"],
+    "resolutionTypeForRejectionKPI37":["Invalid"],
+    "resolutionTypeForRejectionKPI35":["Invalid"],
+    "resolutionTypeForRejectionKPI82":["Invalid"],
+    "resolutionTypeForRejectionKPI135":["Invalid"],
+    "resolutionTypeForRejectionKPI133":["Invalid"],
+    "resolutionTypeForRejectionRCAKPI36":["Invalid"],
+    "resolutionTypeForRejectionKPI14":["Invalid"],
+    "resolutionTypeForRejectionQAKPI111":["Invalid"]
   }
-    ]
+]

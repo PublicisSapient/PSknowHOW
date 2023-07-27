@@ -478,7 +478,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             if(this.sonarKpiData['kpi17']?.trendValueList?.length>0){
                 let overallObj = {
                    'filter': 'Overall',
-                   'value': [] 
+                   'value': []
                 }
                 for(let i = 0; i<this.sonarKpiData['kpi17']?.trendValueList?.length;i++){
                     for(let j = 0; j < this.sonarKpiData['kpi17']?.trendValueList[i]?.value?.length; j++){
@@ -753,7 +753,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         const kpiData = this.masterData.kpiList.find(kpiObj => kpiObj.kpiId === kpiId);
         if (!kpiData?.videoLink?.disabled && kpiData?.videoLink?.videoUrl) {
             return kpiData?.videoLink?.videoUrl;
-        } 
+        }
     }
 
     // Return boolean flag based on link is available and video is enabled
@@ -893,7 +893,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     };
                     data.push(rowData);
                 }
-                
+
                 this.kpiChartData[kpiId].data = data;
             }
             this.showKpiTrendIndicator[kpiId] = false;
@@ -910,7 +910,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
           }
         }
         return arr;
-      }  
+      }
 
     ifKpiExist(kpiId) {
         const id = this.allKpiArray?.findIndex((kpi) => kpi.kpiId == kpiId);
@@ -937,13 +937,14 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     let initialC= trendValueList[0].filter1;
                     if(data[key]?.kpiId ==="kpi72"){
                       this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [initialC],'filter2': ['Overall'] };
-                    } 
+                    }
                     else{
                       this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter': ['Overall'] };
-                    } 
+                    }
                 } else {
                     this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
                 }
+                this.kpiSelectedFilterObj['action']='new';
                 this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
             }
             const agType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.aggregationCriteria;
@@ -1000,7 +1001,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                                 // if (ifF1Exist == -1 && trendValueList[i]?.filter2?.toLowerCase() !=="overall") {
                                     if (ifF1Exist == -1 ) {
                                     optionsArr2?.push(trendValueList[i]?.filter2);
-                                    
+
                                 }
                             }
                         }
@@ -1031,7 +1032,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     obj2['filterType'] = 'Filter by issue type';
                     obj2['options'] = optionsArr2;
                     this.kpiDropdowns[kpiId].push(obj2);
-                }               
+                }
             }
         }
     }
@@ -1076,11 +1077,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         } else {
           this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
         }
-      }      
-      this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
-      this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+      }
+       this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
+              this.kpiSelectedFilterObj['action']='update';
+              this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
     }
-    
+
     downloadGlobalExcel(){
         let worksheet;
         const workbook = new Excel.Workbook();
@@ -1100,9 +1102,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             worksheet.getRow(1).getCell((i*3)+3).fill = { type: 'pattern', pattern: 'solid', fgColor:{argb:colorCode} };
             worksheet.getRow(1).getCell((i*3)+4).fill = { type: 'pattern', pattern: 'solid', fgColor:{argb:colorCode} };
         }
-    
+
         worksheet.columns = [...headers];
-        
+
         for(let kpi of this.updatedConfigGlobalData){
             let kpiId = kpi.kpiId;
             if(this.kpiTrendsObj[kpiId]?.length > 0){
@@ -1116,7 +1118,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 worksheet.addRow(obj);
             }
         }
-       
+
 
         worksheet.eachRow(function(row, rowNumber) {
             if (rowNumber === 1) {
@@ -1208,7 +1210,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         let latest:string = '';
         let trend:string = '';
         if(item?.value?.length > 0){
-            let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value; 
+            let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
             var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit.trim() : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
@@ -1259,8 +1261,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         "hierarchyName": this.kpiChartData[kpiId][i]?.data,
                         "value": latest,
                         "trend": trend,
-                        "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ? 
-                                    this.checkMaturity(this.kpiChartData[kpiId][i]) 
+                        "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
+                                    this.checkMaturity(this.kpiChartData[kpiId][i])
                                     : 'M'+this.kpiChartData[kpiId][i]?.maturity,
                         "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue,
                         "kpiUnit" : unit
@@ -1290,7 +1292,54 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
             this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
                 this.kpiCommentsCountObj = res;
-            }); 
+            });
+        }
+    }
+
+    reloadKPI(event) {
+        const idx = this.ifKpiExist(event?.kpiDetail?.kpiId)
+        if(idx !== -1){
+            this.allKpiArray.splice(idx,1);
+        }
+        const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, '');
+        if (currentKPIGroup?.kpiList?.length > 0) {
+            const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
+            if (this.service.getSelectedType().toLowerCase() === 'kanban') {
+                switch (kpiSource) {
+                    case 'sonar':
+                        this.postSonarKanbanKpi(currentKPIGroup, 'sonar');
+                        break;
+                    case 'jenkins':
+                        this.postJenkinsKanbanKpi(currentKPIGroup, 'jenkins');
+                        break;
+                    case 'zypher':
+                        this.postZypherKanbanKpi(currentKPIGroup, 'zypher');
+                        break;
+                    case 'bitbucket':
+                        this.postBitBucketKanbanKpi(currentKPIGroup, 'bitbucket');
+                        break;
+                    default:
+                        this.postJiraKanbanKpi(currentKPIGroup, 'jira');
+                }
+            } else {
+                switch (kpiSource) {
+                    case 'sonar':
+                        this.postSonarKpi(currentKPIGroup, 'sonar');
+                        break;
+                    case 'jenkins':
+                        this.postJenkinsKpi(currentKPIGroup, 'jenkins');
+                        break;
+                    case 'zypher':
+                        this.postZypherKpi(currentKPIGroup, 'zypher');
+                        break;
+                    case 'bitbucket':
+                        this.postBitBucketKpi(currentKPIGroup, 'bitbucket');
+                        break;
+                    default:
+                        this.postJiraKpi(currentKPIGroup, 'jira');
+
+                }
+            }
         }
     }
 }

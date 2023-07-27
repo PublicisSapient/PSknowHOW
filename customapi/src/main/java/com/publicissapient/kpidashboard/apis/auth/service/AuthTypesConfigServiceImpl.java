@@ -78,14 +78,14 @@ public class AuthTypesConfigServiceImpl implements AuthTypesConfigService {
 		// find users
 		if (!authTypeStatus.isStandardLogin()) {
 			List<UserInfo> standardUsers = userInfoService.getUserInfoByAuthType(AuthType.STANDARD.name());
-			if (standardUsers != null && standardUsers.size() > 0) {
+			if (standardUsers != null && !standardUsers.isEmpty()) {
 				usernames.addAll(standardUsers.stream().map(UserInfo::getUsername).collect(Collectors.toList()));
 			}
 		}
 
 		if (!authTypeStatus.isAdLogin()) {
 			List<UserInfo> adUsers = userInfoService.getUserInfoByAuthType(AuthType.LDAP.name());
-			if (adUsers != null && adUsers.size() > 0) {
+			if (adUsers != null && !adUsers.isEmpty()) {
 				usernames.addAll(adUsers.stream().map(UserInfo::getUsername).collect(Collectors.toList()));
 			}
 		}
@@ -115,8 +115,7 @@ public class AuthTypesConfigServiceImpl implements AuthTypesConfigService {
 
 	private GlobalConfig getGlobalConfig() {
 		List<GlobalConfig> globalConfigs = globalConfigRepository.findAll();
-		GlobalConfig globalConfig = CollectionUtils.isEmpty(globalConfigs) ? null : globalConfigs.get(0);
-		return globalConfig;
+		return CollectionUtils.isEmpty(globalConfigs) ? null : globalConfigs.get(0);
 	}
 
 	private String encryptStringForDb(String plainText) {

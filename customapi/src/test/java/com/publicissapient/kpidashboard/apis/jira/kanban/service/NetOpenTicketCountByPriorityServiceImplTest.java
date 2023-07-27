@@ -129,7 +129,7 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 	private void setMockFieldMapping() {
 
 		FieldMapping projectOne = new FieldMapping();
-		projectOne.setBasicProjectConfigId(new ObjectId("5b674d58f47cae8935b1b26f"));
+		projectOne.setBasicProjectConfigId(new ObjectId("6335368249794a18e8a4479f"));
 		projectOne.setTicketCountIssueType(Arrays.asList("Story"));
 
 		FieldMapping projectTwo = new FieldMapping();
@@ -181,13 +181,14 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("JiraIssueHistoryData", kanbanIssueCustomHistoryDataList);
 		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(), any(),
-				anyString())).thenReturn(resultMap);
+				anyString(), anyMap())).thenReturn(resultMap);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(netOpenTicketCountByPriorityImpl.getKanbanRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 		try {
 			KpiElement kpiElement = netOpenTicketCountByPriorityImpl.getKpiData(kpiRequest,

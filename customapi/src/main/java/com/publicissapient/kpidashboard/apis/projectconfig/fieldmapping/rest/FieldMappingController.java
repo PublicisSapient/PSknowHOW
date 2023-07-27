@@ -18,6 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.rest;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +42,9 @@ import com.publicissapient.kpidashboard.common.model.application.dto.FieldMappin
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+import java.util.Optional;
+
 /**
  * @author anisingh4
  */
@@ -51,6 +57,9 @@ public class FieldMappingController {
 
 	@Autowired
 	private ContextAwarePolicyEnforcement policy;
+
+	@Autowired
+	private ConfigHelperService configHelperService;
 
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> addFieldMapping(@PathVariable String projectToolConfigId,
@@ -81,7 +90,7 @@ public class FieldMappingController {
 
 	@RequestMapping(value = "/tools/{projectToolConfigId}/saveMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> saveFieldMapping(@PathVariable String projectToolConfigId,
-			@RequestBody FieldMappingDTO fieldMappingDTO) {
+															@RequestBody FieldMappingDTO fieldMappingDTO) {
 
 		projectToolConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectToolConfigId);
 
@@ -92,17 +101,31 @@ public class FieldMappingController {
 		final ModelMapper modelMapper = new ModelMapper();
 		FieldMapping fieldMapping = modelMapper.map(fieldMappingDTO, FieldMapping.class);
 
+		List<ProjectToolConfig> projectToolConfigs = (List<ProjectToolConfig>) configHelperService
+				.loadAllProjectToolConfig();
+
+		String finalProjectToolConfigId = projectToolConfigId;
+		Optional<ProjectToolConfig> projectToolConfigOptional = projectToolConfigs.stream()
+				.filter(t -> t.getId().toString().equals(finalProjectToolConfigId))
+				.findFirst();
+		ProjectToolConfig projectToolConfig = projectToolConfigOptional.orElse(null);
+
 		boolean result = fieldMappingService.compareMappingOnSave(projectToolConfigId, fieldMapping);
 
-		ServiceResponse response = null;
-		if (result) {
-			response = new ServiceResponse(true, "mappings are not same as default mapping", result);
+		ServiceResponse response;
+		if (result && projectToolConfig != null &&
+				(projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)
+						|| projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN))) {
+			response = new ServiceResponse(true, "changes are made in customize mappings", false);
 		} else {
-			response = new ServiceResponse(true, "mappings are same as default mapping", result);
+			response = new ServiceResponse(true, "mappings are " + (result ? "not " : "") + "same as "
+					+ (projectToolConfig != null ? "already maintained" : "default") + " mapping", result);
+
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
+
 
 	@RequestMapping(value = "/tools/{projectToolConfigId}/fieldMapping", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> getFieldMapping(@PathVariable String projectToolConfigId) {

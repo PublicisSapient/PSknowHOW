@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy,OnChanges, SimpleChanges } from '@angular/core';
 import { faShareSquare } from '@fortawesome/free-solid-svg-icons';
 import { SharedService } from 'src/app/services/shared.service';
+import { HttpService } from 'src/app/services/http.service';
 @Component({
   selector: 'app-kpi-card',
   templateUrl: './kpi-card.component.html',
@@ -12,6 +13,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   @Output() downloadExcel = new EventEmitter<boolean>();
   @Input() dropdownArr: any;
   @Output() optionSelected = new EventEmitter<any>();
+  @Output() reloadKPITab = new EventEmitter<any>();
   faShareSquare = faShareSquare;
   isTooltip = false;
   filterTooltip = false;
@@ -43,10 +45,20 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
  ];
  sprintDetailsList : Array<any>;
  colorCssClassArray = ['sprint-hover-project1','sprint-hover-project2','sprint-hover-project3','sprint-hover-project4','sprint-hover-project5','sprint-hover-project6'];
+ displayConfigModel = false;
+ fieldMappingMetaData = [];
+ disableSave = false
+ fieldMappingConfig = [];
+ selectedFieldMapping = []
+ selectedConfig: any = {};
+ selectedToolConfig: any = [];
+ loading : boolean = false
+ noData : boolean = false
  @Input() commentCount : string;
  @Output() getCommentCountByKpi = new EventEmitter();
 
-  constructor(private service: SharedService) {
+  constructor(private service: SharedService,
+    private http : HttpService) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -55,7 +67,9 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
 
   ngOnInit(): void {
     this.subscriptions.push(this.service.selectedFilterOptionObs.subscribe((x) => {
-      if (Object.keys(x)?.length > 0) {
+       /** Refreshing multiselect filter when project/sprint/release are changing from the boards */
+       this.filterOptions = x?.action === 'new' ? {} : {...this.filterOptions};
+      if (Object.keys(x)?.length > 1) {
         this.kpiSelectedFilterObj = JSON.parse(JSON.stringify(x));
         for (const key in x[this.kpiData?.kpiId]) {
           if (x[this.kpiData?.kpiId][key]?.includes('Overall')) {
@@ -212,6 +226,83 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
 
   getColorCssClasses(index){
     return this.colorCssClassArray[index];
+  }
+
+  /** When field mapping dialog is opening */
+  onOpenFieldMappingDialog(){
+    this.getKPIFieldMappingConfig();
+  }
+
+  /** This method is responsible for getting field mapping configuration for specfic KPI */
+  getKPIFieldMappingConfig() {
+    const selectedTab = this.service.getSelectedTab().toLowerCase();
+    const selectedType = this.service.getSelectedType().toLowerCase();
+    const selectedTrend = this.service.getSelectedTrends();
+    if (selectedType === 'scrum' && selectedTrend.length == 1  && selectedTab !== 'release') {
+      this.loading = true;
+      this.displayConfigModel = true;
+      this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`).subscribe(data => {
+        if(data && data['success']){
+          this.fieldMappingConfig = data?.data['fieldConfiguration'];
+          const kpiSource = data?.data['kpiSource']?.toLowerCase();
+          const toolConfigID = data?.data['projectToolConfigId'];
+          this.selectedToolConfig = [{ id: toolConfigID, toolName: kpiSource }];
+          if (this.fieldMappingConfig.length > 0) {
+            this.selectedConfig = { ...selectedTrend[0], id: selectedTrend[0]?.basicProjectConfigId }
+            this.getFieldMapping();
+            if (this.service.getFieldMappingMetaData().length) {
+              const metaDataList = this.service.getFieldMappingMetaData();
+              const metaData = metaDataList.find(data => data.projectID === selectedTrend[0]?.basicProjectConfigId && data.kpiSource === kpiSource);
+              if (metaData && metaData.metaData) {
+                this.fieldMappingMetaData = metaData.metaData;
+              } else {
+                this.getFieldMappingMetaData(kpiSource);
+              }
+            } else {
+              this.getFieldMappingMetaData(kpiSource);
+            }
+          } else {
+            this.loading = false;
+            this.noData = true;
+          }
+        }
+      })
+    }
+  }
+
+  getFieldMapping() {
+    this.http.getFieldMappings(this.selectedToolConfig[0].id).subscribe(mappings => {
+      if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 2) {
+        this.selectedFieldMapping = mappings['data'];
+        this.noData = false;
+        this.displayConfigModel = true;
+        this.loading = false;
+
+      } else {
+        this.loading = false;
+        this.noData = true;
+      }
+    });
+  }
+
+  getFieldMappingMetaData(kpiSource) {
+    this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id).subscribe(Response => {
+      if (Response.success) {
+        this.fieldMappingMetaData = Response.data;
+        this.service.setFieldMappingMetaData({
+          projectID: this.service.getSelectedTrends()[0]?.basicProjectConfigId,
+          kpiSource: kpiSource,
+          metaData: Response.data
+        })
+      } else {
+        this.fieldMappingMetaData = [];
+      }
+    });
+  }
+
+  reloadKPI(){
+    this.displayConfigModel = false;
+    this.reloadKPITab.emit(this.kpiData);
   }
 
   handleGetCount(event){

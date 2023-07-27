@@ -1,22 +1,50 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-} from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 
 import { KpiCardComponent } from './kpi-card.component';
 import { SharedService } from 'src/app/services/shared.service';
+import { HttpService } from 'src/app/services/http.service';
+import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
+import { of } from 'rxjs';
+
 
 describe('KpiCardComponent', () => {
   let component: KpiCardComponent;
   let fixture: ComponentFixture<KpiCardComponent>;
   let sharedService: SharedService;
-
+  let httpService: HttpService;
+  const fakeKpiFieldMappingList = require('../../../test/resource/fakeMappingFieldConfig.json');
+  const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
+  const fakeSelectedFieldMapping = {
+    "id": "63282cbaf5c740241aff32a1",
+    "projectToolConfigId": "63282ca6487eff1e8b70b1bb",
+    "basicProjectConfigId": "63282c82487eff1e8b70b1b9",
+    "sprintName": "customfield_12700",
+    "jiradefecttype": [
+      "Defect"
+    ],
+    "defectPriority": [],
+    "jiraIssueTypeNames": [
+      "Story",
+      "Enabler Story",
+      "Change request",
+      "Defect",
+      "Epic"
+    ],
+    "jiraBugRaisedByQACustomField": "",
+    "jiraBugRaisedByQAIdentification": "",
+    "jiraBugRaisedByQAValue": [],
+    "jiraDefectDroppedStatus": [],
+    "epicCostOfDelay": "customfield_58102",
+    "epicRiskReduction": "customfield_58101",
+   
+  };
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       declarations: [ KpiCardComponent ],
-      providers: [SharedService]
+      providers: [SharedService,HttpService,
+        { provide: APP_CONFIG, useValue: AppConfig }]
     })
     .compileComponents();
   });
@@ -25,6 +53,7 @@ describe('KpiCardComponent', () => {
     fixture = TestBed.createComponent(KpiCardComponent);
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService);
+    httpService = TestBed.inject(HttpService);
     fixture.detectChanges();
   });
 
@@ -135,7 +164,7 @@ describe('KpiCardComponent', () => {
       shown: true
     };
 
-    const response = { kpi3: ['default'] };
+    const response = { kpi3: ['default'],action : "update" };
     sharedService.setKpiSubFilterObj(response);
     component.ngOnInit();
     tick();
@@ -214,5 +243,37 @@ describe('KpiCardComponent', () => {
       expect(rValue).toBeFalse();
     
   })
+
+  it('should get Mapping configuration',()=>{
+    spyOn(sharedService,'getSelectedTab').and.returnValue('My Dashboard');
+    spyOn(sharedService,'getSelectedType').and.returnValue('scrum');
+    spyOn(sharedService,'getSelectedTrends').and.returnValue([{basicProjectConfigId : '123'}]);
+    spyOn(httpService,'getKPIFieldMappingConfig').and.returnValue(of(fakeKpiFieldMappingList));
+    
+    const fakeMetaDataList = [
+      {
+        projectID: '123',
+        kpiSource: 'jira',
+        metaData: dropDownMetaData.data
+      }
+    ]
+    spyOn(sharedService,'getFieldMappingMetaData').and.returnValue(fakeMetaDataList);
+    component.getKPIFieldMappingConfig();
+    expect(component.fieldMappingConfig.length).toEqual(fakeKpiFieldMappingList.data.fieldConfiguration.length);
+  })
+
+  it('should get FieldMapping',()=>{
+    component.selectedToolConfig = [{id : '123'}];
+    spyOn(httpService,'getFieldMappings').and.returnValue(of({success: true, data: fakeSelectedFieldMapping}));
+    component.getFieldMapping();
+    expect(Object.keys(component.selectedFieldMapping).length).toBeGreaterThan(0);
+  })
+
+  it('should get getFieldMappingMetaData',()=>{
+    component.selectedToolConfig = [{id : '123'}];
+    spyOn(httpService,'getKPIConfigMetadata').and.returnValue(of(dropDownMetaData));
+    component.getFieldMappingMetaData('jira');
+    expect(component.fieldMappingMetaData).not.toBeNull();
+  });
 
 });

@@ -800,6 +800,16 @@ export class BacklogComponent implements OnInit, OnDestroy{
       });
     }
   }
+
+  /** Reload KPI once field mappoing updated */
+  reloadKPI(event){
+    this.kpiChartData[event.kpiDetail?.kpiId] = [];
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId,'Backlog');
+    if (currentKPIGroup?.kpiList?.length > 0) {
+        this.postJiraKpi(this.kpiJira, 'jira');
+    }
+  }
+
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
     this.sharedObject = null;

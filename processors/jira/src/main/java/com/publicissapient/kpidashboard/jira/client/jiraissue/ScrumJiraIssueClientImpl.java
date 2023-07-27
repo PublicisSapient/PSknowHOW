@@ -674,9 +674,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			// Add RCA to JiraIssue
 			setRCA(fieldMapping, issue, jiraIssue, fields);
 
-			// Add device platform filed to issue
-			setDevicePlatform(fieldMapping, jiraIssue, fields);
-
 			// Add UAT/Third Party identification field to JiraIssue
 			setThirdPartyDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 

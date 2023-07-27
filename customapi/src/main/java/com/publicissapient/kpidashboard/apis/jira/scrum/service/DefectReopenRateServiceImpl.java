@@ -317,7 +317,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigObjectId);
 			List<String> closedStatusList = (List<String>) CollectionUtils
-					.emptyIfNull(fieldMapping.getJiraDefectClosedStatus());
+					.emptyIfNull(fieldMapping.getJiraDefectClosedStatusKPI137());
 			closedStatusListBasicConfigMap.put(basicProjectConfigObjectId.toString(), closedStatusList);
 			mapOfProjectFilters.put("statusUpdationLog.story.changedTo",
 					CommonUtils.convertToPatternList(closedStatusList));

@@ -157,7 +157,7 @@ public class TicketOpenVsClosedByPriorityServiceImplTest {
 		when(customApiConfig.getpriorityP1()).thenReturn(P1);
 		when(customApiConfig.getpriorityP2()).thenReturn(P2);
 		when(customApiConfig.getpriorityP3()).thenReturn(P3);
-		when(customApiConfig.getpriorityP4()).thenReturn(P4);
+
 
 		Map<String, List<DataCount>> trendMap = new HashMap<>();
 		trendMap.put("Overall", new ArrayList<>());

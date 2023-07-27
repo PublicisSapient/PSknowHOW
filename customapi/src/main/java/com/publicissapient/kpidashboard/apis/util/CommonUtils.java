@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -312,9 +313,10 @@ public final class CommonUtils {
 		List<Pattern> regexList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(stringList)) {
 			for (String value : stringList) {
-				regexList.add(Pattern.compile(Constant.TILDA_SYMBOL + Pattern.quote(value) + Constant.DOLLAR_SYMBOL,
-						Pattern.CASE_INSENSITIVE));
-
+				if (StringUtils.isNotEmpty(value)) {
+					regexList.add(Pattern.compile(Constant.TILDA_SYMBOL + Pattern.quote(value) + Constant.DOLLAR_SYMBOL,
+							Pattern.CASE_INSENSITIVE));
+				}
 			}
 		}
 		return regexList;

@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,9 +10,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -88,6 +93,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private KpiHelperService kpiHelperService;
 
 	@Autowired
 	private FilterHelperService flterHelperService;
@@ -309,10 +316,36 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 		});
 
-		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
-		getModifiedSprintDetailsFromBaseClass(sprintDetails, configHelperService);
+		List<SprintDetails> sprintDetails = new ArrayList<>(sprintRepository.findBySprintIDIn(sprintList));
+		Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
+				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
+
+		Map<ObjectId, Set<String>> duplicateIssues = kpiHelperService.getProjectWiseDuplicateIssueInSprintDetails(
+				projectWiseTotalSprintDetails);
+		Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
+		Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
+
+		if (MapUtils.isNotEmpty(fieldMappingMap) && !duplicateIssues.isEmpty()) {
+			Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
+					.filter(fieldMappingMap::containsKey).collect(Collectors.toMap(Function.identity(), key -> {
+						FieldMapping fieldMapping = fieldMappingMap.get(key);
+						return Optional.ofNullable(fieldMapping)
+								.map(FieldMapping::getJiraIterationCompletionStatusKpi72)
+								.orElse(Collections.emptyList());
+					}));
+			projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService
+					.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping);
+		}
+
+		Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
 		Set<String> totalIssue = new HashSet<>();
-		sprintDetails.stream().forEach(sprintDetail -> {
+		sprintDetails.stream().forEach(dbSprintDetail -> {
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(dbSprintDetail.getBasicProjectConfigId());
+			// to modify sprintdetails on the basis of configuration for the project
+			SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+					fieldMapping.getJiraIterationIssuetypeKpi72(),
+					fieldMapping.getJiraIterationCompletionStatusKpi72(),finalProjectWiseDuplicateIssuesWithMinCloseDate).get(0);
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));

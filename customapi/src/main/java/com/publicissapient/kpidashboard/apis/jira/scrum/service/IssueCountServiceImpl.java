@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -188,8 +189,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			List<String> jiraStoryIdentification = new ArrayList<>();
-			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
-				jiraStoryIdentification = fieldMapping.getJiraStoryIdentification().stream().map(String::toLowerCase)
+			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKpi40()).isPresent()) {
+				jiraStoryIdentification = fieldMapping.getJiraStoryIdentificationKpi40().stream().map(String::toLowerCase)
 						.collect(Collectors.toList());
 			}
 			projectWiseJiraIdentification.put(basicProjectConfigId.toString(), jiraStoryIdentification);
@@ -199,17 +200,16 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 																	  // comparison
 					.distinct().collect(Collectors.toList());
 
-			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping, categories,
+			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(), categories,
 					JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
-		getModifiedSprintDetailsFromBaseClass(sprintDetails, configHelperService);
 		Set<String> totalIssue = new HashSet<>();
-		sprintDetails.stream().forEach(sprintDetail -> {
-			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
-				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+		sprintDetails.stream().forEach(dbSprintDetail -> {
+			if (CollectionUtils.isNotEmpty(dbSprintDetail.getTotalIssues())) {
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
 						CommonConstant.TOTAL_ISSUES));
 			}
 

@@ -216,15 +216,16 @@ public class ScrumAzureIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("story");
-		fieldMapping.setJiraDefectInjectionIssueType(jiraType);
+		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(jiraType);
 		fieldMapping.setJiraTechDebtIssueType(jiraType);
-		fieldMapping.setJiraDefectSeepageIssueType(jiraType);
-		fieldMapping.setJiraDefectRemovalStatus(jiraType);
-		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
+		fieldMapping.setJiraIssueTypeKPI35(jiraType);
+		fieldMapping.setJiraDefectRemovalStatusKPI34(jiraType);
+		fieldMapping.setJiraIssueTypeKPI37(jiraType);
 		fieldMapping.setJiraTestAutomationIssueType(jiraType);
-		fieldMapping.setJiraDefectRejectionlIssueType(jiraType);
-		fieldMapping.setJiraDefectCountlIssueType(jiraType);
-		fieldMapping.setJiraIntakeToDorIssueType(jiraType);
+		fieldMapping.setJiraIssueTypeKPI37(jiraType);
+		fieldMapping.setJiraDefectCountlIssueTypeKPI36(jiraType);
+		fieldMapping.setJiraDefectCountlIssueTypeKPI28(jiraType);
+		fieldMapping.setJiraIssueTypeKPI3(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
 		fieldMapping.setJiradefecttype(jiraType);
 		fieldMapping.setJiraIssueEpicType(jiraType);
@@ -235,16 +236,26 @@ public class ScrumAzureIssueClientImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("TECH_DEBT");
 		fieldMapping.setJiraTechDebtValue(jiraType);
-		fieldMapping.setJiraDefectRejectionStatus("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI37("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI14("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusAVR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI28("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI34("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI35("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI82("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI135("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusQAKPI111("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI133("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusRCAKPI36("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDod(jiraType);
+		fieldMapping.setJiraDodKPI3(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraDefectRemovalStatus(jiraType);
+		fieldMapping.setJiraDefectRemovalStatusKPI34(jiraType);
 
 		fieldMapping.setJiraStoryPointsCustomField("customfield_56789");
 
@@ -258,36 +269,39 @@ public class ScrumAzureIssueClientImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("Story");
 		jiraType.add("Feature");
-		fieldMapping.setJiraSprintVelocityIssueType(jiraType);
+		fieldMapping.setJiraSprintVelocityIssueTypeKPI138(jiraType);
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature" }));
-		fieldMapping.setJiraSprintCapacityIssueType(jiraType);
+		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraIssueDeliverdStatus(jiraType);
+		fieldMapping.setJiraIssueDeliverdStatusAVR(jiraType);
+		fieldMapping.setJiraIssueDeliverdStatusKPI138(jiraType);
+		fieldMapping.setJiraIssueDeliverdStatusKPI126(jiraType);
+		fieldMapping.setJiraIssueDeliverdStatusKPI82(jiraType);
 
-		fieldMapping.setJiraDor("In Progress");
+		fieldMapping.setJiraDorKPI3("In Progress");
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Pre Story" }));
 		fieldMapping.setJiraStoryIdentification(jiraType);
 
-		fieldMapping.setJiraDefectCreatedStatus("Open");
+		fieldMapping.setJiraDefectCreatedStatusKPI14("Open");
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDod(jiraType);
+		fieldMapping.setJiraDodKPI3(jiraType);
 		fieldMapping.setStoryFirstStatus("In Analysis");
 		jiraType = new ArrayList<>();
 		jiraType.add("In Analysis");
 		jiraType.add("In Development");
-		fieldMapping.setJiraStatusForDevelopment(jiraType);
+		fieldMapping.setJiraStatusForDevelopmentAVR(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Testing");
-		fieldMapping.setJiraStatusForQa(jiraType);
+		fieldMapping.setJiraStatusForQaKPI148(jiraType);
 
 		List<String> jiraSegData = new ArrayList<>();
 		jiraSegData.add("Tech Story");
@@ -312,16 +326,26 @@ public class ScrumAzureIssueClientImplTest {
 
 		fieldMapping.setRootCause("customfield_19121");
 
-		fieldMapping.setJiraDefectRejectionStatus("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI37("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI14("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusAVR("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI28("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI34("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI35("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI82("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI135("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusQAKPI111("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusKPI133("Dropped");
+		fieldMapping.setJiraDefectRejectionStatusRCAKPI36("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDod(jiraType);
+		fieldMapping.setJiraDodKPI3(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
-		fieldMapping.setJiraDefectRemovalStatus(jiraType);
+		fieldMapping.setJiraDefectRemovalStatusKPI34(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("40");
@@ -332,7 +356,6 @@ public class ScrumAzureIssueClientImplTest {
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Support Request", "Incident", "Project Request",
 				"Member Account Request", "DOJO Consulting Request", "Test Case" }));
 		fieldMapping.setTicketCountIssueType(jiraType);
-		fieldMapping.setEnvImpacted("customfield_13131");
 		fieldMapping.setJiraTicketVelocityIssueType(jiraType);
 		fieldMapping.setKanbanJiraTechDebtIssueType(jiraType);
 		fieldMapping.setKanbanCycleTimeIssueType(jiraType);
@@ -360,7 +383,7 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setEpicName("customfield_14502");
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDod(jiraType);
+		fieldMapping.setJiraDodKPI3(jiraType);
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Tech Story");
@@ -369,12 +392,11 @@ public class ScrumAzureIssueClientImplTest {
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("In Analysis");
 		jiraSegData.add("In Development");
-		fieldMapping.setJiraStatusForDevelopment(jiraSegData);
+		fieldMapping.setJiraStatusForDevelopmentAVR(jiraSegData);
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Ready for Testing");
-		fieldMapping.setJiraStatusForQa(jiraSegData);
-		fieldMapping.setDevicePlatform("customfield_18181");
+		fieldMapping.setJiraStatusForQaKPI148(jiraSegData);
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("segregationLabel");

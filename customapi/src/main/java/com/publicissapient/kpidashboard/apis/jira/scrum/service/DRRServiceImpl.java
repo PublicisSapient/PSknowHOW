@@ -179,10 +179,9 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
-
-			KpiHelperService.getDroppedDefectsFilters(defectResolutionRejectionMap, basicProjectConfigId, fieldMapping);
+			KpiHelperService.getDroppedDefectsFilters(defectResolutionRejectionMap, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionKPI37(), fieldMapping.getJiraDefectRejectionStatusKPI37());
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectRejectionlIssueType()));
+					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueTypeKPI37()));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
