@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -94,6 +95,7 @@ import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoL
  *
  * @author tauakram
  */
+@Slf4j
 @Service
 public class KpiHelperService { // NOPMD
 
@@ -1421,10 +1423,11 @@ public class KpiHelperService { // NOPMD
 
 	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiId(String projectBasicConfigId, String kpiId) {
 		FieldMappingStructureResponse fieldMappingStructureResponse = new FieldMappingStructureResponse();
+		fieldMappingStructureResponse.setFieldConfiguration(new ArrayList<>());
 		try {
 			List<FieldMappingStructure> fieldMappingStructureList = (List<FieldMappingStructure>) configHelperService.loadFieldMappingStructure();
 			if (fieldMappingStructureList == null || fieldMappingStructureList.isEmpty()) {
-				return null; // or return an appropriate response for an empty list
+				return fieldMappingStructureResponse;
 			}
 
 			FieldMappingEnum fieldMappingEnum = FieldMappingEnum.valueOf(kpiId.toUpperCase());
@@ -1442,7 +1445,7 @@ public class KpiHelperService { // NOPMD
 			}
 
 			if (CollectionUtils.isEmpty(projectToolConfig)) {
-				return null; // or return an appropriate response when projectToolConfig is empty
+				return fieldMappingStructureResponse;
 			}
 
 			ObjectId projectToolConfigId = projectToolConfig.stream()
@@ -1460,6 +1463,7 @@ public class KpiHelperService { // NOPMD
 					.setProjectToolConfigId(projectToolConfigId != null ? projectToolConfigId.toString() : null);
 		}catch(IllegalArgumentException e){
 			fieldMappingStructureResponse.setFieldConfiguration(new ArrayList<>());
+			log.info("kpi Id"+ kpiId + "No Enum is present");
 		}
 		return fieldMappingStructureResponse;
 	}
