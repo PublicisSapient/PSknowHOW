@@ -214,7 +214,7 @@ if (bulkUpdateKpiFieldMapping.length > 0) {
 }
 
 
- //7.4 changes
+ //DTS-25767 Commitment Reliability - Add Filter by Issue type (add one column for issue type in excel)
  db.kpi_column_configs.updateOne(
    { "kpiId": "kpi72" },
    {
