@@ -292,8 +292,7 @@ public enum KPICode {
     /**
      * Defect Count By Status (Iteration)
      */
-    DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136",
-            KPISource.JIRA.name()),
+    DEFECT_COUNT_BY_STATUS_PIE_CHART("kpi136", KPISource.JIRA.name()),
     /**
      * Defect Count By Priority (Iteration)
      */
@@ -301,23 +300,19 @@ public enum KPICode {
     /**
      * Defect Count By Status (Release)
      */
-    DEFECT_COUNT_BY_STATUS_RELEASE("kpi141",
-            KPISource.JIRA.name()),
+    DEFECT_COUNT_BY_STATUS_RELEASE("kpi141", KPISource.JIRA.name()),
     /**
      * Defect Count By RCA (Release)
      */
-    DEFECT_COUNT_BY_RCA_RELEASE("kpi142",
-            KPISource.JIRA.name()),
+    DEFECT_COUNT_BY_RCA_RELEASE("kpi142", KPISource.JIRA.name()),
     /**
      * Defect Count By Assignee (Release)
      */
-    DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143",
-            KPISource.JIRA.name()),
+    DEFECT_COUNT_BY_ASSIGNEE_RELEASE("kpi143", KPISource.JIRA.name()),
     /**
      * Defect Count By Priority (Release)
      */
-    DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",
-            KPISource.JIRA.name()),
+    DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144", KPISource.JIRA.name()),
     /**
      * Release Progress
      */
@@ -381,8 +376,7 @@ public enum KPICode {
     /**
      * Backlog Readiness
      */
-    BACKLOG_READINESS_EFFICIENCY("kpi138",
-            KPISource.JIRA.name()),
+    BACKLOG_READINESS_EFFICIENCY("kpi138", KPISource.JIRA.name()),
     /**
      * Wastage
      */
