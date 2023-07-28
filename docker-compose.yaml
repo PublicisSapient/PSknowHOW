@@ -86,8 +86,8 @@ services:
       - jira-processorvol:/app/offline_data
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.username=<DB Application Username>
-      - spring.data.mongodb.password=<DB Application Password>
+      - spring.data.mongodb.username=<DB ROOT USERNAME>
+      - spring.data.mongodb.password=<DB ROOT PASSWORD>
       - aesEncryptionKey=<Your AES Encryption KEY here>
     links:
       - MongoDB:mongodb
@@ -111,8 +111,8 @@ services:
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
       - producer.instanceName=<Your-IP>
-      - spring.data.mongodb.username=<DB Application Username>
-      - spring.data.mongodb.password=<DB Application Password>
+      - spring.data.mongodb.username=<DB ROOT USERNAME>
+      - spring.data.mongodb.password=<DB ROOT PASSWORD>
       - aesEncryptionKey=<Your AES Encryption KEY here>
     links:
       - MongoDB:mongodb
@@ -134,8 +134,8 @@ services:
       - azure-board-processorvol:/app/offline_data
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.username=<DB Application Username>
-      - spring.data.mongodb.password=<DB Application Password>
+      - spring.data.mongodb.username=<DB ROOT USERNAME>
+      - spring.data.mongodb.password=<DB ROOT PASSWORD>
       - aesEncryptionKey=<Your AES Encryption KEY here>
     links:
       - MongoDB:mongodb
@@ -158,8 +158,8 @@ services:
       - azure-pipeline-repovol:/app/certs/
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.username=<DB Application Username>
-      - spring.data.mongodb.password=<DB Application Password>
+      - spring.data.mongodb.username=<DB ROOT USERNAME>
+      - spring.data.mongodb.password=<DB ROOT PASSWORD>
       - aesEncryptionKey=<Your AES Encryption KEY here>
     links:
       - MongoDB:mongodb
