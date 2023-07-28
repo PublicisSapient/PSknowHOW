@@ -1,7 +1,7 @@
 version: "2"
 services:
   MongoDB:
-    image: psknowhow/mongodb:latest
+    image: psknowhow/mongo-base:5.0.18
     tty: true
     container_name: mongodb
     ports:
@@ -11,12 +11,8 @@ services:
       - mongodbvol:/data/db
       - mongodbvol:/data/logs
     environment:
-      - MONGODB_ADMIN_USER=<DB Admin Username>
-      - MONGODB_ADMIN_PASS=<DB Admin Password>
-      - MONGODB_APPLICATION_DATABASE=kpidashboard
-      - MONGODB_APPLICATION_USER=<DB Application Username>
-      - MONGODB_APPLICATION_PASS=<DB Application Password>
-      - server_ip=<Your-IP>
+      - MONGO_INITDB_ROOT_USERNAME=<DB ROOT USERNAME>
+      - MONGO_INITDB_ROOT_PASSWORD=<DB ROOT PASSWORD>
     networks:
       - Network_apps
 
@@ -42,8 +38,8 @@ services:
       - corsFilterValidOrigin=<Your-Public-IP>,localhost,<Your-DNS>
       - versionnumber=7.0.0
       - JAVA_OPTS-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.username=<DB Application Username>
-      - spring.data.mongodb.password=<DB Application Encrypted Password>
+      - spring.data.mongodb.username=<DB ROOT USERNAME>
+      - spring.data.mongodb.password=<DB ROOT PASSWORD>
       - aesEncryptionKey=<Your AES Encryption KEY here>
       - auth.secret=<Your Auth Secret>
     links:
