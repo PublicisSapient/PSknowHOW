@@ -395,6 +395,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
 
   handleSelectedOptionForCard(event, kpi) {
+    this.kpiSelectedFilterObj['action']='update'
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
     if (event && Object.keys(event)?.length !== 0) {
       for (const key in event) {
@@ -412,6 +413,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
 
   createAllKpiArray(data) {
+    this.kpiSelectedFilterObj['action']='new'
     for (const key in data) {
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
@@ -656,6 +658,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
 
   handleSelectedOption(event, kpi) {
+    this.kpiSelectedFilterObj['action']='update'
     this.kpiSelectedFilterObj[kpi?.kpiId] = [];
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
         for (const key in event) {
