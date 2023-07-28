@@ -338,9 +338,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 			// Add RCA to Issue
 			setRCA(fieldMapping, issue, azureIssue, fieldsMap);
 
-			// Add device platform filed to issue
-			setDevicePlatform(fieldMapping, azureIssue, fieldsMap);
-
 			if (issueTypeNames
 					.contains(AzureProcessorUtil.deodeUTF8String(issueType).toLowerCase(Locale.getDefault()))) {
 
@@ -495,7 +492,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 
 		azureIssueCustomHistory.setCreatedDate(createdDate.toString());
 
-		List<KanbanIssueHistory> kanbanIssueHistoryList = getChangeLog(azureIssue, valueList, createdDate,
+		List<KanbanIssueHistory> kanbanIssueHistoryList = getChangeLog(valueList, createdDate,
 				fieldMapping);
 
 		azureIssueCustomHistory.setStoryID(azureIssue.getNumber());
@@ -547,8 +544,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 			List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList,
 			FieldMapping fieldMapping) {
 		List<KanbanIssueHistory> issueHistoryList = new ArrayList<>();
-		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
-		List<String> jiraStatusForQa = fieldMapping.getJiraStatusForQa();
 		for (com.publicissapient.kpidashboard.common.model.azureboards.updates.Value history : updateValueList) {
 			com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history
 					.getFields();
@@ -559,7 +554,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 						AzureProcessorUtil.getFormattedDateTime(changelogItem.getSystemChangedDate().getNewValue()));
 				kanbanIssueHistory.setActivityDate(changedDate.toString());
 				issueHistoryList.add(kanbanIssueHistory);
-				setIndividualDetails(azureIssue, jiraStatusForDevelopment, jiraStatusForQa, kanbanIssueHistory);
 
 			}
 			azureIssueCustomHistory.setHistoryDetails(issueHistoryList);
@@ -580,12 +574,9 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 *            FielMapping
 	 * @return
 	 */
-	private List<KanbanIssueHistory> getChangeLog(KanbanJiraIssue azureIssue,
-			List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList,
+	private List<KanbanIssueHistory> getChangeLog(List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList,
 			DateTime issueCreatedDate, FieldMapping fieldMapping) {
 		List<KanbanIssueHistory> historyDetails = new ArrayList<>();
-		List<String> jiraStatusForDevelopment = fieldMapping.getJiraStatusForDevelopment();
-		List<String> jiraStatusForQa = fieldMapping.getJiraStatusForQa();
 
 		// creating first entry of issue
 		if (null != issueCreatedDate) {
@@ -593,52 +584,16 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 			kanbanHistory.setActivityDate(issueCreatedDate.toString());
 			kanbanHistory.setStatus(fieldMapping.getStoryFirstStatus());
 			historyDetails.add(kanbanHistory);
-			setIndividualDetails(azureIssue, jiraStatusForDevelopment, jiraStatusForQa, kanbanHistory);
 		}
 		if (CollectionUtils.isNotEmpty(updateValueList)) {
 			for (com.publicissapient.kpidashboard.common.model.azureboards.updates.Value history : updateValueList) {
-				KanbanIssueHistory kanbanIssueHistory = getIssueHistory(azureIssue, history, jiraStatusForDevelopment,
-						jiraStatusForQa);
+				KanbanIssueHistory kanbanIssueHistory = getIssueHistory(history);
 				if (StringUtils.isNotEmpty(kanbanIssueHistory.getActivityDate())) {
-					historyDetails.add(getIssueHistory(azureIssue, history, jiraStatusForDevelopment, jiraStatusForQa));
+					historyDetails.add(getIssueHistory(history));
 				}
 			}
 		}
 		return historyDetails;
-	}
-
-	/**
-	 * Sets Individual Details
-	 *
-	 * @param jiraIssue
-	 *            Jira issue
-	 * @param jiraStatusForDevelopment
-	 *            List of status for Development
-	 * @param jiraStatusForQa
-	 *            List of status for QA
-	 */
-	private void setIndividualDetails(KanbanJiraIssue jiraIssue, List<String> jiraStatusForDevelopment,
-			List<String> jiraStatusForQa, KanbanIssueHistory kanbanIssueHistory) {
-		if (CollectionUtils.isNotEmpty(jiraStatusForDevelopment)
-				&& jiraStatusForDevelopment.stream().anyMatch(kanbanIssueHistory.getStatus()::equalsIgnoreCase)
-				&& StringUtils.isNotBlank(jiraIssue.getAssigneeId())
-				&& StringUtils.isNotBlank(jiraIssue.getAssigneeName())) {
-
-			jiraIssue.setDeveloperId(jiraIssue.getAssigneeId());
-			jiraIssue.setDeveloperName(jiraIssue.getAssigneeName() + AzureConstants.OPEN_BRACKET
-					+ jiraIssue.getAssigneeId() + AzureConstants.CLOSED_BRACKET);
-
-		}
-		if (CollectionUtils.isNotEmpty(jiraStatusForQa)
-				&& jiraStatusForQa.stream().anyMatch(kanbanIssueHistory.getStatus()::equalsIgnoreCase)
-				&& StringUtils.isNotBlank(jiraIssue.getAssigneeId())
-				&& StringUtils.isNotBlank(jiraIssue.getAssigneeName())) {
-
-			jiraIssue.setQaId(jiraIssue.getAssigneeId());
-			jiraIssue.setQaName(jiraIssue.getAssigneeName() + AzureConstants.OPEN_BRACKET + jiraIssue.getAssigneeId()
-					+ AzureConstants.CLOSED_BRACKET);
-
-		}
 	}
 
 	/**
@@ -780,27 +735,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	}
 
 	/**
-	 * Sets Device Platform.
-	 *
-	 * @param fieldMapping
-	 *            fieldMapping provided by the User
-	 * @param azureIssue
-	 *            KanbanJiraIssue instance
-	 * @param fieldsMap
-	 *            the fields map
-	 */
-	public void setDevicePlatform(FieldMapping fieldMapping, KanbanJiraIssue azureIssue,
-			Map<String, Object> fieldsMap) {
-		String devicePlatformFromFieldMapping = fieldMapping.getDevicePlatform();
-		String devicePlatform = null;
-		if (fieldsMap.containsKey(devicePlatformFromFieldMapping)
-				&& fieldsMap.get(devicePlatformFromFieldMapping) != null) {
-			devicePlatform = fieldsMap.get(devicePlatformFromFieldMapping).toString();
-		}
-		azureIssue.setDevicePlatform(devicePlatform);
-	}
-
-	/**
 	 * Process Jira issue Data.
 	 *
 	 * @param azureIssue
@@ -843,8 +777,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 			timeSpent = fields.getMicrosoftVSTSSchedulingCompletedWork() * 60;
 		}
 		azureIssue.setTimeSpentInMinutes(timeSpent);
-
-		setEnvironmentImpacted(azureIssue, fieldsMap, fieldMapping);
 
 		azureIssue.setChangeDate(AzureProcessorUtil.getFormattedDate(AzureProcessorUtil.deodeUTF8String(changeDate)));
 		azureIssue.setIsDeleted(AzureConstants.FALSE);
@@ -1037,15 +969,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 * @param fieldMapping
 	 *            fieldMapping provided by the User
 	 */
-	private void setEnvironmentImpacted(KanbanJiraIssue azureIssue, Map<String, Object> fieldsMap,
-			FieldMapping fieldMapping) {
-		String envImpacted = fieldMapping.getEnvImpacted();
-		if (StringUtils.isNotEmpty(envImpacted) && fieldsMap.containsKey(envImpacted)
-				&& fieldsMap.get(envImpacted) != null) {
-			azureIssue.setEnvImpacted(AzureProcessorUtil.deodeUTF8String(fieldsMap.get(envImpacted)));
-
-		}
-	}
 
 	/**
 	 * Decrypt key.
@@ -1119,9 +1042,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		return azureServer;
 	}
 
-	private KanbanIssueHistory getIssueHistory(KanbanJiraIssue jiraIssue,
-			com.publicissapient.kpidashboard.common.model.azureboards.updates.Value history,
-			List<String> jiraStatusForDevelopment, List<String> jiraStatusForQa) {
+	private KanbanIssueHistory getIssueHistory(com.publicissapient.kpidashboard.common.model.azureboards.updates.Value history) {
 		com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history.getFields();
 		KanbanIssueHistory kanbanHistory = new KanbanIssueHistory();
 		if (null != changelogItem && null != changelogItem.getSystemState()) {
@@ -1129,7 +1050,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 					AzureProcessorUtil.getFormattedDateTime(changelogItem.getSystemChangedDate().getNewValue()));
 			kanbanHistory.setActivityDate(changedDate.toString());
 			kanbanHistory.setStatus(changelogItem.getSystemState().getNewValue());
-			setIndividualDetails(jiraIssue, jiraStatusForDevelopment, jiraStatusForQa, kanbanHistory);
 
 		}
 		return kanbanHistory;

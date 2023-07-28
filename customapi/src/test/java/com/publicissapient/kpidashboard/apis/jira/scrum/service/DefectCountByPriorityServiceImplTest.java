@@ -129,6 +129,7 @@ public class DefectCountByPriorityServiceImplTest {
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> returnMap = defectCountByPriorityService.fetchKPIDataFromDb(leafNodeList, startDate,
 				endDate, kpiRequest);
 		assertNotNull(returnMap);

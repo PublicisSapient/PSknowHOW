@@ -120,6 +120,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
+	public static final String FALSE = "false";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -226,7 +227,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			boolean isOffline) {
 		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
-		psLogData.setKanban("false");
+		psLogData.setKanban(FALSE);
 		int savedIsuesCount = 0;
 		int total = 0;
 
@@ -277,7 +278,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				}
 				if (CollectionUtils.isNotEmpty(issues)) {
 					List<JiraIssue> jiraIssues = saveJiraIssueDetails(issues, projectConfig, setForCacheClean,
-							jiraAdapter, false);
+							jiraAdapter, false, false);
 					findLastSavedJiraIssueByType(jiraIssues, lastSavedJiraIssueChangedDateByType);
 					savedIsuesCount += issues.size();
 					savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues, false, psLogData);
@@ -286,7 +287,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
 					latestDataFetched = cleanCache();
 					setForCacheClean.clear();
-					log.info("latest sprint fetched cache cleaned.");
+					log.info("latest sprint fetched cache and cleaned.");
 				}
 				// will result in an extra call if number of results == pageSize
 				// but I would rather do that then complicate the jira client
@@ -329,7 +330,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			boolean isOffline) {
 		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
-		psLogData.setKanban("false");
+		psLogData.setKanban(FALSE);
 		int savedIsuesCount = 0;
 		int total = 0;
 
@@ -374,7 +375,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					}
 					if (CollectionUtils.isNotEmpty(issues)) {
 						List<JiraIssue> jiraIssues = saveJiraIssueDetails(issues, projectConfig, setForCacheClean,
-								jiraAdapter, true);
+								jiraAdapter, true, false);
 						savedIsuesCount += issues.size();
 						findLastSavedJiraIssueByType(jiraIssues, lastSavedJiraIssueChangedDateByType);
 						savingIssueLogs(savedIsuesCount, jiraIssues, startProcessingJiraIssues, false, psLogData);
@@ -397,7 +398,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				List<Issue> epicIssue = jiraAdapter.getEpic(projectConfig, board.getBoardId());
 				psLogData.setEpicIssuesFetched((epicIssue == null) ? "-1" : String.valueOf(epicIssue.size()));
 				List<JiraIssue> jiraEpicIssueList = saveJiraIssueDetails(epicIssue, projectConfig, setForCacheClean,
-						jiraAdapter, true);
+						jiraAdapter, true, false);
 				savingIssueLogs(jiraEpicIssueList.size(), jiraEpicIssueList, epicProcessStartTime, true, psLogData);
 			}
 			processorFetchingComplete = true;
@@ -628,7 +629,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 *             Error If JSON is invalid
 	 */
 	public List<JiraIssue> saveJiraIssueDetails(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
-			Set<SprintDetails> setForCacheClean, JiraAdapter jiraAdapter, boolean dataFromBoard)
+			Set<SprintDetails> setForCacheClean, JiraAdapter jiraAdapter, boolean dataFromBoard, boolean isSprintFetch)
 			throws JSONException, InterruptedException {
 
 		Set<Assignee> assigneeSetToSave = new HashSet<>();
@@ -674,9 +675,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 			// Add RCA to JiraIssue
 			setRCA(fieldMapping, issue, jiraIssue, fields);
-
-			// Add device platform filed to issue
-			setDevicePlatform(fieldMapping, jiraIssue, fields);
 
 			// Add UAT/Third Party identification field to JiraIssue
 			setThirdPartyDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
@@ -739,10 +737,12 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		// Saving back to MongoDB
 		jiraIssueRepository.saveAll(jiraIssuesToSave);
 		jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
-		saveAccountHierarchy(jiraIssuesToSave, projectConfig, sprintDetailsSet);
+		if(!isSprintFetch){
+			saveAccountHierarchy(jiraIssuesToSave, projectConfig, sprintDetailsSet);
 		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
+		}
 		if (!dataFromBoard) {
-			sprintClient.processSprints(projectConfig, sprintDetailsSet, jiraAdapter);
+			sprintClient.processSprints(projectConfig, sprintDetailsSet, jiraAdapter, false);
 		}
 
 		setForCacheClean.addAll(sprintDetailsSet.stream()
@@ -1067,6 +1067,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			Set<String> defectStorySet = new HashSet<>();
+			String parentKey = null;
 
 			excludeLinks(issue, defectStorySet);
 			storyWithSubTaskDefect(issue, fields, defectStorySet);
@@ -1669,4 +1670,86 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			log.debug("saved project status category");
 		}
 	}
+
+	// for fetch, parse & update based on issuesKeys
+	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, //NOSONAR
+			boolean isOffline, List<String> issueKeys) {
+		PSLogData psLogData = new PSLogData();
+		psLogData.setProjectName(projectConfig.getProjectName());
+		psLogData.setKanban(FALSE);
+		int savedIssuesCount = 0;
+		int total = 0;
+
+		boolean processorFetchingComplete = false;
+		try {
+			boolean dataExist = (jiraIssueRepository
+					.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
+
+			int pageSize = jiraAdapter.getPageSize();
+
+			boolean hasMore = true;
+
+			boolean latestDataFetched = false;
+
+			Set<SprintDetails> setForCacheClean = new HashSet<>();
+
+			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
+
+			for (int i = 0; hasMore; i += pageSize) {
+				Instant startProcessingJiraIssues = Instant.now();
+				SearchResult searchResult = jiraAdapter.getIssuesSprint(projectConfig, i, issueKeys);
+				List<Issue> issues = getIssuesFromResult(searchResult);
+				if (total == 0) {
+					total = getTotal(searchResult);
+					psLogData.setTotalFetchedIssues(String.valueOf(total));
+				}
+
+				// in case of offline method issues size can be greater than
+				// pageSize, increase page size so that same issues not read
+
+				if (isOffline && issues.size() >= pageSize) {
+					pageSize = issues.size() + 1;
+				}
+				if (CollectionUtils.isNotEmpty(issues)) {
+					List<JiraIssue> jiraIssues = saveJiraIssueDetails(issues, projectConfig, setForCacheClean,
+							jiraAdapter, true, true);
+
+					savedIssuesCount += issues.size();
+					savingIssueLogs(savedIssuesCount, jiraIssues, startProcessingJiraIssues, false, psLogData);
+				}
+
+				if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
+					latestDataFetched = cleanCache();
+					setForCacheClean.clear();
+					log.info("latest sprint fetched cache cleaned.");
+				}
+				// will result in an extra call if number of results == pageSize
+				// but I would rather do that then complicate the jira client
+				// implementation
+
+				if (issues.size() < pageSize) {
+					break;
+				}
+				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+			}
+			processorFetchingComplete = true;
+		} catch (JSONException e) {
+			log.error("Error while updating Story information in sprintFetch", e,
+					kv(CommonConstant.PSLOGDATA, psLogData));
+		} catch (InterruptedException e) { //NOSONAR
+			log.error("Interrupted exception thrown during sprintFetch", e, kv(CommonConstant.PSLOGDATA, psLogData));
+			processorFetchingComplete = false;
+		} finally {
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIssuesCount, processorFetchingComplete, psLogData);
+			psLogData.setAction(CommonConstant.FETCHING_ISSUE);
+			if (!isAttemptSuccess) {
+				psLogData.setProjectExecutionStatus(String.valueOf(isAttemptSuccess));
+				log.error("Error in Fetching Issues through JQL during active SprintFetch",
+						kv(CommonConstant.PSLOGDATA, psLogData));
+			}
+		}
+
+		return savedIssuesCount;
+	}
+
 }

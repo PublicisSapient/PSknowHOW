@@ -269,6 +269,10 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 		MDC.clear();
 		return executionStatus;
 	}
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
 
 	private void updateAssigneeForCommit(ProjectBasicConfig proBasicConfig,
 			ProcessorExecutionTraceLog processorExecutionTraceLog, BitbucketRepo bitRepo,

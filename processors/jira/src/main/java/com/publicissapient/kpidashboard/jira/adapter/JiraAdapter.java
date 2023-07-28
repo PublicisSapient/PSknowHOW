@@ -141,4 +141,5 @@ public interface JiraAdapter {
 
 	List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig);
 
+	SearchResult getIssuesSprint(ProjectConfFieldMapping projectConfig, int i, List<String> issueKeys) throws InterruptedException;
 }

@@ -24,9 +24,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -115,6 +117,7 @@ public class OnlineAdapter implements JiraAdapter {
 	private static final String STATUSID = "statusId";
 
 	private static final String TYPEID = "typeId";
+	public static final String PROCESSING_ISSUES_PRINT_LOG = "Processing issues %d - %d out of %d";
 
 	private JiraProcessorConfig jiraProcessorConfig;
 	private AesEncryptionService aesEncryptionService;
@@ -185,7 +188,7 @@ public class OnlineAdapter implements JiraAdapter {
 				if (searchResult != null) {
 					psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
 					psLogData.setAction(CommonConstant.FETCHING_ISSUE);
-					log.info(String.format("Processing issues %d - %d out of %d", pageStart,
+					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
 							Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
 							kv(CommonConstant.PSLOGDATA, psLogData));
 				}
@@ -258,7 +261,7 @@ public class OnlineAdapter implements JiraAdapter {
 				if (searchResult != null) {
 					psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
 					psLogData.setAction(CommonConstant.FETCHING_ISSUE);
-					log.info(String.format("Processing issues %d - %d out of %d", pageStart,
+					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
 							Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
 							kv(CommonConstant.PSLOGDATA, psLogData));
 				}
@@ -1074,4 +1077,48 @@ public class OnlineAdapter implements JiraAdapter {
 		}
 		return res.toString();
 	}
+
+	public SearchResult getIssuesSprint(ProjectConfFieldMapping projectConfig, int pageStart, List<String> issueKeys)
+			throws InterruptedException {
+		SearchResult searchResult = null;
+
+		if (client == null) {
+			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
+		} else if (StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())) {
+			log.info("Project key is empty {}", projectConfig.getProjectToolConfig().getProjectKey());
+		} else {
+			StringBuilder query = new StringBuilder("project in (")
+					.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") AND ");
+			try {
+				query.append(JiraProcessorUtil.processJqlForSprintFetch(issueKeys));
+				psLogData.setSprintId(null);
+				psLogData.setJql(query.toString());
+				Instant start = Instant.now();
+				Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
+						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
+				searchResult = promisedRs.claim();
+				psLogData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
+				log.debug("jql query processed for active sprintFetch", kv(CommonConstant.PSLOGDATA, psLogData));
+				if (searchResult != null) {
+					psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
+					psLogData.setAction(CommonConstant.FETCHING_ISSUE);
+					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
+							Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
+							kv(CommonConstant.PSLOGDATA, psLogData));
+				}
+				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+			} catch (RestClientException e) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+					log.error(ERROR_MSG_401);
+				} else {
+					log.info(NO_RESULT_QUERY, query);
+					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+				}
+			}
+
+		}
+
+		return searchResult;
+	}
+
 }

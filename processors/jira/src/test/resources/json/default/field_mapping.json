@@ -2,6 +2,9 @@
   {
     "sprintName": "customfield_12700",
     "jiraDueDateField": "Custom Field",
-    "jiraDueDateCustomField": "customfield_11528"
+    "jiraDueDateCustomField": "customfield_11528",
+    "jiradefecttype": [
+      "Defect"
+    ]
   }
 ]

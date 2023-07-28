@@ -99,7 +99,7 @@ public class OpenTicketAgingByPriorityServiceImplTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 
 		List<String> jiraTicketClosedStatus = fieldMapping.getJiraTicketClosedStatus();
-		jiraTicketClosedStatus.add(fieldMapping.getJiraLiveStatus());
+		jiraTicketClosedStatus.add(fieldMapping.getJiraLiveStatusOTA());
 		jiraTicketClosedStatus.addAll(fieldMapping.getJiraTicketRejectedStatus());
 
 		KanbanJiraIssueDataFactory kanbanJiraIssueDataFactory = KanbanJiraIssueDataFactory.newInstance();
@@ -214,7 +214,7 @@ public class OpenTicketAgingByPriorityServiceImplTest {
 		Map<String, Object> defectDataListMap = openTicketAgingByPriorityService.fetchKPIDataFromDb(leafNodeList,
 				startDate, endDate, kpiRequest);
 		assertThat("Total Defects issue list :",
-				((List<KanbanJiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(), equalTo(194));
+				((List<KanbanJiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(), equalTo(172));
 	}
 
 	@Test

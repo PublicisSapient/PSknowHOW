@@ -28,12 +28,17 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,6 +89,7 @@ public class NetOpenTicketCountStatusImplTest {
 	@Mock
 	private CommonService commonService;
 	private KpiRequest kpiRequest;
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 
 	@Before
 	public void setup() {
@@ -99,6 +105,14 @@ public class NetOpenTicketCountStatusImplTest {
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put(KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.name(), "sum");
 		setTreadValuesDataCount();
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMapping.setJiraLiveStatusNOSK("");
+		fieldMapping.setJiraTicketClosedStatus(Collections.EMPTY_LIST);
+		fieldMapping.setKanbanRCACountIssueType(Collections.EMPTY_LIST);
+		fieldMapping.setTicketCountIssueType(Collections.EMPTY_LIST);
+		fieldMapping.setStoryFirstStatus("");
+		fieldMappingMap.put(new ObjectId("6335368249794a18e8a4479f"), fieldMapping);
+		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}
 
 	@After
@@ -167,7 +181,7 @@ public class NetOpenTicketCountStatusImplTest {
 	public void testNetOpenTicketByStatus() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
-		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(any(), any(), any(), any(), any()))
+		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(any(), any(), any(), any(), any(), anyMap()))
 				.thenReturn(createResultMap());
 		Map<String, Map<String, Map<String, Set<String>>>> projectWiseJiraHistoryStatusAndDateWiseIssueMap = prepareProjectWiseJiraHistoryByStatusAndDate();
 		when(kpiHelperService.computeProjectWiseJiraHistoryByStatusAndDate(anyMap(), anyString(), anyMap()))
@@ -181,13 +195,14 @@ public class NetOpenTicketCountStatusImplTest {
 		resultMap.put("JiraIssueHistoryData", kanbanIssueCustomHistoryDataList);
 		resultMap.put("projectWiseClosedStoryStatus", projectWiseDoneStatus);
 		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(), any(),
-				anyString())).thenReturn(resultMap);
+				anyString(), anyMap())).thenReturn(resultMap);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(totalTicketCountImpl.getKanbanRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 		try {
 			KpiElement kpiElement = totalTicketCountImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

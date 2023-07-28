@@ -139,14 +139,14 @@ public class BackLogCountByIssueTypeServiceImpl extends JiraKPIService<Integer, 
 
 			Set<String> excludeStatuses = new HashSet<>();
 
-			excludeStatuses.add(Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatus()).orElse(""));
+			excludeStatuses.add(Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatusKPI152()).orElse(""));
 
-			if (Optional.ofNullable(fieldMapping.getJiraDod()).isPresent()) {
-				excludeStatuses.addAll(fieldMapping.getJiraDod());
+			if (Optional.ofNullable(fieldMapping.getJiraDodKPI152()).isPresent()) {
+				excludeStatuses.addAll(fieldMapping.getJiraDodKPI152());
 			}
 
-			if (Optional.ofNullable(fieldMapping.getJiraLiveStatus()).isPresent()) {
-				excludeStatuses.add(fieldMapping.getJiraLiveStatus());
+			if (Optional.ofNullable(fieldMapping.getJiraLiveStatusKPI152()).isPresent()) {
+				excludeStatuses.add(fieldMapping.getJiraLiveStatusKPI152());
 			}
 
 			// exclude the issue from total jiraIssues based on DOD status and Defect

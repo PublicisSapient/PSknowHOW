@@ -97,6 +97,7 @@ public class IssuesWithoutStoryLinkImplTest {
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMapping.setJiraStoryIdentification(Arrays.asList("Story"));
+		fieldMapping.setJiraStoryIdentificationKPI129(Arrays.asList("Story"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);

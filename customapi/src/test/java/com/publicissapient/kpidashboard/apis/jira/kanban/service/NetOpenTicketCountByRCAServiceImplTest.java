@@ -10,12 +10,15 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,6 +65,9 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 	private List<DataCount> trendValues = new ArrayList<>();
 	private KpiRequest kpiRequest;
 
+	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+
+
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance("/json/default/kanban_kpi_request.json");
@@ -76,6 +82,15 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 		kpiWiseAggregation.put("ticketRCA", "sum");
 
 		setTreadValuesDataCount();
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMapping.setJiraLiveStatusNORK("");
+		fieldMapping.setJiraTicketClosedStatus(Collections.EMPTY_LIST);
+		fieldMapping.setKanbanRCACountIssueType(Collections.EMPTY_LIST);
+		fieldMapping.setTicketCountIssueType(Collections.EMPTY_LIST);
+		fieldMapping.setStoryFirstStatus("");
+		fieldMappingMap.put(new ObjectId("6335368249794a18e8a4479f"), fieldMapping);
+		configHelperService.setFieldMappingMap(fieldMappingMap);
+
 	}
 
 	@After
@@ -127,7 +142,8 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 		resultMap.put("JiraIssueHistoryData", kanbanIssueCustomHistoryDataList);
 		resultMap.put("projectWiseClosedStoryStatus", projectWiseDoneStatus);
 		when(kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(anyList(), anyString(), anyString(), any(),
-				anyString())).thenReturn(resultMap);
+				anyString(), anyMap())).thenReturn(resultMap);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 		try {
 			KpiElement kpiElement = ticketRCAServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

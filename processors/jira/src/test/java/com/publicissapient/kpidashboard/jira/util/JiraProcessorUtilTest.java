@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -99,8 +100,8 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void deodeUTF8StringEmpty() throws URISyntaxException {
 		FieldMapping fieldMapping = new FieldMapping();
-		fieldMapping.setJiraDor("");
-		Object jiraResponse = fieldMapping.getJiraDor();
+		fieldMapping.setJiraDorKPI3("");
+		Object jiraResponse = fieldMapping.getJiraDorKPI3();
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
 
 	}
@@ -108,8 +109,8 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void deodeUTF8StringEmptyNull() throws URISyntaxException {
 		FieldMapping fieldMapping = new FieldMapping();
-		fieldMapping.setJiraDor(null);
-		Object jiraResponse = fieldMapping.getJiraDor();
+		fieldMapping.setJiraDorKPI3(null);
+		Object jiraResponse = fieldMapping.getJiraDorKPI3();
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
 
 	}
@@ -223,4 +224,16 @@ public class JiraProcessorUtilTest {
 
 	}
 
+	@Test
+	void processJqlForSprintFetch() {
+		// Arrange
+		List<String> issueKeys = Arrays.asList("KEY-1", "KEY-2", "KEY-3");
+		String expected = "issueKey in (KEY-1, KEY-2, KEY-3)";
+
+		// Act
+		String actual = JiraProcessorUtil.processJqlForSprintFetch(issueKeys);
+
+		// Assert
+		assertEquals(expected, actual);
+	}
 }

@@ -97,6 +97,8 @@ public class QualityStatusServiceImplTest {
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private List<JiraIssue> linkedStories = new ArrayList<>();
+	Map<String, List<String>> priority = new HashMap<>();
+
 
 	@Before
 	public void setup() {
@@ -121,6 +123,7 @@ public class QualityStatusServiceImplTest {
 		List<String> linked = bugList.stream().map(JiraIssue::getDefectStoryID).flatMap(Set::stream)
 				.collect(Collectors.toList());
 		linkedStories = jiraIssueDataFactory.findIssueByNumberList(linked);
+		priority.put("P1",Arrays.asList("p1"));
 	}
 
 	private void setMockProjectConfig() {
@@ -134,8 +137,8 @@ public class QualityStatusServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-		fieldMapping.setJiraDefectRejectionStatus("");
-		fieldMapping.setResolutionTypeForRejection(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
+		fieldMapping.setJiraDefectRejectionStatusKPI133("");
+		fieldMapping.setResolutionTypeForRejectionKPI133(Arrays.asList("Invalid", "Duplicate", "Unrequired"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}
@@ -153,6 +156,7 @@ public class QualityStatusServiceImplTest {
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9 ";
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(customApiConfig.getPriority()).thenReturn(priority);
 		try {
 			KpiElement kpiElement = qualityStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

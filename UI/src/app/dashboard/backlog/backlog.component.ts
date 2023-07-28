@@ -395,6 +395,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
 
   handleSelectedOptionForCard(event, kpi) {
+    this.kpiSelectedFilterObj['action']='update'
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
     if (event && Object.keys(event)?.length !== 0) {
       for (const key in event) {
@@ -412,6 +413,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
 
   createAllKpiArray(data) {
+    this.kpiSelectedFilterObj['action']='new'
     for (const key in data) {
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
@@ -656,6 +658,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
 
   handleSelectedOption(event, kpi) {
+    this.kpiSelectedFilterObj['action']='update'
     this.kpiSelectedFilterObj[kpi?.kpiId] = [];
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
         for (const key in event) {
@@ -800,6 +803,16 @@ export class BacklogComponent implements OnInit, OnDestroy{
       });
     }
   }
+
+  /** Reload KPI once field mappoing updated */
+  reloadKPI(event){
+    this.kpiChartData[event.kpiDetail?.kpiId] = [];
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId,'Backlog');
+    if (currentKPIGroup?.kpiList?.length > 0) {
+        this.postJiraKpi(this.kpiJira, 'jira');
+    }
+  }
+
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
     this.sharedObject = null;

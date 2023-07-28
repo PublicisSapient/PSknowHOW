@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,6 +85,8 @@ public class FlowLoadServiceImplTest {
 		});
 
 		issueBacklogHistoryDataList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(issueBacklogHistoryDataList);
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
 
 	}
 

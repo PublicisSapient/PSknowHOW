@@ -174,16 +174,16 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 			if (MapUtils.isNotEmpty(mapOfProjectFilters)) {
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 			}
-			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKPI129()).isPresent()) {
 
-				if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
-					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfStoriesFilter, fieldMapping,
-							fieldMapping.getJiraStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+				if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKPI129()).isPresent()) {
+					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfStoriesFilter, fieldMapping.getJiradefecttype(),
+							fieldMapping.getJiraStoryIdentificationKPI129(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 				}
 
 				uniqueProjectMapForStories.put(basicProjectConfigId.toString(), mapOfStoriesFilter);
 			}
-			storyType.addAll(fieldMapping.getJiraStoryIdentification());
+			storyType.addAll(fieldMapping.getJiraStoryIdentificationKPI129());
 		});
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
@@ -276,9 +276,9 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			if (null != fieldMapping) {
-				if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
-					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping,
-							fieldMapping.getJiraStoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+				if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKPI129()).isPresent()) {
+					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
+							fieldMapping.getJiraStoryIdentificationKPI129(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 				}
 				excludeStatusList.addAll(
 						CollectionUtils.isEmpty(fieldMapping.getExcludeStatusKpi129()) ? Lists.newArrayList()
