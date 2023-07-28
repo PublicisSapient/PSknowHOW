@@ -353,7 +353,7 @@
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
                   class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn p-mr-2"
-                  #showHide [ngClass]="{'active': toggleDropdown['showHide'],'disabled': noProjects}" (click)="toggleDropdown = !toggleDropdown">
+                  #showHide [ngClass]="{'active': toggleDropdown['showHide'],'disabled': noProjects}" (click)="toggleDropdown['showHide'] = !toggleDropdown['showHide']">
                   Show/Hide
                </div>
                <div *ngIf="toggleDropdown['showHide'] && showKpisList && showKpisList?.length > 0"
