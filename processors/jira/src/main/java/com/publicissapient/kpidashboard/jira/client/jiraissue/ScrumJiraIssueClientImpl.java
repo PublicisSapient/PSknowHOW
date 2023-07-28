@@ -737,9 +737,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		// Saving back to MongoDB
 		jiraIssueRepository.saveAll(jiraIssuesToSave);
 		jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
-		if(!isSprintFetch){
+		if (!isSprintFetch) {
 			saveAccountHierarchy(jiraIssuesToSave, projectConfig, sprintDetailsSet);
-		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
+			saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
 		}
 		if (!dataFromBoard) {
 			sprintClient.processSprints(projectConfig, sprintDetailsSet, jiraAdapter, false);
@@ -1231,6 +1231,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				sprint.setSprintID(
 						sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + jiraIssue.getProjectName()
 								+ JiraConstants.COMBINE_IDS_SYMBOL + projectConfig.getBasicProjectConfigId());
+				sprint.setBasicProjectConfigId(new ObjectId(jiraIssue.getBasicProjectConfigId()));
 			}
 			sprintDetailsSet.addAll(sprints);
 			// Use the latest sprint
@@ -1414,28 +1415,40 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		Map<ObjectId, AccountHierarchy> projectDataMap = new HashMap<>();
 
 		for (JiraIssue jiraIssue : jiraIssueList) {
-			if (StringUtils.isNotBlank(jiraIssue.getProjectName()) && StringUtils.isNotBlank(jiraIssue.getSprintName())
-					&& StringUtils.isNotBlank(jiraIssue.getSprintBeginDate())
-					&& StringUtils.isNotBlank(jiraIssue.getSprintEndDate())) {
+			String projectName = jiraIssue.getProjectName();
+			String sprintName = jiraIssue.getSprintName();
+			String sprintBeginDate = jiraIssue.getSprintBeginDate();
+			String sprintEndDate = jiraIssue.getSprintEndDate();
 
-				ObjectId basicProjectConfigId = new ObjectId(jiraIssue.getBasicProjectConfigId());
+			if (StringUtils.isBlank(projectName) || StringUtils.isBlank(sprintName)
+					|| StringUtils.isBlank(sprintBeginDate) || StringUtils.isBlank(sprintEndDate)) {
+				continue; // Skip this Jira issue if any of the required fields are blank
+			}
 
-				// Fetch projectData from the map or the database if not found in the map
-				AccountHierarchy projectData = getProjectData(projectDataMap, basicProjectConfigId);
+			ObjectId basicProjectConfigId = new ObjectId(jiraIssue.getBasicProjectConfigId());
+			Map<String, SprintDetails> sprintDetailsMap = sprintDetailsSet.stream()
+					.filter(sprintDetails -> sprintDetails.getBasicProjectConfigId().equals(basicProjectConfigId))
+					.collect(Collectors.toMap(sprintDetails -> sprintDetails.getSprintID().split("_")[0],
+							sprintDetails -> sprintDetails));
 
-				if (projectData != null) {
-					for (SprintDetails sprintDetails : sprintDetailsSet) {
-						AccountHierarchy sprintHierarchy = createHierarchyForSprint(sprintDetails,
-								projectConfig.getProjectBasicConfig(), projectData, sprintHierarchyLevel);
+			AccountHierarchy projectData = projectDataMap.computeIfAbsent(basicProjectConfigId, id -> {
+				List<AccountHierarchy> projectDataList = accountHierarchyRepository
+						.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, id);
+				return projectDataList.isEmpty() ? null : projectDataList.get(0);
+			});
 
-						setToSaveAccountHierarchy(setToSave, sprintHierarchy, existingHierarchy);
+			for (String sprintId : jiraIssue.getSprintIdList()) {
+				SprintDetails sprintDetails = sprintDetailsMap.get(sprintId);
+				if (sprintDetails != null) {
+					AccountHierarchy sprintHierarchy = createHierarchyForSprint(sprintDetails,
+							projectConfig.getProjectBasicConfig(), projectData, sprintHierarchyLevel);
 
-						List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
-								jiraIssue, sprintHierarchy, sprintHierarchyLevel, hierarchyLevelList);
-						additionalFiltersHierarchies.forEach(accountHierarchy -> setToSaveAccountHierarchy(setToSave,
-								accountHierarchy, existingHierarchy));
+					setToSaveAccountHierarchy(setToSave, sprintHierarchy, existingHierarchy);
 
-					}
+					List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
+							jiraIssue, sprintHierarchy, sprintHierarchyLevel, hierarchyLevelList);
+					additionalFiltersHierarchies.forEach(accountHierarchy -> setToSaveAccountHierarchy(setToSave,
+							accountHierarchy, existingHierarchy));
 				}
 			}
 		}
@@ -1443,20 +1456,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (!setToSave.isEmpty()) {
 			accountHierarchyRepository.saveAll(setToSave);
 		}
-	}
-
-	/**
-	 *
-	 * @param projectDataMap
-	 * @param basicProjectConfigId
-	 * @return
-	 */
-	private AccountHierarchy getProjectData(Map<ObjectId, AccountHierarchy> projectDataMap, ObjectId basicProjectConfigId) {
-		return projectDataMap.computeIfAbsent(basicProjectConfigId, id -> {
-			List<AccountHierarchy> projectDataList = accountHierarchyRepository
-					.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, id);
-			return projectDataList.isEmpty() ? null : projectDataList.get(0);
-		});
 	}
 
 	/**
@@ -1672,7 +1671,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	// for fetch, parse & update based on issuesKeys
-	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, //NOSONAR
+	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, // NOSONAR
 			boolean isOffline, List<String> issueKeys) {
 		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
@@ -1736,7 +1735,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		} catch (JSONException e) {
 			log.error("Error while updating Story information in sprintFetch", e,
 					kv(CommonConstant.PSLOGDATA, psLogData));
-		} catch (InterruptedException e) { //NOSONAR
+		} catch (InterruptedException e) { // NOSONAR
 			log.error("Interrupted exception thrown during sprintFetch", e, kv(CommonConstant.PSLOGDATA, psLogData));
 			processorFetchingComplete = false;
 		} finally {
