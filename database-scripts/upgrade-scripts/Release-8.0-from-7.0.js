@@ -4,7 +4,11 @@
 //7.3 changes
 
 //-------------------- insert new kpi details -------
+const kpiIdsToCheck = ["kpi151", "kpi152"];
+var kpiData = db.getCollection('kpi_master').find( {kpiId: { $in: kpiIdsToCheck }}).toArray();
+var kpiColumnData = db.getCollection('kpi_column_configs').find( {kpiId: { $in: kpiIdsToCheck }}).toArray();
 
+if (kpiColumnData.length === 0) {
 db.kpi_column_configs.insertMany([{
                                     basicProjectConfigId: null,
                                     kpiId: 'kpi151',
@@ -102,7 +106,11 @@ db.kpi_column_configs.insertMany([{
                                     }]
                                   }
                                  ]);
+                                 } else {
+                                     print("KPI Column Config data is already present");
+                                 }
 
+if (kpiData.length === 0) {
 db.getCollection('kpi_master').insertMany(
 [{
        "kpiId": "kpi151",
@@ -153,6 +161,9 @@ db.getCollection('kpi_master').insertMany(
           "calculateMaturity": false
       }
  ]);
+ } else {
+     print("KPI are already present in Kpi master");
+ }
 
 
  //7.4 changes
