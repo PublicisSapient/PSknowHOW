@@ -348,7 +348,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
       if (idx == -1) {
         uniqueArray = [...uniqueArray, arr[i]];
-        uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
+        uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']] ;
         uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
       } else {
         uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
@@ -1391,7 +1391,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (sprintState?.toLowerCase() === 'active') {
       this.httpService.getactiveIterationfetchStatus(sprintId).subscribe(response => {
         if (response['success']) {
-          const lastSyncDateTime = new Date(response['data'].lastSyncDateTime).getTime();
+          const lastSyncDateTime = new Date(response['data']?.lastSyncDateTime).getTime();
           const lastRunProcessorDateTime = new Date(this.selectedProjectLastSyncDate).getTime();
           if (lastSyncDateTime - lastRunProcessorDateTime > 0) {
             this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
