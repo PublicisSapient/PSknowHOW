@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.model;//NOPMD
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -109,6 +110,7 @@ public class KpiElement implements Serializable { // NOPMD
 	// For Excel column Info
 	private List<KPIExcelColumnInfo> excelColumnInfo;
 	private transient Object filterDuration;
+    private transient Set<IterationKpiModalValue> issueData;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -830,5 +832,14 @@ public class KpiElement implements Serializable { // NOPMD
 	public void setFilterDuration(Object filterDuration) {
 		this.filterDuration = filterDuration;
 	}
+
+	public Set<IterationKpiModalValue> getIssueData() {
+		return issueData;
+	}
+
+	public void setIssueData(Set<IterationKpiModalValue> issueData) {
+		this.issueData = issueData;
+	}
+
 
 }

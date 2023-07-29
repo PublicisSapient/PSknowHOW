@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.model;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -145,4 +146,9 @@ public class IterationKpiModalValue implements Serializable {
 	private String dodToLive;
 	@JsonProperty("Lead Time (In Days)")
 	private String leadTime;
+
+	@JsonProperty("statusLogGroup")
+	Map<String, Set<String>> statusLogGroup;
+	@JsonProperty("workLogGroup")
+	Map<String,Set<String>> workLogGroup;
 }
