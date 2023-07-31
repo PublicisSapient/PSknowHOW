@@ -107,7 +107,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-
+		long jiraRequestStartTime = System.currentTimeMillis();
+        log.info("*****FirstTimePassRateServiceImpl",jiraRequestStartTime);
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
@@ -131,7 +132,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 		log.debug("[STORYCOUNT-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
-
+        log.info("*********Total time taken FirstTimePassRateServiceImpl {}",String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
 		return kpiElement;
 	}
 
