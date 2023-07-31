@@ -182,7 +182,7 @@ public class JiraServiceR {
 					listOfTask.add(new ParallelJiraServices(kpiRequest, responseList, kpiEle, treeAggregatorDetail));
 				}
 				forkJoinPool.invokeAll(listOfTask);
-				//ForkJoinTask.invokeAll(listOfTask);
+				//ForkJoinTask.invokeAll(listOfTask);//NOSONAR
 				List<KpiElement> missingKpis = origRequestedKpis.stream()
 						.filter(reqKpi -> responseList.stream()
 								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
@@ -400,7 +400,7 @@ public class JiraServiceR {
 	 *
 	 * @author pankumar8
 	 */
-	public class ParallelJiraServices implements Callable<Void> { //extends RecursiveAction {
+	public class ParallelJiraServices implements Callable<Void> { //extends RecursiveAction { //NOSONAR
 
 		private static final long serialVersionUID = 1L;
 		private final KpiRequest kpiRequest;
@@ -431,13 +431,13 @@ public class JiraServiceR {
 		 */
 		@SuppressWarnings("PMD.AvoidCatchingGenericException")
 //		@Override
-//		public void compute() {
-//			try {
+	//	NOSONAR//		public void compute() {
+//		try {
 //				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
 //			} catch (Exception e) {
 //				log.error("[PARALLEL_JIRA_SERVICE].Exception occured {}", e);
 //			}
-//		}
+//		}//NOSONAR
 
 		@Override
 		public Void call() {
