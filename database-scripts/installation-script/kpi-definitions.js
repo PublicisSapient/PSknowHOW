@@ -7966,3 +7966,21 @@ db.getCollection('field_mapping_structure').insertMany(
 }
 ]
 );
+
+//Defect fix for DTS-27477 (Remove one In-Sprint Automation mapping which is appearing twice)
+
+var fieldNameToUpdate = "jiraStoryIdentification";
+var updateExecutedFlag = db.getCollection('field_mapping_structure')
+.findOne({ "fieldName": fieldNameToUpdate, "updateExecuted": true });
+
+if (!updateExecutedFlag) {
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: { "fieldLabel": "Issue Count KPI Issue type", "updateExecuted": true } },
+    { multi: false }
+  );
+
+  print("Update executed successfully!");
+} else {
+  print("Update already executed. Skipping...");
+}
