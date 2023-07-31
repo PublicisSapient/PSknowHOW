@@ -2397,3 +2397,33 @@ db.getCollection('field_mapping_structure').insert(
 
  //---------7.5.0 changes------------------------------------------------------------------
 
+db.getCollection('field_mapping_structure').insert([
+        {
+            "fieldName": "jiraDodKPI37",
+            "fieldLabel": "Status to identify completed issues",
+            "fieldType": "chips",
+            "fieldCategory": "workflow",
+            "section": "WorkFlow Status Mapping",
+            "tooltip": {
+                "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+            }
+        },
+
+])
+
+const fieldMappings = db.field_mapping.find({});
+fieldMappings.forEach(function(fm) {
+    const jiraDod = fm.jiraDod;
+
+    db.field_mapping.updateOne(
+        { "_id": fm._id },
+        {
+            $set: {
+                "jiraDodKPI37": jiraDod
+            },
+            $unset: {
+                "jiraIssueTypeKPI37": ""
+            }
+        }
+    );
+});
