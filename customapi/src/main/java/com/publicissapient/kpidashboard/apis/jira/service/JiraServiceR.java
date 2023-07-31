@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
@@ -172,12 +174,15 @@ public class JiraServiceR {
 				kpiRequest.setFilterToShowOnTrend(groupName);
 
 				List<ParallelJiraServices> listOfTask = new ArrayList<>();
+				int numThreads = Runtime.getRuntime().availableProcessors();
+				ForkJoinPool forkJoinPool = new ForkJoinPool(numThreads);
+				log.info("** number of available core processor :{}",numThreads);
 				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 
 					listOfTask.add(new ParallelJiraServices(kpiRequest, responseList, kpiEle, treeAggregatorDetail));
 				}
-
-				ForkJoinTask.invokeAll(listOfTask);
+				forkJoinPool.invokeAll(listOfTask);
+				//ForkJoinTask.invokeAll(listOfTask);
 				List<KpiElement> missingKpis = origRequestedKpis.stream()
 						.filter(reqKpi -> responseList.stream()
 								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
@@ -395,7 +400,7 @@ public class JiraServiceR {
 	 *
 	 * @author pankumar8
 	 */
-	public class ParallelJiraServices extends RecursiveAction {
+	public class ParallelJiraServices implements Callable<Void> { //extends RecursiveAction {
 
 		private static final long serialVersionUID = 1L;
 		private final KpiRequest kpiRequest;
@@ -425,13 +430,23 @@ public class JiraServiceR {
 		 * {@inheritDoc}
 		 */
 		@SuppressWarnings("PMD.AvoidCatchingGenericException")
+//		@Override
+//		public void compute() {
+//			try {
+//				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
+//			} catch (Exception e) {
+//				log.error("[PARALLEL_JIRA_SERVICE].Exception occured {}", e);
+//			}
+//		}
+
 		@Override
-		public void compute() {
+		public Void call() {
 			try {
 				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
 			} catch (Exception e) {
 				log.error("[PARALLEL_JIRA_SERVICE].Exception occured {}", e);
 			}
+			return null;
 		}
 
 		/**

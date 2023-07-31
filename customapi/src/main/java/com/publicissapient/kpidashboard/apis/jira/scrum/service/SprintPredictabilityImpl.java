@@ -271,9 +271,12 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
+		long jiraRequestStartTime = System.currentTimeMillis();
+		log.info("*****SprintPredictability before fetchKPIDataFromDb {}",jiraRequestStartTime);
 
 		Map<String, Object> sprintWisePredictabilityMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
 				kpiRequest);
+		log.info("*********SprintPredictability after fetchKPIDataFromDb {}",String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
 
 		List<SprintWiseStory> sprintWisePredictabilityList = new ArrayList<>();
 
