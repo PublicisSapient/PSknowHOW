@@ -209,11 +209,15 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			}
 			projectCriteriaList.add(projectCriteria);
 		});
-
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.andOperator(projectCriteriaList.toArray(new Criteria[0]));
-		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
-		Query query = new Query(criteriaProjectLevelAdded);
+        Query query;
+		if (CollectionUtils.isEmpty(projectCriteriaList)) {
+			query = new Query(criteria);
+		} else {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+			query = new Query(criteriaProjectLevelAdded);
+		}
 		return operations.find(query, JiraIssueCustomHistory.class);
 
 	}
@@ -221,7 +225,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<JiraIssueCustomHistory> findByFilterAndFromReleaseMap(List<String> basicProjectConfigId,
-			List<String> releaseList) {
+			List<Pattern> releaseList) {
 		Criteria criteria = new Criteria();
 		criteria = criteria.and(BASIC_PROJ_CONF_ID).in(basicProjectConfigId);
 		List<Criteria> projectCriteriaList = new ArrayList<>();

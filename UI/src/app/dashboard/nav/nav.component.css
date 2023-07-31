@@ -274,7 +274,12 @@
   opacity: 0.6;
 }
 .icon-hamburger{
-  height: 40px;
+  height: 40px ;
+  width: 40px ;
+}
+.close-icon{
+  height: 32px;
+  width: 35px;;
 }
 .selected-value{
   writing-mode: vertical-rl;

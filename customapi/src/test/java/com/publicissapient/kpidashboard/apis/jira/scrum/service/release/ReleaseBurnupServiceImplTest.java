@@ -4,14 +4,18 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,6 +64,7 @@ public class ReleaseBurnupServiceImplTest {
 	private List<JiraIssue> jiraIssues = new ArrayList<>();
 	private List<JiraIssueCustomHistory> jiraIssuesCustomHistory = new ArrayList<>();
 	private List<JiraIssueReleaseStatus> jiraIssueReleaseStatusList;
+	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 
 	@Before
 	public void setUp() {
@@ -79,6 +84,14 @@ public class ReleaseBurnupServiceImplTest {
 				.newInstance("/json/default/jira_issue_release_status.json");
 		jiraIssueReleaseStatusList = jiraIssueReleaseStatusDataFactory.getJiraIssueReleaseStatusList();
 
+		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+				.newInstance("/json/default/scrum_project_field_mappings.json");
+		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		configHelperService.setFieldMappingMap(fieldMappingMap);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+
+
 	}
 
 	@Test
@@ -93,7 +106,7 @@ public class ReleaseBurnupServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(jiraService.getJiraIssueReleaseForProject(anyString())).thenReturn(jiraIssueReleaseStatusList.get(0));
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
 		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
@@ -116,7 +129,7 @@ public class ReleaseBurnupServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(jiraService.getJiraIssueReleaseForProject(anyString())).thenReturn(jiraIssueReleaseStatusList.get(0));
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
 		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
@@ -139,7 +152,7 @@ public class ReleaseBurnupServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(jiraService.getJiraIssueReleaseForProject(anyString())).thenReturn(jiraIssueReleaseStatusList.get(0));
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
 		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));

@@ -119,6 +119,11 @@ public class AzureProcessorJobExecutor extends ProcessorJobExecutor<AzureProcess
 		return executionStatus;
 	}
 
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
+
 	private boolean fetchIssueDetail(boolean executionStatus, List<ProjectBasicConfig> projectConfigList) {
 		AtomicReference<Integer> scrumIssueCount = new AtomicReference<>(0);
 		AtomicReference<Integer> kanbanIssueCount = new AtomicReference<>(0);

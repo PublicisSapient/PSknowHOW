@@ -99,14 +99,14 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(defectList));
 
-			if (Optional.ofNullable(fieldMapping.getJiraDod()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getJiraDodKPI127()).isPresent()) {
 				List<String> closedStatusList = new ArrayList<>();
-				closedStatusList.addAll(fieldMapping.getJiraDod());
-				if (Optional.ofNullable(fieldMapping.getJiraLiveStatus()).isPresent()) {
-					closedStatusList.add(fieldMapping.getJiraLiveStatus());
+				closedStatusList.addAll(fieldMapping.getJiraDodKPI127());
+				if (Optional.ofNullable(fieldMapping.getJiraLiveStatusKPI127()).isPresent()) {
+					closedStatusList.add(fieldMapping.getJiraLiveStatusKPI127());
 				}
-				if (Optional.ofNullable(fieldMapping.getJiraDefectDroppedStatus()).isPresent()) {
-					closedStatusList.addAll(fieldMapping.getJiraDefectDroppedStatus());
+				if (Optional.ofNullable(fieldMapping.getJiraDefectDroppedStatusKPI127()).isPresent()) {
+					closedStatusList.addAll(fieldMapping.getJiraDefectDroppedStatusKPI127());
 				}
 				mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(closedStatusList));

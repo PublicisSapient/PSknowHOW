@@ -191,6 +191,7 @@ export class MilestoneComponent implements OnInit {
 
   handleSelectedOption(event, kpi) {
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
+    this.kpiSelectedFilterObj['action']='update';
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
 
       for (const key in event) {
@@ -301,6 +302,7 @@ export class MilestoneComponent implements OnInit {
     return id;
   }
   createAllKpiArray(data) {
+    this.kpiSelectedFilterObj['action']='new';
     for (const key in data) {
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {

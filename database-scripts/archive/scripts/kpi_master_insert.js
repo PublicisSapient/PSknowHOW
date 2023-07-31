@@ -217,8 +217,8 @@ db.getCollection('kpi_master').insert(
           "lhs": "DRE for a sprint",
           "operator": "division",
           "operands": [
-            "No. of defects tagged to stories in the iteration that are fixed",
-            "Total no. of defects tagged to stories in a iteration"
+            "No. of defects in the iteration that are fixed",
+            "Total no. of defects in a iteration"
           ]
         }
       ],
@@ -2461,7 +2461,7 @@ db.getCollection('kpi_master').insert(
     "defaultOrder": 2,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
-    "groupId": 10,
+    "groupId": 11,
     "thresholdValue": "",
     "kanban": false,
     "chartType": null,
@@ -2777,7 +2777,7 @@ db.getCollection('kpi_master').insert(
     "defaultOrder": 8,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
-    "groupId": 10,
+    "groupId": 11,
     "thresholdValue": "",
     "kanban": false,
     "chartType": null,
@@ -2817,7 +2817,7 @@ db.getCollection('kpi_master').insert(
     "defaultOrder": 1,
     "kpiUnit": "Count",
     "kpiSource": "Jira",
-    "groupId": 10,
+    "groupId": 11,
     "kanban": false,
     "chartType": "",
     "kpiInfo": {
@@ -2865,7 +2865,7 @@ db.getCollection('kpi_master').insert(
     "defaultOrder": 7,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
-    "groupId": 10,
+    "groupId": 11,
     "thresholdValue": "",
     "kanban": false,
     "chartType": "stacked-area",
@@ -2959,6 +2959,54 @@ db.getCollection('kpi_master').insert(
     "kpiFilter": "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
-  }
+  },
+  {
+      "kpiId": "kpi151",
+      "kpiName": "Backlog Count By Status",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 8,
+      "kpiCategory": "Backlog",
+      "kpiSource": "Jira",
+      "groupId": 10,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "pieChart",
+      "kpiInfo": {
+        "definition": "Total count of issues in the Backlog with a breakup by Status."
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "dropdown",
+      "boxType": "chart",
+      "calculateMaturity": false
+    },
+    {
+         "kpiId": "kpi152",
+         "kpiName": "Backlog Count By Issue Type",
+         "kpiUnit": "Count",
+         "isDeleted": "False",
+         "defaultOrder": 8,
+         "kpiCategory": "Backlog",
+         "kpiSource": "Jira",
+         "groupId": 11,
+         "thresholdValue": "",
+         "kanban": false,
+         "chartType": "pieChart",
+         "kpiInfo": {
+           "definition": "Total count of issues in the backlog with a breakup by issue type."
+         },
+         "xAxisLabel": "",
+         "yAxisLabel": "",
+         "isPositiveTrend": true,
+         "showTrend": false,
+         "isAdditionalFilterSupport": false,
+         "kpiFilter": "dropdown",
+         "boxType": "chart",
+         "calculateMaturity": false
+     }
 ]
 );

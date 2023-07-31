@@ -190,8 +190,8 @@ public class CustomApiConfig {// NOPMD
 	@Value("${kpi.comments.max.store.count}")
 	private int kpiCommentsMaxStoreCount;
 
-	@Value("${limit.comments.shown.on.kpi.dashboard.count}")
-	private int limitCommentsShownOnKpiDashboardCount;
+	@Value("${latest.kpi.comments.summary}")
+	private int latestKpiCommentsSummary;
 
 	private int jiraXaxisMonthCount;
 
@@ -228,12 +228,12 @@ public class CustomApiConfig {// NOPMD
 		this.sprintVelocityLimit = sprintVelocityLimit;
 	}
 
-	public int getLimitCommentsShownOnKpiDashboardCount() {
-		return limitCommentsShownOnKpiDashboardCount;
+	public int getLatestKpiCommentsSummary() {
+		return latestKpiCommentsSummary;
 	}
 
-	public void setLimitCommentsShownOnKpiDashboardCount(int limitCommentsShownOnKpiDashboardCount) {
-		this.limitCommentsShownOnKpiDashboardCount = limitCommentsShownOnKpiDashboardCount;
+	public void setLatestKpiCommentsSummary(int latestKpiCommentsSummary) {
+		this.latestKpiCommentsSummary = latestKpiCommentsSummary;
 	}
 
 	public int getKpiCommentsMaxStoreCount() {

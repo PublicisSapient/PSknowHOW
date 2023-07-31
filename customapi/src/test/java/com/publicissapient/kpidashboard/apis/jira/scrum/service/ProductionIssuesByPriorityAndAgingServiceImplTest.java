@@ -2,7 +2,9 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -109,6 +111,8 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		totalIssueBacklogList = JiraIssueDataFactory.newInstance().getJiraIssues();
+		when(jiraIssueRepository.findIssuesByDateAndTypeAndStatus(anyMap(),anyMap(),anyString(),anyString(),anyString(),anyString(),anyBoolean())).thenReturn(totalIssueBacklogList);
+
 	}
 
 	@Test

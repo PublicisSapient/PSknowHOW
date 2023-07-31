@@ -250,6 +250,11 @@ public class SonarProcessorJobExecutor extends ProcessorJobExecutor<SonarProcess
 		return executionStatus;
 	}
 
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
+
 	private List<ProjectBasicConfig> getSelectedProjects() {
 		List<ProjectBasicConfig> allProjects = projectConfigRepository.findAll();
 
