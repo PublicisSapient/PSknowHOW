@@ -66,7 +66,12 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	public static final String EPIC_WSJF = "epicWsjf";
 	public static final String EPIC_TIME_CRITICALITY = "epicTimeCriticality";
 	public static final String EPIC_JOB_SIZE = "epicJobSize";
-	public static final String READY_FOR_DEVELOPMENT_STATUS = "readyForDevelopmentStatus";
+	public static final String READY_FOR_DEVELOPMENT_STATUS = "readyForDevelopmentStatusKPI138";
+	public static final String ESTIMATION_CRITERIA = "estimationCriteria";
+	public static final String JIRA_ISSUE_EPIC_TYPE = "jiraIssueEpicType";
+	public static final String JIRA_TECH_DEBT_CUSTOMFIELD = "jiraTechDebtCustomField";
+	public static final String JIRA_TECH_DEBT_VALUE = "jiraTechDebtValue";
+	public static final String JIRA_DEFECT_TYPE = "jiradefecttype";
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 
@@ -91,8 +96,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
-	@Autowired
-	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
 
 	@Override
 	public FieldMapping getFieldMapping(String projectToolConfigId) {
@@ -225,7 +228,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		}
 
 		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraTechDebtIdentification())) {
-			List<String> tachDebtFieldList = Arrays.asList("jiraTechDebtCustomField", "jiraTechDebtValue");
+			List<String> tachDebtFieldList = Arrays.asList(JIRA_TECH_DEBT_CUSTOMFIELD, JIRA_TECH_DEBT_VALUE);
 			isUpdated = checkFieldsForUpdation(unsaved, saved, tachDebtFieldList);
 		}
 
@@ -254,7 +257,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		isUpdated = checkFieldsForUpdation(unsaved, saved, fieldNameListKanban);
 
 		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraTechDebtIdentification())) {
-			List<String> tachDebtFieldList = Arrays.asList("jiraTechDebtCustomField", "jiraTechDebtValue");
+			List<String> tachDebtFieldList = Arrays.asList(JIRA_TECH_DEBT_CUSTOMFIELD, JIRA_TECH_DEBT_VALUE);
 			isUpdated = checkFieldsForUpdation(unsaved, saved, tachDebtFieldList);
 		}
 
@@ -298,7 +301,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean isValueUpdated(Object value, Object value1) {
-		if (value == null) {
+		if (value == null || value1==null) {
 			return value1 != null;
 
 		} else {
@@ -330,7 +333,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		if (projectBasicConfigOpt.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
 
-			List<String> fieldNameList = Arrays.asList("jiradefecttype", "sprintName", JIRA_STORY_POINTS_CUSTOM_FIELD,
+			List<String> fieldNameList = Arrays.asList(JIRA_DEFECT_TYPE, "sprintName", JIRA_STORY_POINTS_CUSTOM_FIELD,
 					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION,
 					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_TIME_CRITICALITY, EPIC_JOB_SIZE,
 					READY_FOR_DEVELOPMENT_STATUS, "additionalFilterConfig", "jiraDueDateField",
@@ -395,8 +398,10 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
 			if (projectBasicConfig.getIsKanban()) {
 				projectToolConfig.setMetadataTemplateCode("9");
+				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			} else {
 				projectToolConfig.setMetadataTemplateCode("10");
+				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			}
 
 			toolConfigRepository.save(projectToolConfig);
@@ -411,28 +416,201 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		if (projectBasicConfigOpt.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = projectBasicConfigOpt.get();
 
-			List<String> fieldNameList = Arrays.asList("jiradefecttype", "sprintName", JIRA_STORY_POINTS_CUSTOM_FIELD,
-					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "jiraDefectCreatedStatus",
-					EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION, "issueStatusExcluMissingWork", "jiraIssueDeliverdStatus",
-					"jiraDod", "jiraDefectRemovalStatus", "jiraDefectDroppedStatus", "jiraStatusForDevelopment",
-					"jiraStatusForQa", "jiraOnHoldStatus", "jiraBlockedStatus", "jiraWaitStatus",
-					"jiraStatusForInProgress", "jiraDevDoneStatus", "jiraDefectSeepageIssueType",
-					"jiraQADefectDensityIssueType", "jiraDefectCountlIssueType", "jiraSprintVelocityIssueType",
-					"jiraDefectRemovalIssueType", "jiraDefectRejectionlIssueType", "jiraDefectInjectionIssueType",
-					"jiraTestAutomationIssueType", "jiraIntakeToDorIssueType", "jiraStoryIdentification",
-					"jiraFTPRStoryIdentification", "jiraSprintCapacityIssueType", "jiraIssueEpicType", "defectPriority",
-					"excludeRCAFromFTPR", "workingHoursDayCPT", "jiraDevDueDateCustomField", EPIC_USER_BUSINESS_VALUE,
-					EPIC_WSJF, "jiraDor", "resolutionTypeForRejection", "jiraDefectRejectionStatus",
-					EPIC_TIME_CRITICALITY, "jiraLiveStatus", EPIC_JOB_SIZE, "additionalFilterConfig",
-					"jiraDueDateField", "jiraDueDateCustomField", "jiraDefectClosedStatus", "jiraRejectedInRefinement",
-					"jiraAcceptedInRefinement", "jiraReadyForRefinement", "jiraIterationCompletionStatusCustomField",
-					"jiraIterationCompletionTypeCustomField", "jiraFtprRejectStatus");
+			List<String> fieldNameList = Arrays.asList(
+			"sprintName",
+			JIRA_DEFECT_TYPE,
+
+			"defectPriorityKPI135",
+			"defectPriorityKPI14",
+			"defectPriorityQAKPI111",
+			"defectPriorityKPI82",
+			"defectPriorityKPI133",
+
+			JIRA_ISSUE_TYPE_NAMES,
+			JIRA_ISSUE_EPIC_TYPE,
+
+			STORY_FIRST_STATUS,
+			"storyFirstStatusKPI148",
+			"storyFirstStatusKPI3",
+			ROOT_CAUSE,
+
+			"jiraStatusForDevelopmentKPI82",
+			"jiraStatusForDevelopmentKPI135",
+
+			"jiraStatusForQaKPI148",
+			"jiraStatusForQaKPI138",
+			"jiraStatusForQaKPI82",
+
+			"jiraDefectInjectionIssueTypeKPI14",
+
+			"jiraDodKPI14",
+			"jiraDodQAKPI111",
+			"jiraDodKPI3",
+			"jiraDodPDA",
+			"jiraDodKPI152",
+			"jiraDodKPI151",
+
+			"jiraDefectCreatedStatusKPI14",
+
+			"jiraDefectRejectionStatusKPI28",
+			"jiraDefectRejectionStatusKPI34",
+			"jiraDefectRejectionStatusKPI37",
+			"jiraDefectRejectionStatusKPI35",
+			"jiraDefectRejectionStatusKPI82",
+			"jiraDefectRejectionStatusKPI135",
+			"jiraDefectRejectionStatusKPI133",
+			"jiraDefectRejectionStatusRCAKPI36",
+			"jiraDefectRejectionStatusKPI14",
+			"jiraDefectRejectionStatusQAKPI111",
+			"jiraDefectRejectionStatusKPI152",
+			"jiraDefectRejectionStatusKPI151",
+
+			"jiraIssueTypeKPI35",
+
+			"jiraDefectRemovalStatusKPI34",
+			"jiraDefectRemovalIssueTypeKPI34",
+
+			"jiraDefectClosedStatusKPI137",
+			JIRA_STORY_POINTS_CUSTOM_FIELD,
+			"jiraTestAutomationIssueType",
+
+			"jiraSprintVelocityIssueTypeKPI138",
+
+			"jiraSprintCapacityIssueTypeKpi46",
+
+			"jiraIssueTypeKPI37",
+
+			"jiraDefectCountlIssueTypeKPI28",
+			"jiraDefectCountlIssueTypeKPI36",
+
+			"jiraIssueDeliverdStatusKPI138",
+			"jiraIssueDeliverdStatusKPI126",
+			"jiraIssueDeliverdStatusKPI82",
+			READY_FOR_DEVELOPMENT_STATUS,
+
+			"jiraDorKPI3",
+			"storyFirstStatusKPI3",
+
+			"jiraIssueTypeKPI3",
+			"jiraStoryIdentification",
+			"jiraStoryIdentificationKpi40",
+			"jiraStoryIdentificationKPI129",
+
+			"jiraLiveStatusKPI3",
+			"jiraLiveStatusLTK",
+			"jiraLiveStatusNOPK",
+			"jiraLiveStatusNOSK",
+			"jiraLiveStatusNORK",
+			"jiraLiveStatusOTA",
+			"jiraLiveStatusPDA",
+			"jiraLiveStatusKPI152",
+			"jiraLiveStatusKPI151",
+
+			"excludeRCAFromKPI82",
+			"excludeRCAFromKPI135",
+			"excludeRCAFromKPI14",
+			"excludeRCAFromQAKPI111",
+			"excludeRCAFromKPI133",
+
+			"resolutionTypeForRejectionKPI28",
+			"resolutionTypeForRejectionKPI34",
+			"resolutionTypeForRejectionKPI37",
+			"resolutionTypeForRejectionKPI35",
+			"resolutionTypeForRejectionKPI82",
+			"resolutionTypeForRejectionKPI135",
+			"resolutionTypeForRejectionKPI133",
+			"resolutionTypeForRejectionRCAKPI36",
+			"resolutionTypeForRejectionKPI14",
+			"resolutionTypeForRejectionQAKPI111",
+
+			"jiraQAKPI111IssueType",
+			"jiraDefectDroppedStatusKPI127",
+
+			EPIC_COST_OF_DELAY,
+			EPIC_RISK_REDUCTION,
+			EPIC_USER_BUSINESS_VALUE,
+			EPIC_WSJF,
+			EPIC_TIME_CRITICALITY,
+			EPIC_JOB_SIZE,
+
+			"jiraStatusForInProgressKPI122",
+			"jiraStatusForInProgressKPI145",
+			"jiraStatusForInProgressKPI125",
+			"jiraStatusForInProgressKPI128",
+			"jiraStatusForInProgressKPI123",
+			"jiraStatusForInProgressKPI119",
+			"jiraStatusForInProgressKPI148",
+			ESTIMATION_CRITERIA,
+
+			"additionalFilterConfig",
+
+			"issueStatusExcluMissingWorkKPI124",
+			"jiraOnHoldStatus",
+
+			"jiraKPI82StoryIdentification",
+			"jiraKPI135StoryIdentification",
+
+			"jiraWaitStatusKPI131",
+
+			"jiraBlockedStatusKPI131",
+
+			"jiraIncludeBlockedStatusKPI131",
+			"jiraDueDateField",
+			"jiraDueDateCustomField",
+			"jiraDevDueDateCustomField",
+
+			"jiraDevDoneStatusKPI119",
+			"jiraDevDoneStatusKPI145",
+			"jiraDevDoneStatusKPI128",
+			"jiraRejectedInRefinementKPI139",
+			"jiraAcceptedInRefinementKPI139",
+			"jiraReadyForRefinementKPI139",
+
+			"jiraFtprRejectStatusKPI135",
+			"jiraFtprRejectStatusKPI82",
+
+			"jiraIterationCompletionStatusCustomField",
+			"jiraIterationCompletionStatusKPI135",
+			"jiraIterationCompletionStatusKPI122",
+			"jiraIterationCompletionStatusKPI75",
+			"jiraIterationCompletionStatusKPI145",
+			"jiraIterationCompletionStatusKPI140",
+			"jiraIterationCompletionStatusKPI132",
+			"jiraIterationCompletionStatusKPI136",
+			"jiraIterationCompletionStatusKpi72",
+			"jiraIterationCompletionStatusKpi39",
+			"jiraIterationCompletionStatusKpi5",
+			"jiraIterationCompletionStatusKPI124",
+			"jiraIterationCompletionStatusKPI123",
+			"jiraIterationCompletionStatusKPI125",
+			"jiraIterationCompletionStatusKPI120",
+			"jiraIterationCompletionStatusKPI128",
+			"jiraIterationCompletionStatusKPI134",
+			"jiraIterationCompletionStatusKPI133",
+			"jiraIterationCompletionStatusKPI119",
+			"jiraIterationCompletionStatusKPI131",
+			"jiraIterationCompletionStatusKPI138",
+
+			"jiraIterationIssuetypeKPI122",
+			"jiraIterationIssuetypeKPI138",
+			"jiraIterationIssuetypeKPI131",
+			"jiraIterationIssuetypeKPI128",
+			"jiraIterationIssuetypeKPI134",
+			"jiraIterationIssuetypeKPI145",
+			"jiraIterationIssuetypeKpi72",
+			"jiraIterationIssuetypeKPI119",
+			"jiraIterationIssuetypeKpi5",
+			"jiraIterationIssuetypeKPI75",
+			"jiraIterationIssuetypeKPI123",
+			"jiraIterationIssuetypeKPI125",
+			"jiraIterationIssuetypeKPI120",
+			"jiraIterationIssuetypeKPI124");
 
 			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE,
 					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus",
 					"jiraTicketRejectedStatus", "jiraTicketClosedStatus", "jiraLiveStatus", "ticketCountIssueType",
 					"kanbanRCACountIssueType", "jiraTicketVelocityIssueType", "kanbanCycleTimeIssueType",
-					"storyPointToHourMapping", EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION, "jiraIssueEpicType",
+					"storyPointToHourMapping", EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION, JIRA_ISSUE_EPIC_TYPE,
 					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_JOB_SIZE, EPIC_TIME_CRITICALITY);
 
 			if ((!projectBasicConfig.getIsKanban()

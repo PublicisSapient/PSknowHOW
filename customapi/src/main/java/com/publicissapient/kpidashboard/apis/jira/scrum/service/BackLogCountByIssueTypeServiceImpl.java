@@ -27,13 +27,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -49,6 +48,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
@@ -80,8 +80,7 @@ public class BackLogCountByIssueTypeServiceImpl extends JiraKPIService<Integer, 
 		if (leafNode != null) {
 			log.info("BackLog Count By Issue Type kpi -> Requested project : {}",
 					leafNode.getProjectFilter().getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
+			List<JiraIssue> totalJiraIssue = getFilteredReleaseJiraIssuesFromBaseClass(new HashMap<>());
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 		}
 
@@ -140,20 +139,21 @@ public class BackLogCountByIssueTypeServiceImpl extends JiraKPIService<Integer, 
 
 			Set<String> excludeStatuses = new HashSet<>();
 
-			excludeStatuses.add(Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatus()).orElse(""));
+			excludeStatuses.add(Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatusKPI152()).orElse(""));
 
-			if (Optional.ofNullable(fieldMapping.getJiraDod()).isPresent()) {
-				excludeStatuses.addAll(fieldMapping.getJiraDod());
+			if (Optional.ofNullable(fieldMapping.getJiraDodKPI152()).isPresent()) {
+				excludeStatuses.addAll(fieldMapping.getJiraDodKPI152());
 			}
 
-			if (Optional.ofNullable(fieldMapping.getJiraLiveStatus()).isPresent()) {
-				excludeStatuses.add(fieldMapping.getJiraLiveStatus());
+			if (Optional.ofNullable(fieldMapping.getJiraLiveStatusKPI152()).isPresent()) {
+				excludeStatuses.add(fieldMapping.getJiraLiveStatusKPI152());
 			}
 
 			// exclude the issue from total jiraIssues based on DOD status and Defect
 			// Rejection Status
 			if (CollectionUtils.isNotEmpty(excludeStatuses)) {
-				Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase).collect(Collectors.toSet());
+				Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase)
+						.collect(Collectors.toSet());
 				jiraIssues = jiraIssues.stream()
 						.filter(jiraIssue -> !excludeStatus.contains(jiraIssue.getJiraStatus().toUpperCase()))
 						.collect(Collectors.toList());

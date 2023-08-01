@@ -107,7 +107,7 @@ export class ToolMenuComponent implements OnInit {
             icon: 'fab fa-atlassian',
             routerLink: '/dashboard/Config/JiraConfig',
             queryParams1: 'Jira',
-            routerLink2: this.selectedProject.Type === 'Kanban' ? '/dashboard/Config/KanbanFieldMapping' : '/dashboard/Config/FieldMapping',
+            routerLink2: '/dashboard/Config/FieldMapping',
             index: 0
           },
           {
@@ -237,7 +237,7 @@ export class ToolMenuComponent implements OnInit {
       icon: 'fab fa-windows',
       routerLink: '/dashboard/Config/JiraConfig',
       queryParams1: 'Azure',
-      routerLink2: this.selectedProject.Type === 'Kanban' ? '/dashboard/Config/KanbanFieldMapping' : '/dashboard/Config/FieldMapping',
+      routerLink2: '/dashboard/Config/FieldMapping',
       index: 0
     };
     const jiraType = {
@@ -247,7 +247,7 @@ export class ToolMenuComponent implements OnInit {
       icon: 'fab fa-atlassian',
       routerLink: '/dashboard/Config/JiraConfig',
       queryParams1: 'Jira',
-      routerLink2: this.selectedProject.Type === 'Kanban' ? '/dashboard/Config/KanbanFieldMapping' : '/dashboard/Config/FieldMapping',
+      routerLink2: '/dashboard/Config/FieldMapping',
       index: 0
     };
     this.tools = this.tools.filter((tool) => tool.toolName !== 'Azure' && tool.toolName !== 'Jira');

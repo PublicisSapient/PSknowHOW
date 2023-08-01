@@ -207,6 +207,10 @@ public class JenkinsProcessorJobExecutor extends ProcessorJobExecutor<JenkinsPro
 		MDC.clear();
 		return executionStatus;
 	}
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
 
 	private int processBuildJob(JenkinsClient jenkinsClient, ProcessorToolConnection jenkinsServer,
 			JenkinsProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog,

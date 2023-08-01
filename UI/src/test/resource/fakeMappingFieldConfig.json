@@ -1,0 +1,161 @@
+{
+    "data" : {
+        "fieldConfiguration": [
+            {
+                "id": "6499c6832d6bfa02cbd16839",
+                "fieldName": "resolutionTypeForRejectionDIR",
+                "fieldLabel": "Resolution Type for Rejection",
+                "fieldType": "chips",
+                "fieldCategory": "workflow",
+                "section": "WorkFlow Status Mapping",
+                "processorCommon": false,
+                "tooltip": {
+                    "definition": "Resolution type to identify rejected defects. <br>"
+                }
+            },
+            {
+                "id": "6499c6832d6bfa02cbd16844",
+                "fieldName": "jiraDefectRejectionStatusDIR",
+                "fieldLabel": "Defect Rejection Status",
+                "fieldType": "text",
+                "fieldCategory": "workflow",
+                "section": "WorkFlow Status Mapping",
+                "processorCommon": false,
+                "tooltip": {
+                    "definition": "Status from workflow on which defect is considered as rejected. <br>Example: Cancelled<hr>"
+                }
+            },
+            {
+                "id": "6499c6832d6bfa02cbd1684e",
+                "fieldName": "defectPriorityDIR",
+                "fieldLabel": "Defect priority exclusion from Quality KPIs",
+                "fieldType": "multiselect",
+                "section": "Defects Mapping",
+                "processorCommon": false,
+                "tooltip": {
+                    "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+                },
+                "options": [
+                    {
+                        "label": "p1",
+                        "value": "p1"
+                    },
+                    {
+                        "label": "p2",
+                        "value": "p2"
+                    },
+                    {
+                        "label": "p3",
+                        "value": "p3"
+                    },
+                    {
+                        "label": "p4",
+                        "value": "p4"
+                    },
+                    {
+                        "label": "p5",
+                        "value": "p5"
+                    }
+                ]
+            },
+            {
+                "id": "6499c6832d6bfa02cbd16854",
+                "fieldName": "excludeRCAFromDIR",
+                "fieldLabel": "Defect RCA exclusion from Quality KPIs",
+                "fieldType": "chips",
+                "section": "Defects Mapping",
+                "processorCommon": false,
+                "tooltip": {
+                    "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+                }
+            },
+            {
+                "id": "6499c6832d6bfa02cbd16857",
+                "fieldName": "jiraDefectInjectionIssueType",
+                "fieldLabel": "Defect Injection Rate - Issue Types with Linked Defect",
+                "fieldType": "chips",
+                "fieldCategory": "Issue_Type",
+                "section": "Issue Types Mapping",
+                "processorCommon": false,
+                "tooltip": {
+                    "definition": "All issue types with which defect is linked. <br> Example: Story, Change Request. <hr>"
+                }
+            },
+            {
+                "id": "6499c6832d6bfa02cbd16858",
+                "fieldName": "jiraDefectCreatedStatus",
+                "fieldLabel": "Defect Created Status",
+                "fieldType": "text",
+                "fieldCategory": "workflow",
+                "section": "WorkFlow Status Mapping",
+                "processorCommon": false,
+                "tooltip": {
+                    "definition": "First status of defect. Default status when a defect is opened. <br> Example: Open<hr/>"
+                }
+            },
+            {
+                "id": "6499c6832d6bfa02cbd1685a",
+                "fieldName": "jiraDodDIR",
+                "fieldLabel": "DOD Status",
+                "fieldType": "chips",
+                "fieldCategory": "workflow",
+                "section": "WorkFlow Status Mapping",
+                "processorCommon": false,
+                "tooltip": {
+                    "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. <br> Example: In Testing <hr>"
+                }
+            },
+            {
+                "id": "6499c6832d6bfa02cbd16898",
+                "fieldName": "jiradefecttype",
+                "fieldLabel": "Issue Type to Identify Defect",
+                "fieldType": "chips",
+                "fieldCategory": "Issue_Type",
+                "section": "Defects Mapping",
+                "processorCommon": true,
+                "tooltip": {
+                    "definition": "In JIRA/AZURE a defect can be defined as Bug, Defect, Snag or any other value. So user need to provide value with which defect is identified in JIRA/AZURE.<hr>"
+                }
+            },
+            {
+                "id": "6499c6832d6bfa02cbd168a1",
+                "fieldName": "estimationCriteria",
+                "fieldLabel": "Estimation Criteria",
+                "fieldType": "radiobutton",
+                "section": "Custom Fields Mapping",
+                "processorCommon": false,
+                "tooltip": {
+                    "definition": "Estimation criteria for stories. <br> Example: Buffered Estimation."
+                },
+                "options": [
+                    {
+                        "label": "Story Point",
+                        "value": "Story Point"
+                    },
+                    {
+                        "label": "Actual (Original Estimation)",
+                        "value": "Actual Estimation"
+                    }
+                ],
+                "nestedFields": [
+                    {
+                        "fieldName": "storyPointToHourMapping",
+                        "fieldLabel": "Story Point to Hour Conversion",
+                        "fieldType": "text",
+                        "processorCommon": false,
+                        "tooltip": {
+                            "definition": "Conversion factor for Story Point to Hour Conversion. <br>Example: If 1 Story Point is 8 hrs, enter 8."
+                        },
+                        "filterGroup": [
+                            "Story Point"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "kpiSource": "JIRA",
+        "projectToolConfigId": "64652799bfbf945f55a89c20"
+    },
+    "message":"field mapping stucture",
+    "success":true
+}

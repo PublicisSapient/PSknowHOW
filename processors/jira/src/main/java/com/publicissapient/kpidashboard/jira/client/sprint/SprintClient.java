@@ -39,7 +39,7 @@ public interface SprintClient {
 	 *            sprintDetailsList
 	 */
 	public void processSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsList,
-			JiraAdapter jiraAdapter) throws InterruptedException;
+			JiraAdapter jiraAdapter, boolean isSprintFetch) throws InterruptedException;
 
 	/**
 	 * This method fetch sprint report

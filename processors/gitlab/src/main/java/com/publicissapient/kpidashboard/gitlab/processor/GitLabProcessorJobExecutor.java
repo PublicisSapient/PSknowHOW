@@ -421,6 +421,11 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 		return executionStatus;
 	}
 
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
+
 	private void cache(int commitsCount, int mergReqCount) {
 		if (commitsCount > 0) {
 			cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.BITBUCKET_KPI_CACHE);

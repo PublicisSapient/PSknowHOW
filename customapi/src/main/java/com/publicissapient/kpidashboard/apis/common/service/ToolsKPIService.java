@@ -640,7 +640,6 @@ public abstract class ToolsKPIService<R, S> {
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
 
-						R aggValue = null;
 						Pair<String, String> maturityValue = null;
 						if (null != configHelperService.calculateMaturity().get(kpiId)) {
 							maturityValue = collectValuesForMaturity(value, kpiName, kpiId);

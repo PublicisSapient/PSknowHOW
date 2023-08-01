@@ -193,26 +193,26 @@ public class AutomationPercentageServiceImplTest {
 
 		FieldMapping projectOne = new FieldMapping();
 		projectOne.setBasicProjectConfigId(new ObjectId("63284960fdd20276d60e4df5"));
-		projectOne.setJiraDefectInjectionIssueType(Arrays.asList("Story", "Tech Story"));
+		projectOne.setJiraDefectInjectionIssueTypeKPI14(Arrays.asList("Story", "Tech Story"));
 		projectOne.setJiradefecttype(Arrays.asList("Bug"));
-		projectOne.setJiraDod(Arrays.asList("Done"));
-		projectOne.setJiraDefectCreatedStatus("Open");
+		projectOne.setJiraDodKPI3(Arrays.asList("Done"));
+		projectOne.setJiraDefectCreatedStatusKPI14("Open");
 		projectOne.setJiraTestAutomationIssueType(Arrays.asList("Yes", "No"));
 
 		FieldMapping projectTwo = new FieldMapping();
 		projectTwo.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
-		projectTwo.setJiraDefectInjectionIssueType(Arrays.asList("Story", "Tech Story"));
+		projectTwo.setJiraDefectInjectionIssueTypeKPI14(Arrays.asList("Story", "Tech Story"));
 		projectOne.setJiradefecttype(Arrays.asList("Bug"));
-		projectTwo.setJiraDod(Arrays.asList("Done"));
-		projectTwo.setJiraDefectCreatedStatus("Open");
+		projectTwo.setJiraDodKPI3(Arrays.asList("Done"));
+		projectTwo.setJiraDefectCreatedStatusKPI14("Open");
 		projectTwo.setJiraTestAutomationIssueType(Arrays.asList("Yes", "No"));
 
 		FieldMapping projectThree = new FieldMapping();
 		projectThree.setBasicProjectConfigId(new ObjectId("63284960fdd20276d60e4df5"));
-		projectThree.setJiraDefectInjectionIssueType(Arrays.asList("Story", "Tech Story"));
+		projectThree.setJiraDefectInjectionIssueTypeKPI14(Arrays.asList("Story", "Tech Story"));
 		projectOne.setJiradefecttype(Arrays.asList("Bug"));
-		projectThree.setJiraDod(Arrays.asList("Done"));
-		projectThree.setJiraDefectCreatedStatus("Open");
+		projectThree.setJiraDodKPI3(Arrays.asList("Done"));
+		projectThree.setJiraDefectCreatedStatusKPI14("Open");
 		projectThree.setJiraTestAutomationIssueType(Arrays.asList("Yes", "No"));
 
 		fieldMappingList.add(projectOne);

@@ -323,7 +323,7 @@ public class LeadTimeKanbanServiceImpl extends JiraKPIService<Long, List<Object>
 			for (KanbanIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistories) {
 				List<String> triaged = fieldMapping.getJiraTicketTriagedStatus();
 				List<String> completed = fieldMapping.getJiraTicketClosedStatus();
-				String live = fieldMapping.getJiraLiveStatus();
+				String live = fieldMapping.getJiraLiveStatusLTK();
 				LeadTimeValidationDataForKanban leadTimeValidationDataForKanban = new LeadTimeValidationDataForKanban();
 				leadTimeValidationDataForKanban.setIssueNumber(jiraIssueCustomHistory.getStoryID());
 				leadTimeValidationDataForKanban.setUrl(jiraIssueCustomHistory.getUrl());

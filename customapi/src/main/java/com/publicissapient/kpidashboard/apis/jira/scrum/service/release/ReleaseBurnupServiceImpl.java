@@ -122,18 +122,21 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			Map<LocalDate, List<JiraIssue>> removeIssueMap, Map<LocalDate, List<JiraIssue>> fullReleaseMap,
 			Map<LocalDate, List<JiraIssue>> completedReleaseMap) {
 
-		releaseName = releaseName !=null? releaseName: "";
+		releaseName = releaseName != null ? releaseName : "";
 		String finalReleaseName = releaseName.toLowerCase();
 		allIssuesHistory.forEach(issueHistory -> {
 			List<JiraHistoryChangeLog> fixVersionUpdationLog = issueHistory.getFixVersionUpdationLog();
 			Collections.sort(fixVersionUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
 			int lastIndex = fixVersionUpdationLog.size() - 1;
-			fixVersionUpdationLog.stream().filter(updateLogs -> updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName)
-					|| updateLogs.getChangedFrom().toLowerCase().contains(finalReleaseName)).forEach(updateLogs -> {
+			fixVersionUpdationLog.stream()
+					.filter(updateLogs -> updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName)
+							|| updateLogs.getChangedFrom().toLowerCase().contains(finalReleaseName))
+					.forEach(updateLogs -> {
 						List<JiraIssue> jiraIssueList = getRespectiveJiraIssue(releaseIssue, issueHistory);
 						LocalDate updatedLog = updateLogs.getUpdatedOn().toLocalDate();
 						if (updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName)) {
-							if (fixVersionUpdationLog.get(lastIndex).getChangedTo().toLowerCase().contains(finalReleaseName)) {
+							if (fixVersionUpdationLog.get(lastIndex).getChangedTo().toLowerCase()
+									.contains(finalReleaseName)) {
 								List<JiraIssue> cloneList = new ArrayList<>(jiraIssueList);
 								fullReleaseMap.computeIfPresent(updatedLog, (k, v) -> {
 									v.addAll(cloneList);
@@ -167,8 +170,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	private void createCompletedIssuesDateWiseMap(JiraIssueCustomHistory issueHistory,
 			Map<LocalDate, List<JiraIssue>> completedIssues, List<JiraIssue> totalIssueList) {
 		List<JiraHistoryChangeLog> statusUpdationLog = issueHistory.getStatusUpdationLog();
-		JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus(
-				issueHistory.getBasicProjectConfigId());
+		JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus();
 		statusUpdationLog = statusUpdationLog.stream()
 				.filter(log -> jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedTo())
 						|| jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedFrom()))
@@ -282,21 +284,24 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 							overallCompletedIssues);
 					overallCompletedIssues = filterWiseGroupedMap.getOrDefault("OVERALL COMPLETED", new ArrayList<>());
 					String date = getRange(dateRange, duration);
-					populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, issueSize, date, duration,fieldMapping);
+					populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, issueSize, date, duration,
+							fieldMapping);
 					startLocalDate = getNextRangeDate(duration, startLocalDate);
 					issueCountDataGroup.add(issueCount);
 					issueSizeCountDataGroup.add(issueSize);
 				}
 				populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
-				createExcelDataAndTrendValueList(kpiElement, excelData, iterationKpiValueList, issueCountDataGroup, issueSizeCountDataGroup);
+				createExcelDataAndTrendValueList(kpiElement, excelData, iterationKpiValueList, issueCountDataGroup,
+						issueSizeCountDataGroup);
 
 			}
 			kpiElement.setTrendValueList(iterationKpiValueList);
 		}
 	}
 
-	private void createExcelDataAndTrendValueList(KpiElement kpiElement, List<KPIExcelData> excelData, List<IterationKpiValue> iterationKpiValueList,
-												  List<DataCountGroup> issueCountDataGroup, List<DataCountGroup> issueSizeCountDataGroup) {
+	private void createExcelDataAndTrendValueList(KpiElement kpiElement, List<KPIExcelData> excelData,
+			List<IterationKpiValue> iterationKpiValueList, List<DataCountGroup> issueCountDataGroup,
+			List<DataCountGroup> issueSizeCountDataGroup) {
 		if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
 			IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 			kpiValueIssueCount.setDataGroup(issueCountDataGroup);
@@ -352,7 +357,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	}
 
 	private void populateFilterWiseDataMap(Map<String, List<JiraIssue>> filterWiseGroupedMap, DataCountGroup issueCount,
-										   DataCountGroup issueSize, String date, String duration, FieldMapping fieldMapping) {
+			DataCountGroup issueSize, String date, String duration, FieldMapping fieldMapping) {
 		List<DataCount> issueCountDataList = new ArrayList<>();
 		List<DataCount> issueSizeDataList = new ArrayList<>();
 
@@ -370,11 +375,14 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		issueCount.setDuration(duration);
 		issueCount.setValue(issueCountDataList);
 
-		createDataCount(getStoryPoint(issuesAdded,fieldMapping), BAR_GRAPH_TYPE, SCOPE_ADDED, issueSizeDataList, issuesAdded);
-		createDataCount(getStoryPoint(issuesRemoved, fieldMapping), BAR_GRAPH_TYPE, SCOPE_REMOVED, issueSizeDataList, issuesRemoved);
-		createDataCount(getStoryPoint(overallIssues, fieldMapping), LINE_GRAPH_TYPE, RELEASE_SCOPE, issueSizeDataList, overallIssues);
-		createDataCount(getStoryPoint(completedIssues, fieldMapping), LINE_GRAPH_TYPE, RELEASE_PROGRESS, issueSizeDataList,
-				completedIssues);
+		createDataCount(getStoryPoint(issuesAdded, fieldMapping), BAR_GRAPH_TYPE, SCOPE_ADDED, issueSizeDataList,
+				issuesAdded);
+		createDataCount(getStoryPoint(issuesRemoved, fieldMapping), BAR_GRAPH_TYPE, SCOPE_REMOVED, issueSizeDataList,
+				issuesRemoved);
+		createDataCount(getStoryPoint(overallIssues, fieldMapping), LINE_GRAPH_TYPE, RELEASE_SCOPE, issueSizeDataList,
+				overallIssues);
+		createDataCount(getStoryPoint(completedIssues, fieldMapping), LINE_GRAPH_TYPE, RELEASE_PROGRESS,
+				issueSizeDataList, completedIssues);
 		issueSize.setFilter(date);
 		issueSize.setDuration(duration);
 		issueSize.setValue(issueSizeDataList);
@@ -397,7 +405,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
 			} else {
 				double totalOriginalEstimate = jiraIssueList.stream()
-						.mapToDouble(jiraIssue->Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0)).sum();
+						.mapToDouble(jiraIssue -> Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0))
+						.sum();
 				double inHours = totalOriginalEstimate / 60;
 				ticketEstimate = inHours / fieldMapping.getStoryPointToHourMapping();
 			}
@@ -492,10 +501,10 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> jiraIssueList,FieldMapping fieldMapping) {
+			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
-			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData,fieldMapping);
+			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}
 

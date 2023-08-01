@@ -88,7 +88,7 @@ public class ScrumHandleAzureIssueHistoryTest {
 	public void testSetJiraFieldChangeLog1() {
 		HashMap fieldsMap = new HashMap<>();
 		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping,
-				fieldsMap, jiraIssue);
+				fieldsMap);
 		Assert.assertEquals(1, jiraIssueCustomHistory.getStatusUpdationLog().size());
 		Assert.assertEquals(1, jiraIssueCustomHistory.getAssigneeUpdationLog().size());
 		Assert.assertEquals(1, jiraIssueCustomHistory.getLabelUpdationLog().size());
@@ -104,7 +104,7 @@ public class ScrumHandleAzureIssueHistoryTest {
 			changeLogList.clear();
 		HashMap fieldsMap = new HashMap<>();
 		handleJiraHistory.setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping,
-				fieldsMap, jiraIssue);
+				fieldsMap);
 		Assert.assertEquals(0, jiraIssueCustomHistory.getStatusUpdationLog().size());
 		Assert.assertEquals(0, jiraIssueCustomHistory.getAssigneeUpdationLog().size());
 		Assert.assertEquals(0, jiraIssueCustomHistory.getLabelUpdationLog().size());

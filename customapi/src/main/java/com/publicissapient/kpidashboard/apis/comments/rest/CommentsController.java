@@ -1,9 +1,11 @@
 package com.publicissapient.kpidashboard.apis.comments.rest;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.comments.CommentRequestDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentSubmitDTO;
 import com.publicissapient.kpidashboard.common.model.comments.CommentViewRequestDTO;
+import com.publicissapient.kpidashboard.common.model.comments.CommentViewResponseDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -106,10 +109,32 @@ public class CommentsController {
 	public ResponseEntity<ServiceResponse> deleteComments(@PathVariable String commentId) {
 		try {
 			commentsService.deleteComments(commentId);
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Successfully Deleted Comment",commentId));
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "Successfully Deleted Comment", commentId));
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(false, "Comments Not Deleted", ex.getMessage()));
 		}
-		catch(Exception ex){
-			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments Not Deleted", ex.getMessage()));
+	}
+
+	/**
+	 *
+	 * @param commentViewRequestDTO
+	 * @return
+	 */
+	@PostMapping("/commentsSummary")
+	public ResponseEntity<ServiceResponse> getCommentsSummary(
+			@RequestBody CommentViewRequestDTO commentViewRequestDTO) {
+
+		List<CommentViewResponseDTO> commentViewAllByBoard = commentsService.findLatestCommentSummary(
+				commentViewRequestDTO.getNodes(), commentViewRequestDTO.getLevel(),
+				commentViewRequestDTO.getNodeChildId(), commentViewRequestDTO.getKpiIds());
+		if (CollectionUtils.isEmpty(commentViewAllByBoard)) {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Comments not found", null));
+		} else {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "Found comments", commentViewAllByBoard));
 		}
+
 	}
 }

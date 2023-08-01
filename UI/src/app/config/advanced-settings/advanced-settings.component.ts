@@ -264,9 +264,9 @@ export class AdvancedSettingsComponent implements OnInit {
 			accept: () => {
 				this.deleteProcessorDataReq(processorDetails,this.selectedProject);
 			},
-			reject: () => {
-
-			}
+      reject : ()=>{
+        console.log("reject")
+      }
 		});
   }
 

@@ -243,6 +243,11 @@ public class ZephyrProcessorJobExecutor extends ProcessorJobExecutor<ZephyrProce
 
 	}
 
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
+
 	/**
 	 * @param projectConfigMap
 	 * @return projectTestCountMap

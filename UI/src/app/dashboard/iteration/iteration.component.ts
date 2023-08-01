@@ -892,6 +892,15 @@ export class IterationComponent implements OnInit, OnDestroy {
     return typeof value === 'object' && value !== null;
   }
 
+  /** Reload KPI once field mappoing updated */
+  reloadKPI(event){
+    this.kpiChartData[event.kpiDetail?.kpiId] = [];
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event?.kpiDetail?.groupId,'Iteration');
+    if (currentKPIGroup?.kpiList?.length > 0) {
+        this.postJiraKpi(this.kpiJira, 'jira');
+    }
+  }
+
   getKpiCommentsCount(kpiId?){
     let requestObj = {
       "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,

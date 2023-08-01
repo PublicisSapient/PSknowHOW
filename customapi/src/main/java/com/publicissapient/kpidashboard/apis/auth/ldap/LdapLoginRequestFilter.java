@@ -46,7 +46,7 @@ public class LdapLoginRequestFilter extends UsernamePasswordAuthenticationFilter
 	private static final String LDAP_NOT_CONFIGURED = "Please contact your Superadmin or "
 			+ "dojosupport@publicissapient.com to get AD login configured";
 
-	private CustomApiConfig customApiConfig;
+	CustomApiConfig customApiConfig;
 	private ADServerDetailsService adServerDetailsService;
 
 	private AuthTypesConfigService authTypesConfigService;

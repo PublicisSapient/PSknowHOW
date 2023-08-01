@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,9 +79,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	@Autowired
 	private KpiHelperService kpiHelperService;
 
-	@Autowired
-	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
-
 	/**
 	 * Gets qualifier type
 	 *
@@ -135,7 +131,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		Map<String, List<String>> closedStatusMap = (Map<String, List<String>>) kpiResultDbMap
 				.get(PROJECT_CLOSED_STATUS_MAP);
 		boolean closedStatusConfigEmpty = closedStatusMap.values().stream().filter(Objects::nonNull)
-				.allMatch(closedStatusList -> closedStatusList.isEmpty());
+				.allMatch(List::isEmpty);
 		if (closedStatusConfigEmpty) {
 			return;
 		}
@@ -300,8 +296,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
 					.collect(Collectors.toList());
-			Map<Long, String> doneStatusMap = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId.toString())
-					.getClosedList();
+			Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus().getClosedList();
 			if (doneStatusMap != null) {
 				List<String> doneStatus = doneStatusMap.values().stream().collect(Collectors.toList());
 				mapOfProjectFilters.put(STATUS, CommonUtils.convertToPatternList(doneStatus));
@@ -322,7 +317,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigObjectId);
 			List<String> closedStatusList = (List<String>) CollectionUtils
-					.emptyIfNull(fieldMapping.getJiraDefectClosedStatus());
+					.emptyIfNull(fieldMapping.getJiraDefectClosedStatusKPI137());
 			closedStatusListBasicConfigMap.put(basicProjectConfigObjectId.toString(), closedStatusList);
 			mapOfProjectFilters.put("statusUpdationLog.story.changedTo",
 					CommonUtils.convertToPatternList(closedStatusList));
