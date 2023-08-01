@@ -1362,32 +1362,46 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   checkIfProjectHasRelease() {
-    let activeRelease = [];
-    let closedRelease = [];
     this.selectedRelease = {};
     const selectedProject = this.selectedProjectData['nodeId'];
     this.filteredAddFilters['release'] = [];
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {
       this.filteredAddFilters['release'] = [...this.additionalFiltersDdn['release']?.filter((x) => x['parentId']?.includes(selectedProject))];
+      console.log(this.filteredAddFilters['release'] .map(re=> { return {name : re.nodeName , sDate : re.releaseStartDate , eDate: re.releaseEndDate}}));
     }
-    activeRelease = [...this.filteredAddFilters['release']?.filter((x) => x['releaseState']?.toLowerCase() == 'unreleased')];
-    closedRelease = [...this.filteredAddFilters['release']?.filter((x) => x['releaseState']?.toLowerCase() == 'released')];
-    if (activeRelease?.length > 0) {
-      this.selectedRelease = { ...activeRelease[0] };
-    } else if (closedRelease?.length > 0) {
-      this.selectedRelease = closedRelease[0];
-      for (let i = 0; i < closedRelease?.length; i++) {
-        const releaseEndDateTS1 = new Date(closedRelease[i]['sprintEndDate']).getTime();
-        const releaseEndDateTS2 = new Date(this.selectedRelease['sprintEndDate']).getTime();
-        if (releaseEndDateTS1 > releaseEndDateTS2) {
-          this.selectedRelease = closedRelease[i];
+    if (this.filteredAddFilters['release'].length) {
+      this.filteredAddFilters['release'] = this.sortAlphabetically(this.filteredAddFilters['release']);
+      const letestPassedRelease = this.findLatestPassedRelease(this.filteredAddFilters['release']);
+      if (letestPassedRelease !== null && letestPassedRelease.length > 1) {
+        /** When more than one passed release */
+        const letestPassedReleaseStartDate = letestPassedRelease[0].releaseEndDate;
+        const letestPassedReleaseOnSameStartDate = letestPassedRelease.filter(release => release.releaseStartDate && (new Date(release.releaseEndDate).getTime() === new Date(letestPassedReleaseStartDate).getTime()));
+        if (letestPassedReleaseOnSameStartDate && letestPassedReleaseOnSameStartDate.length > 1) {
+          this.selectedRelease = letestPassedReleaseOnSameStartDate.sort((a, b) => new Date(a.releaseStartDate).getTime() - new Date(b.releaseStartDate).getTime())[0];
+        } else {
+          /** First release with letest end date */
+          this.selectedRelease = letestPassedRelease[0];
         }
+      } else if (letestPassedRelease !== null && letestPassedRelease.length === 1) {
+        /** First release with letest end date */
+        this.selectedRelease = letestPassedRelease[0];
+      } else {
+        /** First alphabetically release */
+        this.selectedRelease = this.filteredAddFilters['release'][0];
       }
     } else {
       this.selectedFilterArray = [];
       this.selectedRelease = {};
       this.service.setNoRelease(true);
     }
+  }
+
+  findLatestPassedRelease(releaseList) {
+    const currentDate = new Date();
+    const passedReleases = releaseList.filter((release) => release.releaseEndDate && new Date(release.releaseEndDate) < currentDate );
+    passedReleases.sort((a, b) => new Date(b.releaseEndDate).getTime() - new Date(a.releaseEndDate).getTime());
+    console.log("findLatestPassedRelease :",passedReleases);
+    return passedReleases.length > 0 ? passedReleases : null;
   }
 
   fetchActiveIterationStatus() {
