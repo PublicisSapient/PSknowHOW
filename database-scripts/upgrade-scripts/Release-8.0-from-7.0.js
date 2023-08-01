@@ -2345,7 +2345,11 @@ db.getCollection('field_mapping_structure').insert(
         }
     ]
 );
-}
+    print("Field Mapping Structure executed successfully!");
+  } else {
+    print("Field Mapping Structure already executed. Skipping...");
+  }
+
 
 
 //DTS-25767 Commitment Reliability - Add Filter by Issue type (add one column for issue type in excel)
@@ -2424,25 +2428,6 @@ if (!updateExecutedFlag) {
     { $set: {
     "fieldLabel": "Issue type to be included",
     "tooltip.definition": "All issue types that should be included in Lead time calculation",
-     "updateExecuted": true } },
-    { multi: false }
-  );
-
-  print("Update executed successfully!");
-} else {
-  print("Update already executed. Skipping...");
-}
-
-var fieldNameToUpdate = "jiraDorKPI3";
-var updateExecutedFlag = db.getCollection('field_mapping_structure')
-.findOne({ "fieldName": fieldNameToUpdate, "updateExecuted": true });
-
-if (!updateExecutedFlag) {
-  db.getCollection('field_mapping_structure').update(
-    { "fieldName": fieldNameToUpdate },
-    { $set: {
-    "fieldLabel": "DOR status",
-    "tooltip.definition": "Status/es that identify that an issue is ready to be taken in the sprint",
      "updateExecuted": true } },
     { multi: false }
   );
