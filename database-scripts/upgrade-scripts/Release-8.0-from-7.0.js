@@ -2414,3 +2414,78 @@ if (!updateExecutedFlag) {
   print("Update already executed. Skipping...");
 }
 
+var fieldNameToUpdate = "jiraIssueTypeKPI3";
+var updateExecutedFlag = db.getCollection('field_mapping_structure')
+.findOne({ "fieldName": fieldNameToUpdate, "updateExecuted": true });
+
+if (!updateExecutedFlag) {
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Issue type to be included",
+    "tooltip.definition": "All issue types that should be included in Lead time calculation",
+     "updateExecuted": true } },
+    { multi: false }
+  );
+
+  print("Update executed successfully!");
+} else {
+  print("Update already executed. Skipping...");
+}
+
+var fieldNameToUpdate = "jiraDorKPI3";
+var updateExecutedFlag = db.getCollection('field_mapping_structure')
+.findOne({ "fieldName": fieldNameToUpdate, "updateExecuted": true });
+
+if (!updateExecutedFlag) {
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "DOR status",
+    "tooltip.definition": "Status/es that identify that an issue is ready to be taken in the sprint",
+     "updateExecuted": true } },
+    { multi: false }
+  );
+
+  print("Update executed successfully!");
+} else {
+  print("Update already executed. Skipping...");
+}
+
+var fieldNameToUpdate = "jiraDorKPI3";
+var updateExecutedFlag = db.getCollection('field_mapping_structure')
+.findOne({ "fieldName": fieldNameToUpdate, "updateExecuted": true });
+
+if (!updateExecutedFlag) {
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "DOR status",
+    "tooltip.definition": "Status/es that identify that an issue is ready to be taken in the sprint",
+     "updateExecuted": true } },
+    { multi: false }
+  );
+
+  print("Update executed successfully!");
+} else {
+  print("Update already executed. Skipping...");
+}
+
+var fieldNameToUpdate = "jiraLiveStatusKPI3";
+var updateExecutedFlag = db.getCollection('field_mapping_structure')
+.findOne({ "fieldName": fieldNameToUpdate, "updateExecuted": true });
+
+if (!updateExecutedFlag) {
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "tooltip.definition": "Status/es that identify that an issue is LIVE in Production.",
+     "updateExecuted": true } },
+    { multi: false }
+  );
+
+  print("Update executed successfully!");
+} else {
+  print("Update already executed. Skipping...");
+}
+
