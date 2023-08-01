@@ -80,6 +80,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	private static final String OVERALL = "Overall";
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String COMPLETED_ISSUES = "completedIssue";
+	private static final String STORY = "Story";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -284,9 +285,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 						.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
 
 				for (JiraIssue jiraIssue : allDefects) {
-					createLinkAndUnlinkDefectList(overAllUnlinkedmodalValues, overAlllinkedmodalValues,
-							linkedDefectList, unlinkedDefectList, jiraIssue, totalJiraIssues, fieldMapping,
-							completedIssueList, linkedIssueMap);
+					createLinkAndUnlinkDefectList(overAllUnlinkedmodalValues, linkedDefectList, unlinkedDefectList,
+							jiraIssue, totalJiraIssues, fieldMapping, completedIssueList, linkedIssueMap);
 				}
 				Set<String> linkedStoriesSet = linkedDefectList.stream().map(JiraIssue::getDefectStoryID)
 						.flatMap(Set::stream).collect(Collectors.toSet());
@@ -304,6 +304,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 						fieldMapping);
 
 				double overAllDir = calculateDIR(closedPlusOpenLinkedStories, linkedDefectList);
+				createOverallLinkedModal(overAlllinkedmodalValues, linkedDefectList, totalJiraIssues,
+						completedIssueList, fieldMapping);
 
 				List<IterationKpiData> data = new ArrayList<>();
 				IterationKpiData overAllLD = new IterationKpiData(LINKED_DEFECTS,
@@ -327,6 +329,53 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 				kpiElement.setTrendValueList(trendValue);
 			}
 		}
+	}
+
+	private void createOverallLinkedModal(List<IterationKpiModalValue> overAlllinkedmodalValues,
+			List<JiraIssue> linkedDefectList, List<JiraIssue> closedPlusOpenLinkedStories,
+			List<JiraIssue> completedIssueList, FieldMapping fieldMapping) {
+		Map<String, List<JiraIssue>> storyWithLinkedDefects = new HashMap<>();
+		Map<String, JiraIssue> totalStoriesMap = closedPlusOpenLinkedStories.stream()
+				.filter(issue -> issue.getTypeName().equalsIgnoreCase(STORY))
+				.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
+		for (JiraIssue jiraIssue : linkedDefectList) {
+			Set<String> storyIds = jiraIssue.getDefectStoryID();
+			for (String storyId : storyIds) {
+				if (totalStoriesMap.get(storyId) != null && storyWithLinkedDefects.containsKey(storyId))
+					storyWithLinkedDefects.get(storyId).add(jiraIssue);
+				else if (totalStoriesMap.get(storyId) != null) {
+					List<JiraIssue> defects = new ArrayList<>();
+					defects.add(jiraIssue);
+					storyWithLinkedDefects.put(storyId, defects);
+				}
+			}
+
+		}
+
+		storyWithLinkedDefects.forEach((storyId, defects) -> {
+			JiraIssue jiraIssue = totalStoriesMap.get(storyId);
+			List<JiraIssue> jiraIssueList = new ArrayList<>();
+			jiraIssueList.add(jiraIssue);
+			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(jiraIssueList);
+			IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());
+			KPIExcelUtility.populateIterationKPI(overAlllinkedmodalValues, new ArrayList<>(), jiraIssue, fieldMapping,
+					modalObjectMap);
+			Map<String, String> linkedDefects = defects.stream()
+					.collect(Collectors.toMap(
+							jiraIssue1 -> jiraIssue1.getNumber() + " ( " + jiraIssue1.getPriority() + " ) ",
+							JiraIssue::getUrl));
+			jiraIssueModalObject.setLinkedDefefect(linkedDefects);
+			jiraIssueModalObject.setDIR((double) defects.size());
+			if (!completedIssueList.contains(jiraIssue)) {
+				jiraIssueModalObject.setMarker(Constant.GREEN);
+			}
+			if (jiraIssueModalObject.getIssueSize() == null
+					|| jiraIssueModalObject.getIssueSize().equalsIgnoreCase("0.0"))
+				jiraIssueModalObject.setDefectDensity("-");
+			else
+				jiraIssueModalObject.setDefectDensity(String.valueOf(
+						roundingOff((defects.size() * 1.0) / Double.parseDouble(jiraIssueModalObject.getIssueSize()))));
+		});
 	}
 
 	/**
@@ -390,9 +439,9 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	 */
 
 	private void createLinkAndUnlinkDefectList(List<IterationKpiModalValue> overAllUnlinkedmodalValues, // NOSONAR
-			List<IterationKpiModalValue> overAlllinkedmodalValues, List<JiraIssue> linkedDefect,
-			List<JiraIssue> unlinkedDefect, JiraIssue jiraIssue, List<JiraIssue> totalJiraIssues,
-			FieldMapping fieldMapping, List<JiraIssue> completedIssueList, Map<String, JiraIssue> linkedIssueMap) {
+			List<JiraIssue> linkedDefect, List<JiraIssue> unlinkedDefect, JiraIssue jiraIssue,
+			List<JiraIssue> totalJiraIssues, FieldMapping fieldMapping, List<JiraIssue> completedIssueList,
+			Map<String, JiraIssue> linkedIssueMap) {
 
 		Map<String, JiraIssue> totalStoriesMap = totalJiraIssues.stream()
 				.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
@@ -406,8 +455,6 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					linkedJiraIssueStoryList, modalObjectMap, linkedIssueMap);
 			if (CollectionUtils.isNotEmpty(linkedJiraIssueStoryList)) {
 				linkedDefect.add(jiraIssue);
-				KPIExcelUtility.populateIterationKPI(overAlllinkedmodalValues, new ArrayList<>(), jiraIssue,
-						fieldMapping, modalObjectMap);
 				setKpiSpecificData(jiraIssue, fieldMapping, modalObjectMap, linkedJiraIssueStoryList, true,
 						completedIssueList);
 			}

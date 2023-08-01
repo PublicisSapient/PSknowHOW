@@ -5265,18 +5265,30 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: true
                                  		}, {
-                                 			columnName: 'Linked Stories',
+                                 			columnName: 'Linked Defect',
                                  			order: 5,
                                  			isShown: true,
                                  			isDefault: false
                                  		}, {
-                                 			columnName: 'Linked Stories Size',
+                                 			columnName: 'Size(story point/hours)',
                                  			order: 6,
                                  			isShown: true,
                                  			isDefault: false
-                                 		}, {
+                                 		},{
+                                            columnName: 'DIR',
+                                            order: 7,
+                                            isShown: true,
+                                            isDefault: false
+                                        },
+                                        {
+                                            columnName: 'Defect Density',
+                                            order: 8,
+                                            isShown: true,
+                                            isDefault: false
+                                        },
+                                 		 {
                                  			columnName: 'Assignee',
-                                 			order: 7,
+                                 			order: 9,
                                  			isShown: true,
                                  			isDefault: false
                                  		}]
@@ -5377,7 +5389,7 @@ db.kpi_column_configs.insertMany([{
                                  	{
                                  		basicProjectConfigId: null,
                                  		kpiId: 'kpi135',
-                                 		kpiColumnDetails: [{
+                                 		ikpiColumnDetails: [{
                                  			columnName: 'Issue Id',
                                  			order: 0,
                                  			isShown: true,
