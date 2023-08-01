@@ -2439,3 +2439,22 @@ var fieldNameToUpdate = "jiraLiveStatusKPI3";
     { multi: false }
   );
 
+// Check if the document with the name "Fetch Sprint" already exists
+const sprintFetchPolicy = db.action_policy_rule.findOne({
+    "name": "Fetch Sprint"
+});
+
+if (!sprintFetchPolicy) {
+    db.action_policy_rule.insertOne({
+        "name": "Fetch Sprint",
+        "roleAllowed": "",
+        "description": "super admin and project admin can run active sprint fetch",
+        "roleActionCheck": "action == 'TRIGGER_SPRINT_FETCH'",
+        "condition": "subject.authorities.contains('ROLE_SUPERADMIN') || subject.authorities.contains('ROLE_PROJECT_ADMIN')",
+        "createdDate": new Date(),
+        "lastModifiedDate": new Date(),
+        "isDeleted": false
+    })
+} else {
+    print("Fetch Sprint policy already exists");
+}

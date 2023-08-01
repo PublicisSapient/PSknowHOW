@@ -119,7 +119,7 @@ public class ProcessorController {
 	}
 
 	@PostMapping(path = "/fetchSprint/{sprintId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasPermission(#spintId, 'TRIGGER_SPRINT_FETCH')")
+	@PreAuthorize("hasPermission(#sprintId, 'TRIGGER_SPRINT_FETCH')")
 	public ResponseEntity<ServiceResponse> triggerSprintFetch(@PathVariable String sprintId) {
 
 
