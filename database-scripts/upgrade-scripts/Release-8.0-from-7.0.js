@@ -2397,6 +2397,9 @@ db.getCollection('field_mapping_structure').insert(
 
  //---------7.5.0 changes------------------------------------------------------------------
 
+// Check if the jiraDodKPI37 already exists
+var existingDodKPI37 = db.getCollection('field_mapping_structure').findOne({ "fieldName": "jiraDodKPI37" });
+if (!existingDodKPI37) {
 db.getCollection('field_mapping_structure').insert([
         {
             "fieldName": "jiraDodKPI37",
@@ -2408,11 +2411,11 @@ db.getCollection('field_mapping_structure').insert([
                 "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
             }
         },
-
 ])
+}
 
-const fieldMappings = db.field_mapping.find({});
-fieldMappings.forEach(function(fm) {
+const fieldMapToUpdate = db.field_mapping.find({ "jiraIssueTypeKPI37": { $exists: true } });
+fieldMapToUpdate.forEach(function(fm) {
     const jiraDod = fm.jiraDod;
 
     db.field_mapping.updateOne(
