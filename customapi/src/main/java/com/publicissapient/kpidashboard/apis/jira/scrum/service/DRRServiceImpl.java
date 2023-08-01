@@ -128,16 +128,15 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			if (!defectStatus.isEmpty()) {
 				if (StringUtils.isNotEmpty(jiraIssue.getResolution())
 						&& CollectionUtils.isNotEmpty(defectStatus.get(Constant.RESOLUTION_TYPE_FOR_REJECTION))
-						&& defectStatus.get(Constant.RESOLUTION_TYPE_FOR_REJECTION)
-								.contains(jiraIssue.getResolution())) {
+						&& defectStatus.get(Constant.RESOLUTION_TYPE_FOR_REJECTION).stream().map(String::toLowerCase)
+								.collect(Collectors.toList()).contains(jiraIssue.getResolution().toLowerCase())) {
 					defectListWthDropSet.add(jiraIssue);
 				} else if (StringUtils.isNotEmpty(jiraIssue.getStatus())
 						&& CollectionUtils.isNotEmpty(defectStatus.get(Constant.DEFECT_REJECTION_STATUS))
-						&& defectStatus.get(Constant.DEFECT_REJECTION_STATUS).contains(jiraIssue.getStatus())) {
+						&& defectStatus.get(Constant.DEFECT_REJECTION_STATUS).stream().map(String::toLowerCase)
+								.collect(Collectors.toList()).contains(jiraIssue.getStatus().toLowerCase())) {
 					defectListWthDropSet.add(jiraIssue);
 				}
-			} else {
-				defectListWthDropSet.add(jiraIssue);
 			}
 		}
 	}
