@@ -329,5 +329,15 @@ db.getCollection('action_policy_rule').insertMany([
             "createdDate": new Date(),
             "lastModifiedDate": new Date(),
             "isDeleted": false
+        },
+        {
+            "name": "Fetch Sprint",
+            "roleAllowed": "",
+            "description": "super admin and project admin can run active sprint fetch",
+            "roleActionCheck": "action == 'TRIGGER_SPRINT_FETCH'",
+            "condition": "subject.authorities.contains('ROLE_SUPERADMIN') || subject.authorities.contains('ROLE_PROJECT_ADMIN')",
+            "createdDate": new Date(),
+            "lastModifiedDate": new Date(),
+            "isDeleted": false
         }
     ]);
