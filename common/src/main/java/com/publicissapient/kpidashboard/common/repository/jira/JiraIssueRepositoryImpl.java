@@ -32,6 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationExpression;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
+import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
@@ -42,6 +45,7 @@ import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
 /**
@@ -306,8 +310,8 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		}
 		orCriteria.orOperator(filter.toArray(filter.toArray(new Criteria[filter.size()])));
 		criteria.and(JIRA_UPDATED_DATE).gte(startDate).lte(endDate);
-		criteria.orOperator(Criteria.where(SPRINT_ASSET_STATE).in("",null, FUTURE, FUTURE.toLowerCase(),
-				CLOSED, CLOSED.toLowerCase()), orCriteria);
+		criteria.orOperator(Criteria.where(SPRINT_ASSET_STATE).in("", null, FUTURE, FUTURE.toLowerCase(), CLOSED,
+				CLOSED.toLowerCase()), orCriteria);
 		Query query = new Query(criteria);
 		query.fields().include(SPRINT_ASSET_STATE);
 		query.fields().include(NUMBER);
@@ -806,6 +810,40 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Query query = new Query(criteriaProjectLevelAdded);
 		return operations.find(query, JiraIssue.class);
 
+	}
+
+	@Override
+	public List<ReleaseWisePI> findUniqueReleaseVersionByUniqueTypeName(Map<String, List<String>> mapOfFilters,
+			Map<String, Map<String, Object>> uniqueProjectMap, String typeName) {
+
+		Criteria criteria = new Criteria();
+		// map of common filters Project and Sprint
+		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
+		// Project level storyType filters
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			projectCriteria.and(CONFIG_ID).is(project);
+			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
+			projectCriteriaList.add(projectCriteria);
+
+		});
+
+		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
+		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+		MatchOperation matchStage = Aggregation.match(criteriaProjectLevelAdded);
+
+		AggregationExpression condition = ConditionalOperators
+				.when(ComparisonOperators.Eq.valueOf("typeName").equalToValue("Epic")).then(true).otherwise(false);
+
+		GroupOperation groupBySprint = Aggregation.group("releaseVersions.releaseName")
+				.last("releaseVersions.releaseName").as("releaseVersion").last("basicProjectConfigId")
+				.as("basicProjectConfigId").addToSet("typeName").as("uniqueTypeName").min(condition)
+				.as("considerVersionAsPI");
+
+		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupBySprint);
+		return operations.aggregate(aggregation, JiraIssue.class, ReleaseWisePI.class).getMappedResults();
 	}
 
 }

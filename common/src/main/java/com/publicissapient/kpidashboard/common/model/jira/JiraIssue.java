@@ -147,6 +147,8 @@ public class JiraIssue extends BasicModel implements Cloneable {
 	private double businessValue;
 	private double timeCriticality;
 	private double riskReduction;
+	private double epicPlannedValue;
+	private double epicAchievedValue;
 
 	/*
 	 * Scope data
