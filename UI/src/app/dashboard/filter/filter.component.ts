@@ -117,6 +117,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   ];
   username: string;
   isGuest = false;
+  isViewer = false;
   logoImage: any;
   totalRequestCount = 0;
   selectedProjectData = {};
@@ -241,6 +242,10 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
     if (authoritiesArr && authoritiesArr.includes('ROLE_GUEST')) {
       this.isGuest = true;
+    }
+
+    if (authoritiesArr && authoritiesArr.includes('ROLE_PROJECT_VIEWER')) {
+      this.isViewer = true;
     }
     if (!this.isGuest) {
       this.items.unshift({
