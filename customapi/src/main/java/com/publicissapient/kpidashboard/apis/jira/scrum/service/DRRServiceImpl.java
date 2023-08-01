@@ -311,19 +311,22 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			List<String> completedSprintIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
 					CommonConstant.COMPLETED_ISSUES);
 
-			List<JiraIssue> sprintSubtask = totalSubtaskList.stream()
-					.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
-							&& jiraIssue.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
-					.collect(Collectors.toList());
-
 			FieldMapping fieldMapping = configHelperService.getFieldMapping(sd.getBasicProjectConfigId());
-			// For finding the completed Defect we are taking combination of DodStatus & DefectRejectionStatus
+			// For finding the completed Defect we are taking combination of DodStatus &
+			// DefectRejectionStatus
 			List<String> dodStatus = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiraDodKPI37)
 					.orElse(Collections.emptyList()).stream().map(String::toLowerCase).collect(Collectors.toList());
-			String defectRejectionStatus = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiraDefectRejectionStatusKPI37).orElse("");
+			String defectRejectionStatus = Optional.ofNullable(fieldMapping)
+					.map(FieldMapping::getJiraDefectRejectionStatusKPI37).orElse("");
 			List<String> dodAndDefectRejStatus = new ArrayList<>(dodStatus);
-			if(StringUtils.isNotEmpty(defectRejectionStatus))
+			if (StringUtils.isNotEmpty(defectRejectionStatus))
 				dodAndDefectRejStatus.add(defectRejectionStatus.toLowerCase());
+
+			List<JiraIssue> sprintSubtask = KpiDataHelper.getTotalSprintSubTasks(totalSubtaskList.stream()
+					.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList())
+							&& jiraIssue.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
+					.collect(Collectors.toList()), sd, totalSubtaskHistory, dodAndDefectRejStatus);
+
 			List<JiraIssue> sprintRejectedDefects = canceledDefectList.stream()
 					.filter(element -> totalSprintIssues.contains(element.getNumber())).collect(Collectors.toList());
 

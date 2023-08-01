@@ -858,7 +858,7 @@ public final class KpiDataHelper {
 	}
 
 	/**
-	 *
+	 * Get completed subtask of sprint
 	 * @param totalSubTask
 	 * @param subTaskHistory
 	 * @param sprintDetail
@@ -889,4 +889,39 @@ public final class KpiDataHelper {
 		});
 		return resolvedSubtaskForSprint;
 	}
+
+	/**
+	 *  Get total subtask of sprint
+	 * @param allSubTasks
+	 * @param sprintDetails
+	 * @param subTaskHistory
+	 * @param fieldMappingDoneStatus
+	 * @return
+	 */
+	public static List<JiraIssue> getTotalSprintSubTasks(List<JiraIssue> allSubTasks, SprintDetails sprintDetails,
+			List<JiraIssueCustomHistory> subTaskHistory, List<String> fieldMappingDoneStatus) {
+		LocalDateTime sprintEndDate = sprintDetails.getCompleteDate() != null
+				? LocalDateTime.parse(sprintDetails.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDateTime sprintStartDate = sprintDetails.getActivatedDate() != null
+				? LocalDateTime.parse(sprintDetails.getActivatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		List<JiraIssue> subTaskTaggedWithSprint = new ArrayList<>();
+
+		allSubTasks.forEach(jiraIssue -> {
+			JiraIssueCustomHistory jiraIssueCustomHistory = subTaskHistory.stream().filter(
+					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
+					.findFirst().orElse(new JiraIssueCustomHistory());
+			Optional<JiraHistoryChangeLog> jiraHistoryChangeLog = jiraIssueCustomHistory.getStatusUpdationLog().stream()
+					.filter(changeLog -> fieldMappingDoneStatus.contains(changeLog.getChangedTo().toLowerCase())
+							&& changeLog.getUpdatedOn().isAfter(sprintStartDate))
+					.findFirst();
+			if (jiraHistoryChangeLog.isPresent() && sprintEndDate
+					.isAfter(LocalDateTime.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)))
+				subTaskTaggedWithSprint.add(jiraIssue);
+
+		});
+		return subTaskTaggedWithSprint;
+	}
+
 }
