@@ -321,6 +321,8 @@ public class MetaDataClientImpl implements MetadataClient {
 				fieldMapping.setJiraDorKPI3(null);
 			}
 			fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI151(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
@@ -469,6 +471,8 @@ public class MetaDataClientImpl implements MetadataClient {
 					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
 			fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI151(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
@@ -516,6 +520,8 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraStatusForQaKPI82(workflowMap.get(CommonConstant.QA));
 			fieldMapping.setJiraStatusForQaKPI135(workflowMap.get(CommonConstant.QA));
 			fieldMapping.setJiraDefectRejectionStatusAVR(CommonConstant.REJECTED);
+			fieldMapping.setJiraDefectRejectionStatusKPI151(CommonConstant.REJECTED);
+			fieldMapping.setJiraDefectRejectionStatusKPI152(CommonConstant.REJECTED);
 			fieldMapping.setJiraDefectRejectionStatusKPI28(CommonConstant.REJECTED);
 			fieldMapping.setJiraDefectRejectionStatusKPI34(CommonConstant.REJECTED);
 			fieldMapping.setJiraDefectRejectionStatusKPI37(CommonConstant.REJECTED);
