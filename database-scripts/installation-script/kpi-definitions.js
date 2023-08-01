@@ -5389,7 +5389,7 @@ db.kpi_column_configs.insertMany([{
                                  	{
                                  		basicProjectConfigId: null,
                                  		kpiId: 'kpi135',
-                                 		ikpiColumnDetails: [{
+                                 		kpiColumnDetails: [{
                                  			columnName: 'Issue Id',
                                  			order: 0,
                                  			isShown: true,
