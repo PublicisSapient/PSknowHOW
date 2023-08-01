@@ -76,7 +76,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class KpiDataHelper {
-	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final String CLOSED = "closed";
 
 	private KpiDataHelper() {
@@ -583,14 +582,11 @@ public final class KpiDataHelper {
 			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
 		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
 				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping && CollectionUtils
-				.isNotEmpty(fieldMapping)) {
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
 			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> fieldMapping.contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
+					.filter(jiraIssue -> fieldMapping.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
 			openIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> !fieldMapping.contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
+					.filter(jiraIssue -> !fieldMapping.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
 		} else {
 			openIssues.addAll(jiraIssuesWithDueDate);
 		}
@@ -686,7 +682,8 @@ public final class KpiDataHelper {
 									: dbSprintDetail.getNotCompletedIssues());
 					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
 							fieldMappingCompletionType, fieldMappingCompletionStatus);
-					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus, projectWiseDuplicateIssuesWithMinCloseDate);
+					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus,
+							projectWiseDuplicateIssuesWithMinCloseDate);
 					dbSprintDetail.setCompletedIssues(newCompletedSet);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
 					Set<SprintIssue> totalIssue = new HashSet<>();
@@ -700,7 +697,7 @@ public final class KpiDataHelper {
 	}
 
 	public static Set<SprintIssue> changeSprintDetails(SprintDetails sprintDetail, Set<SprintIssue> completedIssues,
-													   List<String> customCompleteStatus, Map<ObjectId, Map<String, List<LocalDateTime>>> issueWiseMinimumDates) {
+			List<String> customCompleteStatus, Map<ObjectId, Map<String, List<LocalDateTime>>> issueWiseMinimumDates) {
 		if (CollectionUtils.isNotEmpty(customCompleteStatus) && CollectionUtils.isNotEmpty(completedIssues)
 				&& MapUtils.isNotEmpty(issueWiseMinimumDates)) {
 			ObjectId projectId = sprintDetail.getBasicProjectConfigId();
@@ -722,7 +719,6 @@ public final class KpiDataHelper {
 		}
 		return completedIssues;
 	}
-
 
 	private static Set<SprintIssue> getCombinationalCompletedSet(Set<SprintIssue> typeWiseIssues,
 			Set<SprintIssue> statusWiseIssues) {
@@ -826,7 +822,8 @@ public final class KpiDataHelper {
 	}
 
 	/**
-	 *  Cal time with 8hr in a day
+	 * Cal time with 8hr in a day
+	 * 
 	 * @param timeInHours
 	 * @return
 	 */
@@ -852,5 +849,10 @@ public final class KpiDataHelper {
 			current = current.plusDays(1);
 		}
 		return count;
+	}
+
+	public static DateTime convertLocalDateTimeToDateTime(LocalDateTime dateTime) {
+		Instant instant = dateTime.atZone(ZoneId.systemDefault()).toInstant();
+		return new DateTime(instant.toEpochMilli());
 	}
 }

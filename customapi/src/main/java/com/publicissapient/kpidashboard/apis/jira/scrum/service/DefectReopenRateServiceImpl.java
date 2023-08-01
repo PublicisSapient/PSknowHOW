@@ -3,7 +3,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,6 +18,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -59,12 +60,13 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
 	private static final String DEFECT_REOPEN_RATE = "Reopen Rate";
-	private static final String REOPEN_BY_TOTAL_DEFECTS = "Reopened /Total";
+	private static final String REOPEN_BY_CLOSED_DEFECTS = "Reopened /Total Closed";
 	private static final String AVERAGE_TIME_REOPEN = "Avg. Time to Reopen";
 	private static final String OVERALL = "Overall";
 	private static final String TOTAL_JIRA_ISSUE = "TOTAL_JIRA_ISSUE";
 	private static final String PROJECT_CLOSED_STATUS_MAP = "PROJECT_CLOSED_STATUS_MAP";
 	private static final String JIRA_REOPEN_HISTORY = "JIRA_REOPEN_HISTORY";
+	private static final String TIME_FORMAT_WITH_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 	private static final String STATUS = "status";
 
 	@Autowired
@@ -124,6 +126,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValues(List<Node> projectList, DataCount trendValue, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
+		Node leafNode = projectList.stream().findFirst().orElse(null);
 		Map<String, Object> kpiResultDbMap = fetchKPIDataFromDb(projectList, null, null, kpiRequest);
 		List<JiraIssue> totalDefects = (List<JiraIssue>) kpiResultDbMap.get(TOTAL_JIRA_ISSUE);
 		List<JiraIssueCustomHistory> reopenJiraHistory = (List<JiraIssueCustomHistory>) kpiResultDbMap
@@ -144,6 +147,8 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		List<IterationKpiModalValue> overAllModalValues = new ArrayList<>();
 		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 		List<Double> overAllDuration = Arrays.asList(0.0);
+		List<String> closedStatusList = closedStatusMap
+				.getOrDefault(leafNode.getProjectFilter().getBasicProjectConfigId().toString(), new ArrayList<>());
 		priorityWiseTotalStory.forEach((priority, jiraIssueList) -> {
 			List<IterationKpiModalValue> modalValues = new ArrayList<>();
 			filters.add(priority);
@@ -151,8 +156,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			jiraIssueList.forEach(jiraIssue -> {
 				if (reopenJiraHistoryMap.containsKey(jiraIssue.getNumber())) {
 					JiraIssueCustomHistory jiraIssueCustomHistory = reopenJiraHistoryMap.get(jiraIssue.getNumber());
-					List<String> closedStatusList = closedStatusMap.getOrDefault(jiraIssue.getBasicProjectConfigId(),
-							new ArrayList<>());
 					List<JiraHistoryChangeLog> issueHistoryList = jiraIssueCustomHistory.getStatusUpdationLog();
 					Optional<JiraHistoryChangeLog> closedHistoryOptional = issueHistoryList.stream()
 							.filter(Objects::nonNull)
@@ -165,22 +168,27 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 								.findFirst();
 						if (reopenHistoryOptional.isPresent()) {
 							JiraHistoryChangeLog reopenHistory = reopenHistoryOptional.get();
-							IterationKpiModalValue iterationModal = crateIterationKpiModal(jiraIssue, closedHistory,
-									reopenHistory);
+							LocalDateTime closedTime = closedHistory.getUpdatedOn();
+							LocalDateTime reopenTime = reopenHistory.getUpdatedOn();
+							DateTime closedDate = KpiDataHelper.convertLocalDateTimeToDateTime(closedTime);
+							DateTime reopenDate = KpiDataHelper.convertLocalDateTimeToDateTime(reopenTime);
+							IterationKpiModalValue iterationModal = crateIterationKpiModal(jiraIssue, closedDate,
+									reopenDate);
 							modalValues.add(iterationModal);
-							double duration = ChronoUnit.DAYS.between(closedHistory.getUpdatedOn(),
-									reopenHistory.getUpdatedOn());
+							double duration = Double.parseDouble(KpiDataHelper.calWeekHours(closedDate, reopenDate));
 							totalDuration.set(0, totalDuration.get(0) + duration);
 						}
 					}
 				}
 			});
-			addToIterationKpiValues(iterationKpiValues, priority, jiraIssueList, modalValues, totalDuration);
+			addToIterationKpiValues(iterationKpiValues, priority, jiraIssueList, modalValues, totalDuration,
+					closedStatusList);
 			overAllModalValues.addAll(modalValues);
 			overAllDuration.set(0, overAllDuration.get(0) + totalDuration.get(0));
 
 		});
-		addToIterationKpiValues(iterationKpiValues, OVERALL, totalDefects, overAllModalValues, overAllDuration);
+		addToIterationKpiValues(iterationKpiValues, OVERALL, totalDefects, overAllModalValues, overAllDuration,
+				closedStatusList);
 		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, filters);
 		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
 		kpiElement.setFilters(iterationKpiFilters);
@@ -191,25 +199,27 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 
 	/**
 	 * Update iterationKpiValues.
-	 * 
+	 *
 	 * @param iterationKpiValues
 	 * @param priority
 	 * @param jiraIssueList
 	 * @param modalValues
 	 * @param totalDuration
-	 *
+	 * @param closedStatusList
 	 */
 	private void addToIterationKpiValues(List<IterationKpiValue> iterationKpiValues, String priority,
-			List<JiraIssue> jiraIssueList, List<IterationKpiModalValue> modalValues, List<Double> totalDuration) {
+			List<JiraIssue> jiraIssueList, List<IterationKpiModalValue> modalValues, List<Double> totalDuration,
+			List<String> closedStatusList) {
 		double averageTimeToReopen = totalDuration.get(0) > 0 && !modalValues.isEmpty()
 				? Math.ceil(totalDuration.get(0) / modalValues.size())
 				: 0;
-
-		IterationKpiData reopenRateKpi = createReopenRateIterationData(modalValues, jiraIssueList.size());
-		IterationKpiData reopenedByTotalKpi = IterationKpiData.builder().label(REOPEN_BY_TOTAL_DEFECTS)
-				.value(Double.valueOf(modalValues.size())).value1(Double.valueOf(jiraIssueList.size())).build();
+		List<JiraIssue> closedIssueList = jiraIssueList.stream()
+				.filter(jiraIssue -> closedStatusList.contains(jiraIssue.getStatus())).collect(Collectors.toList());
+		IterationKpiData reopenRateKpi = createReopenRateIterationData(modalValues, closedIssueList.size());
+		IterationKpiData reopenedByTotalKpi = IterationKpiData.builder().label(REOPEN_BY_CLOSED_DEFECTS)
+				.value(Double.valueOf(modalValues.size())).value1(Double.valueOf(closedIssueList.size())).build();
 		IterationKpiData averageKpi = IterationKpiData.builder().label(AVERAGE_TIME_REOPEN).value(averageTimeToReopen)
-				.unit("d").build();
+				.unit("Hrs").build();
 		iterationKpiValues.add(
 				new IterationKpiValue(priority, null, Arrays.asList(reopenedByTotalKpi, reopenRateKpi, averageKpi)));
 	}
@@ -222,17 +232,16 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	 * @param reopenHistory
 	 * @return IterationKpiModalValue
 	 */
-	private IterationKpiModalValue crateIterationKpiModal(JiraIssue issue, JiraHistoryChangeLog closedHistory,
-			JiraHistoryChangeLog reopenHistory) {
-		LocalDateTime closedTime = closedHistory.getUpdatedOn();
-		LocalDateTime reopenTime = reopenHistory.getUpdatedOn();
-		String duration = String
-				.valueOf(ChronoUnit.DAYS.between(closedHistory.getUpdatedOn(), reopenHistory.getUpdatedOn()));
+	private IterationKpiModalValue crateIterationKpiModal(JiraIssue issue, DateTime closedHistory,
+			DateTime reopenHistory) {
+
+		String duration = KpiDataHelper.calWeekHours(closedHistory, reopenHistory);
+
 		return IterationKpiModalValue.builder().issueId(issue.getNumber()).issueURL(issue.getUrl())
 				.description(issue.getName()).priority(issue.getPriority()).issueStatus(issue.getStatus())
-				.closedDate(DateUtil.localDateTimeConverter(closedTime.toLocalDate()))
-				.reopenDate(DateUtil.localDateTimeConverter(reopenTime.toLocalDate())).durationToReopen(duration + "d")
-				.build();
+				.closedDate(DateUtil.dateTimeConverter(closedHistory, TIME_FORMAT_WITH_SEC))
+				.reopenDate(DateUtil.dateTimeConverter(reopenHistory, TIME_FORMAT_WITH_SEC))
+				.durationToReopen(duration + "Hrs").build();
 	}
 
 	/**
