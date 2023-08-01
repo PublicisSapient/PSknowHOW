@@ -193,4 +193,9 @@
     justify-content: space-around;
 }
 
+.disable-setting-icon{
+    pointer-events: none;
+    opacity: 0.5;
+}
+
 
