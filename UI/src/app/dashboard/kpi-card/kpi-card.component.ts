@@ -57,7 +57,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
  @Input() commentCount : string;
  @Output() getCommentCountByKpi = new EventEmitter();
 
-  constructor(private service: SharedService,
+  constructor(public service: SharedService,
     private http : HttpService) {
   }
 
