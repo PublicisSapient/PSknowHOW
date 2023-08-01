@@ -1415,15 +1415,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		Map<ObjectId, AccountHierarchy> projectDataMap = new HashMap<>();
 
 		for (JiraIssue jiraIssue : jiraIssueList) {
-			String projectName = jiraIssue.getProjectName();
-			String sprintName = jiraIssue.getSprintName();
-			String sprintBeginDate = jiraIssue.getSprintBeginDate();
-			String sprintEndDate = jiraIssue.getSprintEndDate();
-
-			if (StringUtils.isBlank(projectName) || StringUtils.isBlank(sprintName)
-					|| StringUtils.isBlank(sprintBeginDate) || StringUtils.isBlank(sprintEndDate)) {
-				continue; // Skip this Jira issue if any of the required fields are blank
-			}
 
 			ObjectId basicProjectConfigId = new ObjectId(jiraIssue.getBasicProjectConfigId());
 			Map<String, SprintDetails> sprintDetailsMap = sprintDetailsSet.stream()
