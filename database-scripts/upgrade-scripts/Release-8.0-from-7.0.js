@@ -2345,7 +2345,11 @@ db.getCollection('field_mapping_structure').insert(
         }
     ]
 );
-}
+    print("Field Mapping Structure executed successfully!");
+  } else {
+    print("Field Mapping Structure already executed. Skipping...");
+  }
+
 
 
 //DTS-25767 Commitment Reliability - Add Filter by Issue type (add one column for issue type in excel)
@@ -2396,7 +2400,64 @@ db.getCollection('field_mapping_structure').insert(
  );
 
  //---------7.5.0 changes------------------------------------------------------------------
+//Defect fix for DTS-27477 (Remove one In-Sprint Automation mapping which is appearing twice)
 
+var fieldNameToUpdate = "jiraStoryIdentification";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: { "fieldLabel": "Issue Count KPI Issue type" } },
+    { multi: false }
+  );
+
+
+var fieldNameToUpdate = "jiraIssueTypeKPI3";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Issue type to be included",
+    "tooltip.definition": "All issue types that should be included in Lead time calculation"
+    } },
+    { multi: false }
+  );
+
+var fieldNameToUpdate = "jiraDorKPI3";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "DOR status",
+    "tooltip.definition": "Status/es that identify that an issue is ready to be taken in the sprint"
+     } },
+    { multi: false }
+  );
+
+var fieldNameToUpdate = "jiraLiveStatusKPI3";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "tooltip.definition": "Status/es that identify that an issue is LIVE in Production."
+    } },
+    { multi: false }
+  );
+
+// Check if the document with the name "Fetch Sprint" already exists
+const sprintFetchPolicy = db.action_policy_rule.findOne({
+    "name": "Fetch Sprint"
+});
+
+if (!sprintFetchPolicy) {
+    db.action_policy_rule.insertOne({
+        "name": "Fetch Sprint",
+        "roleAllowed": "",
+        "description": "super admin and project admin can run active sprint fetch",
+        "roleActionCheck": "action == 'TRIGGER_SPRINT_FETCH'",
+        "condition": "subject.authorities.contains('ROLE_SUPERADMIN') || subject.authorities.contains('ROLE_PROJECT_ADMIN')",
+        "createdDate": new Date(),
+        "lastModifiedDate": new Date(),
+        "isDeleted": false
+    })
+} else {
+    print("Fetch Sprint policy already exists");
+}
 // Check if the jiraDodKPI37 already exists
 var existingDodKPI37 = db.getCollection('field_mapping_structure').findOne({ "fieldName": "jiraDodKPI37" });
 if (!existingDodKPI37) {
