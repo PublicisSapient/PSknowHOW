@@ -303,6 +303,8 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				subCategoryWiseTotalDefectList.addAll(totalSubTask);
 
 				List<JiraIssue> subCategoryWiseClosedDefectList = sprintReportedBugs.stream()
+						.filter(defect -> CollectionUtils.isNotEmpty(defect.getSprintIdList())
+								&& defect.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
 						.filter(f -> completedSprintIssues.contains(f.getNumber()) && CollectionUtils
 								.emptyIfNull(projectWiseDefectRemovalStatus.get(f.getBasicProjectConfigId())).stream()
 								.anyMatch(s -> s.equalsIgnoreCase(f.getJiraStatus())))
