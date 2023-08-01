@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SprintIssue {
+public class SprintIssue implements Cloneable {
 	private String number;
 	private String originBoardId;
 	private String priority;
@@ -30,5 +30,10 @@ public class SprintIssue {
 	@Override
 	public int hashCode() {
 		return Objects.hash(number);
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

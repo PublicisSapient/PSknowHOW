@@ -384,7 +384,6 @@ public class KanbanJiraIssueClientImplTest {
 		al.add("Bug");
 		al.add("Defect");
 		fieldMapping.setJiraTechDebtValue(al);
-		fieldMapping.setEnvImpacted("yes");
 		fieldMapping.setJiraTechDebtIdentification(JiraConstants.LABELS);
 		Issue issue = new Issue("summary", null, "key", 121L, null, null,
 				new Status(null, null, "TestHOW", null, null, null), "description", null, null, null, null, null,
@@ -393,18 +392,4 @@ public class KanbanJiraIssueClientImplTest {
 		kanbanJiraIssueClient.processJiraIssueData(getKanbanJiraIssue(), issue, map, fieldMapping, jiraProcessorConfig);
 	}
 
-	@Test
-	public void setDevicePlatform() {
-		FieldMapping fieldMapping = new FieldMapping();
-		ArrayList<String> al = new ArrayList<>();
-		al.add("Bug");
-		al.add("Defect");
-		fieldMapping.setJiraTechDebtValue(al);
-		fieldMapping.setJiraTechDebtIdentification(JiraConstants.LABELS);
-		fieldMapping.setDevicePlatform("platform");
-		Map<String, IssueField> map = new HashMap<>();
-		IssueField issueField = null;
-		map.put("111", issueField);
-		kanbanJiraIssueClient.setDevicePlatform(fieldMapping, getKanbanJiraIssue(), map);
-	}
 }

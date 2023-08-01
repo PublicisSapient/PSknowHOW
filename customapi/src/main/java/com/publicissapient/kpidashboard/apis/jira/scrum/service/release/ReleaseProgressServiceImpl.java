@@ -76,11 +76,9 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Release Progress -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-
 			List<JiraIssue> releaseIssues = getFilteredReleaseJiraIssuesFromBaseClass(null);
 			resultListMap.put(TOTAL_ISSUES, releaseIssues);
-			JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus(basicProjectConfigId);
+			JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus();
 			resultListMap.put(RELEASE_JIRA_ISSUE_STATUS, jiraIssueReleaseStatus);
 		}
 		return resultListMap;
@@ -149,9 +147,8 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	public void createDataCountGroupMap(List<JiraIssue> jiraIssueList, JiraIssueReleaseStatus jiraIssueReleaseStatus,
 			Set<String> assigneeNames, Set<String> priorities, FieldMapping fieldMapping,
 			List<IterationKpiValue> iterationKpiValues) {
-		Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = jiraIssueList.stream()
-				.collect(Collectors.groupingBy(
-						jiraIssue -> Optional.ofNullable(jiraIssue.getAssigneeName()).orElse("-"),
+		Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = jiraIssueList.stream().collect(
+				Collectors.groupingBy(jiraIssue -> Optional.ofNullable(jiraIssue.getAssigneeName()).orElse("-"),
 						Collectors.groupingBy(JiraIssue::getPriority)));
 		typeAndStatusWiseIssues
 				.forEach((assigneeName, priorityWiseIssue) -> priorityWiseIssue.forEach((priority, issues) -> {

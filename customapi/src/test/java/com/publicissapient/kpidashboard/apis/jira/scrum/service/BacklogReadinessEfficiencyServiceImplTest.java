@@ -12,9 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
-import org.apache.kafka.common.protocol.types.Field;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +34,7 @@ import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -48,6 +46,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -67,13 +66,11 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	@InjectMocks
 	BacklogReadinessEfficiencyServiceImpl backlogReadinessEfficiencyServiceImpl;
 	@Mock
-	private JiraIssueCustomHistoryRepository jiraHistoryRepo;
-	@Mock
 	private ConfigHelperService configHelperService;
 	@Mock
 	private KpiHelperService kpiHelperService;
 	@Mock
-	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+	private JiraServiceR jiraService;
 	@Mock
 	private SprintVelocityServiceHelper velocityServiceHelper;
 	@Mock
@@ -136,13 +133,12 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		Map<String, Object> sprintVelocityStoryMap = new HashMap<>();
 		sprintVelocityStoryMap.put("sprintVelocityKey", storyList);
 
-		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any())).thenReturn(sprintVelocityStoryMap);
+		when(kpiHelperService.fetchBackLogReadinessFromdb(any(), any())).thenReturn(sprintVelocityStoryMap);
 
 		when(jiraIssueCustomHistoryRepository.findByStoryIDIn(any())).thenReturn(jiraIssueCustomHistories);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(storyList);
-		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(any())).thenReturn(
-				new JiraIssueReleaseStatus(new String(),new HashMap<>(),new HashMap<>(),new HashMap<>()));
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
 		when(backlogReadinessEfficiencyServiceImpl.getBackLogStory(new ObjectId("6335363749794a18e8a4479b")))
 				.thenReturn(storyList);
 
@@ -174,8 +170,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	public void testGetBackLogStory() {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(storyList);
-		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(any())).thenReturn(
-				new JiraIssueReleaseStatus(any(),new HashMap<>(),new HashMap<>(),new HashMap<>()));
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
 		List<JiraIssue> backLogStory = backlogReadinessEfficiencyServiceImpl
 				.getBackLogStory(new ObjectId("6335363749794a18e8a4479b"));
 		Assert.assertEquals(backLogStory.size(), storyList.size());

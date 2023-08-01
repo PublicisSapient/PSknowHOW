@@ -491,4 +491,29 @@ public final class JiraProcessorUtil {
 		return "";
 	}
 
+	public static String processJqlForSprintFetch(List<String> issueKeys) {
+		String finalQuery = StringUtils.EMPTY;
+		if (issueKeys == null) {
+			return finalQuery;
+		}
+		StringBuilder issueKeysDataQuery = new StringBuilder();
+
+		int size = issueKeys.size();
+		int count = 0;
+		issueKeysDataQuery.append("issueKey in (");
+
+		for (String issueKey : issueKeys) {
+			count++;
+			issueKeysDataQuery.append(issueKey);
+			if (count < size) {
+				issueKeysDataQuery.append(", ");
+			}
+		}
+		issueKeysDataQuery.append(")");
+
+		finalQuery = issueKeysDataQuery.toString();
+
+		return finalQuery;
+	}
+
 }

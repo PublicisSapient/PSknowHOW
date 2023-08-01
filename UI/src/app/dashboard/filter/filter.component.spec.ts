@@ -74,6 +74,7 @@ describe('FilterComponent', () => {
       level: 3,
     },
   ];
+  const fakeCommentList = require('../../../test/resource/fakeCommentList.json');
 
   const additionalFiltersDdn =  {
     selectedLevel: [{
@@ -979,7 +980,7 @@ describe('FilterComponent', () => {
     spyOn(sharedService, 'setDashConfigData');
     component.submitKpiConfigChange();
     tick();
-    expect(component.toggleDropdown).toBeFalse();
+    expect(component.toggleDropdown['showHide']).toBeFalse();
   }));
 
   it("should get processor trace log details",()=>{
@@ -989,6 +990,7 @@ describe('FilterComponent', () => {
     }
     spyOn(httpService,"getProcessorsTraceLogsForProject").and.returnValue(of(fakeResponce));
     spyOn(component,"findTraceLogForTool");
+    spyOn(component,'showExecutionDate');
     component.getProcessorsTraceLogsForProject("63284960fdd20276d60e4df5");
     expect(httpService.getProcessorsTraceLogsForProject).toHaveBeenCalled();
   })
@@ -1521,9 +1523,11 @@ describe('FilterComponent', () => {
             "executionSuccess": true,
             "lastSuccessfulRun": "2023-05-09 00:02",
     }
-    spyOn(component,'findTraceLogForTool').and.returnValue(fakeTraceLog)
+    spyOn(component,'findTraceLogForTool').and.returnValue(fakeTraceLog);
+    const spyOnFetchData = spyOn(component,'fetchActiveIterationStatus');
     component.showExecutionDate();
     expect(component.selectedProjectLastSyncStatus).toBe('SUCCESS');
+    expect(spyOnFetchData).toHaveBeenCalled();
   })
 
   it('should get date and status of jira processor when status is false',()=>{
@@ -1535,11 +1539,72 @@ describe('FilterComponent', () => {
             "executionEndedAt": 1683590549223,
             "executionSuccess": false,
             "lastSuccessfulRun": "2023-05-09 00:02",
-    }
+    };
+    const spyOnFetchData = spyOn(component,'fetchActiveIterationStatus');
     spyOn(component,'findTraceLogForTool').and.returnValue(fakeTraceLog)
     component.showExecutionDate();
     expect(component.selectedProjectLastSyncStatus).toBe("FAILURE");
-  })
+    expect(spyOnFetchData).toHaveBeenCalled();
+  });
+
+  it('should get comment summary', fakeAsync(() => {
+    component.showSpinner = true;
+    const reqObj = {
+        "level": 5,
+        "kpiIds": [
+            "kpi14",
+            "kpi82",
+            "kpi111",
+            "kpi35",
+            "kpi34",
+            "kpi37",
+            "kpi28",
+            "kpi36",
+            "kpi126",
+            "kpi42",
+            "kpi16",
+            "kpi17",
+            "kpi38",
+            "kpi27",
+            "kpi116",
+            "kpi70",
+            "kpi40",
+            "kpi72",
+            "kpi5",
+            "kpi39",
+            "kpi46",
+            "kpi84",
+            "kpi11",
+            "kpi8",
+            "kpi118",
+            "kpi73",
+            "kpi113",
+            "kpi149"
+        ],
+        "nodes": [
+            "ADDD_649a920fdf3e6c21e3968e30"
+        ],
+        "nodeChildId": ''
+    }
+    component.filterApplyData['selectedMap'] = {
+      'sprint': [],
+      'release': [],
+      'project': ['ADDD_649a920fdf3e6c21e3968e30']
+    }
+    component.selectedTab = 'my-knowhow';
+    const spy = spyOn(httpService, 'getCommentSummary').and.returnValue(of(fakeCommentList['data']));
+    
+    component.getRecentComments();
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }));
+
+  it('should handle comment summary button click', () => {
+    component.toggleDropdown['commentSummary'] = false;
+    const spy = spyOn(component, 'getRecentComments');
+    component.handleBtnClick();
+    expect(spy).toHaveBeenCalled();
+  });
 
   it('should compile GA data', () => {
     component.selectedFilterArray = fakeSelectedFilterArray;
@@ -1556,6 +1621,142 @@ describe('FilterComponent', () => {
       }
   ]
     expect(component.selectedFilterArray.length).toEqual(gaArray.length);
-  })
+  });
+
+  it('should update kpi on click of update',()=>{
+   const spySelect=  spyOn(sharedService,'select');
+    component.onUpdateKPI();
+    expect(spySelect).toHaveBeenCalled();
+  });
+
+  it('should update selectedProjectLastSyncDate on fetch data success ', fakeAsync(() => {
+    component.initializeFilterForm();
+    component.filterForm?.get('selectedSprintValue').setValue('43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d')
+    component.selectedSprint = {
+      "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
+      "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
+      "sprintStartDate": "2023-06-07T11:52:00.0000000",
+      "sprintEndDate": "2023-06-27T11:52:00.0000000",
+      "sprintState": "ACTIVE",
+      "level": 6
+    };
+    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+      "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
+      "success": true
+    }));
+
+    spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(of({
+      "message": "Successfully fetched last sync details from db",
+      "success": true,
+      "data": {
+        "id": "64ba0f5f56af7e18da9da925",
+        "sprintId": "42842_KnowHOW_6360fefc3fa9e175755f0728",
+        "fetchSuccessful": true,
+        "errorInFetch": false,
+        "lastSyncDateTime": "2023-07-21T10:23:51.845"
+      }
+    }));
+
+    component.fetchData();
+    tick(10000);
+    expect(getActiveIterationStatusSpy).toHaveBeenCalled();
+    expect(component.selectedProjectLastSyncStatus).toEqual('SUCCESS');
+    expect(component.selectedProjectLastSyncDate).toEqual('2023-07-21T10:23:51.845');
+  }));
+
+  it('should not update selectedProjectLastSyncDate on fetch data failure ',fakeAsync(()=>{
+    component.initializeFilterForm();
+    component.filterForm?.get('selectedSprintValue').setValue('43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d')
+    component.selectedSprint = {
+      "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
+      "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
+      "sprintStartDate": "2023-06-07T11:52:00.0000000",
+      "sprintEndDate": "2023-06-27T11:52:00.0000000",
+      "sprintState": "ACTIVE",
+      "level": 6
+    };
+    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+      "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
+      "success": false
+    }));
+
+    const getactiveIterationfetchStatusSpy = spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(of({
+      "message": "Successfully fetched last sync details from db",
+      "success": true,
+      "data": {
+        "id": "64ba0f5f56af7e18da9da925",
+        "sprintId": "42842_KnowHOW_6360fefc3fa9e175755f0728",
+        "fetchSuccessful": false,
+        "errorInFetch": true,
+        "lastSyncDateTime": "2023-07-21T10:23:51.845"
+      }
+    }));
+
+    component.fetchData();
+    tick(10000);
+    expect(getActiveIterationStatusSpy).toHaveBeenCalled();
+    expect(getactiveIterationfetchStatusSpy).not.toHaveBeenCalled();
+    expect(Object.keys(component.lastSyncData).length).toEqual(0);
+  }));
+
+  it('should fetch ActiveIterationStatus success case',()=>{
+    component.initializeFilterForm();
+    component.filterForm?.get('selectedSprintValue').setValue('43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d')
+    component.selectedSprint = {
+      "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
+      "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
+      "sprintStartDate": "2023-06-07T11:52:00.0000000",
+      "sprintEndDate": "2023-06-27T11:52:00.0000000",
+      "sprintState": "ACTIVE",
+      "level": 6
+    };
+    component.selectedProjectLastSyncDate = '2023-06-21T10:23:51.845';
+    const getactiveIterationfetchStatusSpy = spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(of({
+      "message": "Successfully fetched last sync details from db",
+      "success": true,
+      "data": {
+        "id": "64ba0f5f56af7e18da9da925",
+        "sprintId": "42842_KnowHOW_6360fefc3fa9e175755f0728",
+        "fetchSuccessful": true,
+        "errorInFetch": false,
+        "lastSyncDateTime": "2023-07-21T10:23:51.845"
+      }
+    }));
+    component.fetchActiveIterationStatus();
+    fixture.detectChanges();
+    expect(component.selectedProjectLastSyncStatus).toEqual('SUCCESS');
+
+  });
+
+
+  it('should fetch ActiveIterationStatus fail case',()=>{
+    component.initializeFilterForm();
+    component.filterForm?.get('selectedSprintValue').setValue('43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d')
+    component.selectedSprint = {
+      "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
+      "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
+      "sprintStartDate": "2023-06-07T11:52:00.0000000",
+      "sprintEndDate": "2023-06-27T11:52:00.0000000",
+      "sprintState": "ACTIVE",
+      "level": 6
+    };
+
+    const getactiveIterationfetchStatusSpy = spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(of({
+      "message": "Successfully fetched last sync details from db",
+      "success": true,
+      "data": {
+        "id": "64ba0f5f56af7e18da9da925",
+        "sprintId": "42842_KnowHOW_6360fefc3fa9e175755f0728",
+        "fetchSuccessful": false,
+        "errorInFetch": true,
+        "lastSyncDateTime": "2023-07-21T10:23:51.845"
+      }
+    }));
+    component.selectedProjectLastSyncDate = '2023-06-21T10:23:51.845';
+    component.fetchActiveIterationStatus();
+    fixture.detectChanges();
+    expect(component.selectedProjectLastSyncStatus).toEqual('FAILURE');
+
+  });
 
 });

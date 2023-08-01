@@ -28,8 +28,9 @@ import { MessageService, MenuItem } from 'primeng/api';
 import { faRotateRight } from '@fortawesome/fontawesome-free';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
-import { first } from 'rxjs/operators';
+import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { interval, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-filter',
@@ -38,11 +39,14 @@ import { environment } from 'src/environments/environment';
 })
 export class FilterComponent implements OnInit, OnDestroy {
   @ViewChild('selector') ngselect: NgSelectComponent;
-  @ViewChild('toggleButton') toggleButton: ElementRef;
-  @ViewChild('drpmenu') drpmenu: ElementRef;
+  @ViewChild('showHide') showHide: ElementRef;
+  @ViewChild('commentSummary') commentSummary: ElementRef;
+  @ViewChild('showHideDdn') showHideDdn: ElementRef;
+  @ViewChild('commentSummaryDdn') commentSummaryDdn: ElementRef;
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
 
+  subject = new Subject();
   isSuperAdmin = false;
   masterData: any = {};
   filterData: any = [];
@@ -60,7 +64,10 @@ export class FilterComponent implements OnInit, OnDestroy {
   filterType = 'Default';
   maxDate = new Date(); // setting max date user can select in calendar
   showIndicator = false;
-  toggleDropdown = false;
+  toggleDropdown: object = {
+    'showHide': false,
+    'commentSummary': false
+  };
   kpiListData: any = {};
   kpiList = [];
   showKpisList = [];
@@ -80,7 +87,6 @@ export class FilterComponent implements OnInit, OnDestroy {
   hierarchyLevels = [];
   trendLineValueList: any = [];
   toggleDateDropdown = false;
-  filteredSprints = [];
   showDropdown = {};
   selectedDateFilter = '';
   beginningDate;
@@ -120,6 +126,11 @@ export class FilterComponent implements OnInit, OnDestroy {
   noProjects = false;
   selectedRelease = {};
   ssoLogin = environment.SSO_LOGIN;
+  lastSyncData: object = {};
+  commentList: Array<object> = [];
+  showCommentPopup:boolean = false;
+  showSpinner: boolean = false;
+  kpiObj:object = {};
 
   constructor(
     private service: SharedService,
@@ -159,7 +170,12 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {
+        this.lastSyncData ={};
+        this.subject.next(true);
         this.selectedTab = data.selectedTab;
+        if(this.toggleDropdown['commentSummary']){
+          this.toggleDropdown['commentSummary'] = false;
+        }
         if (this.selectedTab?.toLowerCase() === 'iteration') {
           this.service.setEmptyFilter();
         }
@@ -241,8 +257,10 @@ export class FilterComponent implements OnInit, OnDestroy {
   toggleFilter() {
     // getting document click event from dashboard and check if it is outside click of the filter and if filter is open then closing it
     this.service.getClickedItem().subscribe((target) => {
-      if (target && target !== this.toggleButton?.nativeElement && target?.closest('.kpi-dropdown') !== this.drpmenu?.nativeElement) {
-        this.toggleDropdown = false;
+      for(let key in this.toggleDropdown){
+        if(target && target !== this[key].nativeElement && target?.closest('.'+key+'Ddn') !== this[key+'Ddn']?.nativeElement){
+          this.toggleDropdown[key] = false;
+        }
       }
       if (Object.keys(this.toggleDropdownObj)?.length > 0) {
         for (const key in this.toggleDropdownObj) {
@@ -330,7 +348,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
       if (idx == -1) {
         uniqueArray = [...uniqueArray, arr[i]];
-        uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
+        uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']] ;
         uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
       } else {
         uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
@@ -775,7 +793,7 @@ export class FilterComponent implements OnInit, OnDestroy {
             detail: '',
           });
           this.service.setDashConfigData(this.kpiListData);
-          this.toggleDropdown = false;
+          this.toggleDropdown['showHide'] = false;
         } else {
           this.messageService.add({
             severity: 'error',
@@ -833,6 +851,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.subject.next(true);
     this.filterApplyData = [];
     this.service.setEmptyFilter();
     this.service.setSelectedLevel({});
@@ -1046,6 +1065,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     1: onload
     2: onchange */
   handleIterationFilters(level) {
+    this.lastSyncData={};
+    this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
       this.service.setNoSprints(false);
       if (level?.toLowerCase() === 'project') {
@@ -1167,8 +1188,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     } else {
       this.selectedProjectLastSyncStatus = "";
-      this.selectedProjectLastSyncDate = "NA"
-    }
+      this.selectedProjectLastSyncDate = "NA";
+   }
+  this.fetchActiveIterationStatus();
   }
   setSelectedDateType(label: string) {
     this.selectedDayType = label;
@@ -1360,6 +1382,121 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.selectedFilterArray = [];
       this.selectedRelease = {};
       this.service.setNoRelease(true);
+    }
+  }
+
+  fetchActiveIterationStatus() {
+    const sprintId = this.filterForm.get('selectedSprintValue')?.value;
+    const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
+    if (sprintState?.toLowerCase() === 'active') {
+      this.httpService.getactiveIterationfetchStatus(sprintId).subscribe(response => {
+        if (response['success']) {
+          const lastSyncDateTime = new Date(response['data']?.lastSyncDateTime).getTime();
+          const lastRunProcessorDateTime = new Date(this.selectedProjectLastSyncDate).getTime();
+          if (lastSyncDateTime - lastRunProcessorDateTime > 0) {
+            this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+            if (response['data']?.fetchSuccessful === true) {
+              this.selectedProjectLastSyncStatus = 'SUCCESS';
+            } else if (response['data']?.errorInFetch === true) {
+              this.selectedProjectLastSyncStatus = 'FAILURE';
+            }
+          }
+        }
+
+      });
+    }
+  }
+
+  fetchData() {
+    const sprintId = this.filterForm.get('selectedSprintValue')?.value;
+    const sprintState = this.selectedSprint['nodeId'] == sprintId ? this.selectedSprint['sprintState'] : '';
+    if (sprintState?.toLowerCase() === 'active') {
+      this.lastSyncData = {
+        fetchSuccessful: false,
+        errorInFetch: false
+      };
+      this.selectedProjectLastSyncStatus = '';
+      this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
+        if (activeSprintStatus['success']) {
+          interval(10000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
+            if (response?.['success']) {
+              this.selectedProjectLastSyncStatus = '';
+              this.lastSyncData = response['data'];
+              if (response['data']?.fetchSuccessful === true) {
+                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+                this.selectedProjectLastSyncStatus = 'SUCCESS';
+                this.subject.next(true);
+              }else if(response['data']?.errorInFetch){
+                this.lastSyncData = {};
+                this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
+                this.selectedProjectLastSyncStatus = 'FAILURE';
+                this.subject.next(true);
+              }
+            } else {
+              this.subject.next(true);
+              this.lastSyncData = {};
+            }
+          }, error => {
+            this.subject.next(true);
+            this.lastSyncData = {};
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error in syncing data. Please try after some time.',
+            });
+          });
+        } else {
+          this.lastSyncData = {};
+        }
+      });
+    }
+  }
+
+  onUpdateKPI(){
+    this.lastSyncData ={};
+    this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+  }
+
+  getRecentComments(){
+    this.showSpinner = true;
+    let reqObj = {
+      "level": this.filterApplyData?.['level'],
+      "nodeChildId": this.filterApplyData?.['selectedMap']['sprint']?.[0] || this.filterApplyData?.['selectedMap']['release']?.[0] || "",
+      "kpiIds": this.showKpisList?.map((item) => item.kpiId),
+      "nodes":[]
+    }
+
+    this.showKpisList.forEach(x => {
+      this.kpiObj[x.kpiId] = x.kpiName;
+    });
+    
+    if(this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'release'){
+      reqObj['nodes'] = this.filterData.filter(x => x.nodeId == this.filterApplyData?.['ids'][0])[0]?.parentId;
+    }else{
+      reqObj['nodes'] = [...this.filterApplyData?.['selectedMap']['project']];
+    }
+
+    this.httpService.getCommentSummary(reqObj).subscribe((response) => {
+      if(response['success']){
+        this.commentList = response['data'];
+      }else{
+        this.commentList = [];
+      }
+      this.showSpinner = false;
+    }, error => {
+      console.log(error);
+      this.commentList = [];
+      this.showSpinner = false;
+    })
+  }
+
+  getNodeName(nodeId){
+    return this.trendLineValueList.filter((x) => x.nodeId == nodeId)[0]?.nodeName;
+  }
+
+  handleBtnClick(){
+    this.toggleDropdown['commentSummary'] = !this.toggleDropdown['commentSummary'];
+    if(this.toggleDropdown['commentSummary']){
+      this.getRecentComments(); 
     }
   }
 

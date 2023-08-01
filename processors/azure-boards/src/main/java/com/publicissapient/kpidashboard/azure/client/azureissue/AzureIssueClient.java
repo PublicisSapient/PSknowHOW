@@ -146,26 +146,6 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	}
 
 	/**
-	 * Sets Device Platform.
-	 *
-	 * @param fieldMapping
-	 *            fieldMapping provided by the User
-	 * @param azureIssue
-	 *            JiraIssue instance
-	 * @param fieldsMap
-	 *            the fields map
-	 */
-	public void setDevicePlatform(FieldMapping fieldMapping, JiraIssue azureIssue, Map<String, Object> fieldsMap) {
-		String devicePlatformFromFieldMapping = fieldMapping.getDevicePlatform();
-		String devicePlatform = null;
-		if (fieldsMap.containsKey(devicePlatformFromFieldMapping)
-				&& fieldsMap.get(devicePlatformFromFieldMapping) != null) {
-			devicePlatform = fieldsMap.get(devicePlatformFromFieldMapping).toString();
-		}
-		azureIssue.setDevicePlatform(devicePlatform);
-	}
-
-	/**
 	 * Sets Issue Tech Story Type after identifying s whether a story is tech story
 	 * or simple feature story. There can be possible 3 ways to identify a tech
 	 * story 1. Specific 'label' is maintained 2. 'Issue type' itself is a 'Tech

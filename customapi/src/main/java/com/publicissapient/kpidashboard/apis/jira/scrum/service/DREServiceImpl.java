@@ -172,14 +172,14 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			projectWiseDefectRemovelStatus.put(basicProjectConfigId.toString(),
-					fieldMapping.getJiraDefectRemovalStatus());
+					fieldMapping.getJiraDefectRemovalStatusKPI34());
 			projectWiseDefectRemovalType.put(basicProjectConfigId.toString(),
-					fieldMapping.getJiraDefectRemovalIssueType());
+					fieldMapping.getJiraDefectRemovalIssueTypeKPI34());
 
 			defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId, fieldMapping);
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionKPI34(), fieldMapping.getJiraDefectRejectionStatusKPI34());
 
 		});
 
@@ -208,7 +208,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-		
+
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
 			List<JiraIssue> totalSprintReportDefects = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
 					uniqueProjectMap);
@@ -516,13 +516,13 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					&& null != jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE)
 					&& ((sprintEndDate.isAfter(jiraCreatedDate)
 					&& jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE).isAfter(sprintEndDate)) ||
-					(DateUtil.isWithinDateRangeWithTime(jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE),
+					(DateUtil.isWithinDateTimeRange(jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE),
 							sprintStartDate, sprintEndDate)))) {
 				totalSubTask.add(jiraIssue);
 			}
 			if (CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) && jiraIssue.getSprintIdList()
 					.contains(sprintDetail.getSprintID().split("_")[0]) && null != jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE)
-					&& DateUtil.isWithinDateRangeWithTime(jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE),
+					&& DateUtil.isWithinDateTimeRange(jiraTicketClosedDateMap.get(JIRA_ISSUE_CLOSED_DATE),
 					sprintStartDate, sprintEndDate)) {
 				totalSubTask.add(jiraIssue);
 			}

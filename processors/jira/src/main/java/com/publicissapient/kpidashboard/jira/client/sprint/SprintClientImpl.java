@@ -106,7 +106,7 @@ public class SprintClientImpl implements SprintClient {
 	 */
 	@Override
 	public synchronized void processSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			JiraAdapter jiraAdapter) throws InterruptedException {
+			JiraAdapter jiraAdapter, boolean isSprintFetch) throws InterruptedException {
 		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
@@ -140,6 +140,11 @@ public class SprintClientImpl implements SprintClient {
 					} // case 2 : sprint state is active or changed which is present in db
 					else if (sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 							|| !sprint.getState().equalsIgnoreCase(dbSprintDetails.getState())) {
+						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
+						fetchReport = true;
+					} // fetching for only Iteration data don't change the state of sprint
+					else if (!sprint.getState().equalsIgnoreCase(dbSprintDetails.getState()) && isSprintFetch) {
+						sprint.setState(dbSprintDetails.getState());
 						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
 					} else {
@@ -188,7 +193,7 @@ public class SprintClientImpl implements SprintClient {
 			List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), jiraAdapter);
 			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 				Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
-				processSprints(projectConfig, sprintDetailSet, jiraAdapter);
+				processSprints(projectConfig, sprintDetailSet, jiraAdapter,false);
 			}
 		}
 	}

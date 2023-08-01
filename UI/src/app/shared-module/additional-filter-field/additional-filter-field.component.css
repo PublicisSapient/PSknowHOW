@@ -1,0 +1,158 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+ .main {
+    min-height: calc(100vh - 188px);
+    position: relative;
+    background-color: var(--color-white);
+    padding: 16px;
+    border-radius: 4px;
+    box-shadow:0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    margin: 8px;
+    width: calc(100% - 16px);
+  }
+.card__primary__title {padding: 24px 16px 16px;}
+.card__primary__title__text {
+display: block;
+  display: -webkit-box;
+ display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+font-size: 24px;
+  font-weight: normal;
+  line-height: normal;
+-webkit-transform-origin: 149px 48px;
+  -ms-transform-origin: 149px 48px;
+transform-origin: 149px 48px;
+}
+
+
+.p-grid {
+    margin: 0;
+}
+
+
+::ng-deep .p-inputgroup ul.p-chips-multiple-container {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    width: 100% !important;
+    max-width: none;
+}
+
+.save-container {
+    text-align: center;
+}
+
+.field-title {
+    color: #7d7d7d;
+    width: 28vw;
+}
+
+::ng-deep .p-multiselect .p-multiselect-label-container {
+    display: inline-block;
+  }
+
+::ng-deep .cuppa-dropdown .selected-list .c-btn {
+    font-size: 14px;
+    padding: 16px;
+    border-color: #000001;
+}
+
+.multiselect-container p-multiselect {
+    float: left;
+}
+input[type="file"].btn-import { 
+    opacity: 0;
+}
+
+.fields-container{
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.38);
+  max-width: initial;
+  width: calc(60vw + 42px);
+}
+  
+label.btn-import-label {
+  color: #ffffff;
+  background: #06a0ff;
+  padding: 0.8925rem 1.25rem;
+  border-radius:4px;
+  cursor: pointer;
+}
+
+::ng-deep .field-mapping .p-inputtext{
+  width: 100%;
+}
+::ng-deep .field-mapping .p-dropdown{
+  width: 100%;
+}
+::ng-deep .field-mapping .p-inputgroup .p-chips{
+  display: flex;
+  width: 100%;
+}
+::ng-deep .field-mapping .p-inputwrapper .p-chips{
+  display: flex;
+  width: 100%;
+}
+
+:host ::ng-deep .p-inputgroup{
+  width: auto;
+}
+
+:host ::ng-deep .p-accordion .p-accordion-tab .p-accordion-toggle-icon{
+  border: none;
+}
+
+::ng-deep .tooltiptext hr{
+  border: none;
+  border-top: 3px dotted white;
+  margin: 5px 0px;
+  margin-top: 12px;
+  margin-bottom: 1px !important;
+  padding: 0px;
+}
+
+.p-button-close{
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 0px;
+  padding: 8px;
+}
+
+.additional-fields-container{
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.38);
+  padding: 5px;
+  width: 100%;
+}
+
+.button-add{
+  padding: 15px;
+  border-top-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+
+::ng-deep .configure-btn .p-disabled{
+  background-color: #06a0ff !important;
+  color: white !important;
+  opacity: 0.6;
+} 

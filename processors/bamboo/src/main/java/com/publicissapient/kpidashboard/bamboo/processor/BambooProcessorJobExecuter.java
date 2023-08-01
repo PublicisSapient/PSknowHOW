@@ -268,6 +268,11 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 		return executionStatus;
 	}
 
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
+
 	private void processEachBambooJobOnJobType(List<ProcessorToolConnection> bambooJobList,
 			Map<Pair<ObjectId, String>, List<Deployment>> existingDeployJobs, List<Build> activeBuildJobs,
 			List<Deployment> activeDeployJobs, ObjectId processorId, ProjectBasicConfig proBasicConfig) {

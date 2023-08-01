@@ -19,7 +19,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
@@ -28,6 +28,19 @@ import { NamePipePipe } from './name-pipe.pipe';
 import { PageLoaderComponent } from './page-loader/page-loader.component';
 import { FooterComponent } from './footer/footer.component';
 import { KpiFilterComponent } from './kpi-filter/kpi-filter.component';
+import { FieldMappingFormComponent } from './field-mapping-form/field-mapping-form.component';
+import { DialogModule } from 'primeng/dialog';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
+import { FieldMappingFieldComponent } from './field-mapping-field/field-mapping-field.component';
+import { AccordionModule } from 'primeng/accordion';
+import { TooltipModule } from 'primeng/tooltip';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { ChipsModule } from 'primeng/chips';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { AdditionalFilterFieldComponent } from './additional-filter-field/additional-filter-field.component';
 
 @NgModule({
   imports: [
@@ -36,7 +49,18 @@ import { KpiFilterComponent } from './kpi-filter/kpi-filter.component';
     CalendarModule,
     NgSelectModule,
     MultiSelectModule,
-    DropdownModule
+    DropdownModule,
+    DialogModule,
+    ToastModule,
+    ConfirmDialogModule,
+    AccordionModule,
+    ReactiveFormsModule,
+    ToastModule,
+    TooltipModule,
+    InputTextModule,
+    ButtonModule,
+    ChipsModule,
+    RadioButtonModule
   ],
   exports: [
     NgSelectModule,
@@ -45,14 +69,19 @@ import { KpiFilterComponent } from './kpi-filter/kpi-filter.component';
     PageLoaderComponent,
     CalendarModule,
     FooterComponent,
-    KpiFilterComponent
+    KpiFilterComponent,
+    FieldMappingFormComponent
   ],
   declarations: [
     ProjectFilterComponent,
     NamePipePipe,
     PageLoaderComponent,
     FooterComponent,
-    KpiFilterComponent
-  ]
+    KpiFilterComponent,
+    FieldMappingFormComponent,
+    FieldMappingFieldComponent,
+    AdditionalFilterFieldComponent
+  ],
+  providers : [ConfirmationService]
 })
 export class SharedModuleModule { }

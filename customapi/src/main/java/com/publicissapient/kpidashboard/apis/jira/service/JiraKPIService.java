@@ -18,25 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
@@ -59,6 +40,23 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class is extention of ApplicationKPIService. All Jira KPIs service have
@@ -217,12 +215,12 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		overAllModalValues.add(iterationKpiModalValue);
 	}
 
-	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, FieldMapping fieldMapping) {
+	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, List<String> fieldMapping) {
 		String devCompleteDate = Constant.DASH;
 		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraDevDoneStatus())) {
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
 			devCompleteDate = filterStatusUpdationLog.stream()
-					.filter(jiraHistoryChangeLog -> fieldMapping.getJiraDevDoneStatus().contains(
+					.filter(jiraHistoryChangeLog -> fieldMapping.contains(
 							jiraHistoryChangeLog.getChangedTo()) && jiraHistoryChangeLog.getUpdatedOn() != null)
 					.findFirst()
 					.map(jiraHistoryChangeLog -> LocalDate
@@ -270,7 +268,13 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public SprintDetails getSprintDetailsFromBaseClass() {
-		return jiraService.getCurrentSprintDetails();
+		SprintDetails sprintDetails;
+		try {
+			sprintDetails = (SprintDetails) jiraService.getCurrentSprintDetails().clone();
+		}catch (CloneNotSupportedException e) {
+			sprintDetails = null;
+		}
+		return sprintDetails;
 	}
 
 	public List<JiraIssue> getJiraIssuesFromBaseClass(List<String> numbersList) {
@@ -304,13 +308,8 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return filteredJiraIssue;
 	}
 
-	public JiraIssueReleaseStatus getJiraIssueReleaseStatus(String basicProjectConfigId) {
-		return jiraService.getJiraIssueReleaseForProject(basicProjectConfigId);
-	}
-
-	public void getModifiedSprintDetailsFromBaseClass(List<SprintDetails> sprintDetails,
-			ConfigHelperService configHelperService) {
-		jiraService.processSprintBasedOnFieldMapping(sprintDetails, configHelperService);
+	public JiraIssueReleaseStatus getJiraIssueReleaseStatus() {
+		return jiraService.getJiraIssueReleaseForProject();
 	}
 
 	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,

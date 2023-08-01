@@ -114,6 +114,11 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 		}
 	}
 
+	public void runSprint(String sprintId) {
+		boolean isSuccess = executeSprint(sprintId);
+		log.debug("Saving the last executed status as: {} for {} sprint!", isSuccess, sprintId);
+	}
+
 	@PostConstruct
 	public void onStartup() {
 		taskScheduler.schedule(this, new CronTrigger(getCron()));
@@ -133,6 +138,7 @@ public abstract class ProcessorJobExecutor<T extends Processor> implements Runna
 	public abstract String getCron();
 
 	public abstract boolean execute(T processor);
+	public abstract boolean executeSprint(String sprintId);
 
 	private void setOnline(boolean online) {
 		T processor = getProcessorRepository().findByProcessorName(processorName);

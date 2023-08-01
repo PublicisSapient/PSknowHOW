@@ -471,8 +471,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			userInfo = createDefaultUserInfo(username, authType, email);
 			userInfo = save(userInfo);
 		}
-		UserInfoDTO userInfoDTO = convertToDTOObject(userInfo);
-		return userInfoDTO;
+		return convertToDTOObject(userInfo);
 	}
 
 	private UserInfoDTO convertToDTOObject(UserInfo userInfo) {

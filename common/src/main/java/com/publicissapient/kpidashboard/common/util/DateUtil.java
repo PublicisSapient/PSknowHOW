@@ -162,6 +162,10 @@ public class DateUtil {
 		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
 	}
 
+	public static boolean isWithinDateTimeRange(LocalDateTime targetDate, LocalDateTime startDate, LocalDateTime endDate) {
+		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
+	}
+
 	public static String convertMillisToDateTime(long milliSeconds) {
 		return convertMillisToLocalDateTime(milliSeconds).toString();
 	}
@@ -235,10 +239,6 @@ public class DateUtil {
 			strDate = dateTimeFormatter(dateTime, DISPLAY_DATE_FORMAT);
 		}
 		return strDate;
-	}
-
-	public static boolean isWithinDateRangeWithTime(LocalDateTime targetDate, LocalDateTime startDate, LocalDateTime endDate) {
-		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
 	}
 
 }

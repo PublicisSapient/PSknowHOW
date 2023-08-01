@@ -18,10 +18,13 @@
 
 package com.publicissapient.kpidashboard.common.model.jira;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -36,7 +39,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "sprint_details")
-public class SprintDetails extends BasicModel {
+public class SprintDetails extends BasicModel implements Cloneable{
 
 	public static final String SPRINT_STATE_CLOSED = "CLOSED";
 	public static final String SPRINT_STATE_ACTIVE = "ACTIVE";
@@ -74,6 +77,49 @@ public class SprintDetails extends BasicModel {
 	@Override
 	public int hashCode() {
 		return Objects.hash(sprintID);
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		SprintDetails clonedSprintDetails = (SprintDetails) super.clone();
+
+		if(CollectionUtils.isNotEmpty(this.getCompletedIssues())) {
+			clonedSprintDetails.setCompletedIssues(deepCloneIssueSet(this.getCompletedIssues()));
+		}
+		if(CollectionUtils.isNotEmpty(this.getNotCompletedIssues())) {
+			clonedSprintDetails.setNotCompletedIssues(deepCloneIssueSet(this.getNotCompletedIssues()));
+		}
+		if(CollectionUtils.isNotEmpty(this.getPuntedIssues())) {
+			clonedSprintDetails.setPuntedIssues(deepCloneIssueSet(this.getPuntedIssues()));
+		}
+		if(CollectionUtils.isNotEmpty(this.getCompletedIssuesAnotherSprint())) {
+			clonedSprintDetails.setCompletedIssuesAnotherSprint(deepCloneIssueSet(this.getCompletedIssuesAnotherSprint()));
+		}
+		if(CollectionUtils.isNotEmpty(this.getTotalIssues())) {
+			clonedSprintDetails.setTotalIssues(deepCloneIssueSet(this.getTotalIssues()));
+		}
+
+		if (this.originBoardId != null) {
+			clonedSprintDetails.originBoardId = new ArrayList<>(this.originBoardId);
+		}
+
+		if (this.addedIssues != null) {
+			clonedSprintDetails.addedIssues = new HashSet<>(this.addedIssues);
+		}
+
+		return clonedSprintDetails;
+	}
+
+	private Set<SprintIssue> deepCloneIssueSet(Set<SprintIssue> originalSet) throws CloneNotSupportedException {
+		Set<SprintIssue> clonedSet = new HashSet<>();
+		if(CollectionUtils.isNotEmpty(originalSet)) {
+			for (SprintIssue issue : originalSet) {
+				clonedSet.add((SprintIssue) issue.clone());
+			}
+			return clonedSet;
+		}
+		return null;
+
 	}
 
 }
