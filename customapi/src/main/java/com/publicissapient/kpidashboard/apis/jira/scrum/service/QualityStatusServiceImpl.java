@@ -332,10 +332,10 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	}
 
 	private void createOverallLinkedModal(List<IterationKpiModalValue> overAlllinkedmodalValues,
-			List<JiraIssue> linkedDefectList, List<JiraIssue> closedPlusOpenLinkedStories,
+			List<JiraIssue> linkedDefectList, List<JiraIssue> totalJiraIssues,
 			List<JiraIssue> completedIssueList, FieldMapping fieldMapping) {
 		Map<String, List<JiraIssue>> storyWithLinkedDefects = new HashMap<>();
-		Map<String, JiraIssue> totalStoriesMap = closedPlusOpenLinkedStories.stream()
+		Map<String, JiraIssue> totalStoriesMap = totalJiraIssues.stream()
 				.filter(issue -> issue.getTypeName().equalsIgnoreCase(STORY))
 				.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
 		for (JiraIssue jiraIssue : linkedDefectList) {
