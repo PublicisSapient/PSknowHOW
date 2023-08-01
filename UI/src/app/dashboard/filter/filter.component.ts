@@ -1369,8 +1369,8 @@ export class FilterComponent implements OnInit, OnDestroy {
       const letestPassedRelease = this.findLatestPassedRelease(this.filteredAddFilters['release']);
       if (letestPassedRelease !== null && letestPassedRelease.length > 1) {
         /** When more than one passed release */
-        const letestPassedReleaseStartDate = letestPassedRelease[0].releaseStartDate;
-        const letestPassedReleaseOnSameStartDate = letestPassedRelease.filter(release => release.releaseStartDate && release.releaseStartDate === letestPassedReleaseStartDate);
+        const letestPassedReleaseStartDate = letestPassedRelease[0].releaseEndDate;
+        const letestPassedReleaseOnSameStartDate = letestPassedRelease.filter(release => release.releaseStartDate && (new Date(release.releaseEndDate).getTime() === new Date(letestPassedReleaseStartDate).getTime()));
         if (letestPassedReleaseOnSameStartDate && letestPassedReleaseOnSameStartDate.length > 1) {
           this.selectedRelease = letestPassedReleaseOnSameStartDate.sort((a, b) => new Date(a.releaseStartDate).getTime() - new Date(b.releaseStartDate).getTime())[0];
         } else {
@@ -1395,6 +1395,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     const currentDate = new Date();
     const passedReleases = releaseList.filter((release) => release.releaseEndDate && new Date(release.releaseEndDate) < currentDate );
     passedReleases.sort((a, b) => new Date(b.releaseEndDate).getTime() - new Date(a.releaseEndDate).getTime());
+    console.log("findLatestPassedRelease :",passedReleases);
     return passedReleases.length > 0 ? passedReleases : null;
   }
 
