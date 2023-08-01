@@ -318,9 +318,13 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 					.collect(Collectors.toList());
 
 			FieldMapping fieldMapping = configHelperService.getFieldMapping(sd.getBasicProjectConfigId());
+			// For finding the completed Defect we are taking combination of DodStatus & DefectRejectionStatus
 			List<String> dodStatus = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiraDodKPI37)
-					.orElse(Collections.emptyList());
-
+					.orElse(Collections.emptyList()).stream().map(String::toLowerCase).collect(Collectors.toList());
+			String defectRejectionStatus = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiraDefectRejectionStatusKPI37).orElse("");
+			List<String> dodAndDefectRejStatus = new ArrayList<>(dodStatus);
+			if(StringUtils.isNotEmpty(defectRejectionStatus))
+				dodAndDefectRejStatus.add(defectRejectionStatus.toLowerCase());
 			List<JiraIssue> sprintRejectedDefects = canceledDefectList.stream()
 					.filter(element -> totalSprintIssues.contains(element.getNumber())).collect(Collectors.toList());
 
@@ -332,10 +336,10 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			List<JiraIssue> sprintCompletedDefects = totalDefectList.stream()
 					.filter(element -> completedSprintIssues.contains(element.getNumber()))
-					.filter(element -> dodStatus.contains(element.getStatus())).collect(Collectors.toList());
+					.filter(element -> dodAndDefectRejStatus.contains(element.getStatus().toLowerCase())).collect(Collectors.toList());
 
 			sprintCompletedDefects.addAll(
-					KpiDataHelper.getCompletedSubTasksByHistory(sprintSubtask, totalSubtaskHistory, sd, dodStatus));
+					KpiDataHelper.getCompletedSubTasksByHistory(sprintSubtask, totalSubtaskHistory, sd, dodAndDefectRejStatus));
 
 			List<JiraIssue> sprintWiseRejectedDefectList = new ArrayList<>();
 			List<JiraIssue> sprintWiseCompletedDefectList = new ArrayList<>();

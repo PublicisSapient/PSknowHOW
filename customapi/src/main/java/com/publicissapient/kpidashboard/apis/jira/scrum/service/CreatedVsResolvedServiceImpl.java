@@ -324,7 +324,9 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 								.collect(Collectors.toList()),
 						sd);
 				FieldMapping fieldMapping = configHelperService.getFieldMapping(sd.getBasicProjectConfigId());
-                List<String> deliveredStatus = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiraIssueDeliverdStatusKPI126).orElse(Collections.emptyList());
+				List<String> deliveredStatus = Optional.ofNullable(fieldMapping)
+						.map(FieldMapping::getJiraIssueDeliverdStatusKPI126).orElse(Collections.emptyList()).stream()
+						.map(String::toLowerCase).collect(Collectors.toList());
 				completedIssues.addAll(KpiDataHelper.getCompletedSubTasksByHistory(totalSubTask, allSubTaskBugsHistory, sd, deliveredStatus));
 
 				sprintWiseCreatedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),

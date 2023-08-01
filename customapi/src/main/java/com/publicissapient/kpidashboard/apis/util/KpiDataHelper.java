@@ -884,7 +884,7 @@ public final class KpiDataHelper {
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateTimeRange(jiraIssueSprint.getUpdatedOn(),
 							sprintStartDateTime, sprintEndDateTime))
 					.reduce((a, b) -> b);
-			if (issueSprint.isPresent() && fieldMappingDoneStatus.contains(issueSprint.get().getChangedTo()))
+			if (issueSprint.isPresent() && fieldMappingDoneStatus.contains(issueSprint.get().getChangedTo().toLowerCase()))
 				resolvedSubtaskForSprint.add(jiraIssue);
 		});
 		return resolvedSubtaskForSprint;
