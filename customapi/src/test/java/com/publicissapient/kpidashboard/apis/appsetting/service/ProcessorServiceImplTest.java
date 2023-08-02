@@ -30,9 +30,8 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
-import com.publicissapient.kpidashboard.apis.debbie.service.DebbieConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
-import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +40,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,7 +77,7 @@ public class ProcessorServiceImplTest {
 	SprintTraceLogRepository sprintTraceLogRepository;
 
 	@Mock
-	private DebbieConfigServiceImpl debbieConfigService;
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
 	/**
 	 * method includes preprocesses for test cases

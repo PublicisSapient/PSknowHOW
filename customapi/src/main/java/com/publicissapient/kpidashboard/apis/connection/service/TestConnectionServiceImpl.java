@@ -23,8 +23,8 @@ import java.net.URI;
 import java.util.Base64;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.debbie.model.DebbieTools;
-import com.publicissapient.kpidashboard.apis.debbie.repository.DebbieToolsRepository;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
+import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -67,7 +67,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	@Autowired
 	private RestTemplate restTemplate;
 	@Autowired
-	private DebbieToolsRepository debbieToolsRepository;
+	private RepoToolsProviderRepository repoToolsProviderRepository;
 
 
 	@Override
@@ -131,8 +131,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				statusCode = validateTestConn(connection, apiUrl, password, toolName);
 			}
 			break;
-			case Constant.DEBBIE_TOOLS:
-				apiUrl = getApiForDebbieTool(connection, toolName);
+			case Constant.REPO_TOOLS:
+				apiUrl = getApiForRepoTool(connection, toolName);
 				statusCode = validateTestConn(connection, apiUrl, password, toolName);
 			break;
 		default:
@@ -150,9 +150,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return new ServiceResponse(false, "Password/API token missing", HttpStatus.NOT_FOUND);
 	}
 
-	private String getApiForDebbieTool(Connection connection, String toolName) {
-		DebbieTools debbieTools = debbieToolsRepository.findByToolName(connection.getType());
-		return debbieTools.getTestApiUrl();
+	private String getApiForRepoTool(Connection connection, String toolName) {
+		RepoToolsProvider repoToolsProvider = repoToolsProviderRepository.findByToolName(connection.getType());
+		return repoToolsProvider.getTestApiUrl();
 	}
 
 	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password,
@@ -234,8 +234,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			if (connection.isBearerToken()) {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-		} else if (toolName.equalsIgnoreCase(CommonConstant.DEBBIE_TOOLS)) {
-				isValid = testConnectionForDebbie(apiUrl, connection.getUsername(), password, toolName);
+		} else if (toolName.equalsIgnoreCase(CommonConstant.REPO_TOOLS)) {
+				isValid = testConnectionForRepoTools(apiUrl, connection.getUsername(), password, toolName);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 			}
 		else {
@@ -247,7 +247,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return statusCode;
 	}
 
-	private boolean testConnectionForDebbie(String apiUrl, String username, String password, String toolname) {
+	private boolean testConnectionForRepoTools(String apiUrl, String username, String password, String toolname) {
 
 		try {
 			HttpHeaders httpHeaders = createHeadersWithAuthentication(username, password, false);
@@ -552,7 +552,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		if (Constant.TOOL_JIRA.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
 			return connection.getPatOAuthToken();
 		}
-		if (Constant.DEBBIE_TOOLS.equalsIgnoreCase(toolName) &&
+		if (Constant.REPO_TOOLS.equalsIgnoreCase(toolName) &&
 				StringUtils.isNotEmpty(connection.getAccessToken())) {
 			return connection.getAccessToken();
 		}

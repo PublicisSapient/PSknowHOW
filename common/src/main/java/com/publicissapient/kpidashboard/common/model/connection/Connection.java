@@ -83,6 +83,7 @@ public class Connection extends BasicModel {
 	private String sshUrl;
 	private String httpUrl;
 	private String email;
+	private String repoToolProvider;
 
 	public boolean getIsOAuth() {
 		return this.isOAuth;

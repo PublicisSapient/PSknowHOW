@@ -31,6 +31,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigService;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -128,6 +131,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	@Autowired
 	private TestExecutionService testExecutionService;
+
+	@Autowired
+	private ProjectToolConfigService projectToolConfigService;
+
+	@Autowired
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
 	/**
 	 * method to save basic configuration
@@ -329,8 +338,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			log.error(errorMsg);
 			throw new ProjectNotFoundException(errorMsg);
 		} else {
-
-			deleteToolsAndCleanData(projectBasicConfig);
+			Boolean isRepoTool = false;
+			deleteToolsAndCleanData(projectBasicConfig, isRepoTool);
+			deleteRepoToolProject(projectBasicConfig, isRepoTool);
 			deleteFilterData(projectBasicConfig);
 			deleteFieldMappingAndBoardMetadata(projectBasicConfig);
 			deleteUploadData(projectBasicConfig);
@@ -346,6 +356,13 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 		return projectBasicConfig;
 	}
 
+	public void deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean isRepoTool) {
+
+		if(isRepoTool) {
+			repoToolsConfigService.deleteRepoToolProject(projectBasicConfig, false);
+		}
+
+	}
 	private void rejectAccessRequestsWithProject(ProjectBasicConfig projectBasicConfig) {
 		log.info("removing project [{}, {}] from project access requests", projectBasicConfig.getProjectName(),
 				projectBasicConfig.getId().toHexString());
@@ -374,10 +391,10 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				projectBasicConfig.getIsKanban());
 	}
 
-	private void deleteToolsAndCleanData(ProjectBasicConfig projectBasicConfig) {
+	private void deleteToolsAndCleanData(ProjectBasicConfig projectBasicConfig, Boolean isRepoTool) {
 
 		List<ProjectToolConfig> tools = toolRepository.findByBasicProjectConfigId(projectBasicConfig.getId());
-
+		isRepoTool = tools.stream().anyMatch(toolConfig -> ProcessorConstants.REPO_TOOLS.equals(toolConfig.getToolName()));
 		CollectionUtils.emptyIfNull(tools).forEach(tool -> {
 
 			ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(tool.getToolName());

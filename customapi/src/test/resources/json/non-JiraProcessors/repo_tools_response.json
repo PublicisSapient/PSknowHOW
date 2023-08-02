@@ -1,0 +1,45 @@
+{
+  "values": [
+    {
+      "project_name": "TestP1_64748074f15d7843b3735db5",
+      "project_code": "TestP1_64748074f15d7843b3735db5",
+      "projectGrade": 0,
+      "projectHours": 0,
+      "average": 43269.57407945454,
+      "repositories": [
+        {
+          "name": "string",
+          "pickupTimeRepoScore": 0,
+          "pickupTimeRepoHours": 0,
+          "pickupTimeMergeRequestPT": [
+            {
+              "link": 0
+            }
+          ],
+          "branches": [
+            {
+              "name": "master",
+              "average": 30176.5,
+              "mergeRequests": 5
+            }
+          ],
+          "branchesCommitsCount": [
+            {
+              "branch__name": "master",
+              "count": 12,
+              "grade": 0
+            }
+          ]
+        }
+      ],
+      "users": [
+        {
+          "email": "string",
+          "grade": 0,
+          "hours": 0
+        }
+      ],
+      "date_label": "2023-07-01"
+    }
+  ]
+}

@@ -141,7 +141,7 @@ public final class Constant {
 	public static final String COUNT = "count";
 	public static final String DURATION = "duration";
 
-	public static final String DEBBIE_TOOLS = "Debbie";
+	public static final String REPO_TOOLS = "Repo_Tools";
 
 	private Constant() {
 	}

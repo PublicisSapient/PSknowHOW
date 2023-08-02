@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.debbie.model;
+package com.publicissapient.kpidashboard.apis.repotools.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,9 +17,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Document(collection = "debbie_tools")
-public class DebbieTools extends BasicModel {
+@Document(collection = "repo_tools_provider")
+public class RepoToolsProvider extends BasicModel {
     private String toolName;
-    private String debbieProvider;
+    private String repoToolProvider;
     private String testApiUrl;
 }

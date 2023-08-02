@@ -52,6 +52,7 @@ public class ProjectToolConfigDTO {
 	private String jobName;
 	private String jobType;
 	private String branch;
+	private String defaultBranch;
 	private String env;
 	private String repositoryName;
 	private String repoSlug;

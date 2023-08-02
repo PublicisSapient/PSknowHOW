@@ -210,12 +210,12 @@ public class TestConnectionController {
 
 	}
 
-	@PostMapping("/debbie")
-	public ResponseEntity<ServiceResponse> validateDebbieConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
+	@PostMapping("/repoTools")
+	public ResponseEntity<ServiceResponse> validateRepoToolsConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating Sonar connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();
 		final Connection connection = modelMapper.map(connectionDTO, Connection.class);
-		return ResponseEntity.status(HttpStatus.OK).body(testConnectionService.validateConnection(connection, CommonConstant.DEBBIE_TOOLS));
+		return ResponseEntity.status(HttpStatus.OK).body(testConnectionService.validateConnection(connection, CommonConstant.REPO_TOOLS));
 
 	}
 

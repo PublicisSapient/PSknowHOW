@@ -220,25 +220,25 @@ public class CustomApiConfig {// NOPMD
 	// repo x axis count days rangeForCheckInsAndMergeRequests
 	private Integer repoXAxisCountForCheckInsAndMergeRequests;
 
-	private String debbieAPIKey;
+	private String repoToolAPIKey;
 
-	public String getDebbieAPIKey() {
-		return debbieAPIKey;
+	public String getRepoToolAPIKey() {
+		return repoToolAPIKey;
 	}
 
-	public void setDebbieAPIKey(String debbieAPIKey) {
-		this.debbieAPIKey = debbieAPIKey;
+	public void setRepoToolAPIKey(String repoToolAPIKey) {
+		this.repoToolAPIKey = repoToolAPIKey;
 	}
 
-	public String getDebbieURL() {
-		return debbieURL;
+	public String getRepoToolURL() {
+		return repoToolURL;
 	}
 
-	public void setDebbieURL(String debbieURL) {
-		this.debbieURL = debbieURL;
+	public void setRepoToolURL(String repoToolURL) {
+		this.repoToolURL = repoToolURL;
 	}
 
-	private String debbieURL;
+	private String repoToolURL;
 
 	public int getSprintVelocityLimit() {
 		return sprintVelocityLimit;
