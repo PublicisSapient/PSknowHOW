@@ -290,25 +290,31 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
-
+		long jiraRequestStartTime1= System.currentTimeMillis();
+		log.info("*********SprintPredictability before loop start of sprintDetails {}",jiraRequestStartTime1);
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
+
+			Map<String, JiraIssue> jiraIssueMap = sprintWiseJiraStoryList.stream().collect(
+					Collectors.toMap(JiraIssue::getNumber, Function.identity(), (existing, replacement) -> existing));
+
 			sprintDetails.forEach(sd -> {
 				Set<IssueDetails> filterIssueDetailsSet = new HashSet<>();
 				List<String> storyList = new ArrayList<>();
 				AtomicDouble effectSumDouble = new AtomicDouble();
 				if (CollectionUtils.isNotEmpty(sd.getCompletedIssues())) {
-					sd.getCompletedIssues().stream()
-							.forEach(sprintIssue -> sprintWiseJiraStoryList.stream().forEach(jiraIssue -> {
-								if (sprintIssue.getNumber().equals(jiraIssue.getNumber())) {
-									IssueDetails issueDetails = new IssueDetails();
-									issueDetails.setSprintIssue(sprintIssue);
-									issueDetails.setUrl(jiraIssue.getUrl());
-									issueDetails.setDesc(jiraIssue.getName());
-									storyList.add(sprintIssue.getNumber());
-									setEstimation(fieldMapping, effectSumDouble, sprintIssue, jiraIssue);
-									filterIssueDetailsSet.add(issueDetails);
-								}
-							}));
+					sd.getCompletedIssues().stream().forEach(sprintIssue -> {
+						JiraIssue jiraIssue = jiraIssueMap.get(sprintIssue.getNumber());
+						if (jiraIssue != null) {
+							IssueDetails issueDetails = new IssueDetails();
+							issueDetails.setSprintIssue(sprintIssue);
+							issueDetails.setUrl(jiraIssue.getUrl());
+							issueDetails.setDesc(jiraIssue.getName());
+							storyList.add(sprintIssue.getNumber());
+							setEstimation(fieldMapping, effectSumDouble, sprintIssue, jiraIssue);
+							filterIssueDetailsSet.add(issueDetails);
+						}
+					});
+
 				}
 				SprintWiseStory sprintWiseStory = new SprintWiseStory();
 				sprintWiseStory.setSprint(sd.getSprintID());
@@ -322,9 +328,12 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				currentSprintLeafPredictabilityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
 			});
 		}
+		log.info("*********SprintPredictability after loop end of sprintDetails {}",String.valueOf(System.currentTimeMillis() - jiraRequestStartTime1));
 
 		Map<Pair<String, String>, Double> predictability = prepareSprintPredictMap(sprintWisePredictabilityList);
 		List<KPIExcelData> excelData = new ArrayList<>();
+		long jiraRequestStartTime3 = System.currentTimeMillis();
+		log.info("*********SprintPredictability before loop start of sprintLeafNodeList {}",jiraRequestStartTime3);
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
@@ -350,6 +359,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				trendValueList.add(dataCount);
 			}
 		});
+		log.info("*********SprintPredictability after loop end of sprintLeafNodeList {}",String.valueOf(System.currentTimeMillis() - jiraRequestStartTime3));
+
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_PREDICTABILITY.getColumns());
 	}

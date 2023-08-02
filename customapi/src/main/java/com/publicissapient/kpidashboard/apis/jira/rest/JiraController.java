@@ -93,6 +93,8 @@ public class JiraController {
 		log.info("Received Jira KPI request {}", kpiRequest);
 
 		long jiraRequestStartTime = System.currentTimeMillis();
+		log.info("** method start Controller:{}",String.valueOf(jiraRequestStartTime));
+
 		MDC.put("JiraRequestStartTime", String.valueOf(jiraRequestStartTime));
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name(),
 				kpiRequest.getRequestTrackerId());
@@ -106,6 +108,7 @@ public class JiraController {
 
 		log.info("");
 		MDC.clear();
+		log.info("** end of method Controller:{}",String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
 		if (responseList.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
 		} else {

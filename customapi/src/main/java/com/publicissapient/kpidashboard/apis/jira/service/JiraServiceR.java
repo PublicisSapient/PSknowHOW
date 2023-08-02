@@ -122,7 +122,8 @@ public class JiraServiceR {
 	 */
 	@SuppressWarnings({ "PMD.AvoidCatchingGenericException", "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
-
+		long jiraRequestStartTime = System.currentTimeMillis();
+		log.info("** time start method process :{}",String.valueOf(jiraRequestStartTime));
 		log.info("Processing KPI calculation for data {}", kpiRequest.getKpiList());
 		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
 				.collect(Collectors.toList());
@@ -178,8 +179,8 @@ public class JiraServiceR {
 
 					listOfTask.add(new ParallelJiraServices(kpiRequest, responseList, kpiEle, treeAggregatorDetail));
 				}
-
 				ForkJoinTask.invokeAll(listOfTask);
+				log.info("** time start after thread :{}",System.currentTimeMillis() - jiraRequestStartTime);
 				List<KpiElement> missingKpis = origRequestedKpis.stream()
 						.filter(reqKpi -> responseList.stream()
 								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
@@ -198,7 +199,7 @@ public class JiraServiceR {
 			log.error("Error while KPI calculation for data {} {}", kpiRequest.getKpiList(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
 		}
-
+		log.info("** end of method Process:{}",String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
 		return responseList;
 	}
 
