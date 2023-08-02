@@ -296,7 +296,6 @@ public class MetaDataClientImpl implements MetadataClient {
 //		} else {
 			fieldMapping.setJiraIssueTypeNames(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()).stream().toArray(String[]::new));
 			fieldMapping.setJiraSprintCapacityIssueTypeKpi46(issueTypeMap.getOrDefault(CommonConstant.JIRASPRINTCAPACITYISSUETYPEKPI46, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeKPI37(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPEKPI37, new ArrayList<>()));
 			fieldMapping.setJiraDefectCountlIssueTypeKPI28(issueTypeMap.getOrDefault(CommonConstant.JIRADEFECTCOUNTLISSUETYPEKPI28, new ArrayList<>()));
 			fieldMapping.setJiraDefectCountlIssueTypeKPI36(issueTypeMap.getOrDefault(CommonConstant.JIRADEFECTCOUNTLISSUETYPEKPI36, new ArrayList<>()));
 			fieldMapping.setJiraDefectInjectionIssueTypeKPI14(issueTypeMap.getOrDefault(CommonConstant.JIRADEFECTINJECTIONISSUETYPEKPI14, new ArrayList<>()));
