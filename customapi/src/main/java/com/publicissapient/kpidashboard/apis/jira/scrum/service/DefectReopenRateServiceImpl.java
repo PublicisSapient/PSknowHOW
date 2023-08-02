@@ -68,6 +68,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	private static final String JIRA_REOPEN_HISTORY = "JIRA_REOPEN_HISTORY";
 	private static final String TIME_FORMAT_WITH_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 	private static final String STATUS = "status";
+	private static final List<String> closedStatusLists = Arrays.asList("Closed", "Done", "Live");
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
@@ -182,13 +183,13 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 				}
 			});
 			addToIterationKpiValues(iterationKpiValues, priority, jiraIssueList, modalValues, totalDuration,
-					closedStatusList);
+					closedStatusLists);
 			overAllModalValues.addAll(modalValues);
 			overAllDuration.set(0, overAllDuration.get(0) + totalDuration.get(0));
 
 		});
 		addToIterationKpiValues(iterationKpiValues, OVERALL, totalDefects, overAllModalValues, overAllDuration,
-				closedStatusList);
+				closedStatusLists);
 		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, filters);
 		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
 		kpiElement.setFilters(iterationKpiFilters);
