@@ -2451,7 +2451,7 @@ db.action_policy_rule.insertOne({
     "isDeleted": false
 })
 
-db.getCollection('field_mapping_structure').insert([
+db.getCollection('field_mapping_structure').insertMany([
     {
         "fieldName": "jiraDodKPI37",
         "fieldLabel": "Status to identify completed issues",
