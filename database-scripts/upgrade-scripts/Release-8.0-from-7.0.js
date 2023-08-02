@@ -2461,6 +2461,7 @@ if (!sprintFetchPolicy) {
 
 
 var fieldNameToCheck = "sprintName";
+
 if (db.getCollection('field_mapping_structure').count({ "fieldName": fieldNameToCheck }) === 0) {
     db.getCollection('field_mapping_structure').insert([
         {
