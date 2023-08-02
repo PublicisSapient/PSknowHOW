@@ -5265,16 +5265,21 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: true
                                  		}, {
-                                            columnName: 'Linked Stories Size',
-                                            order: 6,
-                                            isShown: true,
-                                            isDefault: false
-                                        }, {
-                                            columnName: 'Assignee',
-                                            order: 7,
-                                            isShown: true,
-                                            isDefault: false
-                                        }]
+                                 			columnName: 'Linked Stories',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Linked Stories Size',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Assignee',
+                                 			order: 7,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}]
                                  	},
 
                                  	{
