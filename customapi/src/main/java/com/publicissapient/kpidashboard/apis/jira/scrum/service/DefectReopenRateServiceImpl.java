@@ -127,7 +127,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValues(List<Node> projectList, DataCount trendValue, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
-		Node leafNode = projectList.stream().findFirst().orElse(null);
 		Map<String, Object> kpiResultDbMap = fetchKPIDataFromDb(projectList, null, null, kpiRequest);
 		List<JiraIssue> totalDefects = (List<JiraIssue>) kpiResultDbMap.get(TOTAL_JIRA_ISSUE);
 		List<JiraIssueCustomHistory> reopenJiraHistory = (List<JiraIssueCustomHistory>) kpiResultDbMap
@@ -148,8 +147,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		List<IterationKpiModalValue> overAllModalValues = new ArrayList<>();
 		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 		List<Double> overAllDuration = Arrays.asList(0.0);
-		List<String> closedStatusList = closedStatusMap
-				.getOrDefault(leafNode.getProjectFilter().getBasicProjectConfigId().toString(), new ArrayList<>());
 		priorityWiseTotalStory.forEach((priority, jiraIssueList) -> {
 			List<IterationKpiModalValue> modalValues = new ArrayList<>();
 			filters.add(priority);
@@ -157,6 +154,8 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			jiraIssueList.forEach(jiraIssue -> {
 				if (reopenJiraHistoryMap.containsKey(jiraIssue.getNumber())) {
 					JiraIssueCustomHistory jiraIssueCustomHistory = reopenJiraHistoryMap.get(jiraIssue.getNumber());
+					List<String> closedStatusList = closedStatusMap.getOrDefault(jiraIssue.getBasicProjectConfigId(),
+							new ArrayList<>());
 					List<JiraHistoryChangeLog> issueHistoryList = jiraIssueCustomHistory.getStatusUpdationLog();
 					Optional<JiraHistoryChangeLog> closedHistoryOptional = issueHistoryList.stream()
 							.filter(Objects::nonNull)
@@ -206,16 +205,16 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	 * @param jiraIssueList
 	 * @param modalValues
 	 * @param totalDuration
-	 * @param closedStatusList
+	 * @param closedStatusLists
 	 */
 	private void addToIterationKpiValues(List<IterationKpiValue> iterationKpiValues, String priority,
 			List<JiraIssue> jiraIssueList, List<IterationKpiModalValue> modalValues, List<Double> totalDuration,
-			List<String> closedStatusList) {
+			List<String> closedStatusLists) {
 		double averageTimeToReopen = totalDuration.get(0) > 0 && !modalValues.isEmpty()
 				? Math.ceil(totalDuration.get(0) / modalValues.size())
 				: 0;
 		List<JiraIssue> closedIssueList = jiraIssueList.stream()
-				.filter(jiraIssue -> closedStatusList.contains(jiraIssue.getStatus())).collect(Collectors.toList());
+				.filter(jiraIssue -> closedStatusLists.contains(jiraIssue.getStatus())).collect(Collectors.toList());
 		IterationKpiData reopenRateKpi = createReopenRateIterationData(modalValues, closedIssueList.size());
 		IterationKpiData reopenedByTotalKpi = IterationKpiData.builder().label(REOPEN_BY_CLOSED_DEFECTS)
 				.value(Double.valueOf(modalValues.size())).value1(Double.valueOf(closedIssueList.size())).build();
