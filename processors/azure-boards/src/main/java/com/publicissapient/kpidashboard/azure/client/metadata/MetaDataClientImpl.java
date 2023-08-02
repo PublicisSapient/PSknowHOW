@@ -277,6 +277,8 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDorKPI3(null);
 		}
 		fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodKPI151(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
@@ -310,7 +312,6 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraTestAutomationIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraSprintVelocityIssueTypeKPI138(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraIssueTypeKPI37(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraDefectCountlIssueTypeKPI28(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraDefectCountlIssueTypeKPI36(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraIssueDeliverdStatusKPI138(workflowMap.get(CommonConstant.DELIVERED));
