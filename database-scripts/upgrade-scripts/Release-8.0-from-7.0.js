@@ -2491,3 +2491,22 @@ fieldMapToUpdate.forEach(function(fm) {
         }
     );
 });
+
+// changing DRR formula
+db.kpi_master.updateOne(
+  {
+    "kpiId": "kpi37",
+    "kpiInfo.formula.operands": "Total no. of defects reported in a sprint"
+  },
+  {
+    $set: {
+      "kpiInfo.formula.$[formulaElem].operands.$[operandElem]": "Total no. of defects Closed in a sprint"
+    }
+  },
+  {
+    arrayFilters: [
+      { "formulaElem.operands": { $exists: true } },
+      { "operandElem": "Total no. of defects reported in a sprint" }
+    ]
+  }
+);

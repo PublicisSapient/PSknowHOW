@@ -285,7 +285,7 @@ db.getCollection('kpi_master').insertMany(
           "operator": "division",
           "operands": [
             "No. of defects rejected in a sprint",
-            "Total no. of defects reported in a sprint"
+            "Total no. of defects Closed in a sprint"
           ]
         }
       ],
