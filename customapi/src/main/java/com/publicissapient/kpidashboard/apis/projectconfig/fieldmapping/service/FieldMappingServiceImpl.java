@@ -449,6 +449,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraDodPDA",
 			"jiraDodKPI152",
 			"jiraDodKPI151",
+			"jiraDodKPI37",
 
 			"jiraDefectCreatedStatusKPI14",
 
@@ -477,8 +478,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraSprintVelocityIssueTypeKPI138",
 
 			"jiraSprintCapacityIssueTypeKpi46",
-
-			"jiraIssueTypeKPI37",
 
 			"jiraDefectCountlIssueTypeKPI28",
 			"jiraDefectCountlIssueTypeKPI36",
