@@ -195,12 +195,6 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));
 			}
-			if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssuesAnotherSprint())) {
-				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
-						CommonConstant.COMPLETED_ISSUES_ANOTHER_SPRINT));
-			}
-
-
 		});
 
 		/** additional filter **/
@@ -295,16 +289,14 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 						CommonConstant.COMPLETED_ISSUES);
 				Set<JiraIssue> totalSubTask = new HashSet<>();
 				getSubtasks(subTaskBugs, defectsCustomHistory, projectWiseDefectRemovalStatus, totalSubTask, sd);
-
-				List<JiraIssue> subCategoryWiseTotalDefectList = totalDefects.stream().filter(
-						defect -> CollectionUtils.isNotEmpty(defect.getSprintIdList())
-								&& defect.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
+				List<String> totalIssues = new ArrayList<>(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
+						CommonConstant.TOTAL_ISSUES));
+				List<JiraIssue> subCategoryWiseTotalDefectList = totalDefects.stream()
+						.filter(f -> totalIssues.contains(f.getNumber()))
 						.collect(Collectors.toList());
 				subCategoryWiseTotalDefectList.addAll(totalSubTask);
 
 				List<JiraIssue> subCategoryWiseClosedDefectList = sprintReportedBugs.stream()
-						.filter(defect -> CollectionUtils.isNotEmpty(defect.getSprintIdList())
-								&& defect.getSprintIdList().contains(sd.getSprintID().split("_")[0]))
 						.filter(f -> completedSprintIssues.contains(f.getNumber()) && CollectionUtils
 								.emptyIfNull(projectWiseDefectRemovalStatus.get(f.getBasicProjectConfigId())).stream()
 								.anyMatch(s -> s.equalsIgnoreCase(f.getJiraStatus())))
