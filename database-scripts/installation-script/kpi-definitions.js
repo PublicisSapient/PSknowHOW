@@ -7963,6 +7963,15 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "Status from workflow on which ticket is considered as Rejected/Dropped."
     }
+},{
+    "fieldName": "sprintName",
+    "fieldLabel": "Sprint Name",
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+        "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
+    }
 }
 ]
 );

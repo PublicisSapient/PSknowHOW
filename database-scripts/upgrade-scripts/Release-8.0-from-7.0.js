@@ -2458,3 +2458,24 @@ if (!sprintFetchPolicy) {
 } else {
     print("Fetch Sprint policy already exists");
 }
+
+
+var fieldNameToCheck = "sprintName";
+if (db.getCollection('field_mapping_structure').count({ "fieldName": fieldNameToCheck }) === 0) {
+    db.getCollection('field_mapping_structure').insert([
+        {
+            "fieldName": "sprintName",
+            "fieldLabel": "Sprint Name",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
+            }
+        }
+    ]);
+    print("Document inserted successfully.");
+} else {
+    print("Document with fieldName '" + fieldNameToCheck + "' already exists. No action required.");
+}
+
