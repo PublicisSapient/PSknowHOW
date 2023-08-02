@@ -1074,9 +1074,7 @@ public class OnlineDataProcessorImplTest {
 		fieldMapping.setJiraTechDebtIssueType(jiraType);
 		fieldMapping.setJiraIssueTypeKPI35(jiraType);
 		fieldMapping.setJiraDefectRemovalStatusKPI34(jiraType);
-		fieldMapping.setJiraIssueTypeKPI37(jiraType);
 		fieldMapping.setJiraTestAutomationIssueType(jiraType);
-		fieldMapping.setJiraIssueTypeKPI37(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeKPI36(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeKPI28(jiraType);
 		fieldMapping.setJiraIssueTypeKPI3(jiraType);

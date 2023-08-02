@@ -2439,3 +2439,63 @@ var fieldNameToUpdate = "jiraLiveStatusKPI3";
     { multi: false }
   );
 
+// Adding action_policy "Fetch Sprint"
+db.action_policy_rule.insertOne({
+    "name": "Fetch Sprint",
+    "roleAllowed": "",
+    "description": "super admin and project admin can run active sprint fetch",
+    "roleActionCheck": "action == 'TRIGGER_SPRINT_FETCH'",
+    "condition": "subject.authorities.contains('ROLE_SUPERADMIN') || subject.authorities.contains('ROLE_PROJECT_ADMIN')",
+    "createdDate": new Date(),
+    "lastModifiedDate": new Date(),
+    "isDeleted": false
+})
+
+db.getCollection('field_mapping_structure').insertMany([
+    {
+        "fieldName": "jiraDodKPI37",
+        "fieldLabel": "Status to identify completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+        }
+    },
+])
+
+const fieldMapToUpdate = db.field_mapping.find({ "jiraIssueTypeKPI37": { $exists: true } });
+fieldMapToUpdate.forEach(function(fm) {
+    const jiraDod = fm.jiraDod;
+
+    db.field_mapping.updateOne(
+        { "_id": fm._id },
+        {
+            $set: {
+                "jiraDodKPI37": jiraDod
+            },
+            $unset: {
+                "jiraIssueTypeKPI37": ""
+            }
+        }
+    );
+});
+
+// changing DRR formula
+db.kpi_master.updateOne(
+  {
+    "kpiId": "kpi37",
+    "kpiInfo.formula.operands": "Total no. of defects reported in a sprint"
+  },
+  {
+    $set: {
+      "kpiInfo.formula.$[formulaElem].operands.$[operandElem]": "Total no. of defects Closed in a sprint"
+    }
+  },
+  {
+    arrayFilters: [
+      { "formulaElem.operands": { $exists: true } },
+      { "operandElem": "Total no. of defects reported in a sprint" }
+    ]
+  }
+);

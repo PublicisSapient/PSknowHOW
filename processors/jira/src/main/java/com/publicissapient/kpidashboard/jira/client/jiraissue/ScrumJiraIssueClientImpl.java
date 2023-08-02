@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -725,7 +726,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
-				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, projectConfig, fields );
+				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, projectConfig, fields);
 				if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
 					jiraIssuesToSave.add(jiraIssue);
 					jiraIssueHistoryToSave.add(jiraIssueHistory);
@@ -736,9 +737,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		// Saving back to MongoDB
 		jiraIssueRepository.saveAll(jiraIssuesToSave);
 		jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
-		if(!isSprintFetch){
-		saveAccountHierarchy(jiraIssuesToSave, projectConfig);
-		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
+		if (!isSprintFetch) {
+			saveAccountHierarchy(jiraIssuesToSave, projectConfig, sprintDetailsSet);
+			saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
 		}
 		if (!dataFromBoard) {
 			sprintClient.processSprints(projectConfig, sprintDetailsSet, jiraAdapter, false);
@@ -1227,7 +1228,12 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			for (SprintDetails sprint : sprints) {
 				sprintsList.add(sprint.getOriginalSprintId());
 				jiraIssue.setSprintIdList(sprintsList);
+				sprint.setSprintID(
+						sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + jiraIssue.getProjectName()
+								+ JiraConstants.COMBINE_IDS_SYMBOL + projectConfig.getBasicProjectConfigId());
+				sprint.setBasicProjectConfigId(new ObjectId(jiraIssue.getBasicProjectConfigId()));
 			}
+			sprintDetailsSet.addAll(sprints);
 			// Use the latest sprint
 			// if any sprint date is blank set that sprint to JiraIssue
 			// because this sprint is
@@ -1235,20 +1241,15 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			// sprint
 			SprintDetails sprint = sprints.stream().filter(s -> StringUtils.isBlank(s.getStartDate())).findFirst()
 					.orElse(sprints.get(sprints.size() - 1));
-			String sprintId = sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL
-					+ jiraIssue.getProjectName() + JiraConstants.COMBINE_IDS_SYMBOL
-					+ projectConfig.getBasicProjectConfigId();
 
 			jiraIssue.setSprintName(sprint.getSprintName() == null ? StringUtils.EMPTY : sprint.getSprintName());
-			jiraIssue.setSprintID(sprint.getOriginalSprintId() == null ? StringUtils.EMPTY : sprintId);
+			jiraIssue.setSprintID(sprint.getOriginalSprintId() == null ? StringUtils.EMPTY : sprint.getSprintID());
 			jiraIssue.setSprintBeginDate(sprint.getStartDate() == null ? StringUtils.EMPTY
 					: JiraProcessorUtil.getFormattedDate(sprint.getStartDate()));
 			jiraIssue.setSprintEndDate(sprint.getEndDate() == null ? StringUtils.EMPTY
 					: JiraProcessorUtil.getFormattedDate(sprint.getEndDate()));
 			jiraIssue.setSprintAssetState(sprint.getState() == null ? StringUtils.EMPTY : sprint.getState());
 
-			sprint.setSprintID(sprintId);
-			sprintDetailsSet.add(sprint);
 		} else {
 			log.error("JIRA Processor | Failed to obtain sprint data for {}", sValue);
 		}
@@ -1395,13 +1396,15 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 *            list of jira issues
 	 * @param projectConfig
 	 *            Project Configuration Map
+	 * @param sprintDetailsSet
 	 */
-	private void saveAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig) {
+	private void saveAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig,
+			Set<SprintDetails> sprintDetailsSet) {
 
 		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
 				.getFullHierarchyLevels(projectConfig.isKanban());
 		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, Function.identity()));
 
 		HierarchyLevel sprintHierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
 
@@ -1409,30 +1412,49 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.getAccountHierarchy(accountHierarchyRepository);
 
 		Set<AccountHierarchy> setToSave = new HashSet<>();
+		Map<ObjectId, AccountHierarchy> projectDataMap = new HashMap<>();
+
 		for (JiraIssue jiraIssue : jiraIssueList) {
-			if (StringUtils.isNotBlank(jiraIssue.getProjectName()) && StringUtils.isNotBlank(jiraIssue.getSprintName())
-					&& StringUtils.isNotBlank(jiraIssue.getSprintBeginDate())
-					&& StringUtils.isNotBlank(jiraIssue.getSprintEndDate())) {
 
-				AccountHierarchy projectData = accountHierarchyRepository
-						.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
-								new ObjectId(jiraIssue.getBasicProjectConfigId()))
-						.get(0);
+			String projectName = jiraIssue.getProjectName();
+			String sprintName = jiraIssue.getSprintName();
+			String sprintBeginDate = jiraIssue.getSprintBeginDate();
+			String sprintEndDate = jiraIssue.getSprintEndDate();
 
-				AccountHierarchy sprintHierarchy = createHierarchyForSprint(jiraIssue,
-						projectConfig.getProjectBasicConfig(), projectData, sprintHierarchyLevel);
-
-				setToSaveAccountHierarchy(setToSave, sprintHierarchy, existingHierarchy);
-
-				List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(jiraIssue,
-						sprintHierarchy, sprintHierarchyLevel, hierarchyLevelList);
-				additionalFiltersHierarchies.forEach(
-						accountHierarchy -> setToSaveAccountHierarchy(setToSave, accountHierarchy, existingHierarchy));
-
+			if (StringUtils.isBlank(projectName) || StringUtils.isBlank(sprintName)
+					|| StringUtils.isBlank(sprintBeginDate) || StringUtils.isBlank(sprintEndDate)) {
+				continue; // Skip this Jira issue if any of the required fields are blank
 			}
 
+			ObjectId basicProjectConfigId = new ObjectId(jiraIssue.getBasicProjectConfigId());
+			Map<String, SprintDetails> sprintDetailsMap = sprintDetailsSet.stream()
+					.filter(sprintDetails -> sprintDetails.getBasicProjectConfigId().equals(basicProjectConfigId))
+					.collect(Collectors.toMap(sprintDetails -> sprintDetails.getSprintID().split("_")[0],
+							sprintDetails -> sprintDetails));
+
+			AccountHierarchy projectData = projectDataMap.computeIfAbsent(basicProjectConfigId, id -> {
+				List<AccountHierarchy> projectDataList = accountHierarchyRepository
+						.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, id);
+				return projectDataList.isEmpty() ? null : projectDataList.get(0);
+			});
+
+			for (String sprintId : jiraIssue.getSprintIdList()) {
+				SprintDetails sprintDetails = sprintDetailsMap.get(sprintId);
+				if (sprintDetails != null) {
+					AccountHierarchy sprintHierarchy = createHierarchyForSprint(sprintDetails,
+							projectConfig.getProjectBasicConfig(), projectData, sprintHierarchyLevel);
+
+					setToSaveAccountHierarchy(setToSave, sprintHierarchy, existingHierarchy);
+
+					List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
+							jiraIssue, sprintHierarchy, sprintHierarchyLevel, hierarchyLevelList);
+					additionalFiltersHierarchies.forEach(accountHierarchy -> setToSaveAccountHierarchy(setToSave,
+							accountHierarchy, existingHierarchy));
+				}
+			}
 		}
-		if (CollectionUtils.isNotEmpty(setToSave)) {
+
+		if (!setToSave.isEmpty()) {
 			accountHierarchyRepository.saveAll(setToSave);
 		}
 	}
@@ -1455,8 +1477,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 	}
 
-	private AccountHierarchy createHierarchyForSprint(JiraIssue jiraIssue, ProjectBasicConfig projectBasicConfig,
-			AccountHierarchy projectHierarchy, HierarchyLevel hierarchyLevel) {
+	private AccountHierarchy createHierarchyForSprint(SprintDetails sprintDetails,
+			ProjectBasicConfig projectBasicConfig, AccountHierarchy projectHierarchy, HierarchyLevel hierarchyLevel) {
 		AccountHierarchy accountHierarchy = null;
 		try {
 
@@ -1464,14 +1486,17 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			accountHierarchy.setBasicProjectConfigId(projectBasicConfig.getId());
 			accountHierarchy.setIsDeleted(JiraConstants.FALSE);
 			accountHierarchy.setLabelName(hierarchyLevel.getHierarchyLevelId());
-			String sprintName = (String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintName");
-			String sprintId = (String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintID");
+
+			String sprintName = (String) PropertyUtils.getSimpleProperty(sprintDetails, "sprintName");
+			String sprintId = (String) PropertyUtils.getSimpleProperty(sprintDetails, "sprintID");
 
 			accountHierarchy.setNodeId(sprintId);
-			accountHierarchy.setNodeName(sprintName + JiraConstants.COMBINE_IDS_SYMBOL + jiraIssue.getProjectName());
+			accountHierarchy
+					.setNodeName(sprintName + JiraConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectName());
 
-			accountHierarchy.setBeginDate((String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintBeginDate"));
-			accountHierarchy.setEndDate((String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintEndDate"));
+			accountHierarchy.setBeginDate((String) PropertyUtils.getSimpleProperty(sprintDetails, "startDate"));
+			accountHierarchy.setEndDate((String) PropertyUtils.getSimpleProperty(sprintDetails, "endDate"));
+
 			accountHierarchy.setPath(new StringBuffer(56).append(projectHierarchy.getNodeId())
 					.append(CommonConstant.ACC_HIERARCHY_PATH_SPLITTER).append(projectHierarchy.getPath()).toString());
 			accountHierarchy.setParentId(projectHierarchy.getNodeId());
@@ -1647,7 +1672,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	// for fetch, parse & update based on issuesKeys
-	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, //NOSONAR
+	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, // NOSONAR
 			boolean isOffline, List<String> issueKeys) {
 		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
@@ -1711,7 +1736,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		} catch (JSONException e) {
 			log.error("Error while updating Story information in sprintFetch", e,
 					kv(CommonConstant.PSLOGDATA, psLogData));
-		} catch (InterruptedException e) { //NOSONAR
+		} catch (InterruptedException e) { // NOSONAR
 			log.error("Interrupted exception thrown during sprintFetch", e, kv(CommonConstant.PSLOGDATA, psLogData));
 			processorFetchingComplete = false;
 		} finally {
