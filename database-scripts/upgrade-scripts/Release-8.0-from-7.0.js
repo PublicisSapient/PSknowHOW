@@ -2439,41 +2439,30 @@ var fieldNameToUpdate = "jiraLiveStatusKPI3";
     { multi: false }
   );
 
-// Check if the document with the name "Fetch Sprint" already exists
-const sprintFetchPolicy = db.action_policy_rule.findOne({
-    "name": "Fetch Sprint"
-});
+// Adding action_policy "Fetch Sprint"
+db.action_policy_rule.insertOne({
+    "name": "Fetch Sprint",
+    "roleAllowed": "",
+    "description": "super admin and project admin can run active sprint fetch",
+    "roleActionCheck": "action == 'TRIGGER_SPRINT_FETCH'",
+    "condition": "subject.authorities.contains('ROLE_SUPERADMIN') || subject.authorities.contains('ROLE_PROJECT_ADMIN')",
+    "createdDate": new Date(),
+    "lastModifiedDate": new Date(),
+    "isDeleted": false
+})
 
-if (!sprintFetchPolicy) {
-    db.action_policy_rule.insertOne({
-        "name": "Fetch Sprint",
-        "roleAllowed": "",
-        "description": "super admin and project admin can run active sprint fetch",
-        "roleActionCheck": "action == 'TRIGGER_SPRINT_FETCH'",
-        "condition": "subject.authorities.contains('ROLE_SUPERADMIN') || subject.authorities.contains('ROLE_PROJECT_ADMIN')",
-        "createdDate": new Date(),
-        "lastModifiedDate": new Date(),
-        "isDeleted": false
-    })
-} else {
-    print("Fetch Sprint policy already exists");
-}
-// Check if the jiraDodKPI37 already exists
-var existingDodKPI37 = db.getCollection('field_mapping_structure').findOne({ "fieldName": "jiraDodKPI37" });
-if (!existingDodKPI37) {
 db.getCollection('field_mapping_structure').insert([
-        {
-            "fieldName": "jiraDodKPI37",
-            "fieldLabel": "Status to identify completed issues",
-            "fieldType": "chips",
-            "fieldCategory": "workflow",
-            "section": "WorkFlow Status Mapping",
-            "tooltip": {
-                "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
-            }
-        },
+    {
+        "fieldName": "jiraDodKPI37",
+        "fieldLabel": "Status to identify completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+        }
+    },
 ])
-}
 
 const fieldMapToUpdate = db.field_mapping.find({ "jiraIssueTypeKPI37": { $exists: true } });
 fieldMapToUpdate.forEach(function(fm) {
