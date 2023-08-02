@@ -107,7 +107,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   hierarchies;
   filteredAddFilters = {};
   initFlag = true;
-  showChart = true;
+  showChart = 'chart';
   iterationConfigData = {};
   kpisNewOrder = [];
   isTooltip = false;
@@ -131,6 +131,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   showCommentPopup:boolean = false;
   showSpinner: boolean = false;
   kpiObj:object = {};
+  totalProjectSelected : number = 1;
 
   constructor(
     private service: SharedService,
@@ -507,6 +508,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   onSelectedTrendValueChange($event) {
+    this.totalProjectSelected = this.filterForm?.get('selectedTrendValue')?.value.length;
     this.additionalFiltersArr.forEach((additionalFilter) => {
       this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
     });

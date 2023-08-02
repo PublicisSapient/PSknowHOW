@@ -21,10 +21,10 @@
   <div class="{{selectedtype}}" id="{{selectedtype}}">
     <div class="clearfix">
       <div class="right-container col">
-        <div class="p-grid justify-content-start p-pt-3">
+        <div class="p-grid justify-content-start p-pt-3 p-pl-2 p-pr-2">
           <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
             <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
-              <div class="p-sm-6" [ngClass]="{'p-pl-4': i%2 == 0, 'p-pr-4': i%2 != 0}">
+              <div [ngClass]="{'p-sm-6':!(showChart==='large'),'p-sm-12':showChart==='large'}">
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                 [trendData]="kpiTrendsObj[kpi?.kpiId]" [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
                 [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
@@ -40,7 +40,7 @@
                         *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                         <ng-container
                           *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0 && chartColorList[kpi?.kpiId]?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData[kpi?.kpiId]?.length > 0 && chartColorList[kpi?.kpiId]?.length>0 && kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData">
-                          <ng-container *ngIf="showChart">
+                          <ng-container *ngIf="!(showChart === 'table')">
                             <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'tooltip'"
                               [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                               [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
@@ -53,7 +53,7 @@
                               [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                               [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                               [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
-                              [selectedtype]="selectedtype">
+                              [selectedtype]="selectedtype" [viewType]="showChart">
                             </app-multiline>
                             <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
                               [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true" [unit]="kpi?.kpiDetail?.kpiUnit"

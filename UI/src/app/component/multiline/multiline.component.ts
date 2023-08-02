@@ -52,12 +52,20 @@ export class MultilineComponent implements OnChanges {
   @Input() selectedtype: string;
   elem;
   sliderLimit = <any>'750';
+  sprintList : Array<any> = [];
+  @Input() viewType :string = 'chart'
   constructor(
     private viewContainerRef: ViewContainerRef,
     private service: SharedService,
   ) {
     // used to make chart independent from previous made chart
     this.elem = this.viewContainerRef.element.nativeElement;
+  }
+  
+  ngOnInit(): void {
+    this.service.showTableViewObs.subscribe(view => {
+      this.viewType = view;
+     });
   }
 
   // Runs when property "data" changed
@@ -66,13 +74,15 @@ export class MultilineComponent implements OnChanges {
       this.xCaption = this.service.getSelectedDateFilter();
     }
     if (Object.keys(changes)?.length > 0) {
-      if (changes['data']) {
-        if (!changes['data'].firstChange) {
+      // if (changes['data']) {
+      //   if (!changes['data'].firstChange) {
+        d3.select(this.elem).select('svg').remove();
+        d3.select(this.elem).select('.bstimeslider').remove();
           this.draw('update');
-        } else {
-          this.draw('new');
-        }
-      }
+      //   } else {
+      //     this.draw('new');
+      //   }
+      // }
     } else {
       d3.select(this.elem).select('svg').remove();
       d3.select(this.elem).select('.bstimeslider').remove();
@@ -85,7 +95,14 @@ export class MultilineComponent implements OnChanges {
     d3.select(this.elem).select('#verticalSVG').select('svg').remove();
     d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
+    d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+    const formatedData = this?.data[0]?.value.map(details=>{
+      const XValue = details.date || details.sSprintName;
+       return {...details,sortSprint:XValue};
+    })
     
+    this.data[0].value = formatedData;
+    const viewType = this.viewType;
     const data = this.data;
     const thresholdValue = this.thresholdValue;
     const elem = this.elem;
@@ -110,6 +127,7 @@ export class MultilineComponent implements OnChanges {
     const showPercent = false;
     const showWeek = false;
     const showUnit = this.unit;
+    const sprintList = data[0].value.map(details=>details.date || details?.sortSprint);
 
     // width = $('#multiLineChart').width();
     width =
@@ -154,7 +172,17 @@ export class MultilineComponent implements OnChanges {
       });
     });
 
-    const xScale = d3
+    let xScale;
+
+    if (viewType === 'large') {
+      xScale = d3
+        .scaleBand()
+        .domain(sprintList)
+        .range([0, width - margin])
+        .padding(0)
+        
+    }else{
+      xScale = d3
       .scaleBand()
       .rangeRound([0, width - margin])
       .padding(0)
@@ -163,6 +191,7 @@ export class MultilineComponent implements OnChanges {
           return i + 1;
         }),
       );
+    }
 
     let divisor = 10;
     let power = 1;
@@ -194,6 +223,39 @@ export class MultilineComponent implements OnChanges {
       .scaleLinear()
       .domain([0, maxYValue])
       .range([height - margin, 0]);
+  
+    if (viewType === 'large') {
+      d3.select(this.elem).select('#horizontalSVG').select('div').remove();
+      d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+      /** Adding tooltip container */
+      const tooltipContainer = d3.select(this.elem).select('#horizontalSVG').
+        append('div')
+        .attr('class', 'tooltip-container')
+        .attr('height', height + 35 + 'px')
+        .attr('width', width + 'px')
+
+        tooltipContainer
+        .selectAll('div')
+        .data(data[0].value)
+        .join('div')
+        .attr('class', 'tooltip2')
+        .style('left', d => {
+          let left = d.date || d.sortSprint
+          return xScale(left) + xScale.bandwidth() / 2 + 'px'
+        })
+        .style('top', d => {
+          return yScale(Math.round(d.value * 100) / 100) + 'px'
+        })
+        .text(d => Math.round(d.value * 100) / 100)
+        .transition()
+        .duration(500)
+        .style('display', 'block')
+        .style('opacity', 1);
+    }else{
+      d3.select(this.elem).select('#horizontalSVG').select('div').remove();
+      d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+    }
+
     /* Add SVG */
 
     const svgX = d3
@@ -242,7 +304,9 @@ export class MultilineComponent implements OnChanges {
       .append('g')
       .attr('class', 'x axis')
       .attr('transform', `translate(0, ${height - margin})`)
-      .call(xAxis);
+      .call(xAxis)
+      .selectAll(".tick text")
+      .call(this.wrap, xScale.bandwidth());
 
     const XCaption = XCaptionSVG.append('text')
       .attr('x', width / 2 - 24)
@@ -324,10 +388,17 @@ export class MultilineComponent implements OnChanges {
     /* Add line into SVG acoording to data */
     const line = d3
       .line()
-      .x((d, i) => xScale(i + 1))
+      .x((d, i) => {
+        if(viewType  === 'large'){
+          return xScale(d.date || d.sortSprint)
+        }else{
+          return xScale(i+1)
+        }
+      })
       .y((d) => yScale(d.value));
 
-    const lines = svgX.append('g').attr('class', 'lines');
+    const lines = svgX.append('g').attr('class', 'lines')
+    .attr('transform', `translate(${xScale.bandwidth()/2}, ${0})`);
 
     function tweenDash() {
       const l = this.getTotalLength();
@@ -465,7 +536,11 @@ export class MultilineComponent implements OnChanges {
       })
       .append('circle')
       .attr('cx', function (d, i) {
-        return xScale(i + 1);
+        if(viewType  === 'large'){
+          return xScale(d.date || d.sortSprint)
+        }else{
+          return xScale(i+1)
+        }
       })
       .attr('cy', (d) => yScale(d.value))
       .attr('r', circleRadius)
@@ -555,6 +630,31 @@ export class MultilineComponent implements OnChanges {
     }
     const content = this.elem.querySelector('#horizontalSVG');
     content.scrollLeft += width;
+  }
+
+
+  wrap(text, width) {
+    text.each(function() {
+      var text = d3.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.1, // ems
+          y = text.attr("y"),
+          dy = parseFloat(text.attr("dy")),
+          tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
+      while (word = words.pop()) {
+        line.push(word)
+        tspan.text(line.join(" "))
+        if (tspan.node().getComputedTextLength() > (width-5)) {
+          line.pop()
+          tspan.text(line.join(" "))
+          line = [word]
+          tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+        }
+      }
+    })
   }
 
   ngOnDestroy() {
