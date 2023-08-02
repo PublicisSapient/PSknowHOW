@@ -19,19 +19,12 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.repotools.model.Branches;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -84,6 +77,12 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	private static final String GITHUB = "GitHub";
 	private static final String DATE = "Date ";
 	private static final String COMMIT_COUNT = "commitCount";
+	private static final String REPO_TOOL_COMMIT_COUNT = "repoToolCommitCount";
+
+	public static final String REPO_TOOL_COMMIT_KPI = "repo-activity";
+	public static final String REPO_TOOL_MR_KPI = "pr-size";
+	public static final String FREQUENCY = "week";
+	private static final String REPO_TOOL = "Repo_Tool";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -93,6 +92,9 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
+
+	@Autowired
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
 	@Override
 	public String getQualifierType() {
@@ -149,6 +151,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		String endDate = dateRange.getEndDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(projectList, startDate, endDate, null);
+		getRepoToolKpiMetricResponse(startDate, endDate, projectList, REPO_TOOL_COMMIT_KPI, resultMap);
 		kpiWithFilter(resultMap, mapTmp, projectList, kpiElement, kpiRequest);
 
 	}
@@ -158,12 +161,14 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		Map<String, ValidationData> validationMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		List<CommitDetails> commitList = (List<CommitDetails>) resultMap.get(COMMIT_COUNT);
+		List<RepoToolKpiMetricResponse> repoToolCommitList = (List<RepoToolKpiMetricResponse>) resultMap.get(REPO_TOOL_COMMIT_COUNT);
 		final Map<ObjectId, Map<String, Long>> commitListItemId = new LinkedHashMap<>();
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 		if (CollectionUtils.isNotEmpty(commitList)) {
 			commitListItemId.putAll(commitList.stream().collect(Collectors.groupingBy(CommitDetails::getProcessorItemId,
 					Collectors.toMap(CommitDetails::getDate, CommitDetails::getCount))));
 		}
+
 
 		leafNodeList.forEach(node -> {
 			List<Map<String, Long>> repoWiseCommitList = new LinkedList<>();
@@ -183,7 +188,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 				}
 				String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 				Map<String, Long> filterValueMap = filterKanbanDataBasedOnStartAndEndDateAndCommitDetails(reposList,
-						dateRange, commitListItemId, projectName, repoWiseCommitList, listOfRepo, listOfBranch);
+						dateRange, commitListItemId, projectName, repoWiseCommitList, listOfRepo, listOfBranch, repoToolCommitList);
 
 				String dataCountDate = getRange(dateRange, kpiRequest);
 				prepareRepoWiseMap(filterValueMap, projectName, dataCountDate, projectWiseDataMap);
@@ -217,7 +222,8 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	 */
 	private Map<String, Long> filterKanbanDataBasedOnStartAndEndDateAndCommitDetails(List<Tool> reposList,
 			CustomDateRange dateRange, Map<ObjectId, Map<String, Long>> commitListItemId, String projectName,
-			List<Map<String, Long>> repoWiseCommitList, List<String> listOfRepo, List<String> listOfBranch) {
+			List<Map<String, Long>> repoWiseCommitList, List<String> listOfRepo, List<String> listOfBranch,
+			List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList) {
 		LocalDate startDate = dateRange.getStartDate();
 		LocalDate endDate = dateRange.getEndDate();
 		Map<String, Long> filterWiseValue = new HashMap<>();
@@ -228,10 +234,16 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 			Map<String, Long> excelLoader = new LinkedHashMap<>();
 			String keyName = getBranchSubFilter(tool, projectName);
 			Long commitCountValue = 0l;
-			if (!CollectionUtils.isEmpty(tool.getProcessorItemList())
-					&& tool.getProcessorItemList().get(0).getId() != null) {
-				Map<String, Long> commitDateMap = commitListItemId
-						.getOrDefault(tool.getProcessorItemList().get(0).getId(), new HashMap<>());
+			Map<String, Long> commitDateMap = new HashMap<>();
+			if (!tool.getTool().equals(REPO_TOOL)) {
+				if (!CollectionUtils.isEmpty(tool.getProcessorItemList())
+						&& tool.getProcessorItemList().get(0).getId() != null) {
+					commitDateMap = commitListItemId.getOrDefault(tool.getProcessorItemList().get(0).getId(),
+							new HashMap<>());
+				} else {
+					commitDateMap = createDateLabelWiseMap(repoToolKpiMetricResponseList, tool.getRepositoryName(),
+							tool.getBranch());
+				}
 				while (currentDate.compareTo(endDate) <= 0) {
 					commitCountValue = commitCountValue + commitDateMap.getOrDefault(currentDate.toString(), 0l);
 					excelLoader.put(DATE + DateUtil.localDateTimeConverter(currentDate), commitCountValue);
@@ -361,6 +373,31 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 		return resultListMap;
 	}
 
+	private void getRepoToolKpiMetricResponse(String startDate, String endDate, List<Node> leafNodeList, String repoToolsKpi,
+			Map<String, Object> resultMap) {
+		List<String> projectCode = leafNodeList.stream().map(Node::getId).collect(Collectors.toList());
+		if (CollectionUtils.isEmpty(projectCode)) {
+			resultMap.put(REPO_TOOL_COMMIT_COUNT, new ArrayList<>());
+		}
+
+		resultMap.put(REPO_TOOL_COMMIT_COUNT,
+				repoToolsConfigService.getRepoToolKpiMetrics(projectCode, repoToolsKpi, startDate, endDate, FREQUENCY));
+	}
+
+	private List<Tool> getRepoToolsJobs(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
+		ProjectFilter accountHierarchyData = node.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(configId);
+		List<Tool> bitbucketJob = new ArrayList<>();
+		if (null != toolListMap) {
+			bitbucketJob.addAll(toolListMap.get(REPO_TOOL) == null ? Collections.emptyList() : toolListMap.get(REPO_TOOL));
+		}
+		if (CollectionUtils.isEmpty(bitbucketJob)) {
+			log.error("[BITBUCKET]. No repository found for this project {}", node.getProjectFilter());
+		}
+		return bitbucketJob;
+	}
+
 	private List<Tool> getBitBucketJobs(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
 		ProjectFilter projectFilter = node.getProjectFilter();
 		ObjectId configId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
@@ -391,5 +428,23 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiName) {
 		return calculateKpiValueForLong(valueList, kpiName);
+	}
+
+	private Map<String, Long> createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons,
+														 String repoName, String branchName) {
+		Map<String, Long> commitMap = new HashMap<>();
+
+		for (RepoToolKpiMetricResponse response : repoToolKpiMetricRespons) {
+			if (response.getRepositories() != null) {
+				Optional<Branches> matchingBranch = response.getRepositories().stream()
+						.filter(repository -> repository.getName().equals(repoName))
+						.flatMap(repository -> repository.getBranches().stream())
+						.filter(branch -> branch.getName().equals(branchName)).findFirst();
+
+				matchingBranch.ifPresent(branch -> commitMap.put(response.getDateLabel(), branch.getCount()));
+			}
+		}
+
+		return commitMap;
 	}
 }

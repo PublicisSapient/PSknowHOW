@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.debbie.service.DebbieConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -72,7 +72,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 	private CustomApiConfig customApiConfig;
 
 	@Autowired
-	private DebbieConfigServiceImpl debbieConfigService;
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
 
 	@Override
@@ -93,10 +93,9 @@ public class ProcessorServiceImpl implements ProcessorService {
 		String url = processorUrlConfig.getProcessorUrl(processorName);
 		boolean isSuccess = true;
 		int statuscode = HttpStatus.NOT_FOUND.value();
-		if (processorName.equalsIgnoreCase(ProcessorConstants.BITBUCKET)
-				&& processorName.equalsIgnoreCase(ProcessorConstants.BITBUCKET)) {
-			statuscode = debbieConfigService
-					.triggerScanDebbieProject(processorExecutionBasicConfig.getProjectBasicConfigIds());
+		if (processorName.equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)) {
+			statuscode = repoToolsConfigService
+					.triggerScanRepoToolProject(processorExecutionBasicConfig.getProjectBasicConfigIds());
 		} else {
 			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 			String token = httpServletRequest.getHeader("Authorization");

@@ -18,17 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,17 +41,14 @@ import com.mongodb.BasicDBObject;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.repotools.model.Branches;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
@@ -89,6 +80,10 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 	private static final String YYYYMMDD = "yyyy-MM-dd";
 	private static final String NO_CHECKIN = "No. of Check in";
 	private static final String NO_MERGE = "No. of Merge Requests";
+	public static final String REPO_TOOLS_COMMIT_KPI = "repo-activity-bulk";
+	public static final String REPO_TOOLS_MR_KPI = "pr-size-bulk";
+	public static final String FREQUENCY = "day";
+	private static final String REPO_TOOLS = "Repo_Tools";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -101,6 +96,9 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
+
+	@Autowired
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
 	@Override
 	public String getQualifierType() {
@@ -170,6 +168,10 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(projectLeafNodeList, startDate, endDate, null);
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList = getRepoToolsKpiMetricResponse(startDate, endDate,
+				toolMap, projectLeafNodeList, REPO_TOOLS_COMMIT_KPI);
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseMergeList = getRepoToolsKpiMetricResponse(startDate, endDate,
+				toolMap, projectLeafNodeList, REPO_TOOLS_MR_KPI);
 		List<CommitDetails> commitList = (List<CommitDetails>) resultMap.get("commitCount");
 		List<MergeRequests> mergeList = (List<MergeRequests>) resultMap.get("mrCount");
 		final Map<ObjectId, Map<String, Long>> commitListItemId = new HashMap<>();
@@ -200,25 +202,37 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
 						&& repo.getProcessorItemList().get(0).getId() != null) {
-					Map<String, Long> commitCountForRepo = commitListItemId
-							.get(repo.getProcessorItemList().get(0).getId());
-					Map<String, Long> mergeCountForRepo = mergeListItemId
-							.get(repo.getProcessorItemList().get(0).getId());
-					if (MapUtils.isNotEmpty(commitCountForRepo) || MapUtils.isNotEmpty(mergeCountForRepo)) {
-						aggCommitAndMergeCount(aggCommitCountForRepo, aggMergeCountForRepo, commitCountForRepo,
-								mergeCountForRepo);
-						Map<String, Long> excelDataLoader = new HashMap<>();
-						Map<String, Long> mergeRequestExcelDataLoader = new HashMap<>();
+					Map<String, Long> excelDataLoader = new HashMap<>();
+					Map<String, Long> mergeRequestExcelDataLoader = new HashMap<>();
+					List<DataCount> dayWiseCount = new ArrayList<>();
+					if(!repo.getTool().equals(REPO_TOOLS)) {
+						Map<String, Long> commitCountForRepo = commitListItemId
+								.get(repo.getProcessorItemList().get(0).getId());
+						Map<String, Long> mergeCountForRepo = mergeListItemId
+								.get(repo.getProcessorItemList().get(0).getId());
+						if (MapUtils.isNotEmpty(commitCountForRepo) || MapUtils.isNotEmpty(mergeCountForRepo)) {
+							aggCommitAndMergeCount(aggCommitCountForRepo, aggMergeCountForRepo, commitCountForRepo,
+									mergeCountForRepo);
 
-						List<DataCount> dayWiseCount = setDayWiseCountForProject(mergeCountForRepo, commitCountForRepo,
-								excelDataLoader, start, end, projectName, mergeRequestExcelDataLoader);
+							dayWiseCount = setDayWiseCountForProject(mergeCountForRepo, commitCountForRepo,
+									excelDataLoader, start, end, projectName, mergeRequestExcelDataLoader);
+						}
+					} else if (CollectionUtils.isNotEmpty(repoToolKpiMetricResponseMergeList)
+							|| CollectionUtils.isNotEmpty(repoToolKpiMetricResponseCommitList)) {
+						Map<String, Long> dateWiseCommitList = new HashMap<>();
+						Map<String, Long> dateWiseMRList = new HashMap<>();
+						createDateLabelWiseMap(repoToolKpiMetricResponseCommitList, repoToolKpiMetricResponseMergeList,
+								repo.getRepositoryName(), repo.getBranch(), dateWiseCommitList, dateWiseMRList);
+						dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, dateWiseMRList, excelDataLoader,
+								start, end, projectName, mergeRequestExcelDataLoader);
+					}
 						aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
 						repoWiseCommitList.add(excelDataLoader);
 						repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
 						repoList.add(repo.getUrl());
 						branchList.add(repo.getBranch());
 
-					}
+					
 				}
 			});
 			List<DataCount> dayWiseCount = setDayWiseCountForProject(aggMergeCountForRepo, aggCommitCountForRepo,
@@ -285,6 +299,8 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 					mapOfListOfTools.get(GITLAB) == null ? Collections.emptyList() : mapOfListOfTools.get(GITLAB));
 			reposList.addAll(
 					mapOfListOfTools.get(GITHUB) == null ? Collections.emptyList() : mapOfListOfTools.get(GITHUB));
+			reposList.addAll(
+					mapOfListOfTools.get(REPO_TOOLS) == null ? Collections.emptyList() : mapOfListOfTools.get(REPO_TOOLS));
 		}
 	}
 
@@ -315,8 +331,8 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 	 * @param excelDataLoader
 	 * @param mergeRequestExcelDataLoader
 	 */
-	private List<DataCount> setDayWiseCountForProject(Map<String, Long> mergeCountForRepo,
-			Map<String, Long> commitCountForRepo, Map<String, Long> excelDataLoader, DateTime start, DateTime end,
+	private List<DataCount> setDayWiseCountForProject(Map<String, Long> commitCountForRepo,
+			Map<String, Long> mergeCountForRepo, Map<String, Long> excelDataLoader, DateTime start, DateTime end,
 			String projectName, Map<String, Long> mergeRequestExcelDataLoader) {
 		List<DataCount> dayWiseCommitCount = new ArrayList<>();
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(YYYYMMDD);
@@ -379,11 +395,11 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 
 		leafNodeList.forEach(node -> {
 
-			List<Tool> bitbucketJob = getBitBucketJobs(toolMap, node);
-			if (CollectionUtils.isEmpty(bitbucketJob)) {
+			List<Tool> azureRepoJobs = getBitBucketJobs(toolMap, node);
+			if (CollectionUtils.isEmpty(azureRepoJobs)) {
 				return;
 			}
-			bitbucketJob.forEach(job -> {
+			azureRepoJobs.forEach(job -> {
 				if (org.springframework.util.CollectionUtils.isEmpty(job.getProcessorItemList())) {
 					return;
 				}
@@ -421,8 +437,37 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		return resultListMap;
 	}
 
-	private List<Tool> getBitBucketJobs(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
+	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(String startDate, String endDate,
+																	   Map<ObjectId, Map<String, List<Tool>>> toolMap, List<Node> leafNodeList, String repoToolsKpi) {
+		List<String> projectCode = new ArrayList<>();
+		leafNodeList.forEach(node -> {
+			List<Tool> repoToolsJobs = getRepoToolsJobs(toolMap, node);
+			if (CollectionUtils.isNotEmpty(repoToolsJobs)) {
+				projectCode.add(node.getId());
+			}
+		});
+		if (CollectionUtils.isEmpty(projectCode)) {
+			return new ArrayList<>();
+		}
+		return repoToolsConfigService.getRepoToolKpiMetrics(projectCode, repoToolsKpi, startDate, endDate,
+				FREQUENCY);
+	}
 
+	private List<Tool> getRepoToolsJobs(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
+		ProjectFilter accountHierarchyData = node.getProjectFilter();
+		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(configId);
+		List<Tool> bitbucketJob = new ArrayList<>();
+		if (null != toolListMap) {
+			bitbucketJob.addAll(toolListMap.get(REPO_TOOLS) == null ? Collections.emptyList() : toolListMap.get(REPO_TOOLS));
+		}
+		if (CollectionUtils.isEmpty(bitbucketJob)) {
+			log.error("[BITBUCKET]. No repository found for this project {}", node.getProjectFilter());
+		}
+		return bitbucketJob;
+	}
+
+	private List<Tool> getBitBucketJobs(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
 		ProjectFilter accountHierarchyData = node.getProjectFilter();
 		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
 		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(configId);
@@ -435,14 +480,12 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 			bitbucketJob.addAll(toolListMap.get(GITLAB) == null ? Collections.emptyList() : toolListMap.get(GITLAB));
 			bitbucketJob.addAll(toolListMap.get(GITHUB) == null ? Collections.emptyList() : toolListMap.get(GITHUB));
 		}
-
 		if (CollectionUtils.isEmpty(bitbucketJob)) {
 			log.error("[BITBUCKET]. No repository found for this project {}", node.getProjectFilter());
 		}
-
 		return bitbucketJob;
-
 	}
+
 
 	@Override
 	public Long calculateKPIMetrics(Map<String, Object> t) {
@@ -453,6 +496,35 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
 		return calculateKpiValueForLong(valueList, kpiId);
+	}
+
+	private void createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesCommit,
+										List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesMR, String repoName, String branchName,
+										Map<String, Long> dateWiseCommitRepoTools, Map<String, Long> dateWiseMRRepoTools) {
+
+		for (RepoToolKpiMetricResponse response : repoToolKpiMetricResponsesCommit) {
+			if (response.getProjectRepositories() != null) {
+				Optional<Branches> matchingBranch = response.getProjectRepositories().stream()
+						.filter(repository -> repository.getRepository().equals(repoName))
+						.flatMap(repository -> repository.getBranchesCommitsCount().stream())
+						.filter(branch -> branch.getBranchName().equals(branchName)).findFirst();
+
+				Long commitValue = matchingBranch.map(Branches::getCount).orElse(0L);
+				matchingBranch.ifPresent(branch -> dateWiseCommitRepoTools.put(response.getDateLabel(), commitValue));
+			}
+		}
+
+		for (RepoToolKpiMetricResponse response : repoToolKpiMetricResponsesMR) {
+			if (response.getRepositories() != null) {
+				Optional<Branches> matchingBranch = response.getRepositories().stream()
+						.filter(repository -> repository.getName().equals(repoName))
+						.flatMap(repository -> repository.getBranches().stream())
+						.filter(branch -> branch.getName().equals(branchName)).findFirst();
+
+				Long mrValue = matchingBranch.map(Branches::getMergeRequests).orElse(0L);
+				matchingBranch.ifPresent(branch -> dateWiseMRRepoTools.put(response.getDateLabel(), mrValue));
+			}
+		}
 	}
 
 }

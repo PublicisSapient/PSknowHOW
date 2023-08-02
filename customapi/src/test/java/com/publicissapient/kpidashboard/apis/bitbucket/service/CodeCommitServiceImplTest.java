@@ -33,6 +33,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.data.*;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,10 +51,6 @@ import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.CommitDetailsDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.data.MergeRequestDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
@@ -87,6 +86,7 @@ public class CodeCommitServiceImplTest {
 	private static final String P4 = "p4, P4 - Minor, minor, 4, Low";
 	private static Tool tool1;
 	private static Tool tool2;
+	private static Tool tool3;
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	Map<String, List<Tool>> toolGroup = new HashMap<>();
@@ -111,6 +111,9 @@ public class CodeCommitServiceImplTest {
 	CodeCommitServiceImpl codeCommitServiceImpl;
 	List<Tool> toolList1;
 	List<Tool> toolList2;
+	List<Tool> toolList3;
+
+
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
@@ -124,11 +127,14 @@ public class CodeCommitServiceImplTest {
 	private KpiRequest kpiRequest;
 	@Mock
 	private TreeAggregatorDetail treeAggregatorDetail;
+	@Mock
+	RepoToolsConfigServiceImpl repoToolsConfigService;
 	private List<MergeRequests> mergeList = new ArrayList<>();
 	private KpiElement kpiElement;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 	private List<DataCount> trendValues = new ArrayList<>();
+	private List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -151,6 +157,9 @@ public class CodeCommitServiceImplTest {
 		MergeRequestDataFactory mergeRequestDataFactory = MergeRequestDataFactory.newInstance();
 		mergeList = mergeRequestDataFactory.getMergeRequestList();
 
+		RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
+		repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
+
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
 		});
@@ -168,6 +177,7 @@ public class CodeCommitServiceImplTest {
 	private void setToolMap() {
 		toolList1 = new ArrayList<>();
 		toolList2 = new ArrayList<>();
+		toolList3 = new ArrayList<>();
 
 		ProcessorItem processorItem = new ProcessorItem();
 		processorItem.setProcessorId(new ObjectId("63282180160f5b4eb2ac380b"));
@@ -185,11 +195,15 @@ public class CodeCommitServiceImplTest {
 		tool1 = createTool("21c056722dba82182340470ecd20112c", "job1", "url1", "Bitbucket", "user1", collectorItemList);
 		tool2 = createTool("1c056f7m0dba82182340470ecd20112c", "job2", "url2", "AzureRepository", "user2",
 				collectorItemList1);
+		tool3 = createTool("21c056722dba82182340470ecd21312c", "job3", "url3", "Repo_Tools", "USER3",  collectorItemList1);
+
 		toolList1.add(tool1);
 		toolList2.add(tool2);
+		toolList3.add(tool3);
 
 		toolGroup.put(Constant.TOOL_BITBUCKET, toolList1);
 		toolGroup.put(Constant.TOOL_AZUREREPO, toolList2);
+		toolGroup.put(Constant.REPO_TOOLS, toolList3);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
 
 	}
@@ -233,7 +247,7 @@ public class CodeCommitServiceImplTest {
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put("codeCommit", Arrays.asList("0", "2", "4", "8", "32"));
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
-
+		when(repoToolsConfigService.getrepoToolKpiMetrics(any(), any(), any(), any(), any())).thenReturn(repoToolKpiMetricResponseList);
 		try {
 			KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
