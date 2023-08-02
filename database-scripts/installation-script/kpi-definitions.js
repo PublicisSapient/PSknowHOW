@@ -5269,17 +5269,24 @@ db.kpi_column_configs.insertMany([{
                                  			order: 5,
                                  			isShown: true,
                                  			isDefault: false
-                                 		}, {
-                                 			columnName: 'Linked Stories Size',
-                                 			order: 6,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
-                                 			columnName: 'Assignee',
-                                 			order: 7,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}]
+                                 		},{
+                                            columnName : "DIR",
+                                            order : Double("7"),
+                                            isShown : true,
+                                            isDefault : false
+                                        },
+                                        {
+                                            columnName : "Defect Density",
+                                            order : Double("8"),
+                                            isShown : true,
+                                            isDefault : false
+                                        },
+                                        {
+                                            columnName : "Assignee",
+                                            order : Double("9"),
+                                            isShown : true,
+                                            isDefault : false
+                                        }]
                                  	},
 
                                  	{
