@@ -26,9 +26,9 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   filterMultiSelectOptionsData: object = {};
   kpiSelectedFilterObj: any = {};
   @Input() isShow?: any;
-  @Input() showExport: boolean;
+  @Input() showExport: string;
   @Input() showTrendIndicator =true;
-  @Input() showChartView = true;
+  @Input() showChartView = 'chart';
   @Input() cols: Array<object> = [];
   @Input() iSAdditionalFilterSelected =false;
   @Input() showCommentIcon: boolean;
