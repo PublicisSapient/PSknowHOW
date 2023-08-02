@@ -7963,8 +7963,8 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
     }
-   }
-},{
+   },
+   {
     "fieldName": "sprintName",
     "fieldLabel": "Sprint Name",
     "fieldType": "text",

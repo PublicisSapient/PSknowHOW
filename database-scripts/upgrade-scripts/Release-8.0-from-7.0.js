@@ -2500,10 +2500,7 @@ db.kpi_master.updateOne(
   }
 );
 
-var fieldNameToCheck = "sprintName";
-
-if (db.getCollection('field_mapping_structure').count({ "fieldName": fieldNameToCheck }) === 0) {
-    db.getCollection('field_mapping_structure').insert([
+    db.getCollection('field_mapping_structure').insertMany([
         {
             "fieldName": "sprintName",
             "fieldLabel": "Sprint Name",
@@ -2515,7 +2512,4 @@ if (db.getCollection('field_mapping_structure').count({ "fieldName": fieldNameTo
             }
         }
     ]);
-    print("Document inserted successfully.");
-} else {
-    print("Document with fieldName '" + fieldNameToCheck + "' already exists. No action required.");
-}
+
