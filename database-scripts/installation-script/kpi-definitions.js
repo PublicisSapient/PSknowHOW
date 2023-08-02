@@ -5265,33 +5265,16 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: true
                                  		}, {
-                                 			columnName: 'Linked Defect',
-                                 			order: 5,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
-                                 			columnName: 'Size(story point/hours)',
-                                 			order: 6,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		},{
-                                            columnName: 'DIR',
+                                            columnName: 'Linked Stories Size',
+                                            order: 6,
+                                            isShown: true,
+                                            isDefault: false
+                                        }, {
+                                            columnName: 'Assignee',
                                             order: 7,
                                             isShown: true,
                                             isDefault: false
-                                        },
-                                        {
-                                            columnName: 'Defect Density',
-                                            order: 8,
-                                            isShown: true,
-                                            isDefault: false
-                                        },
-                                 		 {
-                                 			columnName: 'Assignee',
-                                 			order: 9,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}]
+                                        }]
                                  	},
 
                                  	{
