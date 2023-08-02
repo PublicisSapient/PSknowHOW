@@ -366,15 +366,12 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 							JiraIssue::getUrl));
 			jiraIssueModalObject.setLinkedDefefect(linkedDefects);
 			jiraIssueModalObject.setDIR((double) defects.size());
+			jiraIssueModalObject
+					.setDefectDensity(String.valueOf(calculateDefectDensity(jiraIssueList, defects, fieldMapping)));
+			if(jiraIssueModalObject.getIssueSize()==null) jiraIssueModalObject.setIssueSize("0.0");
 			if (!completedIssueList.contains(jiraIssue)) {
 				jiraIssueModalObject.setMarker(Constant.GREEN);
 			}
-			if (jiraIssueModalObject.getIssueSize() == null
-					|| jiraIssueModalObject.getIssueSize().equalsIgnoreCase("0.0"))
-				jiraIssueModalObject.setDefectDensity("-");
-			else
-				jiraIssueModalObject.setDefectDensity(String.valueOf(
-						roundingOff((defects.size() * 1.0) / Double.parseDouble(jiraIssueModalObject.getIssueSize()))));
 		});
 	}
 
