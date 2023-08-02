@@ -2501,7 +2501,6 @@ db.kpi_master.updateOne(
 );
 
 var fieldNameToCheck = "sprintName";
-
 if (db.getCollection('field_mapping_structure').count({ "fieldName": fieldNameToCheck }) === 0) {
     db.getCollection('field_mapping_structure').insert([
         {
