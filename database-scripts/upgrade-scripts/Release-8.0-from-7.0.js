@@ -2458,3 +2458,12 @@ if (!sprintFetchPolicy) {
 } else {
     print("Fetch Sprint policy already exists");
 }
+
+//---------7.6.0 changes------------------------------------------------------------------
+//---- KPI info update for KPI 137 ( Defect Reopen Rate)
+
+db.getCollection('kpi_master').updateOne(
+  { "kpiId": "kpi137" },
+  { $set: { "kpiInfo.definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available." } }
+);
+
