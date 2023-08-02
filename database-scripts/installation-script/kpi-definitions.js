@@ -285,7 +285,7 @@ db.getCollection('kpi_master').insertMany(
           "operator": "division",
           "operands": [
             "No. of defects rejected in a sprint",
-            "Total no. of defects reported in a sprint"
+            "Total no. of defects Closed in a sprint"
           ]
         }
       ],
@@ -6870,16 +6870,6 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
-        "fieldName": "jiraIssueTypeKPI37",
-        "fieldLabel": "Issue type to be included",
-        "fieldType": "chips",
-        "fieldCategory": "Issue_Type",
-        "section": "Issue Types Mapping",
-        "tooltip": {
-            "definition": "Issue types that are considered as defects in Jira"
-        }
-    },
-    {
         "fieldName": "jiraIssueTypeNames",
         "fieldLabel": "Issue types to be included",
         "fieldType": "chips",
@@ -7963,6 +7953,16 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "Status from workflow on which ticket is considered as Rejected/Dropped."
     }
-}
+  },
+  {
+    "fieldName": "jiraDodKPI37",
+    "fieldLabel": "Status to identify completed issues",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+    }
+   }
 ]
 );
