@@ -285,7 +285,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 						.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
 
 				for (JiraIssue jiraIssue : allDefects) {
-					createLinkAndUnlinkDefectList(overAllUnlinkedmodalValues, linkedDefectList, unlinkedDefectList,
+					createLinkDefectListAndUnlinkDefectModal(overAllUnlinkedmodalValues, linkedDefectList, unlinkedDefectList,
 							jiraIssue, totalJiraIssues, fieldMapping, completedIssueList, linkedIssueMap);
 				}
 				Set<String> linkedStoriesSet = linkedDefectList.stream().map(JiraIssue::getDefectStoryID)
@@ -435,7 +435,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	 * and adds it to either a list of linked or unlinked defects accordingly.
 	 */
 
-	private void createLinkAndUnlinkDefectList(List<IterationKpiModalValue> overAllUnlinkedmodalValues, // NOSONAR
+	private void createLinkDefectListAndUnlinkDefectModal(List<IterationKpiModalValue> overAllUnlinkedmodalValues, // NOSONAR
 			List<JiraIssue> linkedDefect, List<JiraIssue> unlinkedDefect, JiraIssue jiraIssue,
 			List<JiraIssue> totalJiraIssues, FieldMapping fieldMapping, List<JiraIssue> completedIssueList,
 			Map<String, JiraIssue> linkedIssueMap) {
