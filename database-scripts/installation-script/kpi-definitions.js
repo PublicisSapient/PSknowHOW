@@ -3305,7 +3305,8 @@ db.getCollection('kpi_category_mapping').insertMany(
 
 
 //Fields, used on issue details for KPI issue lists
-db.kpi_column_configs.insertMany([{
+db.kpi_column_configs.insertMany([
+{
                                  		basicProjectConfigId: null,
                                  		kpiId: 'kpi8',
                                  		kpiColumnDetails: [{
@@ -5265,11 +5266,16 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: true
                                  		}, {
-                                 			columnName: 'Linked Stories',
+                                 			columnName: 'Linked Defect',
                                  			order: 5,
                                  			isShown: true,
                                  			isDefault: false
                                  		},{
+                                            columnName: 'Size(story point/hours)',
+                                            order: 6,
+                                            isShown: true,
+                                            isDefault: true
+                                        },{
                                             columnName : "DIR",
                                             order : Double("7"),
                                             isShown : true,
