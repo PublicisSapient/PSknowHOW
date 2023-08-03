@@ -34,8 +34,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1290,8 +1292,10 @@ public class KPIExcelUtility {
 			jiraIssueModalObject.setDevDueDate(jiraIssue.getDevDueDate().split("T")[0]);
 		else
 			jiraIssueModalObject.setDevDueDate(Constant.DASH);
-		modalValues.add(jiraIssueModalObject);
-		overAllModalValues.add(jiraIssueModalObject);
+		if(modalValues!=null || overAllModalValues!=null){
+			modalValues.add(jiraIssueModalObject);
+			overAllModalValues.add(jiraIssueModalObject);
+		}
 	}
 
 	/**
@@ -1498,6 +1502,36 @@ public class KPIExcelUtility {
 			userRatings.add(user.getRating());
 			userRatingsForSprintMap.put(userIdentifier, userRatings);
 		}
+	}
+
+	public static void prepareStoryData(List<JiraIssue> value, List<JiraIssueCustomHistory> issuehistory, List<KPIExcelData> issueDetailList, Map<String, IterationKpiModalValue> modalObjectMap, FieldMapping fieldMapping) {
+		Map<String, JiraIssueCustomHistory> historyMap = issuehistory.stream()
+				.filter(history -> value.stream()
+						.anyMatch(issue -> issue.getNumber().equalsIgnoreCase(history.getStoryID())))
+				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, Function.identity()));
+
+		for(JiraIssue jiraIssue:value){
+			KPIExcelUtility.populateIterationKPI(null, null, jiraIssue, fieldMapping, modalObjectMap);
+			IterationKpiModalValue iterationKpiModalValue = modalObjectMap.get(jiraIssue.getNumber());
+			JiraIssueCustomHistory jiraIssueCustomHistory = historyMap.get(jiraIssue.getNumber());
+			iterationKpiModalValue.setStatusLogGroup(createLog(jiraIssueCustomHistory.getStatusUpdationLog()));
+			iterationKpiModalValue.setWorkLogGroup(createLog(jiraIssueCustomHistory.getWorkLog()));
+		}
+	}
+
+	private static Map<String, Set<String>> createLog(List<JiraHistoryChangeLog> historyLog) {
+		Map<String,Set<String>> dateWiseLogMap= new HashMap<>();
+		if(CollectionUtils.isNotEmpty(historyLog)){
+			for(JiraHistoryChangeLog log:historyLog){
+				String changedOn = log.getUpdatedOn().toLocalDate().toString();
+				dateWiseLogMap.computeIfPresent(changedOn,(date,logs)->{
+					logs.add(log.getChangedTo());
+					return logs;
+				});
+				dateWiseLogMap.computeIfAbsent(changedOn,k->new HashSet<>()).add(log.getChangedTo());
+			}
+		}
+		return dateWiseLogMap;
 	}
 
 	public static double roundingOff(double value) {

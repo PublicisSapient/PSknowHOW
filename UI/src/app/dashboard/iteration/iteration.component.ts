@@ -96,7 +96,8 @@ export class IterationComponent implements OnInit, OnDestroy {
   sharedObject;
   navigationTabs:Array<object> = [
     {'label':'Iteration Review', 'count': 0},
-    {'label':'Iteration Progress', 'count': 0}
+    {'label':'Iteration Progress', 'count': 0},
+    {'label':'New Category', 'count': 0}
   ];
   forzenColumns = ['issue id','issue description'];
   commitmentReliabilityKpi;

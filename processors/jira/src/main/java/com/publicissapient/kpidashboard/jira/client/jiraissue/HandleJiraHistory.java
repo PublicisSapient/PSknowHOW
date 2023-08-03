@@ -190,6 +190,7 @@ public class HandleJiraHistory {
 		List<JiraHistoryChangeLog> priorityChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.PRIORITY);
 		List<JiraHistoryChangeLog> fixVersionChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.FIXVERSION);
 		List<JiraHistoryChangeLog> labelsChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.LABELS);
+		List<JiraHistoryChangeLog> workLog = getJiraFieldChangeLog(changeLogList, JiraConstants.WORKLOG);
 		List<JiraHistoryChangeLog> dueDateChangeLog = getDueDateChangeLog(changeLogList, fieldMapping, fields);
 		List<JiraHistoryChangeLog> sprintChangeLog = getCustomFieldChangeLog(changeLogList,
 				handleStr(fieldMapping.getSprintName()), fields);
@@ -206,6 +207,7 @@ public class HandleJiraHistory {
 		createFirstEntryOfChangeLog(priorityChangeLog, issue,
 				ObjectUtils.isNotEmpty(issue.getPriority()) ? issue.getPriority().getName() : "");
 		createFirstEntryOfChangeLog(labelsChangeLog, issue, StringUtils.join(issue.getLabels(), " "));
+		createFirstEntryOfChangeLog(workLog, issue, "");
 		createFirstEntryOfDueDateChangeLog(dueDateChangeLog, fieldMapping, issue, fields);
 		creatingFirstEntryOfSprintChangeLog(sprintChangeLog, fieldMapping, issue, fields);
 		createFixVersionHistory(fixVersionChangeLog, issue, convertIterableVersionToString(issue.getFixVersions()));
@@ -219,6 +221,7 @@ public class HandleJiraHistory {
 		jiraIssueCustomHistory.setDueDateUpdationLog(dueDateChangeLog);
 		jiraIssueCustomHistory.setSprintUpdationLog(sprintChangeLog);
 		jiraIssueCustomHistory.setFlagStatusChangeLog(flagStatusChangeLog);
+		jiraIssueCustomHistory.setWorkLog(workLog);
 
 	}
 
