@@ -186,6 +186,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
 		Set<String> totalNonBugIssues = new HashSet<>();
 		Set<String> totalIssue = new HashSet<>();
+		Set<String> totalIssueInSprint = new HashSet<>();
 		sprintDetails.forEach(sprintDetail -> {
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetail.getBasicProjectConfigId());
@@ -195,6 +196,14 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));
 			}
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.TOTAL_ISSUES));
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.COMPLETED_ISSUES_ANOTHER_SPRINT));
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.PUNTED_ISSUES));
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.ADDED_ISSUES));
 		});
 
 		/** additional filter **/
@@ -207,21 +216,21 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			List<JiraIssue> totalSprintReportDefects = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
 					uniqueProjectMap);
 			sprintReportedBugsList = totalSprintReportDefects;
-			List<JiraIssue> totalBugs = jiraIssueRepository
+			List<JiraIssue> subTaskBugs = jiraIssueRepository
 					.findLinkedDefects(mapOfFilters, totalNonBugIssues, uniqueProjectMap).stream()
-					.filter(jiraIssue -> !totalIssue.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber())).collect(Collectors.toList());
 
-			ArrayList<JiraIssue> totalDefects = new ArrayList<>(totalBugs);
+			ArrayList<JiraIssue> totalDefects = new ArrayList<>(subTaskBugs);
 			List<JiraIssueCustomHistory> defectsCustomHistory = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(
-							totalBugs.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
+							subTaskBugs.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
 							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 			setDbQueryLogger(sprintDetails, totalDefects, totalSprintReportDefects);
 
 			resultListMap.put(SPRINT_REPORTED_BUGS, sprintReportedBugsList);
 			resultListMap.put(TOTAL_DEFECTS, totalSprintReportDefects);
-			resultListMap.put(SUB_TASK_BUGS, totalBugs);
+			resultListMap.put(SUB_TASK_BUGS, subTaskBugs);
 			resultListMap.put(DEFECT_HISTORY, defectsCustomHistory);
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 			resultListMap.put(PROJECT_WISE_DEFECT_REMOVEL_STATUS, projectWiseDefectRemovelStatus);
