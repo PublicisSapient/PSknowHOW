@@ -68,8 +68,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	private static final String JIRA_REOPEN_HISTORY = "JIRA_REOPEN_HISTORY";
 	private static final String TIME_FORMAT_WITH_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 	private static final String STATUS = "status";
-	private static final List<String> closedStatusLists = Arrays.asList("Closed", "Done", "Live");
-
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -124,77 +122,82 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	 * 
 	 */
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("java:S3776")
 	private void projectWiseLeafNodeValues(List<Node> projectList, DataCount trendValue, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
-		Map<String, Object> kpiResultDbMap = fetchKPIDataFromDb(projectList, null, null, kpiRequest);
-		List<JiraIssue> totalDefects = (List<JiraIssue>) kpiResultDbMap.get(TOTAL_JIRA_ISSUE);
-		List<JiraIssueCustomHistory> reopenJiraHistory = (List<JiraIssueCustomHistory>) kpiResultDbMap
-				.get(JIRA_REOPEN_HISTORY);
-		Map<String, List<String>> closedStatusMap = (Map<String, List<String>>) kpiResultDbMap
-				.get(PROJECT_CLOSED_STATUS_MAP);
-		boolean closedStatusConfigEmpty = closedStatusMap.values().stream().filter(Objects::nonNull)
-				.allMatch(List::isEmpty);
-		if (closedStatusConfigEmpty) {
-			return;
-		}
-		Map<String, List<JiraIssue>> priorityWiseTotalStory = totalDefects.stream()
-				.collect(Collectors.groupingBy(JiraIssue::getPriority));
-		Map<String, JiraIssueCustomHistory> reopenJiraHistoryMap = reopenJiraHistory.stream()
-				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, Function.identity()));
-		Set<String> filters = new LinkedHashSet<>();
-		filters.add(OVERALL);
-		List<IterationKpiModalValue> overAllModalValues = new ArrayList<>();
-		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
-		List<Double> overAllDuration = Arrays.asList(0.0);
-		priorityWiseTotalStory.forEach((priority, jiraIssueList) -> {
-			List<IterationKpiModalValue> modalValues = new ArrayList<>();
-			filters.add(priority);
-			List<Double> totalDuration = Arrays.asList(0.0);
-			jiraIssueList.forEach(jiraIssue -> {
-				if (reopenJiraHistoryMap.containsKey(jiraIssue.getNumber())) {
-					JiraIssueCustomHistory jiraIssueCustomHistory = reopenJiraHistoryMap.get(jiraIssue.getNumber());
-					List<String> closedStatusList = closedStatusMap.getOrDefault(jiraIssue.getBasicProjectConfigId(),
-							new ArrayList<>());
-					List<JiraHistoryChangeLog> issueHistoryList = jiraIssueCustomHistory.getStatusUpdationLog();
-					Optional<JiraHistoryChangeLog> closedHistoryOptional = issueHistoryList.stream()
-							.filter(Objects::nonNull)
-							.filter(issueHistory -> closedStatusList.contains(issueHistory.getChangedTo())).findFirst();
-					if (closedHistoryOptional.isPresent()) {
-						JiraHistoryChangeLog closedHistory = closedHistoryOptional.get();
-						Optional<JiraHistoryChangeLog> reopenHistoryOptional = issueHistoryList.stream().filter(
-								sprintDetail -> sprintDetail.getUpdatedOn().isAfter(closedHistory.getUpdatedOn())
-										&& !closedStatusList.contains(sprintDetail.getChangedTo()))
+		Node leafNode = projectList.stream().findFirst().orElse(null);
+		if (leafNode != null) {
+			Map<String, Object> kpiResultDbMap = fetchKPIDataFromDb(projectList, null, null, kpiRequest);
+			List<JiraIssue> totalDefects = (List<JiraIssue>) kpiResultDbMap.get(TOTAL_JIRA_ISSUE);
+			List<JiraIssueCustomHistory> reopenJiraHistory = (List<JiraIssueCustomHistory>) kpiResultDbMap
+					.get(JIRA_REOPEN_HISTORY);
+			Map<String, List<String>> closedStatusMap = (Map<String, List<String>>) kpiResultDbMap
+					.get(PROJECT_CLOSED_STATUS_MAP);
+			boolean closedStatusConfigEmpty = closedStatusMap.values().stream().filter(Objects::nonNull)
+					.allMatch(List::isEmpty);
+			if (closedStatusConfigEmpty) {
+				return;
+			}
+			Map<String, List<JiraIssue>> priorityWiseTotalStory = totalDefects.stream()
+					.collect(Collectors.groupingBy(JiraIssue::getPriority));
+			Map<String, JiraIssueCustomHistory> reopenJiraHistoryMap = reopenJiraHistory.stream()
+					.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, Function.identity()));
+			Set<String> filters = new LinkedHashSet<>();
+			filters.add(OVERALL);
+			List<IterationKpiModalValue> overAllModalValues = new ArrayList<>();
+			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
+			List<Double> overAllDuration = Arrays.asList(0.0);
+			List<String> closedStatusList = closedStatusMap
+					.getOrDefault(leafNode.getProjectFilter().getBasicProjectConfigId().toString(), new ArrayList<>());
+			priorityWiseTotalStory.forEach((priority, jiraIssueList) -> {
+				List<IterationKpiModalValue> modalValues = new ArrayList<>();
+				filters.add(priority);
+				List<Double> totalDuration = Arrays.asList(0.0);
+				jiraIssueList.forEach(jiraIssue -> {
+					if (reopenJiraHistoryMap.containsKey(jiraIssue.getNumber())) {
+						JiraIssueCustomHistory jiraIssueCustomHistory = reopenJiraHistoryMap.get(jiraIssue.getNumber());
+						List<JiraHistoryChangeLog> issueHistoryList = jiraIssueCustomHistory.getStatusUpdationLog();
+						Optional<JiraHistoryChangeLog> closedHistoryOptional = issueHistoryList.stream()
+								.filter(Objects::nonNull)
+								.filter(issueHistory -> closedStatusList.contains(issueHistory.getChangedTo()))
 								.findFirst();
-						if (reopenHistoryOptional.isPresent()) {
-							JiraHistoryChangeLog reopenHistory = reopenHistoryOptional.get();
-							LocalDateTime closedTime = closedHistory.getUpdatedOn();
-							LocalDateTime reopenTime = reopenHistory.getUpdatedOn();
-							DateTime closedDate = KpiDataHelper.convertLocalDateTimeToDateTime(closedTime);
-							DateTime reopenDate = KpiDataHelper.convertLocalDateTimeToDateTime(reopenTime);
-							IterationKpiModalValue iterationModal = crateIterationKpiModal(jiraIssue, closedDate,
-									reopenDate);
-							modalValues.add(iterationModal);
-							double duration = Double.parseDouble(KpiDataHelper.calWeekHours(closedDate, reopenDate));
-							totalDuration.set(0, totalDuration.get(0) + duration);
+						if (closedHistoryOptional.isPresent()) {
+							JiraHistoryChangeLog closedHistory = closedHistoryOptional.get();
+							Optional<JiraHistoryChangeLog> reopenHistoryOptional = issueHistoryList.stream().filter(
+									sprintDetail -> sprintDetail.getUpdatedOn().isAfter(closedHistory.getUpdatedOn())
+											&& !closedStatusList.contains(sprintDetail.getChangedTo()))
+									.findFirst();
+							if (reopenHistoryOptional.isPresent()) {
+								JiraHistoryChangeLog reopenHistory = reopenHistoryOptional.get();
+								LocalDateTime closedTime = closedHistory.getUpdatedOn();
+								LocalDateTime reopenTime = reopenHistory.getUpdatedOn();
+								DateTime closedDate = KpiDataHelper.convertLocalDateTimeToDateTime(closedTime);
+								DateTime reopenDate = KpiDataHelper.convertLocalDateTimeToDateTime(reopenTime);
+								IterationKpiModalValue iterationModal = crateIterationKpiModal(jiraIssue, closedDate,
+										reopenDate);
+								modalValues.add(iterationModal);
+								double duration = Double
+										.parseDouble(KpiDataHelper.calWeekHours(closedDate, reopenDate));
+								totalDuration.set(0, totalDuration.get(0) + duration);
+							}
 						}
 					}
-				}
-			});
-			addToIterationKpiValues(iterationKpiValues, priority, jiraIssueList, modalValues, totalDuration,
-					closedStatusLists);
-			overAllModalValues.addAll(modalValues);
-			overAllDuration.set(0, overAllDuration.get(0) + totalDuration.get(0));
+				});
+				addToIterationKpiValues(iterationKpiValues, priority, jiraIssueList, modalValues, totalDuration,
+						closedStatusList);
+				overAllModalValues.addAll(modalValues);
+				overAllDuration.set(0, overAllDuration.get(0) + totalDuration.get(0));
 
-		});
-		addToIterationKpiValues(iterationKpiValues, OVERALL, totalDefects, overAllModalValues, overAllDuration,
-				closedStatusLists);
-		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, filters);
-		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
-		kpiElement.setFilters(iterationKpiFilters);
-		trendValue.setValue(iterationKpiValues);
-		kpiElement.setModalHeads(KPIExcelColumn.DEFECT_REOPEN_RATE.getColumns());
-		kpiElement.setTrendValueList(trendValue);
+			});
+			addToIterationKpiValues(iterationKpiValues, OVERALL, totalDefects, overAllModalValues, overAllDuration,
+					closedStatusList);
+			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, filters);
+			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
+			kpiElement.setFilters(iterationKpiFilters);
+			trendValue.setValue(iterationKpiValues);
+			kpiElement.setModalHeads(KPIExcelColumn.DEFECT_REOPEN_RATE.getColumns());
+			kpiElement.setTrendValueList(trendValue);
+		}
 	}
 
 	/**
