@@ -64,3 +64,20 @@
   padding-top: 10px;
   overflow-y: visible;
 }
+
+:host ::ng-deep.tooltip2{
+  display: none;
+  font-size: 0.7rem;
+  padding: 2px;
+  position: absolute;
+  color: var(--color-gray-34);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 2px;
+  box-shadow: 0px 0px 6px #b9b9bb;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+:host ::ng-deep.tooltip-container{
+  position: relative
+}

@@ -1188,8 +1188,8 @@ describe('FilterComponent', () => {
    })
 
    it("should enable show chart toggle ",()=>{
-    component.showChartToggle(true);
-    expect(component.showChart).toBe(true)
+    component.showChartToggle('chart');
+    expect(component.showChart).toBe('chart')
    })
 
    it("should disable export btn once clicked",()=>{
@@ -1328,6 +1328,7 @@ describe('FilterComponent', () => {
   it('should call applyChagnes on selection of trendValue', () => {
     const spy = spyOn(component, 'applyChanges');
     component.initializeFilterForm();
+    component.filterForm?.get('selectedTrendValue').setValue('DOTC_63b51633f33fd2360e9e72bd')
     component.additionalFiltersArr = [{
       "level": 5,
       "hierarchyLevelId": "sprint",
