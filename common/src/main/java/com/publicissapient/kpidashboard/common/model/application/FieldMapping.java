@@ -93,6 +93,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDodQAKPI111;
 	private List<String> jiraDodKPI3;
 	private List<String> jiraDodKPI127;
+	private List<String> jiraDodKPI37;
 
 	private String jiraDefectCreatedStatus;
 	private String jiraDefectCreatedStatusKPI14;
@@ -143,7 +144,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraSprintCapacityIssueTypeKpi46;
 
 	private List<String> jiraDefectRejectionlIssueType;
-	private List<String> jiraIssueTypeKPI37;
 
 	private List<String> jiraDefectCountlIssueType;
 	private List<String> jiraDefectCountlIssueTypeKPI28;
