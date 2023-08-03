@@ -46,3 +46,59 @@ db.kpi_master.updateOne(
     ]
   }
 );
+
+//Reversing DTS-26121 Untagged
+let columnConfigs = db.kpi_column_configs.find({"kpiId" : "kpi133"});
+columnConfigs.forEach(function(config){
+    db.kpi_column_configs.updateOne({"_id":config._id},
+    {$set:{"kpiColumnDetails" : [
+           		{
+           			"columnName" : "Issue Id",
+           			"order" : Double("0"),
+           			"isShown" : true,
+           			"isDefault" : true
+           		},
+           		{
+           			"columnName" : "Issue Type",
+           			"order" : Double("1"),
+           			"isShown" : true,
+           			"isDefault" : true
+           		},
+           		{
+           			"columnName" : "Issue Description",
+           			"order" : Double("2"),
+           			"isShown" : true,
+           			"isDefault" : true
+           		},
+           		{
+           			"columnName" : "Issue Status",
+           			"order" : Double("3"),
+           			"isShown" : true,
+           			"isDefault" : true
+           		},
+           		{
+           			"columnName" : "Priority",
+           			"order" : Double("4"),
+           			"isShown" : true,
+           			"isDefault" : true
+           		},
+           		{
+           			"columnName" : "Linked Stories",
+           			"order" : Double("5"),
+           			"isShown" : true,
+           			"isDefault" : false
+           		},
+           		{
+           			"columnName" : "Linked Stories Size",
+           			"order" : Double("6"),
+           			"isShown" : true,
+           			"isDefault" : false
+           		},
+           		{
+           			"columnName" : "Assignee",
+           			"order" : Double("7"),
+           			"isShown" : true,
+           			"isDefault" : false
+           		}
+           	] }})
+})
