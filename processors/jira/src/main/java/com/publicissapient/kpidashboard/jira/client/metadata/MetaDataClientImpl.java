@@ -232,7 +232,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		List<Identifier> workflowList = metadataIdentifier.getWorkflow();
 		FieldMapping fieldMapping=null;
 
-		if(projectConfig.isKanban() || metadataIdentifier.getTool()==AZURE) {
+		if(projectConfig.isKanban() || metadataIdentifier.getTool().equalsIgnoreCase(AZURE)) {
 			if (templateName.equalsIgnoreCase(STANDARD_TEMPLATE)) {
 				valuesToIdentifyMap = metadataIdentifier.getValuestoidentify().stream()
 						.collect(Collectors.toMap(Identifier::getType, Identifier::getValue));
@@ -576,7 +576,7 @@ public class MetaDataClientImpl implements MetadataClient {
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping
 					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
-			if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE)) {/////////////////////////////////////
+			if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE)) {
 				fieldMapping.setJiraTechDebtIssueType(
 						issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			} else {
