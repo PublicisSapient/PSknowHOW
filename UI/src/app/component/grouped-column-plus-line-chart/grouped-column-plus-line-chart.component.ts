@@ -138,13 +138,14 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
   draw2(data) {
     let sprintList = [];
     const viewType = this.viewType;
+    const selectedProjectCount = this.service.getSelectedTrends().length;
     const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
     d3.select(this.elem).select('#verticalSVG').select('svg').remove();
     d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
     d3.select(this.elem).select('#svgLegend').select('svg').remove();
     d3.select(this.elem).select('#legendIndicator').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
-    if (viewType === 'large') {
+    if (viewType === 'large' && selectedProjectCount === 1) {
       data = data.map(details => {
         let finalResult = {};
         finalResult = { ...details,sortName:(details.value[0].sSprintName || details.value[0].date), value: [{ ...details.value[0], sortSprint: (details.value[0].sSprintName || details.value[0].date)}] }
@@ -170,8 +171,10 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     const x1 = d3.scaleBand();
 
     const y = d3.scaleLinear().range([height - margin.top, 0]);
-
-    if (viewType === 'large') {
+    let tempAxis;
+    if (viewType === 'large' && selectedProjectCount === 1) {
+      /** Temporary axis for wrapping text only */
+      tempAxis =  d3.scaleBand().rangeRound([0, width - margin.left]).domain(sprintList)
       x0.domain(sprintList);
     }else{
       x0.domain(categoriesNames);
@@ -241,7 +244,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
 
     /** Adding tooltip container */
     let tooltipContainer;
-    if (viewType === 'large') {
+    if (viewType === 'large' && selectedProjectCount === 1) {
       d3.select(this.elem).select('#horizontalSVG').select('div').remove();
       d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
       tooltipContainer = d3.select(this.elem).select('#horizontalSVG').
@@ -279,7 +282,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       .append('g');
 
 
-    svgX
+    const xAxisText = svgX
       .append('g')
       .attr('class', 'xAxis')
       .attr('transform', 'translate(0,' + (height - margin.top) + ')')
@@ -287,7 +290,14 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       .attr('opacity', '1')
       .call(xAxis)
       .selectAll(".tick text")
-      .call(this.wrap, x0.bandwidth());
+
+      if (viewType === 'large' && selectedProjectCount === 1) {
+        xAxisText.each((d, i, nodes) => {
+          const textElement = d3.select(nodes[i]);
+          const width = tempAxis.bandwidth(); 
+          this.wrap(textElement, width);
+        });
+      }
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const XCaption = d3
@@ -365,7 +375,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       .append('rect')
       .attr('width', barWidth)
       .attr('x', (d, i) =>{
-        if (viewType === 'large') {
+        if (viewType === 'large' && selectedProjectCount === 1) {
           return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? x0(d.sortSprint || d.date) + barWidth / 1.5 : x0(d.sortSprint || d.date)
         }else{
           return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? x1(d.rate) + barWidth / 1.5 : x1(d.rate)
@@ -492,7 +502,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
           .range([height - margin.top, 0]);
 
         let xScale 
-        if(viewType === 'large'){
+        if(viewType === 'large' && selectedProjectCount === 1){
           xScale =  d3.scaleBand()
           .rangeRound([0, width - margin.left])
           .domain(sprintList)
@@ -510,7 +520,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
 
         const line = d3.line()
           .x((d, i) => {
-            const xValue = viewType === 'large' ? (d.date || d.sortSprint) : (i+1);
+            const xValue = (viewType === 'large' && selectedProjectCount === 1) ? (d.date || d.sortSprint) : (i+1);
             return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? xScale(xValue) + barWidth / 1.5 : xScale(xValue)
           })
           .y(d => yScale(d.lineValue));
@@ -606,7 +616,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
           })
           .append('circle')
           .attr('cx', (d, i) => {
-            const xValue = viewType === 'large' ? (d.date || d.sortSprint) : (i+1);
+            const xValue = (viewType === 'large' && selectedProjectCount === 1) ? (d.date || d.sortSprint) : (i+1);
             return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? xScale(xValue) + barWidth / 1.5 : xScale(xValue)})
           .attr('cy', d => yScale(d.lineValue))
           .attr('r', circleRadius)
@@ -626,7 +636,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
           });
 
          /** Adding tooltip text  */
-        if (viewType === 'large') {
+        if (viewType === 'large' && selectedProjectCount === 1) {
           tooltipContainer
             .selectAll('div')
             .data(newRawData[0]['value'])
@@ -639,7 +649,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
             .style('top', d => {
               return yScale(d.lineValue) - 20 + 'px'
             })
-            .text(d => d.lineValue)
+            .text(d => d.lineValue+' '+showUnit)
             .transition()
             .duration(500)
             .style('display', 'block')
@@ -784,10 +794,10 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
           tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
       while (word = words.pop()) {
         line.push(word)
-        tspan.text(line.join(""))
-        if (tspan.node().getComputedTextLength() > (width)) {
+        tspan.text(line.join(" "))
+        if (tspan.node().getComputedTextLength() > (width-5)) {
           line.pop()
-          tspan.text(line.join(""))
+          tspan.text(line.join(" "))
           line = [word]
           tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
         }
