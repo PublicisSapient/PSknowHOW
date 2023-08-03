@@ -68,6 +68,7 @@ public class MetaDataClientImpl implements MetadataClient {
 	public static final String DOJO_SAFE_TEMPLATE = "DOJO Safe Template";
 	public static final String DOJO_STUDIO_TEMPLATE = "DOJO Studio Template";
 	public static final String STANDARD_TEMPLATE = "Standard Template";
+	public static final String AZURE = "Azure";
 	private final JiraAdapter jiraAdapter;
 	private final BoardMetadataRepository boardMetadataRepository;
 	private final FieldMappingRepository fieldMappingRepository;
@@ -231,7 +232,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		List<Identifier> workflowList = metadataIdentifier.getWorkflow();
 		FieldMapping fieldMapping=null;
 
-		if(projectConfig.isKanban() || metadataIdentifier.getTool()=="Azure") {
+		if(projectConfig.isKanban() || metadataIdentifier.getTool()==AZURE) {
 			if (templateName.equalsIgnoreCase(STANDARD_TEMPLATE)) {
 				valuesToIdentifyMap = metadataIdentifier.getValuestoidentify().stream()
 						.collect(Collectors.toMap(Identifier::getType, Identifier::getValue));
