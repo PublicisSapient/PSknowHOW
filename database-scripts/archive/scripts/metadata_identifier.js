@@ -1062,6 +1062,12 @@ db.metadata_identifier.insert([{
                 "value": [
                     "Closed"
                 ]
+            },
+            {
+                "type": "jiraDodKPI37",
+                "value": [
+                    "Closed"
+                ]
             }
         ]
     },
@@ -1612,6 +1618,12 @@ db.metadata_identifier.insert([{
                 "value": [
                     "Closed"
                 ]
+            },
+            {
+                "type": "jiraDodKPI37",
+                "value": [
+                    "Closed"
+                ]
             }
         ]
     },
@@ -2159,6 +2171,12 @@ db.metadata_identifier.insert([{
             },
             {
                 "type": "jiraDodKPI151",
+                "value": [
+                    "Closed"
+                ]
+            },
+            {
+                "type": "jiraDodKPI37",
                 "value": [
                     "Closed"
                 ]
@@ -2775,6 +2793,14 @@ db.metadata_identifier.insert([{
             },
             {
                 "type": "jiraDodKPI151",
+                "value": [
+                    "Closed",
+                    "Resolved",
+                    "Ready for Delivery"
+                ]
+            },
+            {
+                "type": "jiraDodKPI37",
                 "value": [
                     "Closed",
                     "Resolved",
