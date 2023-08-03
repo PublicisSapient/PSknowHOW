@@ -752,7 +752,7 @@ db.metadata_identifier.insert([{
                 "value": [
                     "Closed"
                 ]
-            }, ,
+            },
             {
                 "type": "jiraDefectCreatedStatusKPI14",
                 "value": [
@@ -1308,7 +1308,7 @@ db.metadata_identifier.insert([{
                 "value": [
                     "Closed"
                 ]
-            }, ,
+            },
             {
                 "type": "jiraDefectCreatedStatusKPI14",
                 "value": [
@@ -1864,7 +1864,7 @@ db.metadata_identifier.insert([{
                 "value": [
                     "Closed"
                 ]
-            }, ,
+            },
             {
                 "type": "jiraDefectCreatedStatusKPI14",
                 "value": [
