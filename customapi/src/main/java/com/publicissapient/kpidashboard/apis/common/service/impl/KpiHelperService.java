@@ -568,7 +568,7 @@ public class KpiHelperService { // NOPMD
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
 
-			Map<ObjectId, Set<String>> duplicateIssues = getProjectWiseDuplicateIssueInSprintDetails(
+			Map<ObjectId, Set<String>> duplicateIssues = getProjectWiseTotalSprintDetail(
 					projectWiseTotalSprintDetails);
 			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
@@ -1506,26 +1506,18 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * get duplicate issues from all the sprints selected
+	 * get projectWiseTotalIssues
 	 * @param projectWiseTotalSprintDetails
 	 * @return
 	 */
-	public Map<ObjectId, Set<String>> getProjectWiseDuplicateIssueInSprintDetails(
+	public Map<ObjectId, Set<String>> getProjectWiseTotalSprintDetail(
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails) {
 		Map<ObjectId, Set<String>> duplicateIssues = new HashMap<>();
 		projectWiseTotalSprintDetails.forEach((projectId, sprintDetails) -> {
-			List<String> allIssues = sprintDetails.stream().flatMap(
+			Set<String> allIssues = sprintDetails.stream().flatMap(
 					sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(Collections.emptySet()).stream())
-					.map(SprintIssue::getNumber).collect(Collectors.toList());
-			//if single sprint is selected duplicate issues cannot be found, so taking all total issues as duplicate issues
-			if (sprintDetails.size() == 1) {
-				duplicateIssues.put(projectId, new HashSet<>(allIssues));
-			} else {
-				Set<String> duplicate = allIssues.stream()
-						.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet().stream()
-						.filter(m -> m.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
-				duplicateIssues.put(projectId, duplicate);
-			}
+					.map(SprintIssue::getNumber).collect(Collectors.toSet());
+			duplicateIssues.put(projectId, allIssues);
 		});
 		return duplicateIssues;
 	}
