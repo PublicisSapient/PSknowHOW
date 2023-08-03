@@ -100,9 +100,9 @@ export class MultilineComponent implements OnChanges {
       const XValue = details.date || details.sSprintName;
        return {...details,sortSprint:XValue};
     })
-    
     this.data[0].value = formatedData;
     const viewType = this.viewType;
+    const selectedProjectCount = this.service.getSelectedTrends().length;
     const data = this.data;
     const thresholdValue = this.thresholdValue;
     const elem = this.elem;
@@ -174,7 +174,7 @@ export class MultilineComponent implements OnChanges {
 
     let xScale;
 
-    if (viewType === 'large') {
+    if (viewType === 'large' && selectedProjectCount === 1) {
       xScale = d3
         .scaleBand()
         .domain(sprintList)
@@ -224,7 +224,7 @@ export class MultilineComponent implements OnChanges {
       .domain([0, maxYValue])
       .range([height - margin, 0]);
   
-    if (viewType === 'large') {
+    if (viewType === 'large' && selectedProjectCount === 1) {
       d3.select(this.elem).select('#horizontalSVG').select('div').remove();
       d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
       /** Adding tooltip container */
@@ -246,7 +246,7 @@ export class MultilineComponent implements OnChanges {
         .style('top', d => {
           return yScale(Math.round(d.value * 100) / 100) + 'px'
         })
-        .text(d => Math.round(d.value * 100) / 100)
+        .text(d => Math.round(d.value * 100) / 100+' '+showUnit)
         .transition()
         .duration(500)
         .style('display', 'block')
@@ -389,7 +389,7 @@ export class MultilineComponent implements OnChanges {
     const line = d3
       .line()
       .x((d, i) => {
-        if(viewType  === 'large'){
+        if(viewType  === 'large' && selectedProjectCount === 1){
           return xScale(d.date || d.sortSprint)
         }else{
           return xScale(i+1)
@@ -536,7 +536,7 @@ export class MultilineComponent implements OnChanges {
       })
       .append('circle')
       .attr('cx', function (d, i) {
-        if(viewType  === 'large'){
+        if(viewType  === 'large' && selectedProjectCount === 1){
           return xScale(d.date || d.sortSprint)
         }else{
           return xScale(i+1)
