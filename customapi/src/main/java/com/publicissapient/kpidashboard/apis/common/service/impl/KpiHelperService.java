@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -89,6 +88,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Helper class for kpi requests . Utility to process for kpi requests.
@@ -1514,14 +1515,17 @@ public class KpiHelperService { // NOPMD
 		Map<ObjectId, Set<String>> duplicateIssues = new HashMap<>();
 		projectWiseTotalSprintDetails.forEach((projectId, sprintDetails) -> {
 			List<String> allIssues = sprintDetails.stream().flatMap(
-							sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(Collections.emptySet()).stream())
+					sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(Collections.emptySet()).stream())
 					.map(SprintIssue::getNumber).collect(Collectors.toList());
-
-			Set<String> duplicate = allIssues.stream()
-					.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet().stream()
-					.filter(m -> m.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
-
-			duplicateIssues.put(projectId, duplicate);
+			//if single sprint is selected duplicate issues cannot be found, so taking all total issues as duplicate issues
+			if (sprintDetails.size() == 1) {
+				duplicateIssues.put(projectId, new HashSet<>(allIssues));
+			} else {
+				Set<String> duplicate = allIssues.stream()
+						.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet().stream()
+						.filter(m -> m.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
+				duplicateIssues.put(projectId, duplicate);
+			}
 		});
 		return duplicateIssues;
 	}

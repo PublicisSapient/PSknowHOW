@@ -340,7 +340,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
 		Set<String> totalIssue = new HashSet<>();
 		sprintDetails.stream().forEach(dbSprintDetail -> {
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+			FieldMapping fieldMapping = fieldMappingMap
 					.get(dbSprintDetail.getBasicProjectConfigId());
 			// to modify sprintdetails on the basis of configuration for the project
 			SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
