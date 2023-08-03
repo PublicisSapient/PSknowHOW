@@ -34,6 +34,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -83,6 +85,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	public static final String DUE_DATE = "dueDate";
 	private static final String SPRINT = "sprint";
 	private static final String ISSUES = "issues";
+	public static final String ISSUE_CUSTOM_HISTORY = "issues custom history";
+	public static final String ASSIGNEE_DETAILS = "AssigneeDetails";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	@Autowired
@@ -90,6 +94,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 
 	@Autowired
 	private CapacityKpiDataRepository capacityKpiDataRepository;
+
+	@Autowired
+	private KpiHelperService kpiHelperService;
 
 	/**
 	 * {@inheritDoc}
@@ -131,75 +138,41 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Iteration Burnup -> Requested sprint : {}", leafNode.getName());
-			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
 			SprintDetails sprintDetails;
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails = KpiDataHelper.processSprintBasedOnFieldMappings(
-						Collections.singletonList(dbSprintDetail), fieldMapping.getJiraIterationIssuetypeKPI125(),
-						fieldMapping.getJiraIterationCompletionStatusKPI125(), null).get(0);
-
-				LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
-						DATE_TIME_FORMATTER);
+				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+						fieldMapping.getJiraIterationIssuetypeKPI119(),
+						fieldMapping.getJiraIterationCompletionStatusKPI119(), null).get(0);
 
 				List<String> allIssues = new ArrayList<>();
-				List<String> notCompleted = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-						CommonConstant.NOT_COMPLETED_ISSUES);
-				List<String> completed = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-						CommonConstant.COMPLETED_ISSUES);
-				allIssues.addAll(notCompleted);
-				allIssues.addAll(completed);
+				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+						CommonConstant.NOT_COMPLETED_ISSUES));
+				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+						CommonConstant.COMPLETED_ISSUES));
 				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.ADDED_ISSUES));
 				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.PUNTED_ISSUES));
 
 				if (CollectionUtils.isNotEmpty(allIssues)) {
-					Set<SprintIssue> sprintIssues = new HashSet<>();
-					sprintIssues.addAll(checkNullList(sprintDetails.getTotalIssues()));
-					sprintIssues.addAll(checkNullList(sprintDetails.getPuntedIssues()));
 					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
-							sprintDetails, sprintIssues, getJiraIssuesFromBaseClass(allIssues));
+							sprintDetails, null, getJiraIssuesFromBaseClass(allIssues));
 					List<JiraIssueCustomHistory> allIssuesHistory = getJiraIssuesCustomHistoryFromBaseClass(allIssues);
-					Map<LocalDate, List<JiraIssue>> fullSprintIssues = new HashMap<>();
-					Map<LocalDate, List<JiraIssue>> addedIssues = new HashMap<>();
-					Map<LocalDate, List<JiraIssue>> removedIssues = new HashMap<>();
-					Map<LocalDate, List<JiraIssue>> completedIssues = new HashMap<>();
-					Map<LocalDate, List<JiraIssue>> removedCompletedIssues = new HashMap<>();
-					/*
-					 * allIssuesHistory.forEach(issueHistory -> { if
-					 * (CollectionUtils.isNotEmpty(issueHistory.getSprintUpdationLog())) {
-					 * List<JiraHistoryChangeLog> sprintUpdationLog =
-					 * issueHistory.getSprintUpdationLog(); Collections.sort(sprintUpdationLog,
-					 * Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
-					 * createAddedandRemovedIssueDateWiseMap(sprintDetails, totalIssueList,
-					 * addedIssues, removedIssues, fullSprintIssues, issueHistory,
-					 * sprintUpdationLog); } createCompletedIssuesDateWiseMap(sprintDetails,
-					 * totalIssueList, completedIssues, removedCompletedIssues, issueHistory,
-					 * sprintStartDate); });
-					 * 
-					 * resultListMap.put(FULL_SPRINT_ISSUES, fullSprintIssues);
-					 * resultListMap.put(CommonConstant.PUNTED_ISSUES, removedIssues);
-					 * resultListMap.put(CommonConstant.ADDED_ISSUES, addedIssues);
-					 * resultListMap.put(CommonConstant.COMPLETED_ISSUES, completedIssues);
-					 * resultListMap.put(REMOVED_FROM_CLOSED, removedCompletedIssues);
-					 */
+
 					resultListMap.put(SPRINT, sprintDetails);
 					resultListMap.put(ISSUES, totalIssueList);
-					resultListMap.put("ISSUEHISTORY", allIssuesHistory);
-					resultListMap.put("AssigneeDetails",
+					resultListMap.put(ISSUE_CUSTOM_HISTORY, allIssuesHistory);
+					resultListMap.put(ASSIGNEE_DETAILS,
 							capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(sprintDetails.getSprintID(),
 									sprintDetails.getBasicProjectConfigId()));
 				}
 			}
 		}
 		return resultListMap;
-	}
-
-	private Set<SprintIssue> checkNullList(Set<SprintIssue> totalIssues) {
-		return CollectionUtils.isNotEmpty(totalIssues) ? totalIssues : new HashSet<>();
 	}
 
 	/*
@@ -364,8 +337,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 */
 	@SuppressWarnings(UNCHECKED)
 	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		DataCount dataCount = new DataCount();
-		String requestTrackerId = getRequestTrackerId();
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		List<Node> latestSprintNode = new ArrayList<>();
@@ -374,34 +345,46 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		Object basicProjectConfigId = latestSprint.getProjectFilter().getBasicProjectConfigId();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
+		//fetch from db
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
-		Map<LocalDate, List<JiraIssue>> fullSprintIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
-				.get("FULL_SPRINT_ISSUES");
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT);
-		List<JiraIssueCustomHistory> issuehistory = (List<JiraIssueCustomHistory>) resultMap.get("ISSUEHISTORY");
-		CapacityKpiData capacityKpiData = (CapacityKpiData) resultMap.get("AssigneeDetails");
-		Map<LocalDate, Set<JiraIssue>> removedFromClosed = (Map<LocalDate, Set<JiraIssue>>) resultMap
-				.get(REMOVED_FROM_CLOSED);
+		List<JiraIssueCustomHistory> issuehistory = (List<JiraIssueCustomHistory>) resultMap.get(ISSUE_CUSTOM_HISTORY);
+		CapacityKpiData capacityKpiData = (CapacityKpiData) resultMap.get(ASSIGNEE_DETAILS);
 		List<JiraIssue> totalIssueList = new ArrayList<>((Set<JiraIssue>) resultMap.get(ISSUES));
-		if (ObjectUtils.isNotEmpty(sprintDetails)) {
-			// log.info("Daily Standup View -> request id : {} total jira Issues : {}",
-			// requestTrackerId,
-			// fullSprintIssuesMap.size());
 
+
+		if (ObjectUtils.isNotEmpty(sprintDetails)) {
 			List<IterationKpiValue> iterationKpiValueList = new ArrayList<>();
 			Set<String> roles = new HashSet<>();
 			Set<String> assignees = new HashSet<>();
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(totalIssueList);
 
 			Map<String, String> userWiseRole = new HashMap<>();
+			Map<String, String> userWiseRemainingCapacity = new HashMap<>();
 			Map<String, List<JiraIssue>> assigneeWiseList = totalIssueList.stream()
 					.collect(Collectors.groupingBy(JiraIssue::getAssigneeId));
+
+
+			//Calculate Remaining Capacity
+			LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
+					DATE_TIME_FORMATTER);
+			LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0],
+					DATE_TIME_FORMATTER);
+			int daysBetween = sprintEndDate.compareTo(sprintStartDate);
+			int daysLeft = sprintEndDate.compareTo(LocalDate.now());
+
 			if (CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity())) {
 				capacityKpiData.getAssigneeCapacity().forEach(assignee -> {
+					calculateRemainigCapacity(daysBetween, daysLeft, assignee,userWiseRemainingCapacity);
 					if (assignee.getRole() != null)
 						userWiseRole.put(assignee.getUserId(), assignee.getRole().getRoleValue());
 				});
 			}
+
+
+
+
+
 			List<KPIExcelData> issueDetailList = new ArrayList<>();
 			for (Map.Entry<String, List<JiraIssue>> listEntry : assigneeWiseList.entrySet()) {
 				IterationKpiValue kpiValue = new IterationKpiValue();
@@ -422,9 +405,14 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 
 			Set<IterationKpiModalValue> values = new HashSet<>(modalObjectMap.values());
 			kpiElement.setIssueData(values);
-			dataCount.setValue(iterationKpiValueList);
-			kpiElement.setTrendValueList(dataCount);
+			//dataCount.setValue(iterationKpiValueList);
+			//kpiElement.setTrendValueList(dataCount);
 		}
+	}
+
+	private void calculateRemainigCapacity(int daysBetween, int daysLeft, AssigneeCapacity assignee, Map<String, String> userWiseRemainingCapacity) {
+		double remainingCapacity = (assignee.getAvailableCapacity() / daysBetween) * daysLeft;
+		userWiseRemainingCapacity.putIfAbsent(assignee.getUserId(),String.valueOf(remainingCapacity));
 	}
 
 }
