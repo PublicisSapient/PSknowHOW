@@ -177,7 +177,6 @@
     "jiraTestAutomationIssueType" : [ "Enabler Story", "Change request", "Defect" ],
     "jiraSprintVelocityIssueTypeKPI138" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraSprintCapacityIssueTypeKpi46" : [ "Story", "Enabler Story", "Change request", "Defect" ],
-    "jiraIssueTypeKPI37" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraDefectCountlIssueTypeKPI28" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraDefectCountlIssueTypeKPI36" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraIssueDeliverdStatusKPI138" : [ "Closed" ],

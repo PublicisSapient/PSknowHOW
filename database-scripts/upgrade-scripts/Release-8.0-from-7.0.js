@@ -2439,90 +2439,76 @@ var fieldNameToUpdate = "jiraLiveStatusKPI3";
     { multi: false }
   );
 
-// Check if the document with the name "Fetch Sprint" already exists
-const sprintFetchPolicy = db.action_policy_rule.findOne({
-    "name": "Fetch Sprint"
+// Adding action_policy "Fetch Sprint"
+db.action_policy_rule.insertOne({
+    "name": "Fetch Sprint",
+    "roleAllowed": "",
+    "description": "super admin and project admin can run active sprint fetch",
+    "roleActionCheck": "action == 'TRIGGER_SPRINT_FETCH'",
+    "condition": "subject.authorities.contains('ROLE_SUPERADMIN') || subject.authorities.contains('ROLE_PROJECT_ADMIN')",
+    "createdDate": new Date(),
+    "lastModifiedDate": new Date(),
+    "isDeleted": false
+})
+
+db.getCollection('field_mapping_structure').insertMany([
+    {
+        "fieldName": "jiraDodKPI37",
+        "fieldLabel": "Status to identify completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+        }
+    },
+    {
+        "fieldName": "sprintName",
+        "fieldLabel": "Sprint Name",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
+        }
+    }
+])
+
+const fieldMapToUpdate = db.field_mapping.find({ "jiraIssueTypeKPI37": { $exists: true } });
+fieldMapToUpdate.forEach(function(fm) {
+    const jiraDod = fm.jiraDod;
+
+    db.field_mapping.updateOne(
+        { "_id": fm._id },
+        {
+            $set: {
+                "jiraDodKPI37": jiraDod
+            },
+            $unset: {
+                "jiraIssueTypeKPI37": ""
+            }
+        }
+    );
 });
 
-if (!sprintFetchPolicy) {
-    db.action_policy_rule.insertOne({
-        "name": "Fetch Sprint",
-        "roleAllowed": "",
-        "description": "super admin and project admin can run active sprint fetch",
-        "roleActionCheck": "action == 'TRIGGER_SPRINT_FETCH'",
-        "condition": "subject.authorities.contains('ROLE_SUPERADMIN') || subject.authorities.contains('ROLE_PROJECT_ADMIN')",
-        "createdDate": new Date(),
-        "lastModifiedDate": new Date(),
-        "isDeleted": false
-    })
-} else {
-    print("Fetch Sprint policy already exists");
-}
+// changing DRR formula
+db.kpi_master.updateOne(
+  {
+    "kpiId": "kpi37",
+    "kpiInfo.formula.operands": "Total no. of defects reported in a sprint"
+  },
+  {
+    $set: {
+      "kpiInfo.formula.$[formulaElem].operands.$[operandElem]": "Total no. of defects Closed in a sprint"
+    }
+  },
+  {
+    arrayFilters: [
+      { "formulaElem.operands": { $exists: true } },
+      { "operandElem": "Total no. of defects reported in a sprint" }
+    ]
+  }
+);
 
-//DTS-26121 Untagged
-let columnConfigs = db.kpi_column_configs.find({"kpiId" : "kpi133"});
-columnConfigs.forEach(function(config){
-    db.kpi_column_configs.updateOne({"_id":config._id},
-    {$set:{"kpiColumnDetails" : [
-		{
-			"columnName" : "Issue Id",
-			"order" : Double("0"),
-			"isShown" : true,
-			"isDefault" : true
-		},
-		{
-			"columnName" : "Issue Type",
-			"order" : Double("1"),
-			"isShown" : true,
-			"isDefault" : true
-		},
-		{
-			"columnName" : "Issue Description",
-			"order" : Double("2"),
-			"isShown" : true,
-			"isDefault" : true
-		},
-		{
-			"columnName" : "Issue Status",
-			"order" : Double("3"),
-			"isShown" : true,
-			"isDefault" : true
-		},
-		{
-			"columnName" : "Priority",
-			"order" : Double("4"),
-			"isShown" : true,
-			"isDefault" : true
-		},
-		{
-			"columnName" : "Linked Defect",
-			"order" : Double("5"),
-			"isShown" : true,
-			"isDefault" : false
-		},
-		{
-			"columnName" : "Size(story point/hours)",
-			"order" : Double("6"),
-			"isShown" : true,
-			"isDefault" : false
-		},
-		{
-			"columnName" : "DIR",
-			"order" : Double("7"),
-			"isShown" : true,
-			"isDefault" : false
-		},
-		{
-			"columnName" : "Defect Density",
-			"order" : Double("8"),
-			"isShown" : true,
-			"isDefault" : false
-		},
-		{
-			"columnName" : "Assignee",
-			"order" : Double("9"),
-			"isShown" : true,
-			"isDefault" : false
-		}
-	]}})
-})
+
+
