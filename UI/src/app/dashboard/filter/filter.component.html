@@ -16,7 +16,7 @@
                      <div *ngIf="selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release'" class="form-check filter-box p-col-lg abc" style="min-width: 170px;">
                         <ng-select formControlName="selectedLevel" [dropdownPosition]="'bottom'"
                            (change)="handleSelect($event)" placeholder="Organization Level"
-                           id="Filter-Aggregation-Level" class="p-pb-0">
+                           id="Filter-Aggregation-Level" class="p-pb-0" [readonly]="(showChart === 'large')">
                            <ng-option *ngFor="let item of hierarchyLevels" [value]="item.hierarchyLevelId">
                               {{item?.hierarchyLevelName}}
                            </ng-option>
@@ -29,10 +29,10 @@
                            [items]="trendLineValueList"
                            bindLabel="nodeName"
                            bindValue="nodeId"
-                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 6)'"
+                           [placeholder]="showChart === 'large'? 'Select One Project'  :'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 6)'"
                            [closeOnSelect]="false"
                            (remove)="handleRemove()"
-                           [maxSelectedItems]="6"
+                           [maxSelectedItems]="showChart === 'large' ? 1 : 6"
                            class="trend-line-value p-pb-0">
                            <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                               <div class="ng-value" *ngFor="let item of items | slice:0:2">
@@ -346,10 +346,10 @@
                <img src="../../../assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
                <img src="../../../assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
             </label>
-            <input id="large-view" class="large-view" type="radio" name="view" [checked]="showChart === 'large'" [ngClass]="{'large-view-disabled': totalProjectSelected !==1}">
-            <label class="label3" for="large-view" (click)="showChartToggle('large')" id="Layout-Chart" [ngClass]="{'large-view-disabled': totalProjectSelected !==1}">
-               <img src="../../../assets/img/ico-graph-white.svg" alt="Large View" class="ico-active" />
-               <img src="../../../assets/img/ico-graph-black.svg" alt="Large View" class="ico-default" />
+            <input id="large-view" class="large-view" type="radio" name="view" [checked]="showChart === 'large'" [ngClass]="{'large-view-disabled': totalProjectSelected !==1 || selectedLevelValue !== 'project'}">
+            <label class="label3" for="large-view" (click)="showChartToggle('large')" id="Layout-Chart" [ngClass]="{'large-view-disabled': totalProjectSelected !==1 || selectedLevelValue !== 'project'}">
+               <img src="../../../assets/img/full-screen-white.svg" alt="Large View" class="ico-active" />
+               <img src="../../../assets/img/full-screen-black.svg" alt="Large View" class="ico-default" />
             </label>
 
             <!-- SHow/Hide start -->

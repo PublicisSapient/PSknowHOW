@@ -68,7 +68,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     // changes['dropdownArr']?.currentValue ? true : this.dropdownArr = [];
     this.userRole = this.authService.getRole();
-   this.checkIfViewer =  (this.authService.checkIfViewer({id : this.service.getSelectedTrends()[0].basicProjectConfigId}));
+   this.checkIfViewer =  (this.authService.checkIfViewer({id : this.service.getSelectedTrends()[0]?.basicProjectConfigId}));
   }
 
   ngOnInit(): void {

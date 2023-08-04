@@ -198,4 +198,13 @@
     opacity: 0.5;
 }
 
+.custom-pi{
+    font-size: 1.1rem;
+    font-weight: 1000;
+    color: #707070;
+    font-family: 'primeicons';
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+}
+
 

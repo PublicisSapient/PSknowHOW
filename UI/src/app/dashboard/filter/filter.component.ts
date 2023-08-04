@@ -133,6 +133,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   showSpinner: boolean = false;
   kpiObj:object = {};
   totalProjectSelected : number = 1;
+  selectedLevelValue : string = 'project';
 
   constructor(
     private service: SharedService,
@@ -183,6 +184,16 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
         this.projectIndex = 0;
         this.selectedType(data.selectedType);
+
+        if(this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase()  === 'backlog' || this.selectedTab.toLowerCase()  === 'release' ){
+          this.showChart = 'chart'
+          this.selectedLevelValue = 'project';
+          this.totalProjectSelected = 1;
+        }
+        if(this.selectedTab.toLowerCase() === 'maturity'){
+          this.showChart = 'chart'
+          this.totalProjectSelected = 1;
+        }
       }),
 
       this.service.mapColorToProjectObs.subscribe((x) => {
@@ -335,6 +346,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.kanban !== this.previousType) {
       this.filterForm?.reset();
       this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
+      this.selectedLevelValue = 'project';
+      this.totalProjectSelected = 1;
     }
 
     const data = {
@@ -880,6 +893,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
     this.filterForm?.get('selectedTrendValue').setValue('');
     this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === event?.toLowerCase()));
+    this.selectedLevelValue = event?.toLowerCase();
   }
 
   setMarker() {
