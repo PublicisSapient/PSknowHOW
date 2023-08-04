@@ -685,8 +685,8 @@ public final class KpiDataHelper {
 									: dbSprintDetail.getNotCompletedIssues());
 					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
 							fieldMappingCompletionType, fieldMappingCompletionStatus);
-					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus,
-							projectWiseDuplicateIssuesWithMinCloseDate);
+					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
+					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus, projectWiseDuplicateIssuesWithMinCloseDate);
 					dbSprintDetail.setCompletedIssues(newCompletedSet);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
 					Set<SprintIssue> totalIssue = new HashSet<>();
@@ -826,7 +826,7 @@ public final class KpiDataHelper {
 
 	/**
 	 * Cal time with 8hr in a day
-	 * 
+	 *
 	 * @param timeInHours
 	 * @return
 	 */
@@ -856,7 +856,7 @@ public final class KpiDataHelper {
 
 	/**
 	 * Get completed subtask of sprint
-	 * 
+	 *
 	 * @param totalSubTask
 	 * @param subTaskHistory
 	 * @param sprintDetail
@@ -891,7 +891,7 @@ public final class KpiDataHelper {
 
 	/**
 	 * Get total subtask of sprint
-	 * 
+	 *
 	 * @param allSubTasks
 	 * @param sprintDetails
 	 * @param subTaskHistory
