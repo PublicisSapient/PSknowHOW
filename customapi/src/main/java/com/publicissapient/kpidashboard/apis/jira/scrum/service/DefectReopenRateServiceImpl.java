@@ -63,11 +63,10 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	private static final String REOPEN_BY_CLOSED_DEFECTS = "Reopened /Total Closed";
 	private static final String AVERAGE_TIME_REOPEN = "Avg. Time to Reopen";
 	private static final String OVERALL = "Overall";
-	private static final String TOTAL_JIRA_ISSUE = "TOTAL_JIRA_ISSUE";
+	private static final String TOTAL_JIRA_DEFECTS = "TOTAL_JIRA_DEFECTS";
 	private static final String PROJECT_CLOSED_STATUS_MAP = "PROJECT_CLOSED_STATUS_MAP";
 	private static final String JIRA_REOPEN_HISTORY = "JIRA_REOPEN_HISTORY";
 	private static final String TIME_FORMAT_WITH_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-	private static final String STATUS = "status";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -119,7 +118,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
-	 * 
 	 */
 
 	@SuppressWarnings("java:S3776")
@@ -128,7 +126,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		Node leafNode = projectList.stream().findFirst().orElse(null);
 		if (leafNode != null) {
 			Map<String, Object> kpiResultDbMap = fetchKPIDataFromDb(projectList, null, null, kpiRequest);
-			List<JiraIssue> totalDefects = (List<JiraIssue>) kpiResultDbMap.get(TOTAL_JIRA_ISSUE);
+			List<JiraIssue> totalDefects = (List<JiraIssue>) kpiResultDbMap.get(TOTAL_JIRA_DEFECTS);
 			List<JiraIssueCustomHistory> reopenJiraHistory = (List<JiraIssueCustomHistory>) kpiResultDbMap
 					.get(JIRA_REOPEN_HISTORY);
 			Map<String, List<String>> closedStatusMap = (Map<String, List<String>>) kpiResultDbMap
@@ -183,14 +181,14 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 						}
 					}
 				});
-				addToIterationKpiValues(iterationKpiValues, priority, jiraIssueList, modalValues, totalDuration,
-						closedStatusList);
+				addToIterationKpiValues(iterationKpiValues, priority, jiraIssueList, modalValues, totalDuration
+				);
 				overAllModalValues.addAll(modalValues);
 				overAllDuration.set(0, overAllDuration.get(0) + totalDuration.get(0));
 
 			});
-			addToIterationKpiValues(iterationKpiValues, OVERALL, totalDefects, overAllModalValues, overAllDuration,
-					closedStatusList);
+			addToIterationKpiValues(iterationKpiValues, OVERALL, totalDefects, overAllModalValues, overAllDuration
+			);
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, filters);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
 			kpiElement.setFilters(iterationKpiFilters);
@@ -208,19 +206,15 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	 * @param jiraIssueList
 	 * @param modalValues
 	 * @param totalDuration
-	 * @param closedStatusLists
 	 */
 	private void addToIterationKpiValues(List<IterationKpiValue> iterationKpiValues, String priority,
-			List<JiraIssue> jiraIssueList, List<IterationKpiModalValue> modalValues, List<Double> totalDuration,
-			List<String> closedStatusLists) {
+			List<JiraIssue> jiraIssueList, List<IterationKpiModalValue> modalValues, List<Double> totalDuration) {
 		double averageTimeToReopen = totalDuration.get(0) > 0 && !modalValues.isEmpty()
 				? Math.ceil(totalDuration.get(0) / modalValues.size())
 				: 0;
-		List<JiraIssue> closedIssueList = jiraIssueList.stream()
-				.filter(jiraIssue -> closedStatusLists.contains(jiraIssue.getStatus())).collect(Collectors.toList());
-		IterationKpiData reopenRateKpi = createReopenRateIterationData(modalValues, closedIssueList.size());
+		IterationKpiData reopenRateKpi = createReopenRateIterationData(modalValues, jiraIssueList.size());
 		IterationKpiData reopenedByTotalKpi = IterationKpiData.builder().label(REOPEN_BY_CLOSED_DEFECTS)
-				.value(Double.valueOf(modalValues.size())).value1(Double.valueOf(closedIssueList.size())).build();
+				.value(Double.valueOf(modalValues.size())).value1(Double.valueOf(jiraIssueList.size())).build();
 		IterationKpiData averageKpi = IterationKpiData.builder().label(AVERAGE_TIME_REOPEN).value(averageTimeToReopen)
 				.unit("Hrs").build();
 		iterationKpiValues.add(
@@ -229,7 +223,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 
 	/**
 	 * create IterationKPIModel.
-	 * 
+	 *
 	 * @param issue
 	 * @param closedHistory
 	 * @param reopenHistory
@@ -249,7 +243,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 
 	/**
 	 * create ReopenRateIterationData.
-	 * 
+	 *
 	 * @param reopenIssueList
 	 * @param totalDefects
 	 * @return IterationKpiData.
@@ -308,11 +302,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
 					.collect(Collectors.toList());
-			Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus().getClosedList();
-			if (doneStatusMap != null) {
-				List<String> doneStatus = doneStatusMap.values().stream().collect(Collectors.toList());
-				mapOfProjectFilters.put(STATUS, CommonUtils.convertToPatternList(doneStatus));
-			}
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(defectList));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
@@ -321,10 +310,8 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 				basicProjectConfigIds.stream().map(ObjectId::toString).distinct().collect(Collectors.toList()));
 		List<JiraIssue> jiraIssues = jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters,
 				uniqueProjectMap);
-		resultMap.put(TOTAL_JIRA_ISSUE, jiraIssues);
 
-		List<String> notClosedJiraIssueNumbers = jiraIssues.stream().map(JiraIssue::getNumber)
-				.collect(Collectors.toList());
+		List<String> jiraDefectID = jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
 		basicProjectConfigIds.forEach(basicProjectConfigObjectId -> {
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigObjectId);
@@ -337,11 +324,15 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		});
 		mapOfFiltersForHistory.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().map(ObjectId::toString).distinct().collect(Collectors.toList()));
-		mapOfFiltersForHistory.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(), notClosedJiraIssueNumbers);
-		// we get all the data that are once closed and now in open state.
+		mapOfFiltersForHistory.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(), jiraDefectID);
+		// we get all the data that are once closed
 		List<JiraIssueCustomHistory> jiraReopenIssueCustomHistories = jiraIssueCustomHistoryRepository
 				.findByFilterAndFromStatusMap(mapOfFiltersForHistory, uniqueProjectMap);
-
+		List<String> jiraHistoryDefectID = jiraReopenIssueCustomHistories.stream()
+				.map(JiraIssueCustomHistory::getStoryID).collect(Collectors.toList());
+		List<JiraIssue> totalJiraDefect = jiraIssues.stream()
+				.filter(jiraIssue -> jiraHistoryDefectID.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+		resultMap.put(TOTAL_JIRA_DEFECTS, totalJiraDefect);
 		resultMap.put(PROJECT_CLOSED_STATUS_MAP, closedStatusListBasicConfigMap);
 		resultMap.put(JIRA_REOPEN_HISTORY, jiraReopenIssueCustomHistories);
 		return resultMap;
