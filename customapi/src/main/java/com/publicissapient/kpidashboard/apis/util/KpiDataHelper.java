@@ -27,17 +27,19 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -58,8 +60,10 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -483,6 +487,8 @@ public final class KpiDataHelper {
 		iterationPotentialDelay.setPotentialDelay((sprintClosed && remainingEstimateTime == 0) ? 0 : potentialDelay);
 		iterationPotentialDelay.setDueDate(dueDate.toString());
 		iterationPotentialDelay.setPredictedCompletedDate(potentialClosedDate.toString());
+		iterationPotentialDelay.setAssigneeId(issue.getAssigneeId());
+		iterationPotentialDelay.setStatus(issue.getStatus());
 		return iterationPotentialDelay;
 
 	}
@@ -922,6 +928,68 @@ public final class KpiDataHelper {
 
 		});
 		return subTaskTaggedWithSprint;
+	}
+
+	/**
+	 * with assignees criteria calculating potential delay for inprogress and open
+	 * issues and without assignees calculating potential delay for inprogress
+	 * stories
+	 *
+	 * @param sprintDetails
+	 * @param allIssues
+	 * @param fieldMapping
+	 * @return
+	 */
+	public static List<IterationPotentialDelay> calculatePotentialDelay(SprintDetails sprintDetails,
+																		List<JiraIssue> allIssues, FieldMapping fieldMapping) {
+		List<IterationPotentialDelay> iterationPotentialDelayList = new ArrayList<>();
+		Map<String, List<JiraIssue>> assigneeWiseJiraIssue = assigneeWiseJiraIssue(allIssues);
+
+		if (MapUtils.isNotEmpty(assigneeWiseJiraIssue)) {
+			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
+				List<JiraIssue> inProgressIssues = new ArrayList<>();
+				List<JiraIssue> openIssues = new ArrayList<>();
+				KpiDataHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI119(), jiraIssues, inProgressIssues, openIssues);
+				iterationPotentialDelayList
+						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
+			});
+		}
+
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI119())) {
+			List<JiraIssue> inProgressIssues = allIssues.stream()
+					.filter(jiraIssue -> (jiraIssue.getAssigneeId() == null)
+							&& StringUtils.isNotEmpty(jiraIssue.getDueDate())
+							&& (fieldMapping.getJiraStatusForInProgressKPI119().contains(jiraIssue.getStatus())))
+					.collect(Collectors.toList());
+
+			List<JiraIssue> openIssues = new ArrayList<>();
+			iterationPotentialDelayList.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
+		}
+		return iterationPotentialDelayList;
+	}
+
+	public static Map<String, List<JiraIssue>> assigneeWiseJiraIssue(List<JiraIssue> allIssues) {
+		return allIssues.stream().filter(jiraIssue -> jiraIssue.getAssigneeId() != null)
+				.collect(Collectors.groupingBy(JiraIssue::getAssigneeId));
+	}
+
+	public static LinkedHashMap<String, IterationPotentialDelay> checkMaxDelayAssigneeWise( List<IterationPotentialDelay> issueWiseDelay, FieldMapping fieldMapping) {
+		Map<String, List<IterationPotentialDelay>> assigneeWiseDelay = issueWiseDelay.stream()
+				.collect(Collectors.groupingBy(IterationPotentialDelay::getAssigneeId));
+		List<IterationPotentialDelay> maxDelayList = new ArrayList<>();
+		List<String> jiraStatusInProgress = CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI119()) ? fieldMapping.getJiraStatusForInProgressKPI119() : new ArrayList<>();
+		assigneeWiseDelay.entrySet()
+				.forEach((assignee) -> maxDelayList.add(assignee.getValue().stream()
+						.filter(iterationPotentialDelay -> jiraStatusInProgress
+								.contains(iterationPotentialDelay.getStatus()))
+						.max(Comparator.comparing(IterationPotentialDelay::getPotentialDelay))
+						.orElse(new IterationPotentialDelay())));
+		if (CollectionUtils.isNotEmpty(maxDelayList)) {
+			maxDelayList.stream().forEach(iterationPotentialDelay -> issueWiseDelay.stream()
+					.filter(issue -> issue.equals(iterationPotentialDelay)).forEach(issue -> issue.setMaxMarker(true)));
+		}
+		return issueWiseDelay.stream().collect(Collectors.toMap(IterationPotentialDelay::getIssueId,
+				Function.identity(), (e1, e2) -> e2, LinkedHashMap::new));
 	}
 
 }

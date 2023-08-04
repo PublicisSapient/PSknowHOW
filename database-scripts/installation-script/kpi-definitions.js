@@ -3025,6 +3025,33 @@ db.getCollection('kpi_master').insertMany(
       "kpiFilter": "dropdown",
       "boxType": "chart",
       "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi154",
+    "kpiName": "Daily Standup View",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 8,
+    "kpiCategory": "Iteration",
+    "kpiSubCategory": "Iteration Progress",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "CumulativeMultilineChart",
+    "kpiInfo": {
+      "definition": "Iteration Burnup KPI shows the cumulative actual progress against the overall scope of the iteration on a daily basis. For teams putting due dates at the beginning of iteration, the graph additionally shows the actual progress in comparison to the planning done and also predicts the probable progress for the remaining days of the iteration."
+    },
+    "xAxisLabel": "Days",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiselectdropdown",
+    "boxType": "chart",
+    "kpiWidth": 100,
+    "calculateMaturity": false
   }
 ]
 );
