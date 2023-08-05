@@ -186,13 +186,16 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.selectedType(data.selectedType);
 
         if(this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase()  === 'backlog' || this.selectedTab.toLowerCase()  === 'release' ){
-          this.showChart = 'chart'
+          this.showChart = 'chart';
           this.selectedLevelValue = 'project';
           this.totalProjectSelected = 1;
+          this.service.setShowTableView(this.showChart);
         }
         if(this.selectedTab.toLowerCase() === 'maturity'){
-          this.showChart = 'chart'
+          this.showChart = 'chart';
+          this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase()
           this.totalProjectSelected = 1;
+          this.service.setShowTableView(this.showChart);
         }
       }),
 
@@ -275,7 +278,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     // getting document click event from dashboard and check if it is outside click of the filter and if filter is open then closing it
     this.service.getClickedItem().subscribe((target) => {
       for(let key in this.toggleDropdown){
-        if(target && target !== this[key].nativeElement && target?.closest('.'+key+'Ddn') !== this[key+'Ddn']?.nativeElement){
+        if(target && target !== this[key]?.nativeElement && target?.closest('.'+key+'Ddn') !== this[key+'Ddn']?.nativeElement){
           this.toggleDropdown[key] = false;
         }
       }
@@ -526,11 +529,11 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   onSelectedTrendValueChange($event) {
-    this.totalProjectSelected = this.filterForm?.get('selectedTrendValue')?.value.length;
     this.additionalFiltersArr.forEach((additionalFilter) => {
       this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
     });
     this.applyChanges();
+    this.totalProjectSelected = this.service.getSelectedTrends().length;
   }
 
   // this method would be called on click of apply button of filter
@@ -893,7 +896,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
     this.filterForm?.get('selectedTrendValue').setValue('');
     this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === event?.toLowerCase()));
-    this.selectedLevelValue = event?.toLowerCase();
+    this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase();
   }
 
   setMarker() {
