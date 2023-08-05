@@ -62,7 +62,6 @@ import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -602,76 +601,30 @@ public class JiraCommonService {
 		return searchResult;
 	}
 
-	public List<Issue> fetchIssueBasedOnBoard(Map.Entry<String, ProjectConfFieldMapping> entry,
-			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, boolean dataExist,
-			Set<SprintDetails> setForCacheClean) {
+	public List<Issue> fetchIssueBasedOnBoard(ProjectConfFieldMapping projectConfig,
+			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, int pageNumber, String boardId) {
 
-		List<Issue> totalIssues = new ArrayList<>();
-		ProjectConfFieldMapping projectConfig = entry.getValue();
-
-		PSLogData psLogData = new PSLogData();
-		psLogData.setProjectName(projectConfig.getProjectName());
-		int total = 0;
-		int savedIsuesCount = 0;
-
-		Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
-		JiraHelper.setStartDate(jiraProcessorConfig);
-		boolean processorFetchingComplete = false;
 		client = clientIncoming;
 		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(projectConfig);
-
+		List<Issue> issues = new ArrayList<>();
 		try {
-
-			// write get logic to fetch last successful updated date.
+			// find deltaDate logic : processor successful run :
+			// latestSuccessful run -1 hour. First time : last n months data
+			// defined in properties file
+			JiraHelper.setStartDate(jiraProcessorConfig);
 			String queryDate = JiraHelper.getDeltaDate(processorExecutionTraceLog.getLastSuccessfulRun());
-			String userTimeZone = getUserTimeZone(projectConfig, krb5Client);
-			List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
 
-			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
-			boolean latestDataFetched = false;
+			SearchResult searchResult = getIssues(boardId, projectConfig, queryDate, pageNumber);
+			issues = JiraHelper.getIssuesFromResult(searchResult);
 
-			for (BoardDetails board : boardDetailsList) {
-				psLogData.setBoardId(board.getBoardId());
-				int boardTotal = 0;
-				int pageSize = getPageSize();
-				boolean hasMore = true;
-				for (int i = 0; hasMore; i += pageSize) {
-
-					SearchResult searchResult = getIssues(board, projectConfig, queryDate, userTimeZone, i, dataExist);
-					List<Issue> issues = JiraHelper.getIssuesFromResult(searchResult);
-					totalIssues.addAll(issues);
-					if (boardTotal == 0) {
-						boardTotal = JiraHelper.getTotal(searchResult);
-						total += boardTotal;
-						psLogData.setTotalFetchedIssues(String.valueOf(total));
-					}
-					if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
-						latestDataFetched = cleanCache();
-						setForCacheClean.clear();
-						log.info("latest sprint fetched cache cleaned.");
-					}
-
-					if (issues.size() < pageSize) {
-						break;
-					}
-					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-				}
-			}
-			processorFetchingComplete = true;
 		} catch (InterruptedException e) {
 			log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
-			lastSavedJiraIssueChangedDateByType.clear();
-			processorFetchingComplete = false;
-		} finally {
-			validateData.check(total, savedIsuesCount, processorFetchingComplete, psLogData,
-					lastSavedJiraIssueChangedDateByType, projectConfig, processorExecutionTraceLog);
 		}
-		return totalIssues;
+		return issues;
 	}
 
-	public SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig,
-			String startDateTimeByIssueType, String userTimeZone, int pageStart, boolean dataExist)
-			throws InterruptedException {
+	public SearchResult getIssues(String boardId, ProjectConfFieldMapping projectConfig,
+			String startDateTimeByIssueType, int pageStart) throws InterruptedException {
 		SearchResult searchResult = null;
 
 		if (client == null) {
@@ -680,30 +633,16 @@ public class JiraCommonService {
 			String query = StringUtils.EMPTY;
 			try {
 				query = "updatedDate>='" + startDateTimeByIssueType + "' order by updatedDate desc";
-				psLogData.setUserTimeZone(userTimeZone);
-				psLogData.setJql(query);
-				psLogData.setBoardId(boardDetails.getBoardId());
-				Instant start = Instant.now();
 				CustomAsynchronousIssueRestClient issueRestClient = client.getCustomIssueClient();
-				Promise<SearchResult> promisedRs = issueRestClient.searchBoardIssue(boardDetails.getBoardId(), query,
+				Promise<SearchResult> promisedRs = issueRestClient.searchBoardIssue(boardId, query,
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
-				psLogData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
-				log.debug("jql query processed for board", kv(CommonConstant.PSLOGDATA, psLogData));
-				if (searchResult != null) {
-					psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
-					psLogData.setAction(CommonConstant.FETCHING_ISSUE);
-					log.info(String.format("Processing issues %d - %d out of %d", pageStart,
-							Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
-							kv(CommonConstant.PSLOGDATA, psLogData));
-				}
-				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+
 			} catch (RestClientException e) {
 				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-					log.error(ERROR_MSG_401, kv(CommonConstant.PSLOGDATA, psLogData));
+					log.error(ERROR_MSG_401);
 				} else {
-					log.info(NO_RESULT_QUERY, query, kv(CommonConstant.PSLOGDATA, psLogData));
-					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause(), kv(CommonConstant.PSLOGDATA, psLogData));
+					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
 				}
 			}
 

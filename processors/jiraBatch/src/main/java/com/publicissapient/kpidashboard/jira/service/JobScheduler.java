@@ -22,15 +22,24 @@ public class JobScheduler {
 	@Qualifier("fetchIssueScrumBoardJob")
 	@Autowired
 	Job fetchIssueScrumBoardJob;
+	
+	/**
+	@Qualifier("myJob")
+	@Autowired
+	Job myJob;
+	**/
 
 	@Async
-	@Scheduled(cron = "0 0/1 * 1/1 * ?")
+	//@Scheduled(cron = "0 0/1 * 1/1 * ?")
 	public void fetchIssueScrumStarter() throws Exception {
 		Map<String, JobParameter> params = new HashMap<>();
-		params.put("currentTime", new JobParameter(System.currentTimeMillis()));
+		params.put("projectConfig", new JobParameter(System.currentTimeMillis()));
 		JobParameters jobParameters = new JobParameters(params);
-		jobLauncher.run(fetchIssueScrumBoardJob, jobParameters);
 		System.out.println("Fetch Issue for Scrum Job Started .....");
+		jobLauncher.run(fetchIssueScrumBoardJob, jobParameters);
+		//jobLauncher.run(myJob, jobParameters);
+	
 
 	}
+
 }

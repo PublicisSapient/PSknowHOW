@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 import com.publicissapient.kpidashboard.jira.processor.IssueScrumProcessor;
 import com.publicissapient.kpidashboard.jira.reader.IssueScrumBoardReader;
 import com.publicissapient.kpidashboard.jira.tasklet.MetaDataScrumBoardTasklet;
@@ -21,42 +21,42 @@ import com.publicissapient.kpidashboard.jira.writer.IssueScrumWriter;
 public class JiraProcessorJob {
 
 	@Autowired
-	private JobBuilderFactory jobBuilderFactory;
+	JobBuilderFactory jobBuilderFactory;
 
 	@Autowired
-	private StepBuilderFactory stepBuilderFactory;
+	StepBuilderFactory stepBuilderFactory;
 
 	@Autowired
-	private IssueScrumBoardReader issueScrumBoardReader;
+	IssueScrumBoardReader issueScrumBoardReader;
 
 	@Autowired
-	private IssueScrumProcessor issueScrumProcessor;
+	IssueScrumProcessor issueScrumProcessor;
 
 	@Autowired
-	private IssueScrumWriter issueScrumWriter;
+	IssueScrumWriter issueScrumWriter;
 
 	@Autowired
-	private MetaDataScrumBoardTasklet metaDataScrumBoardTasklet;
-	
+	MetaDataScrumBoardTasklet metaDataScrumBoardTasklet;
+
 	@Autowired
-	private SprintScrumBoardTasklet sprintScrumBoardTasklet;
+	SprintScrumBoardTasklet sprintScrumBoardTasklet;
 
 	@Bean
 	public Job fetchIssueScrumBoardJob() {
 		return jobBuilderFactory.get("FetchIssueScrum Job").incrementer(new RunIdIncrementer()).start(metaDataStep())
-				.next(sprintReportStep())
-				.next(fetchIssueScrumBoardChunkStep()).build();
+				.next(sprintReportStep()).next(fetchIssueScrumBoardChunkStep()).build();
 	}
 
 	private Step metaDataStep() {
 		return stepBuilderFactory.get("Fetch metadata-Scrum-board").tasklet(metaDataScrumBoardTasklet).build();
 	}
-	
+
 	private Step sprintReportStep() {
 		return stepBuilderFactory.get("Fetch Sprint Report-Scrum-board").tasklet(sprintScrumBoardTasklet).build();
 	}
+
 	private Step fetchIssueScrumBoardChunkStep() {
-		return stepBuilderFactory.get("Fetch Issue-Scrum-board").<Issue, JiraIssue>chunk(5)
+		return stepBuilderFactory.get("Fetch Issue-Scrum-board").<Issue, CompositeResult>chunk(10)
 				.reader(issueScrumBoardReader).processor(issueScrumProcessor).writer(issueScrumWriter).build();
 	}
 }
