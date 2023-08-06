@@ -689,6 +689,7 @@ public final class KpiDataHelper {
 									: dbSprintDetail.getNotCompletedIssues());
 					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
 							fieldMappingCompletionType, fieldMappingCompletionStatus);
+					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
 					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus, projectWiseDuplicateIssuesWithMinCloseDate);
 					dbSprintDetail.setCompletedIssues(newCompletedSet);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
