@@ -148,8 +148,11 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     if (viewType === 'large' && selectedProjectCount === 1) {
       data = data.map(details => {
         let finalResult = {};
-        finalResult = { ...details,sortName:(details.value[0].sSprintName || details.value[0].date), value: [{ ...details.value[0], sortSprint: (details.value[0].sSprintName || details.value[0].date)}] }
-        sprintList.push(details.value[0].sSprintName || details.value[0].date)
+        const XValue = details.value[0].sSprintName || details.value[0].date;
+        const projectName = '_'+this.service.getSelectedTrends()[0]?.nodeName;
+        const removeProject = XValue.includes(projectName) ? XValue.replace(projectName,'') : XValue;
+        finalResult = { ...details,sortName:removeProject, value: [{ ...details.value[0], sortSprint: removeProject}] }
+        sprintList.push(removeProject)
         return finalResult
       })
     }
@@ -162,7 +165,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
 
     const margin = { top: 35, right: 50, bottom: 50, left: 50 };
     const barWidth = 20;
-    const width = data.length <= 5 ? document.getElementById('chart').offsetWidth - 70 : data.length * barWidth * 8;
+    const width = data.length <= 5 ? document.getElementById('chart').offsetWidth - 70 : data.length * barWidth * 10;
     const height = 210;
     const paddingFactor = width < 600 ? 0.30 : 0.55;
 
@@ -482,7 +485,9 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
          const unFormatedData= JSON.parse(JSON.stringify(self.unmodifiedData));
          unFormatedData[0].value = unFormatedData[0].value.map(details=>{
           const XValue = details.date || details.sSprintName;
-           return {...details,sortSprint:XValue};
+          const projectName = '_'+this.service.getSelectedTrends()[0]?.nodeName;
+          const removeProject = XValue.includes(projectName) ? XValue.replace(projectName,'') : XValue;
+           return {...details,sortSprint:removeProject};
         })
         const newRawData = unFormatedData;
          const colorArr = this.color;

@@ -98,7 +98,9 @@ export class MultilineComponent implements OnChanges {
     d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
     const formatedData = this?.data[0]?.value.map(details=>{
       const XValue = details.date || details.sSprintName;
-       return {...details,sortSprint:XValue};
+      const projectName = '_'+this.service.getSelectedTrends()[0]?.nodeName;
+      const removeProject = XValue.includes(projectName) ? XValue.replace(projectName,'') : XValue;
+       return {...details,sortSprint:removeProject};
     })
     this.data[0].value = formatedData;
     const viewType = this.viewType;
@@ -562,7 +564,7 @@ export class MultilineComponent implements OnChanges {
       .selectAll('.tick')
       .each(function (dataObj) {
         const tick = d3.select(this);
-        if (data[0]?.value[0] && data[0]?.value[0]?.xAxisTick) {
+        if (data[0]?.value[0] && data[0]?.value[0]?.xAxisTick &&  !(viewType === 'large' && selectedProjectCount === 1)) {
           const textElement = this.getElementsByTagName('text');
           textElement[0].textContent = data[0].value[dataObj - 1]?.xAxisTick;
         }
