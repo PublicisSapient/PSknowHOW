@@ -371,7 +371,7 @@ export class ConnectionListComponent implements OnInit {
         { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
         { field: 'username', header: 'User Name', class: 'normal' },
         // { field: 'apiKey', header: 'API Key', class: 'normal' },
-        { field: 'baseUrl', header: 'Http URL', class: 'long-text' },
+        { field: 'httpUrl', header: 'Http URL', class: 'long-text' },
         // { field: 'cloneable', header: 'Is Cloneable', class: 'small-text' },
       ]
     }
@@ -1116,6 +1116,14 @@ export class ConnectionListComponent implements OnInit {
           this.basicConnectionForm.controls['accessToken']?.disable();
           this.basicConnectionForm.controls['username']?.enable();
           this.basicConnectionForm.controls['password']?.enable();
+        }
+      }
+      if (field === 'isCloneable' && type.toLowerCase() === 'repotool') {
+        if (event.checked) {
+          this.basicConnectionForm.controls['sshUrl']?.enable();
+        } else {
+          this.basicConnectionForm.controls['sshUrl'].setValue('');
+          this.basicConnectionForm.controls['sshUrl']?.disable();
         }
       }
     }
