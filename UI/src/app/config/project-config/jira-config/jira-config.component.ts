@@ -2098,6 +2098,65 @@ export class JiraConfigComponent implements OnInit {
           };
         }
         break;
+        case 'RepoTool':
+        {
+          this.formTitle = 'RepoTool';
+          this.connectionTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'username', header: 'User Name', class: 'normal' },            
+            { field: 'httpUrl', header: 'Http URL', class: 'long-text' },
+          ];
+          this.configuredToolTableCols = [
+            { field: 'connectionName',header: 'Connection Name',class: 'long-text'},
+            { field: 'repositoryName', header: 'Repository Name', class: 'long-text'},
+            { field: 'defaultBranch', header: 'Default Branch', class: 'long-text' },
+            { field: 'scanningBranch', header: 'Scanning Branch', class: 'long-text' },
+          ];
+          this.formTemplate = {
+            group: 'RepoTool',
+            elements: [
+              {
+                type: 'text',
+                label: 'Repository Name',
+                id: 'repositoryName',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Repository Name.<br / <i>Impacted : All Repository based KPIs</i>`,
+                // onFocusOut : this.getGitActionWorkflowName
+              },
+              {
+                type: 'text',
+                label: 'Default Branch',
+                id: 'defaultBranch',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Default Branch name to access Repository data.<br />
+                <i>
+                  Example: master<br />
+                  Impacted : All Repository based KPIs</i>`,
+              },
+              {
+                type: 'text',
+                label: 'Scanning Branch',
+                id: 'scanningBranch',
+                validators: [],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Scanning Branch name to access Repository data.<br />
+                <i>
+                  Example: master<br />
+                  Impacted : All Repository based KPIs</i>`,
+              },
+            ],
+          };
+        }
+        break;
     }
 
     const group = {};
