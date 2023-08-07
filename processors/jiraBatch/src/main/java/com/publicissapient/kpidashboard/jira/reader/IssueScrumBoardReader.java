@@ -1,7 +1,6 @@
 package com.publicissapient.kpidashboard.jira.reader;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.bson.types.ObjectId;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;
@@ -28,6 +26,7 @@ import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @StepScope
-public class IssueScrumBoardReader implements ItemReader<Issue> {
+public class IssueScrumBoardReader implements ItemReader<ReadData> {
 
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
@@ -76,13 +75,13 @@ public class IssueScrumBoardReader implements ItemReader<Issue> {
 	}
 
 	@Override
-	public Issue read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+	public ReadData read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
 
 		if (null == projectConfMapIterator) {
 			log.info("Gathering data for batch");
 			initializeReader();
 		}
-		Issue issue = null;
+		ReadData readData = null;
 		if (projectConfigIterator == null || !projectConfigIterator.hasNext()) {
 			if (projectConfMapIterator.hasNext()) {
 				Map.Entry<String, List<ProjectConfFieldMapping>> entry = projectConfMapIterator.next();
@@ -105,7 +104,7 @@ public class IssueScrumBoardReader implements ItemReader<Issue> {
 				if (boardIterator.hasNext()) {
 					BoardDetails boardDetails = boardIterator.next();
 					boardId = boardDetails.getBoardId();
-					pageNumber = 0;
+					pageNumber = 1200;
 					fetchIssues(krb5Client, client);
 				}
 
@@ -118,14 +117,17 @@ public class IssueScrumBoardReader implements ItemReader<Issue> {
 			}
 		}
 		if (null != issueIterator && issueIterator.hasNext()) {
-			issue = issueIterator.next();
+			Issue issue = issueIterator.next();
+			readData = new ReadData();
+			readData.setIssue(issue);
+			readData.setProjectConfFieldMapping(projectConfFieldMapping);
 		}
 		if ((null == projectConfMapIterator) || (!projectConfigIterator.hasNext() && !boardIterator.hasNext()
 				&& (!issueIterator.hasNext() && issues.size() < pageSize))) {
 			log.info("Data of all projects has been fetched");
-			issue = null;
+			readData = null;
 		}
-		return issue;
+		return readData;
 
 	}
 

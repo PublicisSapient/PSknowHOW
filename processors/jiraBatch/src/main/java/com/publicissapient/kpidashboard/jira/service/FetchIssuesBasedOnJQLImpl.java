@@ -46,11 +46,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL {
 	@Autowired
 	private KanbanJiraIssueRepository kanbanJiraRepo;
 
-	// @Autowired
-	// private RabbitTemplate template;
-	@Autowired
-	private TransformFetchedIssueToJiraIssue transformFetchedIssue;
-
 	@Autowired
 	private JiraCommonService jiraCommonService;
 

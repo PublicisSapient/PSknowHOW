@@ -1,31 +1,34 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
+import com.publicissapient.kpidashboard.jira.model.ReadData;
+import org.codehaus.jettison.json.JSONException;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Component
-public class IssueScrumProcessor implements ItemProcessor<Issue,CompositeResult> {
+public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeResult> {
+
+	@Autowired
+	private JiraIssueProcessor jiraIssueProcessor;
 
 	@Override
-	public CompositeResult process(Issue issue) throws Exception {
-		CompositeResult compositeResult=new CompositeResult();
-		compositeResult.setJiraIssue(convertIssueToJiraIssue(issue));
+	public CompositeResult process(ReadData readData) throws Exception {
+		CompositeResult compositeResult = null;
+		JiraIssue jiraIssue=convertIssueToJiraIssue(readData);
+		if(null!=jiraIssue) {
+			compositeResult = new CompositeResult();
+			compositeResult.setJiraIssue(jiraIssue);
+		}
 		return compositeResult;
-		
+
 	}
-	
-	private JiraIssue convertIssueToJiraIssue(Issue issue) {
-		JiraIssue jiraIssue=new JiraIssue();
-		jiraIssue.setNumber(issue.getKey());
-		jiraIssue.setIssueId(issue.getSummary());
-		return jiraIssue;
+
+	private JiraIssue convertIssueToJiraIssue(ReadData readData) throws JSONException {
+		return jiraIssueProcessor.convertToJiraIssue(readData.getIssue(), readData.getProjectConfFieldMapping());
 	}
 
 }

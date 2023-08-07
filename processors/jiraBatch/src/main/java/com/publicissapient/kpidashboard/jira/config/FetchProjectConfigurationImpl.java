@@ -114,6 +114,7 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 		projectConfFieldMapping.setProjectToolConfig(projectToolConfig);
 		projectConfFieldMapping.setJiraToolConfigId(projectToolConfig.getId());
 		projectConfFieldMapping.setFieldMapping(basicConfigWiseFieldMapping.get(projectConfig.getId()));
+		projectConfFieldMapping.setProjectName(projectConfig.getProjectName());
 		return projectConfFieldMapping;
 	}
 
