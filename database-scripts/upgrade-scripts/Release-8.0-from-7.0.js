@@ -2510,7 +2510,8 @@ db.kpi_master.updateOne(
   }
 );
 
-//DTS-26121 Untagged
+//----------------7.6.0 Changes ---------------------------
+//DTS-26121 Enchancement of Quality Status Overlay
 let columnConfigs = db.kpi_column_configs.find({"kpiId" : "kpi133"});
 columnConfigs.forEach(function(config){
     db.kpi_column_configs.updateOne({"_id":config._id},
@@ -2577,6 +2578,4 @@ columnConfigs.forEach(function(config){
 		}
 	]}})
 })
-
-
 
