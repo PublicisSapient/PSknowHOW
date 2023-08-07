@@ -923,9 +923,4 @@ public final class KpiDataHelper {
 		});
 		return subTaskTaggedWithSprint;
 	}
-
-	public static DateTime convertLocalDateTimeToDateTime(LocalDateTime dateTime) {
-		Instant instant = dateTime.atZone(ZoneId.systemDefault()).toInstant();
-		return new DateTime(instant.toEpochMilli());
-	}
 }

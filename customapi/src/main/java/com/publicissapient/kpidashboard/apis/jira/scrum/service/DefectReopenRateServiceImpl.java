@@ -169,8 +169,8 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 								JiraHistoryChangeLog reopenHistory = reopenHistoryOptional.get();
 								LocalDateTime closedTime = closedHistory.getUpdatedOn();
 								LocalDateTime reopenTime = reopenHistory.getUpdatedOn();
-								DateTime closedDate = KpiDataHelper.convertLocalDateTimeToDateTime(closedTime);
-								DateTime reopenDate = KpiDataHelper.convertLocalDateTimeToDateTime(reopenTime);
+								DateTime closedDate = DateUtil.convertLocalDateTimeToDateTime(closedTime);
+								DateTime reopenDate = DateUtil.convertLocalDateTimeToDateTime(reopenTime);
 								IterationKpiModalValue iterationModal = crateIterationKpiModal(jiraIssue, closedDate,
 										reopenDate);
 								modalValues.add(iterationModal);
