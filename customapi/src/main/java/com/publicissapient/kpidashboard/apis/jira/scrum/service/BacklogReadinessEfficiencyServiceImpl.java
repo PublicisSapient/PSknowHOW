@@ -291,7 +291,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 		if (jiraCustomHistory.isPresent()) {
 
 			Optional<JiraHistoryChangeLog> sprint = jiraCustomHistory.get().getStatusUpdationLog().stream()
-					.filter(sprintDetails -> status.contains(sprintDetails.getChangedTo()))
+					.filter(sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
 					.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn).reversed()).findFirst();
 			if (sprint.isPresent()) {
 				DateTime createdDate = new DateTime(jiraCustomHistory.get().getCreatedDate(), DateTimeZone.UTC);
