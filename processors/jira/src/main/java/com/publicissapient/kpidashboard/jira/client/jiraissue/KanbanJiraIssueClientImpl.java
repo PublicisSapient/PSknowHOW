@@ -1349,11 +1349,15 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 					&& fields.get(estimationField).getValue() != null
 					&& !JiraProcessorUtil.deodeUTF8String(fields.get(estimationField).getValue()).isEmpty()) {
 				if (JiraConstants.ACTUAL_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
-					value = ((Double) fields.get(estimationField).getValue()) / 3600D;
+					if (fields.get(estimationField).getValue() instanceof Integer) {
+						value = ((Integer) fields.get(estimationField).getValue()) / 3600D;
+					} else {
+						value = ((Double) (fields.get(estimationField).getValue()));
+					}
 					valueString = String.valueOf(value.doubleValue());
 				} else if (JiraConstants.BUFFERED_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
 					if (fields.get(estimationField).getValue() instanceof Integer) {
-						value = ((Double) fields.get(estimationField).getValue()) / 3600D;
+						value = ((Integer) fields.get(estimationField).getValue()) / 3600D;
 					} else {
 						value = ((Double) (fields.get(estimationField).getValue()));
 					}
