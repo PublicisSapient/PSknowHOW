@@ -2574,6 +2574,6 @@ db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
 			"isShown" : true,
 			"isDefault" : false
 		}
-	]}})
+	]}});
 
 

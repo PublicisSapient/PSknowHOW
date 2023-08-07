@@ -97,4 +97,4 @@ db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},{$set:{"kpiColumnDetails" 
            			"isShown" : true,
            			"isDefault" : false
            		}
-           	] }})
+           	] }});
