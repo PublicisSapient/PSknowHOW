@@ -930,9 +930,9 @@ describe('ConnectionListComponent', () => {
           isEnabled: false,
         },
       ],
-      is_cloneable:[
+      isCloneable:[
         {
-          field: 'ssh_url',
+          field: 'sshUrl',
           isEnabled: false
         }, 
       ],
@@ -1003,7 +1003,7 @@ describe('ConnectionListComponent', () => {
           isEnabled: false,
         },
       ],
-      is_cloneable:[],
+      isCloneable:[],
       accessTokenEnabled: [],
     },
   };

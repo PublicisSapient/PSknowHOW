@@ -140,7 +140,7 @@
                         </div> -->
 
                         <div class="p-field"
-                             *ngIf="connectionFieldLabels.inputFields[i] === 'bearerToken' || connectionFieldLabels.inputFields[i] === 'vault' || connectionFieldLabels.inputFields[i] === 'cloudEnv' || connectionFieldLabels.inputFields[i] === 'isOAuth' || connectionFieldLabels.inputFields[i] === 'offline' || connectionFieldLabels.inputFields[i] === 'accessTokenEnabled' || connectionFieldLabels.inputFields[i] === 'is_cloneable'">
+                             *ngIf="connectionFieldLabels.inputFields[i] === 'bearerToken' || connectionFieldLabels.inputFields[i] === 'vault' || connectionFieldLabels.inputFields[i] === 'cloudEnv' || connectionFieldLabels.inputFields[i] === 'isOAuth' || connectionFieldLabels.inputFields[i] === 'offline' || connectionFieldLabels.inputFields[i] === 'accessTokenEnabled' || connectionFieldLabels.inputFields[i] === 'isCloneable'">
 
                             <label for="connection_{{connectionFieldLabels.inputFields[i]}}">{{ connectionFieldLabels.inputFields[i] !== 'accessTokenEnabled' ? connectionLabelFields : connectionLabelFields[0]
                                 }}</label>
@@ -176,7 +176,7 @@
                         </div>
 
                         <div class="p-field"
-                             *ngIf="connectionFieldLabels.inputFields[i] !== 'type' && connectionFieldLabels.inputFields[i] !== 'repoToolProvider' && connectionFieldLabels.inputFields[i] !== 'passwordIsOAuth' && connectionFieldLabels.inputFields[i] !== 'connPrivate' && connectionFieldLabels.inputFields[i] !== 'cloudEnv' && connectionFieldLabels.inputFields[i] !== 'isOAuth' && connectionFieldLabels.inputFields[i] !== 'offline' && connectionFieldLabels.inputFields[i] !== 'vault' && connectionFieldLabels.inputFields[i] !== 'bearerToken' && connectionFieldLabels.inputFields[i] !== 'accessTokenEnabled' && connectionFieldLabels.inputFields[i] !== 'is_cloneable'">
+                             *ngIf="connectionFieldLabels.inputFields[i] !== 'type' && connectionFieldLabels.inputFields[i] !== 'repoToolProvider' && connectionFieldLabels.inputFields[i] !== 'passwordIsOAuth' && connectionFieldLabels.inputFields[i] !== 'connPrivate' && connectionFieldLabels.inputFields[i] !== 'cloudEnv' && connectionFieldLabels.inputFields[i] !== 'isOAuth' && connectionFieldLabels.inputFields[i] !== 'offline' && connectionFieldLabels.inputFields[i] !== 'vault' && connectionFieldLabels.inputFields[i] !== 'bearerToken' && connectionFieldLabels.inputFields[i] !== 'accessTokenEnabled' && connectionFieldLabels.inputFields[i] !== 'isCloneable'">
                             <label for="connection_{{connectionFieldLabels.inputFields[i]}}">{{ connectionLabelFields
                                 }}</label>
                             <input #inputFieldVar name="{{ connectionFieldLabels.inputFields[i] }}"
