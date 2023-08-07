@@ -691,6 +691,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// Type
 				jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
 				jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+				jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+				Object epicLinked=fields.get(fieldMapping.getEpicLink().trim()).getValue();
+				jiraIssue.setEpicLinked(epicLinked==null ? null : epicLinked.toString());
 
 				setDefectIssueType(jiraIssue, issueType, fieldMapping);
 
