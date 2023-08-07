@@ -2510,3 +2510,14 @@ db.kpi_master.updateOne(
   }
 );
 
+ //---------7.6.0 changes------------------------------------------------------------------
+ // --- Backlog Readiness KPI Fieldmapping Enhancement (DTS-27535)
+
+var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldType": "chips"
+    } },
+    { multi: false }
+  );

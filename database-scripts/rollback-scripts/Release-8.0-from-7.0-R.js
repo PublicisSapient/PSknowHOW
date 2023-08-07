@@ -46,3 +46,14 @@ db.kpi_master.updateOne(
     ]
   }
 );
+
+//---------7.6.0 changes------------------------------------------------------------------
+ // --- Reverse fieldType for KPI 138
+var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldType": "text"
+    } },
+    { multi: false }
+  );
