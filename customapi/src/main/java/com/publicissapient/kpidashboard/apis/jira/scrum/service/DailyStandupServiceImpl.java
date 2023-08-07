@@ -18,10 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -48,6 +51,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
@@ -203,11 +207,18 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			Map<String, StandUpViewKpiData> remianingWork = new HashMap<>();
 			Map<String, StandUpViewKpiData> assigneeWiseRemaingEstimate = new HashMap<>();
 			Map<String, StandUpViewKpiData> assigneeWiseMaxDelay = new HashMap<>();
+			Function<JiraIssue, String> function = (issue) -> {
+				if (issue.getAssigneeId() == null) {
+					issue.setAssigneeName(UNASSIGNED);
+					return UNASSIGNED;
+				}
+				return issue.getAssigneeId();
+			};
 
-			Map<String, List<JiraIssue>> assigneeWiseList = totalIssueList.stream().collect(Collectors
-					.groupingBy(issue -> (issue.getAssigneeId() == null) ? UNASSIGNED : issue.getAssigneeId()));
-			Map<String, List<JiraIssue>> assigneeWiseNotCompleted = notCompletedJiraIssue.stream().collect(Collectors
-					.groupingBy(issue -> (issue.getAssigneeId() == null) ? UNASSIGNED : issue.getAssigneeId()));
+			Map<String, List<JiraIssue>> assigneeWiseList = totalIssueList.stream()
+					.collect(Collectors.groupingBy(function));
+			Map<String, List<JiraIssue>> assigneeWiseNotCompleted = notCompletedJiraIssue.stream()
+					.collect(Collectors.groupingBy(function));
 
 			// calculate
 			calculateAssigneeWiseRemainingEstimate(assigneeWiseNotCompleted, remianingWork, assigneeWiseRemaingEstimate,
@@ -224,8 +235,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
 					DATE_TIME_FORMATTER);
 			LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0], DATE_TIME_FORMATTER);
-			int daysBetween = sprintEndDate.compareTo(sprintStartDate);
-			int daysLeft = sprintEndDate.compareTo(LocalDate.now());
+			int daysBetween = checkWorkingDays(sprintStartDate, sprintEndDate);
+			int daysLeft = checkWorkingDays(LocalDate.now(), sprintEndDate);
 
 			if (capacityKpiData != null && CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity())) {
 				capacityKpiData.getAssigneeCapacity().forEach(assignee -> {
@@ -265,12 +276,20 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			}
 			createRoleFilter(filtersList, allRoles);
 		}
+		userWiseCardDetails.sort(Comparator.comparing(UserWiseCardDetail::getAssigneeName));
 		kpiElement.setTrendValueList(userWiseCardDetails);
 		kpiElement.setFilterData(filtersList);
 	}
 
+	private int checkWorkingDays(LocalDate startDate, LocalDate endDate) {
+		int incrementCounter = 1;
+		if (startDate.getDayOfWeek() == DayOfWeek.SATURDAY || startDate.getDayOfWeek() == DayOfWeek.SUNDAY)
+			incrementCounter--;
+		return CommonUtils.getWorkingDays(startDate, endDate) + incrementCounter;
+	}
+
 	private void createRoleFilter(List<Filter> filtersList, Set<String> allRoles) {
-		List<String> values = new ArrayList<>(allRoles);
+		List<String> values = allRoles.stream().sorted().collect(Collectors.toList());
 		Filter filter = new Filter();
 		filter.setFilterKey("role");
 		filter.setFilterType("singleSelect");
@@ -289,7 +308,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					.mapToDouble(delay -> Optional.of(delay.getPotentialDelay()).orElse(0) * 60 * 8).sum();
 
 			assigneeWiseMaxDelay.put(assigneeId,
-					new StandUpViewKpiData(String.valueOf(totalDelayInMinutes), null, null, CommonConstant.DAY));
+					new StandUpViewKpiData(String.valueOf(totalDelayInMinutes), null, CommonConstant.DAY, null));
 		});
 	}
 
@@ -312,7 +331,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			int totalRemainingEstimate = jiraIssueList.stream()
 					.mapToInt(issue -> Optional.ofNullable(issue.getRemainingEstimateMinutes()).orElse(0)).sum();
 			assigneeWiseRemainingEstimate.put(assigneeId,
-					new StandUpViewKpiData(String.valueOf(totalRemainingEstimate), null, null, CommonConstant.DAY));
+					new StandUpViewKpiData(String.valueOf(totalRemainingEstimate), null, CommonConstant.DAY, null));
 		});
 	}
 
@@ -321,7 +340,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		if (assignee.getAvailableCapacity() != null) {
 			double remainingCapacity = (assignee.getAvailableCapacity() / daysBetween) * daysLeft;
 			userWiseRemainingCapacity.putIfAbsent(assignee.getUserId(),
-					new StandUpViewKpiData(String.valueOf(remainingCapacity), null, null, CommonConstant.DAY));
+					new StandUpViewKpiData(String.valueOf(remainingCapacity), null, CommonConstant.HOURS, null));
 		}
 	}
 
