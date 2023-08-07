@@ -2510,3 +2510,13 @@ db.kpi_master.updateOne(
   }
 );
 
+//removing epicLink from documents of metadata_identifier
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["1", "2", "3", "4", "5", "6", "7", "8"] } },
+   { $pull: {
+      "customfield": {
+         "type": "epicLink"
+      }
+   }}
+);
+
