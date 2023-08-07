@@ -145,4 +145,8 @@ public class IterationKpiModalValue implements Serializable {
 	private String dodToLive;
 	@JsonProperty("Lead Time (In Days)")
 	private String leadTime;
+	@JsonProperty("DIR")
+	private Double DIR;
+	@JsonProperty("Defect Density")
+	private String defectDensity;
 }
