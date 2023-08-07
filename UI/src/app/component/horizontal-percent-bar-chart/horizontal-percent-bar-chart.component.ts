@@ -112,6 +112,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .keys(subgroups)
       (this.data);
 
+      const isIssueCountPresent = Object.values(this.data.filter(tooltip => tooltip.kpiGroup === 'Story Point')[0].value).some(count=> (count as number) > 1);
 
     // Show the bars
     svg.append('g')
@@ -130,16 +131,23 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .style('cursor', 'pointer')
       .on('mouseover', (event, d) => {
         this.selectedGroup = d.data.kpiGroup;
-        const tooltipData = this.data.filter(tooltip => tooltip.kpiGroup === this.selectedGroup)[0];
-        d3.select('#chart').select('#legendContainer').selectAll('div').remove();
-        this.showTooltip(subgroups, width, margin, color, tooltipData);
+        if (this.selectedGroup === 'Issue Count') {
+          const tooltipData = this.data.filter(tooltip => tooltip.kpiGroup === this.selectedGroup)[0];
+          d3.select('#chart').select('#legendContainer').selectAll('div').remove();
+          this.showTooltip(subgroups, width, margin, color, tooltipData);
+        }
       })
       .on('mouseout', (event, d) => {
-        d3.select('#chart').select('#legendContainer').selectAll('div').remove();
-        this.showLegend(subgroups, width, margin, color);
+        this.selectedGroup = d.data.kpiGroup;
+        if (this.selectedGroup === 'Issue Count') {
+          d3.select('#chart').select('#legendContainer').selectAll('div').remove();
+          const tooltipData = this.data.filter(tooltip => isIssueCountPresent ? tooltip.kpiGroup === 'Story Point' : tooltip.kpiGroup === 'Issue Count')[0];
+          this.showTooltip(subgroups, width, margin, color, tooltipData);
+        }
       });
-
-      this.showLegend(subgroups,width,margin,color);
+      
+      const tooltipData = this.data.filter(tooltip => isIssueCountPresent ? tooltip.kpiGroup === 'Story Point' : tooltip.kpiGroup === 'Issue Count')[0];
+      this.showTooltip(subgroups, width, margin, color, tooltipData);
 
   }
 
