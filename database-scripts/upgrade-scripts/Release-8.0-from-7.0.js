@@ -2510,8 +2510,80 @@ db.kpi_master.updateOne(
   }
 );
 
- //---------7.6.0 changes------------------------------------------------------------------
- // --- Backlog Readiness KPI Fieldmapping Enhancement (DTS-27535)
+//----------------7.6.0 Changes ---------------------------
+//DTS-26121 Enchancement of Quality Status Overlay
+db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
+{$set:{"kpiColumnDetails" : [
+		{
+			"columnName" : "Issue Id",
+			"order" : Double("0"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Type",
+			"order" : Double("1"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Description",
+			"order" : Double("2"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Status",
+			"order" : Double("3"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Priority",
+			"order" : Double("4"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Linked Defect",
+			"order" : Double("5"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Size(story point/hours)",
+			"order" : Double("6"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "DIR",
+			"order" : Double("7"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Defect Density",
+			"order" : Double("8"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Assignee",
+			"order" : Double("9"),
+			"isShown" : true,
+			"isDefault" : false
+		}
+	]}});
+
+//---- KPI info update for KPI 137 (Defect Reopen Rate)
+
+db.getCollection('kpi_master').updateOne(
+  { "kpiId": "kpi137" },
+  { $set: { "kpiInfo.definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available." } }
+);
+
+// --- Backlog Readiness KPI Fieldmapping Enhancement (DTS-27535)
 
 var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
   db.getCollection('field_mapping_structure').update(
