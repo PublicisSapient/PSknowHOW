@@ -241,21 +241,16 @@ export class TestConnectionService {
     );
   }
 
-  testRepoTool(httpUrl, repoToolProvider, username, accessToken, password, email, accessTokenEnabled): Observable<any> {
+  testRepoTool(httpUrl, repoToolProvider, username, accessToken, email): Observable<any> {
     let postData = {};
 
     postData = {
       httpUrl,
       repoToolProvider,
-      email,
-      accessTokenEnabled: accessTokenEnabled === undefined ? false : accessTokenEnabled
+      username, 
+      accessToken,
+      email
     };
-    if (accessTokenEnabled) {
-      postData['accessToken'] = accessToken ? accessToken : '';
-    } else {
-      postData['password'] = password ? password : '';
-      postData['username'] = username;
-    }
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');
     return this.http.post(environment.baseUrl + '/api/testconnection/repotool', postData

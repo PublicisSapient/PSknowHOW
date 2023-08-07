@@ -2107,7 +2107,8 @@ export class JiraConfigComponent implements OnInit {
               header: 'Connection Name',
               class: 'long-text',
             },
-            { field: 'username', header: 'User Name', class: 'normal' },            
+            { field: 'username', header: 'User Name', class: 'normal' },
+            { field: 'repoToolProvider', header: 'RepoTool Provider', class: 'normal' },
             { field: 'httpUrl', header: 'Http URL', class: 'long-text' },
           ];
           this.configuredToolTableCols = [

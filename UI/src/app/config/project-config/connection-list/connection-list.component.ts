@@ -130,8 +130,8 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'RepoTool',
       connectionLabel: 'RepoTool',
-      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Http Url', 'Is Cloneable', 'SSH Url', 'Username', ['Use Password', 'Use Token'], 'Access Token', 'Password', 'User Email', 'Is Connection Private'],
-      inputFields: ['type', 'repoToolProvider', 'connectionName', 'httpUrl', 'isCloneable', 'sshUrl', 'username', 'accessTokenEnabled', 'accessToken', 'password', 'email', 'connPrivate']
+      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Http Url', 'Is Cloneable', 'SSH Url', 'Username', 'Access Token', 'User Email', 'Is Connection Private'],
+      inputFields: ['type', 'repoToolProvider', 'connectionName', 'httpUrl', 'isCloneable', 'sshUrl', 'username', 'accessToken', 'email', 'connPrivate']
     }
   ];
 
@@ -370,7 +370,7 @@ export class ConnectionListComponent implements OnInit {
       connectionTableCols: [
         { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
         { field: 'username', header: 'User Name', class: 'normal' },
-        // { field: 'apiKey', header: 'API Key', class: 'normal' },
+        { field: 'repoToolProvider', header: 'RepoTool Provider', class: 'normal' },
         { field: 'httpUrl', header: 'Http URL', class: 'long-text' },
         // { field: 'cloneable', header: 'Is Cloneable', class: 'small-text' },
       ]
@@ -1024,12 +1024,7 @@ export class ConnectionListComponent implements OnInit {
     } else if (this.selectedConnectionType.toLowerCase() === 'repotool' && !!this.basicConnectionForm.controls['isCloneable'] && this.connection['isCloneable'] === true) {
       this.basicConnectionForm.controls['sshUrl'].enable();
     }  
-    
-    if(this.selectedConnectionType.toLowerCase() === 'repotool' && !!this.basicConnectionForm.controls['accessTokenEnabled'] && !!this.connection['accessTokenEnabled'] === false){
-      this.basicConnectionForm.controls['username'].enable();
-      this.basicConnectionForm.controls['password'].enable();
-      this.basicConnectionForm.controls['accessToken'].disable();
-    }
+
     if(this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true){
       this.basicConnectionForm.controls['password'].disable();
       this.basicConnectionForm.controls['accessToken'].disable();
@@ -1104,20 +1099,7 @@ export class ConnectionListComponent implements OnInit {
           this.basicConnectionForm.controls['accessTokenEnabled']?.setValue(false);
         }
       }
-      if (field === 'accessTokenEnabled' && type.toLowerCase() === 'repotool') {
-        if (event.checked) {
-          this.basicConnectionForm.controls['accessToken']?.enable();
-          this.basicConnectionForm.controls['username'].setValue('');
-          this.basicConnectionForm.controls['username']?.disable();
-          this.basicConnectionForm.controls['password'].setValue('');
-          this.basicConnectionForm.controls['password']?.disable();
-        } else {
-          this.basicConnectionForm.controls['accessToken'].setValue('');
-          this.basicConnectionForm.controls['accessToken']?.disable();
-          this.basicConnectionForm.controls['username']?.enable();
-          this.basicConnectionForm.controls['password']?.enable();
-        }
-      }
+
       if (field === 'isCloneable' && type.toLowerCase() === 'repotool') {
         if (event.checked) {
           this.basicConnectionForm.controls['sshUrl']?.enable();
@@ -1373,7 +1355,7 @@ export class ConnectionListComponent implements OnInit {
         break;
         
       case 'RepoTool':
-        this.testConnectionService.testRepoTool(reqData['httpUrl'], reqData['repoToolProvider'], reqData['username'], reqData['accessToken'], reqData['password'], reqData['email'], reqData['accessTokenEnabled']).subscribe(next => {
+        this.testConnectionService.testRepoTool(reqData['httpUrl'], reqData['repoToolProvider'], reqData['username'], reqData['accessToken'], reqData['email']).subscribe(next => {
           if (next.success && next.data === 200) {
             this.testConnectionMsg = 'Valid Connection';
             this.testConnectionValid = true;
