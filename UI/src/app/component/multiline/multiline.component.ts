@@ -246,7 +246,7 @@ export class MultilineComponent implements OnChanges {
           return xScale(left) + xScale.bandwidth() / 2 + 'px'
         })
         .style('top', d => {
-          return yScale(Math.round(d.value * 100) / 100) + 'px'
+          return yScale(Math.round(d.value * 100) / 100)+10 + 'px'
         })
         .text(d => Math.round(d.value * 100) / 100+' '+showUnit)
         .transition()

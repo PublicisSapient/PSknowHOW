@@ -177,6 +177,7 @@
   box-shadow: 0px 0px 6px #b9b9bb;
   opacity: 0.5;
   pointer-events: none;
+  width: max-content;
 }
 
 :host ::ng-deep.tooltip-container{

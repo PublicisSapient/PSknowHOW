@@ -652,7 +652,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
               return x0(left) + x0.bandwidth() / 2 + 'px'
             })
             .style('top', d => {
-              return yScale(d.lineValue) - 20 + 'px'
+              return yScale(d.lineValue) - 25 + 'px'
             })
             .text(d => d.lineValue+' '+showUnit)
             .transition()
