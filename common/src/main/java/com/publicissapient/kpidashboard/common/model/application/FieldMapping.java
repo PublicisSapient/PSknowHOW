@@ -49,6 +49,8 @@ import lombok.Setter;
 @Document(collection = "field_mapping")
 public class FieldMapping extends BasicModel {
 
+	public static final String READY_FOR_TESTING = "Ready For Testing";
+	public static final String IN_TESTING = "In Testing";
 	private ObjectId projectToolConfigId;
 	private ObjectId basicProjectConfigId;
 	private String projectId;
@@ -75,13 +77,13 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForDevelopmentKPI82;
 	private List<String> jiraStatusForDevelopmentKPI135;
 	@Builder.Default
-	private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQa = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	@Builder.Default
-	private List<String> jiraStatusForQaKPI148 = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQaKPI148 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	@Builder.Default
-	private List<String> jiraStatusForQaKPI135 = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQaKPI135 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	@Builder.Default
-	private List<String> jiraStatusForQaKPI82 = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQaKPI82 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
 	private List<String> jiraDefectInjectionIssueTypeKPI14;
@@ -156,7 +158,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueDeliverdStatusKPI82;
 
 	private String readyForDevelopmentStatus;
-	private String readyForDevelopmentStatusKPI138;
+	private List<String> readyForDevelopmentStatusKPI138;
 
 	private String jiraDor;
 	private String jiraDorKPI3;
