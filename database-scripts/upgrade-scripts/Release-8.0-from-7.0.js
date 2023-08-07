@@ -2512,10 +2512,8 @@ db.kpi_master.updateOne(
 
 //----------------7.6.0 Changes ---------------------------
 //DTS-26121 Enchancement of Quality Status Overlay
-let columnConfigs = db.kpi_column_configs.find({"kpiId" : "kpi133"});
-columnConfigs.forEach(function(config){
-    db.kpi_column_configs.updateOne({"_id":config._id},
-    {$set:{"kpiColumnDetails" : [
+db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
+{$set:{"kpiColumnDetails" : [
 		{
 			"columnName" : "Issue Id",
 			"order" : Double("0"),
@@ -2577,5 +2575,5 @@ columnConfigs.forEach(function(config){
 			"isDefault" : false
 		}
 	]}})
-})
+
 
