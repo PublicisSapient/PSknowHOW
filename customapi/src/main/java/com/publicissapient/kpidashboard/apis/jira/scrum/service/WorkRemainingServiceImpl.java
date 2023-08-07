@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import static com.publicissapient.kpidashboard.apis.util.KpiDataHelper.sprintWiseDelayCalculation;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,17 +25,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -67,6 +61,7 @@ import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDela
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -90,7 +85,6 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 
 	@Autowired
 	private SprintRepository sprintRepository;
-
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -129,8 +123,8 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-						fieldMapping.getJiraIterationIssuetypeKPI119(),
+				sprintDetails = KpiDataHelper.processSprintBasedOnFieldMappings(
+						Collections.singletonList(dbSprintDetail), fieldMapping.getJiraIterationIssuetypeKPI119(),
 						fieldMapping.getJiraIterationCompletionStatusKPI119(), null).get(0);
 
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
@@ -184,9 +178,10 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
-			List<IterationPotentialDelay> iterationPotentialDelayList = KpiDataHelper.calculatePotentialDelay(sprintDetails,
-					allIssues, fieldMapping);
-			Map<String, IterationPotentialDelay> issueWiseDelay = KpiDataHelper.checkMaxDelayAssigneeWise(iterationPotentialDelayList, fieldMapping);
+			List<IterationPotentialDelay> iterationPotentialDelayList = KpiDataHelper
+					.calculatePotentialDelay(sprintDetails, allIssues, fieldMapping);
+			Map<String, IterationPotentialDelay> issueWiseDelay = KpiDataHelper
+					.checkMaxDelayAssigneeWise(iterationPotentialDelayList, fieldMapping);
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> statuses = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
@@ -217,7 +212,8 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 									.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID()
 											.equals(jiraIssue.getNumber()))
 									.findFirst().orElse(new JiraIssueCustomHistory());
-							String devCompletionDate = getDevCompletionDate(issueCustomHistory,fieldMapping.getJiraDevDoneStatusKPI119());
+							String devCompletionDate = getDevCompletionDate(issueCustomHistory,
+									fieldMapping.getJiraDevDoneStatusKPI119());
 							KPIExcelUtility.populateIterationKPI(finalOverAllmodalValues, finalmodalValues, jiraIssue,
 									fieldMapping, modalObjectMap);
 							issueCount = issueCount + 1;
@@ -339,7 +335,6 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 		}
 		return finalDelay;
 	}
-
 
 	private void setKpiSpecificData(SprintDetails sprintDetails, Map<String, IterationKpiModalValue> modalObjectMap,
 			Map<String, IterationPotentialDelay> issueWiseDelay, JiraIssue jiraIssue, String devCompletionDate) {

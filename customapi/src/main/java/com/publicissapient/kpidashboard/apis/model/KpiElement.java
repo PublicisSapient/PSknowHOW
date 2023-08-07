@@ -111,6 +111,7 @@ public class KpiElement implements Serializable { // NOPMD
 	private List<KPIExcelColumnInfo> excelColumnInfo;
 	private transient Object filterDuration;
     private transient Set<IterationKpiModalValue> issueData;
+	private transient List<Filter> filterData;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -555,7 +556,7 @@ public class KpiElement implements Serializable { // NOPMD
 				+ ", isDeleted=" + isDeleted + ", kpiCategory=" + kpiCategory + ", kpiInAggregatedFeed="
 				+ kpiInAggregatedFeed + ", kpiOnDashboard=" + kpiOnDashboard + ", kpiBaseLine=" + kpiBaseLine
 				+ ", kpiUnit=" + kpiUnit + ", isTrendUpOnValIncrease=" + isTrendUpOnValIncrease + ", kpiSource="
-				+ kpiSource + ", trendValueList=" + trendValueList + "]";
+				+ kpiSource + ", trendValueList=" + trendValueList + ", filterData=" + filterData;
 	}
 
 	/**
@@ -840,6 +841,12 @@ public class KpiElement implements Serializable { // NOPMD
 	public void setIssueData(Set<IterationKpiModalValue> issueData) {
 		this.issueData = issueData;
 	}
+
+
+	public List<Filter> getFilterData() { return filterData; }
+
+	public void setFilterData(List<Filter> filterData) { this.filterData = filterData; }
+
 
 
 }
