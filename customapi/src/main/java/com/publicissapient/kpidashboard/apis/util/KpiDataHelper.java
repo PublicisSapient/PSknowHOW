@@ -82,7 +82,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class KpiDataHelper {
-	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final String CLOSED = "closed";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
@@ -592,14 +591,11 @@ public final class KpiDataHelper {
 			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
 		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
 				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping && CollectionUtils
-				.isNotEmpty(fieldMapping)) {
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
 			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> fieldMapping.contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
+					.filter(jiraIssue -> fieldMapping.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
 			openIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> !fieldMapping.contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
+					.filter(jiraIssue -> !fieldMapping.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
 		} else {
 			openIssues.addAll(jiraIssuesWithDueDate);
 		}
@@ -695,6 +691,7 @@ public final class KpiDataHelper {
 									: dbSprintDetail.getNotCompletedIssues());
 					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
 							fieldMappingCompletionType, fieldMappingCompletionStatus);
+					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
 					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus, projectWiseDuplicateIssuesWithMinCloseDate);
 					dbSprintDetail.setCompletedIssues(newCompletedSet);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
@@ -709,7 +706,7 @@ public final class KpiDataHelper {
 	}
 
 	public static Set<SprintIssue> changeSprintDetails(SprintDetails sprintDetail, Set<SprintIssue> completedIssues,
-													   List<String> customCompleteStatus, Map<ObjectId, Map<String, List<LocalDateTime>>> issueWiseMinimumDates) {
+			List<String> customCompleteStatus, Map<ObjectId, Map<String, List<LocalDateTime>>> issueWiseMinimumDates) {
 		if (CollectionUtils.isNotEmpty(customCompleteStatus) && CollectionUtils.isNotEmpty(completedIssues)
 				&& MapUtils.isNotEmpty(issueWiseMinimumDates)) {
 			ObjectId projectId = sprintDetail.getBasicProjectConfigId();
@@ -731,7 +728,6 @@ public final class KpiDataHelper {
 		}
 		return completedIssues;
 	}
-
 
 	private static Set<SprintIssue> getCombinationalCompletedSet(Set<SprintIssue> typeWiseIssues,
 			Set<SprintIssue> statusWiseIssues) {
@@ -835,7 +831,8 @@ public final class KpiDataHelper {
 	}
 
 	/**
-	 *  Cal time with 8hr in a day
+	 * Cal time with 8hr in a day
+	 *
 	 * @param timeInHours
 	 * @return
 	 */
@@ -865,6 +862,7 @@ public final class KpiDataHelper {
 
 	/**
 	 * Get completed subtask of sprint
+	 *
 	 * @param totalSubTask
 	 * @param subTaskHistory
 	 * @param sprintDetail
@@ -890,14 +888,16 @@ public final class KpiDataHelper {
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateTimeRange(jiraIssueSprint.getUpdatedOn(),
 							sprintStartDateTime, sprintEndDateTime))
 					.reduce((a, b) -> b);
-			if (issueSprint.isPresent() && fieldMappingDoneStatus.contains(issueSprint.get().getChangedTo().toLowerCase()))
+			if (issueSprint.isPresent()
+					&& fieldMappingDoneStatus.contains(issueSprint.get().getChangedTo().toLowerCase()))
 				resolvedSubtaskForSprint.add(jiraIssue);
 		});
 		return resolvedSubtaskForSprint;
 	}
 
 	/**
-	 *  Get total subtask of sprint
+	 * Get total subtask of sprint
+	 *
 	 * @param allSubTasks
 	 * @param sprintDetails
 	 * @param subTaskHistory
