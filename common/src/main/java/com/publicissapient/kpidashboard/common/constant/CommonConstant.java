@@ -52,6 +52,7 @@ public final class CommonConstant {
 	public static final String FIRST_STATUS = "firststatus";
 	public static final String OPEN = "Open";
 	public static final String CLOSED = "Closed";
+	public static final String FUTURE = "FUTURE";
 	public static final String ROOT_CAUSE = "rootcause";
 	public static final String DEVELOPMENT = "development";
 	public static final String QA = "qa";
@@ -140,7 +141,6 @@ public final class CommonConstant {
 	public static final String PUNTED_ISSUES = "puntedIssues";
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
-	public static final String CACHE_KPI_FIELD_MAPPING = "cache_kpi_field_mapping";
 
 	public static final String PSLOGDATA = "PSLogData";
 	public static final String REQUESTID = "requestId";
@@ -155,6 +155,7 @@ public final class CommonConstant {
 	public static final String PROJECT_EXECUTION_STATUS = "projectExecutionStatus";
 	public static final String SPRINT_DATA = "collectSprintData";
 	public static final String RELEASE_DATA = "collectReleaseData";
+	public static final String SUBTASK_DATA = "collectSubtaskData";
 	public static final String JIRAISSUE_DATA = "collectJiraIssueData";
 	public static final String EPIC_DATA = "collectEpicData";
 	public static final String METADATA = "collectMetaData";
@@ -164,7 +165,8 @@ public final class CommonConstant {
 	public static final String JIRA_BLOCKED_STATUS = "jiraBlockedStatus";
 
 	public static final String IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE = "Include Flagged Issue";
-	public static final String REQUIRED_ATTENTION_FLAG = "Requires attention";
+	public static final String FLAG_STATUS_FOR_SERVER = "Requires attention";
+	public static final String FLAG_STATUS_FOR_CLOUD = "Impediment";
 	public static final String BLOCKED_STATUS_WASTAGE = "Blocked Status";
 	public static final String JIRA_IN_PROGRESS_STATUS = "jiraStatusForInProgress";
 
@@ -179,12 +181,17 @@ public final class CommonConstant {
 	public static final String REJECTED = "Rejected";
 	public static final String ITERATION = "Iteration";
 	public static final String RELEASE = "Release";
+	public static final String BACKLOG = "Backlog";
 
 	public static final String RELEASED = "Released";
 	public static final String UNRELEASED = "Unreleased";
 	public static final String REPO_TOOLS = "Repo_Tools";
+    public static final String CACHE_FIELD_MAPPING_STUCTURE = "cache_field_mapping_stucture";
+	public static final String CACHE_PROJECT_TOOL_CONFIG= "cache_project_tool_config";
+	public static final String CUSTOM_TEMPLATE_CODE_SCRUM="10";
+	public static final String CUSTOM_TEMPLATE_CODE_KANBAN="9";
 
-	private CommonConstant() {
+    private CommonConstant() {
 
 	}
 }

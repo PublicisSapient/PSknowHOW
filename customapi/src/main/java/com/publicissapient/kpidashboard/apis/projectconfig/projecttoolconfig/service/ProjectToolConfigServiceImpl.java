@@ -275,7 +275,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		projectTool.setMetadataTemplateCode(projectToolConfig.getMetadataTemplateCode());
 		projectTool.setGitLabSdmID(projectToolConfig.getGitLabSdmID());
 		projectTool.setAzureIterationStatusFieldUpdate(projectToolConfig.isAzureIterationStatusFieldUpdate());
-
+		projectTool.setProjectComponent(projectToolConfig.getProjectComponent());
 		log.info("Successfully update project_tools  into db");
 		toolRepository.save(projectTool);
 		cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
@@ -431,6 +431,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setDeploymentProjectId(e.getDeploymentProjectId());
 			projectConfToolDto.setDeploymentProjectName(e.getDeploymentProjectName());
 			projectConfToolDto.setParameterNameForEnvironment(e.getParameterNameForEnvironment());
+			projectConfToolDto.setConnectionName(getConnection(e.getConnectionId()).getConnectionName());
 			projectConfToolDtoList.add(projectConfToolDto);
 			projectConfToolDto.setJiraTestCaseType(e.getJiraTestCaseType());
 			projectConfToolDto.setTestAutomatedIdentification(e.getTestAutomatedIdentification());
@@ -447,6 +448,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setIsNew(e.getIsNew());
 			projectConfToolDto.setRepoCloningEnabled(e.getRepoCloningEnabled());
 			projectConfToolDto.setConnectionName(getConnection(e.getConnectionId()).getConnectionName());
+			projectConfToolDto.setProjectComponent(e.getProjectComponent());
 		});
 
 		return projectConfToolDtoList;

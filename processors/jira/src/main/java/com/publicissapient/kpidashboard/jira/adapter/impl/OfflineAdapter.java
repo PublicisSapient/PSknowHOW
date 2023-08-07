@@ -172,4 +172,10 @@ public class OfflineAdapter implements JiraAdapter {
 		return null;
 	}
 
+	@Override
+	public SearchResult getIssuesSprint(ProjectConfFieldMapping projectConfig, int i, List<String> issueKeys)
+			throws InterruptedException {
+		return null;
+	}
+
 }

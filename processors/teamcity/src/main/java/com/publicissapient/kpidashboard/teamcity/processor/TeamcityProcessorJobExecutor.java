@@ -212,6 +212,11 @@ public class TeamcityProcessorJobExecutor extends ProcessorJobExecutor<TeamcityP
 		return executionStatus;
 	}
 
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
+
 	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.TEAMCITY);

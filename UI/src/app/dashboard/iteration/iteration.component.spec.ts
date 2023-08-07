@@ -2951,5 +2951,24 @@ describe('IterationComponent', () => {
         component.applyColumnFilter();
         expect(spypostKpiColumnConfig).toHaveBeenCalled();
     });
+
+    it('should reload KPI once mapping saved ', () => {
+        const KPiList = [{
+            id: "kpi1"
+        }];
+        const fakeKPiDetails = {
+            kpiDetails: {
+                kpiSource: 'jira',
+                kanban: true,
+                groupId: 1
+            }
+        }
+        spyOn(service, 'getSelectedType').and.returnValue('kanban');
+        spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: KPiList })
+        const spy = spyOn(component, 'postJiraKpi');
+        component.reloadKPI(fakeKPiDetails);
+        expect(spy).toBeDefined();
+      })
+
     });
 

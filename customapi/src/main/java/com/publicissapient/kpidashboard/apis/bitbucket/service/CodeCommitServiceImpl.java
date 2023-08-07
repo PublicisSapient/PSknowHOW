@@ -221,6 +221,8 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 							|| CollectionUtils.isNotEmpty(repoToolKpiMetricResponseCommitList)) {
 						Map<String, Long> dateWiseCommitList = new HashMap<>();
 						Map<String, Long> dateWiseMRList = new HashMap<>();
+						aggCommitAndMergeCount(aggCommitCountForRepo, aggMergeCountForRepo, dateWiseCommitList,
+								dateWiseMRList);
 						createDateLabelWiseMap(repoToolKpiMetricResponseCommitList, repoToolKpiMetricResponseMergeList,
 								repo.getRepositoryName(), repo.getBranch(), dateWiseCommitList, dateWiseMRList);
 						dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, dateWiseMRList, excelDataLoader,
@@ -232,7 +234,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 						repoList.add(repo.getUrl());
 						branchList.add(repo.getBranch());
 
-					
+
 				}
 			});
 			List<DataCount> dayWiseCount = setDayWiseCountForProject(aggMergeCountForRepo, aggCommitCountForRepo,

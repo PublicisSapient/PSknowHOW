@@ -562,8 +562,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 			// Add RCA to Issue
 			setRCA(fieldMapping, issue, jiraIssue, fields);
 
-			// Add device platform filed to issue
-			setDevicePlatform(fieldMapping, jiraIssue, fields);
 			if (issueTypeNames.contains(
 					JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
 				// collectorId
@@ -1167,32 +1165,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	}
 
 	/**
-	 * Sets Device Platform
-	 *
-	 * @param fieldMapping
-	 *            fieldMapping provided by the User
-	 * @param jiraIssue
-	 *            JiraIssue instance
-	 * @param fields
-	 *            Map of Issue Fields
-	 */
-	public void setDevicePlatform(FieldMapping fieldMapping, KanbanJiraIssue jiraIssue,
-			Map<String, IssueField> fields) {
-
-		try {
-			String devicePlatform = null;
-			if (fields.get(fieldMapping.getDevicePlatform()) != null
-					&& fields.get(fieldMapping.getDevicePlatform()).getValue() != null) {
-				devicePlatform = ((JSONObject) fields.get(fieldMapping.getDevicePlatform()).getValue())
-						.getString(JiraConstants.VALUE);
-			}
-			jiraIssue.setDevicePlatform(devicePlatform);
-		} catch (JSONException e) {
-			log.error("JIRA Processor | Error while parsing Device Platform ");
-		}
-	}
-
-	/**
 	 * Process Jira issue Data
 	 *
 	 * @param jiraIssue
@@ -1232,7 +1204,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		}
 		setEstimate(jiraIssue, fields, fieldMapping, jiraProcessorConfig);
 		setAggregateTimeEstimates(jiraIssue, fields);
-		setEnvironmentImpacted(jiraIssue, fields, fieldMapping);
 
 		jiraIssue.setChangeDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
 		jiraIssue.setIsDeleted(JiraConstants.FALSE);
@@ -1408,31 +1379,6 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 	}
 
 	/**
-	 * Sets the environment impacted custom field.
-	 *
-	 * @param jiraIssue
-	 *            JiraIssue instance
-	 * @param fields
-	 *            Map of Issue Fields
-	 * @param fieldMapping
-	 *            fieldMapping provided by the User
-	 */
-	private void setEnvironmentImpacted(KanbanJiraIssue jiraIssue, Map<String, IssueField> fields,
-			FieldMapping fieldMapping) {
-		if (fields.get(fieldMapping.getEnvImpacted()) != null
-				&& fields.get(fieldMapping.getEnvImpacted()).getValue() != null) {
-			JSONObject customField;
-			try {
-				customField = new JSONObject(fields.get(fieldMapping.getEnvImpacted()).getValue().toString());
-				jiraIssue.setEnvImpacted(JiraProcessorUtil.deodeUTF8String(customField.get(JiraConstants.VALUE)));
-			} catch (JSONException e) {
-				log.error("JIRA Processor | Error while parsing the environment custom field Environment", e);
-			}
-
-		}
-	}
-
-	/**
 	 * Set Details related to issues with Epic Issue type
 	 *
 	 * @param fieldMapping
@@ -1481,15 +1427,19 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			Set<String> defectStorySet = new HashSet<>();
-			for (IssueLink issueLink : issue.getIssueLinks()) {
-				if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())
-						&& jiraProcessorConfig.getExcludeLinks().stream()
-								.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
-					break;
-				}
-				defectStorySet.add(issueLink.getTargetIssueKey());
-			}
+			excludeLinks(issue, defectStorySet);
 			jiraIssue.setDefectStoryID(defectStorySet);
+		}
+	}
+
+	private void excludeLinks(Issue issue, Set<String> defectStorySet) {
+		if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())) {
+			for (IssueLink issueLink : issue.getIssueLinks()) {
+				if (!jiraProcessorConfig.getExcludeLinks().stream()
+						.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
+					defectStorySet.add(issueLink.getTargetIssueKey());
+				}
+			}
 		}
 	}
 

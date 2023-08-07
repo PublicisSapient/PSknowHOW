@@ -1,0 +1,131 @@
+.feeback-container {
+    position: absolute;
+    bottom: 42px;
+}
+.icon-feedback1 {
+    margin: 0 0 -28px 14px;
+}
+
+.icon-feedback2 {
+    margin-left: -3px;
+}
+
+
+@media only screen and (max-width: 1600px){
+    .icon-feedback1 {
+        width: 80px;
+        height: 25px;
+        margin-bottom: -32px;
+    }
+
+    .icon-feedback2 {
+        width: 25px;
+        height: 25px;
+        margin-left: 5px;
+    }
+}
+
+.document-link {
+    width: 316px;
+    margin-top: -10px;
+}
+
+::ng-deep .feedback-overlay-with-sidebar {
+    position: fixed !important;
+    width: 361px;
+    height: 214px;    
+    left: 43px !important;
+    box-shadow: 0px 4px 15px #7070709A;
+    border-radius: 5px;
+    display: block !important;
+    --overlayArrowLeft: -100px !important;
+    margin-top: -10px !important;
+}
+::ng-deep .feedback-overlay {
+    position: fixed !important;
+    left: 80px !important;
+    width: 361px;
+    height: 214px;
+    box-shadow: 0px 4px 15px #7070709A;
+    border-radius: 5px;
+    display: block !important;
+    --overlayArrowLeft: -100px !important;
+    margin-top: -10px !important;
+}
+
+::ng-deep.p-overlaypanel .p-overlaypanel-close {
+    background: #707070;
+    width: 18px;
+    height: 18px;
+    border-radius: 14px;
+}
+
+::ng-deep .p-overlaypanel .p-overlaypanel-content {
+    padding: 1rem;
+}
+
+.p-button {
+    padding: 4px 12px 4px 12px;
+    background: #437495 0% 0% no-repeat padding-box;
+    border-radius: 2px;
+}
+
+::ng-deep .pi{
+    font-size: 9px;
+}
+
+.overlay-heading1 {
+    font-weight: 700 ;
+}
+
+.comment {
+    resize: none;
+    margin-top: -5px;
+    width: 100%;
+    height: 81px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 1px solid #707070;
+    border-radius: 0px;
+}
+
+.backward {
+    margin-top: 0px;
+}
+
+.backward {
+    margin-top: 0px;
+}
+
+.documentation {
+    width: 100px;
+    height: 16px;
+    color: #707070;
+}
+
+.feedback {
+    padding-left: 8px;
+    width: 71px;
+    height: 16px;
+    color: #707070;
+}
+
+.click-here {
+    color: #1F7EFF;
+}
+
+.doc-container{
+    width: 316px;
+    height: 130px;
+}
+
+.feedback-container{
+    width: 332px;
+    height: 177px;
+}
+::ng-deep .document-link .p-tabview .p-tabview-nav {
+    border: 0;
+}
+
+::ng-deep .document-link .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+    padding: 1rem 1rem;
+}

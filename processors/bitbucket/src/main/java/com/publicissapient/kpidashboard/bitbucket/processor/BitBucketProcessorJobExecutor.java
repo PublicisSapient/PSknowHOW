@@ -104,6 +104,7 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+
 	@Autowired
 	protected BitBucketProcessorJobExecutor(TaskScheduler taskScheduler) {
 		super(taskScheduler, ProcessorConstants.BITBUCKET);
@@ -267,6 +268,10 @@ public class BitBucketProcessorJobExecutor extends ProcessorJobExecutor<Bitbucke
 		MDC.put("executionStatus", String.valueOf(executionStatus));
 		MDC.clear();
 		return executionStatus;
+	}
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
 	}
 
 	private void updateAssigneeForCommit(ProjectBasicConfig proBasicConfig,

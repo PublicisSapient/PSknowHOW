@@ -79,7 +79,7 @@ class SprintClientImplTest {
 		when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("abxg");
 		when(sprintRepository.findTopByBasicProjectConfigIdAndState(any(), anyString())).thenReturn(null);
 		when(jiraProcessorRepository.findByProcessorName(anyString())).thenReturn(processor);
-		sprintClientImpl.processSprints(projectConfig, getSprintDetails(), jiraAdapter);
+		sprintClientImpl.processSprints(projectConfig, getSprintDetails(), jiraAdapter,false);
 	}
 
 	@Test
@@ -117,7 +117,7 @@ class SprintClientImplTest {
 		when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("abxg");
 		when(sprintRepository.findBySprintIDIn(any())).thenReturn(Arrays.asList(sprintDetails));
 		when(jiraProcessorRepository.findByProcessorName(anyString())).thenReturn(processor);
-		sprintClientImpl.processSprints(projectConfig, getSprintDetails(), jiraAdapter);
+		sprintClientImpl.processSprints(projectConfig, getSprintDetails(), jiraAdapter,false);
 	}
 
 	@Test
@@ -155,7 +155,7 @@ class SprintClientImplTest {
 		when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("abxg");
 		when(sprintRepository.findBySprintIDIn(any())).thenReturn(Arrays.asList(sprintDetails));
 		when(jiraProcessorRepository.findByProcessorName(anyString())).thenReturn(processor);
-		sprintClientImpl.processSprints(projectConfig, getSprintDetails(), jiraAdapter);
+		sprintClientImpl.processSprints(projectConfig, getSprintDetails(), jiraAdapter,false);
 	}
 
 	private Set<SprintDetails> getSprintDetails() {

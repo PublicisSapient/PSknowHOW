@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -32,8 +33,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -64,12 +63,14 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
 	public static final String STORY_CATEGORIES = "storyCategories";
 	public static final String PROJECT_WISE_TOTAL_CATEGORIES = "projectWiseTotalCategories";
-	private static final Logger LOGGER = LoggerFactory.getLogger(IssueCountServiceImpl.class);
 	private static final String STORY_COUNT = "Story Count";
 	private static final String TOTAL_COUNT = "Total Count";
 	private static final String STORY_LIST = "stories";
@@ -148,7 +149,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			dataCountGroups.add(dataCountGroup);
 		});
 
-		LOGGER.debug("[ISSUE-COUNT-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
+		log.debug("[ISSUE-COUNT-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
 		kpiElement.setTrendValueList(dataCountGroups);
@@ -188,8 +189,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 			List<String> jiraStoryIdentification = new ArrayList<>();
-			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentification()).isPresent()) {
-				jiraStoryIdentification = fieldMapping.getJiraStoryIdentification().stream().map(String::toLowerCase)
+			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKpi40()).isPresent()) {
+				jiraStoryIdentification = fieldMapping.getJiraStoryIdentificationKpi40().stream().map(String::toLowerCase)
 						.collect(Collectors.toList());
 			}
 			projectWiseJiraIdentification.put(basicProjectConfigId.toString(), jiraStoryIdentification);
@@ -199,17 +200,16 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 																	  // comparison
 					.distinct().collect(Collectors.toList());
 
-			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping, categories,
+			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(), categories,
 					JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
-		getModifiedSprintDetailsFromBaseClass(sprintDetails, configHelperService);
 		Set<String> totalIssue = new HashSet<>();
-		sprintDetails.stream().forEach(sprintDetail -> {
-			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
-				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+		sprintDetails.stream().forEach(dbSprintDetail -> {
+			if (CollectionUtils.isNotEmpty(dbSprintDetail.getTotalIssues())) {
+				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
 						CommonConstant.TOTAL_ISSUES));
 			}
 
@@ -242,7 +242,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	public Double calculateKPIMetrics(Map<String, Object> subCategoryMap) {
 		String requestTrackerId = getRequestTrackerId();
 
-		LOGGER.debug("[JIRA-ISSUECOUNT][{}]. Total Story Count: {}", requestTrackerId, subCategoryMap);
+		log.debug("[JIRA-ISSUECOUNT][{}]. Total Story Count: {}", requestTrackerId, subCategoryMap);
 		return 0.0d;
 	}
 
@@ -334,7 +334,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 			Map<String, Double> issueCountMap = new LinkedHashMap<>();
 			issueCountMap.put(STORY_COUNT, (double) totalPresentStoryIssue.size());
 			issueCountMap.put(TOTAL_COUNT, (double) totalPresentTotalIssue.size());
-			LOGGER.debug("[ISSUECOUNT-SPRINT-WISE][{}]. Total Stories Count for sprint {}  is {}", requestTrackerId,
+			log.debug("[ISSUECOUNT-SPRINT-WISE][{}]. Total Stories Count for sprint {}  is {}", requestTrackerId,
 					node.getSprintFilter().getName(), storyCount);
 
 			Map<String, List<DataCount>> dataCountMap = new HashMap<>();

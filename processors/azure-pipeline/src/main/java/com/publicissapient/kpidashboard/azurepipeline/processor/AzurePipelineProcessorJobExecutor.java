@@ -229,6 +229,11 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 		return executionStatus;
 	}
 
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
+
 	private int deployJobs(AzurePipelineProcessor processor, long startTime, List<Deployment> deploymentJobs,
 			List<Deployment> activeDeployJobs, ProcessorToolConnection azurePipelineServer, long lastStartTimeOfJobs,
 			ProjectBasicConfig proBasicConfig) {

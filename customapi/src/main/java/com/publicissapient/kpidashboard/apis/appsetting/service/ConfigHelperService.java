@@ -18,20 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -45,23 +31,34 @@ import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
+import com.publicissapient.kpidashboard.common.repository.application.FieldMappingStructureRepository;
 import com.publicissapient.kpidashboard.common.repository.application.HierarchyLevelSuggestionRepository;
-import com.publicissapient.kpidashboard.common.repository.application.KpiFieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Helper class for configuration
- * 
+ *
  * @author anisingh4
  */
+@Slf4j
 @Service
 public class ConfigHelperService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigHelperService.class);
 	private final Map<ObjectId, Map<String, List<Tool>>> toolItemMap = new HashMap<>();
 	@Autowired
 	CacheService cacheService;
@@ -75,8 +72,6 @@ public class ConfigHelperService {
 	@Autowired
 	private KpiMasterRepository kpiMasterRepository;
 	@Autowired
-	private KpiFieldMappingRepository kpiFieldMappingRepository;
-	@Autowired
 	private HierarchyLevelSuggestionRepository hierarchyLevelSuggestionRepository;
 	@Autowired
 	private ProjectBasicConfigService projectBasicConfigService;
@@ -84,6 +79,9 @@ public class ConfigHelperService {
 	private ProjectToolConfigRepository projectToolConfigRepository;
 	@Autowired
 	private UserBoardConfigRepository userBoardConfigRepository;
+
+	@Autowired
+	private FieldMappingStructureRepository fieldMappingStructureRepository;
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectToolConfMap = new HashMap<>();
 
@@ -92,7 +90,7 @@ public class ConfigHelperService {
 	 */
 	@PostConstruct
 	public void loadConfigData() {
-		LOGGER.info("loadConfigData - loading project config, field mapping and tool_config");
+		log.info("loadConfigData - loading project config, field mapping and tool_config");
 		projectConfigMap.clear();
 		fieldMappingMap.clear();
 
@@ -218,7 +216,7 @@ public class ConfigHelperService {
 
 	/**
 	 * return Config data to cache service based on cache key
-	 * 
+	 *
 	 * @param key
 	 * @return config object
 	 */
@@ -243,7 +241,7 @@ public class ConfigHelperService {
 	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_KPI_MASTER)
 	public Iterable<KpiMaster> loadKpiMaster() {
-		LOGGER.info("loading KPI Master data");
+		log.info("loading KPI Master data");
 		return kpiMasterRepository.findAll();
 	}
 
@@ -278,7 +276,7 @@ public class ConfigHelperService {
 	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_PROJECT_BASIC_TREE)
 	public ProjectBasicConfigNode loadProjectBasicTree() {
-		LOGGER.info("loading Project Basic Tree");
+		log.info("loading Project Basic Tree");
 		return projectBasicConfigService.getBasicConfigTree();
 	}
 
@@ -288,25 +286,33 @@ public class ConfigHelperService {
 	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_HIERARCHY_LEVEL_VALUE)
 	public List<HierarchyLevelSuggestion> loadHierarchyLevelSuggestion() {
-		LOGGER.info("loading hierarchy level Master data");
+		log.info("loading hierarchy level Master data");
 		return hierarchyLevelSuggestionRepository.findAll();
 	}
 
 	/**
 	 * Load KPI Field Mapping.
 	 */
+
 	@PostConstruct
-	@Cacheable(CommonConstant.CACHE_KPI_FIELD_MAPPING)
-	public Object loadKpiFieldMapping() {
-		LOGGER.info("loading KPI FieldMapping data");
-		return kpiFieldMappingRepository.findAll();
+	@Cacheable(CommonConstant.CACHE_FIELD_MAPPING_STUCTURE)
+	public Object loadFieldMappingStructure() {
+		log.info("loading FieldMappingStucture data");
+		return fieldMappingStructureRepository.findAll();
 	}
 
 	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_USER_BOARD_CONFIG)
 	public List<UserBoardConfig> loadUserBoardConfig() {
-		LOGGER.info("loading UserBoarConfig");
+		log.info("loading UserBoarConfig");
 		return userBoardConfigRepository.findAll();
+	}
+
+	@PostConstruct
+	@Cacheable(CommonConstant.CACHE_PROJECT_TOOL_CONFIG)
+	public Object loadAllProjectToolConfig() {
+		log.info("loading projectToolConfig data");
+		return projectToolConfigRepository.findAll();
 	}
 
 }

@@ -153,11 +153,13 @@ export class HttpService {
   private generateTokenUrl = this.baseUrl + '/api/exposeAPI/generateToken';
   private getCommentUrl = this.baseUrl + '/api/comments/getCommentsByKpiId';
   private submitCommentUrl = this.baseUrl + '/api/comments/submitComments';
+  private deleteCommentUrl = this.baseUrl + '/api/comments/deleteCommentById';
+  private getCommentCountUrl = this.baseUrl + '/api/comments/getCommentCount';
   private getJiraProjectAssigneUrl = this.baseUrl + '/api/jira/assignees';
   private getAssigneeRolesUrl = this.baseUrl + '/api/capacity/assignee/roles';
   private saveAssigneeForProjectUrl = this.baseUrl + '/api/capacity/assignee';
   private uploadCert = this.baseUrl + '/api/file/uploadCertificate';
-
+  private commentsSummaryUrl = this.baseUrl + '/api/comments/commentsSummary';
   private jiraTemplateUrl = this.baseUrl + '/api/templates';
   private currentUserDetailsURL = this.baseUrl + '/api/userinfo/userData';
   private getKpiColumnsUrl = this.baseUrl + '/api/kpi-column-config';
@@ -169,6 +171,8 @@ export class HttpService {
     this.baseUrl + '/api/capacity/jira/happiness';
   userName: string;
   userEmail: string;
+  private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
+  private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -808,11 +812,11 @@ export class HttpService {
     this.http.get<any>(this.authDetailsUrl).subscribe((response) => {
       if (response && response?.success && response?.data) {
         const authDetails = response?.data;
-        const newRoles = authDetails['projectsAccess'].map(
+        const newRoles = authDetails['projectsAccess']?.map(
           (projectRolesDetails) => projectRolesDetails?.role,
         );
         let roleAlreadyExist = true;
-        newRoles.forEach((role) => {
+        newRoles?.forEach((role) => {
           if (!existingRoles.includes(role)) {
             roleAlreadyExist = false;
           }
@@ -1050,21 +1054,20 @@ export class HttpService {
     );
   }
 
-  getComment(selectedTab, selectedFilter, kpiId) {
-    const postData = {
-      node:
-        selectedTab !== 'iteration'
-          ? selectedFilter?.nodeId
-          : selectedFilter?.parentId[0],
-      sprintId: selectedTab === 'iteration' ? selectedFilter.nodeId : '',
-      kpiId: kpiId,
-      level: selectedFilter?.level,
-    };
+  getComment(postData) {
     return this.http.post<any>(this.getCommentUrl, postData);
   }
 
   submitComment(data): Observable<any> {
     return this.http.post<object>(this.submitCommentUrl, data);
+  }
+
+  deleteComment(id): Observable<any> {
+    return this.http.delete<object>(this.deleteCommentUrl+ '/' + id);
+  }
+
+  getCommentCount(data): Observable<any>{
+    return this.http.post<object>(this.getCommentCountUrl, data);
   }
 
   /* Update project details  */
@@ -1101,4 +1104,21 @@ export class HttpService {
       data,
     );
   }
+
+  getActiveIterationStatus(postData){
+    return this.http.post(this.activeIterationUrl + '/'+ postData.sprintId,{});
+  }
+
+  getactiveIterationfetchStatus(sprintId){
+    return this.http.get(this.activeIterationfetchStatusUrl+'/' + sprintId);
+  }
+  getCommentSummary(data) {
+    return this.http.post<object>(this.commentsSummaryUrl, data);
+  }
+
+  /** This method is responsible for getting field mapping configuration for specfic KPI and processor */
+  getKPIFieldMappingConfig(KPIID) {
+    return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
+  }
+
 }

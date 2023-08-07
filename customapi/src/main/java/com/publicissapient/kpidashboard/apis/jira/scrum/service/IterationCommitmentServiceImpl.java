@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,8 +33,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -60,12 +59,14 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
 	public static final String UNCHECKED = "unchecked";
 	public static final String OVERALL_COMMITMENT = "Overall Commitment";
-	private static final Logger LOGGER = LoggerFactory.getLogger(IterationCommitmentServiceImpl.class);
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	private static final String SEARCH_BY_PRIORITY = "Filter by status";
 	private static final String PUNTED_ISSUES = "puntedIssues";
@@ -109,9 +110,17 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Scope Change -> Requested sprint : {}", leafNode.getName());
-			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
-			if (null != sprintDetails) {
+			log.info("Scope Change -> Requested sprint : {}", leafNode.getName());
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
+			SprintDetails sprintDetails;
+			if (null != dbSprintDetail) {
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+				// to modify sprintdetails on the basis of configuration for the project
+				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+						fieldMapping.getJiraIterationIssuetypeKPI120(),
+						fieldMapping.getJiraIterationCompletionStatusKPI120(), null).get(0);
+
 				List<String> puntedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.PUNTED_ISSUES);
 				Set<String> addedIssues = sprintDetails.getAddedIssues();
@@ -200,7 +209,7 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 		}
 
 		if (CollectionUtils.isNotEmpty(totalIssues)) {
-			LOGGER.info("Scope Change -> request id : {} total jira Issues : {}", requestTrackerId, totalIssues.size());
+			log.info("Scope Change -> request id : {} total jira Issues : {}", requestTrackerId, totalIssues.size());
 			List<Integer> overAllTotalIssueCount = Arrays.asList(0);
 			List<Double> overAllTotalIssueSp = Arrays.asList(0.0);
 			List<Double> overAllTotalOriginalEstimate = Arrays.asList(0.0);
@@ -213,7 +222,7 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 		}
 
 		if (CollectionUtils.isNotEmpty(initialIssues)) {
-			LOGGER.info("Scope Change -> request id : {} initial jira Issues : {}", requestTrackerId,
+			log.info("Scope Change -> request id : {} initial jira Issues : {}", requestTrackerId,
 					initialIssues.size());
 			List<Integer> overAllInitialIssueCount = Arrays.asList(0);
 			List<Double> overAllInitialIssueSp = Arrays.asList(0.0);
@@ -227,7 +236,7 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 		}
 
 		if (CollectionUtils.isNotEmpty(addedIssues)) {
-			LOGGER.info("Scope Change -> request id : {} added jira Issues : {}", requestTrackerId, addedIssues.size());
+			log.info("Scope Change -> request id : {} added jira Issues : {}", requestTrackerId, addedIssues.size());
 			List<Integer> overAllAddedIssueCount = Arrays.asList(0);
 			List<Double> overAllAddedIssueSp = Arrays.asList(0.0);
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);
@@ -239,8 +248,7 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 		}
 
 		if (CollectionUtils.isNotEmpty(puntedIssues)) {
-			LOGGER.info("Scope Change -> request id : {} punted jira Issues : {}", requestTrackerId,
-					puntedIssues.size());
+			log.info("Scope Change -> request id : {} punted jira Issues : {}", requestTrackerId, puntedIssues.size());
 			List<Integer> overAllPunIssueCount = Arrays.asList(0);
 			List<Double> overAllPunIssueSp = Arrays.asList(0.0);
 			List<Double> overAllOriginalEstimate = Arrays.asList(0.0);

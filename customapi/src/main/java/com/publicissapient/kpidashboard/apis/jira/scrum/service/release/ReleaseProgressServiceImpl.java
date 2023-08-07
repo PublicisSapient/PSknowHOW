@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,10 +39,12 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseProgressServiceImpl.class);
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String RELEASE_JIRA_ISSUE_STATUS = "releaseJiraIssueStatus";
 	private static final String TO_DO = "To Do";
@@ -75,12 +75,10 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			LOGGER.info("Release Progress -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-
+			log.info("Release Progress -> Requested sprint : {}", leafNode.getName());
 			List<JiraIssue> releaseIssues = getFilteredReleaseJiraIssuesFromBaseClass(null);
 			resultListMap.put(TOTAL_ISSUES, releaseIssues);
-			JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus(basicProjectConfigId);
+			JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus();
 			resultListMap.put(RELEASE_JIRA_ISSUE_STATUS, jiraIssueReleaseStatus);
 		}
 		return resultListMap;
@@ -99,7 +97,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		LOGGER.info("ReleaseProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("ReleaseProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
@@ -124,7 +122,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 				Set<String> priorities = new HashSet<>();
 				createDataCountGroupMap(releaseIssues, jiraIssueReleaseStatus, assignees, priorities, fieldMapping,
 						filterDataList);
-				populateExcelDataObject(requestTrackerId, excelData, releaseIssues);
+				populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
 				List<DataCount> dataCountList = new ArrayList<>();
 				dataCountList.add(getStatusWiseCountList(releaseIssues, jiraIssueReleaseStatus));
 				dataCountList.add(getStatusWiseStoryPointList(releaseIssues, fieldMapping, jiraIssueReleaseStatus));
@@ -150,7 +148,8 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 			Set<String> assigneeNames, Set<String> priorities, FieldMapping fieldMapping,
 			List<IterationKpiValue> iterationKpiValues) {
 		Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = jiraIssueList.stream().collect(
-				Collectors.groupingBy(JiraIssue::getAssigneeName, Collectors.groupingBy(JiraIssue::getPriority)));
+				Collectors.groupingBy(jiraIssue -> Optional.ofNullable(jiraIssue.getAssigneeName()).orElse("-"),
+						Collectors.groupingBy(JiraIssue::getPriority)));
 		typeAndStatusWiseIssues
 				.forEach((assigneeName, priorityWiseIssue) -> priorityWiseIssue.forEach((priority, issues) -> {
 					List<DataCount> dataCountList = new ArrayList<>();
@@ -200,14 +199,17 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 			JiraIssueReleaseStatus jiraIssueReleaseStatus) {
 		DataCount dataCount = new DataCount();
 		Map<String, Double> releaseProgressStoryPoint = new HashMap<>();
+
 		releaseProgressStoryPoint.put(TO_DO, jiraIssueList.stream()
 				.filter(jiraIssue -> jiraIssueReleaseStatus.getToDoList().values().contains(jiraIssue.getStatus()))
 				.mapToDouble(jiraIssue -> {
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						return jiraIssue.getStoryPoints();
+						return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
 					} else {
-						return jiraIssue.getOriginalEstimateMinutes();
+						Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+						int inHours = integer / 60;
+						return inHours / fieldMapping.getStoryPointToHourMapping();
 					}
 				}).sum());
 		releaseProgressStoryPoint.put(IN_PROGRESS, jiraIssueList.stream().filter(
@@ -215,9 +217,11 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 				.mapToDouble(jiraIssue -> {
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						return jiraIssue.getStoryPoints();
+						return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
 					} else {
-						return jiraIssue.getOriginalEstimateMinutes();
+						Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+						int inHours = integer / 60;
+						return inHours / fieldMapping.getStoryPointToHourMapping();
 					}
 				}).sum());
 		releaseProgressStoryPoint.put(DONE, jiraIssueList.stream()
@@ -225,9 +229,11 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 				.mapToDouble(jiraIssue -> {
 					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						return jiraIssue.getStoryPoints();
+						return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
 					} else {
-						return jiraIssue.getOriginalEstimateMinutes();
+						Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+						int inHours = integer / 60;
+						return inHours / fieldMapping.getStoryPointToHourMapping();
 					}
 				}).sum());
 		dataCount.setData(
@@ -238,10 +244,10 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> jiraIssueList) {
+			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
-			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData);
+			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}
 

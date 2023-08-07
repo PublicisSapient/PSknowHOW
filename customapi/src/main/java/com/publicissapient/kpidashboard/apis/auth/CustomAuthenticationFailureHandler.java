@@ -26,6 +26,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -41,7 +45,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
 	private static final String WRONGCREDENTIALS = "Login Failed: The username or password entered is incorrect";
-
+	public static final String USERNAME = "username";
+	public static final String FAIL = "FAIL";
+	@Autowired
+	private UserLoginHistoryService userLoginHistoryService;
+	@Autowired
+	private UserInfoRepository userInfoRepository;
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
 			AuthenticationException exception) throws IOException, ServletException {
@@ -60,6 +69,12 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 			data.put("message", "Authentication Failed: " + exception.getMessage());
 		}
 		data.put("path", httpServletRequest.getRequestURI());
+
+		String username = httpServletRequest.getParameter(USERNAME);
+		UserInfo userinfo = userInfoRepository.findByUsername(username);
+		if(userinfo != null) {
+			userLoginHistoryService.createUserLoginHistoryInfo(userinfo, FAIL);
+		}
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		httpServletResponse.getOutputStream().println(objectMapper.writeValueAsString(data));

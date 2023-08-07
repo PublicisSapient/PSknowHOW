@@ -247,7 +247,7 @@ public class CodeCommitServiceImplTest {
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put("codeCommit", Arrays.asList("0", "2", "4", "8", "32"));
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
-		when(repoToolsConfigService.getrepoToolKpiMetrics(any(), any(), any(), any(), any())).thenReturn(repoToolKpiMetricResponseList);
+		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any())).thenReturn(repoToolKpiMetricResponseList);
 		try {
 			KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);

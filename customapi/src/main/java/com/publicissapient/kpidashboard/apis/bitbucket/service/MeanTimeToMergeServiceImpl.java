@@ -15,6 +15,7 @@ import com.publicissapient.kpidashboard.apis.repotools.model.Branches;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -80,7 +81,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
-	
+
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
@@ -128,6 +129,12 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		return kpiElement;
 	}
 
+	private void aggMeanTimeToMerge(Map<String, Double> aggPickupTimeForRepo, Map<String, Double> pickupTimeForRepo) {
+		if (MapUtils.isNotEmpty(pickupTimeForRepo)) {
+			aggPickupTimeForRepo.putAll(pickupTimeForRepo);
+		}
+	}
+	
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
 			List<Node> projectLeafNodeList) {
 		String requestTrackerId = getRequestTrackerId();
@@ -167,6 +174,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 
 			Map<String, List<DataCount>> aggDataMap = new HashMap<>();
 			List<MergeRequests> aggMergeRequests = new ArrayList<>();
+			Map<String, Double> aggMeanTimeToMerge = new HashMap<>();
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
 						&& repo.getProcessorItemList().get(0).getId() != null) {
@@ -180,16 +188,20 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 									aggDataMap);
 						}
 					} else if(CollectionUtils.isNotEmpty(repoToolKpiMetricRespons)) {
-						setWeekWiseMeanTimeToMergeForRepoTools(createDateLabelWiseMap(repoToolKpiMetricRespons, repo.getRepositoryName(), repo.getBranch()), end, excelDataLoader, branchName, projectName,
+						Map<String, Double> dateWiseMeanTimeToMerge = new HashMap<>();
+						createDateLabelWiseMap(repoToolKpiMetricRespons, repo.getRepositoryName(), repo.getBranch(), dateWiseMeanTimeToMerge);
+						aggMeanTimeToMerge(aggMeanTimeToMerge, dateWiseMeanTimeToMerge);
+						setWeekWiseMeanTimeToMergeForRepoTools(dateWiseMeanTimeToMerge, end, excelDataLoader, branchName, projectName,
 								aggDataMap);
 					}
 						repoWiseMRList.add(excelDataLoader);
 						repoList.add(repo.getUrl());
 						branchList.add(repo.getBranch());
-					
+
 				}
 			});
-
+			setWeekWiseMeanTimeToMergeForRepoTools(aggMeanTimeToMerge, end, excelDataLoader, Constant.AGGREGATED_VALUE, projectName,
+					aggDataMap);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 			populateExcelDataObject(requestTrackerId, repoWiseMRList, repoList, branchList, excelData, node);
 		});
@@ -206,7 +218,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 	 * @param projectName
 	 * @param aggDataMap
 	 */
-	private void setWeekWiseMeanTimeToMergeForRepoTools(Map<String, Branches> mergeReqList, LocalDateTime end,
+	private void setWeekWiseMeanTimeToMergeForRepoTools(Map<String, Double> mergeReqList, LocalDateTime end,
 			Map<String, Double> excelDataLoader, String branchName, String projectName,
 			Map<String, List<DataCount>> aggDataMap) {
 		LocalDate endDate = end.toLocalDate();
@@ -219,8 +231,8 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
 				sunday = sunday.plusDays(1);
 			}
-			Branches branches = mergeReqList.get(monday.toString());
-			double meanTimeToMerge = branches != null?branches.getAverage()*1000: 0.0d;
+			double meanTimeToMerge = mergeReqList.getOrDefault(monday.toString(), 0.0d)*1000;
+//			double meanTimeToMerge = branches != null?branches.getAverage()*1000: 0.0d;
 			String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
 					DateUtil.DISPLAY_DATE_FORMAT) + WEEK_SEPERATOR
 					+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
@@ -285,24 +297,39 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		});
 	}
 
-	private Map<String, Branches> createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons,
-			String repoName, String branchName) {
-		Map<String, Branches> branchesMap = new HashMap<>();
+//	private Map<String, Branches> createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons,
+//			String repoName, String branchName) {
+//		Map<String, Branches> branchesMap = new HashMap<>();
+//
+//		for (RepoToolKpiMetricResponse response : repoToolKpiMetricRespons) {
+//			if (response.getRepositories() != null) {
+//				Optional<Branches> matchingBranch = response.getRepositories().stream()
+//						.filter(repository -> repository.getName().equals(repoName))
+//						.flatMap(repository -> repository.getBranches().stream())
+//						.filter(branch -> branch.getName().equals(branchName)).findFirst();
+//
+//				matchingBranch.ifPresent(branch -> branchesMap.put(response.getDateLabel(), branch));
+//			}
+//		}
+//
+//		return branchesMap;
+//	}
 
-		for (RepoToolKpiMetricResponse response : repoToolKpiMetricRespons) {
+	private void createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesCommit,
+										String repoName, String branchName, Map<String, Double> dateWisePickupTime) {
+
+		for (RepoToolKpiMetricResponse response : repoToolKpiMetricResponsesCommit) {
 			if (response.getRepositories() != null) {
 				Optional<Branches> matchingBranch = response.getRepositories().stream()
 						.filter(repository -> repository.getName().equals(repoName))
 						.flatMap(repository -> repository.getBranches().stream())
 						.filter(branch -> branch.getName().equals(branchName)).findFirst();
 
-				matchingBranch.ifPresent(branch -> branchesMap.put(response.getDateLabel(), branch));
+				double pickupTime = matchingBranch.map(Branches::getAverage).orElse(0.0d);
+				matchingBranch.ifPresent(branch -> dateWisePickupTime.put(response.getDateLabel(), pickupTime));
 			}
 		}
-
-		return branchesMap;
 	}
-	
 
 	/**
 	 * @param projectName
@@ -423,7 +450,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		}
 		return bitbucketJob;
 	}
-	
+
 	private void populateRepoList(List<Tool> reposList, Map<String, List<Tool>> mapOfListOfTools) {
 		if (null != mapOfListOfTools) {
 			reposList.addAll(mapOfListOfTools.get(BITBUCKET) == null ? Collections.emptyList()

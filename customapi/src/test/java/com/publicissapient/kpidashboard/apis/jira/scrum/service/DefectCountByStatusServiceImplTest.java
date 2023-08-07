@@ -146,6 +146,7 @@ public class DefectCountByStatusServiceImplTest {
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 		when(jiraServiceR.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraServiceR.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> returnMap = defectCountByStatusService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertNotNull(returnMap);

@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.repotools;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConfig;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
@@ -64,8 +65,8 @@ public class RepoToolsClient {
 	public RepoToolKpiBulkMetricResponse kpiMetricCall(String REPO_TOOLSKpiUrl, String apiKey) {
 		setHttpHeaders(apiKey);
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-		ResponseEntity<RepoToolKpiBulkMetricResponse> response = restTemplate.exchange(REPO_TOOLSKpiUrl, HttpMethod.GET,
-				entity, RepoToolKpiBulkMetricResponse.class);
+        ResponseEntity<RepoToolKpiBulkMetricResponse> response = restTemplate.exchange(REPO_TOOLSKpiUrl, HttpMethod.GET,
+                entity, RepoToolKpiBulkMetricResponse.class);
 		return response.getBody();
 
 	}

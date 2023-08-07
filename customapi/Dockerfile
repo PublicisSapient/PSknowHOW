@@ -1,10 +1,10 @@
-FROM amazoncorretto:8
+FROM psknowhow/amazoncorretto:8
 
 # There are environment variables with periods in the names so change bash as default
 RUN ln -sf /bin/bash /bin/sh 
 #&& apt-get update && apt upgrade libc-bin -y
 
-ENV CONFIG_LOCATION="/app/properties/customapi.properties" certhostpath="/app/certs/" keytoolalias="myknowhow" JAVA_OPTS="" keystorefile="/usr/local/openjdk-8/lib/security/cacerts"
+ENV CONFIG_LOCATION="/app/properties/customapi.properties" certhostpath="/app/certs/" keytoolalias="myknowhow" JAVA_OPTS="" keystorefile="/usr/lib/jvm/java-1.8.0-amazon-corretto/jre/lib/security/cacerts"
 
 ARG JAR_FILE
 ADD ${JAR_FILE} /app/customapi.jar

@@ -289,6 +289,12 @@ label, .p-tabview-title, .navigation li a, .text-data,.col-head, .p-tabmenu-nav 
 .pad-b-30 {
   padding-bottom: 30px;
 }
+.font-bold{
+  font-weight: bold;
+}
+.font-grey{
+  color: #666666;
+}
 h3{
   font-weight: 500;
 }
@@ -1992,6 +1998,19 @@ p-dialog .p-button-cancel.p-button-secondary {
 .p-radiobutton .p-radiobutton-box .p-radiobutton-icon{
   width: 8px;
   height: 8px;
+}
+.icon-spinner {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+      transform: rotate(0deg);
+  }
+
+  100% {
+      transform: rotate(360deg);
+  }
 }
 @media only screen and (max-width:768px){
   .wrapper-w-50{

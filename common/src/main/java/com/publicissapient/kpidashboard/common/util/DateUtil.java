@@ -65,6 +65,7 @@ public class DateUtil {
 	public static final String BASIC_DATE_FORMAT = "dd-MM-yyyy";
 
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+	public static final String NOT_APPLICABLE = "NA";
 
 	private DateUtil() {
 		// to prevent creation on object
@@ -161,6 +162,10 @@ public class DateUtil {
 		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
 	}
 
+	public static boolean isWithinDateTimeRange(LocalDateTime targetDate, LocalDateTime startDate, LocalDateTime endDate) {
+		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
+	}
+
 	public static String convertMillisToDateTime(long milliSeconds) {
 		return convertMillisToLocalDateTime(milliSeconds).toString();
 	}
@@ -235,4 +240,5 @@ public class DateUtil {
 		}
 		return strDate;
 	}
+
 }

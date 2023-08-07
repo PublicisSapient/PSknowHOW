@@ -110,4 +110,5 @@ public class ProjectToolConfigDTO {
 	private Boolean isNew;
 
 	private String repoCloningEnabled;
+	private String projectComponent;
 }

@@ -44,12 +44,9 @@ import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryQueryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -68,12 +65,10 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	private static final String TOTAL_JIRA_ISSUE = "TOTAL_JIRA_ISSUE";
 	private static final String PROJECT_CLOSED_STATUS_MAP = "PROJECT_CLOSED_STATUS_MAP";
 	private static final String JIRA_REOPEN_HISTORY = "JIRA_REOPEN_HISTORY";
+	private static final String STATUS = "status";
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
-	private IssueBacklogRepository issueBacklogRepository;
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -83,9 +78,6 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 
 	@Autowired
 	private KpiHelperService kpiHelperService;
-
-	@Autowired
-	private IssueBacklogCustomHistoryQueryRepository issueBacklogCustomHistoryQueryRepository;
 
 	/**
 	 * Gets qualifier type
@@ -139,7 +131,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 		Map<String, List<String>> closedStatusMap = (Map<String, List<String>>) kpiResultDbMap
 				.get(PROJECT_CLOSED_STATUS_MAP);
 		boolean closedStatusConfigEmpty = closedStatusMap.values().stream().filter(Objects::nonNull)
-				.allMatch(closedStatusList -> closedStatusList.isEmpty());
+				.allMatch(List::isEmpty);
 		if (closedStatusConfigEmpty) {
 			return;
 		}
@@ -304,6 +296,11 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
 					.collect(Collectors.toList());
+			Map<Long, String> doneStatusMap = getJiraIssueReleaseStatus().getClosedList();
+			if (doneStatusMap != null) {
+				List<String> doneStatus = doneStatusMap.values().stream().collect(Collectors.toList());
+				mapOfProjectFilters.put(STATUS, CommonUtils.convertToPatternList(doneStatus));
+			}
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(defectList));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
@@ -320,7 +317,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigObjectId);
 			List<String> closedStatusList = (List<String>) CollectionUtils
-					.emptyIfNull(fieldMapping.getJiraDefectClosedStatus());
+					.emptyIfNull(fieldMapping.getJiraDefectClosedStatusKPI137());
 			closedStatusListBasicConfigMap.put(basicProjectConfigObjectId.toString(), closedStatusList);
 			mapOfProjectFilters.put("statusUpdationLog.story.changedTo",
 					CommonUtils.convertToPatternList(closedStatusList));

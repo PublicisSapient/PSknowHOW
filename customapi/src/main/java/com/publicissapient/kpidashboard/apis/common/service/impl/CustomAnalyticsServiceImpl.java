@@ -22,10 +22,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,10 +55,12 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private static final String USER_NAME = "user_name";
 	private static final String USER_EMAIL = "user_email";
+	private static final String USER_ID = "user_id";
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final Object USER_AUTHORITIES = "authorities";
-	private static final Logger LOGGER = LoggerFactory.getLogger(CustomAnalyticsServiceImpl.class);
+	public static final String SUCCESS = "SUCCESS";
+
 	@Autowired
 	UserAuthorizedProjectsService userAuthorizedProjectsService;
 	@Autowired
@@ -72,7 +73,8 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private CustomApiConfig settings;
 	@Autowired
 	private ProjectAccessManager projectAccessManager;
-
+	@Autowired
+	private UserLoginHistoryService userLoginHistoryService;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -87,8 +89,11 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
 		json.put(USER_NAME, username);
 		json.put(USER_EMAIL, email);
+		json.put(USER_ID, userinfo.getId().toString());
 		json.put(USER_AUTHORITIES, userinfo.getAuthorities());
 		Gson gson = new Gson();
+
+		userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
 
 		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 
@@ -101,7 +106,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		}
 		json.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
 
-		LOGGER.info("Successfully added Google Analytics data to Response.");
+		log.info("Successfully added Google Analytics data to Response.");
 		return json;
 
 	}

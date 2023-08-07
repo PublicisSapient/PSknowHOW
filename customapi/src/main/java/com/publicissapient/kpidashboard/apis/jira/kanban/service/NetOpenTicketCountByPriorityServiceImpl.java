@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -129,8 +131,22 @@ public class NetOpenTicketCountByPriorityServiceImpl
 	@Override
 	public Map<String, Map<String, Map<String, Set<String>>>> fetchKPIDataFromDb(List<Node> leafNodeList,
 			String startDate, String endDate, KpiRequest kpiRequest) {
+		Map<ObjectId,Map<String,Object>> projectWiseMapping=new HashMap<>();
+		leafNodeList.forEach(leaf -> {
+			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+			Map<String, Object> fieldWise = new HashMap<>();
+			fieldWise.put("LiveStatus", fieldMapping.getJiraLiveStatusNOPK());
+			fieldWise.put("ClosedStatus", fieldMapping.getJiraTicketClosedStatus());
+			fieldWise.put("RejectedStatus", fieldMapping.getJiraTicketRejectedStatus());
+			fieldWise.put("RCA_Count_IssueType", fieldMapping.getKanbanRCACountIssueType());
+			fieldWise.put("Ticket_Count_IssueType", fieldMapping.getTicketCountIssueType());
+			fieldWise.put("StoryFirstStatus", fieldMapping.getStoryFirstStatus());
+		 	projectWiseMapping.put(basicProjectConfigId, fieldWise);
+		});
+
 		resultListMap = kpiHelperService.fetchJiraCustomHistoryDataFromDbForKanban(leafNodeList, startDate, endDate,
-				kpiRequest, FIELD_PRIORITY);
+				kpiRequest, FIELD_PRIORITY,projectWiseMapping);
 
 		CustomDateRange dateRangeForCumulative = KpiDataHelper.getStartAndEndDatesForCumulative(kpiRequest);
 		String startDateForCumulative = dateRangeForCumulative.getStartDate().format(DATE_FORMATTER);

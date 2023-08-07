@@ -1,7 +1,9 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -9,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MapUtils;
@@ -150,6 +153,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 		List<String> sprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
+		List<String> sprintStatusList = new ArrayList<>();
 
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
@@ -159,23 +163,48 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			basicProjectConfigObjectIds.add(basicProjectConfigId);
 
 		});
-
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
+		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
 		List<SprintDetails> totalSprintDetails = sprintRepository
-				.findByBasicProjectConfigIdInAndStateOrderByStartDateDesc(basicProjectConfigObjectIds,
-						SprintDetails.SPRINT_STATE_CLOSED);
+				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
+						sprintStatusList);
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
 
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = totalSprintDetails.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
 
+			Map<ObjectId, Set<String>> duplicateIssues = kpiHelperService.getProjectWiseDuplicateIssueInSprintDetails(
+					projectWiseTotalSprintDetails);
+			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
+			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
+
+			if (MapUtils.isNotEmpty(fieldMappingMap) && !duplicateIssues.isEmpty()) {
+				Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
+						.filter(fieldMappingMap::containsKey).collect(Collectors.toMap(Function.identity(), key -> {
+							FieldMapping fieldMapping = fieldMappingMap.get(key);
+							return Optional.ofNullable(fieldMapping)
+									.map(FieldMapping::getJiraIterationCompletionStatusKpi5)
+									.orElse(Collections.emptyList());
+						}));
+				projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService
+						.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping);
+			}
+
+			Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
+
 			List<SprintDetails> projectWiseSprintDetails = new ArrayList<>();
 			projectWiseTotalSprintDetails.forEach((basicProjectConfigId, sprintDetailsList) -> {
 				List<SprintDetails> sprintDetails = sprintDetailsList.stream()
 						.limit(Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT)
 						.collect(Collectors.toList());
-				getModifiedSprintDetailsFromBaseClass(sprintDetails, configHelperService);
-				sprintDetails.stream().forEach(sprintDetail -> {
+				sprintDetails.stream().forEach(dbSprintDetail -> {
+					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+							.get(dbSprintDetail.getBasicProjectConfigId());
+					// to modify sprintdetails on the basis of configuration for the project
+					SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+							fieldMapping.getJiraIterationIssuetypeKpi5(),
+							fieldMapping.getJiraIterationCompletionStatusKpi5(), finalProjectWiseDuplicateIssuesWithMinCloseDate).get(0);
 					if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 						List<String> sprintWiseIssueIds = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 								sprintDetail, CommonConstant.COMPLETED_ISSUES);

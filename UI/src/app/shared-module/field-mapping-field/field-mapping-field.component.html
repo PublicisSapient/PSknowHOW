@@ -1,0 +1,55 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<div [ngSwitch]="fieldConfig?.fieldType">
+
+    <div class="p-inputgroup" *ngSwitchCase="'text'">
+        <input type="text" pInputText id="fieldConfig?.fieldName" placeholder="Enter {{fieldConfig?.fieldLabel}}"
+        styleClass="p-w-100" [(ngModel)]="value" (change)="setValue()">
+        <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
+        (click)="showDialogToAddValue(true, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"></button>
+    </div>
+
+    <div class="p-inputgroup" *ngSwitchCase="'chips'">
+        <p-chips styleClass="p-w-100" inputId="fieldConfig?.fieldName"
+            placeholder="Enter {{fieldConfig?.fieldLabel}}" addOnBlur="true" [(ngModel)]="value" (onAdd)="setValue()" (onRemove)="setValue()">
+        </p-chips>
+        <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
+        (click)="showDialogToAddValue(false, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"></button>
+    </div>
+
+    <div class="p-d-flex p-justify-between" *ngSwitchCase="'radiobutton'">
+        <div class="p-inputgroup">
+            <ng-container *ngFor="let opt of fieldConfig.options">
+                <p-radioButton placeholder="Select" value="{{opt.value}}" label="{{opt.value}}" class="p-m-2"
+                    [name]="fieldConfig?.fieldName" [(ngModel)]="value" (onClick)="setValue()">
+                </p-radioButton>
+            </ng-container>
+        </div>
+        <button pButton pRipple type="button" label="Reset" class="p-button-raised" (click)="resetRadioButton()"></button>
+    </div>
+
+    <div *ngSwitchCase="'multiselect'">
+        <p-multiSelect id="fieldConfig?.fieldName" [options]="fieldConfig.options" placeholder="Select Priority"
+        styleClass="p-w-100" [showHeader]="false" [(ngModel)]="value" (onChange)="setValue()">
+        </p-multiSelect>
+    </div>
+
+    <div *ngSwitchCase="'dropdown'">
+        <app-additional-filter-field [fieldMappingMetaData]="fieldMappingMetaData"  (additionalFilterChange)="setAdditionalFilterValue($event)"></app-additional-filter-field>
+    </div>
+</div>

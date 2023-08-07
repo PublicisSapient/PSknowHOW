@@ -29,6 +29,7 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -40,8 +41,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryQueryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
@@ -57,11 +57,9 @@ public class DefectReopenRateServiceImplTest {
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
 	@Mock
-	private IssueBacklogCustomHistoryQueryRepository issueBacklogCustomHistoryQueryRepository;
+	private JiraServiceR jiraService;
 	@Mock
 	private KpiHelperService kpiHelperService;
-	@Mock
-	private IssueBacklogRepository issueBacklogRepository;
 	@Mock
 	private ConfigHelperService configHelperService;
 	@Mock
@@ -83,9 +81,10 @@ public class DefectReopenRateServiceImplTest {
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
+		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance("/json/default/kpi_request.json");
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi137");
 		kpiRequest.setLabel("PROJECT");
+		kpiRequest.setDuration("WEEKS");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
@@ -107,6 +106,8 @@ public class DefectReopenRateServiceImplTest {
 		Mockito.doReturn(totalJiraIssueHistoryList).when(jiraIssueCustomHistoryRepository)
 				.findByFilterAndFromStatusMap(anyMap(), anyMap());
 		try {
+
+			when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
 			KpiElement kpiElement = defectReopenRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
 			assertNotNull(kpiElement);

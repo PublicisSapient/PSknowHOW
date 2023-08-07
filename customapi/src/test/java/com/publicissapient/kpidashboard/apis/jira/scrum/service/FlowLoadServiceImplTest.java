@@ -11,13 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -26,11 +26,12 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.apis.data.IssueBacklogCustomHistoryDataFactory;
+import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -38,8 +39,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FlowLoadServiceImplTest {
@@ -47,16 +47,16 @@ public class FlowLoadServiceImplTest {
 	@Mock
 	CacheService cacheService;
 	@Mock
-	CustomApiConfig customApiConfig;
+	private JiraServiceR jiraService;
+	@Mock
+	private CustomApiConfig customApiConfig;
 	List<Node> leafNodeList = new ArrayList<>();
 	TreeAggregatorDetail treeAggregatorDetail;
-	List<IssueBacklogCustomHistory> issueBacklogHistoryDataList = new ArrayList<>();
+	List<JiraIssueCustomHistory> issueBacklogHistoryDataList = new ArrayList<>();
 	@InjectMocks
 	private FlowLoadServiceImpl flowLoadService;
 	@Mock
 	private ConfigHelperService configHelperService;
-	@Mock
-	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private KpiRequest kpiRequest;
 
@@ -84,7 +84,9 @@ public class FlowLoadServiceImplTest {
 			leafNodeList.addAll(v);
 		});
 
-		issueBacklogHistoryDataList = IssueBacklogCustomHistoryDataFactory.newInstance().getIssueBacklogCustomHistory();
+		issueBacklogHistoryDataList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(issueBacklogHistoryDataList);
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(new JiraIssueReleaseStatus());
 
 	}
 
@@ -99,12 +101,10 @@ public class FlowLoadServiceImplTest {
 		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		List<IssueBacklogCustomHistory> expectedResult = new ArrayList<>();
+		List<JiraIssueCustomHistory> expectedResult = new ArrayList<>();
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put(ISSUE_BACKLOG_HISTORY, issueBacklogHistoryDataList);
 		List<Map<String, Object>> typeCountMap = new ArrayList<>();
-		when(issueBacklogCustomHistoryRepository.findByBasicProjectConfigIdIn(Mockito.any()))
-				.thenReturn(issueBacklogHistoryDataList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement responseKpiElement = flowLoadService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);

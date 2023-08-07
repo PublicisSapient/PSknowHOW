@@ -28,8 +28,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,12 +50,14 @@ import com.publicissapient.kpidashboard.common.model.jira.UserRatingData;
 import com.publicissapient.kpidashboard.common.repository.jira.HappinessKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(HappinessIndexServiceImpl.class);
-	private static final String SPRINTSDETAILS = "sprints";
-	private static final String HAPPINESS_INDEX_DETAILS = "heppinessIndexDetails";
+	private static final String SPRINT_DETAILS = "sprints";
+	private static final String HAPPINESS_INDEX_DETAILS = "happinessIndexDetails";
 	@Autowired
 	private SprintRepository sprintRepository;
 	@Autowired
@@ -98,7 +98,7 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 
 		});
 
-		LOGGER.debug("[HAPPINESS-INDEX-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
+		log.debug("[HAPPINESS-INDEX-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
@@ -137,7 +137,7 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 
 		Map<Pair<String, String>, List<Integer>> sprintWiseHappinessIndexNumbers = new HashMap<>();
 
-		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINTSDETAILS);
+		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINT_DETAILS);
 		List<HappinessKpiData> happinessKpiDataList = (List<HappinessKpiData>) resultMap.get(HAPPINESS_INDEX_DETAILS);
 
 		if (CollectionUtils.isNotEmpty(sprintDetails) && CollectionUtils.isNotEmpty(happinessKpiDataList)) {
@@ -149,7 +149,7 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 								sd.getBasicProjectConfigId().toString()) && data.getSprintID().equals(sd.getSprintID()))
 						.flatMap(filteredData -> filteredData.getUserRatingList().stream()
 								.map(UserRatingData::getRating))
-						.filter(rating -> Objects.nonNull(rating)).collect(Collectors.toList());
+						.filter(Objects::nonNull).collect(Collectors.toList());
 
 				sprintWiseHappinessIndexNumbers.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 						totalRatings);
@@ -175,7 +175,7 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 				populateExcelData(requestTrackerId, excelData, node, happinessKpiDataList);
 			}
 
-			LOGGER.debug("[HAPPINESS-INDEX-SPRINT-WISE][{}]. happiness index for sprint {}  is {}", requestTrackerId,
+			log.debug("[HAPPINESS-INDEX-SPRINT-WISE][{}]. happiness index for sprint {}  is {}", requestTrackerId,
 					node.getSprintFilter().getName(), happinessIndexValue);
 
 			DataCount dataCount = new DataCount();
@@ -228,7 +228,7 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 	public Double calculateKPIMetrics(Map<String, Object> stringObjectMap) {
 		String requestTrackerId = getRequestTrackerId();
 
-		LOGGER.debug("[HAPPINESS INDEX VALUE][{}].Total Happiness Index Value: {}", requestTrackerId, stringObjectMap);
+		log.debug("[HAPPINESS INDEX VALUE][{}].Total Happiness Index Value: {}", requestTrackerId, stringObjectMap);
 		return 0.0d;
 	}
 
@@ -252,8 +252,10 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
 		List<HappinessKpiData> happinessKpiDataList = happinessKpiDataRepository.findBySprintIDIn(sprintList);
-
-		resultListMap.put(SPRINTSDETAILS, sprintDetails);
+		// filtering rating of 0 i.e not entered any rating
+		happinessKpiDataList.forEach(happinessKpiData -> happinessKpiData.getUserRatingList().removeIf(
+				userRatingData -> userRatingData.getRating() == null || userRatingData.getRating().equals(0)));
+		resultListMap.put(SPRINT_DETAILS, sprintDetails);
 		resultListMap.put(HAPPINESS_INDEX_DETAILS, happinessKpiDataList);
 
 		return resultListMap;

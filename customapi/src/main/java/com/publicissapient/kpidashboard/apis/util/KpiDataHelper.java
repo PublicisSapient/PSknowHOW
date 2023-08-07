@@ -19,8 +19,12 @@
 package com.publicissapient.kpidashboard.apis.util;
 
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,11 +37,16 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.Hours;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
@@ -48,10 +57,11 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -70,6 +80,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class KpiDataHelper {
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final String CLOSED = "closed";
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	private KpiDataHelper() {
 	}
@@ -351,10 +362,10 @@ public final class KpiDataHelper {
 	}
 
 	public static void prepareFieldMappingDefectTypeTransformation(Map<String, Object> mapOfProjectFilters,
-			FieldMapping fieldMapping, List<String> kpiWiseDefectsFieldMapping, String key) {
-		if (Optional.ofNullable(fieldMapping.getJiradefecttype()).isPresent()
-				&& CollectionUtils.containsAny(kpiWiseDefectsFieldMapping, fieldMapping.getJiradefecttype())) {
-			kpiWiseDefectsFieldMapping.removeIf(x -> fieldMapping.getJiradefecttype().contains(x));
+			List<String> defectType, List<String> kpiWiseDefectsFieldMapping, String key) {
+		if (Optional.ofNullable(defectType).isPresent()
+				&& CollectionUtils.containsAny(kpiWiseDefectsFieldMapping, defectType)) {
+			kpiWiseDefectsFieldMapping.removeIf(x -> defectType.contains(x));
 			kpiWiseDefectsFieldMapping.add(NormalizedJira.DEFECT_TYPE.getValue());
 		}
 		mapOfProjectFilters.put(key, CommonUtils.convertToPatternList(kpiWiseDefectsFieldMapping));
@@ -518,7 +529,7 @@ public final class KpiDataHelper {
 	 */
 	private static Map<LocalDate, List<JiraIssue>> createDueDateWiseMap(List<JiraIssue> arrangeJiraIssueList) {
 		TreeMap<LocalDate, List<JiraIssue>> localDateListMap = new TreeMap<>();
-		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(arrangeJiraIssueList)) {
+		if (CollectionUtils.isNotEmpty(arrangeJiraIssueList)) {
 			arrangeJiraIssueList.forEach(jiraIssue -> {
 				LocalDate dueDate = DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC);
 				localDateListMap.computeIfPresent(dueDate, (date, issue) -> {
@@ -571,21 +582,22 @@ public final class KpiDataHelper {
 	 * @param openIssues
 	 * @return
 	 */
-	public static void arrangeJiraIssueList(FieldMapping fieldMapping, List<JiraIssue> allIssues,
+	public static void arrangeJiraIssueList(List<String> fieldMapping, List<JiraIssue> allIssues,
 			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
 		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
 				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping.getJiraStatusForInProgress() && org.apache.commons.collections.CollectionUtils
-				.isNotEmpty(fieldMapping.getJiraStatusForInProgress())) {
+		if (null != fieldMapping && CollectionUtils
+				.isNotEmpty(fieldMapping)) {
 			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
+					.filter(jiraIssue -> fieldMapping.contains(jiraIssue.getStatus()))
 					.collect(Collectors.toList()));
 			openIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> !fieldMapping.getJiraStatusForInProgress().contains(jiraIssue.getStatus()))
+					.filter(jiraIssue -> !fieldMapping.contains(jiraIssue.getStatus()))
 					.collect(Collectors.toList()));
 		} else {
 			openIssues.addAll(jiraIssuesWithDueDate);
 		}
+
 	}
 
 	/**
@@ -658,6 +670,258 @@ public final class KpiDataHelper {
 	public static Map<String, IterationKpiModalValue> createMapOfModalObject(List<JiraIssue> jiraIssueList) {
 		return jiraIssueList.stream()
 				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IterationKpiModalValue()));
+	}
+
+	public static List<SprintDetails> processSprintBasedOnFieldMappings(List<SprintDetails> dbSprintDetails,
+			List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus,
+			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate) {
+		List<SprintDetails> updatedSprintDetails = new ArrayList<>(dbSprintDetails);
+		if (CollectionUtils.isNotEmpty(fieldMappingCompletionType)
+				|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
+			updatedSprintDetails.forEach(dbSprintDetail -> {
+				if ((CollectionUtils.isNotEmpty(fieldMappingCompletionType)
+						|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus))) {
+					dbSprintDetail.setCompletedIssues(
+							CollectionUtils.isEmpty(dbSprintDetail.getCompletedIssues()) ? new HashSet<>()
+									: dbSprintDetail.getCompletedIssues());
+					dbSprintDetail.setNotCompletedIssues(
+							CollectionUtils.isEmpty(dbSprintDetail.getNotCompletedIssues()) ? new HashSet<>()
+									: dbSprintDetail.getNotCompletedIssues());
+					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
+							fieldMappingCompletionType, fieldMappingCompletionStatus);
+					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus, projectWiseDuplicateIssuesWithMinCloseDate);
+					dbSprintDetail.setCompletedIssues(newCompletedSet);
+					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
+					Set<SprintIssue> totalIssue = new HashSet<>();
+					totalIssue.addAll(dbSprintDetail.getCompletedIssues());
+					totalIssue.addAll(dbSprintDetail.getNotCompletedIssues());
+					dbSprintDetail.setTotalIssues(totalIssue);
+				}
+			});
+		}
+		return updatedSprintDetails;
+	}
+
+	public static Set<SprintIssue> changeSprintDetails(SprintDetails sprintDetail, Set<SprintIssue> completedIssues,
+													   List<String> customCompleteStatus, Map<ObjectId, Map<String, List<LocalDateTime>>> issueWiseMinimumDates) {
+		if (CollectionUtils.isNotEmpty(customCompleteStatus) && CollectionUtils.isNotEmpty(completedIssues)
+				&& MapUtils.isNotEmpty(issueWiseMinimumDates)) {
+			ObjectId projectId = sprintDetail.getBasicProjectConfigId();
+			Map<String, List<LocalDateTime>> stringListMap = issueWiseMinimumDates.get(projectId);
+			if (MapUtils.isNotEmpty(stringListMap)) {
+				return completedIssues.stream().filter(completedIssue -> {
+					List<LocalDateTime> issueDateMap = stringListMap.get(completedIssue.getNumber());
+					if (CollectionUtils.isNotEmpty(issueDateMap)) {
+						return issueDateMap.stream()
+								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime,
+										LocalDateTime.ofInstant(Instant.parse(sprintDetail.getStartDate()),
+												ZoneId.systemDefault()),
+										LocalDateTime.ofInstant(Instant.parse(sprintDetail.getCompleteDate()),
+												ZoneId.systemDefault())));
+					}
+					return true;
+				}).collect(Collectors.toSet());
+			}
+		}
+		return completedIssues;
+	}
+
+
+	private static Set<SprintIssue> getCombinationalCompletedSet(Set<SprintIssue> typeWiseIssues,
+			Set<SprintIssue> statusWiseIssues) {
+		Set<SprintIssue> newCompletedSet;
+		if (CollectionUtils.isNotEmpty(typeWiseIssues) && CollectionUtils.isNotEmpty(statusWiseIssues)) {
+			newCompletedSet = new HashSet<>(CollectionUtils.intersection(typeWiseIssues, statusWiseIssues));
+		} else if (CollectionUtils.isNotEmpty(typeWiseIssues)) {
+			newCompletedSet = typeWiseIssues;
+		} else {
+			newCompletedSet = statusWiseIssues;
+		}
+		return newCompletedSet;
+	}
+
+	private static Set<SprintIssue> filteringByFieldMapping(SprintDetails dbSprintDetail,
+			List<String> fieldMapingCompletionType, List<String> fieldMappingCompletionStatus) {
+		Set<SprintIssue> typeWiseIssues = new HashSet<>();
+		Set<SprintIssue> statusWiseIssues = new HashSet<>();
+		if (CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)
+				&& CollectionUtils.isNotEmpty(fieldMapingCompletionType)) {
+			statusWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
+					.filter(issue -> fieldMappingCompletionStatus.contains(issue.getStatus()))
+					.collect(Collectors.toSet()));
+			statusWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
+					.filter(issue -> fieldMappingCompletionStatus.contains(issue.getStatus()))
+					.collect(Collectors.toSet()));
+			typeWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
+					.filter(issue -> fieldMapingCompletionType.contains(issue.getTypeName()))
+					.collect(Collectors.toSet()));
+			typeWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
+					.filter(issue -> fieldMapingCompletionType.contains(issue.getTypeName()))
+					.collect(Collectors.toSet()));
+		} else if (CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
+			statusWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
+					.filter(issue -> fieldMappingCompletionStatus.contains(issue.getStatus()))
+					.collect(Collectors.toSet()));
+			statusWiseIssues.addAll(dbSprintDetail.getNotCompletedIssues().stream()
+					.filter(issue -> fieldMappingCompletionStatus.contains(issue.getStatus()))
+					.collect(Collectors.toSet()));
+		} else if (CollectionUtils.isNotEmpty(fieldMapingCompletionType)) {
+			typeWiseIssues.addAll(dbSprintDetail.getCompletedIssues().stream()
+					.filter(issue -> fieldMapingCompletionType.contains(issue.getTypeName()))
+					.collect(Collectors.toSet()));
+		}
+		return getCombinationalCompletedSet(typeWiseIssues, statusWiseIssues);
+	}
+
+	/**
+	 * To create Map of Modal Object
+	 *
+	 * @param jiraIssueCustomHistories
+	 * @param cycleTimeList
+	 * @return
+	 */
+	public static Map<String, IterationKpiModalValue> createMapOfModalObjectFromJiraHistory(
+			List<JiraIssueCustomHistory> jiraIssueCustomHistories, List<CycleTimeValidationData> cycleTimeList) {
+		Map<String, IterationKpiModalValue> dataMap = new HashMap<>();
+		for (JiraIssueCustomHistory customHistory : jiraIssueCustomHistories) {
+			Optional<CycleTimeValidationData> cycleTimeValidationDataOptional = cycleTimeList.stream()
+					.filter(cyc -> cyc.getIssueNumber().equalsIgnoreCase(customHistory.getStoryID())).findFirst();
+			if (cycleTimeValidationDataOptional.isPresent()) {
+				CycleTimeValidationData cycleTimeValidationData = cycleTimeValidationDataOptional.get();
+				IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+				iterationKpiModalValue.setIssueId(customHistory.getStoryID());
+				iterationKpiModalValue.setIssueURL(customHistory.getUrl());
+				iterationKpiModalValue.setDescription(customHistory.getDescription());
+				String intakeToDor = calWeekHours(cycleTimeValidationData.getIntakeDate(),
+						cycleTimeValidationData.getDorDate());
+				String dorToDod = calWeekHours(cycleTimeValidationData.getDorDate(),
+						cycleTimeValidationData.getDodDate());
+				String dodToLive = calWeekHours(cycleTimeValidationData.getDodDate(),
+						cycleTimeValidationData.getLiveDate());
+				String leadTime = calWeekHours(cycleTimeValidationData.getIntakeDate(),
+						cycleTimeValidationData.getLiveDate());
+				iterationKpiModalValue.setIntakeToDor(getTimeValue(intakeToDor));
+				iterationKpiModalValue.setDorToDod(getTimeValue(dorToDod));
+				iterationKpiModalValue.setDodToLive(getTimeValue(dodToLive));
+				iterationKpiModalValue.setLeadTime(getTimeValue(leadTime));
+				dataMap.put(customHistory.getStoryID(), iterationKpiModalValue);
+			}
+		}
+		return dataMap;
+	}
+
+	private static String getTimeValue(String time) {
+		if (time != null && !time.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+			return CommonUtils.convertIntoDays((int) calculateTimeInDays(Long.parseLong(time)));
+		} else {
+			return Constant.NOT_AVAILABLE;
+		}
+	}
+
+	public static String calWeekHours(DateTime startDateTime, DateTime endDateTime) {
+		if (startDateTime != null && endDateTime != null) {
+			int hours = Hours.hoursBetween(startDateTime, endDateTime).getHours();
+			int weekendsCount = countSaturdaysAndSundays(startDateTime, endDateTime);
+			int res = hours - weekendsCount * 24;
+			return String.valueOf(res);
+		}
+		return DateUtil.NOT_APPLICABLE;
+	}
+
+	/**
+	 *  Cal time with 8hr in a day
+	 * @param timeInHours
+	 * @return
+	 */
+	public static long calculateTimeInDays(long timeInHours) {
+		long timeInMin = (timeInHours / 24) * 8 * 60;
+		long remainingTimeInMin = (timeInHours % 24) * 60;
+		if (remainingTimeInMin >= 480) {
+			timeInMin = timeInMin + 480;
+		} else {
+			timeInMin = timeInMin + remainingTimeInMin;
+		}
+		return timeInMin;
+	}
+
+	public static int countSaturdaysAndSundays(DateTime startDateTime, DateTime endDateTime) {
+		int count = 0;
+		DateTime current = startDateTime;
+		while (current.isBefore(endDateTime)) {
+			if (current.getDayOfWeek() == DateTimeConstants.SATURDAY
+					|| current.getDayOfWeek() == DateTimeConstants.SUNDAY) {
+				count++;
+			}
+			current = current.plusDays(1);
+		}
+		return count;
+	}
+
+	/**
+	 * Get completed subtask of sprint
+	 * @param totalSubTask
+	 * @param subTaskHistory
+	 * @param sprintDetail
+	 * @param fieldMappingDoneStatus
+	 * @return
+	 */
+	public static List<JiraIssue> getCompletedSubTasksByHistory(List<JiraIssue> totalSubTask,
+			List<JiraIssueCustomHistory> subTaskHistory, SprintDetails sprintDetail,
+			List<String> fieldMappingDoneStatus) {
+		List<JiraIssue> resolvedSubtaskForSprint = new ArrayList<>();
+		LocalDateTime sprintEndDateTime = sprintDetail.getCompleteDate() != null
+				? LocalDateTime.parse(sprintDetail.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDateTime sprintStartDateTime = sprintDetail.getActivatedDate() != null
+				? LocalDateTime.parse(sprintDetail.getActivatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+
+		totalSubTask.forEach(jiraIssue -> {
+			JiraIssueCustomHistory jiraIssueCustomHistory = subTaskHistory.stream().filter(
+					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
+					.findFirst().orElse(new JiraIssueCustomHistory());
+			Optional<JiraHistoryChangeLog> issueSprint = jiraIssueCustomHistory.getStatusUpdationLog().stream()
+					.filter(jiraIssueSprint -> DateUtil.isWithinDateTimeRange(jiraIssueSprint.getUpdatedOn(),
+							sprintStartDateTime, sprintEndDateTime))
+					.reduce((a, b) -> b);
+			if (issueSprint.isPresent() && fieldMappingDoneStatus.contains(issueSprint.get().getChangedTo().toLowerCase()))
+				resolvedSubtaskForSprint.add(jiraIssue);
+		});
+		return resolvedSubtaskForSprint;
+	}
+
+	/**
+	 *  Get total subtask of sprint
+	 * @param allSubTasks
+	 * @param sprintDetails
+	 * @param subTaskHistory
+	 * @param fieldMappingDoneStatus
+	 * @return
+	 */
+	public static List<JiraIssue> getTotalSprintSubTasks(List<JiraIssue> allSubTasks, SprintDetails sprintDetails,
+			List<JiraIssueCustomHistory> subTaskHistory, List<String> fieldMappingDoneStatus) {
+		LocalDateTime sprintEndDate = sprintDetails.getCompleteDate() != null
+				? LocalDateTime.parse(sprintDetails.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDateTime sprintStartDate = sprintDetails.getActivatedDate() != null
+				? LocalDateTime.parse(sprintDetails.getActivatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		List<JiraIssue> subTaskTaggedWithSprint = new ArrayList<>();
+
+		allSubTasks.forEach(jiraIssue -> {
+			JiraIssueCustomHistory jiraIssueCustomHistory = subTaskHistory.stream().filter(
+					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
+					.findFirst().orElse(new JiraIssueCustomHistory());
+			Optional<JiraHistoryChangeLog> jiraHistoryChangeLog = jiraIssueCustomHistory.getStatusUpdationLog().stream()
+					.filter(changeLog -> fieldMappingDoneStatus.contains(changeLog.getChangedTo().toLowerCase())
+							&& changeLog.getUpdatedOn().isAfter(sprintStartDate))
+					.findFirst();
+			if (jiraHistoryChangeLog.isPresent() && sprintEndDate
+					.isAfter(LocalDateTime.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)))
+				subTaskTaggedWithSprint.add(jiraIssue);
+
+		});
+		return subTaskTaggedWithSprint;
 	}
 
 }

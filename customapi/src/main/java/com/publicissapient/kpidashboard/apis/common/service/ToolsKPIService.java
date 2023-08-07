@@ -40,7 +40,7 @@ public abstract class ToolsKPIService<R, S> {
 
 	private Set<String> reverseTrendList = new HashSet<>(Arrays.asList(KPICode.CODE_COMMIT.name(),
 			KPICode.MEAN_TIME_TO_MERGE.name(), KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING.name(),
-			KPICode.OPEN_TICKET_AGING_BY_PRIORITY.name()));
+			KPICode.OPEN_TICKET_AGING_BY_PRIORITY.name(), KPICode.PICKUP_TIME.name()));
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -439,7 +439,6 @@ public abstract class ToolsKPIService<R, S> {
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
 
-						R aggValue = null;
 						Pair<String, String> maturityValue = null;
 						if (null != configHelperService.calculateMaturity().get(kpiId)) {
 							maturityValue = collectValuesForMaturity(value, kpiName, kpiId);

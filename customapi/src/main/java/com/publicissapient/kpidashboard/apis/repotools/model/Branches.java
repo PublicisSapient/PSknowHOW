@@ -17,4 +17,5 @@ public class Branches {
     private long mergeRequests;
     private double grade;
     private double average;
+    private double hours;
 }

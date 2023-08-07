@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.common.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMappingStructure;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -82,6 +86,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KpiHelperServiceTest {
@@ -99,36 +104,14 @@ public class KpiHelperServiceTest {
 
 	@Mock
 	private KanbanCapacityRepository kanbanCapacityRepository;
-
-	@Mock
-	private CacheService cacheService;
-
-	@Mock
-	private FilterHelperService filterHelperService;
-
 	@Mock
 	private ConfigHelperService configHelperService;
 
-	@Mock
-	private CustomApiConfig customApiConfig;
 
 	@Mock
 	private CapacityKpiDataRepository capacityKpiDataRepository;
-
-	@Mock
-	private KPIVideoLinkRepository kpiVideoLinkRepository;
-
-	@Mock
-	private KpiMasterRepository kpiMasterRepository;
-
 	@InjectMocks
 	private KpiHelperService kpiHelperService;
-
-	@Mock
-	private SprintRepository sprintRepository;
-
-	@Mock
-	private JiraServiceR jiraKPIService;
 
 	private List<SprintDetails> sprintDetailsList = new ArrayList<>();
 
@@ -146,6 +129,27 @@ public class KpiHelperServiceTest {
 
 	private KpiRequestFactory kanbanKpiRequestFactory;
 
+	@Mock
+	private FieldMappingStructure fieldMappingStructure= new FieldMappingStructure();
+
+	private List<FieldMappingStructure> fieldMappingStructureList = new ArrayList<>();
+
+	@Mock
+	private FilterHelperService flterHelperService;
+
+	@Mock
+	private SprintRepository sprintRepository;
+
+	@Mock
+	private KPIVideoLinkRepository kpiVideoLinkRepository;
+
+	@Mock
+	private CustomApiConfig customApiConfig;
+
+	Map<String, List<String>> priority = new HashMap<>();
+
+	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> projectConfigMap = new HashMap<>();
+
 	@Before
 	public void setup() {
 		AccountHierarchyFilterDataFactory factory = AccountHierarchyFilterDataFactory.newInstance();
@@ -156,6 +160,14 @@ public class KpiHelperServiceTest {
 
 		kpiRequestFactory = KpiRequestFactory.newInstance();
 		kanbanKpiRequestFactory = KpiRequestFactory.newInstance();
+
+		ProjectToolConfig projectConfig = new ProjectToolConfig();
+		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
+		projectConfig.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479c"));
+		Map<String, List<ProjectToolConfig>> stringListMap=new HashMap<>();
+		stringListMap.put("Jira",Arrays.asList());
+		projectConfigMap.put(projectConfig.getBasicProjectConfigId(), stringListMap);
+		when(configHelperService.getProjectToolConfigMap()).thenReturn(projectConfigMap);
 
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
@@ -184,6 +196,10 @@ public class KpiHelperServiceTest {
 
 		CapacityKpiDataDataFactory capacityKpiDataDataFactory = CapacityKpiDataDataFactory.newInstance();
 		capacityKpiDataList = capacityKpiDataDataFactory.getCapacityKpiDataList();
+		fieldMappingStructureList.add(fieldMappingStructure);
+
+
+		priority.put("P1",Arrays.asList("p1"));
 	}
 
 	@After
@@ -205,6 +221,8 @@ public class KpiHelperServiceTest {
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
 
+		when(customApiConfig.getPriority()).thenReturn(priority);
+
 		Map<String, Object> resultMap = kpiHelperService.fetchDIRDataFromDb(leafNodeList, kpiRequest);
 		assertEquals(3, resultMap.size());
 	}
@@ -222,6 +240,7 @@ public class KpiHelperServiceTest {
 				new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		when(customApiConfig.getPriority()).thenReturn(priority);
 
 		Map<String, Object> resultMap = kpiHelperService.fetchQADDFromDb(leafNodeList, kpiRequest);
 		assertEquals(3, resultMap.size());
@@ -371,7 +390,35 @@ public class KpiHelperServiceTest {
 	public void testKpiResolution() {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.AVERAGE_RESOLUTION_TIME.getKpiId());
+		KpiMaster kpiMaster=new KpiMaster();
+		kpiMaster.setKpiId("kpi83");
+		kpiMaster.setKpiName("abc");
+		kpiMaster.setKpiSource("abc");
+		kpiMaster.setKpiUnit("123");
+		kpiMaster.setKpiCategory("abc");
+		kpiMaster.setMaxValue("abbc");
+		List<KpiMaster> kpiMasters=new ArrayList<>();
+		kpiMasters.add(kpiMaster);
+		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasters);
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
+	}
+
+	@Test
+	public void fetchFieldMappingStructureByKpiFieldMappingData(){
+		when(configHelperService.loadFieldMappingStructure()).thenReturn(fieldMappingStructureList);
+		assertNotNull(kpiHelperService.fetchFieldMappingStructureByKpiId("6335363749794a18e8a4479c","kpi0"));
+	}
+
+	@Test
+	public void fetchBackLogReadinessFromdb() throws ApplicationException {
+		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.SPRINT_VELOCITY.getKpiId());
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest, ahdList,
+				new ArrayList<>(), "hierarchyLevelOne", 5);
+		List<Node> leafNodeList = new ArrayList<>();
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		when(sprintRepository.findBySprintIDIn(any())).thenReturn(sprintDetailsList);
+		Map<String, Object> resultMap = kpiHelperService.fetchBackLogReadinessFromdb(leafNodeList,kpiRequest);
+		assertEquals(2, resultMap.size());
 	}
 
 }

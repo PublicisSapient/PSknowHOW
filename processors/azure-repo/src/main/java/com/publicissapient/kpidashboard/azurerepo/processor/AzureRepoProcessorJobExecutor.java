@@ -350,6 +350,11 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 		return executionStatus;
 	}
 
+	@Override
+	public boolean executeSprint(String sprintId) {
+		return false;
+	}
+
 	/**
 	 * 
 	 * processRepoData

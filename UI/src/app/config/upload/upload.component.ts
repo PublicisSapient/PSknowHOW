@@ -994,15 +994,55 @@ export class UploadComponent implements OnInit {
         this.http_service.saveOrUpdateAssignee(postData)
             .subscribe(response => {
                 if (response && response?.success && response?.data) {
-                    this.getCapacityData(this.selectedSprintDetails['basicProjectConfigId']);
-                    const expandedRowsKey = this.kanban ? this.selectedSprintDetails.startDate : this.selectedSprintDetails.sprintNodeId;
-                    this.expandedRows = { [expandedRowsKey]: true };
-                    this.messageService.add({ severity: 'success', summary: 'Assignee Details saved successfully!' });
+                    if(!this.kanban){
+                        this.sendSprintHappinessIndexForAddOrRemove(postData);
+                    } else {
+                        this.getCapacityData(this.selectedSprintDetails['basicProjectConfigId']);
+                        const expandedRowsKey = this.kanban ? this.selectedSprintDetails.startDate : this.selectedSprintDetails.sprintNodeId;
+                        this.expandedRows = { [expandedRowsKey]: true };
+                        this.messageService.add({ severity: 'success', summary: 'Assignee Details saved successfully!' });
+                    }
                 } else {
                     this.messageService.add({ severity: 'error', summary: 'Error in Saving Assignee Details. Please try after sometime!' });
                 }
             });
     }
+
+    sendSprintHappinessIndexForAddOrRemove(capacitySaveData) {
+        const postData = {
+          basicProjectConfigId: capacitySaveData['basicProjectConfigId'],
+          sprintID: capacitySaveData['sprintNodeId'],
+          userRatingList: capacitySaveData['assigneeCapacity'].map((assignee) => ({
+            userId: assignee['userId'],
+            userName: assignee['userName'],
+            rating: assignee['happinessRating'] ? assignee['happinessRating'] : 0,
+          })),
+        };
+    
+        this.http_service
+          .saveOrUpdateSprintHappinessIndex(postData)
+          .subscribe((response) => {
+            if (response && response?.success && response?.data) {
+              this.getCapacityData(
+                this.selectedSprintDetails['basicProjectConfigId'],
+              );
+              const expandedRowsKey = this.kanban
+                ? this.selectedSprintDetails.startDate
+                : this.selectedSprintDetails.sprintNodeId;
+              this.expandedRows = { [expandedRowsKey]: true };
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Assignee Details saved successfully!',
+              });
+            } else {
+              this.messageService.add({
+                severity: 'error',
+                summary:
+                  'Error in Saving Assignee Details. Please try after sometime!',
+              });
+            }
+          });
+      }
 
     getAssigneeRoles() {
         if (!(this.projectAssigneeRoles.length > 0)) {

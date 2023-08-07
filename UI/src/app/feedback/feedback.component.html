@@ -1,0 +1,108 @@
+<div class="feeback-container">
+    <div style="position: relative;">
+        <div *ngIf="visibleSidebar; else elseBlock">
+            <img class="icon-feedback1 cursor-pointer" src="../../../assets/img/ico-feedback-long.png"
+                alt="feedback icon" aria-hidden="true" (click)="op2.toggle($event);open(); feedback=true" />
+        </div>
+        <ng-template #elseBlock>
+            <img class="icon-feedback2 cursor-pointer" src="../../../assets/img/ico-feedback-small.png"
+                alt="feedback icon" aria-hidden="true" (click)="op2.toggle($event);open(); feedback=true" />
+        </ng-template>
+        <p-overlayPanel #op2 [showCloseIcon]="true" (onHide)="OnOverlayHide()"
+            [styleClass]="visibleSidebar ? 'feedback-overlay' : 'feedback-overlay-with-sidebar'">
+            <ng-template pTemplate="content">
+                <div *ngIf="feedback==true">
+                    <div class="p-justify-between p-align-center">
+                        <div class="feedback-container">
+                            <span class="overlay-heading1">
+                                Feedback
+                            </span>
+                            <p>Tell us about your experience</p>
+                            <form [formGroup]="voiceForm" autocomplete="off">
+                                <textarea class="comment" formControlName="feedback" pInputTextarea></textarea>
+                                <div class="p-d-flex p-justify-end p-justify-between">
+                                    <span
+                                        [ngClass]="{'alert-success': isFeedbackSubmitted, 'alert-error': !isFeedbackSubmitted}">
+                                        {{formMessage}}
+                                    </span>
+                                    <button pButton pRipple type="button"
+                                        class="p-element p-ripple p-button-sm p-button-success p-button-raised p-button"
+                                        label="Submit" (click)="save()" [disabled]="voiceForm.invalid"></button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="forward p-d-flex p-justify-end p-align-center">
+                            <span class="p-d-flex" (click)="toggleFlag()">
+                                <span class="documentation cursor-pointer">Documentation</span>
+                                <img class="drop-right cursor-pointer"
+                                    src="../../../assets/img/ico-arrow-drop-right-circle.png" alt="forward icon"
+                                    aria-hidden="true" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="feedback==false">
+                    <div class="document-link p-justify-between p-align-center">
+                        <p-tabView>
+                            <p-tabPanel header="Documentation">
+                                <div class="doc-container">
+                                    <p class="p-doc">KnowHOW has an extensive documentation that is regularly updated on
+                                        Confluence. The
+                                        important
+                                        links are:
+                                    </p>
+                                    <ul style="padding-inline-start: 17px; margin-top: -8px;">
+                                        <li>
+                                            Installation & Setup - <a
+                                                href="https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/1966195/Installation"
+                                                class="click-here" target="_blank">Click here</a>
+                                        </li>
+                                        <li>
+                                            Project & Tool Configuration - <a
+                                                href="https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/1966202/PSknowHOW+Configure+Project+s"
+                                                class="click-here" target="_blank">Click here</a>
+                                        </li>
+                                        <li>
+                                            KPI definitions - <a
+                                                href="https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2064430/PSKnowHOW+-+KPI+Guide"
+                                                class="click-here" target="_blank">Click here</a>
+                                        </li>
+                                    </ul>
+
+                                </div>
+                                <div class="backward p-d-flex p-justify-start">
+                                    <span class="p-d-flex" (click)="toggleFlag()">
+                                        <img class="down-left cursor-pointer"
+                                            src="../../../assets/img/ico-arrow-drop-left-circle.png" alt="backward icon"
+                                            aria-hidden="true" />
+                                        <span class="feedback cursor-pointer">Feedback</span>
+                                    </span>
+                                </div>
+                            </p-tabPanel>
+                            <p-tabPanel header="Release">
+                                <div class="doc-container">
+                                    <ul style="padding-inline-start: 17px;">
+                                        <li>
+                                            To view the details of past Releases - <a
+                                                href="https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/12189906/PSKnowHOW+Releases"
+                                                class="click-here" target="_blank">Click here</a>
+                                        </li>
+                                    </ul>
+
+                                </div>
+                                <div class="backward p-d-flex p-justify-start">
+                                    <span class="p-d-flex" (click)="toggleFlag()">
+                                        <img class="down-left cursor-pointer"
+                                            src="../../../assets/img/ico-arrow-drop-left-circle.png" alt="backward icon"
+                                            aria-hidden="true" />
+                                        <span class="feedback cursor-pointer">Feedback</span>
+                                    </span>
+                                </div>
+                            </p-tabPanel>
+                        </p-tabView>
+                    </div>
+                </div>
+            </ng-template>
+        </p-overlayPanel>
+    </div>
+</div>

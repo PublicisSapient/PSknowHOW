@@ -251,7 +251,7 @@ public final class JiraProcessorUtil {
 			JsonNode jsonNode = objectMapper.readTree(sprintData);
 			sprint.setSprintID(jsonNode.get(ID) == null ? null : jsonNode.get(ID).asText());
 			sprint.setOriginalSprintId(jsonNode.get(ID) == null ? null : jsonNode.get(ID).asText());
-			sprint.setState(jsonNode.get(STATE) == null ? null : jsonNode.get(STATE).asText());
+			sprint.setState(jsonNode.get(STATE) == null ? null : jsonNode.get(STATE).asText().toUpperCase());
 			String boardId = null;
 
 			if (jsonNode.get(RAPIDVIEWID) == null) {
@@ -489,6 +489,31 @@ public final class JiraProcessorUtil {
 		}
 
 		return "";
+	}
+
+	public static String processJqlForSprintFetch(List<String> issueKeys) {
+		String finalQuery = StringUtils.EMPTY;
+		if (issueKeys == null) {
+			return finalQuery;
+		}
+		StringBuilder issueKeysDataQuery = new StringBuilder();
+
+		int size = issueKeys.size();
+		int count = 0;
+		issueKeysDataQuery.append("issueKey in (");
+
+		for (String issueKey : issueKeys) {
+			count++;
+			issueKeysDataQuery.append(issueKey);
+			if (count < size) {
+				issueKeysDataQuery.append(", ");
+			}
+		}
+		issueKeysDataQuery.append(")");
+
+		finalQuery = issueKeysDataQuery.toString();
+
+		return finalQuery;
 	}
 
 }

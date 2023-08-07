@@ -30,8 +30,6 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,8 +49,8 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklogCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,11 +59,10 @@ import lombok.extern.slf4j.Slf4j;
 public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 	public static final String BACKLOG_CUSTOM_HISTORY = "backlogCustomHistory";
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	private static final Logger LOGGER = LoggerFactory.getLogger(FlowDistributionServiceImpl.class);
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
-	private IssueBacklogCustomHistoryRepository issueBacklogCustomHistoryRepository;
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	// storyType have more than two word the stackChart hover fn break
 	private static String combineType(String storyType) {
@@ -89,7 +86,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 				projectWiseLeafNodeValue(v, trendValueList, kpiElement, kpiRequest);
 			}
 		});
-		LOGGER.info("FlowDistributionServiceImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("FlowDistributionServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
@@ -105,11 +102,9 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 
 		if (leafNode != null) {
-			LOGGER.info("Flow Distribution kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			List<IssueBacklogCustomHistory> issueBacklogCustomHistoryList = issueBacklogCustomHistoryRepository
-					.findByBasicProjectConfigIdIn(basicProjectConfigId);
-			resultListMap.put(BACKLOG_CUSTOM_HISTORY, new ArrayList<>(issueBacklogCustomHistoryList));
+			log.info("Flow Distribution kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
+			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+			resultListMap.put(BACKLOG_CUSTOM_HISTORY, new ArrayList<>(jiraIssueCustomHistoryList));
 		}
 		return resultListMap;
 	}
@@ -139,12 +134,12 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, startDate, endDate, kpiRequest);
 
-		List<IssueBacklogCustomHistory> issueBacklogCustomHistories = (List<IssueBacklogCustomHistory>) resultMap
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = (List<JiraIssueCustomHistory>) resultMap
 				.get(BACKLOG_CUSTOM_HISTORY);
 
-		if (CollectionUtils.isNotEmpty(issueBacklogCustomHistories)) {
+		if (CollectionUtils.isNotEmpty(jiraIssueCustomHistories)) {
 
-			Map<String, Map<String, Integer>> groupByDateAndTypeCount = issueBacklogCustomHistories.stream()
+			Map<String, Map<String, Integer>> groupByDateAndTypeCount = jiraIssueCustomHistories.stream()
 					.collect(Collectors.groupingBy(issue -> issue.getCreatedDate().toString().split("T")[0],
 							Collectors.groupingBy(issue -> combineType(issue.getStoryType()),
 									Collectors.summingInt(issue -> 1))));
@@ -168,7 +163,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 
 			populateTrendValueList(trendValueList, cumulativeAddedCountMap);
 			populateExcelDataObject(requestTrackerId, excelData, mapAfterStartDate);
-			LOGGER.info("FlowDistributionServiceImpl -> request id : {} dateWiseCountMap : {}", requestTrackerId,
+			log.info("FlowDistributionServiceImpl -> request id : {} dateWiseCountMap : {}", requestTrackerId,
 					cumulativeAddedCountMap);
 		}
 		kpiElement.setExcelData(excelData);

@@ -57,7 +57,6 @@ import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.IssueBacklogRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 
@@ -69,8 +68,6 @@ public class IssuesWithoutStoryLinkImplTest {
 	private ConfigHelperService configHelperService;
 	@Mock
 	private CacheService cacheService;
-	@Mock
-	private IssueBacklogRepository issueBacklogRepository;
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
 	@Mock
@@ -100,6 +97,7 @@ public class IssuesWithoutStoryLinkImplTest {
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMapping.setJiraStoryIdentification(Arrays.asList("Story"));
+		fieldMapping.setJiraStoryIdentificationKPI129(Arrays.asList("Story"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
