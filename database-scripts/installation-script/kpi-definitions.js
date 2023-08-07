@@ -78,7 +78,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiSource": "Jira",
     "groupId": 1,
     "thresholdValue": "75",
-    "kanban": false,
+f    "kanban": false,
     "chartType": "line",
     "kpiInfo": {
       "definition": "Measures the percentage of tickets that passed QA with no return transition or any tagging to a specific configured status and no linkage of a defect",
@@ -2589,7 +2589,7 @@ db.getCollection('kpi_master').insertMany(
     "thresholdValue": "",
     "kanban": false,
     "kpiInfo": {
-      "definition": "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available."
+      "definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available."
     },
     "isPositiveTrend": false,
     "kpiFilter": "dropdown",

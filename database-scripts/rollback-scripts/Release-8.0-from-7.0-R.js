@@ -98,3 +98,10 @@ db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},{$set:{"kpiColumnDetails" 
            			"isDefault" : false
            		}
            	] }});
+
+//---- reverse KPI info for KPI 137 (Defect Reopen Rate)
+
+db.getCollection('kpi_master').updateOne(
+  { "kpiId": "kpi137" },
+  { $set: { "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available." } }
+);

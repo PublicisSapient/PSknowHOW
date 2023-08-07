@@ -241,4 +241,9 @@ public class DateUtil {
 		return strDate;
 	}
 
+	public static DateTime convertLocalDateTimeToDateTime(LocalDateTime dateTime) {
+		Instant instant = dateTime.atZone(ZoneId.systemDefault()).toInstant();
+		return new DateTime(instant.toEpochMilli());
+	}
+
 }
