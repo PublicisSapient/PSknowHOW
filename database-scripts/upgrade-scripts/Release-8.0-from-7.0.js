@@ -2510,6 +2510,7 @@ db.kpi_master.updateOne(
   }
 );
 
+//----------------7.6.0 Changes ---------------------------
 //removing epicLink from documents of metadata_identifier
 db.getCollection('metadata_identifier').updateMany(
    { "templateCode": { $in: ["1", "2", "3", "4", "5", "6", "7", "8"] } },
@@ -2520,3 +2521,67 @@ db.getCollection('metadata_identifier').updateMany(
    }}
 );
 
+//DTS-26121 Enchancement of Quality Status Overlay
+db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
+{$set:{"kpiColumnDetails" : [
+		{
+			"columnName" : "Issue Id",
+			"order" : Double("0"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Type",
+			"order" : Double("1"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Description",
+			"order" : Double("2"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Status",
+			"order" : Double("3"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Priority",
+			"order" : Double("4"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Linked Defect",
+			"order" : Double("5"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Size(story point/hours)",
+			"order" : Double("6"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "DIR",
+			"order" : Double("7"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Defect Density",
+			"order" : Double("8"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Assignee",
+			"order" : Double("9"),
+			"isShown" : true,
+			"isDefault" : false
+		}
+	]}});
