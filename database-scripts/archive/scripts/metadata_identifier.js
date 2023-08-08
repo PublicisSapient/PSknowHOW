@@ -110,11 +110,17 @@ db.metadata_identifier.insert([{
                 ]
             },
             {
-                "type": "jobSize",
-                "value": [
-                    "Job Size"
-                ]
-            }
+                                              "type": "jobSize",
+                                              "value": [
+                                                "Job Size"
+                                              ]
+                                            },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
+                                              ]
+                                            }
         ],
         "workflow": [{
                 "type": "firststatus",
@@ -281,11 +287,17 @@ db.metadata_identifier.insert([{
                 ]
             },
             {
-                "type": "jobSize",
-                "value": [
-                    "Job Size"
-                ]
-            }
+                                              "type": "jobSize",
+                                              "value": [
+                                                "Job Size"
+                                              ]
+                                            },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
+                                              ]
+                                            }
         ],
         "workflow": [{
                 "type": "firststatus",
@@ -452,11 +464,17 @@ db.metadata_identifier.insert([{
                 ]
             },
             {
-                "type": "jobSize",
-                "value": [
-                    "Job Size"
-                ]
-            }
+                                              "type": "jobSize",
+                                              "value": [
+                                                "Job Size"
+                                              ]
+                                            },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
+                                              ]
+                                            }
         ],
         "workflow": [{
                 "type": "firststatus",
@@ -690,13 +708,18 @@ db.metadata_identifier.insert([{
                 "value": [
                     "Time Criticality"
                 ]
-            },
-            {
+            }{
                 "type": "epicJobSize",
                 "value": [
                     "Job Size"
                 ]
             },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
+                                              ]
+                                            },
             {
                 "type": "rootCause",
                 "value": [
@@ -1246,13 +1269,18 @@ db.metadata_identifier.insert([{
                 "value": [
                     "Time Criticality"
                 ]
-            },
-            {
+            }{
                 "type": "epicJobSize",
                 "value": [
                     "Job Size"
                 ]
             },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
+                                              ]
+                                            },
             {
                 "type": "rootCause",
                 "value": [
@@ -1802,13 +1830,18 @@ db.metadata_identifier.insert([{
                 "value": [
                     "Time Criticality"
                 ]
-            },
-            {
+            }{
                 "type": "epicJobSize",
                 "value": [
                     "Job Size"
                 ]
             },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
+                                              ]
+                                            },
             {
                 "type": "rootCause",
                 "value": [
@@ -2372,13 +2405,18 @@ db.metadata_identifier.insert([{
                 "value": [
                     "Time Criticality"
                 ]
-            },
-            {
+            }{
                 "type": "epicJobSize",
                 "value": [
                     "Job Size"
                 ]
             },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
+                                              ]
+                                            },
             {
                 "type": "rootCause",
                 "value": [
@@ -3007,11 +3045,17 @@ db.metadata_identifier.insert([{
                 ]
             },
             {
-                "type": "jobSize",
-                "value": [
-                    "Job Size"
-                ]
-            }
+                                              "type": "jobSize",
+                                              "value": [
+                                                "Job Size"
+                                              ]
+                                            },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
+                                              ]
+                                            }
         ],
         "workflow": [{
                 "type": "firststatus",
@@ -3521,5 +3565,3 @@ db.metadata_identifier.insert([{
             }
         ]
     }
-
-]);

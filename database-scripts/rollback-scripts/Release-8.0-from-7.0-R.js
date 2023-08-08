@@ -223,6 +223,12 @@ db.getCollection('metadata_identifier').update({
                     "value": [
                         "Job Size"
                     ]
+                },
+                {
+                    "type": "epicLink",
+                    "value": [
+                        "Epic Link"
+                    ]
                 }
             ],
             "workflow": [{
@@ -335,4 +341,13 @@ db.getCollection('metadata_identifier').update({
     }
 );
 
+//removing epicLink from documents of metadata_identifier
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7", "8"] } },
+   { $pull: {
+      "customfield": {
+         "type": "epicLink"
+      }
+   }}
+);
 

@@ -177,4 +177,7 @@ public class KanbanJiraIssue extends BasicModel {
 	private boolean productionDefect;
 	private Integer aggregateTimeOriginalEstimateMinutes;
 	private Integer aggregateTimeRemainingEstimateMinutes;
+
+	private String originalType;
+	private String epicLinked;
 }
