@@ -2513,7 +2513,7 @@ db.kpi_master.updateOne(
 //----------------7.6.0 Changes ---------------------------
 //updating epicLink from documents of metadata_identifier
 db.getCollection('metadata_identifier').updateMany(
-   { "templateCode": { $in: ["1", "2", "3", "4", "5", "6", "7", "8"] } },
+   { "templateCode": { $in: ["7", "8"] } },
    { $push: {
       "customfield": {
          "type": "epicLink",
