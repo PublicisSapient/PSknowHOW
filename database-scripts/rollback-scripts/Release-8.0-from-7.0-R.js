@@ -115,3 +115,9 @@ db.getCollection('metadata_identifier').updateMany(
       }
    }}
 );
+
+//---------7.7.0 changes------------------------------------------------------------------
+//deleting dailyStandup kpi
+db.getCollection('kpi_master').deleteMany(
+  { "kpiId": "kpi154" }
+);

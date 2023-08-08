@@ -2593,3 +2593,33 @@ db.getCollection('kpi_master').updateOne(
   { "kpiId": "kpi137" },
   { $set: { "kpiInfo.definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available." } }
 );
+
+//----------------7.7.0 Changes ---------------------------
+//adding dailyStandup kpi
+var dailyStandupKPI = db.getCollection('kpi_master').find( {kpiId: "kpi154"}).toArray();
+if (dailyStandupKPI.length === 0) {
+db.getCollection('kpi_master').insertMany(
+[
+{
+    "kpiId": "kpi154",
+    "kpiName": "Daily Standup View",
+    "maxValue": "",
+    "isDeleted": "False",
+    "defaultOrder": 8,
+    "kpiCategory": "Iteration",
+    "kpiSubCategory": "Daily Standup",
+    "kpiSource": "Jira",
+    "groupId": 13,
+    "thresholdValue": "",
+    "kanban": false,
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiselectdropdown",
+    "kpiWidth": 100,
+    "calculateMaturity": false
+  }
+ ]);
+ } else {
+     print("Daily Standup View KPI is already present in Kpi master");
+ }
