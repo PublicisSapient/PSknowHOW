@@ -652,15 +652,6 @@ export class UploadComponent implements OnInit {
             this.reqObj['executedTestCase'] = data?.executedTestCase;
             this.reqObj['passedTestCase'] = data?.passedTestCase;
 
-        } else if (this.selectedView === 'upload_Sprint_Capacity') {
-            this.popupForm = new UntypedFormGroup({
-                capacity: new UntypedFormControl(data?.capacity ? data?.capacity : '')
-            });
-            this.reqObj['capacity'] = data?.capacity ? data?.capacity : '';;
-            if (this.kanban) {
-                this.reqObj['startDate'] = data?.startDate;
-                this.reqObj['endDate'] = data?.endDate;
-            }
         }
         this.enableDisableSubmitButton();
     }
