@@ -112,8 +112,6 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .keys(subgroups)
       (this.data);
 
-      const isIssueCountPresent = Object.values(this.data.filter(tooltip => tooltip.kpiGroup === 'Story Point')[0].value).some(count=> (count as number) > 1);
-
     // Show the bars
     svg.append('g')
       .attr('transform', `translate(10, 0)`)
@@ -129,25 +127,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .attr('width', d => x(d[1]) - x(d[0]))
       .attr('height', y.bandwidth())
       .style('cursor', 'pointer')
-      .on('mouseover', (event, d) => {
-        this.selectedGroup = d.data.kpiGroup;
-        if (this.selectedGroup === 'Issue Count') {
-          const tooltipData = this.data.filter(tooltip => tooltip.kpiGroup === this.selectedGroup)[0];
-          d3.select('#chart').select('#legendContainer').selectAll('div').remove();
-          this.showTooltip(subgroups, width, margin, color, tooltipData);
-        }
-      })
-      .on('mouseout', (event, d) => {
-        this.selectedGroup = d.data.kpiGroup;
-        if (this.selectedGroup === 'Issue Count') {
-          d3.select('#chart').select('#legendContainer').selectAll('div').remove();
-          const tooltipData = this.data.filter(tooltip => isIssueCountPresent ? tooltip.kpiGroup === 'Story Point' : tooltip.kpiGroup === 'Issue Count')[0];
-          this.showTooltip(subgroups, width, margin, color, tooltipData);
-        }
-      });
-      
-      const tooltipData = this.data.filter(tooltip => isIssueCountPresent ? tooltip.kpiGroup === 'Story Point' : tooltip.kpiGroup === 'Issue Count')[0];
-      this.showTooltip(subgroups, width, margin, color, tooltipData);
+      this.showTooltip(subgroups, width, margin, color);
 
   }
 
@@ -174,7 +154,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .style('bottom', 60 + 'px');
   }
 
-  showTooltip(subgroups, width, margin, color, tooltipData) {
+  showTooltip(subgroups, width, margin, color) {
     const legendDiv = d3.select('#chart').select('#legendContainer')
       .style('margin-top', '20px')
       .attr('width', 'auto')
@@ -191,15 +171,24 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
     subgroups.forEach((d, i) => {
       htmlString += `<div class="legend_item" style="flex-direction:column; align-items:start; margin-right:1.5rem">
-                    <div style="margin-bottom:0.5rem" class="p-d-flex p-align-center">
-                      <div class="legend_color_indicator" style="background-color: ${color(d)}">
-                      </div>
-                      <span class="p-m-1" style="font-weight:bold">: ${d}</span>
-                    </div>
-                    <div style="font-size: 0.75rem;">${tooltipData.kpiGroup}: <span style="color:${color(d)}; font-weight:bold">${tooltipData['value'][d]}</span></div>
-                    <div style="font-size: 0.75rem;">Percentage: <span style="color:${color(d)} ; font-weight:bold">${tooltipData[d].toFixed(2).replace(/\.00$/, '')}%</span></div>
-                    </div>`;
+                        <div style="margin-bottom:0.5rem" class="p-d-flex p-align-center">
+                          <div class="legend_color_indicator" style="background-color: ${color(d)}">
+                          </div>
+                          <span class="p-m-1" style="font-weight:bold">: ${d}</span>
+                        </div>`;
+      let details = '';
+      this.data.forEach((data, index) => {
+        const isDataPresent = Object.values(this.data.filter(tooltip => tooltip.kpiGroup === data.kpiGroup)[0].value).some(count => (count as number) > 0);
+        if (isDataPresent) {
+          details += `<div style="font-size: 0.75rem;">${data.kpiGroup}: 
+                              <span style="color:${color(d)}; font-weight:bold">${data['value'][d]}</span>,
+                              <span style="color:${color(d)}; font-weight:bold">${data[d].toFixed(2).replace(/\.00$/, '')}%</span>
+                    </div>`
+        }
+      })
+      htmlString += `${details} </div>`;
     });
+  
 
     legendDiv.html(htmlString)
       .style('bottom', 30 + 'px');
