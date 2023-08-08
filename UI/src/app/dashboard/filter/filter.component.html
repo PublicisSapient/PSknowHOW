@@ -278,7 +278,12 @@
             </div>
             <p-menu #notification [popup]="true" [model]="notificationList"></p-menu>
             <!-- Notification button end -->
-
+            <!-- Capacity Planning link start -->
+            <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn noti-btn-wraper"
+                role="button" (click)="redirectToCapacityPlanning()" title="Go to Capacity Planning">
+               <i class="pi pi-users" style="font-size: 20px;font-weight: bold;"></i>
+            </div>
+            <!-- Capacity Planning link end -->
          </div>
       </div>
 

@@ -892,7 +892,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 .remove-node {
   color: var(--color-cyan-blue);
   border: none;
-  font-size: 0.75rem;
+  font-size: 1.25rem;
   margin-left: 0.5rem;
   padding-bottom: 0.5rem;
 }

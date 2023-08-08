@@ -1559,4 +1559,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
     this.ga.setProjectData(gaArray);
   }
+
+  redirectToCapacityPlanning() {
+    this.router.navigate(['./dashboard/Config/Capacity']);
+  }
 }
