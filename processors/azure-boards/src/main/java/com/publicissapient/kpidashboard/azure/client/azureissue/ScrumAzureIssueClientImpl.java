@@ -357,6 +357,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 				azureIssue.setTypeId(AzureProcessorUtil.deodeUTF8String(issueType));
 				azureIssue.setTypeName(AzureProcessorUtil.deodeUTF8String(issueType));
+				azureIssue.setOriginalType(AzureProcessorUtil.deodeUTF8String(issueType));
 
 				// set defecttype to BUG
 				if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())
