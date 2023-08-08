@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.jira.service;
+package com.publicissapient.kpidashboard.jira.processor;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -34,29 +34,34 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.helper.JiraHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.util.JiraIssueClientUtil;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class CreateJiraIssueHistoryImpl implements CreateJiraIssueHistory {
+public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor {
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	@Override
-	public JiraIssueCustomHistory createIssueCustomHistory(ProjectConfFieldMapping projectConfig, String issueId,
-			JiraIssue jiraIssue, Issue issue, FieldMapping fieldMapping, Map<String, IssueField> fields) {
-		JiraIssueCustomHistory jiraIssueHistory = getIssueCustomHistory(projectConfig, issueId);
+	public JiraIssueCustomHistory convertToJiraIssueHistory(Issue issue, ProjectConfFieldMapping projectConfig,
+			JiraIssue jiraIssue) {
+
+		String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
+		Map<String, IssueField> fields = JiraIssueClientUtil.buildFieldMap(issue.getFields());
+		FieldMapping fieldMapping = projectConfig.getFieldMapping();
+		JiraIssueCustomHistory jiraIssueHistory = getIssueCustomHistory(projectConfig, issueNumber);
 		setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
 
 		return jiraIssueHistory;
 	}
 
-	private JiraIssueCustomHistory getIssueCustomHistory(ProjectConfFieldMapping projectConfig, String issueId) {
+	private JiraIssueCustomHistory getIssueCustomHistory(ProjectConfFieldMapping projectConfig, String issueNumber) {
 		JiraIssueCustomHistory jiraIssueHistory;
-		jiraIssueHistory = findOneJiraIssueHistory(issueId, projectConfig.getBasicProjectConfigId().toString());
+		jiraIssueHistory = findOneJiraIssueHistory(issueNumber, projectConfig.getBasicProjectConfigId().toString());
 		if (jiraIssueHistory == null) {
 			jiraIssueHistory = new JiraIssueCustomHistory();
 		}

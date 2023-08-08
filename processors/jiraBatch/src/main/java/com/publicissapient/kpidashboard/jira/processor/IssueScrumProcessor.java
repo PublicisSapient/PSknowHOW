@@ -1,13 +1,14 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
+import org.codehaus.jettison.json.JSONException;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
-import org.codehaus.jettison.json.JSONException;
 
 @Component
 public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeResult> {
@@ -15,13 +16,18 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 	@Autowired
 	private JiraIssueProcessor jiraIssueProcessor;
 
+	@Autowired
+	private JiraIssueHistoryProcessor jiraIssueHistoryProcessor;
+
 	@Override
 	public CompositeResult process(ReadData readData) throws Exception {
 		CompositeResult compositeResult = null;
-		JiraIssue jiraIssue=convertIssueToJiraIssue(readData);
-		if(null!=jiraIssue) {
+		JiraIssue jiraIssue = convertIssueToJiraIssue(readData);
+		if (null != jiraIssue) {
 			compositeResult = new CompositeResult();
+			JiraIssueCustomHistory jiraIssueCustomHistory = convertIssueToJiraIssueHistory(readData, jiraIssue);	
 			compositeResult.setJiraIssue(jiraIssue);
+			compositeResult.setJiraIssueCustomHistory(jiraIssueCustomHistory);
 		}
 		return compositeResult;
 
@@ -29,6 +35,12 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 
 	private JiraIssue convertIssueToJiraIssue(ReadData readData) throws JSONException {
 		return jiraIssueProcessor.convertToJiraIssue(readData.getIssue(), readData.getProjectConfFieldMapping());
+	}
+
+	private JiraIssueCustomHistory convertIssueToJiraIssueHistory(ReadData readData, JiraIssue jiraIssue)
+			throws JSONException {
+		return jiraIssueHistoryProcessor.convertToJiraIssueHistory(readData.getIssue(),
+				readData.getProjectConfFieldMapping(), jiraIssue);
 	}
 
 }

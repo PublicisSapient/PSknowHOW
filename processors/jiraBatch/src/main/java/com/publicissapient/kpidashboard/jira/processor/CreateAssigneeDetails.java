@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.jira.service;
+package com.publicissapient.kpidashboard.jira.processor;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;

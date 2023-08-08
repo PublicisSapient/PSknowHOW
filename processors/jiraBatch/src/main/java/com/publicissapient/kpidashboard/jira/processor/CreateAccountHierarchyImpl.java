@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.jira.service;
+package com.publicissapient.kpidashboard.jira.processor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;

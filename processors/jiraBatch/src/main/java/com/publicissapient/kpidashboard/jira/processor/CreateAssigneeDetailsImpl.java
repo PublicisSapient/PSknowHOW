@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.jira.service;
+package com.publicissapient.kpidashboard.jira.processor;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;

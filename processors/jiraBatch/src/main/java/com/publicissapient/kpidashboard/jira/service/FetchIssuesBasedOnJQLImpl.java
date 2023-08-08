@@ -16,6 +16,8 @@ import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLo
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.processor.CreateAccountHierarchy;
+import com.publicissapient.kpidashboard.jira.processor.CreateAssigneeDetails;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,18 +53,6 @@ public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL {
 
 	@Autowired
 	ValidateData validateData;
-
-	@Autowired
-	private CreateAccountHierarchy createAccountHierarchy;
-
-	@Autowired
-	private FetchSprintReportImpl fetchSprintReport;
-
-	@Autowired
-	private SaveData saveData;
-
-	@Autowired
-	private CreateAssigneeDetails createAssigneeDetails;
 
 	@Override
 	public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry,
