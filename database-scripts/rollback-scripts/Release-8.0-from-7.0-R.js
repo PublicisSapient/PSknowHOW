@@ -106,15 +106,12 @@ db.getCollection('kpi_master').updateOne(
   { $set: { "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available." } }
 );
 
-
-//updating epicLink from documents of metadata_identifier
+//removing epicLink from documents of metadata_identifier
 db.getCollection('metadata_identifier').updateMany(
    { "templateCode": { $in: ["1", "2", "3", "4", "5", "6", "7", "8"] } },
-   { $push: {
+   { $pull: {
       "customfield": {
-         "type": "epicLink",
-         "value": ["Epic Link"]
+         "type": "epicLink"
       }
    }}
-
 );
