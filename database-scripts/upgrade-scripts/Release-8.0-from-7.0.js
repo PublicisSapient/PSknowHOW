@@ -2461,7 +2461,7 @@ db.getCollection('field_mapping_structure').insertMany([
         "tooltip": {
             "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
         }
-    },
+    }
 ])
 
 const fieldMapToUpdate = db.field_mapping.find({ "jiraIssueTypeKPI37": { $exists: true } });
@@ -2512,6 +2512,71 @@ db.getCollection('field_mapping_structure').insertMany([
       }
    }
 ]);
+//----------------7.6.0 Changes ---------------------------
+//DTS-26121 Enchancement of Quality Status Overlay
+db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
+{$set:{"kpiColumnDetails" : [
+		{
+			"columnName" : "Issue Id",
+			"order" : Double("0"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Type",
+			"order" : Double("1"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Description",
+			"order" : Double("2"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Status",
+			"order" : Double("3"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Priority",
+			"order" : Double("4"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Linked Defect",
+			"order" : Double("5"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Size(story point/hours)",
+			"order" : Double("6"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "DIR",
+			"order" : Double("7"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Defect Density",
+			"order" : Double("8"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Assignee",
+			"order" : Double("9"),
+			"isShown" : true,
+			"isDefault" : false
+		}
+	]}});
 
 //updating metadata_identifier
 db.getCollection('metadata_identifier').update(
@@ -2576,7 +2641,7 @@ db.getCollection('metadata_identifier').update(
                           "Enabler Story",
                           "Change request",
                           "Defect"
-      
+
                       ]
                   },
                   {
@@ -2586,7 +2651,7 @@ db.getCollection('metadata_identifier').update(
                           "Enabler Story",
                           "Change request",
                           "Defect"
-      
+
                       ]
                   },
                   {
@@ -2659,7 +2724,7 @@ db.getCollection('metadata_identifier').update(
                   }
               ],
               "customfield": [
-      
+
                   {
                       "type": "jiraStoryPointsCustomField",
                       "value": [
@@ -2716,7 +2781,7 @@ db.getCollection('metadata_identifier').update(
                   }
               ],
               "workflow": [
-      
+
                   {
                       "type": "storyFirstStatusKPI148",
                       "value": [
@@ -2838,13 +2903,13 @@ db.getCollection('metadata_identifier').update(
                   } {
                       "type": "jiraDefectRemovalStatusKPI34",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectClosedStatusKPI137",
                       "value": [
-      
+
                       ]
                   },
                   {
@@ -2968,7 +3033,7 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "issueStatusExcluMissingWorkKPI124",
                       "value": [
-      
+
                       ]
                   },
                   {
@@ -2981,55 +3046,55 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "jiraBlockedStatusKPI131",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraWaitStatusKPI131",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI148",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI122",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI145",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI125",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI128",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI123",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI119",
                       "value": [
-      
+
                       ]
                   },
                   {
@@ -3077,7 +3142,7 @@ db.getCollection('metadata_identifier').update(
               ]
      }
      },
-      { multi: false } 
+      { multi: false }
 );
 db.getCollection('metadata_identifier').update(
      { "templateCode": "5" }, // Match documents with templateCode equal to "5"
@@ -3141,7 +3206,7 @@ db.getCollection('metadata_identifier').update(
                           "Enabler Story",
                           "Change request",
                           "Defect"
-      
+
                       ]
                   },
                   {
@@ -3151,7 +3216,7 @@ db.getCollection('metadata_identifier').update(
                           "Enabler Story",
                           "Change request",
                           "Defect"
-      
+
                       ]
                   },
                   {
@@ -3216,12 +3281,12 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "jiraTechDebtIssueType",
                       "value": [
-      
+
                       ]
                   }
               ],
               "customfield": [
-      
+
                   {
                       "type": "jiraStoryPointsCustomField",
                       "value": [
@@ -3278,7 +3343,7 @@ db.getCollection('metadata_identifier').update(
                   }
               ],
               "workflow": [
-      
+
                   {
                       "type": "storyFirstStatusKPI148",
                       "value": [
@@ -3400,13 +3465,13 @@ db.getCollection('metadata_identifier').update(
                   } {
                       "type": "jiraDefectRemovalStatusKPI34",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectClosedStatusKPI137",
                       "value": [
-      
+
                       ]
                   },
                   {
@@ -3530,7 +3595,7 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "issueStatusExcluMissingWorkKPI124",
                       "value": [
-      
+
                       ]
                   },
                   {
@@ -3543,55 +3608,55 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "jiraBlockedStatusKPI131",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraWaitStatusKPI131",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI148",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI122",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI145",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI125",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI128",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI123",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI119",
                       "value": [
-      
+
                       ]
                   },
                   {
@@ -3643,7 +3708,7 @@ db.getCollection('metadata_identifier').update(
 );
 db.getCollection('metadata_identifier').update(
      { "templateCode": "6" }, // Match documents with templateCode equal to "6"
-      { $set: 
+      { $set:
      {
               "tool": "Jira",
               "templateName": "DOJO Studio Template",
@@ -3703,7 +3768,7 @@ db.getCollection('metadata_identifier').update(
                           "Enabler Story",
                           "Change request",
                           "Defect"
-      
+
                       ]
                   },
                   {
@@ -3713,7 +3778,7 @@ db.getCollection('metadata_identifier').update(
                           "Enabler Story",
                           "Change request",
                           "Defect"
-      
+
                       ]
                   },
                   {
@@ -3778,12 +3843,12 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "jiraTechDebtIssueType",
                       "value": [
-      
+
                       ]
                   }
               ],
               "customfield": [
-      
+
                   {
                       "type": "jiraStoryPointsCustomField",
                       "value": [
@@ -3840,7 +3905,7 @@ db.getCollection('metadata_identifier').update(
                   }
               ],
               "workflow": [
-      
+
                   {
                       "type": "storyFirstStatusKPI148",
                       "value": [
@@ -3962,13 +4027,13 @@ db.getCollection('metadata_identifier').update(
                   } {
                       "type": "jiraDefectRemovalStatusKPI34",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectClosedStatusKPI137",
                       "value": [
-      
+
                       ]
                   },
                   {
@@ -4092,7 +4157,7 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "issueStatusExcluMissingWorkKPI124",
                       "value": [
-      
+
                       ]
                   },
                   {
@@ -4105,55 +4170,55 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "jiraBlockedStatusKPI131",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraWaitStatusKPI131",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI148",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI122",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI145",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI125",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI128",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI123",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraStatusForInProgressKPI119",
                       "value": [
-      
+
                       ]
                   },
                   {
@@ -4298,7 +4363,7 @@ db.getCollection('metadata_identifier').update(
                           "Enabler Story",
                           "Tech Story",
                           "Change request"
-      
+
                       ]
                   },
                   {
@@ -4308,7 +4373,7 @@ db.getCollection('metadata_identifier').update(
                           "Enabler Story",
                           "Tech Story",
                           "Change request"
-      
+
                       ]
                   },
                   {
@@ -4318,7 +4383,7 @@ db.getCollection('metadata_identifier').update(
                           "Enabler Story",
                           "Tech Story",
                           "Change request"
-      
+
                       ]
                   },
                   {
@@ -4359,7 +4424,7 @@ db.getCollection('metadata_identifier').update(
                   }
               ],
               "customfield": [
-      
+
                   {
                       "type": "jiraStoryPointsCustomField",
                       "value": [
@@ -4416,7 +4481,7 @@ db.getCollection('metadata_identifier').update(
                   }
               ],
               "workflow": [
-      
+
                   {
                       "type": "storyFirstStatusKPI148",
                       "value": [
@@ -4471,73 +4536,73 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "jiraDefectRejectionStatusKPI152",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI151",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI28",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI34",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI37",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI35",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI82",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI135",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI133",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusRCAKPI36",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI14",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusQAKPI111",
                       "value": [
-      
+
                       ]
                   } {
                       "type": "jiraDefectRemovalStatusKPI34",
@@ -4592,25 +4657,25 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "jiraLiveStatusKPI3",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraLiveStatusKPI127",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraLiveStatusKPI152",
                       "value": [
-      
+
                       ]
                   },
                   {
                       "type": "jiraLiveStatusKPI151",
                       "value": [
-      
+
                       ]
                   },
                   {
@@ -4702,7 +4767,7 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "jiraDefectDroppedStatusKPI127",
                       "value": [
-      
+
                       ]
                   },
                   {
@@ -4837,3 +4902,9 @@ db.getCollection('metadata_identifier').update(
 );
 
 
+//---- KPI info update for KPI 137 (Defect Reopen Rate)
+
+db.getCollection('kpi_master').updateOne(
+  { "kpiId": "kpi137" },
+  { $set: { "kpiInfo.definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available." } }
+);
