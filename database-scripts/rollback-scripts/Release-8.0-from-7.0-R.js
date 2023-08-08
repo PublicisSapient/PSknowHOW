@@ -105,3 +105,234 @@ db.getCollection('kpi_master').updateOne(
   { "kpiId": "kpi137" },
   { $set: { "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available." } }
 );
+
+//reversing metadata_identifier back when we use to compare metadata_identifier with boardMetadata
+db.getCollection('metadata_identifier').update({
+        "templateCode": "7"
+    }, // Match documents with templateCode equal to "7"
+    {
+        $set: {
+            "tool": "Jira",
+            "templateName": "Standard Template",
+            "templateCode": "7",
+            "isKanban": false,
+            "disabled": false,
+            "issues": [{
+                    "type": "story",
+                    "value": [
+                        "Story",
+                        "Enabler Story",
+                        "Tech Story",
+                        "Change request"
+                    ]
+                },
+                {
+                    "type": "bug",
+                    "value": [
+                        "Defect",
+                        "Bug"
+                    ]
+                },
+                {
+                    "type": "epic",
+                    "value": [
+                        "Epic"
+                    ]
+                },
+                {
+                    "type": "issuetype",
+                    "value": [
+                        "Story",
+                        "Enabler Story",
+                        "Tech Story",
+                        "Change request",
+                        "Defect",
+                        "Bug",
+                        "Epic"
+                    ]
+                },
+                {
+                    "type": "uatdefect",
+                    "value": [
+                        "UAT Defect"
+                    ]
+                }
+            ],
+            "customfield": [{
+                    "type": "storypoint",
+                    "value": [
+                        "Story Points"
+                    ]
+                },
+                {
+                    "type": "sprint",
+                    "value": [
+                        "Sprint"
+                    ]
+                },
+                {
+                    "type": "rootcause",
+                    "value": [
+                        "Root Cause"
+                    ]
+                },
+                {
+                    "type": "techdebt",
+                    "value": [
+                        "Tech Debt"
+                    ]
+                },
+                {
+                    "type": "uat",
+                    "value": [
+                        "UAT"
+                    ]
+                },
+                {
+                    "type": "timeCriticality",
+                    "value": [
+                        "Time Criticality"
+                    ]
+                },
+                {
+                    "type": "wsjf",
+                    "value": [
+                        "WSJF"
+                    ]
+                },
+                {
+                    "type": "costOfDelay",
+                    "value": [
+                        "Cost of Delay"
+                    ]
+                },
+                {
+                    "type": "businessValue",
+                    "value": [
+                        "User-Business Value"
+                    ]
+                },
+                {
+                    "type": "riskReduction",
+                    "value": [
+                        "Risk Reduction-Opportunity Enablement Value"
+                    ]
+                },
+                {
+                    "type": "jobSize",
+                    "value": [
+                        "Job Size"
+                    ]
+                }
+            ],
+            "workflow": [{
+                    "type": "dor",
+                    "value": [
+                        "Ready for Sprint Planning",
+                        "In Progress"
+                    ]
+                },
+                {
+                    "type": "dod",
+                    "value": [
+                        "Closed",
+                        "Resolved",
+                        "Ready for Delivery"
+                    ]
+                },
+                {
+                    "type": "development",
+                    "value": [
+                        "Implementing",
+                        "In Development",
+                        "In Analysis"
+                    ]
+                },
+                {
+                    "type": "qa",
+                    "value": [
+                        "In Testing"
+                    ]
+                },
+                {
+                    "type": "firststatus",
+                    "value": [
+                        "Open"
+                    ]
+                },
+                {
+                    "type": "rejection",
+                    "value": [
+                        "Closed",
+                        "Rejected"
+                    ]
+                },
+                {
+                    "type": "delivered",
+                    "value": [
+                        "Closed",
+                        "Resolved",
+                        "Ready for Delivery",
+                        "Ready for Release"
+                    ]
+                },
+                {
+                    "type": "jiraWaitStatus",
+                    "value": [
+                        "Ready for Testing"
+                    ]
+                },
+                {
+                    "type": "jiraBlockedStatus",
+                    "value": [
+                        "On Hold",
+                        "Blocked"
+                    ]
+                },
+                {
+                    "type": "jiraStatusForInProgress",
+                    "value": [
+                        "In Analysis",
+                        "In Development",
+                        "In Progress"
+                    ]
+                },
+                {
+                    "type": "jiraStatusForClosed",
+                    "value": [
+                        "Closed",
+                        "CLOSED"
+                    ]
+                }
+            ],
+            "valuestoidentify": [{
+                    "type": "rootCauseValue",
+                    "value": [
+                        "Coding"
+                    ]
+                },
+                {
+                    "type": "rejectionResolution",
+                    "value": [
+                        "Invalid",
+                        "Duplicate",
+                        "Unrequired"
+                    ]
+                },
+                {
+                    "type": "qaRootCause",
+                    "value": [
+                        "Coding",
+                        "Configuration",
+                        "Regression",
+                        "Data"
+                    ]
+                }
+            ]
+        }
+    }, {
+        multi: false
+    }
+);
+
+
