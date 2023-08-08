@@ -572,29 +572,6 @@ describe('UploadComponent', () => {
     expect(component.kanban).toBeFalse();
   });
 
-  it('should switch view to Capacity Configuration view', () => {
-    const fakeEvent = {
-      originalEvent: {
-        isTrusted: true
-      },
-      item: {
-        label: 'Capacity',
-        icon: 'pi pi-pw pi-file',
-        expanded: true
-      }
-    };
-
-    component.switchView(fakeEvent);
-    fixture.detectChanges();
-    expect(component.selectedView).toBe('upload_Sprint_Capacity');
-    expect(component.startDate).toBe('');
-    expect(component.endDate).toBe('');
-    expect(component.capacityErrorMessage).toBe('');
-    expect(component.kanban).toBeFalse();
-    expect(component.isCapacitySaveDisabled).toBeTrue();
-  });
-
- 
 
   it('should ubmit Test Execution data', () => {
     const event = {
@@ -652,9 +629,9 @@ describe('UploadComponent', () => {
     component.ngOnInit();
     fixture.detectChanges();
     if (component.isSuperAdmin) {
-      expect(component.items.length).toBe(4);
+      expect(component.items.length).toBe(3);
     } else {
-      expect(component.items.length).toBe(2);
+      expect(component.items.length).toBe(1);
     }
   });
 
