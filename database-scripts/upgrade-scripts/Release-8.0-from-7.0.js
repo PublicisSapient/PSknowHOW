@@ -2667,6 +2667,24 @@ var fieldNameToUpdate = "jiradefecttype";
     { multi: false }
   );
 
+  var fieldNameToUpdate = "jiraDodKPI152";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "jiraDodKPI151";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+    } },
+    { multi: false }
+  );
+
 //dts-27545_Unrequired fields should be removed from DRE KPI field mapping
 db.field_mapping_structure.deleteMany({
     "fieldName": "jiraDefectRemovalIssueTypeKPI34"
