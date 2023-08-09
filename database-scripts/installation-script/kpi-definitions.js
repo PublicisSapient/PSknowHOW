@@ -78,7 +78,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiSource": "Jira",
     "groupId": 1,
     "thresholdValue": "75",
-    "kanban": false,
+f    "kanban": false,
     "chartType": "line",
     "kpiInfo": {
       "definition": "Measures the percentage of tickets that passed QA with no return transition or any tagging to a specific configured status and no linkage of a defect",
@@ -2589,7 +2589,7 @@ db.getCollection('kpi_master').insertMany(
     "thresholdValue": "",
     "kanban": false,
     "kpiInfo": {
-      "definition": "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available."
+      "definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available."
     },
     "isPositiveTrend": false,
     "kpiFilter": "dropdown",
@@ -3305,7 +3305,8 @@ db.getCollection('kpi_category_mapping').insertMany(
 
 
 //Fields, used on issue details for KPI issue lists
-db.kpi_column_configs.insertMany([{
+db.kpi_column_configs.insertMany([
+{
                                  		basicProjectConfigId: null,
                                  		kpiId: 'kpi8',
                                  		kpiColumnDetails: [{
@@ -5265,21 +5266,33 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: true
                                  		}, {
-                                 			columnName: 'Linked Stories',
+                                 			columnName: 'Linked Defect',
                                  			order: 5,
                                  			isShown: true,
                                  			isDefault: false
-                                 		}, {
-                                 			columnName: 'Linked Stories Size',
-                                 			order: 6,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
-                                 			columnName: 'Assignee',
-                                 			order: 7,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}]
+                                 		},{
+                                            columnName: 'Size(story point/hours)',
+                                            order: 6,
+                                            isShown: true,
+                                            isDefault: true
+                                        },{
+                                            columnName : "DIR",
+                                            order : Double("7"),
+                                            isShown : true,
+                                            isDefault : false
+                                        },
+                                        {
+                                            columnName : "Defect Density",
+                                            order : Double("8"),
+                                            isShown : true,
+                                            isDefault : false
+                                        },
+                                        {
+                                            columnName : "Assignee",
+                                            order : Double("9"),
+                                            isShown : true,
+                                            isDefault : false
+                                        }]
                                  	},
 
                                  	{
