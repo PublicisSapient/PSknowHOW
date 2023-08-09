@@ -2596,7 +2596,7 @@ var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
 
 // Update the String field by converting it into a list
 db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach(function(doc) {
-    db.field_mapping.update(
+    db.field_mapping.updateMany(
         { _id: doc._id },
         {
             $set: {
