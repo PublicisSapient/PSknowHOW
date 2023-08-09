@@ -33,7 +33,7 @@ public enum FieldMappingEnum {
 					"jiraBugRaisedByQACustomField", "jiraBugRaisedByQAIdentification", "jiraBugRaisedByQAValue",
 					"jiraBugRaisedByCustomField", "jiraBugRaisedByValue", "jiraBugRaisedByIdentification",
 					"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
-					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDevDueDateCustomField",
+					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDevDueDateField",
 					"jiraIssueEpicType", "storyFirstStatus", "jiraTestAutomationIssueType", "jiraStoryIdentification",
 					"jiraDefectDroppedStatus", "productionDefectCustomField", "productionDefectIdentifier",
 					"productionDefectValue", "productionDefectComponentValue")),

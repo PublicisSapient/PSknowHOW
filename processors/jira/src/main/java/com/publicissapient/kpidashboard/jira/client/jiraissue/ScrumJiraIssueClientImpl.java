@@ -1608,14 +1608,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				}
 			}
 		}
-		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
-				&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
-			IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
-			if (ObjectUtils.isNotEmpty(issueField.getValue())) {
-				jiraIssue.setDevDueDate((JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
-						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
-			}
-		}
+		setDevDueDates(jiraIssue, issue, fields, fieldMapping);
 	}
 
 	/**
@@ -1750,6 +1743,22 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 
 		return savedIssuesCount;
+	}
+
+	private static void setDevDueDates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields, FieldMapping fieldMapping) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
+			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DEV_DUE_DATE)
+					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
+				jiraIssue.setDevDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+			} else if (ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+				IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+					jiraIssue.setDevDueDate((JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
+				}
+			}
+		}
 	}
 
 }

@@ -310,6 +310,7 @@ private String jiraLiveStatusKPI127;
 	@Builder.Default
 	private String jiraDueDateField = CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
+	private String jiraDevDueDateField = CommonConstant.DEV_DUE_DATE;
 	private String jiraDevDueDateCustomField;
 	private List<String> jiraDevDoneStatus;
 	private List<String> jiraDevDoneStatusKPI119;

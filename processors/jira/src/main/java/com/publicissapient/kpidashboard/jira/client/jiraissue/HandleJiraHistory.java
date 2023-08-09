@@ -87,6 +87,8 @@ public class HandleJiraHistory {
 			}
 			return createDueDateChangeLogs(changeLogList, field);
 		}
+		List<JiraHistoryChangeLog> changeLogList1 = getJiraHistoryChangeLogs(changeLogList, fieldMapping, fields);
+		if (changeLogList1 != null) return changeLogList1;
 		return new ArrayList<>();
 	}
 
@@ -264,6 +266,7 @@ public class HandleJiraHistory {
 				}
 			}
 		}
+		devDueDateChangeLog(dueDateChangeLog, fieldMapping, issue, fields);
 	}
 
 	private void createFixVersionHistory(List<JiraHistoryChangeLog> fixVersionChangeLog, Issue issue,
@@ -331,6 +334,47 @@ public class HandleJiraHistory {
 			}
 			fieldChangeLog.add(0, firstEntry);
 		}
+	}
+
+	private void devDueDateChangeLog(List<JiraHistoryChangeLog> dueDateChangeLog, FieldMapping fieldMapping,
+									 Issue issue, Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
+			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DEV_DUE_DATE)
+					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
+				createFirstEntryOfChangeLog(dueDateChangeLog, issue,
+						LocalDateTime
+								.parse(JiraProcessorUtil
+										.getFormattedDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate())))
+								.toString());
+			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
+					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+				IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+					createFirstEntryOfChangeLog(dueDateChangeLog, issue,
+							LocalDateTime
+									.parse(JiraProcessorUtil
+											.getFormattedDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue())))
+									.toString());
+				}
+			}
+		}
+	}
+
+	private List<JiraHistoryChangeLog> getJiraHistoryChangeLogs(List<ChangelogGroup> changeLogList, FieldMapping fieldMapping,
+																Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
+			String field = "";
+			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DEV_DUE_DATE))
+				field = CommonConstant.DEV_DUE_DATE;
+			else if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
+					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+				IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+				if (ObjectUtils.isNotEmpty(issueField.getName()))
+					field = issueField.getName();
+			}
+			return createDueDateChangeLogs(changeLogList, field);
+		}
+		return Collections.emptyList();
 	}
 
 }
