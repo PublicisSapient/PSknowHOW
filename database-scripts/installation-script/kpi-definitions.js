@@ -6809,7 +6809,7 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "......."
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
         }
     },
     {
@@ -6819,7 +6819,7 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "......."
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
         }
     },
     {
