@@ -74,15 +74,9 @@ export class MultilineComponent implements OnChanges {
       this.xCaption = this.service.getSelectedDateFilter();
     }
     if (Object.keys(changes)?.length > 0) {
-      // if (changes['data']) {
-      //   if (!changes['data'].firstChange) {
         d3.select(this.elem).select('svg').remove();
         d3.select(this.elem).select('.bstimeslider').remove();
-          this.draw('update');
-      //   } else {
-      //     this.draw('new');
-      //   }
-      // }
+        this.draw('update');
     } else {
       d3.select(this.elem).select('svg').remove();
       d3.select(this.elem).select('.bstimeslider').remove();
