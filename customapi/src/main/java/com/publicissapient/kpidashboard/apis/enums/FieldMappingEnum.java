@@ -54,7 +54,7 @@ public enum FieldMappingEnum {
 
 	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKpi40")),
 
-	KPI39("Sprint Velocity", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKpi39")),
+	KPI39("Sprint Velocity", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKpi39" , "jiraIterationIssuetypeKPI39")),
 
 	KPI5("Sprint Predictability", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationIssuetypeKpi5", "jiraIterationCompletionStatusKpi5")),
