@@ -78,7 +78,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiSource": "Jira",
     "groupId": 1,
     "thresholdValue": "75",
-    "kanban": false,
+f    "kanban": false,
     "chartType": "line",
     "kpiInfo": {
       "definition": "Measures the percentage of tickets that passed QA with no return transition or any tagging to a specific configured status and no linkage of a defect",
@@ -285,7 +285,7 @@ db.getCollection('kpi_master').insertMany(
           "operator": "division",
           "operands": [
             "No. of defects rejected in a sprint",
-            "Total no. of defects reported in a sprint"
+            "Total no. of defects Closed in a sprint"
           ]
         }
       ],
@@ -2589,7 +2589,7 @@ db.getCollection('kpi_master').insertMany(
     "thresholdValue": "",
     "kanban": false,
     "kpiInfo": {
-      "definition": "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available."
+      "definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available."
     },
     "isPositiveTrend": false,
     "kpiFilter": "dropdown",
@@ -3305,7 +3305,8 @@ db.getCollection('kpi_category_mapping').insertMany(
 
 
 //Fields, used on issue details for KPI issue lists
-db.kpi_column_configs.insertMany([{
+db.kpi_column_configs.insertMany([
+{
                                  		basicProjectConfigId: null,
                                  		kpiId: 'kpi8',
                                  		kpiColumnDetails: [{
@@ -5265,21 +5266,33 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: true
                                  		}, {
-                                 			columnName: 'Linked Stories',
+                                 			columnName: 'Linked Defect',
                                  			order: 5,
                                  			isShown: true,
                                  			isDefault: false
-                                 		}, {
-                                 			columnName: 'Linked Stories Size',
-                                 			order: 6,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
-                                 			columnName: 'Assignee',
-                                 			order: 7,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}]
+                                 		},{
+                                            columnName: 'Size(story point/hours)',
+                                            order: 6,
+                                            isShown: true,
+                                            isDefault: true
+                                        },{
+                                            columnName : "DIR",
+                                            order : Double("7"),
+                                            isShown : true,
+                                            isDefault : false
+                                        },
+                                        {
+                                            columnName : "Defect Density",
+                                            order : Double("8"),
+                                            isShown : true,
+                                            isDefault : false
+                                        },
+                                        {
+                                            columnName : "Assignee",
+                                            order : Double("9"),
+                                            isShown : true,
+                                            isDefault : false
+                                        }]
                                  	},
 
                                  	{
@@ -6516,22 +6529,22 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "jiraDorKPI3",
-        "fieldLabel": "Status to Identify Development Status",
+        "fieldLabel": "DOR status",
         "fieldType": "text",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Definition of Readiness. Provide any status from workflow on which DOR is considered."
+            "definition": "Status/es that identify that an issue is ready to be taken in the sprint."
         }
     },
     {
         "fieldName": "jiraIssueTypeKPI3",
-        "fieldLabel": "Lead time issue type",
+        "fieldLabel": "Issue type to be included",
         "fieldType": "chips",
         "fieldCategory": "Issue_Type",
         "section": "Issue Types Mapping",
         "tooltip": {
-            "definition": "The issue type which is to be considered while calculating lead time KPIs, i.e. intake to DOR and DOR and DOD."
+            "definition": "All issue types that should be included in Lead time calculation."
         }
     },
     {
@@ -6870,16 +6883,6 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
-        "fieldName": "jiraIssueTypeKPI37",
-        "fieldLabel": "Issue type to be included",
-        "fieldType": "chips",
-        "fieldCategory": "Issue_Type",
-        "section": "Issue Types Mapping",
-        "tooltip": {
-            "definition": "Issue types that are considered as defects in Jira"
-        }
-    },
-    {
         "fieldName": "jiraIssueTypeNames",
         "fieldLabel": "Issue types to be included",
         "fieldType": "chips",
@@ -7186,7 +7189,7 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Provide any status from workflow on which Live is considered."
+            "definition": "Status/es that identify that an issue is LIVE in Production."
         }
     },
     {
@@ -7807,7 +7810,7 @@ db.getCollection('field_mapping_structure').insertMany(
     }
 }, {
     "fieldName": "jiraStoryIdentification",
-    "fieldLabel": "In Sprint Automation - Issue Types with Linked Defect ",
+    "fieldLabel": "Issue Count KPI Issue type",
     "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
@@ -7962,6 +7965,26 @@ db.getCollection('field_mapping_structure').insertMany(
     "section": "WorkFlow Status Mapping",
     "tooltip": {
         "definition": "Status from workflow on which ticket is considered as Rejected/Dropped."
+    }
+  },
+  {
+    "fieldName": "jiraDodKPI37",
+    "fieldLabel": "Status to identify completed issues",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+    }
+   },
+   {
+    "fieldName": "sprintName",
+    "fieldLabel": "Sprint Name",
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+        "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
     }
 }
 ]

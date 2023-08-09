@@ -113,6 +113,12 @@
                                               "value": [
                                                 "Job Size"
                                               ]
+                                            },
+                                            {
+                                               "type": "epicLink",
+                                               "value": [
+                                                 "Epic Link"
+                                               ]
                                             }
                                           ],
                                           "workflow": [

@@ -117,6 +117,12 @@ db.getCollection('metadata_identifier').remove({});
                                               "value": [
                                                 "Job Size"
                                               ]
+                                            },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
+                                              ]
                                             }
                                           ],
                                           "workflow": [
@@ -290,6 +296,12 @@ db.getCollection('metadata_identifier').remove({});
                                               "type": "jobSize",
                                               "value": [
                                                 "Job Size"
+                                              ]
+                                            },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
                                               ]
                                             }
                                           ],
@@ -465,6 +477,12 @@ db.getCollection('metadata_identifier').remove({});
                                               "value": [
                                                 "Job Size"
                                               ]
+                                            },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
+                                              ]
                                             }
                                           ],
                                           "workflow": [
@@ -624,6 +642,12 @@ db.getCollection('metadata_identifier').remove({});
                                               "value": [
                                                 "Job Size"
                                               ]
+                                            },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
+                                              ]
                                             }
                                           ],
                                           "workflow": [
@@ -769,6 +793,12 @@ db.getCollection('metadata_identifier').remove({});
                                               "value": [
                                                 "Job Size"
                                               ]
+                                            },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
+                                              ]
                                             }
                                           ],
                                           "workflow": [
@@ -913,6 +943,12 @@ db.getCollection('metadata_identifier').remove({});
                                               "type": "jobSize",
                                               "value": [
                                                 "Job Size"
+                                              ]
+                                            },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
                                               ]
                                             }
                                           ],
@@ -1069,6 +1105,12 @@ db.getCollection('metadata_identifier').remove({});
                                               "type": "jobSize",
                                               "value": [
                                                 "Job Size"
+                                              ]
+                                            },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
                                               ]
                                             }
                                           ],
@@ -1382,6 +1424,12 @@ db.getCollection('metadata_identifier').remove({});
                                               "type": "jobSize",
                                               "value": [
                                                 "Job Size"
+                                              ]
+                                            },
+                                            {
+                                              "type": "epicLink",
+                                              "value": [
+                                                "Epic Link"
                                               ]
                                             }
                                           ],

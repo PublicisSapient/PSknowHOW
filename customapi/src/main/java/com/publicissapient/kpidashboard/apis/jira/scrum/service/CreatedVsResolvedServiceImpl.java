@@ -215,6 +215,7 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
 		Set<String> totalNonBugIssues = new HashSet<>();
 		Set<String> totalIssue = new HashSet<>();
+		Set<String> totalIssueInSprint = new HashSet<>();
 		sprintDetails.stream().forEach(sprintDetail -> {
 			if (CollectionUtils.isNotEmpty(sprintDetail.getTotalIssues())) {
 				FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetail.getBasicProjectConfigId());
@@ -224,6 +225,14 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
 						CommonConstant.TOTAL_ISSUES));
 			}
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.TOTAL_ISSUES));
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.COMPLETED_ISSUES_ANOTHER_SPRINT));
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.PUNTED_ISSUES));
+			totalIssueInSprint.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail,
+					CommonConstant.ADDED_ISSUES));
 
 		});
 
@@ -238,14 +247,14 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 					uniqueProjectMap);
 			resultListMap.put(CREATED_VS_RESOLVED_KEY, totalSprintReportDefects);
 
-			List<JiraIssue> totalBugs = jiraIssueRepository
+			List<JiraIssue> subTaskBugs = jiraIssueRepository
 					.findLinkedDefects(mapOfFilters, totalNonBugIssues, uniqueProjectMap).stream()
-					.filter(jiraIssue -> !totalIssue.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber())).collect(Collectors.toList());
 			List<JiraIssueCustomHistory> subTaskBugsCustomHistory = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(
-							totalBugs.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
+							subTaskBugs.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
 							basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-			resultListMap.put(SPRINT_WISE_SUB_TASK_BUGS, totalBugs);
+			resultListMap.put(SPRINT_WISE_SUB_TASK_BUGS, subTaskBugs);
 			resultListMap.put(SUB_TASK_BUGS_HISTORY, subTaskBugsCustomHistory);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
 
@@ -323,7 +332,13 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 						allJiraIssue.stream().filter(element -> completedSprintIssues.contains(element.getNumber()))
 								.collect(Collectors.toList()),
 						sd);
-				completedIssues.addAll(getCompletedSubTasksByHistory(totalSubTask, allSubTaskBugsHistory, sd));
+				FieldMapping fieldMapping = configHelperService.getFieldMapping(sd.getBasicProjectConfigId());
+				List<String> deliveredStatus = Optional.ofNullable(fieldMapping)
+						.map(FieldMapping::getJiraIssueDeliverdStatusKPI126).orElse(Collections.emptyList()).stream()
+						.map(String::toLowerCase).collect(Collectors.toList());
+				completedIssues.addAll(KpiDataHelper.getCompletedSubTasksByHistory(totalSubTask, allSubTaskBugsHistory,
+						sd, deliveredStatus));
+
 				sprintWiseCreatedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
 						totalIssues);
 				sprintWiseClosedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
@@ -468,37 +483,6 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		return subTaskTaggedWithSprint;
 	}
 
-	/**
-	 *
-	 * @param totalSubTask
-	 * @param subTaskHistory
-	 * @param sprintDetail
-	 * @return
-	 */
-	public List<JiraIssue> getCompletedSubTasksByHistory(List<JiraIssue> totalSubTask,
-			List<JiraIssueCustomHistory> subTaskHistory, SprintDetails sprintDetail) {
-		List<JiraIssue> resolvedSubtaskForSprint = new ArrayList<>();
-		LocalDate sprintEndDate = sprintDetail.getCompleteDate() != null
-				? LocalDate.parse(sprintDetail.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
-				: LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
-		LocalDate sprintStartDate = sprintDetail.getActivatedDate() != null
-				? LocalDate.parse(sprintDetail.getActivatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
-				: LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
-		FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetail.getBasicProjectConfigId());
-		totalSubTask.forEach(jiraIssue -> {
-			JiraIssueCustomHistory jiraIssueCustomHistory = subTaskHistory.stream().filter(
-					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
-					.findFirst().orElse(new JiraIssueCustomHistory());
-			Optional<JiraHistoryChangeLog> issueSprint = jiraIssueCustomHistory.getStatusUpdationLog().stream()
-					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(jiraIssueSprint.getUpdatedOn().toLocalDate(),
-							sprintStartDate, sprintEndDate))
-					.reduce((a, b) -> b);
-			if (issueSprint.isPresent()
-					&& fieldMapping.getJiraIssueDeliverdStatusKPI126().contains(issueSprint.get().getChangedTo()))
-				resolvedSubtaskForSprint.add(jiraIssue);
-		});
-		return resolvedSubtaskForSprint;
-	}
 
 	private List<JiraIssue> getCompletedIssues(List<JiraIssue> sprintWiseDefects, SprintDetails sprintDetails) {
 		FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetails.getBasicProjectConfigId());

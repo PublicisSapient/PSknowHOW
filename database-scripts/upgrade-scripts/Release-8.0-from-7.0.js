@@ -2345,7 +2345,11 @@ db.getCollection('field_mapping_structure').insert(
         }
     ]
 );
-}
+    print("Field Mapping Structure executed successfully!");
+  } else {
+    print("Field Mapping Structure already executed. Skipping...");
+  }
+
 
 
 //DTS-25767 Commitment Reliability - Add Filter by Issue type (add one column for issue type in excel)
@@ -2396,4 +2400,196 @@ db.getCollection('field_mapping_structure').insert(
  );
 
  //---------7.5.0 changes------------------------------------------------------------------
+//Defect fix for DTS-27477 (Remove one In-Sprint Automation mapping which is appearing twice)
 
+var fieldNameToUpdate = "jiraStoryIdentification";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: { "fieldLabel": "Issue Count KPI Issue type" } },
+    { multi: false }
+  );
+
+
+var fieldNameToUpdate = "jiraIssueTypeKPI3";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Issue type to be included",
+    "tooltip.definition": "All issue types that should be included in Lead time calculation"
+    } },
+    { multi: false }
+  );
+
+var fieldNameToUpdate = "jiraDorKPI3";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "DOR status",
+    "tooltip.definition": "Status/es that identify that an issue is ready to be taken in the sprint"
+     } },
+    { multi: false }
+  );
+
+var fieldNameToUpdate = "jiraLiveStatusKPI3";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "tooltip.definition": "Status/es that identify that an issue is LIVE in Production."
+    } },
+    { multi: false }
+  );
+
+// Adding action_policy "Fetch Sprint"
+db.action_policy_rule.insertOne({
+    "name": "Fetch Sprint",
+    "roleAllowed": "",
+    "description": "super admin and project admin can run active sprint fetch",
+    "roleActionCheck": "action == 'TRIGGER_SPRINT_FETCH'",
+    "condition": "subject.authorities.contains('ROLE_SUPERADMIN') || subject.authorities.contains('ROLE_PROJECT_ADMIN')",
+    "createdDate": new Date(),
+    "lastModifiedDate": new Date(),
+    "isDeleted": false
+})
+
+db.getCollection('field_mapping_structure').insertMany([
+    {
+        "fieldName": "jiraDodKPI37",
+        "fieldLabel": "Status to identify completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+        }
+    },
+    {
+        "fieldName": "sprintName",
+        "fieldLabel": "Sprint Name",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
+        }
+    }
+])
+
+const fieldMapToUpdate = db.field_mapping.find({ "jiraIssueTypeKPI37": { $exists: true } });
+fieldMapToUpdate.forEach(function(fm) {
+    const jiraDod = fm.jiraDod;
+
+    db.field_mapping.updateOne(
+        { "_id": fm._id },
+        {
+            $set: {
+                "jiraDodKPI37": jiraDod
+            },
+            $unset: {
+                "jiraIssueTypeKPI37": ""
+            }
+        }
+    );
+});
+
+// changing DRR formula
+db.kpi_master.updateOne(
+  {
+    "kpiId": "kpi37",
+    "kpiInfo.formula.operands": "Total no. of defects reported in a sprint"
+  },
+  {
+    $set: {
+      "kpiInfo.formula.$[formulaElem].operands.$[operandElem]": "Total no. of defects Closed in a sprint"
+    }
+  },
+  {
+    arrayFilters: [
+      { "formulaElem.operands": { $exists: true } },
+      { "operandElem": "Total no. of defects reported in a sprint" }
+    ]
+  }
+);
+
+//----------------7.6.0 Changes ---------------------------
+//updating epicLink from documents of metadata_identifier
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7", "8"] } },
+   { $push: {
+      "customfield": {
+         "type": "epicLink",
+         "value": ["Epic Link"]
+      }
+   }}
+);
+
+//DTS-26121 Enchancement of Quality Status Overlay
+db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
+{$set:{"kpiColumnDetails" : [
+		{
+			"columnName" : "Issue Id",
+			"order" : Double("0"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Type",
+			"order" : Double("1"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Description",
+			"order" : Double("2"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Status",
+			"order" : Double("3"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Priority",
+			"order" : Double("4"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Linked Defect",
+			"order" : Double("5"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Size(story point/hours)",
+			"order" : Double("6"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "DIR",
+			"order" : Double("7"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Defect Density",
+			"order" : Double("8"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Assignee",
+			"order" : Double("9"),
+			"isShown" : true,
+			"isDefault" : false
+		}
+	]}});
+
+//---- KPI info update for KPI 137 (Defect Reopen Rate)
+
+db.getCollection('kpi_master').updateOne(
+  { "kpiId": "kpi137" },
+  { $set: { "kpiInfo.definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available." } }
+);
