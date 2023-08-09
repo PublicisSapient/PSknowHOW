@@ -29,13 +29,13 @@ public enum FieldMappingEnum {
 
 	KPI0("Processor", KPISource.JIRA.name(),
 			Arrays.asList("jiradefecttype", "jiraIssueTypeNames", "jiraIterationCompletionStatusCustomField",
-					"rootCause", "sprintName", "estimationCriteria", "jiraStoryPointsCustomField", "jiraDod",
+					"rootCause", "sprintName", "estimationCriteria", "jiraStoryPointsCustomField",
 					"jiraBugRaisedByQACustomField", "jiraBugRaisedByQAIdentification", "jiraBugRaisedByQAValue",
 					"jiraBugRaisedByCustomField", "jiraBugRaisedByValue", "jiraBugRaisedByIdentification",
 					"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
-					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDevDueDateCustomField",
-					"jiraIssueEpicType", "storyFirstStatus", "jiraTestAutomationIssueType", "jiraStoryIdentification",
-					"jiraDefectDroppedStatus", "productionDefectCustomField", "productionDefectIdentifier",
+					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField", "jiraDevDueDateCustomField",
+					"jiraIssueEpicType", "storyFirstStatus", "jiraTestAutomationIssueType",
+					 "productionDefectCustomField", "productionDefectIdentifier",
 					"productionDefectValue", "productionDefectComponentValue")),
 
 	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNames", "storyFirstStatus",

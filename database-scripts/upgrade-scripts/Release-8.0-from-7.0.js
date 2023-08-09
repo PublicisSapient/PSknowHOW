@@ -2593,3 +2593,76 @@ db.getCollection('kpi_master').updateOne(
   { "kpiId": "kpi137" },
   { $set: { "kpiInfo.definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available." } }
 );
+
+//updated action_policy "Fetch Sprint"
+db.action_policy_rule.updateOne({
+    "name": "Fetch Sprint"
+}, {
+    $set: {
+        "name": "Fetch Sprint",
+        "roleAllowed": "",
+        "description": "Any user can run active sprint fetch except guest user",
+        "roleActionCheck": "!subject.authorities.contains('ROLE_GUEST') && action == 'TRIGGER_SPRINT_FETCH'",
+        "condition": "true",
+        "createdDate": new Date(),
+        "lastModifiedDate": new Date(),
+        "isDeleted": false
+    }
+});
+
+//we dont need to keep these on processor side
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraDefectDroppedStatus"
+});
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraStoryIdentification"
+});
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraDod"
+});
+
+//DTS-27561-Mapping name to be corrected 'Priority to be Excluded'
+var fieldNameToUpdate = "jiradefecttype";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "tooltip.definition": "All the statuses that signify a defect in Jira/Azure"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityKPI14";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityQAKPI111";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityKPI82";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityKPI133";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded"
+    } },
+    { multi: false }
+  );
