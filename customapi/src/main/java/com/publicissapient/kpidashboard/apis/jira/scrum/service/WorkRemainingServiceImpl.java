@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.CalculatePCDHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,9 +179,9 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = allIssues.stream().collect(
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
-			List<IterationPotentialDelay> iterationPotentialDelayList = KpiDataHelper
+			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper
 					.calculatePotentialDelay(sprintDetails, allIssues, fieldMapping);
-			Map<String, IterationPotentialDelay> issueWiseDelay = KpiDataHelper
+			Map<String, IterationPotentialDelay> issueWiseDelay = CalculatePCDHelper
 					.checkMaxDelayAssigneeWise(iterationPotentialDelayList, fieldMapping);
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> statuses = new HashSet<>();

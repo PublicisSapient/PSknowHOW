@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.CalculatePCDHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -225,10 +226,10 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					fieldMapping);
 
 			// Calculate Delay
-			List<IterationPotentialDelay> iterationPotentialDelayList = KpiDataHelper
+			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper
 					.calculatePotentialDelay(sprintDetails, notCompletedJiraIssue, fieldMapping);
 			List<IterationPotentialDelay> maxPotentualDelay = new ArrayList<>(
-					KpiDataHelper.checkMaxDelayAssigneeWise(iterationPotentialDelayList, fieldMapping).values());
+					CalculatePCDHelper.checkMaxDelayAssigneeWise(iterationPotentialDelayList, fieldMapping).values());
 			calculateAssigneeWiseMaxDelay(maxPotentualDelay, assigneeWiseMaxDelay);
 
 			// Calculate Remaining Capacity
