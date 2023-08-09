@@ -1,5 +1,5 @@
 <div class="tooltip p-p-3" [ngClass]="{'tooltip-kpi': kpiName?.length > 0,'tooltip-width': kpiName?.length > 25}">
-    <div class="tooltip-wrapper" [ngClass]="{'tooltip-wrapper-card' : !showChartView}">
+    <div class="tooltip-wrapper" [ngClass]="{'tooltip-wrapper-card' : !(showChartView === 'chart')}">
         <p class="p-mb-1 paragraph">{{data?.definition}}</p>
         <div class="" *ngIf="!filterNo">
             <ng-container *ngIf="data?.formula?.length > 0">

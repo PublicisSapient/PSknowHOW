@@ -2511,6 +2511,17 @@ db.kpi_master.updateOne(
 );
 
 //----------------7.6.0 Changes ---------------------------
+//updating epicLink from documents of metadata_identifier
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7", "8"] } },
+   { $push: {
+      "customfield": {
+         "type": "epicLink",
+         "value": ["Epic Link"]
+      }
+   }}
+);
+
 //DTS-26121 Enchancement of Quality Status Overlay
 db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
 {$set:{"kpiColumnDetails" : [
