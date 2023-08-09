@@ -571,6 +571,9 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				// Type
 				jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
 				jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+				jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+				Object epicLinked=fields.get(fieldMapping.getEpicLink().trim()).getValue();
+				jiraIssue.setEpicLinked(epicLinked==null ? null : epicLinked.toString());
 
 				// Label
 				jiraIssue.setLabels(JiraIssueClientUtil.getLabelsList(issue));
