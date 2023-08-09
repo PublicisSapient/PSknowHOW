@@ -1558,6 +1558,18 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				+ jiraIssue.getTimeCriticality();
 		jiraIssue.setCostOfDelay(costOfDelay);
 
+		if (fields.get(fieldMapping.getEpicPlannedValue()) != null
+				&& fields.get(fieldMapping.getEpicPlannedValue()).getValue() != null) {
+			String fieldValue = getFieldValue(fieldMapping.getEpicPlannedValue(), fields);
+			jiraIssue.setEpicPlannedValue(Double.parseDouble(fieldValue));
+		}
+
+		if (fields.get(fieldMapping.getEpicAchievedValue()) != null
+				&& fields.get(fieldMapping.getEpicAchievedValue()).getValue() != null) {
+			String fieldValue = getFieldValue(fieldMapping.getEpicAchievedValue(), fields);
+			jiraIssue.setEpicAchievedValue(Double.parseDouble(fieldValue));
+		}
+
 	}
 
 	private void setEstimates(JiraIssue jiraIssue, Issue issue) {

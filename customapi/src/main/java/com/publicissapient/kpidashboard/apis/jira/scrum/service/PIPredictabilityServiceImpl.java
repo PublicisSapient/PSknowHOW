@@ -84,16 +84,21 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 		List<JiraIssue> epicData = (List<JiraIssue>) resultMap.get("EpicData");
 
-		epicData.stream().collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
+		Map<String, List<JiraIssue>> projectWiseEpicData = epicData.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
+
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 
 		List<DataCount> dataCountList = new ArrayList<>();
 		projectLeafNodeList.forEach(node -> {
-			// String currentProjectId =
-			// node.getProjectFilter().getBasicProjectConfigId().toString();
+			 String currentProjectId = node.getProjectFilter().getBasicProjectConfigId().toString();
+			List<JiraIssue> jiraIssueList = projectWiseEpicData.get(currentProjectId);
+
+			//jiraIssueList.stream().forEach(jiraIssue -> jiraIssue.
+
 			// project wise PI EPIC List<JiraIssue>
-			// epicData.stream().collect(Collectors.groupingBy(JiraIssue::getReleaseVersions));
+					jiraIssueList.stream().collect(Collectors.groupingBy(JiraIssue::getReleaseVersions));
 			// group by release Version list
 			String trendLineName = node.getProjectFilter().getName();
 			for (int i = 0; i < 3; i++) {
