@@ -572,8 +572,8 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
 				jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
 				jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
-				Object epicLinked=fields.get(fieldMapping.getEpicLink().trim()).getValue();
-				jiraIssue.setEpicLinked(epicLinked==null ? null : epicLinked.toString());
+
+				setEpicLinked(fieldMapping, jiraIssue, fields);
 
 				// Label
 				jiraIssue.setLabels(JiraIssueClientUtil.getLabelsList(issue));
@@ -618,6 +618,16 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
 
 		return kanbanIssuesToSave;
+	}
+
+	private void setEpicLinked(FieldMapping fieldMapping, KanbanJiraIssue jiraIssue, Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink())
+				&& fields.get(fieldMapping.getEpicLink()) != null
+				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
+			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+		} else {
+			jiraIssue.setEpicLinked(null);
+		}
 	}
 
 	private void setDueDates(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
