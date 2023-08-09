@@ -106,6 +106,15 @@ db.getCollection('kpi_master').updateOne(
   { $set: { "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available." } }
 );
 
+//removing epicLink from documents of metadata_identifier
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7", "8"] } },
+   { $pull: {
+      "customfield": {
+         "type": "epicLink"
+      }
+   }}
+);
 // --- Reverse fieldType for KPI 138
 var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
   db.getCollection('field_mapping_structure').update(

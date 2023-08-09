@@ -276,6 +276,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping
 				.setJiraStoryPointsCustomField(customField.getOrDefault(CommonConstant.STORYPOINT, StringUtils.EMPTY));
 		fieldMapping.setCreatedDate(LocalDateTime.now());
+		fieldMapping.setEpicLink(customField.get(CommonConstant.EPICLINK));
 
 		if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE) || templateName.equalsIgnoreCase(DOJO_SAFE_TEMPLATE)
 				|| templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {

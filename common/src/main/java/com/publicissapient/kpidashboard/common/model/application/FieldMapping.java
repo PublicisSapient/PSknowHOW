@@ -57,6 +57,7 @@ public class FieldMapping extends BasicModel {
 	private String sprintName;
 	private String epicName;
 	private List<String> jiradefecttype;
+	private String epicLink;
 
 	// defectPriority
 	private List<String> defectPriority;
