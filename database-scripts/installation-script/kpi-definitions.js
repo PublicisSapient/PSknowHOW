@@ -6628,7 +6628,7 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "defectPriorityKPI14",
-        "fieldLabel": "Priority to be included",
+        "fieldLabel": "Priority to be excluded",
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
@@ -6658,7 +6658,7 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "defectPriorityQAKPI111",
-        "fieldLabel": "Priority to be included",
+        "fieldLabel": "Priority to be excluded",
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
@@ -6688,7 +6688,7 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "defectPriorityKPI82",
-        "fieldLabel": "Priority to be included",
+        "fieldLabel": "Priority to be excluded",
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
@@ -6718,7 +6718,7 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "defectPriorityKPI133",
-        "fieldLabel": "Priority to be included",
+        "fieldLabel": "Priority to be excluded",
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
@@ -6809,16 +6809,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Default status when upon creation of Defect (Mention default status of all types of defects)"
-        }
-    },
-    {
-        "fieldName": "jiraDod",
-        "fieldLabel": "Status to identify DOD",
-        "fieldType": "chips",
-        "fieldCategory": "workflow",
-        "section": "WorkFlow Status Mapping",
-        "tooltip": {
-            "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered."
         }
     },
     {
@@ -7289,7 +7279,7 @@ db.getCollection('field_mapping_structure').insertMany(
         "section": "Defects Mapping",
         "processorCommon": true,
         "tooltip": {
-            "definition": "All the issue types that signify a defect in Jira/Azure"
+            "definition": "All the statuses that signify a defect in Jira/Azure"
         }
     },
     {
@@ -7836,24 +7826,6 @@ db.getCollection('field_mapping_structure').insertMany(
     "section": "Issue Types Mapping",
     "tooltip": {
         "definition": "",
-    }
-}, {
-    "fieldName": "jiraStoryIdentification",
-    "fieldLabel": "Issue Count KPI Issue type",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "Value to identify kind of stories which are used for identification for story count.",
-    }
-}, {
-    "fieldName": "jiraDefectDroppedStatus",
-    "fieldLabel": "Defect Dropped Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "All issue types with which defect is linked.",
     }
 }, {
     "fieldName": "jiraDefectDroppedStatusKPI127",

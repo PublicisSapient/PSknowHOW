@@ -116,6 +116,9 @@ db.getCollection('metadata_identifier').updateMany(
    }}
 );
 
+//dropping field_mapping_structure table
+db.getCollection('field_mapping_structure').drop();
+
 // delete mapping for sprint velocity
 db.field_mapping_structure.deleteMany({
     "fieldName": "jiraIterationIssuetypeKPI39"
