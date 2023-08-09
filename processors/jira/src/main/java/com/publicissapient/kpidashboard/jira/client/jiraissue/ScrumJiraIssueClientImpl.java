@@ -759,8 +759,6 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				&& fields.get(fieldMapping.getEpicLink()) != null
 				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
 			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
-		} else {
-			jiraIssue.setEpicLinked(null);
 		}
 	}
 
