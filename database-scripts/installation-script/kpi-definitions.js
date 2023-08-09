@@ -6326,16 +6326,6 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
-        "fieldName": "resolutionTypeForRejectionKPI34",
-        "fieldLabel": "Resolution type to be excluded",
-        "fieldType": "chips",
-        "fieldCategory": "workflow",
-        "section": "WorkFlow Status Mapping",
-        "tooltip": {
-            "definition": "Resolutions for defects which are to be excluded from 'Defect Removal Efficiency' calculation."
-        }
-    },
-    {
         "fieldName": "resolutionTypeForRejectionKPI37",
         "fieldLabel": "Resolution type to be included",
         "fieldType": "chips",
@@ -6418,16 +6408,6 @@ db.getCollection('field_mapping_structure').insertMany(
 
     {
         "fieldName": "jiraDefectRejectionStatusKPI28",
-        "fieldLabel": "Status to be excluded",
-        "fieldType": "text",
-        "fieldCategory": "workflow",
-        "section": "WorkFlow Status Mapping",
-        "tooltip": {
-            "definition": "All statuses which are considered for Rejecting defects."
-        }
-    },
-    {
-        "fieldName": "jiraDefectRejectionStatusKPI34",
         "fieldLabel": "Status to be excluded",
         "fieldType": "text",
         "fieldCategory": "workflow",
@@ -6889,16 +6869,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "section": "Issue Types Mapping",
         "tooltip": {
             "definition": "Issue type that will have defects linked to them."
-        }
-    },
-    {
-        "fieldName": "jiraDefectRemovalIssueTypeKPI34",
-        "fieldLabel": "Issue type to be included.",
-        "fieldType": "chips",
-        "fieldCategory": "Issue_Type",
-        "section": "Issue Types Mapping",
-        "tooltip": {
-            "definition": "Issue types that are considered as defects in Jira."
         }
     },
     {

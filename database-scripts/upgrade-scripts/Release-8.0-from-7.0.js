@@ -2667,6 +2667,18 @@ var fieldNameToUpdate = "jiradefecttype";
     { multi: false }
   );
 
+//dts-27545_Unrequired fields should be removed from DRE KPI field mapping
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraDefectRemovalIssueTypeKPI34"
+});
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraDefectRejectionStatusKPI34"
+});
+db.field_mapping_structure.deleteMany({
+    "fieldName": "resolutionTypeForRejectionKPI34"
+});
+
+
 // add kpi issue type mapping for sprint velocity
 db.getCollection('field_mapping_structure').insertMany([
 {
