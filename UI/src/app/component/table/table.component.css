@@ -40,7 +40,6 @@
 }
 
 :host::ng-deep tr td:first-child span{
-    position: relative;
     margin-left: 20px;
     right: -22%;
 }

@@ -26,9 +26,9 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   filterMultiSelectOptionsData: object = {};
   kpiSelectedFilterObj: any = {};
   @Input() isShow?: any;
-  @Input() showExport: boolean;
+  @Input() showExport: string;
   @Input() showTrendIndicator =true;
-  @Input() showChartView = true;
+  @Input() showChartView = 'chart';
   @Input() cols: Array<object> = [];
   @Input() iSAdditionalFilterSelected =false;
   @Input() showCommentIcon: boolean;
@@ -68,7 +68,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     // changes['dropdownArr']?.currentValue ? true : this.dropdownArr = [];
     this.userRole = this.authService.getRole();
-   this.checkIfViewer =  (this.authService.checkIfViewer({id : this.service.getSelectedTrends()[0].basicProjectConfigId}));
+   this.checkIfViewer =  (this.authService.checkIfViewer({id : this.service.getSelectedTrends()[0]?.basicProjectConfigId}));
   }
 
   ngOnInit(): void {
