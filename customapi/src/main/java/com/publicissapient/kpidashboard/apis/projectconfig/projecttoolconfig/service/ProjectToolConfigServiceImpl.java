@@ -445,7 +445,6 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectConfToolDto.setGitLabSdmID(e.getGitLabSdmID());
 			projectConfToolDto.setAzureIterationStatusFieldUpdate(e.isAzureIterationStatusFieldUpdate());
 			projectConfToolDto.setIsNew(e.getIsNew());
-			projectConfToolDto.setRepoCloningEnabled(e.getRepoCloningEnabled());
 			projectConfToolDto.setConnectionName(getConnection(e.getConnectionId()).getConnectionName());
 			projectConfToolDto.setProjectComponent(e.getProjectComponent());
 		});

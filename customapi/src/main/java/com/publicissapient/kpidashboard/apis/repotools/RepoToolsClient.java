@@ -81,10 +81,11 @@ public class RepoToolsClient {
 
     }
 
-	public void deleteProject(String REPO_TOOLSUrl, String apiKey) {
+	public int deleteProject(String REPO_TOOLSUrl, String apiKey) {
 		setHttpHeaders(apiKey);
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-		ResponseEntity<Json> response = restTemplate.exchange(REPO_TOOLSUrl, HttpMethod.DELETE, entity, Json.class);
+		ResponseEntity<JsonNode> response = restTemplate.exchange(REPO_TOOLSUrl, HttpMethod.DELETE, entity, JsonNode.class);
+        return response.getStatusCode().value();
 	}
 
     public void setHttpHeaders(String apiKey) {

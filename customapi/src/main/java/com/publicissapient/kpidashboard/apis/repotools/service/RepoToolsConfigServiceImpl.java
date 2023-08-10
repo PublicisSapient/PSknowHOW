@@ -8,6 +8,8 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.repotools.RepoToolsClient;
 import com.publicissapient.kpidashboard.apis.repotools.model.*;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
@@ -15,6 +17,8 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,9 +51,6 @@ public class RepoToolsConfigServiceImpl {
 	@Autowired
 	private RestAPIUtils restAPIUtils;
 
-    @Autowired
-    private ConnectionRepository connectionRepository;
-
 	@Autowired
 	private ConfigHelperService configHelperService;
 
@@ -58,6 +59,11 @@ public class RepoToolsConfigServiceImpl {
 
 	@Autowired
 	private ProcessorRepository processorRepository;
+
+	@Autowired
+	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	private static final String QUERY_PARAMS = "?projects=%s&start_date=%s&end_date=%s&frequency=%s";
 	private static final String METRIC = "/metric/";
@@ -79,7 +85,7 @@ public class RepoToolsConfigServiceImpl {
 					.findByToolName(connection.getRepoToolProvider().toLowerCase());
 			RepoToolConfig repoToolConfig = new RepoToolConfig(projectToolConfig.getRepositoryName(),
 					projectToolConfig.getIsNew(), projectToolConfig.getBasicProjectConfigId().toString(),
-					connection.getBaseUrl(), repoToolsProvider.getRepoToolProvider(), connection.getSshUrl(),
+					connection.getHttpUrl(), repoToolsProvider.getRepoToolProvider(), connection.getSshUrl(),
 					projectToolConfig.getBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
 					fistScan.toString().replace("T", " "), toolCredential, branchNames);
@@ -99,15 +105,24 @@ public class RepoToolsConfigServiceImpl {
 		List<ProjectToolConfig> projectRepos = basicProjectconfigIdList.stream()
 				.map(id -> projectToolConfigService.getProjectToolConfigsByConfigIdAndType(id, CommonConstant.REPO_TOOLS))
 				.flatMap(List::stream).collect(Collectors.toList());
+
 		try {
 			for (ProjectToolConfig projectToolConfig : projectRepos) {
 				String projectRepoName = projectToolConfig.getRepositoryName();
 				if (projectRepoName != null) {
 					String projectCode = createProjectCode(projectToolConfig.getBasicProjectConfigId().toString());
+					ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
+							projectToolConfig.getBasicProjectConfigId().toHexString());
+					processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 					RepoToolsClient repoToolsClient = new RepoToolsClient();
 					httpStatus = repoToolsClient.triggerScanCall(projectCode, customApiConfig.getRepoToolURL(),
 							restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 					processorItemRepository.save(createProcessorItem(projectToolConfig, processor.getId()));
+					if(httpStatus == HttpStatus.OK.value()) {
+						processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+						processorExecutionTraceLog.setExecutionSuccess(true);
+						processorExecutionTraceLogService.save(processorExecutionTraceLog);
+					}
 				}
 			}
 		} catch (HttpClientErrorException ex) {
@@ -127,16 +142,14 @@ public class RepoToolsConfigServiceImpl {
 				.getProjectToolConfigsByConnectionId(basicProjectConfigId, connectionId);
 		RepoToolsClient repoToolsClient = new RepoToolsClient();
 		if (projectToolConfigList.size() == 1) {
+			ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
+			httpStatus = deleteRepoToolProject(projectBasicConfig, false);
+		} else {
 			String masterSystemId = basicProjectConfigId + connectionId.toString();
 			httpStatus = repoToolsClient.deleteRepositories(masterSystemId, customApiConfig.getRepoToolURL(),
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
-		} else {
-			List<String> branchNames = projectToolConfigList.stream().map(ProjectToolConfig::getBranch)
-					.filter(Objects::nonNull).collect(Collectors.toList());
-			Connection connection = connectionRepository.findById(connectionId).get();
-			httpStatus = configureRepoToolProject(projectToolConfigList.get(0), connection, branchNames);
 		}
-		return httpStatus != HttpStatus.NOT_FOUND.value();
+		return httpStatus == HttpStatus.OK.value();
 	}
 
 	public List<RepoToolKpiMetricResponse> getRepoToolKpiMetrics(List<String> projectCodeList, String repoToolKpi,
@@ -173,11 +186,23 @@ public class RepoToolsConfigServiceImpl {
 		return item;
 	}
 
-	public void deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean onlyData) {
+	public int  deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean onlyData) {
 		String deleteUrl = customApiConfig.getRepoToolURL() + String.format(DELETE_REPO,
 				projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId(), onlyData);
 		RepoToolsClient repoToolsClient = new RepoToolsClient();
-		repoToolsClient.deleteProject(deleteUrl, customApiConfig.getRepoToolAPIKey());
+		return  repoToolsClient.deleteProject(deleteUrl, restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+	}
+
+	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
+		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+		processorExecutionTraceLog.setProcessorName(ProcessorConstants.REPO_TOOLS);
+		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS, basicProjectConfigId);
+		existingTraceLogOptional.ifPresent(
+				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
+						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
+		return processorExecutionTraceLog;
 	}
 
 }

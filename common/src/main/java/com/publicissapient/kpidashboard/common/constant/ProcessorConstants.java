@@ -73,7 +73,7 @@ public final class ProcessorConstants {
 
 	public static final String GITHUBACTION = "GitHubAction";
 
-	public static final String REPO_TOOLS = "Repo_Tools";
+	public static final String REPO_TOOLS = "RepoTool";
 
 	private ProcessorConstants() {
 		// This class should not be instantiable

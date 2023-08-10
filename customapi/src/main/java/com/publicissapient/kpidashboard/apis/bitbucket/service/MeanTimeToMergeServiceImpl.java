@@ -80,7 +80,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
-	
+
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
@@ -186,10 +186,17 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 						repoWiseMRList.add(excelDataLoader);
 						repoList.add(repo.getUrl());
 						branchList.add(repo.getBranch());
-					
+
 				}
 			});
 
+			if (CollectionUtils.isNotEmpty(aggMergeRequests)) {
+				setWeekWiseMeanTimeToMerge(aggMergeRequests, end, excelDataLoader, Constant.AGGREGATED_VALUE, projectName,
+						aggDataMap);
+			}else if(CollectionUtils.isNotEmpty(repoToolKpiMetricRespons)) {
+				setWeekWiseMeanTimeToMergeForRepoTools(aggMeanTimeToMerge, end, excelDataLoader, Constant.AGGREGATED_VALUE, projectName,
+						aggDataMap);
+			}
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 			populateExcelDataObject(requestTrackerId, repoWiseMRList, repoList, branchList, excelData, node);
 		});
@@ -219,8 +226,8 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
 				sunday = sunday.plusDays(1);
 			}
-			Branches branches = mergeReqList.get(monday.toString());
-			double meanTimeToMerge = branches != null?branches.getAverage()*1000: 0.0d;
+			double meanTimeToMerge = mergeReqList.getOrDefault(monday.toString(), 0.0d)*1000;
+//			double meanTimeToMerge = branches != null?branches.getAverage()*1000: 0.0d;
 			String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
 					DateUtil.DISPLAY_DATE_FORMAT) + WEEK_SEPERATOR
 					+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
@@ -302,7 +309,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 
 		return branchesMap;
 	}
-	
+
 
 	/**
 	 * @param projectName
@@ -423,7 +430,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		}
 		return bitbucketJob;
 	}
-	
+
 	private void populateRepoList(List<Tool> reposList, Map<String, List<Tool>> mapOfListOfTools) {
 		if (null != mapOfListOfTools) {
 			reposList.addAll(mapOfListOfTools.get(BITBUCKET) == null ? Collections.emptyList()

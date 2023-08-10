@@ -2115,7 +2115,7 @@ export class JiraConfigComponent implements OnInit {
             { field: 'connectionName',header: 'Connection Name',class: 'long-text'},
             { field: 'repositoryName', header: 'Repository Name', class: 'long-text'},
             { field: 'defaultBranch', header: 'Default Branch', class: 'long-text' },
-            { field: 'scanningBranch', header: 'Scanning Branch', class: 'long-text' },
+            { field: 'branch', header: 'Scanning Branch', class: 'long-text' },
           ];
           this.formTemplate = {
             group: 'RepoTool',
@@ -2145,7 +2145,7 @@ export class JiraConfigComponent implements OnInit {
               {
                 type: 'text',
                 label: 'Scanning Branch',
-                id: 'scanningBranch',
+                id: 'branch',
                 validators: [],
                 containerClass: 'p-sm-6',
                 show: true,

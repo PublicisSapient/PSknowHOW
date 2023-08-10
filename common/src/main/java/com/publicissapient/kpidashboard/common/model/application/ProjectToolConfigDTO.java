@@ -111,4 +111,5 @@ public class ProjectToolConfigDTO {
 	private Boolean isNew;
 
 	private String repoCloningEnabled;
+	private String scanningBranch;
 }
