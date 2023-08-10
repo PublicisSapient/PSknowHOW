@@ -2593,3 +2593,127 @@ db.getCollection('kpi_master').updateOne(
   { "kpiId": "kpi137" },
   { $set: { "kpiInfo.definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available." } }
 );
+
+
+
+
+//----------------7.7.0 Changes ---------------------------
+
+db.getCollection('field_mapping_structure').insertOne(
+{
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "maxValue": "200",
+      "kpiUnit": "",
+      "isDeleted": "False",
+      "defaultOrder": 29,
+      "kpiSource": "Jira",
+      "groupId": 2,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "multipleline",
+      "kpiInfo": {
+        "definition": "PI predictability is calculated by the sum of the actual value achieved against the planned value at the beginning of the PI",
+        "details": [
+          {
+            "type": "link",
+            "kpiLinkDetail": {
+              "text": "Detailed Information at",
+              "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#PI-Predictability"
+            }
+          }
+        ]
+      },
+      "xAxisLabel": "PIs",
+      "yAxisLabel": "Business Value",
+      "isPositiveTrend": false,
+      "showTrend": true,
+      "aggregationCriteria": "sum",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": false
+    });
+
+db.getCollection('field_mapping_structure').insertMany([
+{
+        "fieldName": "epicPlannedValue",
+        "fieldLabel": "Custom field for Epic Planned Value",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+    }
+    },
+    {
+        "fieldName": "epicAchievedValue",
+        "fieldLabel": "Custom field for Epic Achieved Value",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+    }
+    },
+    {
+    "fieldName": "jiraIssueEpicTypeFor153",
+    "fieldLabel": "Epic Issue Type",
+    "fieldType": "text",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "This field is used to identify Epic Issue type.",
+    }
+    }
+])
+
+db.getCollection('kpi_column_configs').insertOne({
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi153',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Project Name',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		},  {
+                                 			columnName: 'Epic ID',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Epic Name',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Status',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'PI Name',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Planned Value',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Achieved Value',
+                                 			order: 7,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		},
+                                 		]
+});
+
+db.getCollection('kpi_category_mapping').insertOne( {
+                                                    		"kpiId": "kpi153",
+                                                    		"categoryId": "categoryThree",
+                                                    		"kpiOrder": 4,
+                                                    		"kanban": false
+                                                    	});
+
+
+

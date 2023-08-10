@@ -819,23 +819,11 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		Criteria criteria = new Criteria();
 		// map of common filters Project and Sprint
 		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
-		// Project level storyType filters
-		List<Criteria> projectCriteriaList = new ArrayList<>();
-		uniqueProjectMap.forEach((project, filterMap) -> {
-			Criteria projectCriteria = new Criteria();
-			projectCriteria.and(CONFIG_ID).is(project);
-			filterMap.forEach((subk, subv) -> projectCriteria.and(subk).in((List<Pattern>) subv));
-			projectCriteriaList.add(projectCriteria);
 
-		});
-
-		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
-		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
-		MatchOperation matchStage = Aggregation.match(criteriaProjectLevelAdded);
+		MatchOperation matchStage = Aggregation.match(criteria);
 
 		AggregationExpression condition = ConditionalOperators
-				.when(ComparisonOperators.Eq.valueOf("typeName").equalToValue("Epic")).then(true).otherwise(false);
+				.when(ComparisonOperators.Eq.valueOf("typeName").equalToValue(typeName)).then(true).otherwise(false);
 
 		GroupOperation groupBySprint = Aggregation.group("releaseVersions.releaseName")
 				.last("releaseVersions.releaseName").as("releaseVersion").last("basicProjectConfigId")

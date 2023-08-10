@@ -185,7 +185,7 @@ public abstract class ToolsKPIService<R, S> {
 	 *            kpiCode
 	 * @return value of node
 	 */
-	public Object calculateAggregatedValueForMultipleLine(Node node, Map<Pair<String, String>, Node> nodeWiseKPIValue,
+	public Object calculateAggregatedMultipleValueGroup(Node node, Map<Pair<String, String>, Node> nodeWiseKPIValue,
 			KPICode kpiCode) {
 
 		String kpiName = kpiCode.name();
@@ -208,14 +208,14 @@ public abstract class ToolsKPIService<R, S> {
 
 		for (Node child : children) {
 			nodeWiseKPIValue.put(Pair.of(node.getGroupName().toUpperCase(), node.getId()), node);
-			Object obj = calculateAggregatedValueForMultipleLine(child, nodeWiseKPIValue, kpiCode);
+			Object obj = calculateAggregatedMultipleValueGroup(child, nodeWiseKPIValue, kpiCode);
 			List<DataCount> value = obj instanceof List<?> ? ((List<DataCount>) obj) : null;
 			if (value != null) {
 				aggregatedValueList.addAll(value);
 			}
 		}
 		if (CollectionUtils.isNotEmpty(aggregatedValueList)) {
-			node.setValue(calculateAggregatedValueMultiple(kpiName, aggregatedValueList, node, kpiId));
+			node.setValue(calculateAggregatedMultipleValueGroup(kpiName, aggregatedValueList, node, kpiId));
 			nodeWiseKPIValue.put(Pair.of(node.getGroupName().toUpperCase(), node.getId()), node);
 		}
 		return node.getValue();
@@ -343,7 +343,7 @@ public abstract class ToolsKPIService<R, S> {
 		return aggregatedDataCount;
 	}
 
-	public List<DataCount> calculateAggregatedValueMultiple(String kpiName, List<DataCount> aggregatedValueList, Node node,
+	public List<DataCount> calculateAggregatedMultipleValueGroup(String kpiName, List<DataCount> aggregatedValueList, Node node,
 			String kpiId) {
 
 		Map<String, List<DataCount>> projectWiseDataCount = aggregatedValueList.stream()
@@ -371,9 +371,9 @@ public abstract class ToolsKPIService<R, S> {
 					projectNames.add(dc.getSProjectName());
 					projectName.append(dc.getSProjectName());
 					hoverIdentifier = dc.getDate();
-					collectAggregatedDataForMultiLine(valueMultiLine, dc);
+					collectAggregatedDataBasedOnLineType(valueMultiLine, dc);
 				}
-				setDataCountValueForMultiLine(kpiId, dataCount, valueMultiLine);
+				setDataCountValueBasedOnLineType(kpiId, dataCount, valueMultiLine);
 				dataCount.setSprintIds(sprintIds);
 				dataCount.setSprintNames(sprintNames);
 				dataCount.setProjectNames(projectNames);
@@ -385,7 +385,14 @@ public abstract class ToolsKPIService<R, S> {
 		return aggregatedDataCount;
 	}
 
-	private void setDataCountValueForMultiLine(String kpiId, DataCount dataCount, Map<String, List<DataValue>> valueMultiLine) {
+	/**
+	 *
+	 * @param kpiId
+	 * @param dataCount
+	 * @param valueMultiLine
+	 */
+	private void setDataCountValueBasedOnLineType(String kpiId, DataCount dataCount,
+			Map<String, List<DataValue>> valueMultiLine) {
 		if (MapUtils.isNotEmpty(valueMultiLine)) {
 			List<DataValue> aggregatedDataValueList = new ArrayList<>();
 			for (Map.Entry<String, List<DataValue>> entry : valueMultiLine.entrySet()) {
@@ -425,7 +432,12 @@ public abstract class ToolsKPIService<R, S> {
 		}
 	}
 
-	private void collectAggregatedDataForMultiLine(Map<String, List<DataValue>> valueMultiLine, DataCount dc) {
+	/**
+	 * 
+	 * @param valueMultiLine
+	 * @param dc
+	 */
+	private void collectAggregatedDataBasedOnLineType(Map<String, List<DataValue>> valueMultiLine, DataCount dc) {
 		dc.getDataValue().stream().forEach(dataValue -> {
 			valueMultiLine.computeIfPresent(dataValue.getLineType() , (k , v) -> {
 				v.add(dataValue);

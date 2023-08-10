@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +19,7 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
@@ -27,14 +28,18 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataValue;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -46,6 +51,11 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 	@Autowired
 	private ConfigHelperService configHelperService;
+
+	@Autowired
+	private ProjectReleaseRepo projectReleaseRepo;
+
+	private static ThreadLocal<Integer> threadLocalVariable = ThreadLocal.withInitial(() -> 0);
 
 	@Override
 	public String getQualifierType() {
@@ -70,7 +80,7 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 				root);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		calculateAggregatedValueForMultipleLine(root, nodeWiseKPIValue, KPICode.PI_PREDICTABILITY);
+		calculateAggregatedMultipleValueGroup(root, nodeWiseKPIValue, KPICode.PI_PREDICTABILITY);
 		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.PI_PREDICTABILITY);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
@@ -80,66 +90,89 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 			List<Node> projectLeafNodeList) {
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(projectLeafNodeList, null, null, null);
-		// find resultMap.PIData all projects
 
 		List<JiraIssue> epicData = (List<JiraIssue>) resultMap.get("EpicData");
 
 		Map<String, List<JiraIssue>> projectWiseEpicData = epicData.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
 
-
 		List<KPIExcelData> excelData = new ArrayList<>();
 
-		List<DataCount> dataCountList = new ArrayList<>();
 		projectLeafNodeList.forEach(node -> {
 			 String currentProjectId = node.getProjectFilter().getBasicProjectConfigId().toString();
-			List<JiraIssue> jiraIssueList = projectWiseEpicData.get(currentProjectId);
-
+			List<JiraIssue> epicList = projectWiseEpicData.get(currentProjectId);
+			List<DataCount> dataCountList = new ArrayList<>();
 			//jiraIssueList.stream().forEach(jiraIssue -> jiraIssue.
-
+			Map<DateTime , ReleaseWiseLatestEpicData> piNameWiseEpicData = new HashMap<>();
 			// project wise PI EPIC List<JiraIssue>
-					jiraIssueList.stream().collect(Collectors.groupingBy(JiraIssue::getReleaseVersions));
-			// group by release Version list
-			String trendLineName = node.getProjectFilter().getName();
-			for (int i = 0; i < 3; i++) {
-				List<DataValue> dataValueList = new ArrayList<>();
-				DataCount dataCount = new DataCount();
-				dataCount.setSProjectName(trendLineName);
-				dataCount.setSSprintID("sprintID " + i);
-				dataCount.setSSprintName("sprintName " + i);
-				DataValue dataValue1 = new DataValue();
-				dataValue1.setData("10");
-				Map<String, Object> hoverValueMap1 = new HashMap<>();
-				dataValue1.setHoverValue(hoverValueMap1);
-				dataValue1.setLineType("simple");
-				// aggregatedDataValue.setName();
-				Double aValue = 20.0d;
-				Double pValue = 30.0d;
-				dataValue1.setValue(aValue);
+			if (CollectionUtils.isNotEmpty(epicList)) {
+				epicList.stream().forEach(jiraIssue -> {
+					if (CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())
+							&& jiraIssue.getReleaseVersions().get(0).getReleaseDate() != null) {
+						piNameWiseEpicData.putIfAbsent(jiraIssue.getReleaseVersions().get(0).getReleaseDate(),
+								new ReleaseWiseLatestEpicData());
+						piNameWiseEpicData.computeIfPresent(jiraIssue.getReleaseVersions().get(0).getReleaseDate(),
+								(k, v) -> {
+									v.setPiName(jiraIssue.getReleaseVersions().get(0).getReleaseName());
+									v.setPiEndDate(jiraIssue.getReleaseVersions().get(0).getReleaseDate());
+									List<JiraIssue> piWiseEpicList = v.getEpicList();
+									piWiseEpicList.add(jiraIssue);
+									v.setEpicList(piWiseEpicList);
+									return v;
+								});
+					}
+				});
 
-				DataValue dataValue2 = new DataValue();
-				Map<String, Object> hoverValueMap2 = new HashMap<>();
-				dataValue2.setData("20");
-				dataValue2.setHoverValue(hoverValueMap2);
-				dataValue2.setLineType("dotted");
-				// aggregatedDataValue.setName();
-				dataValue2.setValue(pValue);
-				dataValueList.add(dataValue1);
-				dataValueList.add(dataValue2);
-				dataCount.setDataValue(dataValueList);
-				dataCountList.add(dataCount);
+				Map<DateTime, ReleaseWiseLatestEpicData> sortedPINameWiseEpicData = piNameWiseEpicData.entrySet()
+						.stream().sorted(Map.Entry.comparingByKey()).limit(5)
+						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+								(oldValue, newValue) -> oldValue, LinkedHashMap::new));
+
+				String trendLineName = node.getProjectFilter().getName();
+				String requestTrackerId = getRequestTrackerId();
+
+				sortedPINameWiseEpicData.forEach((releaseDate, releaseWiseLatestEpicData) -> {
+					String piName = releaseWiseLatestEpicData.getPiName();
+					Double plannedValueSum = releaseWiseLatestEpicData.getEpicList().stream()
+							.mapToDouble(JiraIssue::getBusinessValue).sum();
+					Double achievedValueSum = releaseWiseLatestEpicData.getEpicList().stream()
+							.mapToDouble(JiraIssue::getTimeCriticality).sum();
+
+					List<DataValue> dataValueList = new ArrayList<>();
+					DataCount dataCount = new DataCount();
+					dataCount.setSProjectName(trendLineName);
+					dataCount.setSSprintID(piName);
+					dataCount.setSSprintName(piName);
+					DataValue dataValue1 = new DataValue();
+					dataValue1.setData(plannedValueSum.toString());
+					Map<String, Object> hoverValueMap1 = new HashMap<>();
+					dataValue1.setHoverValue(hoverValueMap1);
+					dataValue1.setLineType("solid");
+					dataValue1.setName("Achieved Value");
+					dataValue1.setValue(achievedValueSum);
+
+					DataValue dataValue2 = new DataValue();
+					Map<String, Object> hoverValueMap2 = new HashMap<>();
+					dataValue2.setData(plannedValueSum.toString());
+					dataValue2.setHoverValue(hoverValueMap2);
+					dataValue2.setLineType("dotted");
+					dataValue2.setName("Planned Value");
+					dataValue2.setValue(plannedValueSum);
+					dataValueList.add(dataValue1);
+					dataValueList.add(dataValue2);
+					dataCount.setDataValue(dataValueList);
+					dataCountList.add(dataCount);
+
+				});
+				mapTmp.get(node.getId()).setValue(dataCountList);
+				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+					KPIExcelUtility.populatePIPredictabilityExcelData(trendLineName, epicList, excelData);
+				}
 			}
-			mapTmp.get(node.getId()).setValue(dataCountList);
-			/*
-			 * if
-			 * (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()
-			 * )) { KPIExcelUtility.populateCODExcelData(projectName, epicList, excelData);
-			 * }
-			 */
-
 		});
+		
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.COST_OF_DELAY.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.PI_PREDICTABILITY.getColumns());
 
 	}
 
@@ -155,18 +188,23 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
+		List<ObjectId> basicProjectConfigObjectsIds = new ArrayList<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
+			basicProjectConfigObjectsIds.add(basicProjectConfigId);
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			if (Optional.ofNullable(fieldMapping.getJiradefecttype()).isPresent()) {
+			List<String> issueTypeList = new ArrayList<>();
+			String epicName = fieldMapping.getJiraIssueEpicTypeKPI153();
+			/*if (Optional.ofNullable(fieldMapping.getJiradefecttype()).isPresent()) {
+				issueTypeList.add(fieldMapping.getJiraIssueEpicTypeKPI153());
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getTicketCountIssueType()));
+						CommonUtils.convertToPatternList(issueTypeList));
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			}
+			}*/
 		});
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
@@ -186,18 +224,22 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 		mapOfProjectFilters.put(CommonConstant.RELEASE, CommonUtils.convertToPatternListForSubString(piList));
 		uniqueProjectMap.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(), mapOfProjectFilters);
 		List<JiraIssue> piWiseEpicList = jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
-
 		resultListMap.put("EpicData", piWiseEpicList);
-		// release Version List List<String> releaseList/PI Name ( for X axis)
-		// find epic is linked to above releaseList
-		// List<JiraIssue> // all epic data which is tagged to PI
-
-		return null;
+		return resultListMap;
 	}
 
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiId) {
 		return calculateKpiValueForDouble(valueList, kpiId);
+	}
+
+	@Getter
+	@Setter
+	public class ReleaseWiseLatestEpicData {
+		private String basicProjectConfigId;
+		private String piName;
+		private DateTime piEndDate;
+		private List<JiraIssue> epicList = new ArrayList<>();
 	}
 
 }

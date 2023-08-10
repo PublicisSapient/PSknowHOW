@@ -578,7 +578,7 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
         for (let d of dataCategory) {
           htmlString += `<div>`;
           lineTypes.forEach((lineType, i) => {
-            htmlString += `<div class="legend-item"><div class="legend_color_indicator_dashed" style="border-top:  ${lineType === 'simple' ? '3px solid ' : '3px dashed '}${colorCategory(d)}"></div> <span class="p-m-1">:${d} ${lineDetails[i]}</span></div>`;
+            htmlString += `<div class="legend-item"><div class="legend_color_indicator_dashed" style="border-top:  ${lineType === 'solid' ? '3px solid ' : '3px dashed '}${colorCategory(d)}"></div> <span class="p-m-1">:${d} ${lineDetails[i]}</span></div>`;
           });
           htmlString += `</div>`;
         }
