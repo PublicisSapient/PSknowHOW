@@ -117,6 +117,22 @@ db.getCollection('metadata_identifier').updateMany(
    }}
 );
 
+db.action_policy_rule.updateOne(
+{
+    "name": "Fetch Sprint"
+},
+{
+$set: {
+        "name": "Fetch Sprint",
+        "roleAllowed": "",
+        "description": "super admin and project admin can run active sprint fetch",
+        "roleActionCheck": "action == 'TRIGGER_SPRINT_FETCH'",
+        "condition": "subject.authorities.contains('ROLE_SUPERADMIN') || subject.authorities.contains('ROLE_PROJECT_ADMIN')",
+        "createdDate": new Date(),
+        "lastModifiedDate": new Date(),
+        "isDeleted": false
+    }
+});
 //dropping field_mapping_structure table
 db.getCollection('field_mapping_structure').drop();
 
