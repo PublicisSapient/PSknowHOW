@@ -102,8 +102,6 @@ public class JiraServiceR {
 	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
-	@Autowired
-    private CalculatePCDHelper calculatePCDServiceHelper;
 
 	JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
 	private List<JiraIssue> jiraIssueList;
