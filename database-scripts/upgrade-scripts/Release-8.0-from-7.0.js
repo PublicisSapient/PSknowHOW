@@ -2702,7 +2702,7 @@ db.field_mapping.updateOne({
             "_id": fm._id
         },
         {
-             $set: {
+             $unset: {
                 "jiraDefectRejectionStatusKPI34": "",
                 "jiraDefectRemovalIssueTypeKPI34": "",
                 "resolutionTypeForRejectionKPI34": "",
