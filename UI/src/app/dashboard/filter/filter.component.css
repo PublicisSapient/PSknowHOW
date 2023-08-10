@@ -1141,3 +1141,8 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   color: #666666;
   font-size: .8rem; 
 }
+.large-view-disabled{
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(0,0,0,0.2) !important;
+}

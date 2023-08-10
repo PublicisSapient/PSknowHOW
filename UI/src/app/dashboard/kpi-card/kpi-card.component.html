@@ -8,9 +8,9 @@
                         <app-tooltip *ngIf="isTooltip" [data]="kpiData?.kpiDetail?.kpiInfo"
                             (mouseleave)="showTooltip(false)" [showChartView]="showChartView" [kpiName]="kpiData?.kpiName" ></app-tooltip>
                     </span>
-                    <img src="../../../assets/img/database-svg.svg" *ngIf="sprintsOverlayVisible"  (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event,kpiHeader) : '' ;" alt="Sprint Details" class="cursor-pointer p-ml-1 sprint-hover-icon"   pTooltip='<div class="inner-content">
+                    <span *ngIf="sprintsOverlayVisible"  (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event,kpiHeader) : '' ;" class="cursor-pointer p-ml-1 sprint-hover-icon"   pTooltip='<div class="inner-content">
                         Please click on icon for all sprint details.
-                    </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper" />
+                    </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper" ><i class="custom-pi pi-bars"></i></span>
                     <app-comments *ngIf="showCommentIcon" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName" [selectedTab]="selectedTab" (closeSpringOverlay)="op.hide($event);" [commentCount]="commentCount" (getCommentsCountByKpiId)="handleGetCount($event)"></app-comments>
                 </h3>
             </div>
@@ -84,8 +84,8 @@
         </div>
     </div>
     <div class="kpi-card-body" 
-    [ngStyle]="{'height': showChartView ? '400px' : '150px', 
-    'min-height': showChartView ? '330px' : '100px'}">
+    [ngStyle]="{'height': !(showChartView === 'table') ? '400px' : '150px', 
+    'min-height': !(showChartView === 'table')  ? '330px' : '100px'}">
         <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="isShow && trendData?.length > 0 && showTrendIndicator"
             [ngClass]="{'p-d-none':kpiData?.kpiId == 'kpi17' && trendData.length != 1}">
             <div *ngFor="let item of trendData; let i = index;" class="trend-box">
@@ -95,7 +95,7 @@
                 </app-trend-indicator>
             </div>
         </div>
-        <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="!showChartView && (kpiData?.kpiId == 'kpi53') && !(kpiData?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected)">
+        <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="(showChartView === 'table') && (kpiData?.kpiId == 'kpi53') && !(kpiData?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected)">
             <div class="trend-box" *ngFor="let item of trendData; let i = index;">
                 <app-trend-indicator
                     [dataTrend]="item" [cols]="cols" [color]="trendBoxColorObj[item?.hierarchyName]?.color" 
@@ -110,7 +110,7 @@
         <div class="kpi-card-icons" [ngClass]="{'disable-setting-icon': (service.getSelectedType()?.toLowerCase() !== 'scrum' || service.getSelectedTrends().length > 1 || service.getSelectedTab()?.toLowerCase() === 'release' || service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase() !== 'project' ||  userRole === 'roleViewer' || checkIfViewer)}">
             <img src="../../../assets/img/setting-icon.svg" alt="KPI Setting" class="ico-active p-mr-1 kpi-download-icon" (click)="onOpenFieldMappingDialog();" pTooltip="Setting" tooltipPosition="top" tooltipEvent="hover" [escape]="false"/>
         </div>
-        <div class="kpi-card-icons" *ngIf="showExport">
+        <div class="kpi-card-icons" *ngIf="!(showExport === 'table')">
             <img src="../../../assets/img/download.svg" alt="Download" class="ico-active p-mr-1 kpi-download-icon" (click)="exportToExcel()" pTooltip="Explore" tooltipPosition="top" tooltipEvent="hover" [escape]="false"/>
             <!-- <i class="fas fa-expand mr-10"></i> -->
         </div>

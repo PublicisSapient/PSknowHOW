@@ -565,8 +565,6 @@ public class MetaDataClientImpl implements MetadataClient {
 					workflowMap.getOrDefault(CommonConstant.JIRA_IN_PROGRESS_STATUS, new ArrayList<>()));
 			fieldMapping.setJiraStatusForInProgressKPI119(
 					workflowMap.getOrDefault(CommonConstant.JIRA_IN_PROGRESS_STATUS, new ArrayList<>()));
-			fieldMapping.setJiraDefectRemovalIssueTypeKPI34(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping
 					.setJiraTestAutomationIssueType(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraSprintVelocityIssueTypeKPI138(
@@ -599,8 +597,6 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setResolutionTypeForRejectionAVR(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionKPI28(
-					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setResolutionTypeForRejectionKPI34(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionKPI37(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
@@ -660,8 +656,6 @@ public class MetaDataClientImpl implements MetadataClient {
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKpi40(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraDefectRemovalIssueTypeKPI34(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping
 					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
 			if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE)) {
@@ -705,8 +699,6 @@ public class MetaDataClientImpl implements MetadataClient {
 					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionKPI28(
 					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setResolutionTypeForRejectionKPI34(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionKPI37(
 					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionRCAKPI36(
@@ -737,7 +729,6 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDefectRejectionStatusKPI151(CommonConstant.REJECTED);
 			fieldMapping.setJiraDefectRejectionStatusKPI152(CommonConstant.REJECTED);
 			fieldMapping.setJiraDefectRejectionStatusKPI28(CommonConstant.REJECTED);
-			fieldMapping.setJiraDefectRejectionStatusKPI34(CommonConstant.REJECTED);
 			fieldMapping.setJiraDefectRejectionStatusKPI37(CommonConstant.REJECTED);
 			fieldMapping.setJiraDefectRejectionStatusKPI35(CommonConstant.REJECTED);
 			fieldMapping.setJiraDefectRejectionStatusKPI82(CommonConstant.REJECTED);

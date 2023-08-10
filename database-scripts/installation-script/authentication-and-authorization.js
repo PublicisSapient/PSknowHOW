@@ -333,11 +333,11 @@ db.getCollection('action_policy_rule').insertMany([
         {
             "name": "Fetch Sprint",
             "roleAllowed": "",
-            "description": "super admin and project admin can run active sprint fetch",
-            "roleActionCheck": "action == 'TRIGGER_SPRINT_FETCH'",
-            "condition": "subject.authorities.contains('ROLE_SUPERADMIN') || subject.authorities.contains('ROLE_PROJECT_ADMIN')",
+            "description": "Any user can run active sprint fetch except guest user",
+            "roleActionCheck": "!subject.authorities.contains('ROLE_GUEST') && action == 'TRIGGER_SPRINT_FETCH'",
+            "condition": "true",
             "createdDate": new Date(),
             "lastModifiedDate": new Date(),
             "isDeleted": false
-        }
+    }
     ]);
