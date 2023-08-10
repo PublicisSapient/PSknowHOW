@@ -2626,7 +2626,7 @@ var fieldNameToUpdate = "jiradefecttype";
   db.getCollection('field_mapping_structure').update(
     { "fieldName": fieldNameToUpdate },
     { $set: {
-    "tooltip.definition": "All the statuses that signify a defect in Jira/Azure"
+    "fieldLabel": "Issue Type to identify defects"
     } },
     { multi: false }
   );

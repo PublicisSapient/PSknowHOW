@@ -7243,13 +7243,13 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "jiradefecttype",
-        "fieldLabel": "Status to identify defects",
+        "fieldLabel": "Issue Type to identify defects",
         "fieldType": "chips",
         "fieldCategory": "Issue_Type",
         "section": "Defects Mapping",
         "processorCommon": true,
         "tooltip": {
-            "definition": "All the statuses that signify a defect in Jira/Azure"
+            "definition": "All the issue types that signify a defect in Jira/Azure"
         }
     },
     {
