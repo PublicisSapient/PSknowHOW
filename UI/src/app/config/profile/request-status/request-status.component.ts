@@ -79,7 +79,9 @@ export class RequestStatusComponent implements OnInit, OnDestroy {
           }
         });
       },
-      reject: () => { }
+      reject: () => {
+        console.log('reject')
+       }
     });
   }
 
