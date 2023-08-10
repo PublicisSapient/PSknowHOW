@@ -209,8 +209,10 @@ export class ProjectListComponent implements OnInit {
         header: 'Project Deletion Status',
         icon: 'fa fa-check-circle alert-success',
         accept: () => {
+          console.log('accept')
         },
         reject: () => {
+          console.log('reject')
         }
       });
     } else {
@@ -219,8 +221,10 @@ export class ProjectListComponent implements OnInit {
         header: 'Project Deletion Status',
         icon: 'fa fa-times-circle alert-danger',
         accept: () => {
+          console.log('accept')
         },
         reject: () => {
+          console.log('reject')
         }
       });
     }
