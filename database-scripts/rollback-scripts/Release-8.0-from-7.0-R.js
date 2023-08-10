@@ -106,6 +106,7 @@ db.getCollection('kpi_master').updateOne(
   { $set: { "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available." } }
 );
 
+
 //removing epicLink from documents of metadata_identifier
 db.getCollection('metadata_identifier').updateMany(
    { "templateCode": { $in: ["7", "8"] } },
@@ -115,6 +116,24 @@ db.getCollection('metadata_identifier').updateMany(
       }
    }}
 );
+
+db.action_policy_rule.updateOne(
+{
+    "name": "Fetch Sprint"
+},
+{
+$set: {
+        "name": "Fetch Sprint",
+        "roleAllowed": "",
+        "description": "super admin and project admin can run active sprint fetch",
+        "roleActionCheck": "action == 'TRIGGER_SPRINT_FETCH'",
+        "condition": "subject.authorities.contains('ROLE_SUPERADMIN') || subject.authorities.contains('ROLE_PROJECT_ADMIN')",
+        "createdDate": new Date(),
+        "lastModifiedDate": new Date(),
+        "isDeleted": false
+    }
+});
+
 
 //------ DTS-27515
 db.getCollection('field_mapping_structure').insertOne(
