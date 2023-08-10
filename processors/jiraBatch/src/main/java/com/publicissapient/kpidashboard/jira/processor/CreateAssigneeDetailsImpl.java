@@ -35,7 +35,6 @@ public class CreateAssigneeDetailsImpl implements CreateAssigneeDetails {
                 updatedAssigneeSetToSave.addAll(assigneeSetToSave);
                 assigneeDetails.setAssignee(updatedAssigneeSetToSave);
             }
-//            assigneeDetailsRepository.save(assigneeDetails);
         }
         return assigneeDetails;
     }

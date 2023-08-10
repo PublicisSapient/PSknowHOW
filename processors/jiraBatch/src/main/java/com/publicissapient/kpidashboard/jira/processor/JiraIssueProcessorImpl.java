@@ -18,12 +18,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.json.simple.JSONArray;
@@ -58,7 +59,6 @@ import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
-
 @Slf4j
 @Service
 public class JiraIssueProcessorImpl implements JiraIssueProcessor {
@@ -72,9 +72,10 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	@Autowired
 	private AdditionalFilterHelper additionalFilterHelper;
 
+	Map<String, Map<String, JiraIssue>> projectWiseIssues = new HashMap<>();
+
 	@Override
-	public JiraIssue convertToJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig)
-			throws JSONException {
+	public JiraIssue convertToJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig) throws JSONException {
 
 		JiraIssue jiraIssue = null;
 
@@ -91,17 +92,17 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		Set<String> issueTypeNames = Arrays.stream(fieldMapping.getJiraIssueTypeNames()).map(String::toLowerCase)
 				.collect(Collectors.toSet());
 		IssueType issueType = issue.getIssueType();
-		
-		//save only issues which are in configuration.
+
+		// save only issues which are in configuration.
 		if (issueTypeNames
 				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
-			
+
 			Set<Assignee> assigneeSetToSave = new LinkedHashSet<>();
 			Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 			Map<String, String> issueEpics = new HashMap<>();
-
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
-			jiraIssue = getJiraIssue(projectConfig, issueId);
+
+			jiraIssue = searchIssueInDb(projectConfig,issueId);
 
 			Map<String, IssueField> fields = buildFieldMap(issue.getFields());
 			IssueField epic = fields.get(fieldMapping.getEpicName());
@@ -132,6 +133,53 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			setDueDates(jiraIssue, issue, fields, fieldMapping);
 		}
 		return jiraIssue;
+
+	}
+
+	private JiraIssue searchIssueInDb(ProjectConfFieldMapping projectConfig, String issueId) {
+		
+		JiraIssue jiraIssue=new JiraIssue();
+		if (MapUtils.isEmpty(projectWiseIssues)) {
+			populateProjectWiseIssues(projectConfig);
+
+		}
+		Map<String, JiraIssue> issueIdWiseJiraIssue = projectWiseIssues
+				.get(projectConfig.getBasicProjectConfigId().toString());
+		if (MapUtils.isNotEmpty(issueIdWiseJiraIssue)) {
+			jiraIssue = initializeJiraIssue(issueId, issueIdWiseJiraIssue);
+		} else if (MapUtils.isNotEmpty(projectWiseIssues)) {
+			projectWiseIssues = new HashMap<>();
+			populateProjectWiseIssues(projectConfig);
+			Map<String, JiraIssue> updatedIdWiseIssues = projectWiseIssues
+					.get(projectConfig.getBasicProjectConfigId().toString());
+			if (MapUtils.isNotEmpty(updatedIdWiseIssues)) {
+				jiraIssue = initializeJiraIssue(issueId, updatedIdWiseIssues);
+			}
+
+		}
+		return jiraIssue;
+	}
+
+	private JiraIssue initializeJiraIssue(String issueId, Map<String, JiraIssue> issueIdWiseJiraIssue) {
+		JiraIssue jiraIssue=null;
+		jiraIssue = issueIdWiseJiraIssue.get(issueId);
+		if (null == jiraIssue) {
+			jiraIssue = new JiraIssue();
+		}
+		issueIdWiseJiraIssue = null;
+		log.info("jira Issue found : {}",jiraIssue.getIssueId());
+		return jiraIssue;
+	}
+
+	private void populateProjectWiseIssues(ProjectConfFieldMapping projectConfig) {
+		log.info("populating data in map for project : {}", projectConfig.getProjectName());
+		List<JiraIssue> existingJiraIssues = jiraIssueRepository
+				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
+		if (CollectionUtils.isNotEmpty(existingJiraIssues)) {
+			Map<String, JiraIssue> issueIdWiseJiraIssue = existingJiraIssues.stream()
+					.collect(Collectors.toMap(JiraIssue::getIssueId, Function.identity()));
+			projectWiseIssues.put(projectConfig.getBasicProjectConfigId().toString(), issueIdWiseJiraIssue);
+		}
 	}
 
 	private void setJiraAssigneeDetails(JiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave,
@@ -180,8 +228,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 			List<String> ownerName = assigneeName.stream().map(JiraIssueProcessorImpl::hash)
 					.collect(Collectors.toList());
-			List<String> ownerId = assigneeKey.stream().map(JiraIssueProcessorImpl::hash)
-					.collect(Collectors.toList());
+			List<String> ownerId = assigneeKey.stream().map(JiraIssueProcessorImpl::hash).collect(Collectors.toList());
 			List<String> ownerFullName = assigneeDisplayName.stream().map(JiraIssueProcessorImpl::hash)
 					.collect(Collectors.toList());
 			jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
@@ -335,15 +382,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		} catch (JSONException e) {
 			log.error("JIRA Processor | Error while parsing Device Platform data", e);
 		}
-	}
-
-	private JiraIssue getJiraIssue(ProjectConfFieldMapping projectConfig, String issueId) {
-		JiraIssue jiraIssue;
-		jiraIssue = findOneJiraIssue(issueId, projectConfig.getBasicProjectConfigId().toString());
-		if (jiraIssue == null) {
-			jiraIssue = new JiraIssue();
-		}
-		return jiraIssue;
 	}
 
 	private void setAdditionalFilters(JiraIssue jiraIssue, Issue issue, ProjectConfFieldMapping projectConfig) {
@@ -610,30 +648,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			}
 			jiraIssue.setDefectStoryID(defectStorySet);
 		}
-	}
-
-	/**
-	 * Finds one JiraIssue by issueId
-	 *
-	 * @param issueId
-	 *            jira issueId
-	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
-	 * @return JiraIssue corresponding to provided IssueId in DB
-	 */
-	private JiraIssue findOneJiraIssue(String issueId, String basicProjectConfigId) {
-		List<JiraIssue> jiraIssues = jiraIssueRepository
-				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
-
-		if (jiraIssues.size() > 1) {
-			log.error("JIRA Processor | More than one Jira Issue item found for id {}", issueId);
-		}
-
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
-		}
-		return null;
-
 	}
 
 	/**

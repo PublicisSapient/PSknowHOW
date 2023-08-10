@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class CreateAccountHierarchyImpl implements CreateAccountHierarchy {
+public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountHierarchyProcessor {
 
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
@@ -41,8 +41,7 @@ public class CreateAccountHierarchyImpl implements CreateAccountHierarchy {
 	private AccountHierarchyRepository accountHierarchyRepository;
 
 	@Override
-	public Set<AccountHierarchy> createAccountHierarchy(List<JiraIssue> jiraIssueList,
-			ProjectConfFieldMapping projectConfig) {
+	public Set<AccountHierarchy> createAccountHierarchy(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig) {
 
 		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
 				.getFullHierarchyLevels(projectConfig.isKanban());
@@ -54,33 +53,27 @@ public class CreateAccountHierarchyImpl implements CreateAccountHierarchy {
 		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = getAccountHierarchy(accountHierarchyRepository);
 
 		Set<AccountHierarchy> setToSave = new HashSet<>();
-		for (JiraIssue jiraIssue : jiraIssueList) {
-			if (StringUtils.isNotBlank(jiraIssue.getProjectName()) && StringUtils.isNotBlank(jiraIssue.getSprintName())
-					&& StringUtils.isNotBlank(jiraIssue.getSprintBeginDate())
-					&& StringUtils.isNotBlank(jiraIssue.getSprintEndDate())) {
+		if (StringUtils.isNotBlank(jiraIssue.getProjectName()) && StringUtils.isNotBlank(jiraIssue.getSprintName())
+				&& StringUtils.isNotBlank(jiraIssue.getSprintBeginDate())
+				&& StringUtils.isNotBlank(jiraIssue.getSprintEndDate())) {
 
-				AccountHierarchy projectData = accountHierarchyRepository
-						.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
-								new ObjectId(jiraIssue.getBasicProjectConfigId()))
-						.get(0);
+			AccountHierarchy projectData = accountHierarchyRepository
+					.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
+							new ObjectId(jiraIssue.getBasicProjectConfigId()))
+					.get(0);
 
-				AccountHierarchy sprintHierarchy = createHierarchyForSprint(jiraIssue,
-						projectConfig.getProjectBasicConfig(), projectData, sprintHierarchyLevel);
+			AccountHierarchy sprintHierarchy = createHierarchyForSprint(jiraIssue,
+					projectConfig.getProjectBasicConfig(), projectData, sprintHierarchyLevel);
 
-				setToSaveAccountHierarchy(setToSave, sprintHierarchy, existingHierarchy);
+			setToSaveAccountHierarchy(setToSave, sprintHierarchy, existingHierarchy);
 
-				List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(jiraIssue,
-						sprintHierarchy, sprintHierarchyLevel, hierarchyLevelList);
-				additionalFiltersHierarchies.forEach(
-						accountHierarchy -> setToSaveAccountHierarchy(setToSave, accountHierarchy, existingHierarchy));
-
-			}
+			List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(jiraIssue,
+					sprintHierarchy, sprintHierarchyLevel, hierarchyLevelList);
+			additionalFiltersHierarchies.forEach(
+					accountHierarchy -> setToSaveAccountHierarchy(setToSave, accountHierarchy, existingHierarchy));
 
 		}
-		log.info("Created Account Hierarchy {}", setToSave);
-		// if (CollectionUtils.isNotEmpty(setToSave)) {
-		// accountHierarchyRepository.saveAll(setToSave);
-		// }
+
 		return setToSave;
 	}
 

@@ -1,15 +1,13 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
+import java.util.Set;
+
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Set;
+public interface JiraIssueAccountHierarchyProcessor {
 
-public interface CreateAccountHierarchy {
-
-    Set<AccountHierarchy> createAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig);
+	Set<AccountHierarchy> createAccountHierarchy(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig);
 
 }

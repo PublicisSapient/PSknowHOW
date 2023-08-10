@@ -6,10 +6,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +49,8 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
+	Map<String, Map<String, JiraIssueCustomHistory>> projectWiseIssues = new HashMap<>();
+
 	@Override
 	public JiraIssueCustomHistory convertToJiraIssueHistory(Issue issue, ProjectConfFieldMapping projectConfig,
 			JiraIssue jiraIssue) {
@@ -53,32 +58,57 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 		String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
 		Map<String, IssueField> fields = JiraIssueClientUtil.buildFieldMap(issue.getFields());
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
-		JiraIssueCustomHistory jiraIssueHistory = getIssueCustomHistory(projectConfig, issueNumber);
+		JiraIssueCustomHistory jiraIssueHistory = searchIssueInDb(projectConfig, issueNumber);
 		setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
 
 		return jiraIssueHistory;
 	}
 
-	private JiraIssueCustomHistory getIssueCustomHistory(ProjectConfFieldMapping projectConfig, String issueNumber) {
-		JiraIssueCustomHistory jiraIssueHistory;
-		jiraIssueHistory = findOneJiraIssueHistory(issueNumber, projectConfig.getBasicProjectConfigId().toString());
-		if (jiraIssueHistory == null) {
-			jiraIssueHistory = new JiraIssueCustomHistory();
+	private JiraIssueCustomHistory searchIssueInDb(ProjectConfFieldMapping projectConfig, String issueId) {
+
+		JiraIssueCustomHistory jiraIssue = new JiraIssueCustomHistory();
+		if (MapUtils.isEmpty(projectWiseIssues)) {
+			populateProjectWiseIssues(projectConfig);
+
 		}
-		return jiraIssueHistory;
+		Map<String, JiraIssueCustomHistory> issueIdWiseJiraIssue = projectWiseIssues
+				.get(projectConfig.getBasicProjectConfigId().toString());
+		if (MapUtils.isNotEmpty(issueIdWiseJiraIssue)) {
+			jiraIssue = initializeJiraIssue(issueId, issueIdWiseJiraIssue);
+		} else if (MapUtils.isNotEmpty(projectWiseIssues)) {
+			projectWiseIssues = new HashMap<>();
+			populateProjectWiseIssues(projectConfig);
+			Map<String, JiraIssueCustomHistory> updatedIdWiseIssues = projectWiseIssues
+					.get(projectConfig.getBasicProjectConfigId().toString());
+			if (MapUtils.isNotEmpty(updatedIdWiseIssues)) {
+				jiraIssue = initializeJiraIssue(issueId, updatedIdWiseIssues);
+			}
+
+		}
+		return jiraIssue;
 	}
 
-	private JiraIssueCustomHistory findOneJiraIssueHistory(String issueId, String basicProjectConfigId) {
-		List<JiraIssueCustomHistory> jiraIssues = jiraIssueCustomHistoryRepository
-				.findByStoryIDAndBasicProjectConfigId(issueId, basicProjectConfigId);
-		if (jiraIssues.size() > 1) {
-			log.warn("JIRA Processor | More than one Issue id  found for history {}", issueId);
+	private JiraIssueCustomHistory initializeJiraIssue(String issueId,
+			Map<String, JiraIssueCustomHistory> issueIdWiseJiraIssue) {
+		JiraIssueCustomHistory jiraIssue = null;
+		jiraIssue = issueIdWiseJiraIssue.get(issueId);
+		if (null == jiraIssue) {
+			jiraIssue = new JiraIssueCustomHistory();
 		}
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
-		}
-		return null;
+		issueIdWiseJiraIssue = null;
+		log.info("jira Issue history found : {}", jiraIssue.getStoryID());
+		return jiraIssue;
+	}
 
+	private void populateProjectWiseIssues(ProjectConfFieldMapping projectConfig) {
+		log.info("populating data in map for project : {}", projectConfig.getProjectName());
+		List<JiraIssueCustomHistory> existingJiraHistoryIssues = jiraIssueCustomHistoryRepository
+				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
+		if (CollectionUtils.isNotEmpty(existingJiraHistoryIssues)) {
+			Map<String, JiraIssueCustomHistory> issueIdWiseJiraIssue = existingJiraHistoryIssues.stream()
+					.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, Function.identity()));
+			projectWiseIssues.put(projectConfig.getBasicProjectConfigId().toString(), issueIdWiseJiraIssue);
+		}
 	}
 
 	private void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,
@@ -91,8 +121,6 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 		jiraIssueHistory.setAdditionalFilters(jiraIssue.getAdditionalFilters());
 		jiraIssueHistory.setUrl(jiraIssue.getUrl());
 		jiraIssueHistory.setDescription(jiraIssue.getName());
-		// This method is not setup method. write it to keep
-		// custom history
 		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
 
 		jiraIssueHistory.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());

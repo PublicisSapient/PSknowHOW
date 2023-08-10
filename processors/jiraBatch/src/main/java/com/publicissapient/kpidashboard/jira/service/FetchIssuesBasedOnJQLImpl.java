@@ -16,8 +16,6 @@ import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLo
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.processor.CreateAccountHierarchy;
-import com.publicissapient.kpidashboard.jira.processor.CreateAssigneeDetails;
 
 import lombok.extern.slf4j.Slf4j;
 

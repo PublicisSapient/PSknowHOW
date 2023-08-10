@@ -156,5 +156,9 @@ public interface JiraIssueRepository
 	 * @return JiraIssue
 	 */
 	List<JiraIssue> findByNumberInAndBasicProjectConfigId(List<String> numberIds, String basicProjectConfigId);
+	
+	
+	@Query(fields = "{'issueId' : 1}")
+	List<JiraIssue> findByBasicProjectConfigId(String basicProjectConfigId);
 
 }

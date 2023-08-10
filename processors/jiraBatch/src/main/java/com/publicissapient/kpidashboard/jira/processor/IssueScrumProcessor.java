@@ -1,10 +1,17 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
@@ -18,6 +25,9 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 
 	@Autowired
 	private JiraIssueHistoryProcessor jiraIssueHistoryProcessor;
+	
+	@Autowired
+	private JiraIssueAccountHierarchyProcessor jiraIssueAccountHierarchyProcessor;
 
 	@Override
 	public CompositeResult process(ReadData readData) throws Exception {
@@ -26,8 +36,12 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 		if (null != jiraIssue) {
 			compositeResult = new CompositeResult();
 			JiraIssueCustomHistory jiraIssueCustomHistory = convertIssueToJiraIssueHistory(readData, jiraIssue);	
+			Set<AccountHierarchy> accountHierarchies=createAccountHierarchies(jiraIssue,readData);
 			compositeResult.setJiraIssue(jiraIssue);
 			compositeResult.setJiraIssueCustomHistory(jiraIssueCustomHistory);
+			if(CollectionUtils.isNotEmpty(accountHierarchies)) {
+				compositeResult.setAccountHierarchies(accountHierarchies);
+			}
 		}
 		return compositeResult;
 
@@ -41,6 +55,11 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 			throws JSONException {
 		return jiraIssueHistoryProcessor.convertToJiraIssueHistory(readData.getIssue(),
 				readData.getProjectConfFieldMapping(), jiraIssue);
+	}
+	
+	private Set<AccountHierarchy> createAccountHierarchies(JiraIssue jiraIssue,ReadData readData){
+		return jiraIssueAccountHierarchyProcessor.createAccountHierarchy(jiraIssue,readData.getProjectConfFieldMapping());
+		
 	}
 
 }
