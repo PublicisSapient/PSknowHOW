@@ -384,54 +384,39 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	 * @return
 	 */
 	private Map<String, Object> generateHowerMap(Map<String, Double> commitmentHowerMap, String key,
-			FieldMapping fieldMapping) {
+												 FieldMapping fieldMapping) {
 		Map<String, Object> howerMap = new LinkedHashMap<>();
-
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			getDeliveredCount(commitmentHowerMap, key, howerMap);
-
 			if (FINAL_SCOPE_COUNT.equalsIgnoreCase(key)) {
+				howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE, 0.0d));
 				howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_ISSUE_SIZE, 0.0d));
 			} else if (INITIAL_ISSUE_COUNT.equalsIgnoreCase(key)) {
+				howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE, 0.0d));
 				howerMap.put(INITIALLYCOMMITED, commitmentHowerMap.getOrDefault(INITIAL_ISSUE_SIZE, 0.0d));
 			} else if (INITIAL_STORY_POINT.equalsIgnoreCase(key)) {
+				howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_STORY_POINTS, 0.0d));
 				howerMap.put(INITIALLYCOMMITED, commitmentHowerMap.getOrDefault(INITIALISSUE_STORY_POINTS, 0.0d));
 			} else {
+				howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_STORY_POINTS, 0.0d));
 				howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_STORY_POINTS, 0.0d));
 			}
 		} else {
-			getDeliveredCount(commitmentHowerMap, key, howerMap);
 			if (FINAL_SCOPE_COUNT.equalsIgnoreCase(key)) {
+				howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE, 0.0d));
 				howerMap.put(COMMITTED, commitmentHowerMap.getOrDefault(TOTAL_ISSUE_SIZE, 0.0d));
 			} else if (INITIAL_ISSUE_COUNT.equalsIgnoreCase(key)) {
+				howerMap.put(DELIVERED, commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE, 0.0d));
 				howerMap.put(INITIALLYCOMMITED, commitmentHowerMap.getOrDefault(INITIAL_ISSUE_SIZE, 0.0d));
 			} else if (INITIAL_ORIGINAL_ESTIMATE.equalsIgnoreCase(key)) {
+				howerMap.put(DELIVERED, commitmentHowerMap.get(COMPLETED_ORIGINAL_ESTIMATE) + " hrs");
 				howerMap.put(INITIALLYCOMMITED, commitmentHowerMap.get(INITIALISSUE_ORIGINAL_ESTIMATE) + " hrs");
 			} else {
+				howerMap.put(DELIVERED, commitmentHowerMap.get(COMPLETED_ORIGINAL_ESTIMATE) + " hrs");
 				howerMap.put(COMMITTED, commitmentHowerMap.get(TOTAL_ORIGINAL_ESTIMATE) + " hrs");
 			}
 		}
 		return howerMap;
-	}
-
-	private static void getDeliveredCount(Map<String, Double> commitmentHowerMap, String key,
-			Map<String, Object> howerMap) {
-		double sumOfValues;
-		if (FINAL_SCOPE_COUNT.equalsIgnoreCase(key) || INITIAL_ISSUE_COUNT.equalsIgnoreCase(key)) {
-			sumOfValues = commitmentHowerMap.getOrDefault(COMPLETED_ISSUE_SIZE,0.0d)
-					+ commitmentHowerMap.getOrDefault(INITIALCMPLTD_ISSUE_SIZE, 0.0d);
-			howerMap.put(DELIVERED, sumOfValues);
-		} else if (INITIAL_STORY_POINT.equalsIgnoreCase(key) || FINAL_SCOPE_STORY_POINTS.equalsIgnoreCase(key)) {
-			sumOfValues = commitmentHowerMap.getOrDefault(INITIALCMPLTDISSUE_STORY_POINTS, 0.0d)
-					+ commitmentHowerMap.getOrDefault(COMPLETED_STORY_POINTS, 0.0d);
-			howerMap.put(DELIVERED, sumOfValues);
-		} else {
-			sumOfValues = commitmentHowerMap.get(INITIALCMPLTD_ORIGINAL_ESTIMATE)
-					+ commitmentHowerMap.get(COMPLETED_ORIGINAL_ESTIMATE);
-			howerMap.put(DELIVERED, sumOfValues + " hrs");
-		}
-
 	}
 
 	/**
@@ -530,29 +515,22 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			commitmentResult.put(FINAL_SCOPE_STORY_POINTS + SPECIAL_SYMBOL + issues,
-					ObjectUtils.defaultIfNull(storyCount, 0L));
-			commitmentResult.put(INITIAL_STORY_POINT + SPECIAL_SYMBOL + issues,
-					ObjectUtils.defaultIfNull(initialStoryCount, 0L));
+			commitmentResult.put(FINAL_SCOPE_STORY_POINTS+SPECIAL_SYMBOL+issues, ObjectUtils.defaultIfNull(storyCount, 0L));
+			commitmentResult.put(INITIAL_STORY_POINT+SPECIAL_SYMBOL+issues, ObjectUtils.defaultIfNull(initialStoryCount, 0L));
 		} else {
-			commitmentResult.put(FINAL_SCOPE_ORIGINAL_ESTIMATE + SPECIAL_SYMBOL + issues,
-					ObjectUtils.defaultIfNull(totalHours, 0L));
-			commitmentResult.put(INITIAL_ORIGINAL_ESTIMATE + SPECIAL_SYMBOL + issues,
-					ObjectUtils.defaultIfNull(initialTotalHours, 0L));
+			commitmentResult.put(FINAL_SCOPE_ORIGINAL_ESTIMATE+SPECIAL_SYMBOL+issues, ObjectUtils.defaultIfNull(totalHours, 0L));
+			commitmentResult.put(INITIAL_ORIGINAL_ESTIMATE+SPECIAL_SYMBOL+issues, ObjectUtils.defaultIfNull(initialTotalHours, 0L));
 		}
-		commitmentResult.put(FINAL_SCOPE_COUNT + SPECIAL_SYMBOL + issues, ObjectUtils.defaultIfNull(issueCount, 0L));
-		commitmentResult.put(INITIAL_ISSUE_COUNT + SPECIAL_SYMBOL + issues,
-				ObjectUtils.defaultIfNull(initialIssueCount, 0L));
+		commitmentResult.put(FINAL_SCOPE_COUNT+SPECIAL_SYMBOL+issues, ObjectUtils.defaultIfNull(issueCount, 0L));
+		commitmentResult.put(INITIAL_ISSUE_COUNT+SPECIAL_SYMBOL+issues, ObjectUtils.defaultIfNull(initialIssueCount, 0L));
 		return commitmentResult;
 
 	}
-
-	private double getTotalSum(List<JiraIssue> totalJiraIssue) {
+	private double getTotalSum(List<JiraIssue> totalJiraIssue){
 		return totalJiraIssue.stream().filter(jiraIssue -> Objects.nonNull(jiraIssue.getStoryPoints()))
 				.mapToDouble(JiraIssue::getStoryPoints).sum();
 
 	}
-
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
 		return calculateKpiValueForLong(valueList, kpiId);
