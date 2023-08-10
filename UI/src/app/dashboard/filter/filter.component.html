@@ -174,7 +174,7 @@
                   <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
                      Last Sync
                   </h4>
-                  <ng-container *ngIf="this.selectedSprint['sprintState'] === 'ACTIVE' && !isGuest && !isViewer">
+                  <ng-container *ngIf="this.selectedSprint['sprintState'] === 'ACTIVE' && !isGuest">
                      <span class="refresh-state p-p-1" (click)="fetchData()" *ngIf=" (lastSyncData | json) == '{}' || lastSyncData.errorInFetch">
                         <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh"/>Refresh
                      </span>
