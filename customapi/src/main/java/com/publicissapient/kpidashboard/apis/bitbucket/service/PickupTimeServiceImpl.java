@@ -47,6 +47,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	public static final String PICKUP_TIME_KPI = "pickup-time-bulk";
 	public static final String FREQUENCY = "week";
+	public static final String MR_COUNT = "No of MRs";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -138,18 +139,19 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 			String projectName = node.getProjectFilter().getName();
 			Map<String, List<DataCount>> aggDataMap = new HashMap<>();
 			Map<String, Double> aggPickupTimeForRepo = new HashMap<>();
+			Map<String, Integer> aggMRCount = new HashMap<>();
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
 						&& repo.getProcessorItemList().get(0).getId() != null) {
 					Map<String, Double> excelDataLoader = new HashMap<>();
-					List<DataCount> dayWiseCount = new ArrayList<>();
 					if (CollectionUtils.isNotEmpty(repoToolKpiMetricResponseList)) {
 						String branchName = getBranchSubFilter(repo, projectName);
 						Map<String, Double> dateWisePickupTime = new HashMap<>();
+						Map<String, Integer> dateWiseMRCount = new HashMap<>();
 						createDateLabelWiseMap(repoToolKpiMetricResponseList, repo.getRepositoryName(),
-								repo.getBranch(), dateWisePickupTime);
-						aggPickupTime(aggPickupTimeForRepo, dateWisePickupTime);
-						setWeekWisePickupTime(dateWisePickupTime, localEndDate, excelDataLoader, branchName,
+								repo.getBranch(), dateWisePickupTime, dateWiseMRCount);
+						aggPickupTime(aggPickupTimeForRepo, dateWisePickupTime, aggMRCount, dateWiseMRCount);
+						setWeekWisePickupTime(dateWisePickupTime, dateWiseMRCount, localEndDate, excelDataLoader, branchName,
 								projectName, aggDataMap);
 					}
 					repoWisePickupTimeList.add(excelDataLoader);
@@ -158,7 +160,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 				}
 			});
-			setWeekWisePickupTime(aggPickupTimeForRepo, localEndDate, new HashMap<>(), Constant.AGGREGATED_VALUE,
+			setWeekWisePickupTime(aggPickupTimeForRepo, aggMRCount, localEndDate, new HashMap<>(), Constant.AGGREGATED_VALUE,
 					projectName, aggDataMap);
 			// List<DataCount> dayWiseCount = setWeekWisePickupTime(aggMergeCountForRepo,
 			// aggCommitCountForRepo,
@@ -172,9 +174,13 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 		kpiElement.setExcelColumns(KPIExcelColumn.PICKUP_TIME.getColumns());
 	}
 
-	private void aggPickupTime(Map<String, Double> aggPickupTimeForRepo, Map<String, Double> pickupTimeForRepo) {
+	private void aggPickupTime(Map<String, Double> aggPickupTimeForRepo, Map<String, Double> pickupTimeForRepo,
+			Map<String, Integer> aggMRCount, Map<String, Integer> mrCount) {
 		if (MapUtils.isNotEmpty(pickupTimeForRepo)) {
 			aggPickupTimeForRepo.putAll(pickupTimeForRepo);
+		}
+		if (MapUtils.isNotEmpty(mrCount)) {
+			aggMRCount.putAll(mrCount);
 		}
 	}
 
@@ -186,7 +192,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 	}
 
 	private void createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesCommit,
-			String repoName, String branchName, Map<String, Double> dateWisePickupTime) {
+			String repoName, String branchName, Map<String, Double> dateWisePickupTime, Map<String, Integer> dateWiseMRCount) {
 
 		for (RepoToolKpiMetricResponse response : repoToolKpiMetricResponsesCommit) {
 			if (response.getRepositories() != null) {
@@ -195,13 +201,15 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 						.flatMap(repository -> repository.getBranches().stream())
 						.filter(branch -> branch.getName().equals(branchName)).findFirst();
 
-				double pickupTime = matchingBranch.map(Branches::getHours).orElse(0.0d);
-				matchingBranch.ifPresent(branch -> dateWisePickupTime.put(response.getDateLabel(), pickupTime));
+				matchingBranch.ifPresent(branch -> {
+					dateWisePickupTime.put(response.getDateLabel(), branch.getHours());
+					dateWiseMRCount.put(response.getDateLabel(), branch.getMergeRequestsPT().size());
+				});
 			}
 		}
 	}
 
-	private void setWeekWisePickupTime(Map<String, Double> weekWisePickupTime, LocalDateTime end,
+	private void setWeekWisePickupTime(Map<String, Double> weekWisePickupTime, Map<String, Integer> weekWiseMRCount, LocalDateTime end,
 			Map<String, Double> excelDataLoader, String branchName, String projectName,
 			Map<String, List<DataCount>> aggDataMap) {
 		LocalDate endDate = end.toLocalDate();
@@ -220,7 +228,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 					DateUtil.DISPLAY_DATE_FORMAT) + WEEK_SEPERATOR
 					+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
 			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
-			DataCount dataCount = setDataCount(projectName, date, pickupTime);
+			DataCount dataCount = setDataCount(projectName, date, pickupTime, weekWiseMRCount.get(monday.toString()).longValue());
 			aggDataMap.get(branchName).add(dataCount);
 			excelDataLoader.put(date, pickupTime);
 			endDate = endDate.minusWeeks(1);
@@ -229,12 +237,14 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 	}
 
-	private DataCount setDataCount(String projectName, String week, Double value) {
+	private DataCount setDataCount(String projectName, String week, Double value, Long mrCount) {
+		Map<String, Object> hoverMap = new HashMap<>();
+		hoverMap.put(MR_COUNT, mrCount);
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value == null ? 0L : value.longValue()));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(week);
-		dataCount.setHoverValue(new HashMap<>());
+		dataCount.setHoverValue(hoverMap);
 		dataCount.setValue(value == null ? 0.0 : value.longValue());
 		return dataCount;
 	}

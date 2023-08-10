@@ -200,8 +200,13 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 
 				}
 			});
-			setWeekWiseMeanTimeToMergeForRepoTools(aggMeanTimeToMerge, end, excelDataLoader, Constant.AGGREGATED_VALUE, projectName,
-					aggDataMap);
+			if (CollectionUtils.isNotEmpty(aggMergeRequests)) {
+				setWeekWiseMeanTimeToMerge(aggMergeRequests, end, excelDataLoader, Constant.AGGREGATED_VALUE, projectName,
+						aggDataMap);
+			}else if(CollectionUtils.isNotEmpty(repoToolKpiMetricRespons)) {
+				setWeekWiseMeanTimeToMergeForRepoTools(aggMeanTimeToMerge, end, excelDataLoader, Constant.AGGREGATED_VALUE, projectName,
+						aggDataMap);
+			}
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 			populateExcelDataObject(requestTrackerId, repoWiseMRList, repoList, branchList, excelData, node);
 		});

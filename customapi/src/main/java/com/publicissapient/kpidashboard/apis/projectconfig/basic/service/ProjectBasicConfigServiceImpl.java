@@ -338,9 +338,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			log.error(errorMsg);
 			throw new ProjectNotFoundException(errorMsg);
 		} else {
-			Boolean isRepoTool = false;
-			deleteToolsAndCleanData(projectBasicConfig, isRepoTool);
-			deleteRepoToolProject(projectBasicConfig, isRepoTool);
+			deleteToolsAndCleanData(projectBasicConfig);
 			deleteFilterData(projectBasicConfig);
 			deleteFieldMappingAndBoardMetadata(projectBasicConfig);
 			deleteUploadData(projectBasicConfig);
@@ -391,10 +389,11 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				projectBasicConfig.getIsKanban());
 	}
 
-	private void deleteToolsAndCleanData(ProjectBasicConfig projectBasicConfig, Boolean isRepoTool) {
+	private void deleteToolsAndCleanData(ProjectBasicConfig projectBasicConfig) {
 
 		List<ProjectToolConfig> tools = toolRepository.findByBasicProjectConfigId(projectBasicConfig.getId());
-		isRepoTool = tools.stream().anyMatch(toolConfig -> ProcessorConstants.REPO_TOOLS.equals(toolConfig.getToolName()));
+		Boolean isRepoTool = tools.stream().anyMatch(toolConfig -> ProcessorConstants.REPO_TOOLS.equals(toolConfig.getToolName()));
+		deleteRepoToolProject(projectBasicConfig, isRepoTool);
 		CollectionUtils.emptyIfNull(tools).forEach(tool -> {
 
 			ToolDataCleanUpService dataCleanUpService = dataCleanUpServiceFactory.getService(tool.getToolName());
