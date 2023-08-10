@@ -2592,14 +2592,16 @@ db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
 //updating metadata_identifier
 db.getCollection('metadata_identifier').update(
      { "templateCode": "7" }, // Match documents with templateCode equal to "7"
-     { $set:
+     {
+     $set:
      {
               "tool": "Jira",
               "templateName": "Standard Template",
               "templateCode": "7",
               "isKanban": false,
               "disabled": false,
-              "issues": [{
+              "issues": [
+                  {
                       "type": "jiradefecttype",
                       "value": [
                           "Defect",
@@ -2743,10 +2745,27 @@ db.getCollection('metadata_identifier').update(
                           "Tech Story",
                           "Change request"
                       ]
+                  },
+                  {
+                      "type": "jiraKPI82StoryIdentification",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraKPI135StoryIdentification",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
                   }
               ],
               "customfield": [
-
                   {
                       "type": "jiraStoryPointsCustomField",
                       "value": [
@@ -2789,8 +2808,14 @@ db.getCollection('metadata_identifier').update(
                           "Job Size"
                       ]
                   },
+                 {
+                     "type": "epicLink",
+                     "value": [
+                         "Epic Link"
+                     ]
+                 },
                   {
-                      "type": "rootCause",
+                      "type": "rootcause",
                       "value": [
                           "Root Cause"
                       ]
@@ -2803,13 +2828,13 @@ db.getCollection('metadata_identifier').update(
                   }
               ],
               "workflow": [
-
                   {
                       "type": "storyFirstStatusKPI148",
                       "value": [
                           "Open"
                       ]
-                  }, {
+                  },
+                  {
                       "type": "storyFirstStatusKPI3",
                       "value": [
                           "Open"
@@ -2858,81 +2883,83 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "jiraDefectRejectionStatusKPI152",
                       "value": [
-
+                          "Rejected"
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI151",
                       "value": [
-
+                          "Rejected"
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI28",
                       "value": [
-
+                          "Rejected"
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI34",
                       "value": [
-
+                          "Rejected"
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI37",
                       "value": [
-
+                          "Rejected"
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI35",
                       "value": [
-
+                          "Rejected"
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI82",
                       "value": [
-
+                          "Rejected"
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI135",
                       "value": [
-
+                          "Rejected"
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI133",
                       "value": [
-
+                          "Rejected"
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusRCAKPI36",
                       "value": [
-
+                          "Rejected"
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusKPI14",
                       "value": [
-
+                          "Rejected"
                       ]
                   },
                   {
                       "type": "jiraDefectRejectionStatusQAKPI111",
                       "value": [
-
+                          "Rejected"
                       ]
-                  } {
+                  },
+                  {
                       "type": "jiraDefectRemovalStatusKPI34",
                       "value": [
                           "Closed",
                           "Resolved",
                           "Ready for Delivery",
-                          "Ready for Release"
+                          "Ready for Release",
+                          "Done"
                       ]
                   },
                   {
@@ -2948,7 +2975,8 @@ db.getCollection('metadata_identifier').update(
                           "Closed",
                           "Resolved",
                           "Ready for Delivery",
-                          "Ready for Release"
+                          "Ready for Release",
+                          "Done"
                       ]
                   },
                   {
@@ -2957,7 +2985,8 @@ db.getCollection('metadata_identifier').update(
                           "Closed",
                           "Resolved",
                           "Ready for Delivery",
-                          "Ready for Release"
+                          "Ready for Release",
+                          "Done"
                       ]
                   },
                   {
@@ -2966,38 +2995,39 @@ db.getCollection('metadata_identifier').update(
                           "Closed",
                           "Resolved",
                           "Ready for Delivery",
-                          "Ready for Release"
+                          "Ready for Release",
+                          "Done"
                       ]
                   },
                   {
                       "type": "jiraDorKPI3",
                       "value": [
-                          "Ready for Sprint Planning",
-                          "In Progress"
+                          "Ready for Sprint Planning"
+
                       ]
                   },
                   {
                       "type": "jiraLiveStatusKPI3",
                       "value": [
-
+                          "Live"
                       ]
                   },
                   {
                       "type": "jiraLiveStatusKPI127",
                       "value": [
-
+                          "Live"
                       ]
                   },
                   {
                       "type": "jiraLiveStatusKPI152",
                       "value": [
-
+                          "Live"
                       ]
                   },
                   {
                       "type": "jiraLiveStatusKPI151",
                       "value": [
-
+                          "Live"
                       ]
                   },
                   {
@@ -3005,7 +3035,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Invalid",
                           "Duplicate",
-                          "Unrequired"
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
                       ]
                   },
                   {
@@ -3013,7 +3045,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Invalid",
                           "Duplicate",
-                          "Unrequired"
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
                       ]
                   },
                   {
@@ -3021,7 +3055,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Invalid",
                           "Duplicate",
-                          "Unrequired"
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
                       ]
                   },
                   {
@@ -3029,7 +3065,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Invalid",
                           "Duplicate",
-                          "Unrequired"
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
                       ]
                   },
                   {
@@ -3037,7 +3075,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Invalid",
                           "Duplicate",
-                          "Unrequired"
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
                       ]
                   },
                   {
@@ -3045,7 +3085,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Invalid",
                           "Duplicate",
-                          "Unrequired"
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
                       ]
                   },
                   {
@@ -3053,7 +3095,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Invalid",
                           "Duplicate",
-                          "Unrequired"
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
                       ]
                   },
                   {
@@ -3061,7 +3105,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Invalid",
                           "Duplicate",
-                          "Unrequired"
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
                       ]
                   },
                   {
@@ -3069,7 +3115,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Invalid",
                           "Duplicate",
-                          "Unrequired"
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
                       ]
                   },
                   {
@@ -3077,7 +3125,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Invalid",
                           "Duplicate",
-                          "Unrequired"
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
                       ]
                   },
                   {
@@ -3089,7 +3139,8 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "jiraDefectDroppedStatusKPI127",
                       "value": [
-
+                          "Dropped",
+                          "Canceled"
                       ]
                   },
                   {
@@ -3102,7 +3153,8 @@ db.getCollection('metadata_identifier').update(
                   {
                       "type": "jiraWaitStatusKPI131",
                       "value": [
-                          "Ready for Testing"
+                          "Ready for Testing",
+                          "Code Review"
                       ]
                   },
                   {
@@ -3166,7 +3218,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Closed",
                           "Resolved",
-                          "Ready for Delivery"
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
                       ]
                   },
                   {
@@ -3174,7 +3228,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Closed",
                           "Resolved",
-                          "Ready for Delivery"
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
                       ]
                   },
                   {
@@ -3182,7 +3238,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Closed",
                           "Resolved",
-                          "Ready for Delivery"
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
                       ]
                   },
                   {
@@ -3190,7 +3248,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Closed",
                           "Resolved",
-                          "Ready for Delivery"
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
                       ]
                   },
                   {
@@ -3198,7 +3258,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Closed",
                           "Resolved",
-                          "Ready for Delivery"
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
                       ]
                   },
                   {
@@ -3206,7 +3268,9 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Closed",
                           "Resolved",
-                          "Ready for Delivery"
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
                       ]
                   },
                   {
@@ -3214,10 +3278,15 @@ db.getCollection('metadata_identifier').update(
                       "value": [
                           "Closed",
                           "Resolved",
-                          "Ready for Delivery"
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
                       ]
                   }
               ]
+     },
+     $unset: {
+         "valuestoidentify":1
      }
      },
      { multi: false }

@@ -231,6 +231,11 @@ public class MetaDataClientImpl implements MetadataClient {
 		List<Identifier> customFieldList = metadataIdentifier.getCustomfield();
 		List<Identifier> workflowList = metadataIdentifier.getWorkflow();
 		FieldMapping fieldMapping=null;
+		Map<String, String> allCustomField = new HashMap<>();
+		List<Metadata> metadataList = boardMetadata.getMetadata();
+		for (Metadata metadata : metadataList){
+				metadata.getValue().stream().forEach(mv -> allCustomField.put(mv.getKey(), mv.getData()));
+		}
 
 		if(projectConfig.isKanban() || metadataIdentifier.getTool().equalsIgnoreCase(AZURE)) {
 			if (templateName.equalsIgnoreCase(STANDARD_TEMPLATE)) {
@@ -238,18 +243,14 @@ public class MetaDataClientImpl implements MetadataClient {
 						.collect(Collectors.toMap(Identifier::getType, Identifier::getValue));
 			}
 
-			List<Metadata> metadataList = boardMetadata.getMetadata();
 			Set<String> allIssueTypes = new HashSet<>();
 			Set<String> allWorkflow = new HashSet<>();
-			Map<String, String> allCustomField = new HashMap<>();
 
 			for (Metadata metadata : metadataList) {
 				if (metadata.getType().equals(CommonConstant.META_ISSUE_TYPE)) {
 					allIssueTypes = metadata.getValue().stream().map(MetadataValue::getData).collect(Collectors.toSet());
 				} else if (metadata.getType().equals(CommonConstant.META_WORKFLOW)) {
 					allWorkflow = metadata.getValue().stream().map(MetadataValue::getData).collect(Collectors.toSet());
-				} else if (metadata.getType().equals(CommonConstant.META_FIELD)) {
-					metadata.getValue().stream().forEach(mv -> allCustomField.put(mv.getKey(), mv.getData()));
 				}
 			}
 			Map<String, List<String>> issueTypeMap = compareIssueType(issueList, allIssueTypes);
@@ -265,9 +266,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			Map<String, List<String>> workflowMap = new HashMap<>();
 			workflowList.forEach(identifier1 -> workflowMap.put(identifier1.getType(),
 					CollectionUtils.isNotEmpty(identifier1.getValue())?identifier1.getValue():null));
-			Map<String, String> customField = new HashMap<>();
-			customFieldList.forEach(identifier2 -> customField.put(identifier2.getType(),
-					CollectionUtils.isNotEmpty(identifier2.getValue())?identifier2.getValue().get(0):null));
+			Map<String, String> customField = compareCustomField(customFieldList, allCustomField);
 			fieldMapping=mapFieldMapping(issueTypeMap, workflowMap, customField, projectConfig,
 					templateName);
 		}
@@ -293,6 +292,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraStoryPointsCustomField(
 				customField.getOrDefault(CommonConstant.JIRASTORYPOINTSCUSTOMFIELD, StringUtils.EMPTY));
 		fieldMapping.setCreatedDate(LocalDateTime.now());
+		fieldMapping.setEpicLink(customField.get(CommonConstant.EPICLINK));
 
 		fieldMapping.setJiraIssueTypeNames(issueTypeMap
 				.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()).stream().toArray(String[]::new));
@@ -316,8 +316,6 @@ public class MetaDataClientImpl implements MetadataClient {
 				issueTypeMap.getOrDefault(CommonConstant.JIRASPRINTVELOCITYISSUETYPEKPI138, new ArrayList<>()));
 		fieldMapping.setJiraStoryIdentificationKpi40(
 				issueTypeMap.getOrDefault(CommonConstant.JIRASTORYIDENTIFICATIONKPI40, new ArrayList<>()));
-		fieldMapping.setJiraDefectRemovalIssueTypeKPI34(
-				issueTypeMap.getOrDefault(CommonConstant.JIRADEFECTREMOVALISSUETYPEKPI34, new ArrayList<>()));
 		fieldMapping.setJiraIssueEpicType(
 				issueTypeMap.get(CommonConstant.JIRAISSUEEPICTYPE).stream().collect(Collectors.toList()));
 		fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.JIRATECHDEBTISSUETYPE));
@@ -371,8 +369,6 @@ public class MetaDataClientImpl implements MetadataClient {
 				: null);
 		fieldMapping.setResolutionTypeForRejectionKPI28(
 				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONKPI28, new ArrayList<>()));
-		fieldMapping.setResolutionTypeForRejectionKPI34(
-				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONKPI34, new ArrayList<>()));
 		fieldMapping.setResolutionTypeForRejectionKPI37(
 				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONKPI37, new ArrayList<>()));
 		fieldMapping.setResolutionTypeForRejectionRCAKPI36(
@@ -407,10 +403,6 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraDefectRejectionStatusKPI151(
 				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI151))
 						? workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI151).get(0)
-						: null);
-		fieldMapping.setJiraDefectRejectionStatusKPI34(
-				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI34))
-						? workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI34).get(0)
 						: null);
 		fieldMapping.setJiraDefectRejectionStatusKPI37(
 				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI37))
@@ -467,7 +459,10 @@ public class MetaDataClientImpl implements MetadataClient {
 				workflowMap.getOrDefault(CommonConstant.JIRASTATUSFORINPROGRESSKPI123, new ArrayList<>()));
 		fieldMapping.setJiraStatusForInProgressKPI119(
 				workflowMap.getOrDefault(CommonConstant.JIRASTATUSFORINPROGRESSKPI119, new ArrayList<>()));
-
+		fieldMapping.setJiraKPI82StoryIdentification(
+				issueTypeMap.getOrDefault(CommonConstant.JIRAKPI82STORYIDENTIFICATION, new ArrayList<>()));
+		fieldMapping.setJiraKPI135StoryIdentification(
+				issueTypeMap.getOrDefault(CommonConstant.JIRAKPI135STORYIDENTIFICATION, new ArrayList<>()));
 		return fieldMapping;
 	}
 
@@ -714,8 +709,6 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setResolutionTypeForRejectionKPI135(
 					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setResolutionTypeForRejectionKPI35(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setJiraDefectDroppedStatus(
 					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
 			fieldMapping.setJiraDefectDroppedStatusKPI127(
 					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
