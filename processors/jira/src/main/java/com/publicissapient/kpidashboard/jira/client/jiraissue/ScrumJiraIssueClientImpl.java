@@ -1758,7 +1758,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 	private static void setDevDueDates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields, FieldMapping fieldMapping) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
-			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DEV_DUE_DATE)
+			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
 					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
 				jiraIssue.setDevDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
 						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));

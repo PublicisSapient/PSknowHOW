@@ -339,7 +339,7 @@ public class HandleJiraHistory {
 	private void devDueDateChangeLog(List<JiraHistoryChangeLog> dueDateChangeLog, FieldMapping fieldMapping,
 									 Issue issue, Map<String, IssueField> fields) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
-			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DEV_DUE_DATE)
+			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
 					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
 				createFirstEntryOfChangeLog(dueDateChangeLog, issue,
 						LocalDateTime
@@ -364,7 +364,7 @@ public class HandleJiraHistory {
 																Map<String, IssueField> fields) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
 			String field = "";
-			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DEV_DUE_DATE))
+			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE))
 				field = CommonConstant.DEV_DUE_DATE;
 			else if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
 					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
