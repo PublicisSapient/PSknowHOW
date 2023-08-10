@@ -2593,3 +2593,56 @@ db.getCollection('kpi_master').updateOne(
   { "kpiId": "kpi137" },
   { $set: { "kpiInfo.definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available." } }
 );
+
+//---------7.4.0 changes----------------------------------------------------------------------
+db.getCollection('field_mapping_structure').deleteOne(
+{
+    "fieldName": "jiraDevDueDateCustomField",
+    "fieldLabel": "Dev Due Date",
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+        "definition": "This field is to track dev due date of issues tagged in the iteration."
+    }
+});
+
+const fieldMappingField = ["jiraDevDueDateField"];
+var jiraDevDueDateField = db.getCollection('field_mapping_structure').find( {fieldName: { $in: fieldMappingField }}).toArray();
+if (jiraDevDueDateField.length === 0) {
+db.getCollection('field_mapping_structure').insertOne(
+{
+     "fieldName": "jiraDevDueDateField",
+     "fieldLabel": "Dev Due Date",
+     "fieldType": "radiobutton",
+     "section": "Custom Fields Mapping",
+     "tooltip": {
+       "definition": "This field is to track dev due date of issues tagged in the iteration."
+     },
+     "options": [
+       {
+         "label": "Custom Field",
+         "value": "CustomField"
+       },
+       {
+         "label": "Due Date",
+         "value": "Due Date"
+       }
+     ],
+     "nestedFields": [
+       {
+         "fieldName": "jiraDevDueDateCustomField",
+         "fieldLabel": "Dev Due Date Custom Field",
+         "fieldType": "text",
+         "fieldCategory": "fields",
+         "filterGroup": [
+           "CustomField"
+         ],
+         "tooltip": {
+           "definition": "This field is to track dev due date of issues tagged in the iteration."
+         }
+       }
+     ]
+   }
+);
+}
