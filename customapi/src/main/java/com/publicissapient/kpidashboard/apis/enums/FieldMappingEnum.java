@@ -86,14 +86,6 @@ public enum FieldMappingEnum {
 	KPI140("Defect Count by Priority (Iteration)", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusKPI140")),
 
-	KPI144("Defect Count by Priority (Release)", KPISource.JIRA.name(), Arrays.asList()),
-
-	KPI143("Defect Count by Assignee (Release)", KPISource.JIRA.name(), Arrays.asList()),
-
-	KPI142("Defect Count by RCA (Release)", KPISource.JIRA.name(), Arrays.asList()),
-
-	KPI141("Defect Count by Status (Release)", KPISource.JIRA.name(), Arrays.asList()),
-
 	KPI36("Defect Count by RCA (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraDefectCountlIssueTypeKPI36",
 			"resolutionTypeForRejectionRCAKPI36", "jiraDefectRejectionStatusRCAKPI36")),
 

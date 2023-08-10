@@ -2694,7 +2694,7 @@ var fieldNameToUpdate = "jiradefecttype";
   db.getCollection('field_mapping_structure').update(
     { "fieldName": fieldNameToUpdate },
     { $set: {
-    "fieldLabel": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+    "tooltip.definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
     } },
     { multi: false }
   );
@@ -2703,10 +2703,28 @@ var fieldNameToUpdate = "jiradefecttype";
   db.getCollection('field_mapping_structure').update(
     { "fieldName": fieldNameToUpdate },
     { $set: {
-    "fieldLabel": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+    "tooltip.definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
     } },
     { multi: false }
   );
+
+  var fieldNameToUpdate = "jiraDefectCountlIssueTypeKPI28";
+    db.getCollection('field_mapping_structure').update(
+      { "fieldName": fieldNameToUpdate },
+      { $set: {
+      "fieldLabel": "Issue types which will have linked defects"
+      } },
+      { multi: false }
+    );
+
+  var fieldNameToUpdate = "jiraDefectCountlIssueTypeKPI36";
+    db.getCollection('field_mapping_structure').update(
+      { "fieldName": fieldNameToUpdate },
+      { $set: {
+      "fieldLabel": "Issue types which will have linked defects"
+      } },
+      { multi: false }
+    );
 
 //dts-27545_Unrequired fields should be removed from DRE KPI field mapping
 db.field_mapping_structure.deleteMany({
