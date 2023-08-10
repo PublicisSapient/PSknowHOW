@@ -259,9 +259,6 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.isGuest = true;
     }
 
-    if (authoritiesArr && authoritiesArr.includes('ROLE_PROJECT_VIEWER')) {
-      this.isViewer = true;
-    }
     if (!this.isGuest) {
       this.items.unshift({
         label: 'Settings',
