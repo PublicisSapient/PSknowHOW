@@ -7583,7 +7583,7 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     }, {
         "fieldName": "jiraDefectCountlIssueTypeKPI28",
-        "fieldLabel": "Issue type to be included",
+        "fieldLabel": "Issue types which will have linked defects",
         "fieldType": "chips",
         "fieldCategory": "Issue_Type",
         "section": "Issue Types Mapping",
@@ -7592,7 +7592,7 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     }, {
         "fieldName": "jiraDefectCountlIssueTypeKPI36",
-        "fieldLabel": "Issue type to be included",
+        "fieldLabel": "Issue types which will have linked defects",
         "fieldType": "chips",
         "fieldCategory": "Issue_Type",
         "section": "Issue Types Mapping",
