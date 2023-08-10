@@ -6578,11 +6578,11 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "defectPriorityKPI135",
-        "fieldLabel": "Defect priority exclusion from Quality KPIs",
+        "fieldLabel": "Priority to be excluded",
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
-            "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+            "definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
         },
         "options": [{
                 "label": "p1",
@@ -6612,7 +6612,7 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
-            "definition": "Priority values of defects which are to be considered in 'Defect Injection rate' calculation"
+            "definition": "Priority values of defects which are to be excluded in 'Defect Injection rate' calculation"
         },
         "options": [{
                 "label": "p1",
@@ -6642,7 +6642,7 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
-            "definition": "Priority values of defects which are to be considered in 'Defect Density' calculation"
+            "definition": "Priority values of defects which are to be excluded in 'Defect Density' calculation"
         },
         "options": [{
                 "label": "p1",
@@ -6672,7 +6672,7 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
-            "definition": "Priority values of defects which are to be considered in 'FTPR' calculation"
+            "definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
         },
         "options": [{
                 "label": "p1",
@@ -6702,7 +6702,7 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
-            "definition": "Priority values of defects which are to be considered in 'Quality Status' calculation"
+            "definition": "Priority values of defects which are to be excluded in 'Quality Status' calculation"
         },
         "options": [{
                 "label": "p1",
@@ -7804,7 +7804,7 @@ db.getCollection('field_mapping_structure').insertMany(
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-        "definition": "All issue types with which defect is linked.",
+        "definition": "All statuses with which defect is linked.",
     }
 }, {
     "fieldName": "productionDefectIdentifier",
