@@ -2696,6 +2696,23 @@ db.field_mapping_structure.deleteMany({
     "fieldName": "resolutionTypeForRejectionKPI34"
 });
 
+const fieldMappings = db.field_mapping.find({});
+fieldMappings.forEach(function(fm) {
+db.field_mapping.updateOne({
+            "_id": fm._id
+        },
+        {
+             $set: {
+                "jiraDefectRejectionStatusKPI34": "",
+                "jiraDefectRemovalIssueTypeKPI34": "",
+                "resolutionTypeForRejectionKPI34": "",
+                "jiraIterationCompletionStatusKPI134": "",
+                "jiraIterationIssuetypeKPI134": ""
+             }
+        }
+        );
+});
+
 
 // add kpi issue type mapping for sprint velocity
 db.getCollection('field_mapping_structure').insertMany([
