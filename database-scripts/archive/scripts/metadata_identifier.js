@@ -287,17 +287,17 @@ db.metadata_identifier.insert([{
                 ]
             },
             {
-                                              "type": "jobSize",
-                                              "value": [
-                                                "Job Size"
-                                              ]
-                                            },
-                                            {
-                                              "type": "epicLink",
-                                              "value": [
-                                                "Epic Link"
-                                              ]
-                                            }
+                  "type": "jobSize",
+                  "value": [
+                    "Job Size"
+                  ]
+            },
+            {
+                  "type": "epicLink",
+                  "value": [
+                    "Epic Link"
+                  ]
+            }
         ],
         "workflow": [{
                 "type": "firststatus",
