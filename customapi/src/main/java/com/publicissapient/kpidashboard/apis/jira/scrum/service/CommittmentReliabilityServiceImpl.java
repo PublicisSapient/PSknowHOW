@@ -187,8 +187,9 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			sprintDetails.forEach(sd -> {
 				Set<JiraIssue> totalIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
 						sd.getTotalIssues(), allJiraIssue);
-				Set<JiraIssue> completedIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
-						sd.getCompletedIssues(), allJiraIssue);
+				Set<JiraIssue> completedIssues = new HashSet<>();
+				completedIssues = getCompletedIssues(allJiraIssue, sd, completedIssues);
+
 				Set<JiraIssue> totalInitialIssues = new HashSet<>(totalIssues);
 				// Add the punted issues
 				totalInitialIssues.addAll(KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
@@ -279,6 +280,14 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.COMMITMENT_RELIABILITY.getColumns());
+	}
+
+	private static Set<JiraIssue> getCompletedIssues(List<JiraIssue> allJiraIssue, SprintDetails sd, Set<JiraIssue> completedIssues) {
+		if (sd.getCompletedIssues() != null && CollectionUtils.isNotEmpty(sd.getCompletedIssues())) {
+			completedIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
+					sd.getCompletedIssues(), allJiraIssue);
+		}
+		return completedIssues;
 	}
 
 	public Map<String, List<JiraIssue>> getGroupByAllIssues(List<JiraIssue> jiraIssuesList) {
