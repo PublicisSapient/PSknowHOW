@@ -2635,7 +2635,8 @@ var fieldNameToUpdate = "jiradefecttype";
   db.getCollection('field_mapping_structure').update(
     { "fieldName": fieldNameToUpdate },
     { $set: {
-    "fieldLabel": "Priority to be excluded"
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'Defect Injection rate' calculation"
     } },
     { multi: false }
   );
@@ -2644,7 +2645,8 @@ var fieldNameToUpdate = "jiradefecttype";
   db.getCollection('field_mapping_structure').update(
     { "fieldName": fieldNameToUpdate },
     { $set: {
-    "fieldLabel": "Priority to be excluded"
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'Defect Density' calculation"
     } },
     { multi: false }
   );
@@ -2653,7 +2655,8 @@ var fieldNameToUpdate = "jiradefecttype";
   db.getCollection('field_mapping_structure').update(
     { "fieldName": fieldNameToUpdate },
     { $set: {
-    "fieldLabel": "Priority to be excluded"
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
     } },
     { multi: false }
   );
@@ -2662,7 +2665,27 @@ var fieldNameToUpdate = "jiradefecttype";
   db.getCollection('field_mapping_structure').update(
     { "fieldName": fieldNameToUpdate },
     { $set: {
-    "fieldLabel": "Priority to be excluded"
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'Quality Status' calculation"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityKPI135";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
+    } },
+    { multi: false }
+  );.
+
+  var fieldNameToUpdate = "jiraDefectDroppedStatusKPI127";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "tooltip.definition": "All statuses with which defect is linked."
     } },
     { multi: false }
   );
