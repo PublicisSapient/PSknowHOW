@@ -190,6 +190,8 @@ public final class CommonConstant {
 	public static final String CUSTOM_TEMPLATE_CODE_SCRUM="10";
 	public static final String CUSTOM_TEMPLATE_CODE_KANBAN="9";
 	public static final String EPICLINK="epicLink";
+	public static final String ISSUE_START_DATE="issueStartDate";
+	public static final String ISSUE_CLOSED_DATE="issueClosedDate";
 
     private CommonConstant() {
 

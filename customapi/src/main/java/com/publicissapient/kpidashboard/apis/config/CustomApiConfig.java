@@ -219,6 +219,26 @@ public class CustomApiConfig {// NOPMD
 	private String samlUrlEndString;
 	// repo x axis count days rangeForCheckInsAndMergeRequests
 	private Integer repoXAxisCountForCheckInsAndMergeRequests;
+	@Value("${psChat.endpoint}")
+	private String psChatEndPoint;
+	@Value("${psChat.token}")
+	private String psChatToken;
+
+	public String getPsChatEndPoint() {
+		return psChatEndPoint;
+	}
+
+	public String getPsChatToken() {
+		return psChatToken;
+	}
+
+	public void setPsChatEndPoint(String psChatEndPoint) {
+		this.psChatEndPoint = psChatEndPoint;
+	}
+
+	public void setPsChatToken(String psChatToken) {
+		this.psChatToken = psChatToken;
+	}
 
 	public int getSprintVelocityLimit() {
 		return sprintVelocityLimit;

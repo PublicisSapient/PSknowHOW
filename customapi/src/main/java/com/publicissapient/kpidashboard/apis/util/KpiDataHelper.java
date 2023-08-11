@@ -27,6 +27,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -923,4 +925,72 @@ public final class KpiDataHelper {
 		});
 		return subTaskTaggedWithSprint;
 	}
+
+	public static Map<String, Object> startCompletedDateFromIssueHistory(
+			List<JiraIssueCustomHistory> issueCustomHistoryList, SprintDetails sprintDetail,
+			FieldMapping fieldMapping) {
+		List<String> inProgressStatuses = new ArrayList<>();
+		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
+
+		LocalDate sprintStartDate = LocalDate.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDate sprintEndDate = LocalDate.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		Map<String, Object> resultList = new HashMap<>();
+
+		// filtering statusUpdationLogs lies in between sprintStart and sprintEnd
+		for (JiraIssueCustomHistory issueCustomHistory : issueCustomHistoryList) {
+			Map<String, Object> startClosedDateMap = new HashMap<>();
+			if (org.apache.commons.collections.CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
+				filterStatusUpdationLogs = issueCustomHistory.getStatusUpdationLog().stream()
+						.filter(jiraIssueSprint -> DateUtil
+								.isWithinDateRange(
+										LocalDate.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0]
+												.concat("T00:00:00"), DATE_TIME_FORMATTER),
+										sprintStartDate, sprintEndDate))
+						.collect(Collectors.toList());
+			}
+
+			// Creating the set of completed status
+			Set<String> closedStatus = sprintDetail.getCompletedIssues().stream().map(SprintIssue::getStatus)
+					.collect(Collectors.toSet());
+
+			// sorting the story history on basis of UpdatedOn
+			filterStatusUpdationLogs.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
+
+			// Getting inProgress Status
+			if (null != fieldMapping && org.apache.commons.collections.CollectionUtils
+					.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI128())) {
+				inProgressStatuses = fieldMapping.getJiraStatusForInProgressKPI128();
+			}
+			LocalDate startDate = null;
+			LocalDate endDate;
+			boolean isStartDateFound = false;
+
+			Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
+			for (JiraHistoryChangeLog statusUpdationLog : filterStatusUpdationLogs) {
+				LocalDate activityLocalDate = LocalDate.parse(
+						statusUpdationLog.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"),
+						DATE_TIME_FORMATTER);
+
+				if (inProgressStatuses.contains(statusUpdationLog.getChangedTo()) && !isStartDateFound) {
+					startDate = activityLocalDate;
+					isStartDateFound = true;
+				}
+
+				if (closedStatus.contains(statusUpdationLog.getChangedTo())) {
+					if (closedStatusDateMap.containsKey(statusUpdationLog.getChangedTo())) {
+						closedStatusDateMap.clear();
+					}
+					closedStatusDateMap.put(statusUpdationLog.getChangedTo(), activityLocalDate);
+				}
+			}
+			// Getting the min date of closed status.
+			endDate = closedStatusDateMap.values().stream().filter(Objects::nonNull).min(LocalDate::compareTo)
+					.orElse(null);
+			startClosedDateMap.put(CommonConstant.ISSUE_START_DATE, startDate);
+			startClosedDateMap.put(CommonConstant.ISSUE_CLOSED_DATE, endDate);
+			resultList.put(issueCustomHistory.getStoryID(), startClosedDateMap);
+		}
+		return resultList;
+	}
+
 }
