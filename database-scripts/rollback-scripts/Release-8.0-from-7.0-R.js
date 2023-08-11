@@ -138,3 +138,53 @@ $set: {
 db.field_mapping_structure.deleteMany({
     "fieldName": "jiraIterationIssuetypeKPI39"
 });
+
+
+//------ DTS-27515
+db.getCollection('field_mapping_structure').insertOne(
+{
+    "fieldName": "jiraDevDueDateCustomField",
+    "fieldLabel": "Dev Due Date",
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+        "definition": "This field is to track dev due date of issues tagged in the iteration."
+    }
+});
+
+db.getCollection('field_mapping_structure').deleteOne(
+{
+     "fieldName": "jiraDevDueDateField",
+     "fieldLabel": "Dev Due Date",
+     "fieldType": "radiobutton",
+     "section": "Custom Fields Mapping",
+     "tooltip": {
+       "definition": "This field is to track dev due date of issues tagged in the iteration."
+     },
+     "options": [
+       {
+         "label": "Custom Field",
+         "value": "CustomField"
+       },
+       {
+         "label": "Due Date",
+         "value": "Due Date"
+       }
+     ],
+     "nestedFields": [
+       {
+         "fieldName": "jiraDevDueDateCustomField",
+         "fieldLabel": "Dev Due Date Custom Field",
+         "fieldType": "text",
+         "fieldCategory": "fields",
+         "filterGroup": [
+           "CustomField"
+         ],
+         "tooltip": {
+           "definition": "This field is to track dev due date of issues tagged in the iteration."
+         }
+       }
+     ]
+   }
+);
