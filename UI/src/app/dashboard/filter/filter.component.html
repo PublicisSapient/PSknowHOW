@@ -334,8 +334,35 @@
                </li>
             </ng-container>
          </ul>
-         <!-- toggle view -->
+        
          <div class="tabs" *ngIf="selectedTab?.toLowerCase() !== 'maturity'">
+
+            <!-- Recommendations icon start -->
+          <div class="position-relative p-mr-2" #recommendation>
+            <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn p-ml-2"  *ngIf="selectedTab?.toLowerCase() != 'maturity' || selectedTab?.toLowerCase() != 'iteration' || selectedTab?.toLowerCase() != 'release' || selectedTab?.toLowerCase() != 'backlog'"
+               [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project' 
+            || (filterForm.get('selectedLevel')?.value == 'project' && selectedFilterArray?.length > 1) || (!filterForm.get('selectedTrendValue')?.value[0])}">
+               <img class="p-p-2 " (click)="getRecommendations('projectID')"
+               src="../../../assets/img/ico-comments.svg" alt="Comments"/>
+            </div>
+            <div id="comment-popup" class="recommendation-Ddn" *ngIf="isShowRecommendations">
+               <div class="comment-inner-section">
+                 <span  *ngIf="showSpinner"><i class="fas fa-circle-notch icon-spinner"></i> Fetching..</span>
+                  <ng-container *ngIf="recommendationList?.length > 0 && !showSpinner; else noComments">
+                     <h3 class="p-m-0 font-grey font-bold">Recommendations List</h3>
+                     <ol>
+                        <li *ngFor="let para of recommendationList" class="p-mt-2">{{para}}</li>
+                     </ol>
+                  </ng-container>
+               </div>
+               <ng-template #noComments>
+                  <h5 class="p-m-0 font-grey" *ngIf="!showSpinner">No Recommendations</h5>
+               </ng-template>
+            </div>
+         </div>
+         <!-- Recommendations icon end -->
+
+            <!-- toggle view start-->
             <input id="chart-view" class="chart-view" type="radio" name="view" [checked]="showChart === 'chart'">
             <label class="label1" for="chart-view" (click)="showChartToggle('chart')" id="Layout-Chart">
                <img src="../../../assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
@@ -351,6 +378,8 @@
                <img src="../../../assets/img/full-screen-white.svg" alt="Large View" class="ico-active" />
                <img src="../../../assets/img/full-screen-black.svg" alt="Large View" class="ico-default" />
             </label>
+
+            <!-- toggle view end-->
 
             <!-- SHow/Hide start -->
 
@@ -437,10 +466,37 @@
                   'NA'}}</p>
             </span>
          </div>
+         <div class="p-d-flex">
+          <!-- Recommendations icon start -->
+          <div class="position-relative p-mr-2" #recommendation>
+            <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn p-ml-2"  *ngIf="selectedTab?.toLowerCase() === 'iteration'"
+               [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project' 
+            || (filterForm.get('selectedLevel')?.value == 'project' && selectedFilterArray?.length > 1) || (!filterForm.get('selectedSprintValue')?.value)}">
+               <img class="p-p-2 " (click)="getRecommendations('sprintID')"
+               src="../../../assets/img/ico-comments.svg" alt="Comments"/>
+            </div>
+            <div id="comment-popup" class="recommendation-Ddn" *ngIf="isShowRecommendations">
+               <div class="comment-inner-section">
+                 <span  *ngIf="showSpinner"><i class="fas fa-circle-notch icon-spinner"></i> Fetching..</span>
+                  <ng-container *ngIf="recommendationList?.length > 0 && !showSpinner; else noComments">
+                     <h3 class="p-m-0 font-grey font-bold">Recommendations List</h3>
+                     <ol>
+                        <li *ngFor="let para of recommendationList" class="p-mt-2">{{para}}</li>
+                     </ol>
+                  </ng-container>
+               </div>
+               <ng-template #noComments>
+                  <h5 class="p-m-0 font-grey" *ngIf="!showSpinner">No Recommendations</h5>
+               </ng-template>
+            </div>
+         </div>
+         <!-- Recommendations icon end -->
+
          <button pButton pRipple type="button" [disabled]="kpisNewOrder?.length === 0"
             [ngClass]="{'p-button-outlined' : kpisNewOrder?.length === 0 }" label="SAVE DASHBOARD VIEW"
             class="p-button-secondary" (click)="setKPIOrder()"></button>
       </div>
+   </div>
 
    </div>
 

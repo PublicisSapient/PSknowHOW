@@ -28,7 +28,7 @@ import { MessageService, MenuItem } from 'primeng/api';
 import { faRotateRight } from '@fortawesome/fontawesome-free';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
-import { first, switchMap, takeUntil } from 'rxjs/operators';
+import { delay, first, switchMap, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { interval, Subject } from 'rxjs';
 
@@ -45,6 +45,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   @ViewChild('commentSummaryDdn') commentSummaryDdn: ElementRef;
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
+  @ViewChild('recommendation') recommendation: ElementRef;
 
   subject = new Subject();
   isSuperAdmin = false;
@@ -134,6 +135,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   kpiObj:object = {};
   totalProjectSelected : number = 1;
   selectedLevelValue : string = 'project';
+  isShowRecommendations : boolean = false;
+  recommendationList : any = [];
 
   constructor(
     private service: SharedService,
@@ -142,8 +145,18 @@ export class FilterComponent implements OnInit, OnDestroy {
     public router: Router,
     private ga: GoogleAnalyticsService,
     private messageService: MessageService,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private elementRef: ElementRef
   ) { }
+
+  @HostListener('document:click', ['$event'])
+  onClick(event: any) {
+    // Check if the clicked element is not within the comment-summary or comment-popup
+    const isClickedOutside = !this.recommendation?.nativeElement.contains(event.target);
+    if (isClickedOutside && this.isShowRecommendations) {
+      this.isShowRecommendations = false;
+    }
+  }
 
   ngOnInit() {
     if (!this.ssoLogin) {
@@ -1577,5 +1590,30 @@ export class FilterComponent implements OnInit, OnDestroy {
       return obj;
     });
     this.ga.setProjectData(gaArray);
+  }
+
+  getRecommendations(identifier) {
+    let id, data;
+    if (identifier === 'sprintID') {
+      id = this.filterForm.get('selectedSprintValue')?.value;
+      data = {};
+    } else {
+      id = this.filterForm.get('selectedTrendValue')?.value[0];
+      data = this.filterApplyData;
+    }
+
+    this.recommendationList = [];
+    this.isShowRecommendations = !this.isShowRecommendations;
+    this.showSpinner = true;
+    if (this.isShowRecommendations) {
+      this.httpService.getRecommendations(identifier, id, data).subscribe(data => {
+        this.recommendationList = data['data'];
+        this.showSpinner = false;
+      }, error => {
+        console.log(error);
+        this.recommendationList = [];
+        this.showSpinner = false;
+      })
+    }
   }
 }

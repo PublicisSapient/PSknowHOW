@@ -173,6 +173,9 @@ export class HttpService {
   userEmail: string;
   private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
+ private recommendationSprintUrl = this.baseUrl + '/api/chats/getChat';
+ private recommendationProjectUrl = this.baseUrl + '/api/chats/getDashboardChat';
+
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -1121,4 +1124,14 @@ export class HttpService {
     return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
   }
 
+  getRecommendations(identifier,id,data,){
+    if(identifier === 'sprintID'){
+      return this.http.post(`${this.recommendationSprintUrl}/${id}`,data); 
+    }else{
+      // return this.http.post(`${this.recommendationProjectUrl}`,data);
+      return of({
+        data : ["BE changes needed"]
+      })
+    }
+  }
 }
