@@ -812,9 +812,15 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
+	/**
+	 * find unique release version group by type name and consider as PI if tag to specific type (EPIC)
+	 * @param mapOfFilters
+	 * @param typeName
+	 * @return
+	 */
 	@Override
 	public List<ReleaseWisePI> findUniqueReleaseVersionByUniqueTypeName(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap, String typeName) {
+			String typeName) {
 
 		Criteria criteria = new Criteria();
 		// map of common filters Project and Sprint

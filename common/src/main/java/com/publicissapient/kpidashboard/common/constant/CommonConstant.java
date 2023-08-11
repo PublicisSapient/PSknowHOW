@@ -189,7 +189,11 @@ public final class CommonConstant {
 	public static final String CACHE_PROJECT_TOOL_CONFIG= "cache_project_tool_config";
 	public static final String CUSTOM_TEMPLATE_CODE_SCRUM="10";
 	public static final String CUSTOM_TEMPLATE_CODE_KANBAN="9";
-	public static final String EPICLINK="epicLink";
+	public static final String EPICLINK = "epicLink";
+
+	public static final String SOLID_LINE_TYPE = "solid";
+
+	public static final String DOTTED_LINE_TYPE = "dotted";
 
     private CommonConstant() {
 
