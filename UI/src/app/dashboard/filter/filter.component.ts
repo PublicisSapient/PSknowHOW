@@ -137,6 +137,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedLevelValue : string = 'project';
   isShowRecommendations : boolean = false;
   recommendationList : any = [];
+  pschatErrorMsg : string;
 
   constructor(
     private service: SharedService,
@@ -1601,14 +1602,19 @@ export class FilterComponent implements OnInit, OnDestroy {
       id = this.filterForm.get('selectedTrendValue')?.value[0];
       data = this.filterApplyData;
     }
-
+    this.pschatErrorMsg = "";
     this.recommendationList = [];
     this.isShowRecommendations = !this.isShowRecommendations;
     this.showSpinner = true;
     if (this.isShowRecommendations) {
-      this.httpService.getRecommendations(identifier, id, data).subscribe(data => {
-        this.recommendationList = data['data'];
-        this.showSpinner = false;
+      this.httpService.getRecommendations(identifier, id, data).subscribe(response => {
+        if(response && response['success']){
+          this.recommendationList = response['data'];
+          this.showSpinner = false;
+        }else{
+          this.pschatErrorMsg = response['message'];
+          this.showSpinner = false;
+        }
       }, error => {
         console.log(error);
         this.recommendationList = [];

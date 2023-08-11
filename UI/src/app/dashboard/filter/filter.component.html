@@ -342,21 +342,22 @@
             <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn p-ml-2"  *ngIf="selectedTab?.toLowerCase() != 'maturity' || selectedTab?.toLowerCase() != 'iteration' || selectedTab?.toLowerCase() != 'release' || selectedTab?.toLowerCase() != 'backlog'"
                [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project' 
             || (filterForm.get('selectedLevel')?.value == 'project' && selectedFilterArray?.length > 1) || (!filterForm.get('selectedTrendValue')?.value[0])}">
-               <img class="p-p-2 " (click)="getRecommendations('projectID')"
-               src="../../../assets/img/ico-comments.svg" alt="Comments"/>
+            <img style="height: 34px;" (click)="getRecommendations('projectID')"
+            src="../../../assets/img/suggession.svg" alt="recommendations"/>
             </div>
             <div id="comment-popup" class="recommendation-Ddn" *ngIf="isShowRecommendations">
                <div class="comment-inner-section">
                  <span  *ngIf="showSpinner"><i class="fas fa-circle-notch icon-spinner"></i> Fetching..</span>
                   <ng-container *ngIf="recommendationList?.length > 0 && !showSpinner; else noComments">
-                     <h3 class="p-m-0 font-grey font-bold">Recommendations List</h3>
+                     <h3 class="p-m-0 font-grey font-bold">PS Chat Suggestions</h3>
                      <ol>
                         <li *ngFor="let para of recommendationList" class="p-mt-2">{{para}}</li>
                      </ol>
                   </ng-container>
                </div>
                <ng-template #noComments>
-                  <h5 class="p-m-0 font-grey" *ngIf="!showSpinner">No Recommendations</h5>
+                  <h3 class="p-m-0 font-grey font-bold" *ngIf="!showSpinner && (!pschatErrorMsg)">NO PS Chat Suggestions</h3>
+                  <h3 class="p-m-0 font-grey font-bold" *ngIf="!showSpinner && pschatErrorMsg">{{pschatErrorMsg}}</h3>
                </ng-template>
             </div>
          </div>
@@ -472,21 +473,22 @@
             <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn p-ml-2"  *ngIf="selectedTab?.toLowerCase() === 'iteration'"
                [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project' 
             || (filterForm.get('selectedLevel')?.value == 'project' && selectedFilterArray?.length > 1) || (!filterForm.get('selectedSprintValue')?.value)}">
-               <img class="p-p-2 " (click)="getRecommendations('sprintID')"
-               src="../../../assets/img/ico-comments.svg" alt="Comments"/>
+               <img style="height: 34px;" (click)="getRecommendations('sprintID')"
+               src="../../../assets/img/suggession.svg" alt="recommendations"/>
             </div>
             <div id="comment-popup" class="recommendation-Ddn" *ngIf="isShowRecommendations">
                <div class="comment-inner-section">
                  <span  *ngIf="showSpinner"><i class="fas fa-circle-notch icon-spinner"></i> Fetching..</span>
                   <ng-container *ngIf="recommendationList?.length > 0 && !showSpinner; else noComments">
-                     <h3 class="p-m-0 font-grey font-bold">Recommendations List</h3>
+                     <h3 class="p-m-0 font-grey font-bold">PS Chat Suggestions</h3>
                      <ol>
                         <li *ngFor="let para of recommendationList" class="p-mt-2">{{para}}</li>
                      </ol>
                   </ng-container>
                </div>
                <ng-template #noComments>
-                  <h5 class="p-m-0 font-grey" *ngIf="!showSpinner">No Recommendations</h5>
+                  <h3 class="p-m-0 font-grey font-bold" *ngIf="!showSpinner && (!pschatErrorMsg)">NO PS Chat Suggestions</h3>
+                  <h3 class="p-m-0 font-grey font-bold" *ngIf="!showSpinner && pschatErrorMsg">{{pschatErrorMsg}}</h3>
                </ng-template>
             </div>
          </div>
