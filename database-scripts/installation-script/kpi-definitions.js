@@ -6253,7 +6253,7 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldCategory": "Issue_Type",
         "section": "Issue Types Mapping",
         "tooltip": {
-                    "definition": "Consider issue types which have defects tagged to them"
+            "definition": "Consider issue types which have defects tagged to them"
         }
     },
     {
