@@ -112,6 +112,8 @@ import { CumulativeLineChartComponent } from './component/cumulative-line-chart/
 
 import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
 import { FeedbackComponent } from './feedback/feedback.component';
+import { DailyScrumComponent } from './dashboard/daily-scrum/daily-scrum.component';
+import { CarouselModule } from 'primeng/carousel';
 
 /******************************************************/
 
@@ -175,7 +177,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         HorizontalPercentBarChartComponent,
         CumulativeLineChartComponent,
         StackedAreaChartComponent,
-        FeedbackComponent
+        FeedbackComponent,
+        DailyScrumComponent,
     ],
     imports: [
         DropdownModule,
@@ -206,7 +209,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         DragDropModule,
         OverlayPanelModule,
         MenuModule,
-        SkeletonModule
+        SkeletonModule,
+        CarouselModule
     ],
     providers: [
         ExcelService,

@@ -103,6 +103,10 @@ export class SharedService {
   ngOnInit() {
   }
 
+  setCurrentSelectedSprint(selectedSprint){
+    this.currentSelectedSprintSub.next(selectedSprint);
+  }
+
   setSelectedTypeOrTabRefresh(selectedTab, selectedType) {
     this.selectedtype = selectedType;
     this.selectedTab = selectedTab;

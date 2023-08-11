@@ -1111,6 +1111,8 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === 'project'));
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
       if (this.selectedSprint && Object.keys(this.selectedSprint)?.length > 0) {
+        console.log(this.selectedSprint);
+        this.service.setCurrentSelectedSprint(this.selectedSprint);
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
         this.createFilterApplyData();
