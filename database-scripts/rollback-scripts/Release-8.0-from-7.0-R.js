@@ -133,6 +133,11 @@ $set: {
         "isDeleted": false
     }
 });
+
+// delete mapping for sprint velocity
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraIterationIssuetypeKPI39"
+});
 // --- Reverse fieldType for KPI 138
 var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
   db.getCollection('field_mapping_structure').update(
