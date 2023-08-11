@@ -362,6 +362,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationIssuetypeKPI125;
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
+	private List<String> jiraIterationIssuetypeKPI39;
 	private LocalDateTime createdDate;
 
 	/**

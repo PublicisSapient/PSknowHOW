@@ -133,3 +133,8 @@ $set: {
         "isDeleted": false
     }
 });
+
+// delete mapping for sprint velocity
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraIterationIssuetypeKPI39"
+});
