@@ -139,6 +139,7 @@ db.field_mapping_structure.deleteMany({
     "fieldName": "jiraIterationIssuetypeKPI39"
 });
 
+
 //---------7.7.0 changes------------------------------------------------------------------
 //deleting dailyStandup kpi
 db.getCollection('kpi_master').deleteMany(

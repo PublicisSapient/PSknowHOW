@@ -2769,6 +2769,7 @@ db.getCollection('field_mapping_structure').insertMany([
 }
 ])
 
+
 //----------------7.7.0 Changes ---------------------------
 //adding dailyStandup kpi
 var dailyStandupKPI = db.getCollection('kpi_master').find( {kpiId: "kpi154"}).toArray();
