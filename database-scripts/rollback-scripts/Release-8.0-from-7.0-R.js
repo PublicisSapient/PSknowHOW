@@ -188,3 +188,26 @@ db.getCollection('field_mapping_structure').deleteOne(
      ]
    }
 );
+// --- Reverse fieldType for KPI 138
+var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldType": "text"
+    } },
+    { multi: false }
+  );
+
+// -- Reverse field by converting the array back to a string
+
+db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 4}}).forEach(function(doc) {
+
+    db.field_mapping.updateMany(
+        { _id: doc._id },
+        {
+            $set: {
+                readyForDevelopmentStatusKPI138: doc.readyForDevelopmentStatusKPI138[0]
+            }
+        }
+    );
+});

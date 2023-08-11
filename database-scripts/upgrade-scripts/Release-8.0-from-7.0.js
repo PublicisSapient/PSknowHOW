@@ -2821,3 +2821,27 @@ db.getCollection('field_mapping_structure').insertOne(
    }
 );
 }
+])
+
+// --- Backlog Readiness KPI Fieldmapping Enhancement (DTS-27535)
+
+var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldType": "chips"
+    } },
+    { multi: false }
+  );
+
+// Update the String field by converting it into a list
+db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach(function(doc) {
+    db.field_mapping.updateMany(
+        { _id: doc._id },
+        {
+            $set: {
+                readyForDevelopmentStatusKPI138: [doc.readyForDevelopmentStatusKPI138]
+            }
+        }
+    );
+});

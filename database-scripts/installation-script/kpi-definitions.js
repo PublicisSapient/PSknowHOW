@@ -7696,7 +7696,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "readyForDevelopmentStatusKPI138",
         "fieldLabel": "Status to identify issues Ready for Development ",
-        "fieldType": "text",
+        "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
