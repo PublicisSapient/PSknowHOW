@@ -2754,6 +2754,21 @@ db.field_mapping.updateOne({
         );
 });
 
+
+// add kpi issue type mapping for sprint velocity
+db.getCollection('field_mapping_structure').insertMany([
+{
+        "fieldName": "jiraIterationIssuetypeKPI39",
+        "fieldLabel": "Issue type to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
+        }
+}
+]);
+
 //---------7.4.0 changes----------------------------------------------------------------------
 db.getCollection('field_mapping_structure').deleteOne(
 {

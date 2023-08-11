@@ -134,6 +134,11 @@ $set: {
     }
 });
 
+// delete mapping for sprint velocity
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraIterationIssuetypeKPI39"
+});
+
 
 //------ DTS-27515
 db.getCollection('field_mapping_structure').insertOne(
