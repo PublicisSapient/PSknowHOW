@@ -138,9 +138,10 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-						new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusKPI133(), null).get(0);
+				sprintDetails = KpiDataHelper
+						.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail), new ArrayList<>(),
+								fieldMapping.getJiraIterationCompletionStatusKPI133(), null)
+						.get(0);
 
 				List<String> totalIssue = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
@@ -255,7 +256,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getExcludeRCAFromKPI133());
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects,
 					latestSprint.getProjectFilter().getBasicProjectConfigId(),
-					fieldMapping.getResolutionTypeForRejectionKPI133(), fieldMapping.getJiraDefectRejectionStatusKPI133());
+					fieldMapping.getResolutionTypeForRejectionKPI133(),
+					fieldMapping.getJiraDefectRejectionStatusKPI133());
 			KpiHelperService.getDefectsWithoutDrop(droppedDefects, jiraIssueList, totalJiraIssues);
 
 			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
@@ -285,8 +287,9 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 						.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
 
 				for (JiraIssue jiraIssue : allDefects) {
-					createLinkDefectListAndUnlinkDefectModal(overAllUnlinkedmodalValues, linkedDefectList, unlinkedDefectList,
-							jiraIssue, totalJiraIssues, fieldMapping, completedIssueList, linkedIssueMap);
+					createLinkDefectListAndUnlinkDefectModal(overAllUnlinkedmodalValues, linkedDefectList,
+							unlinkedDefectList, jiraIssue, totalJiraIssues, fieldMapping, completedIssueList,
+							linkedIssueMap);
 				}
 				Set<String> linkedStoriesSet = linkedDefectList.stream().map(JiraIssue::getDefectStoryID)
 						.flatMap(Set::stream).collect(Collectors.toSet());
@@ -296,6 +299,14 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 						.collect(Collectors.toList());
 				// adding all LinkedStories
 				closedPlusOpenLinkedStories.addAll(linkedStoriesJiraIssueList);
+
+				List<String> issueTypeList = new ArrayList<>();
+				if (CollectionUtils.isNotEmpty(fieldMapping.getJiraItrQSIssueTypeKPI133())) {
+					issueTypeList.addAll(fieldMapping.getJiraItrQSIssueTypeKPI133());
+					closedPlusOpenLinkedStories = closedPlusOpenLinkedStories.stream()
+							.filter(jiraIssue -> issueTypeList.contains(jiraIssue.getTypeName()))
+							.collect(Collectors.toList());
+				}
 				// Removing duplicates if any
 				closedPlusOpenLinkedStories = closedPlusOpenLinkedStories.stream().distinct()
 						.collect(Collectors.toList());
@@ -332,8 +343,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	}
 
 	private void createOverallLinkedModal(List<IterationKpiModalValue> overAlllinkedmodalValues,
-			List<JiraIssue> linkedDefectList, List<JiraIssue> totalJiraIssues,
-			List<JiraIssue> completedIssueList, FieldMapping fieldMapping) {
+			List<JiraIssue> linkedDefectList, List<JiraIssue> totalJiraIssues, List<JiraIssue> completedIssueList,
+			FieldMapping fieldMapping) {
 		Map<String, List<JiraIssue>> storyWithLinkedDefects = new HashMap<>();
 		Map<String, JiraIssue> totalStoriesMap = totalJiraIssues.stream()
 				.filter(issue -> issue.getTypeName().equalsIgnoreCase(STORY))
@@ -368,7 +379,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			jiraIssueModalObject.setDIR((double) defects.size());
 			jiraIssueModalObject
 					.setDefectDensity(String.valueOf(calculateDefectDensity(jiraIssueList, defects, fieldMapping)));
-			if(jiraIssueModalObject.getIssueSize()==null) jiraIssueModalObject.setIssueSize("0.0");
+			if (jiraIssueModalObject.getIssueSize() == null)
+				jiraIssueModalObject.setIssueSize("0.0");
 			if (!completedIssueList.contains(jiraIssue)) {
 				jiraIssueModalObject.setMarker(Constant.GREEN);
 			}
