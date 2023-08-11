@@ -2594,6 +2594,167 @@ db.getCollection('kpi_master').updateOne(
   { $set: { "kpiInfo.definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available." } }
 );
 
+//updated action_policy "Fetch Sprint"
+db.action_policy_rule.updateOne({
+    "name": "Fetch Sprint"
+}, {
+    $set: {
+        "name": "Fetch Sprint",
+        "roleAllowed": "",
+        "description": "Any user can run active sprint fetch except guest user",
+        "roleActionCheck": "!subject.authorities.contains('ROLE_GUEST') && action == 'TRIGGER_SPRINT_FETCH'",
+        "condition": "true",
+        "createdDate": new Date(),
+        "lastModifiedDate": new Date(),
+        "isDeleted": false
+    }
+});
+
+//we dont need to keep these on processor side
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraDefectDroppedStatus"
+});
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraStoryIdentification"
+});
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraDod"
+});
+
+//DTS-27561-Mapping name to be corrected 'Priority to be Excluded'
+var fieldNameToUpdate = "jiradefecttype";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Issue Type to identify defects"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityKPI14";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'Defect Injection rate' calculation"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityQAKPI111";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'Defect Density' calculation"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityKPI82";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityKPI133";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'Quality Status' calculation"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityKPI135";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
+    } },
+    { multi: false }
+  );.
+
+  var fieldNameToUpdate = "jiraDefectDroppedStatusKPI127";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "tooltip.definition": "All statuses with which defect is linked."
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "jiraDodKPI152";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "tooltip.definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "jiraDodKPI151";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "tooltip.definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "jiraDefectCountlIssueTypeKPI28";
+    db.getCollection('field_mapping_structure').update(
+      { "fieldName": fieldNameToUpdate },
+      { $set: {
+      "fieldLabel": "Issue types which will have linked defects"
+      } },
+      { multi: false }
+    );
+
+  var fieldNameToUpdate = "jiraDefectCountlIssueTypeKPI36";
+    db.getCollection('field_mapping_structure').update(
+      { "fieldName": fieldNameToUpdate },
+      { $set: {
+      "fieldLabel": "Issue types which will have linked defects"
+      } },
+      { multi: false }
+    );
+
+//dts-27545_Unrequired fields should be removed from DRE KPI field mapping
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraDefectRemovalIssueTypeKPI34"
+});
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraDefectRejectionStatusKPI34"
+});
+db.field_mapping_structure.deleteMany({
+    "fieldName": "resolutionTypeForRejectionKPI34"
+});
+
+const fieldMappings = db.field_mapping.find({});
+fieldMappings.forEach(function(fm) {
+db.field_mapping.updateOne({
+            "_id": fm._id
+        },
+        {
+             $unset: {
+                "jiraDefectRejectionStatusKPI34": "",
+                "jiraDefectRemovalIssueTypeKPI34": "",
+                "resolutionTypeForRejectionKPI34": "",
+                "jiraIterationCompletionStatusKPI134": "",
+                "jiraIterationIssuetypeKPI134": ""
+             }
+        }
+        );
+});
+
+
 // add kpi issue type mapping for sprint velocity
 db.getCollection('field_mapping_structure').insertMany([
 {

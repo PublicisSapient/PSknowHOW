@@ -72,7 +72,7 @@ export class SharedService {
   noSprintsObs = this.noSprints.asObservable();
   noProjects = new BehaviorSubject<boolean>(false);
   noProjectsObs = this.noProjects.asObservable();
-  showTableView = new BehaviorSubject<boolean>(true);
+  showTableView = new BehaviorSubject<string>('chart');
   showTableViewObs = this.showTableView.asObservable();
   setNoData = new Subject<boolean>();
   clickedItem = new Subject<any>();
@@ -87,6 +87,7 @@ export class SharedService {
   noRelease = new BehaviorSubject<any>(false);
   noReleaseObs = this.noRelease.asObservable();
   fieldMappingOptionsMetaData : any = []
+  kpiCardView : string = "chart";
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -285,7 +286,11 @@ export class SharedService {
     return this.xLabelValue;
   }
   setShowTableView(val){
+    this.kpiCardView = val;
     this.showTableView.next(val);
+  }
+  getKPICardView(){
+    return this.kpiCardView;
   }
 
   clearAllCookies() {
