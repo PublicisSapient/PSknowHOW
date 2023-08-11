@@ -2768,3 +2768,18 @@ db.getCollection('field_mapping_structure').insertMany([
         }
 }
 ])
+
+// kpi issue type mapping for Quality status
+
+db.getCollection('field_mapping_structure').insertOne([
+    {
+            "fieldName": "jiraItrQSIssueTypeKPI133",
+            "fieldLabel": "Issue types which will have linked defects",
+            "fieldType": "chips",
+            "fieldCategory": "Issue_Type",
+            "section": "Issue Types Mapping",
+            "tooltip": {
+                "definition": "Consider issue types which have defects tagged to them"
+            }
+    }
+])

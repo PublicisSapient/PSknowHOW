@@ -138,3 +138,8 @@ $set: {
 db.field_mapping_structure.deleteMany({
     "fieldName": "jiraIterationIssuetypeKPI39"
 });
+
+// delete mapping for sprint velocity
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraItrQSIssueTypeKPI133"
+});
