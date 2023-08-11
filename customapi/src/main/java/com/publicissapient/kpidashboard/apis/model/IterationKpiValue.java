@@ -49,7 +49,6 @@ public class IterationKpiValue implements Serializable {
 	private List<DataCountGroup> dataGroup;
 	private List<String> metaDataColumns;
 	private List<String> additionalGroup;
-	private List<String> issueIdList;
 	private Map<String, String> markerInfo;
 
 	public IterationKpiValue(String filter1, String filter2, List<IterationKpiData> data) {
