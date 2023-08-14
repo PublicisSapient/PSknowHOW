@@ -18,25 +18,17 @@
 
 package com.publicissapient.kpidashboard.common.model.jira;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.util.Objects;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * user assignee details
  */
 
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@AllArgsConstructor
 public class Assignee {
 
 	private String assigneeId;

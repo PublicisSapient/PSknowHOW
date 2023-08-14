@@ -40,17 +40,33 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 	@Autowired
 	private AccountHierarchyRepository accountHierarchyRepository;
 
+	HierarchyLevel sprintHierarchyLevel;
+	List<String> additionalFilterCategoryIds;
+	Map<Pair<String, String>, AccountHierarchy> existingHierarchy;
+
 	@Override
 	public Set<AccountHierarchy> createAccountHierarchy(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig) {
 
-		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
-				.getFullHierarchyLevels(projectConfig.isKanban());
-		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		if (null == sprintHierarchyLevel) {
+			List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
+					.getFullHierarchyLevels(projectConfig.isKanban());
 
-		HierarchyLevel sprintHierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
+			Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
+					.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 
-		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = getAccountHierarchy(accountHierarchyRepository);
+			sprintHierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
+
+			additionalFilterCategoryIds = hierarchyLevelList.stream()
+					.filter(x -> x.getLevel() > sprintHierarchyLevel.getLevel())
+					.map(HierarchyLevel::getHierarchyLevelId).collect(Collectors.toList());
+		}
+
+		if (null == existingHierarchy) {
+			log.info("Fetching all hierarchy levels");
+			List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findAll();
+			existingHierarchy = accountHierarchyList.stream()
+					.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
+		}
 
 		Set<AccountHierarchy> setToSave = new HashSet<>();
 		if (StringUtils.isNotBlank(jiraIssue.getProjectName()) && StringUtils.isNotBlank(jiraIssue.getSprintName())
@@ -68,21 +84,13 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 			setToSaveAccountHierarchy(setToSave, sprintHierarchy, existingHierarchy);
 
 			List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(jiraIssue,
-					sprintHierarchy, sprintHierarchyLevel, hierarchyLevelList);
+					sprintHierarchy, sprintHierarchyLevel, additionalFilterCategoryIds);
 			additionalFiltersHierarchies.forEach(
 					accountHierarchy -> setToSaveAccountHierarchy(setToSave, accountHierarchy, existingHierarchy));
 
 		}
 
 		return setToSave;
-	}
-
-	private static Map<Pair<String, String>, AccountHierarchy> getAccountHierarchy(
-			AccountHierarchyRepository accountHierarchyRepository) {
-		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findAll();
-		return accountHierarchyList.stream()
-				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
-
 	}
 
 	private void setToSaveAccountHierarchy(Set<AccountHierarchy> setToSave, AccountHierarchy accountHierarchy,
@@ -93,6 +101,9 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 
 			if (null == exHiery) {
 				accountHierarchy.setCreatedDate(LocalDateTime.now());
+				// update map with hierarchy to be saved
+				existingHierarchy.put(Pair.of(accountHierarchy.getNodeId(), accountHierarchy.getPath()),
+						accountHierarchy);
 				setToSave.add(accountHierarchy);
 			}
 		}
@@ -127,14 +138,10 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 
 	private List<AccountHierarchy> accountHierarchiesForAdditionalFilters(JiraIssue jiraIssue,
 			AccountHierarchy sprintHierarchy, HierarchyLevel sprintHierarchyLevel,
-			List<HierarchyLevel> hierarchyLevelList) {
+			List<String> additionalFilterCategoryIds) {
 
 		List<AccountHierarchy> accountHierarchies = new ArrayList<>();
 		List<AdditionalFilter> additionalFilters = ListUtils.emptyIfNull(jiraIssue.getAdditionalFilters());
-
-		List<String> additionalFilterCategoryIds = hierarchyLevelList.stream()
-				.filter(x -> x.getLevel() > sprintHierarchyLevel.getLevel()).map(HierarchyLevel::getHierarchyLevelId)
-				.collect(Collectors.toList());
 
 		additionalFilters.forEach(additionalFilter -> {
 			if (additionalFilterCategoryIds.contains(additionalFilter.getFilterId())) {
@@ -157,4 +164,10 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 		return accountHierarchies;
 	}
 
+	@Override
+	public void cleanAllObjects() {
+		sprintHierarchyLevel = null;
+		additionalFilterCategoryIds = null;
+		existingHierarchy = null;
+	}
 }

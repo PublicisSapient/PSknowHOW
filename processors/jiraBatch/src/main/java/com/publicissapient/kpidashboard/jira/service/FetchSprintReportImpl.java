@@ -115,8 +115,6 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
 					} else {
-						log.info("Sprint not to be saved again : {}, status: {} ", sprint.getOriginalSprintId(),
-								sprint.getState());
 						fetchReport = false;
 					}
 				} else {

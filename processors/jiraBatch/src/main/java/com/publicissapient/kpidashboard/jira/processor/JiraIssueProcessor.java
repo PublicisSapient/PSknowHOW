@@ -8,6 +8,7 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 public interface JiraIssueProcessor {
 
-	JiraIssue convertToJiraIssue(Issue currentPagedJiraRs, ProjectConfFieldMapping projectConfig)
-			throws JSONException;
+	JiraIssue convertToJiraIssue(Issue currentPagedJiraRs, ProjectConfFieldMapping projectConfig) throws JSONException;
+
+	void cleanAllObjects();
 }

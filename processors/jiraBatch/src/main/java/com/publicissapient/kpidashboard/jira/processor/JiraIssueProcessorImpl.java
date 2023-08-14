@@ -44,7 +44,6 @@ import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.Assignee;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -72,7 +71,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	@Autowired
 	private AdditionalFilterHelper additionalFilterHelper;
 
-	Map<String, Map<String, JiraIssue>> projectWiseIssues = new HashMap<>();
+	private Map<String, Map<String, JiraIssue>> projectWiseIssues;
 
 	@Override
 	public JiraIssue convertToJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig) throws JSONException {
@@ -96,13 +95,11 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		// save only issues which are in configuration.
 		if (issueTypeNames
 				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
-
-			Set<Assignee> assigneeSetToSave = new LinkedHashSet<>();
 			Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 			Map<String, String> issueEpics = new HashMap<>();
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 
-			jiraIssue = searchIssueInDb(projectConfig,issueId);
+			jiraIssue = searchIssueInDb(projectConfig, issueId);
 
 			Map<String, IssueField> fields = buildFieldMap(issue.getFields());
 			IssueField epic = fields.get(fieldMapping.getEpicName());
@@ -128,7 +125,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			IssueField sprint = fields.get(fieldMapping.getSprintName());
 			processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
 			User assignee = issue.getAssignee();
-			setJiraAssigneeDetails(jiraIssue, assignee, assigneeSetToSave, projectConfig);
+			setJiraAssigneeDetails(jiraIssue, assignee, projectConfig);
 			setEstimates(jiraIssue, issue);
 			setDueDates(jiraIssue, issue, fields, fieldMapping);
 		}
@@ -137,53 +134,54 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private JiraIssue searchIssueInDb(ProjectConfFieldMapping projectConfig, String issueId) {
-		
-		JiraIssue jiraIssue=new JiraIssue();
+
+		JiraIssue jiraIssue = new JiraIssue();
 		if (MapUtils.isEmpty(projectWiseIssues)) {
 			populateProjectWiseIssues(projectConfig);
 
 		}
-		Map<String, JiraIssue> issueIdWiseJiraIssue = projectWiseIssues
-				.get(projectConfig.getBasicProjectConfigId().toString());
-		if (MapUtils.isNotEmpty(issueIdWiseJiraIssue)) {
-			jiraIssue = initializeJiraIssue(issueId, issueIdWiseJiraIssue);
-		} else if (MapUtils.isNotEmpty(projectWiseIssues)) {
-			projectWiseIssues = new HashMap<>();
-			populateProjectWiseIssues(projectConfig);
-			Map<String, JiraIssue> updatedIdWiseIssues = projectWiseIssues
+		if (MapUtils.isNotEmpty(projectWiseIssues)) {
+			Map<String, JiraIssue> issueIdWiseJiraIssue = projectWiseIssues
 					.get(projectConfig.getBasicProjectConfigId().toString());
-			if (MapUtils.isNotEmpty(updatedIdWiseIssues)) {
-				jiraIssue = initializeJiraIssue(issueId, updatedIdWiseIssues);
-			}
+			if (MapUtils.isNotEmpty(issueIdWiseJiraIssue)) {
+				jiraIssue = initializeJiraIssue(issueId, issueIdWiseJiraIssue);
+			} else if (MapUtils.isNotEmpty(projectWiseIssues)) {
+				projectWiseIssues = new HashMap<>();
+				populateProjectWiseIssues(projectConfig);
+				Map<String, JiraIssue> updatedIdWiseIssues = projectWiseIssues
+						.get(projectConfig.getBasicProjectConfigId().toString());
+				if (MapUtils.isNotEmpty(updatedIdWiseIssues)) {
+					jiraIssue = initializeJiraIssue(issueId, updatedIdWiseIssues);
+				}
 
+			}
 		}
 		return jiraIssue;
 	}
 
 	private JiraIssue initializeJiraIssue(String issueId, Map<String, JiraIssue> issueIdWiseJiraIssue) {
-		JiraIssue jiraIssue=null;
+		JiraIssue jiraIssue = null;
 		jiraIssue = issueIdWiseJiraIssue.get(issueId);
 		if (null == jiraIssue) {
 			jiraIssue = new JiraIssue();
 		}
 		issueIdWiseJiraIssue = null;
-		log.info("jira Issue found : {}",jiraIssue.getIssueId());
 		return jiraIssue;
 	}
 
 	private void populateProjectWiseIssues(ProjectConfFieldMapping projectConfig) {
-		log.info("populating data in map for project : {}", projectConfig.getProjectName());
+		log.info("Checking if jira issue exist in Db for  project : {}", projectConfig.getProjectName());
 		List<JiraIssue> existingJiraIssues = jiraIssueRepository
 				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
 		if (CollectionUtils.isNotEmpty(existingJiraIssues)) {
 			Map<String, JiraIssue> issueIdWiseJiraIssue = existingJiraIssues.stream()
 					.collect(Collectors.toMap(JiraIssue::getIssueId, Function.identity()));
+			projectWiseIssues = new HashMap<>();
 			projectWiseIssues.put(projectConfig.getBasicProjectConfigId().toString(), issueIdWiseJiraIssue);
 		}
 	}
 
-	private void setJiraAssigneeDetails(JiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave,
-			ProjectConfFieldMapping projectConfig) {
+	private void setJiraAssigneeDetails(JiraIssue jiraIssue, User user, ProjectConfFieldMapping projectConfig) {
 		if (user == null) {
 			jiraIssue.setOwnersUsername(Collections.<String>emptyList());
 			jiraIssue.setOwnersShortName(Collections.<String>emptyList());
@@ -215,16 +213,15 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			jiraIssue.setOwnersFullName(assigneeDisplayName);
 			if (StringUtils.isNotEmpty(jiraIssue.getAssigneeId())
 					&& StringUtils.isNotEmpty(jiraIssue.getAssigneeName())) {
-				updateAssigneeDetailsToggleWise(jiraIssue, assigneeSetToSave, projectConfig, assigneeKey, assigneeName,
+				updateAssigneeDetailsToggleWise(jiraIssue, projectConfig, assigneeKey, assigneeName,
 						assigneeDisplayName);
 			}
 		}
 
 	}
 
-	private void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, Set<Assignee> assigneeSetToSave,
-			ProjectConfFieldMapping projectConfig, List<String> assigneeKey, List<String> assigneeName,
-			List<String> assigneeDisplayName) {
+	private void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
+			List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 			List<String> ownerName = assigneeName.stream().map(JiraIssueProcessorImpl::hash)
 					.collect(Collectors.toList());
@@ -237,8 +234,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			jiraIssue.setOwnersUsername(ownerName);
 			jiraIssue.setOwnersID(ownerId);
 			jiraIssue.setOwnersFullName(ownerFullName);
-		} else {
-			assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
 		}
 	}
 
@@ -880,6 +875,11 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
 			}
 		}
+	}
+
+	@Override
+	public void cleanAllObjects() {
+		projectWiseIssues = null;
 	}
 
 }

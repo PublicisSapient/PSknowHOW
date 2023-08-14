@@ -49,7 +49,7 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
-	Map<String, Map<String, JiraIssueCustomHistory>> projectWiseIssues = new HashMap<>();
+	Map<String, Map<String, JiraIssueCustomHistory>> projectWiseIssues;
 
 	@Override
 	public JiraIssueCustomHistory convertToJiraIssueHistory(Issue issue, ProjectConfFieldMapping projectConfig,
@@ -71,19 +71,21 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 			populateProjectWiseIssues(projectConfig);
 
 		}
-		Map<String, JiraIssueCustomHistory> issueIdWiseJiraIssue = projectWiseIssues
-				.get(projectConfig.getBasicProjectConfigId().toString());
-		if (MapUtils.isNotEmpty(issueIdWiseJiraIssue)) {
-			jiraIssue = initializeJiraIssue(issueId, issueIdWiseJiraIssue);
-		} else if (MapUtils.isNotEmpty(projectWiseIssues)) {
-			projectWiseIssues = new HashMap<>();
-			populateProjectWiseIssues(projectConfig);
-			Map<String, JiraIssueCustomHistory> updatedIdWiseIssues = projectWiseIssues
+		if (MapUtils.isNotEmpty(projectWiseIssues)) {
+			Map<String, JiraIssueCustomHistory> issueIdWiseJiraIssue = projectWiseIssues
 					.get(projectConfig.getBasicProjectConfigId().toString());
-			if (MapUtils.isNotEmpty(updatedIdWiseIssues)) {
-				jiraIssue = initializeJiraIssue(issueId, updatedIdWiseIssues);
-			}
+			if (MapUtils.isNotEmpty(issueIdWiseJiraIssue)) {
+				jiraIssue = initializeJiraIssue(issueId, issueIdWiseJiraIssue);
+			} else if (MapUtils.isNotEmpty(projectWiseIssues)) {
+				projectWiseIssues = new HashMap<>();
+				populateProjectWiseIssues(projectConfig);
+				Map<String, JiraIssueCustomHistory> updatedIdWiseIssues = projectWiseIssues
+						.get(projectConfig.getBasicProjectConfigId().toString());
+				if (MapUtils.isNotEmpty(updatedIdWiseIssues)) {
+					jiraIssue = initializeJiraIssue(issueId, updatedIdWiseIssues);
+				}
 
+			}
 		}
 		return jiraIssue;
 	}
@@ -96,17 +98,17 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 			jiraIssue = new JiraIssueCustomHistory();
 		}
 		issueIdWiseJiraIssue = null;
-		log.info("jira Issue history found : {}", jiraIssue.getStoryID());
 		return jiraIssue;
 	}
 
 	private void populateProjectWiseIssues(ProjectConfFieldMapping projectConfig) {
-		log.info("populating data in map for project : {}", projectConfig.getProjectName());
+		log.info("Checking if jira history issue exist in Db for  project : {}", projectConfig.getProjectName());
 		List<JiraIssueCustomHistory> existingJiraHistoryIssues = jiraIssueCustomHistoryRepository
 				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
 		if (CollectionUtils.isNotEmpty(existingJiraHistoryIssues)) {
 			Map<String, JiraIssueCustomHistory> issueIdWiseJiraIssue = existingJiraHistoryIssues.stream()
 					.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, Function.identity()));
+			projectWiseIssues = new HashMap<>();
 			projectWiseIssues.put(projectConfig.getBasicProjectConfigId().toString(), issueIdWiseJiraIssue);
 		}
 	}
@@ -427,6 +429,11 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 			}
 			fieldChangeLog.add(0, firstEntry);
 		}
+	}
+
+	@Override
+	public void cleanAllObjects() {
+		projectWiseIssues = null;
 	}
 
 }

@@ -10,4 +10,6 @@ public interface JiraIssueAccountHierarchyProcessor {
 
 	Set<AccountHierarchy> createAccountHierarchy(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig);
 
+	void cleanAllObjects();
+
 }
