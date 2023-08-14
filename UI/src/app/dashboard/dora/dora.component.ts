@@ -58,6 +58,17 @@ export class DoraComponent implements OnInit {
   kpiCommentsCountObj: object = {};
   noOfFilterSelected = 0;
   selectedJobFilter = 'Select';
+  summaryObj = {
+    'kpi116': {
+      'label': 'Change Failure Rate',
+      'value': '0-15%'
+    },
+    'kpi118': {
+      'label': 'Deployment Frequency',
+      'value': 'Daily'
+    },
+  };
+  updatedConfigDataObj: object = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
     const selectedTab = window.location.hash.substring(1);
@@ -137,8 +148,6 @@ export class DoraComponent implements OnInit {
     } else {
       this.noKpis = false;
     }
-    console.log(this.updatedConfigGlobalData);
-    
     this.configGlobalData?.forEach(element => {
       if (element.shown && element.isEnabled) {
         this.kpiConfigData[element.kpiId] = true;
@@ -146,6 +155,10 @@ export class DoraComponent implements OnInit {
         this.kpiConfigData[element.kpiId] = false;
       }
     });
+
+    this.updatedConfigGlobalData.forEach((item) => 
+      this.updatedConfigDataObj[item.kpiId] = {...item}
+    );
   }
 
   generateColorObj(kpiId, arr) {

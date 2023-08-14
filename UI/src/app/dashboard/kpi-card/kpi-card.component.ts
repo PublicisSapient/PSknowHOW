@@ -15,6 +15,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   @Input() dropdownArr: any;
   @Output() optionSelected = new EventEmitter<any>();
   @Output() reloadKPITab = new EventEmitter<any>();
+  @Input() board?: string;
   faShareSquare = faShareSquare;
   isTooltip = false;
   filterTooltip = false;
