@@ -2679,7 +2679,7 @@ var fieldNameToUpdate = "jiradefecttype";
     "tooltip.definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
     } },
     { multi: false }
-  );.
+  );
 
   var fieldNameToUpdate = "jiraDefectDroppedStatusKPI127";
   db.getCollection('field_mapping_structure').update(
@@ -2821,7 +2821,6 @@ db.getCollection('field_mapping_structure').insertOne(
    }
 );
 }
-])
 
 // --- Backlog Readiness KPI Fieldmapping Enhancement (DTS-27535)
 
