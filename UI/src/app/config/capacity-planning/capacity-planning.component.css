@@ -1,0 +1,247 @@
+  /*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+ div.main {
+    min-height: calc(100vh - 188px);
+    background-color: var(--color-white);
+    width: calc(100% - 4px);
+    padding: 16px;
+    border-radius: 4px;
+    box-shadow:0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    /* width: calc(100% - 16px);
+    margin: 8px; */
+}
+
+/* Hide the browser's default checkbox */
+
+.filter-nav .checkbox-modified input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  
+  /* Create a custom checkbox */
+  
+  .filter-nav .checkmark {
+    position: absolute;
+    top: 3px;
+    left: 0;
+    height: 12px;
+    width: 12px;
+    background-color: #eee;
+  }
+  
+  
+  /* On mouse-over, add a grey background color */
+  
+  .checkbox-modified:hover input~.checkmark {
+    background-color: #ccc;
+  }
+  
+  
+  /* When the checkbox is checked, add a blue background */
+  
+  .checkbox-modified input:checked~.checkmark {
+    background-color: #2196f3;
+  }
+  
+  
+  /* Create the checkmark/indicator (hidden when not checked) */
+  
+  .filter-nav .checkmark:after {
+    content: '';
+    position: absolute;
+    display: none;
+  }
+  
+  
+  /* Show the checkmark when checked */
+  
+  .checkbox-modified input:checked~.checkmark:after {
+    display: block;
+  }
+  
+  
+  /* Style the checkmark/indicator */
+  
+  .filter-nav .checkbox-modified .checkmark:after {
+    left: 4px;
+    top: 0;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+  
+  }
+  
+  .filter-nav .form-check {
+    padding-left: 6px;
+  }
+
+  .tabs-container {
+    margin-bottom: 15px;
+  } 
+  .tabs-container p-button:last-child {
+    margin-left: 15px !important;
+  }
+
+
+  :host ::ng-deep .p-button.p-button-secondary.edit-button {
+    background: #6B6B6B;
+    color: white;
+  }
+  
+  .expand-btn {
+    margin: 0px;
+    padding: 0px;
+  }
+  
+  :host ::ng-deep .p-button.p-button-text:enabled:focus,
+  :host ::ng-deep .p-button.p-button-text:enabled:active,
+  :host ::ng-deep .p-button.p-button-text:enabled:enabled {
+    background-color: transparent;
+  }
+  
+  :host ::ng-deep .custom-grid .p-datatable {
+    display: block;
+  }
+  
+  :host ::ng-deep .custom-grid .p-datatable table {
+    border: none;
+  }
+  
+  
+  :host ::ng-deep .custom-grid .p-datatable thead.sprint,
+  :host ::ng-deep .p-datatable thead tr {
+    display: block;
+  }
+  
+  :host ::ng-deep .p-datatable thead tr th:first-child {
+    border-radius: 5px 0px 0px 5px;
+  }
+  
+  :host ::ng-deep .p-datatable thead tr th:last-child {
+    border-radius: 0px 5px 5px 0px;
+  }
+  
+  :host ::ng-deep .custom-grid .p-datatable tbody tr.sprint {
+    display: block;
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 10px 0px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: -1px -1px 1px 0.5px rgb(0 0 0 / 20%);
+  }
+  
+  
+  :host ::ng-deep .custom-grid .p-datatable thead tr th,
+  :host ::ng-deep .p-datatable tbody tr.sprint td {
+  
+    display: inline-block;
+    border: none;
+    padding-left: 0px;
+    padding-right: 0px;
+    white-space: nowrap;
+  }
+  
+  :host ::ng-deep .capacity-table.custom-grid .p-datatable tbody tr.sprint {
+    cursor: pointer;
+  }
+  
+  :host ::ng-deep .custom-grid .p-datatable tbody tr.sprint.row-expanded {
+    margin-bottom: 0px;
+    border-radius: 5px 5px 0px 0px;
+  }
+  
+  :host ::ng-deep tr.row-expansion {
+    border: solid 0.5px rgba(0, 0, 0, 0.2);
+    border-radius: 0px 0px 5px 5px;
+    border-top: none;
+    display: block;
+    padding-top: 0px;
+    box-shadow: -1px 0px 1px 0.5px rgb(0 0 0 / 20%);
+  }
+  
+  :host ::ng-deep .p-datatable thead tr.expanded-table-header-row {
+    display: table-row;
+  }
+  
+  .expanded-table-body-row {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  :host ::ng-deep .custom-grid .p-datatable .p-datatable-thead>tr>th.expanded-table-header-cell {
+    display: table-cell;
+    background-color: var(--color-gray-c6);
+    color: rgba(0, 0, 0, 0.6);
+    padding: 1rem;
+    text-align: left;
+    border-radius: 0px;
+    border: 1px solid var(--color-gray-c6);
+  }
+  
+  :host ::ng-deep .custom-grid .p-datatable .p-datatable-thead>tr>th.expanded-table-header-cell div{
+    display: flex;
+    align-items: center;
+  }
+  
+  :host ::ng-deep .custom-grid .p-datatable .p-datatable-thead>tr>th.expanded-table-header-cell span.editable{
+    display: inline-flex;
+    max-width: 90%;
+    white-space: break-spaces;
+  }
+  
+  
+  :host ::ng-deep .custom-grid .p-datatable .p-datatable-tbody>tr>td.expanded-table-body-cell {
+    padding: 1rem;
+    text-align: left;
+  }
+  
+  :host ::ng-deep .custom-grid .p-datatable .p-datatable-tbody>tr>td.expanded-table-body-cell.no-assignee {
+    text-align: center;
+  }
+  
+  .color-grey {
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .upload_sprint_capacity {
+    width: calc(100% / 4);
+  }
+  
+  .p-error-block{
+    color: red;
+    font-size: 0.7rem;
+    position: absolute;
+    left: -12px;
+    top: 60px;
+    width: 280px;
+  }
+  .disabled-button {
+    background-color: gray !important;
+    color: white !important;
+    cursor: not-allowed !important;
+  }

@@ -2510,3 +2510,338 @@ db.kpi_master.updateOne(
   }
 );
 
+//----------------7.6.0 Changes ---------------------------
+//updating epicLink from documents of metadata_identifier
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7", "8"] } },
+   { $push: {
+      "customfield": {
+         "type": "epicLink",
+         "value": ["Epic Link"]
+      }
+   }}
+);
+
+//DTS-26121 Enchancement of Quality Status Overlay
+db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
+{$set:{"kpiColumnDetails" : [
+		{
+			"columnName" : "Issue Id",
+			"order" : Double("0"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Type",
+			"order" : Double("1"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Description",
+			"order" : Double("2"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Status",
+			"order" : Double("3"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Priority",
+			"order" : Double("4"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Linked Defect",
+			"order" : Double("5"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Size(story point/hours)",
+			"order" : Double("6"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "DIR",
+			"order" : Double("7"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Defect Density",
+			"order" : Double("8"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Assignee",
+			"order" : Double("9"),
+			"isShown" : true,
+			"isDefault" : false
+		}
+	]}});
+
+//---- KPI info update for KPI 137 (Defect Reopen Rate)
+
+db.getCollection('kpi_master').updateOne(
+  { "kpiId": "kpi137" },
+  { $set: { "kpiInfo.definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available." } }
+);
+
+//updated action_policy "Fetch Sprint"
+db.action_policy_rule.updateOne({
+    "name": "Fetch Sprint"
+}, {
+    $set: {
+        "name": "Fetch Sprint",
+        "roleAllowed": "",
+        "description": "Any user can run active sprint fetch except guest user",
+        "roleActionCheck": "!subject.authorities.contains('ROLE_GUEST') && action == 'TRIGGER_SPRINT_FETCH'",
+        "condition": "true",
+        "createdDate": new Date(),
+        "lastModifiedDate": new Date(),
+        "isDeleted": false
+    }
+});
+
+//we dont need to keep these on processor side
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraDefectDroppedStatus"
+});
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraStoryIdentification"
+});
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraDod"
+});
+
+//DTS-27561-Mapping name to be corrected 'Priority to be Excluded'
+var fieldNameToUpdate = "jiradefecttype";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Issue Type to identify defects"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityKPI14";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'Defect Injection rate' calculation"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityQAKPI111";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'Defect Density' calculation"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityKPI82";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityKPI133";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'Quality Status' calculation"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "defectPriorityKPI135";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldLabel": "Priority to be excluded",
+    "tooltip.definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
+    } },
+    { multi: false }
+  );.
+
+  var fieldNameToUpdate = "jiraDefectDroppedStatusKPI127";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "tooltip.definition": "All statuses with which defect is linked."
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "jiraDodKPI152";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "tooltip.definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "jiraDodKPI151";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "tooltip.definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+    } },
+    { multi: false }
+  );
+
+  var fieldNameToUpdate = "jiraDefectCountlIssueTypeKPI28";
+    db.getCollection('field_mapping_structure').update(
+      { "fieldName": fieldNameToUpdate },
+      { $set: {
+      "fieldLabel": "Issue types which will have linked defects"
+      } },
+      { multi: false }
+    );
+
+  var fieldNameToUpdate = "jiraDefectCountlIssueTypeKPI36";
+    db.getCollection('field_mapping_structure').update(
+      { "fieldName": fieldNameToUpdate },
+      { $set: {
+      "fieldLabel": "Issue types which will have linked defects"
+      } },
+      { multi: false }
+    );
+
+//dts-27545_Unrequired fields should be removed from DRE KPI field mapping
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraDefectRemovalIssueTypeKPI34"
+});
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraDefectRejectionStatusKPI34"
+});
+db.field_mapping_structure.deleteMany({
+    "fieldName": "resolutionTypeForRejectionKPI34"
+});
+
+const fieldMappings = db.field_mapping.find({});
+fieldMappings.forEach(function(fm) {
+db.field_mapping.updateOne({
+            "_id": fm._id
+        },
+        {
+             $unset: {
+                "jiraDefectRejectionStatusKPI34": "",
+                "jiraDefectRemovalIssueTypeKPI34": "",
+                "resolutionTypeForRejectionKPI34": "",
+                "jiraIterationCompletionStatusKPI134": "",
+                "jiraIterationIssuetypeKPI134": ""
+             }
+        }
+        );
+});
+
+
+// add kpi issue type mapping for sprint velocity
+db.getCollection('field_mapping_structure').insertMany([
+{
+        "fieldName": "jiraIterationIssuetypeKPI39",
+        "fieldLabel": "Issue type to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
+        }
+}
+]);
+
+//---------7.4.0 changes----------------------------------------------------------------------
+db.getCollection('field_mapping_structure').deleteOne(
+{
+    "fieldName": "jiraDevDueDateCustomField",
+    "fieldLabel": "Dev Due Date",
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+        "definition": "This field is to track dev due date of issues tagged in the iteration."
+    }
+});
+
+const fieldMappingField = ["jiraDevDueDateField"];
+var jiraDevDueDateField = db.getCollection('field_mapping_structure').find( {fieldName: { $in: fieldMappingField }}).toArray();
+if (jiraDevDueDateField.length === 0) {
+db.getCollection('field_mapping_structure').insertOne(
+{
+     "fieldName": "jiraDevDueDateField",
+     "fieldLabel": "Dev Due Date",
+     "fieldType": "radiobutton",
+     "section": "Custom Fields Mapping",
+     "tooltip": {
+       "definition": "This field is to track dev due date of issues tagged in the iteration."
+     },
+     "options": [
+       {
+         "label": "Custom Field",
+         "value": "CustomField"
+       },
+       {
+         "label": "Due Date",
+         "value": "Due Date"
+       }
+     ],
+     "nestedFields": [
+       {
+         "fieldName": "jiraDevDueDateCustomField",
+         "fieldLabel": "Dev Due Date Custom Field",
+         "fieldType": "text",
+         "fieldCategory": "fields",
+         "filterGroup": [
+           "CustomField"
+         ],
+         "tooltip": {
+           "definition": "This field is to track dev due date of issues tagged in the iteration."
+         }
+       }
+     ]
+   }
+);
+}
+])
+
+// --- Backlog Readiness KPI Fieldmapping Enhancement (DTS-27535)
+
+var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldType": "chips"
+    } },
+    { multi: false }
+  );
+
+// Update the String field by converting it into a list
+db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach(function(doc) {
+    db.field_mapping.updateMany(
+        { _id: doc._id },
+        {
+            $set: {
+                readyForDevelopmentStatusKPI138: [doc.readyForDevelopmentStatusKPI138]
+            }
+        }
+    );
+});

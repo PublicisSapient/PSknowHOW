@@ -20,6 +20,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ConfigComponent } from './config.component';
 import { UploadComponent } from './upload/upload.component';
+import { CapacityPlanningComponent } from './capacity-planning/capacity-planning.component';
 import { DashboardconfigComponent } from './dashboard-config/dashboard-config.component';
 import { AdvancedSettingsComponent } from './advanced-settings/advanced-settings.component';
 import { AccessGuard } from '../services/access.guard';
@@ -44,6 +45,11 @@ export const ConfigRoutes: Routes = [
             {
                 path: 'Upload',
                 component: UploadComponent,
+                canActivate: [GuestGuard]
+            },
+            {
+                path: 'Capacity',
+                component: CapacityPlanningComponent,
                 canActivate: [GuestGuard]
             },
             {

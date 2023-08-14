@@ -37,7 +37,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -60,6 +59,7 @@ import com.publicissapient.kpidashboard.common.model.application.AdditionalFilte
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -78,7 +78,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class KpiDataHelper {
-	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final String CLOSED = "closed";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
@@ -586,14 +585,11 @@ public final class KpiDataHelper {
 			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
 		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
 				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping && CollectionUtils
-				.isNotEmpty(fieldMapping)) {
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
 			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> fieldMapping.contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
+					.filter(jiraIssue -> fieldMapping.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
 			openIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> !fieldMapping.contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
+					.filter(jiraIssue -> !fieldMapping.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
 		} else {
 			openIssues.addAll(jiraIssuesWithDueDate);
 		}
@@ -704,7 +700,7 @@ public final class KpiDataHelper {
 	}
 
 	public static Set<SprintIssue> changeSprintDetails(SprintDetails sprintDetail, Set<SprintIssue> completedIssues,
-													   List<String> customCompleteStatus, Map<ObjectId, Map<String, List<LocalDateTime>>> issueWiseMinimumDates) {
+			List<String> customCompleteStatus, Map<ObjectId, Map<String, List<LocalDateTime>>> issueWiseMinimumDates) {
 		if (CollectionUtils.isNotEmpty(customCompleteStatus) && CollectionUtils.isNotEmpty(completedIssues)
 				&& MapUtils.isNotEmpty(issueWiseMinimumDates)) {
 			ObjectId projectId = sprintDetail.getBasicProjectConfigId();
@@ -726,7 +722,6 @@ public final class KpiDataHelper {
 		}
 		return completedIssues;
 	}
-
 
 	private static Set<SprintIssue> getCombinationalCompletedSet(Set<SprintIssue> typeWiseIssues,
 			Set<SprintIssue> statusWiseIssues) {
@@ -830,7 +825,8 @@ public final class KpiDataHelper {
 	}
 
 	/**
-	 *  Cal time with 8hr in a day
+	 * Cal time with 8hr in a day
+	 *
 	 * @param timeInHours
 	 * @return
 	 */
@@ -860,6 +856,7 @@ public final class KpiDataHelper {
 
 	/**
 	 * Get completed subtask of sprint
+	 *
 	 * @param totalSubTask
 	 * @param subTaskHistory
 	 * @param sprintDetail
@@ -885,14 +882,16 @@ public final class KpiDataHelper {
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateTimeRange(jiraIssueSprint.getUpdatedOn(),
 							sprintStartDateTime, sprintEndDateTime))
 					.reduce((a, b) -> b);
-			if (issueSprint.isPresent() && fieldMappingDoneStatus.contains(issueSprint.get().getChangedTo().toLowerCase()))
+			if (issueSprint.isPresent()
+					&& fieldMappingDoneStatus.contains(issueSprint.get().getChangedTo().toLowerCase()))
 				resolvedSubtaskForSprint.add(jiraIssue);
 		});
 		return resolvedSubtaskForSprint;
 	}
 
 	/**
-	 *  Get total subtask of sprint
+	 * Get total subtask of sprint
+	 *
 	 * @param allSubTasks
 	 * @param sprintDetails
 	 * @param subTaskHistory
@@ -924,5 +923,4 @@ public final class KpiDataHelper {
 		});
 		return subTaskTaggedWithSprint;
 	}
-
 }

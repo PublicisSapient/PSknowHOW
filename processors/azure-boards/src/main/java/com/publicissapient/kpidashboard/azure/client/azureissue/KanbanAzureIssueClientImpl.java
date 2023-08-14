@@ -352,6 +352,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 				// Type
 				azureIssue.setTypeId(AzureProcessorUtil.deodeUTF8String(issueType));
 				azureIssue.setTypeName(AzureProcessorUtil.deodeUTF8String(issueType));
+				azureIssue.setOriginalType(AzureProcessorUtil.deodeUTF8String(issueType));
 
 				// Set EPIC issue data for issue type epic
 				if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueEpicType()) && fieldMapping
