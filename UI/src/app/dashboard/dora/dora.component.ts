@@ -88,7 +88,7 @@ export class DoraComponent implements OnInit {
       
       // this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
       const boardData = this.service.getDashConfigData();
-      this.configGlobalData = boardData['others']?.filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+      this.configGlobalData = boardData?.['others']?.filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
       console.log(this.configGlobalData);
       
       this.processKpiConfigData();
@@ -156,7 +156,7 @@ export class DoraComponent implements OnInit {
       }
     });
 
-    this.updatedConfigGlobalData.forEach((item) => 
+    this.updatedConfigGlobalData?.forEach((item) => 
       this.updatedConfigDataObj[item.kpiId] = {...item}
     );
   }
