@@ -97,6 +97,8 @@
                                                             us on knowhowfeedback@publicissapient.com)</p>
                                                     </div>
                                                     <p-button styleClass="p-button-secondary p-button-sm edit-button"
+                                                    [disabled]="!isAdminForSelectedProject"
+                                                title="{{!isAdminForSelectedProject ? 'You are not an admin' : ''}}"
                                                         (click)="onSprintCapacityEdit(item)"
                                                         *ngIf="!projectCapacityEditMode"
                                                         [disabled]="!item?.assigneeCapacity?.length > 0">
@@ -191,7 +193,7 @@
 
                                 <button pButton pRipple label="Save" icon="pi pi-save"
                                     class="p-button-secondary p-button-sm" (click)="onSprintCapacitySave(item)"
-                                    [disabled]="selectedSprintAssigneValidator?.length > 0"></button>
+                                    [disabled]="!isAdminForSelectedProject || selectedSprintAssigneValidator?.length > 0"></button>
                             </div>
                         </div>
                         </td>
@@ -259,9 +261,10 @@
                                                         on knowhowfeedback@publicissapient.com)</p>
                                                 </div>
                                                 <p-button styleClass="p-button-secondary p-button-sm edit-button"
+                                                title="{{!isAdminForSelectedProject ? 'You are not an admin' : ''}}"
                                                     (click)="onSprintCapacityEdit(item)"
                                                     *ngIf="!projectCapacityEditMode"
-                                                    [disabled]="!item?.assigneeCapacity?.length > 0">
+                                                    [disabled]="!isAdminForSelectedProject || !item?.assigneeCapacity?.length > 0">
                                                     <img alt="edit logo" src="../../../assets/img/edit.svg"
                                                         style="width: 0.75rem" />
                                                     <span class="p-pl-2">Edit</span>
@@ -379,7 +382,7 @@
 
                             <button pButton pRipple label="Save" icon="pi pi-save"
                                 class="p-button-secondary p-button-sm" (click)="onSprintCapacitySave(item)"
-                                [disabled]="selectedSprintAssigneValidator?.length > 0"></button>
+                                [disabled]="!isAdminForSelectedProject || selectedSprintAssigneValidator?.length > 0"></button>
                         </div>
                     </div>
                     </td>
@@ -426,7 +429,7 @@
             (click)="displayAssignee=false"></button>
 
         <button pButton pRipple label="Save" icon="pi pi-save" class="p-button-secondary p-button-sm"
-            (click)="addRemoveAssignees()"></button>
+        [disabled]="!isAdminForSelectedProject" (click)="addRemoveAssignees()"></button>
 
     </ng-template>
 </p-dialog>
