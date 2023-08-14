@@ -78,7 +78,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiSource": "Jira",
     "groupId": 1,
     "thresholdValue": "75",
-f    "kanban": false,
+    "kanban": false,
     "chartType": "line",
     "kpiInfo": {
       "definition": "Measures the percentage of tickets that passed QA with no return transition or any tagging to a specific configured status and no linkage of a defect",
