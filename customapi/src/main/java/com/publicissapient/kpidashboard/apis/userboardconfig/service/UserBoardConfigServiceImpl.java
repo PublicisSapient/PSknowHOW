@@ -73,6 +73,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private static final String BACKLOG = "Backlog";
 	private static final String RELEASE = "Release";
 	private static final String KPI_MATURITY = "Kpi Maturity";
+
+    private static final String DEVELOPER = "Developer";
 	private static final String DEFAULT_BOARD_NAME = "My KnowHow";
 	@Autowired
 	private UserBoardConfigRepository userBoardConfigRepository;
@@ -148,6 +150,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		defaultKpiCategory.add(ITERATION);
 		defaultKpiCategory.add(RELEASE);
 		defaultKpiCategory.add(BACKLOG);
+        defaultKpiCategory.add(DEVELOPER);
 		defaultKpiCategory.add(KPI_MATURITY);
 		return (!defaultKpiCategory.containsAll(existingCategories));
 	}
@@ -155,8 +158,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private void setUserBoardConfigBasedOnCategoryForFreshUser(UserBoardConfigDTO defaultUserBoardConfigDTO,
 			List<KpiCategory> kpiCategoryList, Map<String, KpiMaster> kpiMasterMap) {
 		setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
-
-		Boolean isRepoToolFlag = customApiConfig.getIsRepoToolEnable();
 		Optional<UserBoardConfig> findFirstUserBoard = CollectionUtils
 				.emptyIfNull(configHelperService.loadUserBoardConfig()).stream().findFirst();
 		if (findFirstUserBoard.isPresent()) {
@@ -310,6 +311,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		defaultKpiCategory.add(ITERATION);
 		defaultKpiCategory.add(RELEASE);
 		defaultKpiCategory.add(BACKLOG);
+        defaultKpiCategory.add(DEVELOPER);
 		defaultKpiCategory.add(KPI_MATURITY);
 		setDefaultBoardInfoFromKpiMaster(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), false,
 				defaultKpiCategory, scrumBoards);
@@ -335,6 +337,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				otherBoards, false);
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), BACKLOG,
 				otherBoards, false);
+        setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), DEVELOPER,
+                otherBoards, false);
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), KPI_MATURITY,
 				otherBoards, false);
 		newUserBoardConfig.setOthers(otherBoards);
