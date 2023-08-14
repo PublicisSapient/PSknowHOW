@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -371,6 +372,7 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraIterationIssuetypeKPI125;
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
+	private LocalDateTime createdDate;
 
 	/**
 	 * Get jira issue type names string [ ].
