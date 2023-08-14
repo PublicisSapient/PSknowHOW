@@ -77,6 +77,7 @@
                                         </td>
                                         <td class="upload_sprint_capacity">
                                             <button pButton type="button" [disabled]="!isAdminForSelectedProject"
+                                                title="{{!isAdminForSelectedProject ? 'You are not an admin' : ''}}"
                                                 class="p-button-sm btn-active edit-btn"
                                                 label="{{isToggleEnableForSelectedProject ? 'Manage Users' : (item.capacity ? 'Edit Capacity' : 'Add Capacity')}}"
                                                 (click)="isToggleEnableForSelectedProject ? manageAssignees(item): AddOrUpdateData(item)"
@@ -240,6 +241,7 @@
                                     <td class="upload_sprint_capacity">
                                         <button pButton type="button" class="p-button-sm btn-active edit-btn" [disabled]="!isAdminForSelectedProject"
                                             label="{{isToggleEnableForSelectedProject ? 'Manage Users' : (item.capacity ? 'Edit Capacity' : 'Add Capacity')}}"
+                                            title="{{!isAdminForSelectedProject ? 'You are not an admin' : ''}}"
                                             (click)="isToggleEnableForSelectedProject ? manageAssignees(item): AddOrUpdateData(item)"
                                             iconPos="right"
                                             [loading]="isToggleEnableForSelectedProject ? jiraAssigneeLoader : false"></button>
