@@ -14,23 +14,27 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/job")
+@Slf4j
 public class JobController {
-	
+
 	@Autowired
 	JobLauncher jobLauncher;
-	
-	@Qualifier("fetchIssueScrumJob")
-	@Autowired
-	Job fetchIssueScrumJob;
 
-	@GetMapping("/start/{jobName}")
-	public String startJob(@PathVariable String jobName) throws Exception {
+	@Qualifier("fetchIssueScrumBoardJob")
+	@Autowired
+	Job fetchIssueScrumBoardJob;
+
+	@GetMapping("/start")
+	public String startJob() throws Exception {
+		log.info("Request coming for job");
 		Map<String, JobParameter> params = new HashMap<>();
 		params.put("currentTime", new JobParameter(System.currentTimeMillis()));
 		JobParameters jobParameters = new JobParameters(params);
-		jobLauncher.run(fetchIssueScrumJob, jobParameters);
+		jobLauncher.run(fetchIssueScrumBoardJob, jobParameters);
 		return "job started ....";
 	}
 }

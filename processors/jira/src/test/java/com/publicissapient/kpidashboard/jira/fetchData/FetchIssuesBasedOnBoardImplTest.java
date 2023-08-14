@@ -1,11 +1,59 @@
 package com.publicissapient.kpidashboard.jira.fetchData;
 
-import com.atlassian.httpclient.apache.httpcomponents.DefaultRequest;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.codehaus.jettison.json.JSONObject;
+import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+
 import com.atlassian.httpclient.api.HttpClient;
-import com.atlassian.jira.rest.client.api.*;
-import com.atlassian.jira.rest.client.api.domain.*;
+import com.atlassian.jira.rest.client.api.AuthenticationHandler;
+import com.atlassian.jira.rest.client.api.MetadataRestClient;
+import com.atlassian.jira.rest.client.api.SessionRestClient;
+import com.atlassian.jira.rest.client.api.StatusCategory;
+import com.atlassian.jira.rest.client.api.domain.BasicPriority;
+import com.atlassian.jira.rest.client.api.domain.BasicProject;
+import com.atlassian.jira.rest.client.api.domain.BasicUser;
+import com.atlassian.jira.rest.client.api.domain.BasicVotes;
+import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
+import com.atlassian.jira.rest.client.api.domain.ChangelogItem;
+import com.atlassian.jira.rest.client.api.domain.Comment;
+import com.atlassian.jira.rest.client.api.domain.FieldType;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.atlassian.jira.rest.client.api.domain.IssueLink;
+import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
+import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.Resolution;
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.User;
+import com.atlassian.jira.rest.client.api.domain.Visibility;
+import com.atlassian.jira.rest.client.api.domain.Worklog;
 import com.atlassian.jira.rest.client.internal.async.AbstractAsynchronousRestClient;
-import com.atlassian.jira.rest.client.internal.async.AsynchronousIssueRestClient;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
@@ -20,37 +68,19 @@ import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLo
 import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.client.CustomAsynchronousIssueRestClient;
 import com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.parser.CustomSearchResultJsonParser;
 import com.publicissapient.kpidashboard.jira.adapter.helper.JiraRestClientFactory;
-import com.publicissapient.kpidashboard.jira.adapter.impl.OnlineAdapter;
 import com.publicissapient.kpidashboard.jira.adapter.impl.async.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.adapter.impl.async.factory.ProcessorAsynchHttpClientFactory;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.data.*;
-import com.publicissapient.kpidashboard.jira.model.JiraInfo;
+import com.publicissapient.kpidashboard.jira.data.ConnectionsDataFactory;
+import com.publicissapient.kpidashboard.jira.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.jira.data.JiraIssueDataFactory;
+import com.publicissapient.kpidashboard.jira.data.ProcessorExecutionTracelogDataFactory;
+import com.publicissapient.kpidashboard.jira.data.ProjectBasicConfigDataFactory;
+import com.publicissapient.kpidashboard.jira.data.ToolConfigDataFactory;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.oauth.JiraOAuthProperties;
+
 import io.atlassian.util.concurrent.Promise;
-import org.apache.commons.beanutils.BeanUtils;
-import org.codehaus.jettison.json.JSONObject;
-import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 @PrepareForTest(fullyQualifiedNames="scr/main/java/com.publicissapient.kpidashboard.jira.adapter.atlassianbespoke.client.*")

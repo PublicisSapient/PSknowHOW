@@ -23,8 +23,8 @@ import java.util.Optional;
 
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,7 +39,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JiraToolConfig {
-
 	private String basicProjectConfigId;
 	private Optional<Connection> connection;
 	private String projectId;

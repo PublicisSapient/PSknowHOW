@@ -16,38 +16,13 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.jira;
+package com.publicissapient.kpidashboard.jira.repository;
 
-import java.util.Objects;
+import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
+import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
+import org.springframework.stereotype.Repository;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-/**
- * user assignee details
- */
-
-@Data
-@AllArgsConstructor
-public class Assignee {
-
-	private String assigneeId;
-	private String assigneeName;
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof Assignee))
-			return false;
-
-		Assignee assignee = (Assignee) o;
-
-		return Objects.equals(assigneeId, assignee.assigneeId);
-	}
-
-	@Override
-	public int hashCode() {
-		return assigneeId != null ? assigneeId.hashCode() : 0;
-	}
+@Repository
+public interface JiraProcessorRepository extends
+        ProcessorRepository<JiraProcessor> {
 }

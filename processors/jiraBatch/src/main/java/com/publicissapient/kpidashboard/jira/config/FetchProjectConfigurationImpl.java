@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -33,102 +34,116 @@ import lombok.extern.slf4j.Slf4j;
 public class FetchProjectConfigurationImpl implements FetchProjectConfiguration {
 
 	@Autowired
-	private ProjectBasicConfigRepository projectConfigRepository;
-
-	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
 
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;
 
 	@Autowired
+	private ProjectBasicConfigRepository projectConfigRepository;
+
+	@Autowired
 	private ConnectionRepository connectionRepository;
-	
+
 	private List<String> projectsBasicConfigIds;
 
 	@Override
-	public Map<String, ProjectConfFieldMapping> fetchConfiguration(Boolean isKanban) {
+	public Map<String, List<ProjectConfFieldMapping>> fetchConfiguration(Boolean isKanban) {
 		List<ProjectBasicConfig> allProjects = projectConfigRepository.findByKanban(isKanban);
-		List<FieldMapping> fieldMappingList = fieldMappingRepository.findAll();
+		List<ObjectId> projectConfigsIds = allProjects.stream().map(projConf -> projConf.getId())
+				.collect(Collectors.toList());
+		List<FieldMapping> fieldMappingList = fieldMappingRepository.findByBasicProjectConfigIdIn(projectConfigsIds);
+		Map<ObjectId, FieldMapping> basicConfigWiseFieldMapping = fieldMappingList.stream()
+				.collect(Collectors.toMap(FieldMapping::getBasicProjectConfigId, Function.identity()));
+
+		List<ProjectToolConfig> projectToolConfigs = toolRepository.findByToolName(ProcessorConstants.JIRA);
+		Map<ObjectId, ProjectToolConfig> basicConfigWiseConfig = projectToolConfigs.stream()
+				.collect(Collectors.toMap(ProjectToolConfig::getBasicProjectConfigId, Function.identity()));
+
+		List<Connection> jiraConnections = connectionRepository.findByType(ProcessorConstants.JIRA);
+		Map<ObjectId, Connection> idWiseConnection = jiraConnections.stream()
+				.collect(Collectors.toMap(Connection::getId, Function.identity()));
 
 		List<String> selectedProjectsBasicIds = getProjectsBasicConfigIds();
 		if (CollectionUtils.isEmpty(selectedProjectsBasicIds)) {
-			return createProjectConfigMap(getRelevantProjects(allProjects), fieldMappingList);
+			return createProjectConfigMap(getRelevantProjects(allProjects, basicConfigWiseConfig, idWiseConnection),
+					basicConfigWiseFieldMapping, basicConfigWiseConfig, idWiseConnection);
 		}
 
 		List<ProjectBasicConfig> projectBasicConfigs = CollectionUtils.emptyIfNull(allProjects).stream().filter(
 				projectBasicConfig -> selectedProjectsBasicIds.contains(projectBasicConfig.getId().toHexString()))
 				.collect(Collectors.toList());
 		log.info("ProjectBasicConfig: " + projectBasicConfigs);
-		return createProjectConfigMap(projectBasicConfigs, fieldMappingList);
+		return createProjectConfigMap(projectBasicConfigs, basicConfigWiseFieldMapping, basicConfigWiseConfig,
+				idWiseConnection);
 	}
 
 	private List<String> getProjectsBasicConfigIds() {
 		return projectsBasicConfigIds;
 	}
 
-	private Map<String, ProjectConfFieldMapping> createProjectConfigMap(List<ProjectBasicConfig> projectConfigList,
-			List<FieldMapping> fieldMappingList) {
-		Map<String, ProjectConfFieldMapping> projectConfigMap = new HashMap<>();
+	private Map<String, List<ProjectConfFieldMapping>> createProjectConfigMap(
+			List<ProjectBasicConfig> projectConfigList, Map<ObjectId, FieldMapping> basicConfigWiseFieldMapping,
+			Map<ObjectId, ProjectToolConfig> basicConfigWiseConfig, Map<ObjectId, Connection> idWiseConnection) {
+		Map<String, List<ProjectConfFieldMapping>> urlWiseprojectConfig = new HashMap<>();
 		CollectionUtils.emptyIfNull(projectConfigList).forEach(projectConfig -> {
-			ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-			try {
-				BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
-				projectConfFieldMapping.setProjectBasicConfig(projectConfig);
-				projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
-				projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
-				projectConfFieldMapping.setJira(getJiraToolConfig(projectConfig.getId()));
-				projectConfFieldMapping.setJiraToolConfigId(getToolConfigId(projectConfig.getId()));
-
-			} catch (IllegalAccessException e) {
-				log.error("Error while copying Project Config to ProjectConfFieldMapping", e);
-			} catch (InvocationTargetException e) {
-				log.error("Error while copying Project Config to ProjectConfFieldMapping invocation error", e);
-			}
-			CollectionUtils.emptyIfNull(fieldMappingList).stream()
-					.filter(fieldMapping -> projectConfig.getId().equals(fieldMapping.getBasicProjectConfigId()))
-					.forEach(fieldMapping -> projectConfFieldMapping.setFieldMapping(fieldMapping));
-			projectConfigMap.putIfAbsent(projectConfig.getProjectName(), projectConfFieldMapping);
-			//
-		});
-		return projectConfigMap;
-	}
-
-	private JiraToolConfig getJiraToolConfig(ObjectId basicProjectConfigId) {
-		JiraToolConfig toolObj = new JiraToolConfig();
-		List<ProjectToolConfig> jiraDetails = toolRepository
-				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA, basicProjectConfigId);
-		if (CollectionUtils.isNotEmpty(jiraDetails)) {
-
-			try {
-				BeanUtils.copyProperties(toolObj, jiraDetails.get(0));
-			} catch (IllegalAccessException | InvocationTargetException e) {
-				log.error("Could not set JiraToolConfig", e);
-			}
-			if (jiraDetails.get(0).getConnectionId() != null) {
-				Optional<Connection> conn = connectionRepository.findById(jiraDetails.get(0).getConnectionId());
+			ProjectToolConfig projectToolConfig = basicConfigWiseConfig.get(projectConfig.getId());
+			if (null != projectToolConfig) {
+				JiraToolConfig jiraToolConfig = createJiraToolConfig(projectToolConfig, idWiseConnection);
+				ProjectConfFieldMapping projectConfFieldMapping = createProjectConfFieldMapping(
+						basicConfigWiseFieldMapping, projectConfig, projectToolConfig, jiraToolConfig);
+				Optional<Connection> conn = jiraToolConfig.getConnection();
 				if (conn.isPresent()) {
-					toolObj.setConnection(conn);
+					urlWiseprojectConfig.computeIfAbsent(conn.get().getBaseUrl(), k -> new ArrayList<>())
+							.add(projectConfFieldMapping);
 				}
 			}
-		}
-		return toolObj;
+		});
+		return urlWiseprojectConfig;
 	}
 
-	private ObjectId getToolConfigId(ObjectId basicProjectConfigId) {
-		List<ProjectToolConfig> boardsDetails = toolRepository
-				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA, basicProjectConfigId);
-		return CollectionUtils.isNotEmpty(boardsDetails) ? boardsDetails.get(0).getId() : null;
+	private ProjectConfFieldMapping createProjectConfFieldMapping(
+			Map<ObjectId, FieldMapping> basicConfigWiseFieldMapping, ProjectBasicConfig projectConfig,
+			ProjectToolConfig projectToolConfig, JiraToolConfig jiraToolConfig) {
+		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
+		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
+		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
+		projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
+		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
+		projectConfFieldMapping.setJira(jiraToolConfig);
+		projectConfFieldMapping.setProjectToolConfig(projectToolConfig);
+		projectConfFieldMapping.setJiraToolConfigId(projectToolConfig.getId());
+		projectConfFieldMapping.setFieldMapping(basicConfigWiseFieldMapping.get(projectConfig.getId()));
+		projectConfFieldMapping.setProjectName(projectConfig.getProjectName());
+		return projectConfFieldMapping;
 	}
-	
-	private List<ProjectBasicConfig> getRelevantProjects(List<ProjectBasicConfig> projectConfigList) {
+
+	private JiraToolConfig createJiraToolConfig(ProjectToolConfig projectToolConfig,
+			Map<ObjectId, Connection> idWiseConnection) {
+		JiraToolConfig JiraToolConfig = new JiraToolConfig();
+		try {
+			BeanUtils.copyProperties(JiraToolConfig, projectToolConfig);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			log.error("Could not set JiraToolConfig", e);
+		}
+		if (projectToolConfig.getConnectionId() != null) {
+			Optional<Connection> conn = Optional.of(idWiseConnection.get(projectToolConfig.getConnectionId()));
+			if (conn.isPresent()) {
+				JiraToolConfig.setConnection(conn);
+			}
+		}
+		return JiraToolConfig;
+	}
+
+	private List<ProjectBasicConfig> getRelevantProjects(List<ProjectBasicConfig> projectConfigList,
+			Map<ObjectId, ProjectToolConfig> basicConfigWiseConfig, Map<ObjectId, Connection> idWiseConnection) {
 		List<ProjectBasicConfig> onlineJiraProjects = new ArrayList<>();
+
 		for (ProjectBasicConfig config : projectConfigList) {
-			List<ProjectToolConfig> jiraDetails = toolRepository
-					.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA, config.getId());
-			if (CollectionUtils.isNotEmpty(jiraDetails) && jiraDetails.get(0).getConnectionId() != null) {
-				Optional<Connection> jiraConn = connectionRepository.findById(jiraDetails.get(0).getConnectionId());
-				if (jiraConn.isPresent() && !jiraConn.get().isOffline()) {
+			ProjectToolConfig projToolConfig = basicConfigWiseConfig.get(config.getId());
+			if (null != projToolConfig && null != projToolConfig.getConnectionId()) {
+				Connection jiraConn = idWiseConnection.get(projToolConfig.getConnectionId());
+				if (null != jiraConn && !jiraConn.isOffline()) {
 					onlineJiraProjects.add(config);
 				}
 			}

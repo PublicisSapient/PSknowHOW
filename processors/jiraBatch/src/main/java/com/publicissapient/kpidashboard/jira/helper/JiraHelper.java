@@ -230,7 +230,7 @@ public class JiraHelper {
 
     public static String getDeltaDate(String lastSuccessfulRun) {
         LocalDateTime ldt = DateUtil.stringToLocalDateTime(lastSuccessfulRun,QUERYDATEFORMAT);
-        ldt = ldt.minusDays(30);
+        ldt = ldt.minusHours(1);
         return DateUtil.dateTimeFormatter(ldt, QUERYDATEFORMAT);
     }
 
