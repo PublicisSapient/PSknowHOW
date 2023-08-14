@@ -232,9 +232,15 @@
             </div>
 
             <!-- /show/hide kpi's ends -->
+            <!-- Capacity Planning link start -->
+            <div [ngClass]="{'disabled': !isAdmin}" class="btn-custom p-p-2 rounded filter-btn noti-btn-wraper"
+                role="button" (click)="redirectToCapacityPlanning()" title="Go to Capacity Planning">
+               <i class="pi pi-users" style="font-size: 20px;font-weight: bold;"></i>
+            </div>
+            <!-- Capacity Planning link end -->
             <!-- comments icon start -->
             <div class="position-relative">
-               <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn p-ml-2"  *ngIf="selectedTab?.toLowerCase() != 'maturity'"
+               <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn"  *ngIf="selectedTab?.toLowerCase() != 'maturity'"
                   [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project' 
                || (filterForm.get('selectedLevel')?.value == 'project' && selectedFilterArray?.length > 1)}">
                   <img #commentSummary class="p-p-2 " (click)="handleBtnClick();"
@@ -278,12 +284,6 @@
             </div>
             <p-menu #notification [popup]="true" [model]="notificationList"></p-menu>
             <!-- Notification button end -->
-            <!-- Capacity Planning link start -->
-            <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn noti-btn-wraper"
-                role="button" (click)="redirectToCapacityPlanning()" title="Go to Capacity Planning">
-               <i class="pi pi-users" style="font-size: 20px;font-weight: bold;"></i>
-            </div>
-            <!-- Capacity Planning link end -->
          </div>
       </div>
 

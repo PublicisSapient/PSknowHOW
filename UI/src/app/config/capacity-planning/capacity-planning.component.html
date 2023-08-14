@@ -75,7 +75,8 @@
                                                 {{item[col.field] ? item[col.field] : '- -'}}
                                             </ng-template>
                                         </td>
-                                        <td class="upload_sprint_capacity"><button pButton type="button"
+                                        <td class="upload_sprint_capacity">
+                                            <button pButton type="button" [disabled]="!isAdminForSelectedProject"
                                                 class="p-button-sm btn-active edit-btn"
                                                 label="{{isToggleEnableForSelectedProject ? 'Manage Users' : (item.capacity ? 'Edit Capacity' : 'Add Capacity')}}"
                                                 (click)="isToggleEnableForSelectedProject ? manageAssignees(item): AddOrUpdateData(item)"
@@ -237,7 +238,7 @@
                                         {{item[col.field] ? item[col.field] : '- -'}}
                                     </td>
                                     <td class="upload_sprint_capacity">
-                                        <button pButton type="button" class="p-button-sm btn-active edit-btn"
+                                        <button pButton type="button" class="p-button-sm btn-active edit-btn" [disabled]="!isAdminForSelectedProject"
                                             label="{{isToggleEnableForSelectedProject ? 'Manage Users' : (item.capacity ? 'Edit Capacity' : 'Add Capacity')}}"
                                             (click)="isToggleEnableForSelectedProject ? manageAssignees(item): AddOrUpdateData(item)"
                                             iconPos="right"

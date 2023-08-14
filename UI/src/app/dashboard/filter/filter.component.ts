@@ -118,6 +118,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   username: string;
   isGuest = false;
   isViewer = false;
+  isAdmin = false;
   logoImage: any;
   totalRequestCount = 0;
   selectedProjectData = {};
@@ -234,7 +235,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.getAuthorizationService.checkIfSuperUser()) {
       this.isSuperAdmin = true;
     }
-    // this.username = this.service.getCurrentUserDetails('user_name');
+    if (this.getAuthorizationService.checkIfSuperUser() || this.getAuthorizationService.checkIfProjectAdmin()) {
+      this.isAdmin = true;
+    } else {
+      this.isAdmin = false;
+    }
 
     let authoritiesArr;
     if (this.service.getCurrentUserDetails('authorities')) {
@@ -1272,6 +1277,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   // when user would want to give access on project from notification list
   routeForAccess(type: string) {
     if (this.getAuthorizationService.checkIfSuperUser() || this.getAuthorizationService.checkIfProjectAdmin()) {
+      this.isAdmin = true;
       switch (type) {
         case 'Project Access Request':
           this.service.setSideNav(false);
@@ -1285,6 +1291,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     } else {
       this.router.navigate(['/dashboard/Config/Profile/RequestStatus']);
+      this.isAdmin = false;
     }
   }
 

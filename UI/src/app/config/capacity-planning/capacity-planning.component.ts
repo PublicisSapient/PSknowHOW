@@ -22,7 +22,7 @@ import { environment } from '../../../environments/environment';
 import { MessageService } from 'primeng/api';
 import { HttpService } from '../../services/http.service';
 import { ManageAssigneeComponent } from '../manage-assignee/manage-assignee.component';
-
+import { GetAuthorizationService } from '../../services/get-authorization.service';
 
 interface CapacitySubmissionReq {
   projectNodeId: string;
@@ -98,7 +98,8 @@ export class CapacityPlanningComponent implements OnInit {
   selectedView = 'upload_Sprint_Capacity';
   showPopuup = false;
   reqObj: CapacitySubmissionReq;
-  constructor(private http_service: HttpService, private messageService: MessageService, private cdr: ChangeDetectorRef) { }
+  isAdminForSelectedProject = false;
+  constructor(private http_service: HttpService, private messageService: MessageService, private cdr: ChangeDetectorRef, private getAuthorizationService: GetAuthorizationService) { }
 
   ngOnInit(): void {
     this.cols = {
@@ -293,6 +294,7 @@ export class CapacityPlanningComponent implements OnInit {
         this.projectDetails = { ...this.trendLineValueList.find(i => i.nodeId === selectedProject) };
         this.selectedProjectBaseConfigId = this.projectDetails?.basicProjectConfigId;
         this.getProjectBasedData();
+        this.isAdminForSelectedProject = this.getAuthorizationService.checkIfSuperUser() || !this.getAuthorizationService.checkIfViewer(this.projectDetails);
       }
     }
   }
