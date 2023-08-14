@@ -50,6 +50,7 @@ export class MultilineComponent implements OnChanges {
   @Input() unit?: string;
   @Input() color?: Array<string>;
   @Input() selectedtype: string;
+  @Input() board:string = '';
   elem;
   sliderLimit = <any>'750';
   constructor(
@@ -110,6 +111,7 @@ export class MultilineComponent implements OnChanges {
     const showPercent = false;
     const showWeek = false;
     const showUnit = this.unit;
+    const board = this.board;
 
     // width = $('#multiLineChart').width();
     width =
@@ -160,7 +162,13 @@ export class MultilineComponent implements OnChanges {
       .padding(0)
       .domain(
         data[maxObjectNo].value.map(function (d, i) {
-          return i + 1;
+          let returnObj = '';
+          if(board == 'dora'){
+            returnObj = d.date;
+          }else{
+            returnObj = i + 1;
+          }
+          return returnObj;
         }),
       );
 
@@ -324,7 +332,7 @@ export class MultilineComponent implements OnChanges {
     /* Add line into SVG acoording to data */
     const line = d3
       .line()
-      .x((d, i) => xScale(i + 1))
+      .x((d, i) => board == 'dora' ? xScale(d.date) : xScale(i + 1))
       .y((d) => yScale(d.value));
 
     const lines = svgX.append('g').attr('class', 'lines');
@@ -465,7 +473,13 @@ export class MultilineComponent implements OnChanges {
       })
       .append('circle')
       .attr('cx', function (d, i) {
-        return xScale(i + 1);
+        let retObj = '';
+        if(board == 'dora'){
+          retObj = xScale(d.date);
+        }else{
+          retObj = xScale(i+1);
+        }
+        return retObj;
       })
       .attr('cy', (d) => yScale(d.value))
       .attr('r', circleRadius)
@@ -485,7 +499,7 @@ export class MultilineComponent implements OnChanges {
     svgX
       .select('.x')
       .selectAll('.tick')
-      .each(function (dataObj) {
+      .each(function (dataObj, index) {
         const tick = d3.select(this);
         if (data[0]?.value[0] && data[0]?.value[0]?.xAxisTick) {
           const textElement = this.getElementsByTagName('text');
@@ -493,14 +507,14 @@ export class MultilineComponent implements OnChanges {
         }
         const string = tick.attr('transform');
         const translate = string
-          .substring(string.indexOf('(') + 1, string.indexOf(')'))
-          .split(',');
+        .substring(string.indexOf('(') + 1, string.indexOf(')'))
+        .split(',');
         translate[0] = parseInt(translate[0], 10);
         tick.attr(
           'transform',
           'translate(' + translate[0] + ',' + translate[1] + ')',
         );
-        if (dataObj === 1) {
+        if (index === 0) {
           // if (maxXValueCount === 1) {
           //     translate[0] = parseInt(translate[0], 10) - 36;
           // } else if (maxXValueCount === 2) {

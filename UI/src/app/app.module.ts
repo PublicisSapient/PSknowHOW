@@ -112,6 +112,7 @@ import { CumulativeLineChartComponent } from './component/cumulative-line-chart/
 
 import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
 import { FeedbackComponent } from './feedback/feedback.component';
+import { DoraComponent } from './dashboard/dora/dora.component';
 
 /******************************************************/
 
@@ -175,7 +176,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         HorizontalPercentBarChartComponent,
         CumulativeLineChartComponent,
         StackedAreaChartComponent,
-        FeedbackComponent
+        FeedbackComponent,
+        DoraComponent
     ],
     imports: [
         DropdownModule,
