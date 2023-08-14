@@ -173,7 +173,10 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			List<String> branchList = repoConfigList.stream().map(ProjectToolConfig::getBranch).filter(Objects::nonNull)
 					.collect(Collectors.toList());
 			projectToolConfig.setIsNew(CollectionUtils.isEmpty(repoConfigList));
-			branchList.add(projectToolConfig.getBranch());
+			if(projectToolConfig.getBranch()==null)
+				branchList.add(projectToolConfig.getDefaultBranch());
+			else
+				branchList.add(projectToolConfig.getBranch());
 			int response = repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, branchList);
 			if (response == HttpStatus.NOT_FOUND.value()) {
 				return new ServiceResponse(false, "", null);
