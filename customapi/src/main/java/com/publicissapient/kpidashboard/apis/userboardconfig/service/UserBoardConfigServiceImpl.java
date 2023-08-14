@@ -33,6 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private static final String BACKLOG = "Backlog";
 	private static final String RELEASE = "Release";
 	private static final String KPI_MATURITY = "Kpi Maturity";
+
+    private static final String DEVELOPER = "Developer";
 	private static final String DEFAULT_BOARD_NAME = "My KnowHow";
 	@Autowired
 	private UserBoardConfigRepository userBoardConfigRepository;
@@ -89,6 +92,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	/**
 	 * This method return user board config if present in db else return a default
@@ -145,6 +150,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		defaultKpiCategory.add(ITERATION);
 		defaultKpiCategory.add(RELEASE);
 		defaultKpiCategory.add(BACKLOG);
+        defaultKpiCategory.add(DEVELOPER);
 		defaultKpiCategory.add(KPI_MATURITY);
 		return (!defaultKpiCategory.containsAll(existingCategories));
 	}
@@ -152,7 +158,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private void setUserBoardConfigBasedOnCategoryForFreshUser(UserBoardConfigDTO defaultUserBoardConfigDTO,
 			List<KpiCategory> kpiCategoryList, Map<String, KpiMaster> kpiMasterMap) {
 		setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
-
 		Optional<UserBoardConfig> findFirstUserBoard = CollectionUtils
 				.emptyIfNull(configHelperService.loadUserBoardConfig()).stream().findFirst();
 		if (findFirstUserBoard.isPresent()) {
@@ -175,7 +180,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 					.flatMap(boardDTO -> boardDTO.getKpis().stream()).forEach(boardKpisDTO -> boardKpisDTO
 							.setShown(kpiWiseIsShownFlag.getOrDefault(boardKpisDTO.getKpiId(), true)));
 			CollectionUtils.emptyIfNull(defaultUserBoardConfigDTO.getOthers()).stream()
-					.flatMap(boardDTO -> boardDTO.getKpis().stream()).forEach(boardKpisDTO -> boardKpisDTO
+					.flatMap(boardDTO -> boardDTO.getKpis().stream())
+					.forEach(boardKpisDTO -> boardKpisDTO
 							.setShown(kpiWiseIsShownFlag.getOrDefault(boardKpisDTO.getKpiId(), true)));
 		}
 	}
@@ -305,6 +311,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		defaultKpiCategory.add(ITERATION);
 		defaultKpiCategory.add(RELEASE);
 		defaultKpiCategory.add(BACKLOG);
+        defaultKpiCategory.add(DEVELOPER);
 		defaultKpiCategory.add(KPI_MATURITY);
 		setDefaultBoardInfoFromKpiMaster(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), false,
 				defaultKpiCategory, scrumBoards);
@@ -330,6 +337,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				otherBoards, false);
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), BACKLOG,
 				otherBoards, false);
+        setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), DEVELOPER,
+                otherBoards, false);
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), KPI_MATURITY,
 				otherBoards, false);
 		newUserBoardConfig.setOthers(otherBoards);
@@ -434,15 +443,19 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * @param kpiMaster
 	 */
 	private void setKpiUserBoardDefaultFromKpiMaster(List<BoardKpisDTO> boardKpisList, KpiMaster kpiMaster) {
-		BoardKpisDTO boardKpis = new BoardKpisDTO();
-		boardKpis.setKpiId(kpiMaster.getKpiId());
-		boardKpis.setKpiName(kpiMaster.getKpiName());
-		boardKpis.setShown(true);
-		boardKpis.setIsEnabled(true);
-		boardKpis.setOrder(kpiMaster.getDefaultOrder());
-		boardKpis.setSubCategoryBoard(kpiMaster.getKpiSubCategory());
-		boardKpis.setKpiDetail(kpiMaster);
-		boardKpisList.add(boardKpis);
+		Boolean isRepoToolFlag = customApiConfig.getIsRepoToolEnable();
+		if ((kpiMaster.getIsRepoToolKpi() && isRepoToolFlag) || (!kpiMaster.getIsRepoToolKpi() && isRepoToolFlag) ||
+				(!kpiMaster.getIsRepoToolKpi() && !isRepoToolFlag)) {
+			BoardKpisDTO boardKpis = new BoardKpisDTO();
+			boardKpis.setKpiId(kpiMaster.getKpiId());
+			boardKpis.setKpiName(kpiMaster.getKpiName());
+			boardKpis.setShown(true);
+			boardKpis.setIsEnabled(true);
+			boardKpis.setOrder(kpiMaster.getDefaultOrder());
+			boardKpis.setSubCategoryBoard(kpiMaster.getKpiSubCategory());
+			boardKpis.setKpiDetail(kpiMaster);
+			boardKpisList.add(boardKpis);
+		}
 	}
 
 	/**

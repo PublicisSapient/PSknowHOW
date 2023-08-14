@@ -86,7 +86,7 @@ public class RepoToolsConfigServiceImpl {
 			RepoToolConfig repoToolConfig = new RepoToolConfig(projectToolConfig.getRepositoryName(),
 					projectToolConfig.getIsNew(), projectToolConfig.getBasicProjectConfigId().toString(),
 					connection.getHttpUrl(), repoToolsProvider.getRepoToolProvider(), connection.getSshUrl(),
-					projectToolConfig.getBranch(),
+					projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
 					fistScan.toString().replace("T", " "), toolCredential, branchNames);
 			RepoToolsClient repoToolsClient = new RepoToolsClient();

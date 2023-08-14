@@ -219,9 +219,18 @@ public class CustomApiConfig {// NOPMD
 	private String samlUrlEndString;
 	// repo x axis count days rangeForCheckInsAndMergeRequests
 	private Integer repoXAxisCountForCheckInsAndMergeRequests;
-
 	private String repoToolAPIKey;
+	private String repoToolURL;
+	private Boolean isRepoToolEnable;
 
+	public Boolean getIsRepoToolEnable() {
+		return isRepoToolEnable;
+	}
+
+	public void setIsRepoToolEnable(Boolean isRepoToolEnable) {
+		this.isRepoToolEnable = isRepoToolEnable;
+	}
+	
 	public String getRepoToolAPIKey() {
 		return repoToolAPIKey;
 	}
@@ -237,8 +246,6 @@ public class CustomApiConfig {// NOPMD
 	public void setRepoToolURL(String repoToolURL) {
 		this.repoToolURL = repoToolURL;
 	}
-
-	private String repoToolURL;
 
 	public int getSprintVelocityLimit() {
 		return sprintVelocityLimit;
