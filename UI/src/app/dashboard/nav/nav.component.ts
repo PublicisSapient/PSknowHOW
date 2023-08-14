@@ -183,6 +183,7 @@ export class NavComponent implements OnInit {
           this.kpiListData['others'][i].boardName.toLowerCase()
       });
     }
+    
     // renamed tab name was not updating when navigating on iteration/backlog, issue fixed
     if (this.changedBoardName) {
       this.service.changedMainDashboardValueSub.next(this.changedBoardName);

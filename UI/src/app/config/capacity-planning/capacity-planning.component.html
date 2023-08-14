@@ -1,0 +1,508 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
+<div class="p-col-12 horizontal-tabs">
+    <div class="main">
+        <div class="tabs-container">
+            <p-button *ngFor='let item of tabHeaders' label="{{item?.toUpperCase()}}"
+                icon="pi pi-{{item?.toLowerCase()}}" class="btn-tab pi-{{item?.toLowerCase()}}-button"
+                [ngClass]="{'btn-active':item?.toLowerCase() === 'scrum'}"
+                (click)="kanbanActivation(item?.toLowerCase())"></p-button>
+        </div>
+        <div class="tabs-content test-execution-content"
+            *ngIf="trendLineValueList && trendLineValueList?.length > 0 else noDataTemp">
+            <div class="p-xl-12 p-pl-0 p-p-r-0 p-pb-2">
+                <div class="p-xl-12 p-pl-0 p-p-r-0">
+                    <form [formGroup]="filterForm" class="p-xl-12 p-p-0">
+                        <div class="p-xl-12 p-d-flex p-pl-0 p-pb-3">
+                            <div class="form-check filter-box p-xl-4 trend-line-container p-pl-0">
+                                <ng-select formControlName="selectedProjectValue"
+                                    (change)="handleIterationFilters('project', false)" placeholder="Project"
+                                    [clearable]="false" class="p-pb-0">
+                                    <ng-option *ngFor="let item of trendLineValueList"
+                                        [value]="item.nodeId">{{item.nodeName}}
+                                    </ng-option>
+                                </ng-select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div #capacityTemp>
+                    <div class="p-xl-12 p-pl-0 p-p-r-0 capcity-kanban-table" *ngIf="kanban else capacityScrumDataTable">
+                        <div class="p-xl-12 p-pl-0 p-p-r-0" *ngIf="capacityKanbanData?.length > 0 else noDataTemp">
+                            <div class="p-xl-12 p-pl-0 p-p-r-0 p-mb-2 table-header">{{tabContentHeaders[selectedView]}}
+                            </div>
+                            <p-table [columns]="cols.capacityKanbanKeys" [value]="capacityKanbanData"
+                                class="capacity-table custom-grid" loadingIcon="loading-img"
+                                [expandedRowKeys]="expandedRows" dataKey="startDate"
+                                (onRowExpand)="onCapacitySprintRowSelection()" rowExpandMode="single">
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <th *ngFor="let col of columns" class="upload_sprint_capacity">
+                                            {{col.header}}
+                                        </th>
+                                        <th class="upload_sprint_capacity">Action</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-item let-columns="columns" let-expanded="expanded">
+                                    <tr class="sprint"
+                                        [ngClass]="{'tr-active':(item | comparedates) === true , 'row-expanded':expanded}"
+                                        [pRowToggler]="item" [pRowTogglerDisabled]="!isToggleEnableForSelectedProject">
+                                        <td *ngFor="let col of columns; let i=index"
+                                            [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number'}"
+                                            class="upload_sprint_capacity sprint p-pl-3">
+                                            <button *ngIf="i === 0 && isToggleEnableForSelectedProject" type="button"
+                                                pButton pRipple class="p-button-text  p-button-plain expand-btn"
+                                                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+                                            <span
+                                                *ngIf="col.field === 'startDate' || col.field === 'endDate' else otherFieldsTemp">
+                                                {{item[col.field] | date: 'dd/MMM/yyyy'}}
+                                            </span>
+                                            <ng-template #otherFieldsTemp>
+                                                {{item[col.field] ? item[col.field] : '- -'}}
+                                            </ng-template>
+                                        </td>
+                                        <td class="upload_sprint_capacity">
+                                            <button pButton type="button" [disabled]="!isAdminForSelectedProject"
+                                                title="{{!isAdminForSelectedProject ? 'You are not an admin' : ''}}"
+                                                class="p-button-sm btn-active edit-btn"
+                                                label="{{isToggleEnableForSelectedProject ? 'Manage Users' : (item.capacity ? 'Edit Capacity' : 'Add Capacity')}}"
+                                                (click)="isToggleEnableForSelectedProject ? manageAssignees(item): AddOrUpdateData(item)"
+                                                iconPos="right"
+                                                [loading]="isToggleEnableForSelectedProject ? jiraAssigneeLoader : false"></button>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="rowexpansion" let-item>
+                                    <tr [pSelectableRow]="item" class="row-expansion">
+                                        <td colspan="5" [style]="{'display':'block'}" class="p-pb-2">
+                                            <div>
+                                                <div class="p-d-flex p-justify-between p-align-center">
+                                                    <div class="p-d-flex p-align-center">
+                                                        <h3 class="color-grey">Added Users</h3>&nbsp;&nbsp;
+                                                        <p> (*If the desired Domain name is not visible, kindly contact
+                                                            us on knowhowfeedback@publicissapient.com)</p>
+                                                    </div>
+                                                    <p-button styleClass="p-button-secondary p-button-sm edit-button"
+                                                    [disabled]="!isAdminForSelectedProject"
+                                                title="{{!isAdminForSelectedProject ? 'You are not an admin' : ''}}"
+                                                        (click)="onSprintCapacityEdit(item)"
+                                                        *ngIf="!projectCapacityEditMode"
+                                                        [disabled]="!item?.assigneeCapacity?.length > 0">
+                                                        <img alt="edit logo" src="../../../assets/img/edit.svg"
+                                                            style="width: 0.75rem" />
+                                                        <span class="p-pl-2">Edit</span>
+                                                    </p-button>
+                                                </div>
+
+
+                                                <p-table [value]="item?.assigneeCapacity" dataKey="userId"
+                                                    [paginator]="true" [rows]="20" [rowsPerPageOptions]="[20,25,30]"
+                                                    [showCurrentPageReport]="true">
+                                                    <ng-template pTemplate="header">
+                                    <tr class="expanded-table-header-row">
+                                        <th pSortableColumn="userName" class="expanded-table-header-cell"
+                                            [style]="{'width':'25%'}">User Name <p-sortIcon field="userName">
+                                            </p-sortIcon>
+                                        </th>
+
+                                        <th pSortableColumn="role" class="expanded-table-header-cell"
+                                            [style]="{'width':'25%'}">Domain <p-sortIcon field="role"></p-sortIcon>
+                                        </th>
+                                        <th pSortableColumn="plannedCapacity" class="expanded-table-header-cell">Planned
+                                            Capacity (in Hrs) <p-sortIcon field="plannedCapacity"></p-sortIcon>
+                                        </th>
+                                        <th pSortableColumn="leaves" class="expanded-table-header-cell">Leaves (in Hrs)
+                                            <p-sortIcon field="leaves">
+                                            </p-sortIcon>
+                                        </th>
+                                        <th pSortableColumn="availableCapacity" class="expanded-table-header-cell">
+                                            Available Capacity (in Hrs) <p-sortIcon
+                                                field="availableCapacity"></p-sortIcon>
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-assignee let-rowIndex="rowIndex">
+                                    <tr class="expanded-table-body-row">
+                                        <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName :
+                                            '- -'}}</td>
+
+                                        <td class="expanded-table-body-cell">
+                                            <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles"
+                                                optionLabel="name" optionValue="value"
+                                                *ngIf="projectCapacityEditMode;else showRole"
+                                                [style]="{'width':'200px'}"
+                                                [formControl]="selectedSprintAssigneFormArray[rowIndex]?.role"
+                                                (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'role')"></p-dropdown>
+                                            <ng-template #showRole>{{assignee?.role ?
+                                                projectAssigneeRolesObj[assignee?.role] : '- -'}}</ng-template>
+                                        </td>
+                                        <td class="expanded-table-body-cell">
+                                            <input type="number" min="0" pInputText
+                                                *ngIf="projectCapacityEditMode;else showPlannedCapacity"
+                                                (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'plannedCapacity')"
+                                                [style]="{'width':'150px'}"
+                                                [formControl]="selectedSprintAssigneFormArray[rowIndex]?.plannedCapacity"
+                                                (keypress)="validateInput($event)">
+                                            <ng-template #showPlannedCapacity>{{assignee?.plannedCapacity ?
+                                                assignee?.plannedCapacity : '- -'}}</ng-template>
+                                        </td>
+                                        <td class="expanded-table-body-cell" [style]="{'position':'relative'}">
+                                            <input type="number" min="0" (keypress)="validateInput($event)" pInputText
+                                                *ngIf="projectCapacityEditMode;else showLeaves"
+                                                [formControl]="selectedSprintAssigneFormArray[rowIndex]?.leaves"
+                                                (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'leaves')"
+                                                [style]="{'width':'150px'}"
+                                                [ngClass]="{'ng-invalid':selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors }">
+                                            <small
+                                                *ngIf="selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors && projectCapacityEditMode"
+                                                class="p-error-block">value must be less than or equal to
+                                                plannedCapacity.</small>
+                                            <ng-template #showLeaves>{{assignee?.leaves ? assignee?.leaves : '-
+                                                -'}}</ng-template>
+                                        </td>
+                                        <td class="expanded-table-body-cell">{{assignee?.availableCapacity ?
+                                            assignee?.availableCapacity : '- -'}}</td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                    <tr class="expanded-table-body-row">
+                                        <td colspan="5" class="expanded-table-body-cell no-assignee">Click on Manage
+                                            Users to add users.</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+
+                            <div class="p-d-flex p-justify-end p-mt-3 p-mb-3" *ngIf="projectCapacityEditMode">
+                                <button pButton pRipple label="Cancel" icon="pi pi-times"
+                                    class="p-button-cancel p-button-outlined p-button-secondary p-button-text p-mr-2 p-button-sm"
+                                    (click)="onSprintCapacityCancel(item)"></button>
+
+                                <button pButton pRipple label="Save" icon="pi pi-save"
+                                    class="p-button-secondary p-button-sm" (click)="onSprintCapacitySave(item)"
+                                    [disabled]="!isAdminForSelectedProject || selectedSprintAssigneValidator?.length > 0"></button>
+                            </div>
+                        </div>
+                        </td>
+                        </tr>
+                        </ng-template>
+                        </p-table>
+                    </div>
+                    <ng-template #noDataTemp>
+                        <div class="p-xl-12 p-pl-0 p-p-r-0 no-data-available" *ngIf="noData">
+                            No data Available for Selected Project
+                        </div>
+                        <div class="p-xl-12 p-pl-0 p-p-r-0 no-data-available" *ngIf="tableLoader && !loader">
+                            <div class="min-ht">
+                                <div class="loading-img"></div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </div>
+                <ng-template #capacityScrumDataTable>
+                    <div class="p-xl-12 p-pl-0 p-p-r-0 capcity-scrum-table"
+                        *ngIf="capacityScrumData?.length > 0 else noDataTemp">
+                        <div class="p-xl-12 p-pl-0 p-p-r-0 p-mb-2 table-header">{{tabContentHeaders[selectedView]}}
+                        </div>
+                        <p-table [columns]="cols.capacityScrumKeys" [value]="capacityScrumData" dataKey="sprintNodeId"
+                            class="capacity-table custom-grid" (onRowExpand)="onCapacitySprintRowSelection()"
+                            [expandedRowKeys]="expandedRows" loadingIcon="loading-img" expandableRows="true"
+                            rowExpandMode="single">
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th *ngFor="let col of columns" class="upload_sprint_capacity">
+                                        {{col.header}}
+                                    </th>
+                                    <th class="upload_sprint_capacity">Action</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-item let-columns="columns" let-expanded="expanded">
+                                <tr class="sprint"
+                                    [ngClass]="{'tr-active': item?.sprintState?.toLowerCase() === 'active', 'row-expanded':expanded}"
+                                    [pRowToggler]="item" [pRowTogglerDisabled]="!isToggleEnableForSelectedProject">
+                                    <td class="upload_sprint_capacity p-pl-3" *ngFor="let col of columns; let i=index"
+                                        [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number'}">
+                                        <button *ngIf="i === 0 && isToggleEnableForSelectedProject" type="button"
+                                            pButton pRipple class="p-button-text  p-button-plain expand-btn"
+                                            [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+                                        {{item[col.field] ? item[col.field] : '- -'}}
+                                    </td>
+                                    <td class="upload_sprint_capacity">
+                                        <button pButton type="button" class="p-button-sm btn-active edit-btn" [disabled]="!isAdminForSelectedProject"
+                                            label="{{isToggleEnableForSelectedProject ? 'Manage Users' : (item.capacity ? 'Edit Capacity' : 'Add Capacity')}}"
+                                            title="{{!isAdminForSelectedProject ? 'You are not an admin' : ''}}"
+                                            (click)="isToggleEnableForSelectedProject ? manageAssignees(item): AddOrUpdateData(item)"
+                                            iconPos="right"
+                                            [loading]="isToggleEnableForSelectedProject ? jiraAssigneeLoader : false"></button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="rowexpansion" let-item>
+                                <tr [pSelectableRow]="item" class="row-expansion">
+                                    <td colspan="5" [style]="{'display':'block'}" class="p-pb-2">
+                                        <div>
+                                            <div class="p-d-flex p-justify-between p-align-center">
+                                                <div class="p-d-flex p-align-center">
+                                                    <h3 class="color-grey">Added Users</h3>&nbsp;&nbsp;
+                                                    <p> (*If the desired Domain name is not visible, kindly contact us
+                                                        on knowhowfeedback@publicissapient.com)</p>
+                                                </div>
+                                                <p-button styleClass="p-button-secondary p-button-sm edit-button"
+                                                title="{{!isAdminForSelectedProject ? 'You are not an admin' : ''}}"
+                                                    (click)="onSprintCapacityEdit(item)"
+                                                    *ngIf="!projectCapacityEditMode"
+                                                    [disabled]="!isAdminForSelectedProject || !item?.assigneeCapacity?.length > 0">
+                                                    <img alt="edit logo" src="../../../assets/img/edit.svg"
+                                                        style="width: 0.75rem" />
+                                                    <span class="p-pl-2">Edit</span>
+                                                </p-button>
+                                            </div>
+
+
+                                            <p-table [value]="item.assigneeCapacity" dataKey="userId" [paginator]="true"
+                                                [rows]="20" [rowsPerPageOptions]="[20,25,30]"
+                                                [showCurrentPageReport]="true">
+                                                <ng-template pTemplate="header">
+                                <tr class="expanded-table-header-row">
+                                    <th pSortableColumn="userName" class="expanded-table-header-cell"
+                                        [style]="{'width':'25%'}">
+                                        <div>
+                                            <span [ngClass]="{'editable': projectCapacityEditMode}">User Name</span>
+                                            <p-sortIcon field="userName"></p-sortIcon>
+                                        </div>
+                                    </th>
+                                    <th pSortableColumn="happinessRating" class="expanded-table-header-cell"
+                                        [style]="{'width':'25%'}">
+                                        <div>
+                                            <span [ngClass]="{'editable': projectCapacityEditMode}">Happiness
+                                                Rating</span>
+                                            <p-sortIcon field="happinessRating"></p-sortIcon>
+                                        </div>
+                                    </th>
+                                    <th pSortableColumn="role" class="expanded-table-header-cell"
+                                        [style]="{'width':'25%'}">
+                                        <div>
+                                            <span [ngClass]="{'editable': projectCapacityEditMode}">Domain</span>
+                                            <p-sortIcon field="role"></p-sortIcon>
+                                        </div>
+                                    </th>
+                                    <th pSortableColumn="plannedCapacity" class="expanded-table-header-cell">
+                                        <div>
+                                            <span [ngClass]="{'editable': projectCapacityEditMode}">Planned Capacity (in
+                                                Hrs)</span>
+                                            <p-sortIcon field="plannedCapacity"></p-sortIcon>
+                                        </div>
+                                    </th>
+                                    <th pSortableColumn="leaves" class="expanded-table-header-cell">
+                                        <div>
+                                            <span [ngClass]="{'editable': projectCapacityEditMode}">Leaves (in
+                                                Hrs)</span>
+                                            <p-sortIcon field="leaves"></p-sortIcon>
+                                        </div>
+                                    </th>
+                                    <th pSortableColumn="availableCapacity" class="expanded-table-header-cell">
+                                        <div>
+                                            <span [ngClass]="{'editable': projectCapacityEditMode}">Available Capacity
+                                                (in Hrs)</span>
+                                            <p-sortIcon field="availableCapacity"></p-sortIcon>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-assignee let-rowIndex="rowIndex">
+                                <tr class="expanded-table-body-row">
+                                    <td class="expanded-table-body-cell">{{assignee?.userName ? assignee?.userName : '-
+                                        -'}}</td>
+                                    <td class="expanded-table-body-cell">
+                                        <app-rating [editable]="projectCapacityEditMode"
+                                            [currentAssignee]="assignee"></app-rating>
+                                    </td>
+                                    <td class="expanded-table-body-cell">
+                                        <p-dropdown placeholder="Select Domain" [options]="projectAssigneeRoles"
+                                            optionLabel="name" optionValue="value"
+                                            *ngIf="projectCapacityEditMode;else showRole" [style]="{'width':'150px'}"
+                                            [formControl]="selectedSprintAssigneFormArray[rowIndex]?.role"
+                                            (onChange)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'role')"></p-dropdown>
+                                        <ng-template #showRole>{{assignee?.role ?
+                                            projectAssigneeRolesObj[assignee?.role] : '- -'}}</ng-template>
+                                    </td>
+                                    <td class="expanded-table-body-cell">
+                                        <input type="number" min="0" pInputText
+                                            *ngIf="projectCapacityEditMode;else showPlannedCapacity"
+                                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'plannedCapacity')"
+                                            [style]="{'width':'120px'}"
+                                            [formControl]="selectedSprintAssigneFormArray[rowIndex]?.plannedCapacity"
+                                            (keypress)="validateInput($event)">
+                                        <ng-template #showPlannedCapacity>{{assignee?.plannedCapacity ?
+                                            assignee?.plannedCapacity : '- -'}}</ng-template>
+                                    </td>
+                                    <td class="expanded-table-body-cell" [style]="{'position':'relative'}">
+                                        <input type="number" min="0" (keypress)="validateInput($event)" pInputText
+                                            *ngIf="projectCapacityEditMode;else showLeaves"
+                                            [formControl]="selectedSprintAssigneFormArray[rowIndex]?.leaves"
+                                            (input)="calculateAvaliableCapacity(assignee,this.selectedSprintAssigneFormArray[rowIndex],'leaves')"
+                                            [style]="{'width':'120px'}"
+                                            [ngClass]="{'ng-invalid':selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors }">
+                                        <small
+                                            *ngIf="selectedSprintAssigneFormArray[rowIndex]?.leaves?.errors && projectCapacityEditMode"
+                                            class="p-error-block">value must be less than or equal to
+                                            plannedCapacity.</small>
+                                        <ng-template #showLeaves>{{assignee?.leaves ? assignee?.leaves : '-
+                                            -'}}</ng-template>
+                                    </td>
+                                    <td class="expanded-table-body-cell">{{assignee?.availableCapacity ?
+                                        assignee?.availableCapacity : '- -'}}</td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr class="expanded-table-body-row">
+                                    <td colspan="5" class="expanded-table-body-cell no-assignee">Click on Manage Users
+                                        to add users.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+
+                        <div class="p-d-flex p-justify-end p-mt-3 p-mb-3" *ngIf="projectCapacityEditMode">
+                            <button pButton pRipple label="Cancel" icon="pi pi-times"
+                                class="p-button-cancel p-button-outlined p-button-secondary p-button-text p-mr-2 p-button-sm"
+                                (click)="onSprintCapacityCancel(item)"></button>
+
+                            <button pButton pRipple label="Save" icon="pi pi-save"
+                                class="p-button-secondary p-button-sm" (click)="onSprintCapacitySave(item)"
+                                [disabled]="!isAdminForSelectedProject || selectedSprintAssigneValidator?.length > 0"></button>
+                        </div>
+                    </div>
+                    </td>
+                    </tr>
+                </ng-template>
+
+                </p-table>
+            </div>
+            <ng-template #noDataTemp>
+                <div class="p-xl-12 p-pl-0 p-p-r-0 no-data-available" *ngIf="noData">
+                    No data Available for Selected Project
+                </div>
+                <div class="p-xl-12 p-pl-0 p-p-r-0 no-data-available" *ngIf="tableLoader && !loader">
+                    <div class="min-ht">
+                        <div class="loading-img"></div>
+                    </div>
+                </div>
+            </ng-template>
+            </ng-template>
+        </div>
+    </div>
+</div>
+<ng-template #noDataTemp>
+    <div class="p-xl-12 no-projects" *ngIf="!loader">
+        <div *ngIf="kanban else noScrumData" class="error-msg">
+            You do not have access to any Kanban project
+        </div>
+        <ng-template #noScrumData>
+            <div class="error-msg">
+                You do not have access to any Scrum project
+            </div>
+        </ng-template>
+    </div>
+</ng-template>
+</div>
+</div>
+
+<p-dialog header="Add/Remove Users" [(visible)]="displayAssignee" [modal]="true" (onShow)="onAssigneeModalOpen()"
+[breakpoints]="{'960px': '75vw', '640px': '100vw'}" [style]="{width: '50vw'}">
+    <app-manage-assignee [assigneeList]="manageAssigneeList" #manageAssignee></app-manage-assignee>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times"
+            class="p-button-cancel p-button-secondary p-button-text p-mr-2 p-button-sm"
+            (click)="displayAssignee=false"></button>
+
+        <button pButton pRipple label="Save" icon="pi pi-save" class="p-button-secondary p-button-sm"
+        [disabled]="!isAdminForSelectedProject" (click)="addRemoveAssignees()"></button>
+
+    </ng-template>
+</p-dialog>
+<p-dialog [(visible)]="showPopuup" [modal]="true" [style]="{width: '50vw'}" [baseZIndex]="10000"
+    [draggable]="false" [resizable]="false" *ngIf="selectedView === 'upload_tep' || selectedView === 'upload_Sprint_Capacity'">
+    <form [formGroup]="popupForm" class="p-fluid p-xl-12 p-p-0" *ngIf="selectedView === 'upload_tep' else sprintCapacityPopupFormTemp">
+      <div class=" form-group p-xl-12 pad-l-0">
+        <label class="mr-sm-2" *ngIf="kanban else scrumTemp">
+          <span>For Execution Date {{executionDate | date: 'dd/MMM/yyyy'}}</span>
+        </label>
+        <ng-template #scrumTemp>
+          <label class="mr-sm-2">
+            <span>For {{selectedSprintName}}:</span>
+          </label>
+        </ng-template>
+      </div>
+       <div class=" form-group p-field p-mb-0 required p-xl-12 pad-l-0">
+        <label for="totalTestCases" class="mr-sm-2 float-left">
+          <span>Enter "Total test cases"</span>
+        </label>
+        <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter total test cases'"
+          formControlName="totalTestCases" (input)="numericInputUpDown($event)"
+          (keydown)="enterNumericValue($event)">
+      </div>
+     <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
+        <label for="executedTestCase" class="mr-sm-2 float-left">
+          <span>Enter "Executed test cases"</span>
+        </label>
+        <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter executed test cases'"
+          formControlName="executedTestCase" (input)="numericInputUpDown($event)"
+          (keydown)="enterNumericValue($event)">
+      </div>
+
+      <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
+        <label for="passedTestCase" class="mr-sm-2 float-left">
+          <span>Enter "Passed test cases"</span>
+        </label>
+        <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter passed test cases'"
+        formControlName="passedTestCase" (input)="numericInputUpDown($event)"
+          (keydown)="enterNumericValue($event)">
+      </div>
+    </form>
+    <ng-template #sprintCapacityPopupFormTemp>
+      <form [formGroup]="popupForm" class="p-xl-12 p-p-0" *ngIf="selectedView === 'upload_Sprint_Capacity'">
+        <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
+          <label for="capacity" class="mr-sm-2 float-left">
+            <span *ngIf="kanban">Enter 'Team capacity' for the days between {{this.startDate | date: 'dd/MMM/yyyy'}}
+              to {{this.endDate | date: 'dd/MMM/yyyy'}} </span>
+            <span *ngIf="!kanban">Enter "Team capacity for {{selectedSprintName}}"</span>
+          </label>
+          <input type="number" pInputText class="form-control w-100 p-p-2 mb-2 mr-sm-2" (input)="numericInputUpDown($event)"
+            (keydown)="enterNumericValue($event)"
+            [placeholder]="'Enter value'"
+            formControlName="capacity">
+        </div>
+      </form>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <p class="text-danger p-text-left p-mt-0" [hidden]="!isTestExecutionSaveDisabled" *ngIf="selectedView === 'upload_tep' else sprintCapacityErrorTemp">{{testExecutionErrorMessage}}</p>
+      <ng-template #sprintCapacityErrorTemp>
+        <p class="text-danger p-text-left p-mt-0" [hidden]="!isCapacitySaveDisabled">{{capacityErrorMessage}}</p>
+      </ng-template>
+      <div class="p-d-flex p-justify-end p-align-center p-mt-1 btn-container">
+        <button pButton pRipple label="Cancel" icon="pi pi-times"
+        class="p-button-cancel p-button-secondary p-button-text p-mr-2 p-button-sm" (click)="showPopuup=false"></button>
+        <button pButton pRipple label="Save" icon="pi pi-save"
+           class="p-button-secondary p-button-sm" (click)="submitTestExecution()" [disabled]="isTestExecutionSaveDisabled"
+           *ngIf="selectedView === 'upload_tep' else capacitySubmitTemp"></button>
+           <ng-template #capacitySubmitTemp>
+            <button pButton pRipple label="Save" icon="pi pi-save" [disabled]="isCapacitySaveDisabled"
+           class="p-button-secondary p-button-sm" (click)="submitCapacity()"></button>
+           </ng-template>
+     </div>
+    </ng-template>
+</p-dialog>
+<app-page-loader *ngIf="loader"></app-page-loader>

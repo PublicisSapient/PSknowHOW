@@ -62,6 +62,7 @@ import { TypeofPipe } from './pipes/type-of.pipe';
 import { CompareStartEndWithCurrentDatePipe } from './pipes/compareStartEndWithCurrentDate';
 import { ManageAssigneeComponent } from './manage-assignee/manage-assignee.component';
 import { RatingComponent } from './rating/rating.component';
+import { CapacityPlanningComponent } from './capacity-planning/capacity-planning.component';
 
 @NgModule({
   imports: [
@@ -109,7 +110,8 @@ import { RatingComponent } from './rating/rating.component';
     TypeofPipe,
     CompareStartEndWithCurrentDatePipe,
     ManageAssigneeComponent,
-    RatingComponent
+    RatingComponent,
+    CapacityPlanningComponent
     // FilterComponent
   ],
   providers: [MessageService, ConfirmationService]
