@@ -41,12 +41,16 @@ import com.atlassian.jira.rest.client.api.domain.User;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -72,6 +76,11 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	private AdditionalFilterHelper additionalFilterHelper;
 
 	private Map<String, Map<String, JiraIssue>> projectWiseIssues;
+
+	@Autowired
+	private AssigneeDetailsRepository assigneeDetailsRepository;
+
+	AssigneeDetails assigneeDetails;
 
 	@Override
 	public JiraIssue convertToJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig) throws JSONException {
@@ -223,22 +232,60 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	private void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
 			List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+
 			List<String> ownerName = assigneeName.stream().map(JiraIssueProcessorImpl::hash)
 					.collect(Collectors.toList());
 			List<String> ownerId = assigneeKey.stream().map(JiraIssueProcessorImpl::hash).collect(Collectors.toList());
 			List<String> ownerFullName = assigneeDisplayName.stream().map(JiraIssueProcessorImpl::hash)
 					.collect(Collectors.toList());
-			jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
-			jiraIssue.setAssigneeName(hash(jiraIssue.getAssigneeId() + jiraIssue.getAssigneeName()));
 			jiraIssue.setOwnersShortName(ownerName);
 			jiraIssue.setOwnersUsername(ownerName);
 			jiraIssue.setOwnersID(ownerId);
 			jiraIssue.setOwnersFullName(ownerFullName);
+			jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
+			jiraIssue.setAssigneeName(
+					setAssigneeName(jiraIssue.getAssigneeId(), projectConfig.getBasicProjectConfigId().toString()));
 		}
 	}
 
 	public static String hash(String input) {
 		return String.valueOf(Objects.hash(input));
+	}
+
+	String setAssigneeName(String assigneeId, String basicProjectConfigId) {
+		String assigneeName = JiraConstants.USER + JiraConstants.SPACE + 1;
+		if (null == assigneeDetails
+				|| !assigneeDetails.getBasicProjectConfigId().equalsIgnoreCase(basicProjectConfigId)) {
+			assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(basicProjectConfigId,
+					ProcessorConstants.JIRA);
+		}
+		Set<Assignee> assigneeSetToSave = new LinkedHashSet<>();
+		if (assigneeDetails == null) {
+			assigneeDetails = new AssigneeDetails();
+			assigneeDetails.setBasicProjectConfigId(basicProjectConfigId);
+			assigneeDetails.setSource(ProcessorConstants.JIRA);
+			assigneeSetToSave.add(new Assignee(assigneeId, assigneeName));
+			assigneeDetails.setAssignee(assigneeSetToSave);
+			assigneeDetails.setAssigneeSequence(2);
+		} else {
+			Assignee assignee = assigneeDetails.getAssignee().stream()
+					.filter(Assignee -> assigneeId.equals(Assignee.getAssigneeId())).findAny().orElse(null);
+			if (null == assignee) {
+				assigneeName = JiraConstants.USER + JiraConstants.SPACE + assigneeDetails.getAssigneeSequence();
+				assigneeDetails.setAssigneeSequence(assigneeDetails.getAssigneeSequence() + 1);
+				// this set is created so that there is no need to fetch
+				// assigneeDetails again and same assignee can be checked
+				// only with existing assigneeDetails object
+				Set<Assignee> newAssignee = new HashSet<>();
+				newAssignee.add(new Assignee(assigneeId, assigneeName));
+				assigneeDetails.getAssignee().addAll(newAssignee);
+
+			} else {
+				assigneeName = assignee.getAssigneeName();
+			}
+
+		}
+		return assigneeName;
 	}
 
 	public String getAssignee(User user) {

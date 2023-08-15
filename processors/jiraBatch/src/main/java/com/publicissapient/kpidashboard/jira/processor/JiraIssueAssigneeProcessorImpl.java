@@ -31,28 +31,36 @@ public class JiraIssueAssigneeProcessorImpl implements JiraIssueAssigneeProcesso
 
 		if (null == assigneeDetails || !assigneeDetails.getBasicProjectConfigId()
 				.equalsIgnoreCase(projectConfig.getBasicProjectConfigId().toString())) {
-			log.info("Fetching assignee details for the project : {}",projectConfig.getProjectName());
+			log.info("Fetching assignee details for the project : {}", projectConfig.getProjectName());
 			assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(
 					projectConfig.getBasicProjectConfigId().toString(), ProcessorConstants.JIRA);
 		}
 
 		Set<Assignee> assigneeSetToSave = new LinkedHashSet<>();
 		if (StringUtils.isNotEmpty(jiraIssue.getAssigneeId()) && StringUtils.isNotEmpty(jiraIssue.getAssigneeName())) {
-			Assignee assignee=new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName());
+			Assignee assignee = new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName());
 			assigneeSetToSave.add(assignee);
 			if (assigneeDetails == null) {
 				assigneeDetails = new AssigneeDetails();
 				assigneeDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
 				assigneeDetails.setSource(ProcessorConstants.JIRA);
 				assigneeDetails.setAssignee(assigneeSetToSave);
-			} else if(!assigneeDetails.getAssignee().contains(assignee)){
+				if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+					assigneeDetails.setAssigneeSequence(2);
+				}
+			} else if (!assigneeDetails.getAssignee().contains(assignee)) {
 				Set<Assignee> updatedAssigneeSetToSave = new HashSet<>();
 				updatedAssigneeSetToSave.addAll(assigneeDetails.getAssignee());
 				updatedAssigneeSetToSave.addAll(assigneeSetToSave);
 				assigneeDetails.setAssignee(updatedAssigneeSetToSave);
-			}else {
+				if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+					assigneeDetails.setAssigneeSequence(assigneeDetails.getAssigneeSequence() + 1);
+				}
+			} else {
 				return null;
 			}
+		}else {
+			return null;
 		}
 		return assigneeDetails;
 	}
