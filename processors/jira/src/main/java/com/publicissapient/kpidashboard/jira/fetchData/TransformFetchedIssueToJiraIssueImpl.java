@@ -99,7 +99,6 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
                 IssueField sprint = fields.get(fieldMapping.getSprintName());
                 setURL(issue.getKey(), jiraIssue, projectConfig);
                 setRCA(fieldMapping, issue, jiraIssue, fields);
-                setDevicePlatform(fieldMapping, jiraIssue, fields);
                 setThirdPartyDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 
                 if (issueTypeNames.contains(
@@ -108,6 +107,9 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
                     jiraIssue.setIssueId(JiraProcessorUtil.deodeUTF8String(issue.getId()));
                     jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
                     jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+                    jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+
+                    setEpicLinked(fieldMapping, jiraIssue, fields);
                     setDefectIssueType(jiraIssue, issueType, fieldMapping);
                     jiraIssue.setLabels(getLabelsList(issue));
                     processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
@@ -151,6 +153,15 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
 
         return jiraIssuesToSave;
     }
+
+    private void setEpicLinked(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
+        if (StringUtils.isNotEmpty(fieldMapping.getEpicLink())
+                && fields.get(fieldMapping.getEpicLink()) != null
+                && fields.get(fieldMapping.getEpicLink()).getValue() != null) {
+            jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+        }
+    }
+
 
     public void setJiraAssigneeDetails(JiraIssue jiraIssue, User user, Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfig) {
         if (user == null) {
@@ -331,21 +342,6 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
         }
         jiraIssue.setEstimate(valueString);
         jiraIssue.setStoryPoints(value);
-    }
-
-    private void setDevicePlatform(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
-
-        try {
-            String devicePlatform = null;
-            if (fields.get(fieldMapping.getDevicePlatform()) != null
-                    && fields.get(fieldMapping.getDevicePlatform()).getValue() != null) {
-                devicePlatform = ((JSONObject) fields.get(fieldMapping.getDevicePlatform()).getValue())
-                        .getString(JiraConstants.VALUE);
-            }
-            jiraIssue.setDevicePlatform(devicePlatform);
-        } catch (JSONException e) {
-            log.error("JIRA Processor | Error while parsing Device Platform data", e);
-        }
     }
 
     private JiraIssue getJiraIssue(ProjectConfFieldMapping projectConfig, String issueId) {
@@ -767,7 +763,12 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
             for (SprintDetails sprint : sprints) {
                 sprintsList.add(sprint.getOriginalSprintId());
                 jiraIssue.setSprintIdList(sprintsList);
+                sprint.setSprintID(
+                        sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + jiraIssue.getProjectName()
+                                + JiraConstants.COMBINE_IDS_SYMBOL + projectConfig.getBasicProjectConfigId());
+                sprint.setBasicProjectConfigId(new ObjectId(jiraIssue.getBasicProjectConfigId()));
             }
+            sprintDetailsSet.addAll(sprints);
             // Use the latest sprint
             // if any sprint date is blank set that sprint to JiraIssue
             // because this sprint is
@@ -775,20 +776,14 @@ public class TransformFetchedIssueToJiraIssueImpl implements TransformFetchedIss
             // sprint
             SprintDetails sprint = sprints.stream().filter(s -> StringUtils.isBlank(s.getStartDate())).findFirst()
                     .orElse(sprints.get(sprints.size() - 1));
-            String sprintId = sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL
-                    + jiraIssue.getProjectName() + JiraConstants.COMBINE_IDS_SYMBOL
-                    + projectConfig.getBasicProjectConfigId();
 
             jiraIssue.setSprintName(sprint.getSprintName() == null ? StringUtils.EMPTY : sprint.getSprintName());
-            jiraIssue.setSprintID(sprint.getOriginalSprintId() == null ? StringUtils.EMPTY : sprintId);
-            jiraIssue.setSprintBeginDate(sprint.getStartDate() == null ? StringUtils.EMPTY
+            jiraIssue.setSprintID(sprint.getOriginalSprintId() == null ? StringUtils.EMPTY : sprint.getSprintID());            jiraIssue.setSprintBeginDate(sprint.getStartDate() == null ? StringUtils.EMPTY
                     : JiraProcessorUtil.getFormattedDate(sprint.getStartDate()));
             jiraIssue.setSprintEndDate(sprint.getEndDate() == null ? StringUtils.EMPTY
                     : JiraProcessorUtil.getFormattedDate(sprint.getEndDate()));
             jiraIssue.setSprintAssetState(sprint.getState() == null ? StringUtils.EMPTY : sprint.getState());
 
-            sprint.setSprintID(sprintId);
-            sprintDetailsSet.add(sprint);
         } else {
             log.error("JIRA Processor | Failed to obtain sprint data for {}", sValue);
         }

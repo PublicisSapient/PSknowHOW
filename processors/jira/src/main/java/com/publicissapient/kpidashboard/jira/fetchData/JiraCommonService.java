@@ -380,16 +380,6 @@ public class JiraCommonService {
         boolean processorFetchingComplete = false;
         ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(projectConfig);
         try {
-            if (projectConfig.isKanban()) {
-                dataExist = (kanbanJiraRepo
-                        .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-                psLogData.setKanban("true");
-            } else {
-                dataExist = (jiraIssueRepository
-                        .findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-                psLogData.setKanban("false");
-            }
-
 
             Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(projectConfig);
 

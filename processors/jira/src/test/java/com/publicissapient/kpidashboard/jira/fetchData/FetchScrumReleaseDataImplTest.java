@@ -2,8 +2,11 @@ package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.application.*;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
@@ -19,11 +22,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -46,6 +51,9 @@ class FetchScrumReleaseDataImplTest {
 
     @Mock
     KerberosClient krb5Client;
+    @Mock
+    JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+
 
     ProjectConfFieldMapping scrumProjectMapping = ProjectConfFieldMapping.builder().build();
     List<AccountHierarchy> accountHierarchylist = new ArrayList<>();
@@ -70,7 +78,7 @@ class FetchScrumReleaseDataImplTest {
 
     @Test
     void processReleaseInfo() {
-        when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(Mockito.anyString(),
+        when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(anyString(),
                 any())).thenReturn(accountHierarchylist);
         when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchylist);
         when(hierarchyLevelService.getFullHierarchyLevels(anyBoolean())).thenReturn(hierarchyLevels);
@@ -83,6 +91,15 @@ class FetchScrumReleaseDataImplTest {
         version.setReleaseDate(DateTime.now());
         versionList.add(version);
         when(jiraCommonService.getVersion(any(),any())).thenReturn(versionList);
+        List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+        JiraIssueCustomHistory jiraIssueCustomHistory = new JiraIssueCustomHistory();
+        JiraHistoryChangeLog changeLog= new JiraHistoryChangeLog("","V1.0.2", LocalDateTime.now());
+        List<JiraHistoryChangeLog> logList= new ArrayList<>();
+        logList.add(changeLog);
+        jiraIssueCustomHistory.setFixVersionUpdationLog(logList);
+        jiraIssueCustomHistories.add(jiraIssueCustomHistory);
+
+        when(jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(anyString())).thenReturn(jiraIssueCustomHistories);
         when(jiraProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
         Assert.assertNull(fetchScrumReleaseData.processReleaseInfo(scrumProjectMapping,krb5Client));
     }
@@ -91,6 +108,10 @@ class FetchScrumReleaseDataImplTest {
     void processReleaseInfoNull() {
         when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId("Project",
                 scrumProjectMapping.getBasicProjectConfigId())).thenReturn(null);
+        List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+        JiraIssueCustomHistory jiraIssueCustomHistory = new JiraIssueCustomHistory();
+        jiraIssueCustomHistories.add(jiraIssueCustomHistory);
+        when(jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(anyString())).thenReturn(jiraIssueCustomHistories);
         Assert.assertNull(fetchScrumReleaseData.processReleaseInfo(scrumProjectMapping,krb5Client));
     }
 
@@ -110,6 +131,7 @@ class FetchScrumReleaseDataImplTest {
         ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
         projectBasicConfig.setProjectName("TEST Project Internal");
         projectBasicConfig.setIsKanban(false);
+        projectBasicConfig.setId(new ObjectId("5e15d8b195fe1300014538ce"));
         scrumProjectMapping.setProjectBasicConfig(projectBasicConfig);
         scrumProjectMapping.setJira(jiraToolConfig);
     }

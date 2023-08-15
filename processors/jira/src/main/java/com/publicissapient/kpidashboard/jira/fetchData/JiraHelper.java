@@ -102,14 +102,14 @@ public class JiraHelper {
         return changeLogList;
     }
 
-    static int getTotal(SearchResult searchResult) {
+    public static int getTotal(SearchResult searchResult) {
         if (searchResult != null) {
             return searchResult.getTotal();
         }
         return 0;
     }
 
-    static List<Issue> getIssuesFromResult(SearchResult searchResult) {
+    public static List<Issue> getIssuesFromResult(SearchResult searchResult) {
         if (searchResult != null) {
             return Lists.newArrayList(searchResult.getIssues());
         }

@@ -271,6 +271,7 @@ public class CreateJiraIssueHistoryImpl implements CreateJiraIssueHistory{
         List<JiraHistoryChangeLog> dueDateChangeLog = getDueDateChangeLog(changeLogList, fieldMapping, fields);
         List<JiraHistoryChangeLog> sprintChangeLog = getCustomFieldChangeLog(changeLogList,
                 handleStr(fieldMapping.getSprintName()), fields);
+        List<JiraHistoryChangeLog> flagStatusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.FLAG_STATUS);
 
         createFirstEntryOfChangeLog(statusChangeLog, issue,
                 ObjectUtils.isNotEmpty(issue.getStatus()) ? issue.getStatus().getName() : "");
@@ -291,6 +292,8 @@ public class CreateJiraIssueHistoryImpl implements CreateJiraIssueHistory{
         jiraIssueCustomHistory.setLabelUpdationLog(labelsChangeLog);
         jiraIssueCustomHistory.setDueDateUpdationLog(dueDateChangeLog);
         jiraIssueCustomHistory.setSprintUpdationLog(sprintChangeLog);
+        jiraIssueCustomHistory.setFlagStatusChangeLog(flagStatusChangeLog);
+
     }
 
     private void creatingFirstEntryOfSprintChangeLog(List<JiraHistoryChangeLog> sprintChangeLog,

@@ -113,7 +113,7 @@ public class FetchSprintReportImplTest {
         when(jiraProcessorConfig.getJiraServerSprintReportApi()).thenReturn("rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
         when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn("jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
         when(jiraCommonService.getDataFromClient(any(),any(),any())).thenReturn(sprintResponse);
-        Assert.assertEquals(1,fetchSprintReport.fetchSprints(projectConfig,sprintDetailsSet,Collections.EMPTY_SET,krb5Client).size());
+        Assert.assertEquals(1,fetchSprintReport.fetchSprints(projectConfig,sprintDetailsSet,Collections.EMPTY_SET,krb5Client,false).size());
     }
 
     private List<SprintDetails> getMockSprintDetails() {

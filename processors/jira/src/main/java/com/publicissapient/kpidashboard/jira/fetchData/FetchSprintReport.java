@@ -9,8 +9,10 @@ import java.util.Set;
 
 public interface FetchSprintReport {
 
-    List<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet, Set<SprintDetails> setForCacheClean, KerberosClient krb5Client) throws InterruptedException;
+    List<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet, Set<SprintDetails> setForCacheClean, KerberosClient krb5Client, boolean isSprintFetch) throws InterruptedException;
 
     List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, Set<SprintDetails> setForCacheClean, KerberosClient krb5Client)
             throws InterruptedException;
+
+    List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId, KerberosClient krb5Client);
 }
