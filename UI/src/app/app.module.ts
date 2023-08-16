@@ -112,6 +112,7 @@ import { CumulativeLineChartComponent } from './component/cumulative-line-chart/
 
 import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
 import { FeedbackComponent } from './feedback/feedback.component';
+import { DeveloperComponent } from './dashboard/developer/developer.component';
 
 /******************************************************/
 
@@ -175,7 +176,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         HorizontalPercentBarChartComponent,
         CumulativeLineChartComponent,
         StackedAreaChartComponent,
-        FeedbackComponent
+        FeedbackComponent,
+        DeveloperComponent
     ],
     imports: [
         DropdownModule,
