@@ -418,7 +418,10 @@ public enum KPICode {
      */
     BACKLOG_COUNT_BY_ISSUE_TYPE("kpi152", KPISource.JIRA.name()),
 
-    PICKUP_TIME("kpi154", KPISource.BITBUCKET.name());
+    PICKUP_TIME("kpi154", KPISource.BITBUCKET.name()),
+    REPO_TOOL_MEAN_TIME_TO_MERGE("kpi155", KPISource.BITBUCKET.name()),
+
+    REPO_TOOL_CODE_COMMIT("kpi156", KPISource.BITBUCKET.name());
 
 
     // @formatter:on

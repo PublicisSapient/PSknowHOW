@@ -14,6 +14,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.data.RepoToolsKpiRequestDataFactory;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -55,14 +58,13 @@ import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestReposi
  */
 
 @RunWith(MockitoJUnitRunner.class)
-public class MeanTimeToMergeServiceImplTest {
+public class RepoToolMeanTimeToMergeServiceImplTest {
 
 	private static Tool tool1;
-	private static Tool tool2;
+
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-	@Mock
-	MergeRequestRepository mergeRequestRepository;
+
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
@@ -74,10 +76,12 @@ public class MeanTimeToMergeServiceImplTest {
 	@Mock
 	KpiHelperService kpiHelperService;
 	@Mock
+	RepoToolsConfigServiceImpl repoToolsConfigService;
+	@Mock
 	private CommonService commonService;
-	private List<MergeRequests> mergeRequestsList = new ArrayList<>();
+
+	private List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
-	private Map<ObjectId, Map<String, List<Tool>>> toolMap1 = new HashMap<>();
 	private Map<String, List<Tool>> toolGroup = new HashMap<>();
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
@@ -97,8 +101,8 @@ public class MeanTimeToMergeServiceImplTest {
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 
-		MergeRequestDataFactory mergeRequestDataFactory = MergeRequestDataFactory.newInstance();
-		mergeRequestsList = mergeRequestDataFactory.getMergeRequestList();
+		RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
+		repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
 
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
@@ -142,7 +146,7 @@ public class MeanTimeToMergeServiceImplTest {
 
 	private void setToolMap() {
 		List<Tool> toolList1 = new ArrayList<>();
-		List<Tool> toolList2 = new ArrayList<>();
+
 		ProcessorItem processorItem = new ProcessorItem();
 		processorItem.setProcessorId(new ObjectId("63242d00aaf87a5b01de7ad6"));
 		processorItem.setId(new ObjectId("63316e5667446e5ec838b67e"));
@@ -156,14 +160,11 @@ public class MeanTimeToMergeServiceImplTest {
 		List<ProcessorItem> collectorItemList1 = new ArrayList<>();
 		collectorItemList1.add(processorItem1);
 
-		tool1 = createTool("URL1", "BRANCH1", "Bitbucket", "USER1", "PASS1", collectorItemList);
-		tool2 = createTool("URL2", "BRANCH2", "AzureRepository", "USER2", "PASS2", collectorItemList1);
+		tool1 = createTool("URL3", "BRANCH3", "Repo_Tools", "USER3", "PASS3", collectorItemList1);
 
 		toolList1.add(tool1);
-		toolList2.add(tool2);
 
-		toolGroup.put(Constant.TOOL_BITBUCKET, toolList1);
-		toolGroup.put(Constant.TOOL_AZUREREPO, toolList2);
+		toolGroup.put(Constant.REPO_TOOLS, toolList1);
 		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), toolGroup);
 
 	}
@@ -192,10 +193,8 @@ public class MeanTimeToMergeServiceImplTest {
 
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name()))
 				.thenReturn("Jira-Excel-5be544de025de212549176a9");
-		when(mergeRequestRepository.findMergeRequestList(any(), any(), any(), any())).thenReturn(mergeRequestsList);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(customApiConfig.getRepoXAxisCount()).thenReturn(5);
 
 		KpiElement kpiElement = meanTimeToMergeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
