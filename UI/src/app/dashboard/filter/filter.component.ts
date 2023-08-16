@@ -135,6 +135,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   kpiObj:object = {};
   totalProjectSelected : number = 1;
   selectedLevelValue : string = 'project';
+  displayModal: boolean = false;
 
   constructor(
     private service: SharedService,
@@ -1459,6 +1460,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       };
       this.selectedProjectLastSyncStatus = '';
       this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
+        this.displayModal = false;
         if (activeSprintStatus['success']) {
           interval(10000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
             if (response?.['success']) {
