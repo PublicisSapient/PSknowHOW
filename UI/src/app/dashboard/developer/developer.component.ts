@@ -256,7 +256,7 @@ export class DeveloperComponent implements OnInit {
     const disabledKpis = this.configGlobalData?.filter(item => item.shown && !item.isEnabled);
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
-    this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
+    this.updatedConfigGlobalData = this.service.getDashConfigData()['others'].filter((item) => (item.boardName.toLowerCase() === 'developer'))[0]?.kpis;
 
     const kpi3Index = this.updatedConfigGlobalData.findIndex(kpi => kpi.kpiId === 'kpi3');
     const kpi3 = this.updatedConfigGlobalData.splice(kpi3Index, 1);
