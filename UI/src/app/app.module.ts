@@ -116,6 +116,7 @@ import { DailyScrumComponent } from './dashboard/daily-scrum/daily-scrum.compone
 import { DailyScrumTabComponent } from './dashboard/daily-scrum-tab/daily-scrum-tab.component';
 import { MultilineStyleComponent } from './component/multiline-style/multiline-style.component';
 import { DoraComponent } from './dashboard/dora/dora.component';
+import { DeveloperComponent } from './dashboard/developer/developer.component';
 
 /******************************************************/
 
@@ -184,6 +185,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         DailyScrumTabComponent,
         MultilineStyleComponent,
         DoraComponent
+        FeedbackComponent,
+        DeveloperComponent
     ],
     imports: [
         DropdownModule,
