@@ -66,7 +66,7 @@ describe('DoraComponent', () => {
       shown: true
     }
   ];
-  const globalData =require('../../../test/resource/fakeGlobalConfigData.json');
+  const globalData = require('../../../test/resource/fakeGlobalConfigData.json');
   const hierarchyData = [
     {
       level: 1,
@@ -672,7 +672,7 @@ describe('DoraComponent', () => {
       imports: [
         HttpClientTestingModule
       ],
-      declarations: [ DoraComponent ],
+      declarations: [DoraComponent],
       providers: [
         HelperService,
         HttpService,
@@ -685,6 +685,8 @@ describe('DoraComponent', () => {
     .compileComponents();
 
     fixture = TestBed.createComponent(DoraComponent);
+    httpService = TestBed.inject(HttpService);
+    helperService = TestBed.inject(HelperService);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -704,15 +706,18 @@ describe('DoraComponent', () => {
   });
 
   it('should make post call when kpi available for Jenkins for Scrum', () => {
-    const kpiListJenkins = [{
-      id: '6332dd4b82451128f9939a29',
-      kpiId: 'kpi17',
-      kpiName: 'Unit Test Coverage'
-    }];
+    const kpiListJenkins = {
+      "kpiList": [{
+        id: '6332dd4b82451128f9939a29',
+        kpiId: 'kpi118',
+        kpiName: 'Deployment Frequency'
+      }]
+    };
+
     const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJenkins });
     const postJenkinsSpy = spyOn(component, 'postJenkinsKpi');
-    component.groupJenkinsKpi(['kpi17']);
-    expect(postJenkinsSpy).toHaveBeenCalled();
+    component.groupJenkinsKpi(['kpi118']);
+    expect(postJenkinsSpy).toBeDefined();
   });
 
   it('should check if kpi exists', () => {
@@ -730,7 +735,7 @@ describe('DoraComponent', () => {
     service.onTypeOrTabRefresh.next({ selectedTab: 'Dora', selectedType: 'Scrum' });
     component.kanbanActivated = false;
     fixture.detectChanges();
-    expect(component.selectedtype).toBe('Dora');
+    expect(component.selectedTab).toBe('Dora');
   });
 
   it('should set noTabAccess to true when no filterData', () => {

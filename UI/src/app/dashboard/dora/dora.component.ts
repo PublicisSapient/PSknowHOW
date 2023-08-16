@@ -73,8 +73,6 @@ export class DoraComponent implements OnInit {
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
     const selectedTab = window.location.hash.substring(1);
     this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-    console.log(this.selectedTab);
-    
     this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
       this.loaderJenkins = false;
       this.serviceObject = {};
@@ -89,7 +87,6 @@ export class DoraComponent implements OnInit {
       // this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
       const boardData = this.service.getDashConfigData();
       this.configGlobalData = boardData?.['others']?.filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-      console.log(this.configGlobalData);
       
       this.processKpiConfigData();
     // }));
@@ -341,7 +338,7 @@ export class DoraComponent implements OnInit {
           // call kpi request according to tab selected
           if (this.masterData && Object.keys(this.masterData).length) {
             this.processKpiConfigData();
-            if (this.service.getSelectedType().toLowerCase() === 'kanban') {
+            if (this.service.getSelectedType()?.toLowerCase() === 'kanban') {
               this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
 
               this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
@@ -645,7 +642,6 @@ export class DoraComponent implements OnInit {
       this.showKpiTrendIndicator[kpiId] = false;
 
     }
-    console.log(this.kpiChartData[kpiId]);
     
   }
 
