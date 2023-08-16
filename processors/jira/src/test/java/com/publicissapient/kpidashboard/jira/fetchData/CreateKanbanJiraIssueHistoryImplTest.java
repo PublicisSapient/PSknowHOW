@@ -47,6 +47,9 @@ public class CreateKanbanJiraIssueHistoryImplTest {
     private KanbanJiraIssueHistoryRepository kanbanIssueHistoryRepo;
 
     @Mock
+    private JiraCommonService jiraCommonService;
+
+    @Mock
     private FieldMapping fieldMapping;
 
     private List<ChangelogGroup> changeLogList = new ArrayList<>();
@@ -69,7 +72,6 @@ public class CreateKanbanJiraIssueHistoryImplTest {
 
     @Test
     public void createIssueCustomHistory(){
-        when(kanbanIssueHistoryRepo.findByStoryIDAndBasicProjectConfigId(any(),any())).thenReturn(Collections.EMPTY_LIST);
         Assert.assertEquals("6335368249794a18e8a4479f",createJiraIssueHistory.createKanbanIssueCustomHistory(createProjectConfig(),jiraIssue,issue,fieldMapping).getBasicProjectConfigId());
     }
 
@@ -79,7 +81,6 @@ public class CreateKanbanJiraIssueHistoryImplTest {
         jiraIssueHistory.setStoryID("12344");
         List<KanbanIssueCustomHistory> kanbanIssueCustomHistoryList=new ArrayList<>();
         kanbanIssueCustomHistoryList.add(jiraIssueHistory);
-        when(kanbanIssueHistoryRepo.findByStoryIDAndBasicProjectConfigId(any(),any())).thenReturn(kanbanIssueCustomHistoryList);
         Assert.assertEquals("6335368249794a18e8a4479f",createJiraIssueHistory.createKanbanIssueCustomHistory(createProjectConfig(),jiraIssue,issue,fieldMapping).getBasicProjectConfigId());
     }
 

@@ -49,6 +49,9 @@ public class CreateAccountHierarchyImpl implements CreateAccountHierarchy {
 
         Map<Pair<String, String>, AccountHierarchy> existingHierarchy = getAccountHierarchy(accountHierarchyRepository);
 
+        List<String> additionalFilterCategoryIds = hierarchyLevelList.stream()
+                .filter(x -> x.getLevel() > sprintHierarchyLevel.getLevel()).map(HierarchyLevel::getHierarchyLevelId)
+                .collect(Collectors.toList());
         Set<AccountHierarchy> setToSave = new HashSet<>();
         Map<ObjectId, AccountHierarchy> projectDataMap = new HashMap<>();
         for (JiraIssue jiraIssue : jiraIssueList) {
@@ -72,7 +75,7 @@ public class CreateAccountHierarchyImpl implements CreateAccountHierarchy {
                     setToSaveAccountHierarchy(setToSave, sprintHierarchy, existingHierarchy);
 
                     List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
-                            jiraIssue, sprintHierarchy, sprintHierarchyLevel, hierarchyLevelList);
+                            jiraIssue, sprintHierarchy, sprintHierarchyLevel, hierarchyLevelList, additionalFilterCategoryIds);
                     additionalFiltersHierarchies.forEach(accountHierarchy -> setToSaveAccountHierarchy(setToSave,
                             accountHierarchy, existingHierarchy));
                 }
@@ -135,14 +138,10 @@ public class CreateAccountHierarchyImpl implements CreateAccountHierarchy {
 
     private List<AccountHierarchy> accountHierarchiesForAdditionalFilters(JiraIssue jiraIssue,
                                                                           AccountHierarchy sprintHierarchy, HierarchyLevel sprintHierarchyLevel,
-                                                                          List<HierarchyLevel> hierarchyLevelList) {
+                                                                          List<HierarchyLevel> hierarchyLevelList, List<String> additionalFilterCategoryIds) {
 
         List<AccountHierarchy> accountHierarchies = new ArrayList<>();
         List<AdditionalFilter> additionalFilters = ListUtils.emptyIfNull(jiraIssue.getAdditionalFilters());
-
-        List<String> additionalFilterCategoryIds = hierarchyLevelList.stream()
-                .filter(x -> x.getLevel() > sprintHierarchyLevel.getLevel()).map(HierarchyLevel::getHierarchyLevelId)
-                .collect(Collectors.toList());
 
         additionalFilters.forEach(additionalFilter -> {
             if (additionalFilterCategoryIds.contains(additionalFilter.getFilterId())) {

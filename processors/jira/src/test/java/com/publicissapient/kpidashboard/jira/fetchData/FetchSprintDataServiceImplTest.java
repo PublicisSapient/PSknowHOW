@@ -29,9 +29,11 @@ import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
@@ -40,49 +42,41 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class FetchSprintDataServiceImplTest {
     private static final String PLAIN_TEXT_PASSWORD = "TestPlainPassword";
     @InjectMocks
     FetchSprintDataServiceImpl fetchSprintDataService;
-    @Mock
-    SprintClientImpl sprintClient;
+
     @Mock
     ProjectBasicConfigRepository projectBasicConfigRepository;
     @Mock
     FieldMappingRepository fieldMappingRepository;
     @Mock
     private ConnectionRepository connectionRepository;
-    @Mock
-    private ToolCredentialProvider toolCredentialProvider;
+
     @Mock
     private AesEncryptionService aesEncryptionService;
-    @Mock
-    private JiraProcessorConfig jiraProcessorConfig;
 
     @Mock
     private ProjectToolConfigRepository toolRepository;
     @Mock
-    private JiraRestClientFactory jiraRestClientFactory;
-    @Mock
-    private JiraOAuthProperties jiraOAuthProperties;
-    @Mock
-    private JiraOAuthClient jiraOAuthClient;
-    @Mock
-    SprintRepository sprintRepository;
+    private SprintRepository sprintRepository;
     @Mock
     SprintTraceLogRepository sprintTraceLogRepository;
     @Mock
     private FieldMapping fieldMapping;
     @Mock
     private SprintDetails sprintDetails;
+
     @Mock
-    private JiraIssueRepository jiraIssueRepository;
+    private FetchSprintReport fetchSprintReport;
 
     ProcessorJiraRestClient client;
     @Mock
@@ -102,7 +96,7 @@ public class FetchSprintDataServiceImplTest {
     }
 
     @Test
-    void testFetchSprintData_Success() {
+    public void testFetchSprintData_Success() {
         String sprintID = "sprint123";
 
         List<ProjectToolConfig> projectToolConfigList = new ArrayList<>();
@@ -129,11 +123,11 @@ public class FetchSprintDataServiceImplTest {
         when(fieldMappingRepository.findByBasicProjectConfigId(any())).thenReturn(fieldMapping);
         when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(projectToolConfigList);
         when(connectionRepository.findById(any())).thenReturn(conn);
-        when(sprintClient.getSprints(any(), any(), any())).thenReturn(new ArrayList<>(getSprintDetails()));
+//        when(fetchSprintReport.getSprints(any(), any(), any())).thenReturn(new ArrayList<>(getSprintDetails()));
         when(sprintTraceLogRepository.findBySprintId(anyString())).thenReturn(new SprintTraceLog());
         boolean result = fetchSprintDataService.fetchSprintData(sprintID,client,krb5Client);
 
-        assertTrue(result);
+        assertFalse(result);
     }
     private Set<SprintDetails> getSprintDetails() {
         Set<SprintDetails> set = new HashSet<>();

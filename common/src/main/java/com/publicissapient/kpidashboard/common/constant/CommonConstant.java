@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.common.constant;
 
 /**
@@ -123,6 +141,7 @@ public final class CommonConstant {
 	public static final String PUNTED_ISSUES = "puntedIssues";
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
+	public static final String CACHE_KPI_FIELD_MAPPING = "cache_kpi_field_mapping";
 
 	public static final String PSLOGDATA = "PSLogData";
 	public static final String REQUESTID = "requestId";
@@ -137,7 +156,6 @@ public final class CommonConstant {
 	public static final String PROJECT_EXECUTION_STATUS = "projectExecutionStatus";
 	public static final String SPRINT_DATA = "collectSprintData";
 	public static final String RELEASE_DATA = "collectReleaseData";
-	public static final String SUBTASK_DATA = "collectSubtaskData";
 	public static final String JIRAISSUE_DATA = "collectJiraIssueData";
 	public static final String EPIC_DATA = "collectEpicData";
 	public static final String METADATA = "collectMetaData";
@@ -147,6 +165,7 @@ public final class CommonConstant {
 	public static final String JIRA_BLOCKED_STATUS = "jiraBlockedStatus";
 
 	public static final String IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE = "Include Flagged Issue";
+	public static final String REQUIRED_ATTENTION_FLAG = "Requires attention";
 	public static final String FLAG_STATUS_FOR_SERVER = "Requires attention";
 	public static final String FLAG_STATUS_FOR_CLOUD = "Impediment";
 	public static final String BLOCKED_STATUS_WASTAGE = "Blocked Status";
