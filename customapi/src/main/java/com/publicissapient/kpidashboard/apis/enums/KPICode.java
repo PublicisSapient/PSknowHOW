@@ -413,10 +413,15 @@ public enum KPICode {
      * Backlog Issue Count By Status
      */
     BACKLOG_ISSUE_COUNT_BY_STATUS("kpi151", KPISource.JIRA.name()),
-	/**
-	 * Backlog Issue Count By Type
-	 */
-	BACKLOG_COUNT_BY_ISSUE_TYPE("kpi152", KPISource.JIRA.name()),
+    /**
+     * Backlog Issue Count By Type
+     */
+    BACKLOG_COUNT_BY_ISSUE_TYPE("kpi152", KPISource.JIRA.name()),
+
+    PICKUP_TIME("kpi154", KPISource.BITBUCKET.name()),
+    REPO_TOOL_MEAN_TIME_TO_MERGE("kpi155", KPISource.BITBUCKET.name()),
+
+    REPO_TOOL_CODE_COMMIT("kpi156", KPISource.BITBUCKET.name()),
 	/**
 	 * PI Predictability
 	 */

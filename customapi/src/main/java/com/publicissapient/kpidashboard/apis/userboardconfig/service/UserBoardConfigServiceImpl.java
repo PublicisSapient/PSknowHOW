@@ -449,8 +449,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 */
 	private void setKpiUserBoardDefaultFromKpiMaster(List<BoardKpisDTO> boardKpisList, KpiMaster kpiMaster) {
 		Boolean isRepoToolFlag = customApiConfig.getIsRepoToolEnable();
-		if ((kpiMaster.getIsRepoToolKpi() && isRepoToolFlag) || (!kpiMaster.getIsRepoToolKpi() && isRepoToolFlag) ||
-				(!kpiMaster.getIsRepoToolKpi() && !isRepoToolFlag)) {
+		if ((kpiMaster.getIsRepoToolKpi() == null) || (kpiMaster.getIsRepoToolKpi() == isRepoToolFlag)) {
 			BoardKpisDTO boardKpis = new BoardKpisDTO();
 			boardKpis.setKpiId(kpiMaster.getKpiId());
 			boardKpis.setKpiName(kpiMaster.getKpiName());

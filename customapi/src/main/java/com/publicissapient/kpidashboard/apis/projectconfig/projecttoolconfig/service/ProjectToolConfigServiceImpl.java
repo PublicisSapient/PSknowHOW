@@ -309,12 +309,6 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		return projectConfToolDtoList;
 	}
 
-	public List<ProjectToolConfig> getProjectToolConfigsByConfigIdAndType(String basicProjectConfigId, String type) {
-		final List<ProjectToolConfig> toolConfigList = toolRepository.findByToolNameAndBasicProjectConfigId(type,
-				new ObjectId(basicProjectConfigId));
-		log.info(SUCCESS_MSG);
-		return toolConfigList;
-	}
 
 	public List<ProjectToolConfig> getProjectToolConfigsByConnectionId(String basicProjectConfigId,
 			ObjectId connectionId) {
