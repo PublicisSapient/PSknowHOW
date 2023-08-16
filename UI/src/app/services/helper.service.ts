@@ -78,6 +78,10 @@ export class HelperService {
                 condition = obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
             }
 
+            if(obj?.kpiId){
+                condition = kpiIdsForCurrentBoard.includes(obj.kpiId) && condition;
+            }
+
             if (condition) {
                 if (obj.videoLink) {
                     delete obj.videoLink;
