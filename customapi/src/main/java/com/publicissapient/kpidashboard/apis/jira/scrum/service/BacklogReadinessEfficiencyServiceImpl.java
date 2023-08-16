@@ -283,15 +283,15 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 	 * @param jiraIssue
 	 * @return
 	 */
-	private AtomicLong getActivityCycleTimeForAnIssue(String status, List<JiraIssueCustomHistory> historyForIssues,
-			JiraIssue jiraIssue) {
+	private AtomicLong getActivityCycleTimeForAnIssue(List<String> status,
+			List<JiraIssueCustomHistory> historyForIssues, JiraIssue jiraIssue) {
 		Optional<JiraIssueCustomHistory> jiraCustomHistory = historyForIssues.stream()
 				.filter(history -> history.getStoryID().equals(jiraIssue.getNumber())).findAny();
 		AtomicLong difference = new AtomicLong(0);
 		if (jiraCustomHistory.isPresent()) {
 
 			Optional<JiraHistoryChangeLog> sprint = jiraCustomHistory.get().getStatusUpdationLog().stream()
-					.filter(sprintDetails -> sprintDetails.getChangedTo().equalsIgnoreCase(status))
+					.filter(sprintDetails -> CollectionUtils.isNotEmpty(status) && status.contains(sprintDetails.getChangedTo()))
 					.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn).reversed()).findFirst();
 			if (sprint.isPresent()) {
 				DateTime createdDate = new DateTime(jiraCustomHistory.get().getCreatedDate(), DateTimeZone.UTC);
@@ -425,7 +425,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 
 		List<String> statusList = new ArrayList<>();
 		if (Optional.ofNullable(fieldMapping.getReadyForDevelopmentStatusKPI138()).isPresent()) {
-			statusList.add(fieldMapping.getReadyForDevelopmentStatusKPI138());
+			statusList.addAll(fieldMapping.getReadyForDevelopmentStatusKPI138());
 		}
 		mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 				CommonUtils.convertToPatternList(statusList));

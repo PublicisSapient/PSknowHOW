@@ -162,11 +162,12 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
 
     const categoriesNames = data.map((d) => d.categorie);
     const rateNames = data[0].value.map((d) => d.rate);
+    const paddingTop = 24; 
 
     const margin = { top: 35, right: 50, bottom: 50, left: 50 };
     const barWidth = 20;
     const width = data.length <= 5 ? document.getElementById('chart').offsetWidth - 70 : data.length * barWidth * 10;
-    const height = 210;
+    const height = 210 - paddingTop;
     const paddingFactor = width < 600 ? 0.30 : 0.55;
 
     const x0 = d3.scaleBand().range([0, width - margin.left]).padding([((6 + this.dataPoints) / (3 * this.dataPoints)) * paddingFactor]);
@@ -317,7 +318,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       .attr('class', 'yAxis')
       .call(yAxis.tickSize(0))
       .style('opacity', '0')
-      .attr('transform', 'translate(' + margin.left + ',' + 5 + ')')
+      .attr('transform', 'translate(' + margin.left + ',' + paddingTop + ')')
       .append('text')
       .attr('x', -60)
       .attr('y', -40)
