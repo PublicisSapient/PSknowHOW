@@ -691,6 +691,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// Type
 				jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
 				jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+				jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+
+				setEpicLinked(fieldMapping, jiraIssue, fields);
 
 				setDefectIssueType(jiraIssue, issueType, fieldMapping);
 
@@ -749,6 +752,14 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
 				.collect(Collectors.toSet()));
 		return jiraIssuesToSave;
+	}
+
+	private void setEpicLinked(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink())
+				&& fields.get(fieldMapping.getEpicLink()) != null
+				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
+			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+		}
 	}
 
 	/**
@@ -1608,14 +1619,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				}
 			}
 		}
-		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
-				&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
-			IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
-			if (ObjectUtils.isNotEmpty(issueField.getValue())) {
-				jiraIssue.setDevDueDate((JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
-						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
-			}
-		}
+		setDevDueDates(jiraIssue, issue, fields, fieldMapping);
 	}
 
 	/**
@@ -1750,6 +1754,22 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 
 		return savedIssuesCount;
+	}
+
+	private static void setDevDueDates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields, FieldMapping fieldMapping) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
+			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
+					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
+				jiraIssue.setDevDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+			} else if (ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+				IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+					jiraIssue.setDevDueDate((JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
+				}
+			}
+		}
 	}
 
 }

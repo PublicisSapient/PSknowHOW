@@ -98,7 +98,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     kpiDropdowns = {};
     showKpiTrendIndicator = {};
     hierarchyLevel;
-    showChart = true;
+    showChart = 'chart';
     displayModal = false;
     modalDetails = {
         header: '',
@@ -1068,10 +1068,14 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             if (event[key]?.length == 0) {
               delete event[key];
               this.kpiSelectedFilterObj[kpi?.kpiId] = event;
-            } else {
+            } else if(Array.isArray(event[key])){
               for (let i = 0; i < event[key]?.length; i++) {
                 this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
               }
+            }else{
+                for (let i = 0; i < event[key]?.length; i++) {
+                    this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
+                  }
             }
           }
         } else {

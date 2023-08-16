@@ -16,7 +16,7 @@
                      <div *ngIf="selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release'" class="form-check filter-box p-col-lg abc" style="min-width: 170px;">
                         <ng-select formControlName="selectedLevel" [dropdownPosition]="'bottom'"
                            (change)="handleSelect($event)" placeholder="Organization Level"
-                           id="Filter-Aggregation-Level" class="p-pb-0">
+                           id="Filter-Aggregation-Level" class="p-pb-0" [readonly]="(showChart === 'large')">
                            <ng-option *ngFor="let item of hierarchyLevels" [value]="item.hierarchyLevelId">
                               {{item?.hierarchyLevelName}}
                            </ng-option>
@@ -29,10 +29,10 @@
                            [items]="trendLineValueList"
                            bindLabel="nodeName"
                            bindValue="nodeId"
-                           [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 6)'"
+                           [placeholder]="showChart === 'large'? 'Select One Project'  :'Select ' + getLevelName(filterForm.get('selectedLevel')?.value) + '(Up to 6)'"
                            [closeOnSelect]="false"
                            (remove)="handleRemove()"
-                           [maxSelectedItems]="6"
+                           [maxSelectedItems]="showChart === 'large' ? 1 : 6"
                            class="trend-line-value p-pb-0">
                            <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                               <div class="ng-value" *ngFor="let item of items | slice:0:2">
@@ -174,17 +174,7 @@
                   <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
                      Last Sync
                   </h4>
-                  <ng-container *ngIf="this.selectedSprint['sprintState'] === 'ACTIVE' && !isGuest && !isViewer">
-                     <span class="refresh-state p-p-1" (click)="fetchData()" *ngIf=" (lastSyncData | json) == '{}' || lastSyncData.errorInFetch">
-                        <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh"/>Refresh
-                     </span>
-                     <span class="refresh-state p-p-1" *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
-                        <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync"/>Syncing
-                     </span>
-                     <span class="success-state p-p-1" *ngIf="!((lastSyncData | json) == '{}') && lastSyncData?.fetchSuccessful" (click)="onUpdateKPI()">
-                        <img src="../../../assets/img/icon-update.svg" class="p-mr-1" alt="Update"/>Update
-                     </span>
-                  </ng-container>
+                  
                 
                </div>  
                <p class="last-sync-date p-m-0 p-text-right">
@@ -232,9 +222,15 @@
             </div>
 
             <!-- /show/hide kpi's ends -->
+            <!-- Capacity Planning link start -->
+            <div [ngClass]="{'disabled': !isAdmin}" class="btn-custom p-p-2 rounded filter-btn noti-btn-wraper"
+                role="button" (click)="redirectToCapacityPlanning()" title="Go to Capacity Planning">
+               <i class="pi pi-users" style="font-size: 20px;font-weight: bold;"></i>
+            </div>
+            <!-- Capacity Planning link end -->
             <!-- comments icon start -->
             <div class="position-relative">
-               <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn p-ml-2"  *ngIf="selectedTab?.toLowerCase() != 'maturity'"
+               <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn"  *ngIf="selectedTab?.toLowerCase() != 'maturity'"
                   [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project' 
                || (filterForm.get('selectedLevel')?.value == 'project' && selectedFilterArray?.length > 1)}">
                   <img #commentSummary class="p-p-2 " (click)="handleBtnClick();"
@@ -278,7 +274,6 @@
             </div>
             <p-menu #notification [popup]="true" [model]="notificationList"></p-menu>
             <!-- Notification button end -->
-
          </div>
       </div>
 
@@ -336,15 +331,20 @@
          </ul>
          <!-- toggle view -->
          <div class="tabs" *ngIf="selectedTab?.toLowerCase() !== 'maturity'">
-            <input id="chart-view" class="chart-view" type="radio" name="view" [checked]='showChart'>
-            <label class="label1" for="chart-view" (click)="showChartToggle(true)" id="Layout-Chart">
+            <input id="chart-view" class="chart-view" type="radio" name="view" [checked]="showChart === 'chart'">
+            <label class="label1" for="chart-view" (click)="showChartToggle('chart')" id="Layout-Chart">
                <img src="../../../assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
                <img src="../../../assets/img/ico-graph-black.svg" alt="Chart View" class="ico-default" />
             </label>
-            <input id="table-view" class="table-view" type="radio" name="view" [checked]='!showChart'>
-            <label class="label2" for="table-view" (click)="showChartToggle(false)" id="Layout-Table">
+            <input id="table-view" class="table-view" type="radio" name="view" [checked]="showChart === 'table'">
+            <label class="label2" for="table-view" (click)="showChartToggle('table')" id="Layout-Table">
                <img src="../../../assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
                <img src="../../../assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
+            </label>
+            <input id="large-view" class="large-view" type="radio" name="view" [checked]="showChart === 'large'" [ngClass]="{'large-view-disabled': totalProjectSelected !==1 || selectedLevelValue !== 'project'}">
+            <label class="label3" for="large-view" (click)="showChartToggle('large')" id="Layout-Chart" [ngClass]="{'large-view-disabled': totalProjectSelected !==1 || selectedLevelValue !== 'project'}">
+               <img src="../../../assets/img/full-screen-white.svg" alt="Large View" class="ico-active" />
+               <img src="../../../assets/img/full-screen-black.svg" alt="Large View" class="ico-default" />
             </label>
 
             <!-- SHow/Hide start -->
@@ -432,11 +432,36 @@
                   'NA'}}</p>
             </span>
          </div>
-         <button pButton pRipple type="button" [disabled]="kpisNewOrder?.length === 0"
-            [ngClass]="{'p-button-outlined' : kpisNewOrder?.length === 0 }" label="SAVE DASHBOARD VIEW"
-            class="p-button-secondary" (click)="setKPIOrder()"></button>
+         <div class="p-d-flex p-align-center">
+            <div class="p-mr-2" *ngIf="this.selectedSprint['sprintState'] === 'ACTIVE' && !isGuest && selectedTab?.toLowerCase() === 'iteration'">
+               <span class="refresh-state p-p-2" (click)="displayModal = true" 
+               *ngIf=" (lastSyncData | json) == '{}' || lastSyncData.errorInFetch">
+                  <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh"/>REFRESH
+               </span>
+               <span class="refresh-state p-p-2" *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
+                  <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync"/>SYNCING
+               </span>
+               <span class="success-state p-p-2" *ngIf="!((lastSyncData | json) == '{}') && lastSyncData?.fetchSuccessful" (click)="onUpdateKPI()">
+                  <img src="../../../assets/img/icon-update.svg" class="p-mr-1" alt="Update"/>UPDATE
+               </span>
+            </div>
+            <button pButton pRipple type="button" [disabled]="kpisNewOrder?.length === 0"
+               [ngClass]="{'p-button-outlined' : kpisNewOrder?.length === 0 }" label="SAVE DASHBOARD VIEW"
+               class="p-button-secondary" (click)="setKPIOrder()"></button>
+         </div>
       </div>
 
    </div>
 
 </div>
+<p-dialog [(visible)]="displayModal" [modal]="true">
+   <p-header>Are you sure you want to refresh?</p-header>
+   <p-footer>
+      <div class="ui-dialog-buttonpane ui-helper-clearfix">
+          <button type="button" pButton pRipple icon="pi pi-times" (click)="displayModal = false" label="Cancel"
+              class="p-button p-button-danger p-button-raised"></button>
+          <button type="button" pButton pRipple icon="fa fa-check" (click)="fetchData()" label="Ok"
+              class="p-button p-button-success p-button-raised"></button>
+      </div>
+  </p-footer>
+ </p-dialog>

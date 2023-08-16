@@ -202,3 +202,12 @@
     min-height: 272px !important;
 }
 
+.custom-pi{
+    font-size: 1.1rem;
+    font-weight: 1000;
+    color: #4a4747;
+    font-family: 'primeicons';
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+}
+

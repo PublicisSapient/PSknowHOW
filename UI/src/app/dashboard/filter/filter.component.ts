@@ -107,7 +107,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   hierarchies;
   filteredAddFilters = {};
   initFlag = true;
-  showChart = true;
+  showChart = 'chart';
   iterationConfigData = {};
   kpisNewOrder = [];
   isTooltip = false;
@@ -118,6 +118,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   username: string;
   isGuest = false;
   isViewer = false;
+  isAdmin = false;
   logoImage: any;
   totalRequestCount = 0;
   selectedProjectData = {};
@@ -132,6 +133,9 @@ export class FilterComponent implements OnInit, OnDestroy {
   showCommentPopup:boolean = false;
   showSpinner: boolean = false;
   kpiObj:object = {};
+  totalProjectSelected : number = 1;
+  selectedLevelValue : string = 'project';
+  displayModal: boolean = false;
 
   constructor(
     private service: SharedService,
@@ -182,6 +186,19 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
         this.projectIndex = 0;
         this.selectedType(data.selectedType);
+
+        if(this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase()  === 'backlog' || this.selectedTab.toLowerCase()  === 'release' ){
+          this.showChart = 'chart';
+          this.selectedLevelValue = 'project';
+          this.totalProjectSelected = 1;
+          this.service.setShowTableView(this.showChart);
+        }
+        if(this.selectedTab.toLowerCase() === 'maturity'){
+          this.showChart = 'chart';
+          this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase()
+          this.totalProjectSelected = 1;
+          this.service.setShowTableView(this.showChart);
+        }
       }),
 
       this.service.mapColorToProjectObs.subscribe((x) => {
@@ -234,7 +251,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.getAuthorizationService.checkIfSuperUser()) {
       this.isSuperAdmin = true;
     }
-    // this.username = this.service.getCurrentUserDetails('user_name');
+    if (this.getAuthorizationService.checkIfSuperUser() || this.getAuthorizationService.checkIfProjectAdmin()) {
+      this.isAdmin = true;
+    } else {
+      this.isAdmin = false;
+    }
 
     let authoritiesArr;
     if (this.service.getCurrentUserDetails('authorities')) {
@@ -244,9 +265,6 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.isGuest = true;
     }
 
-    if (authoritiesArr && authoritiesArr.includes('ROLE_PROJECT_VIEWER')) {
-      this.isViewer = true;
-    }
     if (!this.isGuest) {
       this.items.unshift({
         label: 'Settings',
@@ -263,7 +281,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     // getting document click event from dashboard and check if it is outside click of the filter and if filter is open then closing it
     this.service.getClickedItem().subscribe((target) => {
       for(let key in this.toggleDropdown){
-        if(target && target !== this[key].nativeElement && target?.closest('.'+key+'Ddn') !== this[key+'Ddn']?.nativeElement){
+        if(target && target !== this[key]?.nativeElement && target?.closest('.'+key+'Ddn') !== this[key+'Ddn']?.nativeElement){
           this.toggleDropdown[key] = false;
         }
       }
@@ -333,6 +351,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.kanban !== this.previousType) {
       this.filterForm?.reset();
       this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
+      this.selectedLevelValue = 'project';
+      this.totalProjectSelected = 1;
     }
 
     const data = {
@@ -515,6 +535,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
     });
     this.applyChanges();
+    this.totalProjectSelected = this.service.getSelectedTrends().length;
   }
 
   // this method would be called on click of apply button of filter
@@ -880,6 +901,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
     this.filterForm?.get('selectedTrendValue').setValue('');
     this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === event?.toLowerCase()));
+    this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase();
   }
 
   setMarker() {
@@ -1274,6 +1296,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   // when user would want to give access on project from notification list
   routeForAccess(type: string) {
     if (this.getAuthorizationService.checkIfSuperUser() || this.getAuthorizationService.checkIfProjectAdmin()) {
+      this.isAdmin = true;
       switch (type) {
         case 'Project Access Request':
           this.service.setSideNav(false);
@@ -1287,6 +1310,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     } else {
       this.router.navigate(['/dashboard/Config/Profile/RequestStatus']);
+      this.isAdmin = false;
     }
   }
 
@@ -1438,6 +1462,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       };
       this.selectedProjectLastSyncStatus = '';
       this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
+        this.displayModal = false;
         if (activeSprintStatus['success']) {
           interval(10000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
             if (response?.['success']) {
@@ -1560,5 +1585,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       return obj;
     });
     this.ga.setProjectData(gaArray);
+  }
+
+  redirectToCapacityPlanning() {
+    this.router.navigate(['./dashboard/Config/Capacity']);
   }
 }

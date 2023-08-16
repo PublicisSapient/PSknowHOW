@@ -571,6 +571,9 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				// Type
 				jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
 				jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+				jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+
+				setEpicLinked(fieldMapping, jiraIssue, fields);
 
 				// Label
 				jiraIssue.setLabels(JiraIssueClientUtil.getLabelsList(issue));
@@ -617,6 +620,14 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 		return kanbanIssuesToSave;
 	}
 
+	private void setEpicLinked(FieldMapping fieldMapping, KanbanJiraIssue jiraIssue, Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink())
+				&& fields.get(fieldMapping.getEpicLink()) != null
+				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
+			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+		}
+	}
+
 	private void setDueDates(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
 			FieldMapping fieldMapping) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
@@ -633,14 +644,7 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				}
 			}
 		}
-		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
-				&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
-			IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
-			if (ObjectUtils.isNotEmpty(issueField.getValue())) {
-				jiraIssue.setDevDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
-						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-			}
-		}
+		setDevDueDates(jiraIssue, issue, fields, fieldMapping);
 	}
 
 	private void setAdditionalFilters(KanbanJiraIssue jiraIssue, Issue issue, ProjectConfFieldMapping projectConfig) {
@@ -1349,11 +1353,15 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 					&& fields.get(estimationField).getValue() != null
 					&& !JiraProcessorUtil.deodeUTF8String(fields.get(estimationField).getValue()).isEmpty()) {
 				if (JiraConstants.ACTUAL_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
-					value = ((Double) fields.get(estimationField).getValue()) / 3600D;
+					if (fields.get(estimationField).getValue() instanceof Integer) {
+						value = ((Integer) fields.get(estimationField).getValue()) / 3600D;
+					} else {
+						value = ((Double) (fields.get(estimationField).getValue()));
+					}
 					valueString = String.valueOf(value.doubleValue());
 				} else if (JiraConstants.BUFFERED_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
 					if (fields.get(estimationField).getValue() instanceof Integer) {
-						value = ((Double) fields.get(estimationField).getValue()) / 3600D;
+						value = ((Integer) fields.get(estimationField).getValue()) / 3600D;
 					} else {
 						value = ((Double) (fields.get(estimationField).getValue()));
 					}
@@ -1511,6 +1519,22 @@ public class KanbanJiraIssueClientImpl extends JiraIssueClient {
 				assigneeDetails.setAssignee(updatedAssigneeSetToSave);
 			}
 			assigneeDetailsRepository.save(assigneeDetails);
+		}
+	}
+
+	private static void setDevDueDates(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields, FieldMapping fieldMapping) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
+			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
+					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
+				jiraIssue.setDevDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+			} else if (ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+				IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+					jiraIssue.setDevDueDate((JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
+				}
+			}
 		}
 	}
 

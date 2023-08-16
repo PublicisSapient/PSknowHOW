@@ -156,9 +156,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		List<String> sprintList = new ArrayList<>();
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		Map<String, List<String>> projectWiseDefectRemovelStatus = new HashMap<>();
-		Map<String, List<String>> projectWiseDefectRemovalType = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
 		List<JiraIssue> sprintReportedBugsList;
 		List<String> defectType = new ArrayList<>();
 		leafNodeList.forEach(leaf -> {
@@ -173,14 +171,10 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			projectWiseDefectRemovelStatus.put(basicProjectConfigId.toString(),
 					fieldMapping.getJiraDefectRemovalStatusKPI34());
-			projectWiseDefectRemovalType.put(basicProjectConfigId.toString(),
-					fieldMapping.getJiraDefectRemovalIssueTypeKPI34());
 
 			defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), defectType);
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionKPI34(), fieldMapping.getJiraDefectRejectionStatusKPI34());
-
 		});
 
 		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
