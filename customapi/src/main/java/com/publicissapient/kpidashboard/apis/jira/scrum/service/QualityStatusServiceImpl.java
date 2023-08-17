@@ -80,7 +80,6 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	private static final String OVERALL = "Overall";
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String COMPLETED_ISSUES = "completedIssue";
-	private static final String STORY = "Story";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -347,7 +346,6 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			FieldMapping fieldMapping) {
 		Map<String, List<JiraIssue>> storyWithLinkedDefects = new HashMap<>();
 		Map<String, JiraIssue> totalStoriesMap = totalJiraIssues.stream()
-				.filter(issue -> issue.getTypeName().equalsIgnoreCase(STORY))
 				.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
 		for (JiraIssue jiraIssue : linkedDefectList) {
 			Set<String> storyIds = jiraIssue.getDefectStoryID();

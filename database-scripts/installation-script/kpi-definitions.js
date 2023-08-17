@@ -78,7 +78,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiSource": "Jira",
     "groupId": 1,
     "thresholdValue": "75",
-f    "kanban": false,
+    "kanban": false,
     "chartType": "line",
     "kpiInfo": {
       "definition": "Measures the percentage of tickets that passed QA with no return transition or any tagging to a specific configured status and no linkage of a defect",
@@ -7706,7 +7706,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "readyForDevelopmentStatusKPI138",
         "fieldLabel": "Status to identify issues Ready for Development ",
-        "fieldType": "text",
+        "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
@@ -7743,16 +7743,39 @@ db.getCollection('field_mapping_structure').insertMany(
             }
         }
     ]
-}, {
-    "fieldName": "jiraDevDueDateCustomField",
-    "fieldLabel": "Dev Due Date",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "This field is to track dev due date of issues tagged in the iteration."
-    }
-}, {
+    }, {
+     "fieldName": "jiraDevDueDateField",
+     "fieldLabel": "Dev Due Date",
+     "fieldType": "radiobutton",
+     "section": "Custom Fields Mapping",
+     "tooltip": {
+       "definition": "This field is to track dev due date of issues tagged in the iteration."
+     },
+     "options": [
+       {
+         "label": "Custom Field",
+         "value": "CustomField"
+       },
+       {
+         "label": "Due Date",
+         "value": "Due Date"
+       }
+     ],
+     "nestedFields": [
+       {
+         "fieldName": "jiraDevDueDateCustomField",
+         "fieldLabel": "Dev Due Date Custom Field",
+         "fieldType": "text",
+         "fieldCategory": "fields",
+         "filterGroup": [
+           "CustomField"
+         ],
+         "tooltip": {
+           "definition": "This field is to track dev due date of issues tagged in the iteration."
+         }
+       }
+     ]
+   }, {
     "fieldName": "jiraIssueEpicType",
     "fieldLabel": "Epic Issue Type",
     "fieldType": "chips",
