@@ -2641,7 +2641,7 @@ db.getCollection('field_mapping_structure').insertMany([
         "fieldCategory": "fields",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
     }
     },
     {
@@ -2651,13 +2651,13 @@ db.getCollection('field_mapping_structure').insertMany([
         "fieldCategory": "fields",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
     }
     },
     {
-    "fieldName": "jiraIssueEpicTypeFor153",
+    "fieldName": "jiraIssueEpicTypeKPI153",
     "fieldLabel": "Epic Issue Type",
-    "fieldType": "text",
+    "fieldType": "chips",
     "fieldCategory": "Issue_Type",
     "section": "Issue Types Mapping",
     "tooltip": {

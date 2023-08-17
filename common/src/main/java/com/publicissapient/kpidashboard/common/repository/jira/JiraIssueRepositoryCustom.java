@@ -256,11 +256,10 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 			Map<String, Map<String, Object>> uniqueProjectMap);
 
 	/**
-	 * find unique release version group by type name and consider as PI if tag to specific type (EPIC)
+	 * find unique Release Version Name group by type name
 	 * @param mapOfFilters
-	 * @param typeName
-	 * @return
+	 * @param  @return
 	 */
 
-	List<ReleaseWisePI> findUniqueReleaseVersionByUniqueTypeName(Map<String, List<String>> mapOfFilters, String typeName);
+	List<ReleaseWisePI> findUniqueReleaseVersionByUniqueTypeName(Map<String, List<String>> mapOfFilters);
 }

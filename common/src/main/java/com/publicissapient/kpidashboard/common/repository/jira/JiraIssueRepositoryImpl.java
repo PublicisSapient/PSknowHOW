@@ -37,6 +37,7 @@ import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -813,14 +814,12 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	}
 
 	/**
-	 * find unique release version group by type name and consider as PI if tag to specific type (EPIC)
+	 * find unique Release Version Name group by type name
 	 * @param mapOfFilters
-	 * @param typeName
 	 * @return
 	 */
 	@Override
-	public List<ReleaseWisePI> findUniqueReleaseVersionByUniqueTypeName(Map<String, List<String>> mapOfFilters,
-			String typeName) {
+	public List<ReleaseWisePI> findUniqueReleaseVersionByUniqueTypeName(Map<String, List<String>> mapOfFilters) {
 
 		Criteria criteria = new Criteria();
 		// map of common filters Project and Sprint
@@ -828,15 +827,16 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		MatchOperation matchStage = Aggregation.match(criteria);
 
-		AggregationExpression condition = ConditionalOperators
-				.when(ComparisonOperators.Eq.valueOf("typeName").equalToValue(typeName)).then(true).otherwise(false);
+		GroupOperation groupOperation = Aggregation.group(
+				"typeName", "basicProjectConfigId", "releaseVersions.releaseName"
+		);
 
-		GroupOperation groupBySprint = Aggregation.group("releaseVersions.releaseName")
-				.last("releaseVersions.releaseName").as("releaseVersion").last("basicProjectConfigId")
-				.as("basicProjectConfigId").addToSet("typeName").as("uniqueTypeName").min(condition)
-				.as("considerVersionAsPI");
+		ProjectionOperation projectionOperation = Aggregation.project()
+				.andExpression("_id.typeName").as("uniqueTypeName")
+				.andExpression("_id.releaseName").as("releaseName")
+				.andExpression("_id.basicProjectConfigId").as("basicProjectConfigId");
 
-		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupBySprint);
+		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupOperation , projectionOperation);
 		return operations.aggregate(aggregation, JiraIssue.class, ReleaseWisePI.class).getMappedResults();
 	}
 

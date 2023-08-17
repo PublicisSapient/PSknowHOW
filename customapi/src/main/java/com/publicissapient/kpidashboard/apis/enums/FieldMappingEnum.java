@@ -183,7 +183,7 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraDodKPI152", "jiraDefectRejectionStatusKPI152", "jiraLiveStatusKPI152")),
 
 	KPI153("PI Predictability", KPISource.JIRA.name(),
-			Arrays.asList("jiraIssueEpicTypeFor153", "epicPlannedValue", "epicAchievedValue"));
+			Arrays.asList("jiraIssueEpicTypeKPI153", "epicPlannedValue", "epicAchievedValue"));
 
 	private List<String> fields;
 	private String kpiName;

@@ -369,7 +369,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationIssuetypeKPI124;
 	private LocalDateTime createdDate;
 
-	private String jiraIssueEpicTypeKPI153;
+	private List<String> jiraIssueEpicTypeKPI153;
 
 	/**
 	 * Get jira issue type names string [ ].

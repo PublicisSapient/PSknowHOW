@@ -19,7 +19,6 @@ import java.util.Set;
 public class ReleaseWisePI {
 
 	private String basicProjectConfigId;
-	private List<String> releaseVersion;
-	private boolean considerVersionAsPI;
-	private Set<String> uniqueTypeName;
+	private List<String> releaseName;
+	private String uniqueTypeName;
 }
