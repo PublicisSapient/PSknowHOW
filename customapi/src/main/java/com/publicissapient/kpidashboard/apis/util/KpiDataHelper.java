@@ -923,4 +923,17 @@ public final class KpiDataHelper {
 		});
 		return subTaskTaggedWithSprint;
 	}
+
+	/**
+	 *  Create 90th percentile
+	 * @param values
+	 * @return
+	 * @param <T>
+	 */
+	public static <T extends Number> String calculate90thPercentile(List<T> values) {
+		values.sort((a, b) -> Double.compare(a.doubleValue(), b.doubleValue()));
+		int index = (int) Math.ceil(0.9 * values.size()) - 1;
+		return values.get(index).toString();
+	}
+
 }

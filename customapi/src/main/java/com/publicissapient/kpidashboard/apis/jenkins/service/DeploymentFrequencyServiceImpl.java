@@ -2,8 +2,11 @@ package com.publicissapient.kpidashboard.apis.jenkins.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -106,6 +110,12 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
 			dataCountGroup.setFilter(envName);
 			dataCountGroup.setValue(dataList);
+			List<DataCount> dataCountValues = dataList.stream()
+					.map(dataCount -> (List<DataCount>) dataCount.getValue())
+					.flatMap(List::stream)
+					.collect(Collectors.toList());
+			List<Long> values = dataCountValues.stream().map(dataCount -> (Long) dataCount.getValue()).collect(Collectors.toList());
+			dataCountGroup.setPercentile90(KpiDataHelper.calculate90thPercentile(values));
 			dataCountGroups.add(dataCountGroup);
 		});
 		kpiElement.setTrendValueList(dataCountGroups);
@@ -211,12 +221,26 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 				String envName = entry.getKey();
 				List<Deployment> deploymentListEnvWise = entry.getValue();
 				List<DataCount> dataCountList = new ArrayList<>();
+/*
 				Map<String, List<Deployment>> deploymentMapMonthWise = getLastNMonth(
 						customApiConfig.getJenkinsWeekCount());
+*/
+				Map<String, List<Deployment>> deploymentMapMonthWise = getLastNWeek(25);
 				for (Deployment deployment : deploymentListEnvWise) {
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 					LocalDateTime dateValue = LocalDateTime.parse(deployment.getStartTime(), formatter);
-					String deploymentMonth = dateValue.getYear() + Constant.DASH + dateValue.getMonthValue();
+//					String deploymentMonth = dateValue.getYear() + Constant.DASH + dateValue.getMonthValue();
+					/*LocalDate monday = dateValue.toLocalDate();
+					LocalDate sunday = dateValue.toLocalDate();
+					while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
+						monday = monday.minusDays(1);
+					}
+					while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
+						sunday = sunday.plusDays(1);
+					}*/
+					LocalDate monday = dateValue.toLocalDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+					LocalDate sunday = dateValue.toLocalDate().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+					String deploymentMonth = DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday);
 					deploymentMapMonthWise.computeIfPresent(deploymentMonth, (key, deploymentListCurrentMonth) -> {
 						deploymentListCurrentMonth.add(deployment);
 						return deploymentListCurrentMonth;
@@ -308,6 +332,21 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 
 		}
 		return lastNMonth;
+	}
+	private Map<String, List<Deployment>> getLastNWeek(int count) {
+		Map<String, List<Deployment>> lastNWeek = new LinkedHashMap<>();
+		LocalDate endDateTime = LocalDate.now();
+
+		for (int i = 0; i < count; i++) {
+			LocalDate monday = endDateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+			LocalDate sunday = endDateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+			String currentWeekStr = DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday);
+			lastNWeek.put(currentWeekStr, new ArrayList<>());
+
+			endDateTime = endDateTime.minusWeeks(1);
+		}
+		return lastNWeek;
 	}
 
 	public List<DataCount> calculateAggregatedWeeksWise(String kpiId, List<DataCount> jobsAggregatedValueList) {

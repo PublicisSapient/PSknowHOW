@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -113,6 +115,12 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
 			dataCountGroup.setFilter(issueType);
 			dataCountGroup.setValue(dataList);
+			List<DataCount> dataCountValues = dataList.stream()
+					.map(dataCount -> (List<DataCount>) dataCount.getValue())
+					.flatMap(List::stream)
+					.collect(Collectors.toList());
+			List<Double> values = dataCountValues.stream().map(dataCount -> (Double) dataCount.getValue()).collect(Collectors.toList());
+			dataCountGroup.setPercentile90(KpiDataHelper.calculate90thPercentile(values));
 			dataCountGroups.add(dataCountGroup);
 		});
 		kpiElement.setTrendValueList(dataCountGroups);
@@ -198,7 +206,11 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 						jobName = entry.getKey();
 					}
 					aggBuildList.addAll(buildList);
+/*
 					prepareInfoForBuild(changeFailureRateInfo, end, buildList, trendLineName, trendValueMap, jobName,
+							dataCountAggList);
+*/
+					prepareInfoForBuildMonthWise(changeFailureRateInfo, end, buildList, trendLineName, trendValueMap, jobName,
 							dataCountAggList);
 				}
 			}
@@ -275,6 +287,43 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 		trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
 		trendValueMap.get(jobName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
 		dataCountAggList.addAll(dataCountList);
+	}
+	private void prepareInfoForBuildMonthWise(ChangeFailureRateInfo changeFailureRateInfo, LocalDateTime endTime,
+			List<Build> buildList, String trendLineName, Map<String, List<DataCount>> trendValueMap, String jobName,
+			List<DataCount> dataCountAggList) {
+		LocalDate currentDate = endTime.toLocalDate();
+		List<DataCount> dataCountList = new ArrayList<>();
+		for (int i = 0; i < customApiConfig.getJenkinsWeekCount(); i++) {
+			Double failureBuildCount = 0.0d;
+			Double buildFailurePercentage = 0.0d;
+			Double totalBuildCount = 0.0d;
+			for (Build build : buildList) {
+				if (checkDateIsInMonth(currentDate, build)) {
+					failureBuildCount = getFailureBuildCount(failureBuildCount, build);
+					totalBuildCount = getTotalBuildCount(totalBuildCount, build);
+				}
+			}
+			if (totalBuildCount > 0 && failureBuildCount > 0) {
+				buildFailurePercentage = Double
+						.parseDouble(decimalFormat.format(failureBuildCount / totalBuildCount * 100));
+			}
+			String date = currentDate.getYear() + Constant.DASH + currentDate.getMonthValue();
+			DataCount dataCount = createDataCount(trendLineName, buildFailurePercentage, date,
+					totalBuildCount.intValue(), failureBuildCount.intValue(), jobName);
+			setChangeFailureRateInfoForExcel(changeFailureRateInfo, jobName, totalBuildCount, failureBuildCount,
+					buildFailurePercentage, date);
+			dataCountList.add(dataCount);
+			currentDate = currentDate.minusMonths(1);
+		}
+		trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
+		trendValueMap.get(jobName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+		dataCountAggList.addAll(dataCountList);
+	}
+
+	private boolean checkDateIsInMonth(LocalDate currentDate, Build build) {
+		LocalDate buildTime = Instant.ofEpochMilli(build.getStartTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+		return currentDate.getYear() == buildTime.getYear() &&
+				currentDate.getMonth() == buildTime.getMonth();
 	}
 
 	/**
