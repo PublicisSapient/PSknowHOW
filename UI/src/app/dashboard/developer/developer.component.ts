@@ -102,17 +102,7 @@ export class DeveloperComponent implements OnInit {
       this.configGlobalData = globalConfig['others'].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
       this.processKpiConfigData();
     }));
-  }
 
-  ngOnInit(): void {
-    this.selectedtype = this.service.getSelectedType();
-
-    this.httpService.getTooltipData()
-      .subscribe(filterData => {
-        if (filterData[0] !== 'error') {
-          this.tooltip = filterData;
-        }
-      });
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
       if (Object.keys(x).length > 0) {
         this.colorObj = x;
@@ -127,6 +117,18 @@ export class DeveloperComponent implements OnInit {
       }
     }));
 
+  }
+
+  ngOnInit(): void {
+    this.selectedtype = this.service.getSelectedType();
+
+    this.httpService.getTooltipData()
+      .subscribe(filterData => {
+        if (filterData[0] !== 'error') {
+          this.tooltip = filterData;
+        }
+      });
+    
     this.service.getEmptyData().subscribe((val) => {
       if (val) {
         this.noTabAccess = true;
@@ -178,18 +180,10 @@ export class DeveloperComponent implements OnInit {
           if (this.masterData && Object.keys(this.masterData).length) {
             this.processKpiConfigData();
             if (this.service.getSelectedType().toLowerCase() === 'kanban') {
-              this.configGlobalData = this.service.getDashConfigData()[this.selectedtype.toLowerCase()].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-              // this.groupJiraKanbanKpi(kpiIdsForCurrentBoard);
-              // this.groupSonarKanbanKpi(kpiIdsForCurrentBoard);
-              // this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
-              // this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
+              // this.configGlobalData = this.service.getDashConfigData()[this.selectedtype.toLowerCase()].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
               this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
             } else {
-              // this.groupJenkinsKpi(kpiIdsForCurrentBoard);
-              // this.groupZypherKpi(kpiIdsForCurrentBoard);
-              // this.groupJiraKpi(kpiIdsForCurrentBoard);
               this.groupBitBucketKpi(kpiIdsForCurrentBoard);
-              // this.groupSonarKpi(kpiIdsForCurrentBoard);
             }
             let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
             if (projectLevel) {
@@ -553,36 +547,6 @@ export class DeveloperComponent implements OnInit {
     if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     }
-    // For kpi3 and kpi53 generating table column headers and table data
-    if (kpiId === 'kpi3' || kpiId === 'kpi53') {
-      //generating column headers
-      const columnHeaders = [];
-      if (Object.keys(this.kpiSelectedFilterObj)?.length && this.kpiSelectedFilterObj[kpiId]?.length && this.kpiSelectedFilterObj[kpiId][0]) {
-        columnHeaders.push({ field: 'name', header: this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelName + ' Name' });
-        columnHeaders.push({ field: 'value', header: this.kpiSelectedFilterObj[kpiId][0] });
-        columnHeaders.push({ field: 'maturity', header: 'Maturity' });
-      }
-      if (this.kpiChartData[kpiId]) {
-        this.kpiChartData[kpiId].columnHeaders = columnHeaders;
-      }
-      //generating Table data
-      const kpiUnit = this.updatedConfigGlobalData?.find(kpi => kpi.kpiId === kpiId)?.kpiDetail?.kpiUnit;
-      const data = [];
-      if (this.kpiChartData[kpiId] && this.kpiChartData[kpiId].length) {
-        for (let i = 0; i < this.kpiChartData[kpiId].length; i++) {
-          const rowData = {
-            name: this.kpiChartData[kpiId][i].data,
-            maturity: 'M' + this.kpiChartData[kpiId][i].maturity,
-            value: this.kpiChartData[kpiId][i].value[0].data + ' ' + kpiUnit
-          };
-          data.push(rowData);
-        }
-
-        this.kpiChartData[kpiId].data = data;
-      }
-      this.showKpiTrendIndicator[kpiId] = false;
-
-    }
     this.createTrendsData(kpiId);
   }
 
@@ -592,13 +556,7 @@ export class DeveloperComponent implements OnInit {
       this.chartColorList[kpiId] = [];
       for (let i = 0; i < arr?.length; i++) {
         for (const key in this.colorObj) {
-          if (kpiId == 'kpi17') {
-            if (this.colorObj[key]?.nodeName == arr[i].value[0].sprojectName) {
-              this.chartColorList[kpiId].push(this.colorObj[key]?.color);
-              finalArr.push(JSON.parse(JSON.stringify(arr[i])));
-            }
-
-          } else if (this.colorObj[key]?.nodeName == arr[i]?.data) {
+          if (this.colorObj[key]?.nodeName == arr[i]?.data) {
             this.chartColorList[kpiId].push(this.colorObj[key]?.color);
             finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
             // break;
