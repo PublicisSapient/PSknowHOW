@@ -41,7 +41,7 @@ export class DoraComponent implements OnInit {
   kpiDropdowns = {};
   showKpiTrendIndicator = {};
   hierarchyLevel;
-  showChart = true;
+  showChart = 'chart';
   displayModal = false;
   modalDetails = {
     header: '',
