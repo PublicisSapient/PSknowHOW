@@ -2822,6 +2822,7 @@ db.getCollection('field_mapping_structure').insertOne(
 );
 }
 
+//---------------------------- Release 7.6 ------------------------------------------------------------------------
 // --- Backlog Readiness KPI Fieldmapping Enhancement (DTS-27535)
 
 var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
@@ -2847,7 +2848,8 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach
 
 ])
 
-// kpi issue type mapping for Quality status
+//------------------------- Release 7.7v ----------------------------------------------------------------------------------
+// kpi issue type mapping for Quality status  ---------------------------------------------------------------------------
 
 db.getCollection('field_mapping_structure').insertOne([
     {

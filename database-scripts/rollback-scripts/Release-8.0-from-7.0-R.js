@@ -212,8 +212,9 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 4}}).forEach(f
     );
 });
 
+// --------------------- Release 7.7 -----------------------------------------------------------------
+// delete mapping for Quality Status
 
-// delete mapping for sprint velocity
 db.field_mapping_structure.deleteMany({
     "fieldName": "jiraItrQSIssueTypeKPI133"
 });
