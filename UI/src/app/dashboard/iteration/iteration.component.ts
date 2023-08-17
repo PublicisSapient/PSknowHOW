@@ -95,7 +95,10 @@ export class IterationComponent implements OnInit, OnDestroy {
   globalConfig;
   sharedObject;
   activeIndex = 0;
-  navigationTabs:Array<object> =[];
+  navigationTabs:Array<object> =[
+    {'label':'Iteration Review', 'count': 0},
+    {'label':'Iteration Progress', 'count': 0},
+  ];
   forzenColumns = ['issue id','issue description'];
   commitmentReliabilityKpi;
   kpiCommentsCountObj: object = {};
@@ -191,6 +194,21 @@ export class IterationComponent implements OnInit, OnDestroy {
     click apply and call kpi
    **/
   receiveSharedData($event) {
+    console.log(this.service.currentSelectedSprint);
+    if(this.service.currentSelectedSprint?.sprintState === 'ACTIVE'){
+      this.navigationTabs =  [
+        {'label':'Iteration Review', 'count': 0},
+        {'label':'Iteration Progress', 'count': 0},
+        {'label':'Daily Standup','count':1}
+      ];
+    }else{
+      this.navigationTabs =  [
+        {'label':'Iteration Review', 'count': 0},
+        {'label':'Iteration Progress', 'count': 0},
+      ];
+    }
+
+    console.log(this.navigationTabs);
     this.activeIndex =0;
     if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
@@ -301,20 +319,6 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
     }));
 
-    this.service.currentSelectedSprintObs.subscribe(selectedSprint =>{
-      if(selectedSprint?.sprintState === 'ACTIVE'){
-        this.navigationTabs =  [
-          {'label':'Iteration Review', 'count': 0},
-          {'label':'Iteration Progress', 'count': 0},
-          {'label':'Daily Standup','count':1}
-        ];
-      }else{
-        this.navigationTabs =  [
-          {'label':'Iteration Review', 'count': 0},
-          {'label':'Iteration Progress', 'count': 0},
-        ];
-      }
-    });
 
     this.service.getEmptyData().subscribe((val) => {
       if (val) {

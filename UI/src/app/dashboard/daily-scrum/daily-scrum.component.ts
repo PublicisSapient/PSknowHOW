@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-daily-scrum',
@@ -13,14 +12,13 @@ export class DailyScrumComponent implements OnInit {
   @Input() columns =[];
   @Input() displayModal=false;
   @Input() showLess = true;
-  @Input() selectedRole =null;
   @Input() selectedUser = 'Overall';
+  @Input() selectedRole =null;
 
-  // @Output() showModal = new EventEmitter<boolean>();
-  // @Output() onShowLess = new EventEmitter<boolean>();
-  // @Output() onSelectedRole = new EventEmitter<string>();
-  // @Output() onSelectedUserChange = new EventEmitter<string>();
-
+  @Output() onExpandOrCollapse = new EventEmitter<boolean>();
+  @Output() onShowLessOrMore = new EventEmitter<boolean>();
+  @Output() onSelectedUserChange = new EventEmitter<string>();
+  @Output() onSelectedRole = new EventEmitter<string>();
 
   totals ={};
   allAssignee = [];
@@ -28,7 +26,6 @@ export class DailyScrumComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log(this.assigneeList, this.filterData);
     if(this.assigneeList.length > 0){
       this.allAssignee = [...this.assigneeList];
       this.calculateTotal();
@@ -36,13 +33,19 @@ export class DailyScrumComponent implements OnInit {
   }
 
   setSelectedUser(assigneeId){
-    this.selectedUser=assigneeId;
-    // this.onSelectedUserChange.emit(this.selectedUser);
+    this.onSelectedUserChange.emit(assigneeId);
+  }
+
+  setShowLess(){
+    this.onShowLessOrMore.emit(true);
+  }
+
+  handleViewExpandCollapse(){
+    this.onExpandOrCollapse.emit(!this.displayModal);
   }
 
   handleSelectRole(e){
-    console.log(this.selectedRole);
-    // this.onSelectedRole.emit(this.selectedRole);
+    this.onSelectedRole.emit(this.selectedRole);
     if(this.selectedRole){
       this.assigneeList = this.allAssignee.filter(assignee => assignee.role === this.selectedRole);
     }else{
@@ -51,12 +54,9 @@ export class DailyScrumComponent implements OnInit {
     this.calculateTotal();
   }
 
-  setShowLess(){
-    this.showLess = !this.showLess;
-    // this.onShowLess.emit(true);
-  }
-
   calculateTotal(){
+    console.log(this.columns, this.assigneeList);
+    
     this.totals['Team Member'] = this.assigneeList.length + ' Members';
     this.columns.forEach(col =>{
       this.totals[col] = {...this.assigneeList[0].cardDetails[col]};
@@ -134,14 +134,5 @@ export class DailyScrumComponent implements OnInit {
     return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}${(rminutes !== 0) ? rminutes + 'm' : ''}`;
   }
 
-  handleViewExpandCollapse(){
-    this.displayModal = !this.displayModal;
 
-    if(this.displayModal){
-      document.getElementsByTagName('body')[0].style.overflow = 'hidden';
-    }else{
-      document.getElementsByTagName('body')[0].style.overflow = 'auto';
-    }
-    // this.showModal.emit(true);
-  }
 }

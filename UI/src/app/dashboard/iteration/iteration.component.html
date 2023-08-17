@@ -240,7 +240,11 @@
                   </div>
                 </ng-container>
                 <ng-container *ngIf="activeIndex === 2">
-                  <app-daily-scrum [assigneeList]="kpiChartData['kpi154']" [columns]="jiraKpiData['kpi154']?.modalHeads" [filterData]="jiraKpiData['kpi154']?.filterData"></app-daily-scrum>
+                  <app-daily-scrum-tab 
+                    [assigneeList]="kpiChartData['kpi154']" 
+                    [columns]="jiraKpiData['kpi154']?.modalHeads"
+                    [filterData]="jiraKpiData['kpi154']?.filterData">
+                  </app-daily-scrum-tab>
                 </ng-container>
               </p-tabPanel>
             </p-tabView>
