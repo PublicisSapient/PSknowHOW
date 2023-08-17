@@ -391,6 +391,7 @@ export class HelperService {
         let aggArr = [];
         aggArr = arr?.map(item => ({
             ...item,
+            percentile90: item?.hasOwnProperty('percentile90') ? [] : null,
             value: item.value.map(x => ({
                 ...x,
                 value: (typeof x.value === 'object') ? {} : [],
@@ -403,6 +404,9 @@ export class HelperService {
         for (const key in obj) {
             for (let i = 0; i < obj[key]?.length; i++) {
                 const idx = aggArr?.findIndex(x => x?.data == obj[key][i]?.data);
+                if(obj[key][i]?.hasOwnProperty('percentile90')){
+                    aggArr[idx]['percentile90'] = [...aggArr[idx]['percentile90'], ...obj[key][i]['percentile90']];
+                }
                 if (idx != -1) {
                     for (let j = 0; j < obj[key][i]?.value?.length; j++) {
                         if (!Array.isArray(aggArr[idx]?.value[j]?.value)) {
@@ -443,6 +447,10 @@ export class HelperService {
 
             if (aggregationType?.toLowerCase() == 'sum') {
                 for (let i = 0; i < aggArr?.length; i++) {
+                    if(aggArr[i]?.hasOwnProperty('percentile90')){
+                        aggArr[i]['percentile90'] = aggArr[i]['percentile90']?.reduce((partialSum, a) => (partialSum + parseInt(a)), 0);
+                        
+                    }
                     aggArr[i].value?.map(x => {
                         x.value = (x.value?.reduce((partialSum, a) => partialSum + a, 0));
                         x.data = x.value;

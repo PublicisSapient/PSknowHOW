@@ -33,8 +33,9 @@
                                     [dropdownArr]="kpiDropdowns['kpi116']"
                                     (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi116'])"
                                     [showExport]="false" [showChartView]="showChart"
-                                    [iSAdditionalFilterSelected]="iSAdditionalFilterSelected" [isShow]="false"
+                                    [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"
                                     [sprintsOverlayVisible]="sprintsOverlayVisible && updatedConfigDataObj['kpi116']?.kpiDetail?.chartType !== 'table'"
+                                    [isShow]="(updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false) || (!iSAdditionalFilterSelected && kpiLoader === false) && (ifKpiExist('kpi116') != -1) ? true : false"
                                     [trendValueList]="kpiChartData['kpi116']" [colors]="this.colorObj"
                                     [showCommentIcon]="showCommentIcon" [commentCount]="kpiCommentsCountObj['kpi116']"
                                     (getCommentCountByKpi)="getKpiCommentsCount($event)"
@@ -85,10 +86,10 @@
                             </div>
                             <div class="p-sm-2">
                                 <div class="kpi-summary p-p-3 p-mb-3 position-relative">
-                                    <h4 class="p-m-0">{{summaryObj['kpi116']?.label}}</h4>
+                                    <h4 class="p-m-0">Change Failure Rate</h4>
                                     <div
                                         *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0 && kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData">
-                                        <div class="p-mt-3 summary-circle">{{summaryObj['kpi116']?.value}}</div>
+                                        <div class="p-mt-3 summary-circle">{{kpiChartData['kpi116']?.[0]?.percentile90}}</div>
                                     </div>
                                     <ng-template #noData>
                                         <div class="overlay"
@@ -107,10 +108,10 @@
                                     </ng-template>
                                 </div>
                                 <div class="kpi-summary p-p-3 position-relative">
-                                    <h4 class="p-m-0">{{summaryObj['kpi118']?.label}}</h4>
+                                    <h4 class="p-m-0">Deployment Frequency</h4>
                                     <div
                                         *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0 && kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData">
-                                        <div class="p-mt-3 summary-circle">{{summaryObj['kpi118']?.value}}</div>
+                                        <div class="p-mt-3 summary-circle">{{kpiChartData['kpi118']?.[0]?.percentile90}}</div>
                                     </div>
                                     <ng-template #noData>
                                         <div class="overlay"
@@ -137,7 +138,8 @@
                                     [dropdownArr]="kpiDropdowns['kpi118']"
                                     (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi118'])"
                                     [showExport]="false" [showChartView]="showChart"
-                                    [iSAdditionalFilterSelected]="iSAdditionalFilterSelected" [isShow]="false"
+                                    [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"
+                                    [isShow]="(updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false) || (!iSAdditionalFilterSelected && kpiLoader === false) && (ifKpiExist('kpi118') != -1) ? true : false"
                                     [sprintsOverlayVisible]="sprintsOverlayVisible && updatedConfigDataObj['kpi118']?.kpiDetail?.chartType !== 'table'"
                                     [trendValueList]="kpiChartData['kpi118']" [colors]="this.colorObj"
                                     [showCommentIcon]="showCommentIcon" [commentCount]="kpiCommentsCountObj['kpi118']"

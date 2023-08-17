@@ -80,15 +80,15 @@ export class DoraComponent implements OnInit {
       this.selectedTab = data.selectedTab;
       this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
     }));
-    
+
     // this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
     //   console.log(globalConfig);
-      
-      // this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-      const boardData = this.service.getDashConfigData();
-      this.configGlobalData = boardData?.['others']?.filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-      
-      this.processKpiConfigData();
+
+    // this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+    const boardData = this.service.getDashConfigData();
+    this.configGlobalData = boardData?.['others']?.filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+
+    this.processKpiConfigData();
     // }));
 
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
@@ -132,6 +132,28 @@ export class DoraComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.service.getFilterObject()) {
+      this.serviceObject = JSON.parse(JSON.stringify(this.service.getFilterObject()));
+    }
+
+    this.httpService.getTooltipData().subscribe(filterData => {
+      if (filterData[0] !== 'error') {
+        this.tooltip = filterData;
+      }
+    });
+
+    this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
+      this.noProjects = res;
+      this.kanbanActivated = this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
+    }));
+
+    this.service.getEmptyData().subscribe((val) => {
+      if (val) {
+        this.noTabAccess = true;
+      } else {
+        this.noTabAccess = false;
+      }
+    });
   }
 
   processKpiConfigData() {
@@ -153,8 +175,8 @@ export class DoraComponent implements OnInit {
       }
     });
 
-    this.updatedConfigGlobalData?.forEach((item) => 
-      this.updatedConfigDataObj[item.kpiId] = {...item}
+    this.updatedConfigGlobalData?.forEach((item) =>
+      this.updatedConfigDataObj[item.kpiId] = { ...item }
     );
   }
 
@@ -286,25 +308,25 @@ export class DoraComponent implements OnInit {
     });
   }
 
-  getKpiCommentsCount(kpiId?){
+  getKpiCommentsCount(kpiId?) {
     let requestObj = {
       "nodes": [...this.filterApplyData?.['selectedMap']['project']],
-      "level":this.filterApplyData?.level,
+      "level": this.filterApplyData?.level,
       "nodeChildId": "",
       'kpiIds': []
     };
-    if(kpiId){
-        requestObj['kpiIds'] = [kpiId];
-        this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-            this.kpiCommentsCountObj[kpiId] = res[kpiId];
-        });
-    }else{
-        requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-        this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-            this.kpiCommentsCountObj = res;
-        });
+    if (kpiId) {
+      requestObj['kpiIds'] = [kpiId];
+      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+        this.kpiCommentsCountObj[kpiId] = res[kpiId];
+      });
+    } else {
+      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
+      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+        this.kpiCommentsCountObj = res;
+      });
     }
-}
+  }
 
   receiveSharedData($event) {
     this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false
@@ -401,6 +423,12 @@ export class DoraComponent implements OnInit {
   groupJenkinsKpi(kpiIdsForCurrentBoard) {
     this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
     if (this.kpiJenkins?.kpiList?.length > 0) {
+      for(let i = 0; i<this.kpiJenkins?.kpiList?.length; i++){
+        this.kpiJenkins.kpiList[i]['filterDuration'] = {
+          duration:'WEEKS',
+          value:2
+        }
+      }
       this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
     }
   }
@@ -464,7 +492,7 @@ export class DoraComponent implements OnInit {
 
   sortAlphabetically(objArray) {
     if (objArray && objArray?.length > 1) {
-        objArray?.sort((a, b) => a.data?.localeCompare(b.data));
+      objArray?.sort((a, b) => a.data?.localeCompare(b.data));
     }
     return objArray;
   }
@@ -533,35 +561,20 @@ export class DoraComponent implements OnInit {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
-        if (kpiId === 'kpi17') {
-          this.kpiChartData[kpiId] = [];
-          for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-            let trendList = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0];
-            trendList?.value.forEach((x) => {
-              let obj = {
-                'data': this.kpiSelectedFilterObj[kpiId][i],
-                'value': x.value
-              }
-              this.kpiChartData[kpiId].push(obj);
-            })
-          }
-        } else {
-          const tempArr = {};
-          for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
-            tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
-          }
-          this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
+        const tempArr = {};
+        for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
+          tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
+          tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['percentile90'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.percentile90;
         }
+        this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
+        
       } else {
         if (this.kpiSelectedFilterObj[kpiId]?.length > 0) {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value;
-          if (kpiId == 'kpi17' && this.kpiSelectedFilterObj[kpiId][0]?.toLowerCase() == 'average coverage') {
-            for (let i = 0; i < this.kpiChartData[kpiId]?.length; i++) {
-              this.kpiChartData[kpiId][i]['filter'] = this.kpiSelectedFilterObj[kpiId][0];
-            }
-          }
+          this.kpiChartData[kpiId][0]['percentile90'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.percentile90;
         } else {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
+          this.kpiChartData[kpiId][0]['percentile90'] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.percentile90;
         }
       }
     }
@@ -612,37 +625,6 @@ export class DoraComponent implements OnInit {
     if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     }
-    // For kpi3 and kpi53 generating table column headers and table data
-    if (kpiId === 'kpi3' || kpiId === 'kpi53') {
-      //generating column headers
-      const columnHeaders = [];
-      if (Object.keys(this.kpiSelectedFilterObj)?.length && this.kpiSelectedFilterObj[kpiId]?.length && this.kpiSelectedFilterObj[kpiId][0]) {
-        columnHeaders.push({ field: 'name', header: this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelName + ' Name' });
-        columnHeaders.push({ field: 'value', header: this.kpiSelectedFilterObj[kpiId][0] });
-        columnHeaders.push({ field: 'maturity', header: 'Maturity' });
-      }
-      if (this.kpiChartData[kpiId]) {
-        this.kpiChartData[kpiId].columnHeaders = columnHeaders;
-      }
-      //generating Table data
-      const kpiUnit = this.updatedConfigGlobalData?.find(kpi => kpi.kpiId === kpiId)?.kpiDetail?.kpiUnit;
-      const data = [];
-      if (this.kpiChartData[kpiId] && this.kpiChartData[kpiId].length) {
-        for (let i = 0; i < this.kpiChartData[kpiId].length; i++) {
-          const rowData = {
-            name: this.kpiChartData[kpiId][i].data,
-            maturity: 'M' + this.kpiChartData[kpiId][i].maturity,
-            value: this.kpiChartData[kpiId][i].value[0].data + ' ' + kpiUnit
-          };
-          data.push(rowData);
-        }
-
-        this.kpiChartData[kpiId].data = data;
-      }
-      this.showKpiTrendIndicator[kpiId] = false;
-
-    }
-    
   }
 
   createAllKpiArray(data, inputIsChartData = false) {
@@ -682,7 +664,32 @@ export class DoraComponent implements OnInit {
     }
   }
 
+  handleSelectedOption(event, kpi) {
+    this.kpiSelectedFilterObj[kpi?.kpiId] = [];
 
+    if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
+      for (const key in event) {
+        if (event[key]?.length == 0) {
+          delete event[key];
+          this.kpiSelectedFilterObj[kpi?.kpiId] = event;
+        } else if (Array.isArray(event[key])) {
+          for (let i = 0; i < event[key]?.length; i++) {
+            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
+          }
+        } else {
+          for (let i = 0; i < event[key]?.length; i++) {
+            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
+          }
+        }
+      }
+    } else {
+      this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
+    }
+
+    this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
+    this.kpiSelectedFilterObj['action'] = 'update';
+    this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+  }
 
   // unsubscribing all Kpi Request
   ngOnDestroy() {
