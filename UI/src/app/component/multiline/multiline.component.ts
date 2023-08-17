@@ -103,7 +103,7 @@ export class MultilineComponent implements OnChanges {
     const thresholdValue = this.thresholdValue;
     const elem = this.elem;
     let width = 450;
-    const height = 190;
+    const height = (viewType === 'large' && selectedProjectCount === 1) ? 240 : 190;
     const margin = 50;
     const duration = 250;
     const lineOpacity = '1';
@@ -234,7 +234,16 @@ export class MultilineComponent implements OnChanges {
         .selectAll('div')
         .data(data[0].value)
         .join('div')
-        .attr('class', 'tooltip2')
+        .attr('class', d=>{
+          let cssClass = 'tooltip2';
+          let value = Math.round(d.value * 100) / 100;
+          if(thresholdValue && thresholdValue !== 0 && value >= this.thresholdValue){
+            cssClass += ' above-thresold';
+          } else {
+            cssClass += ' below-thresold';
+          }
+          return cssClass;
+        })
         .style('left', d => {
           let left = d.date || d.sortSprint
           return xScale(left) + xScale.bandwidth() / 2 + 'px'

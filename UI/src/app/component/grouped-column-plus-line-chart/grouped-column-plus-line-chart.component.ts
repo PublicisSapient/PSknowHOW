@@ -167,7 +167,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     const margin = { top: 35, right: 50, bottom: 50, left: 50 };
     const barWidth = 20;
     const width = data.length <= 5 ? document.getElementById('chart').offsetWidth - 70 : data.length * barWidth * 10;
-    const height = 210 - paddingTop;
+    const height = (viewType === 'large' && selectedProjectCount === 1) ? 250 - paddingTop : 210 - paddingTop;
     const paddingFactor = width < 600 ? 0.30 : 0.55;
 
     const x0 = d3.scaleBand().range([0, width - margin.left]).padding([((6 + this.dataPoints) / (3 * this.dataPoints)) * paddingFactor]);
@@ -647,7 +647,16 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
             .selectAll('div')
             .data(newRawData[0]['value'])
             .join('div')
-            .attr('class', 'tooltip2')
+            .attr('class', d=>{
+              let cssClass = 'tooltip2';
+              let value = d.lineValue;
+              if(value >= this.thresholdValue){
+                cssClass += ' above-thresold';
+              } else {
+                cssClass += ' below-thresold';
+              }
+              return cssClass;
+            })
             .style('left', d => {
               let left = d.date || d.sortSprint
               return x0(left) + x0.bandwidth() / 2 + 'px'
