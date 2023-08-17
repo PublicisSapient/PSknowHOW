@@ -165,12 +165,16 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 				uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
 				mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 						Collections.singletonList(basicProjectConfigId));
+				List<String> typeNameList = fieldMapping.getJiraItrQSIssueTypeKPI133();
 
 				if (CollectionUtils.isNotEmpty(totalIssue)) {
 					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(totalIssue);
 					Set<JiraIssue> sprintReportIssueList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), issueList);
+
+					sprintReportIssueList = getTypeNameFilterJiraIssueList(defectTypes, typeNameList,
+							sprintReportIssueList);
 
 					// fetched all defects which is linked to current sprint report stories
 					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
@@ -193,6 +197,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					List<JiraIssue> jiraIssueLinkedStories = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
 							new ArrayList<>(linkedStories), basicProjectConfigId);
 
+					jiraIssueLinkedStories = getJiraIssueLinkedStories(typeNameList, jiraIssueLinkedStories);
+
 					List<JiraIssue> totalIssues = new ArrayList<>();
 					totalIssues.addAll(sprintReportIssueList);
 					totalIssues.addAll(subTaskDefects);
@@ -204,6 +210,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					Set<JiraIssue> completedJiraIssue = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getCompletedIssues(), completedIssueList);
+					completedJiraIssue = getTypeNameFilterJiraIssueList(defectTypes, typeNameList, completedJiraIssue);
 					resultListMap.put(COMPLETED_ISSUES, new ArrayList<>(completedJiraIssue));
 				} else
 					resultListMap.put(COMPLETED_ISSUES, new ArrayList<>());
@@ -212,6 +219,25 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 		}
 		return resultListMap;
 
+	}
+
+	private static List<JiraIssue> getJiraIssueLinkedStories(List<String> typeNameList,
+			List<JiraIssue> jiraIssueLinkedStories) {
+		if (CollectionUtils.isNotEmpty(typeNameList)) {
+			jiraIssueLinkedStories = jiraIssueLinkedStories.stream()
+					.filter(jiraIssue -> typeNameList.contains(jiraIssue.getTypeName())).collect(Collectors.toList());
+		}
+		return jiraIssueLinkedStories;
+	}
+
+	private static Set<JiraIssue> getTypeNameFilterJiraIssueList(List<String> defectTypes, List<String> typeNameList,
+			Set<JiraIssue> sprintReportIssueList) {
+		if (CollectionUtils.isNotEmpty(typeNameList)) {
+			typeNameList.addAll(defectTypes);
+			sprintReportIssueList = sprintReportIssueList.stream()
+					.filter(jiraIssue -> typeNameList.contains(jiraIssue.getTypeName())).collect(Collectors.toSet());
+		}
+		return sprintReportIssueList;
 	}
 
 	/**
@@ -298,14 +324,6 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 						.collect(Collectors.toList());
 				// adding all LinkedStories
 				closedPlusOpenLinkedStories.addAll(linkedStoriesJiraIssueList);
-
-				List<String> issueTypeList = new ArrayList<>();
-				if (CollectionUtils.isNotEmpty(fieldMapping.getJiraItrQSIssueTypeKPI133())) {
-					issueTypeList.addAll(fieldMapping.getJiraItrQSIssueTypeKPI133());
-					closedPlusOpenLinkedStories = closedPlusOpenLinkedStories.stream()
-							.filter(jiraIssue -> issueTypeList.contains(jiraIssue.getTypeName()))
-							.collect(Collectors.toList());
-				}
 				// Removing duplicates if any
 				closedPlusOpenLinkedStories = closedPlusOpenLinkedStories.stream().distinct()
 						.collect(Collectors.toList());
