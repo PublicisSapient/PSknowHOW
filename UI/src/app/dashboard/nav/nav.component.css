@@ -97,11 +97,11 @@
 
 .navigation li a {
   text-transform: uppercase;
-  padding: 9px 7px;
+  padding: 8px 7px;
   margin: 0 auto;
   /* display: inline-block; */
   /* color: #333; */
-  /* font-size: 12px; */
+  font-size: 10px;
   font-weight: 500;
   white-space: nowrap;
   text-decoration: none;
@@ -204,8 +204,8 @@
 }
 
 .filter-btn {
-  font-size: 12px !important;
-  height: 3.25rem;
+  font-size: 10px !important;
+  height: 2.5rem;
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
@@ -218,10 +218,10 @@
   align-items: center;
   justify-content: center;
   margin: 0 0 -1px;
-  padding: 10px;
+  padding: 6px;
   font-weight: 300;
   text-align: center;
-  font-size: 13px;
+  font-size: 11px;
   border: 1px solid var(--color-black);
   cursor: pointer;
   background-color: #FFFFFF;
