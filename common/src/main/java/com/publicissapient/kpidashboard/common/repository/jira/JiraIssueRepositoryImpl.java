@@ -795,6 +795,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		List<Criteria> projectCriteriaList = new ArrayList<>();
 		uniqueProjectMap.forEach((project, filterMap) -> {
 			Criteria projectCriteria = new Criteria();
+			projectCriteria.and(CONFIG_ID).is(project);
 			filterMap.forEach((subk, subv) -> {
 				if (subk.equalsIgnoreCase(CommonConstant.RELEASE)) {
 					projectCriteria.and(RELEASE_VERSION).in((List<Pattern>) filterMap.get(CommonConstant.RELEASE));
@@ -806,7 +807,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		});
 
 		Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-				.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
 		return operations.find(query, JiraIssue.class);

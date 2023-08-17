@@ -220,28 +220,37 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 		List<ReleaseWisePI> releaseWisePIList = jiraIssueRepository
 				.findUniqueReleaseVersionByUniqueTypeName(mapOfFilters);
 
-		List<String> piList = new ArrayList<>();
+		//List<String> piList = new ArrayList<>();
+		Map<String, List<String>> projectWisePIList = new HashMap<>();
 
 		Map<String, List<ReleaseWisePI>> projectWIseData = releaseWisePIList.stream()
 				.collect(Collectors.groupingBy(releaseWisePI -> releaseWisePI.getBasicProjectConfigId()));
 
 		projectWIseData.forEach((basicProjectConfigId, releaseWIseData) -> {
-			Map<String, List<ReleaseWisePI>> versionWiseData = releaseWisePIList.stream()
+			Map<String, List<ReleaseWisePI>> versionWiseData = releaseWIseData.stream()
 					.filter(releaseWisePI -> CollectionUtils.isNotEmpty(releaseWisePI.getReleaseName()))
 					.collect(Collectors.groupingBy(releaseWisePI -> releaseWisePI.getReleaseName().get(0)));
 			versionWiseData.forEach((version, piData) -> {
 				if (piData.size() == 1 && CollectionUtils.isNotEmpty(projectWiseIssueTypeMap.get(basicProjectConfigId))
 						&& CollectionUtils.isNotEmpty(piData.get(0).getReleaseName())) {
 					if (projectWiseIssueTypeMap.get(basicProjectConfigId).contains(piData.get(0).getUniqueTypeName())) {
-						piList.add(piData.get(0).getReleaseName().get(0));
+						//piList.add(piData.get(0).getReleaseName().get(0));
+						projectWisePIList.putIfAbsent(basicProjectConfigId, new ArrayList<>());
+						projectWisePIList.computeIfPresent(basicProjectConfigId, (k, v) -> {
+							v.add(piData.get(0).getReleaseName().get(0));
+							return v;
+						});
 					}
 				}
 			});
 		});
 
-		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-		mapOfProjectFilters.put(CommonConstant.RELEASE, CommonUtils.convertToPatternListForSubString(piList));
-		uniqueProjectMap.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(), mapOfProjectFilters);
+		projectWisePIList.forEach((basicProjectConfigId, piDataList) -> {
+			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+			mapOfProjectFilters.put(CommonConstant.RELEASE, CommonUtils.convertToPatternListForSubString(piDataList));
+			uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
+		});
+		
 		List<JiraIssue> piWiseEpicList = jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
 		resultListMap.put(EPIC_DATA, piWiseEpicList);
 		return resultListMap;

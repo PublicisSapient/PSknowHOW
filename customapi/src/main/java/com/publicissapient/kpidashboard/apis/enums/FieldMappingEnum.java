@@ -36,7 +36,7 @@ public enum FieldMappingEnum {
 					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDevDueDateCustomField",
 					"jiraIssueEpicType", "storyFirstStatus", "jiraTestAutomationIssueType", "jiraStoryIdentification",
 					"jiraDefectDroppedStatus", "productionDefectCustomField", "productionDefectIdentifier",
-					"productionDefectValue", "productionDefectComponentValue")),
+					"productionDefectValue", "productionDefectComponentValue" , "epicPlannedValue", "epicAchievedValue")),
 
 	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNames", "storyFirstStatus",
 			"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
@@ -183,7 +183,7 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraDodKPI152", "jiraDefectRejectionStatusKPI152", "jiraLiveStatusKPI152")),
 
 	KPI153("PI Predictability", KPISource.JIRA.name(),
-			Arrays.asList("jiraIssueEpicTypeKPI153", "epicPlannedValue", "epicAchievedValue"));
+			Arrays.asList("jiraIssueEpicTypeKPI153"));
 
 	private List<String> fields;
 	private String kpiName;

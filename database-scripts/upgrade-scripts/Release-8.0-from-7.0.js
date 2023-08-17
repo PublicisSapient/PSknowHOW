@@ -2599,7 +2599,7 @@ db.getCollection('kpi_master').updateOne(
 
 //----------------7.7.0 Changes ---------------------------
 
-db.getCollection('field_mapping_structure').insertOne(
+db.getCollection('kpi_master').insertOne(
 {
       "kpiId": "kpi153",
       "kpiName": "PI Predictability",

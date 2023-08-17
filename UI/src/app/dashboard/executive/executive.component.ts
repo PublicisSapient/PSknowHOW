@@ -1210,7 +1210,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         let latest:string = '';
         let trend:string = '';
         if(item?.value?.length > 0){
-            let tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'simple')?.value; 
+            let tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
             var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit.trim() : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
@@ -1228,10 +1228,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     trend = 'NA';
                 }
             }else{
-                let lastVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'simple')?.value;
-                let secondLastVal = item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'simple')?.value;
+                let lastVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
+                let secondLastVal = item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
                 console.log('lastVal', lastVal, 'secondLastVal',secondLastVal);
-                
+
                 let isPositive = kpiData?.kpiDetail?.isPositiveTrend;
                 if(secondLastVal > lastVal && !isPositive){
                     trend = '+ve';
@@ -1248,6 +1248,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }else{
             trend = 'NA';
         }
+        console.log([latest, trend, unit]);
         return [latest, trend, unit];
       }
 

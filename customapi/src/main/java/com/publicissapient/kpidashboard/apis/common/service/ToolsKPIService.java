@@ -41,7 +41,7 @@ public abstract class ToolsKPIService<R, S> {
 
 	private Set<String> reverseTrendList = new HashSet<>(Arrays.asList(KPICode.CODE_COMMIT.name(),
 			KPICode.MEAN_TIME_TO_MERGE.name(), KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING.name(),
-			KPICode.OPEN_TICKET_AGING_BY_PRIORITY.name()));
+			KPICode.OPEN_TICKET_AGING_BY_PRIORITY.name() , KPICode.PI_PREDICTABILITY.name()));
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
