@@ -248,7 +248,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				}
 				List<JiraIssue> jiraIssueList = listEntry.getValue();
 				String assigneeId = listEntry.getKey();
-				String assigneeName = jiraIssueList.stream().findFirst().get().getAssigneeName();
+				String assigneeName = jiraIssueList.stream().findFirst().orElse(new JiraIssue()).getAssigneeName();
 
 				cardDetails.put("Remaining Capacity", userWiseRemainingCapacity.getOrDefault(assigneeId,
 						StandUpViewKpiData.builder().value("-").unit(CommonConstant.HOURS).build()));
