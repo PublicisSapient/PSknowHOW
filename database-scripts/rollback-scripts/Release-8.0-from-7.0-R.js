@@ -211,3 +211,28 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 4}}).forEach(f
         }
     );
 });
+
+//----------------7.7.0 Changes ---------------------------
+
+// delete PI Predictability KPI
+db.kpi_master.deleteOne({
+    "kpiId": "kpi153"
+});
+
+
+// delete mapping for PI Predictability KPI
+db.field_mapping_structure.deleteMany([
+    "fieldName": "epicPlannedValue",
+    "fieldName": "epicAchievedValue",
+    "fieldName": "jiraIssueEpicTypeKPI153"
+]);
+
+// delete column config for PI Predictability KPI
+db.kpi_column_configs.deleteOne({
+    "kpiId": "kpi153"
+});
+
+// delete kpi_category_mapping for PI Predictability KPI
+db.kpi_category_mapping.deleteOne({
+    "kpiId": "kpi153"
+});

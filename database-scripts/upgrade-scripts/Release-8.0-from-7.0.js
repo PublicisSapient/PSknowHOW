@@ -2851,6 +2851,7 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach
 
 //----------------7.7.0 Changes ---------------------------
 
+// added PI Predictability KPI for categoryThree board
 db.getCollection('kpi_master').insertOne(
 {
       "kpiId": "kpi153",
@@ -2885,6 +2886,7 @@ db.getCollection('kpi_master').insertOne(
       "calculateMaturity": false
     });
 
+// PI predictability field mapping structure
 db.getCollection('field_mapping_structure').insertMany([
 {
         "fieldName": "epicPlannedValue",
@@ -2918,6 +2920,7 @@ db.getCollection('field_mapping_structure').insertMany([
     }
 ])
 
+// PI predictability KPI column config
 db.getCollection('kpi_column_configs').insertOne({
                                  		basicProjectConfigId: null,
                                  		kpiId: 'kpi153',
@@ -2960,6 +2963,7 @@ db.getCollection('kpi_column_configs').insertOne({
                                  		]
 });
 
+// PI predictability KPI category mapping
 db.getCollection('kpi_category_mapping').insertOne( {
                                                     		"kpiId": "kpi153",
                                                     		"categoryId": "categoryThree",
