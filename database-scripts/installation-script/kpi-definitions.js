@@ -3034,7 +3034,7 @@ db.getCollection('kpi_master').insertMany(
       "isDeleted": "False",
       "defaultOrder": 29,
       "kpiSource": "Jira",
-      "groupId": 2,
+      "groupId": 4,
       "thresholdValue": "",
       "kanban": false,
       "chartType": "multipleline",
