@@ -659,27 +659,24 @@ export class DeveloperComponent implements OnInit {
   }
 
   handleSelectedOption(event, kpi) {
-    this.kpiSelectedFilterObj[kpi?.kpiId] = [];
+    this.kpiSelectedFilterObj[kpi?.kpiId] = {};
+
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
+
       for (const key in event) {
         if (event[key]?.length == 0) {
           delete event[key];
-          this.kpiSelectedFilterObj[kpi?.kpiId] = event;
-        } else {
-          for (let i = 0; i < event[key]?.length; i++) {
-            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
-          }
         }
       }
+      this.kpiSelectedFilterObj[kpi?.kpiId] = event;
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
+      this.kpiSelectedFilterObj[kpi?.kpiId] = {"filter1":[event]};
     }
-
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
-    this.kpiSelectedFilterObj['action'] = 'update';
-    this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-  }
 
+    this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+
+  }
 
 
 }
