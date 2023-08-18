@@ -2963,6 +2963,7 @@ db.getCollection('kpi_column_configs').insertOne({
                                  		]
 });
 
+// Note : below code only For Opensource project
 // PI predictability KPI category mapping
 db.getCollection('kpi_category_mapping').insertOne( {
                                                     		"kpiId": "kpi153",
