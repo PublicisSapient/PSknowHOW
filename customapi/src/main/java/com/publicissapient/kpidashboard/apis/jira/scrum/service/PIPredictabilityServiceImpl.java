@@ -114,31 +114,32 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 			List<DataCount> dataCountList = new ArrayList<>();
 
 			if (CollectionUtils.isNotEmpty(epicList)) {
-				Map<DateTime, ReleaseWiseLatestEpicData> piNameWiseEpicData = new HashMap<>();
-				epicList.stream().forEach(jiraIssue -> {
-					if (CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())
-							&& jiraIssue.getReleaseVersions().get(0).getReleaseDate() != null) {
-						piNameWiseEpicData.putIfAbsent(jiraIssue.getReleaseVersions().get(0).getReleaseDate(),
-								new ReleaseWiseLatestEpicData());
-						piNameWiseEpicData.computeIfPresent(jiraIssue.getReleaseVersions().get(0).getReleaseDate(),
-								(k, v) -> {
-									v.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
-									v.setPiName(jiraIssue.getReleaseVersions().get(0).getReleaseName());
-									v.setPiEndDate(jiraIssue.getReleaseVersions().get(0).getReleaseDate());
-									List<JiraIssue> piWiseEpicList = v.getEpicList();
+				Map<DateTime, PiWiseLatestEpicData> piNameWiseEpicData = epicList.stream()
+						.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())
+								&& jiraIssue.getReleaseVersions().get(0).getReleaseDate() != null)
+						.collect(Collectors.toMap(jiraIssue -> jiraIssue.getReleaseVersions().get(0).getReleaseDate(),
+								jiraIssue -> {
+									PiWiseLatestEpicData releaseWiseLatestEpicData = new PiWiseLatestEpicData();
+									releaseWiseLatestEpicData
+											.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
+									releaseWiseLatestEpicData
+											.setPiName(jiraIssue.getReleaseVersions().get(0).getReleaseName());
+									releaseWiseLatestEpicData
+											.setPiEndDate(jiraIssue.getReleaseVersions().get(0).getReleaseDate());
+									List<JiraIssue> piWiseEpicList = new ArrayList<>();
 									piWiseEpicList.add(jiraIssue);
-									v.setEpicList(piWiseEpicList);
-									return v;
-								});
-					}
-				});
+									releaseWiseLatestEpicData.setEpicList(piWiseEpicList);
+									return releaseWiseLatestEpicData;
+								}, (existing, replacement) -> {
+									existing.getEpicList().addAll(replacement.getEpicList());
+									return existing;
+								}));
 
-				Map<DateTime, ReleaseWiseLatestEpicData> sortedPINameWiseEpicData = piNameWiseEpicData.entrySet()
-						.stream()
+				Map<DateTime, PiWiseLatestEpicData> sortedPINameWiseEpicData = piNameWiseEpicData.entrySet().stream()
 						.filter(epicDataEntry -> epicDataEntry.getValue().getPiEndDate().isBefore(DateTime.now()))
 						.sorted(Map.Entry.comparingByKey()).limit(customApiConfig.getJiraXaxisMonthCount())
-						.collect(LinkedHashMap::new, (map, entry) -> map.put(entry.getKey(), entry.getValue()),
-								LinkedHashMap::putAll);
+						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+								(existing, replacement) -> existing, LinkedHashMap::new));
 
 				String trendLineName = node.getProjectFilter().getName();
 				String requestTrackerId = getRequestTrackerId();
@@ -155,6 +156,8 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 					dataCount.setSProjectName(trendLineName);
 					dataCount.setSSprintID(piName);
 					dataCount.setSSprintName(piName);
+
+					// for line 1
 					DataValue dataValue1 = new DataValue();
 					dataValue1.setData(plannedValueSum.toString());
 					Map<String, Object> hoverValueMap1 = new HashMap<>();
@@ -162,7 +165,9 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 					dataValue1.setLineType(CommonConstant.SOLID_LINE_TYPE);
 					dataValue1.setName(ARCHIVED_VALUE);
 					dataValue1.setValue(achievedValueSum);
+					dataValueList.add(dataValue1);
 
+					// for line 2
 					DataValue dataValue2 = new DataValue();
 					Map<String, Object> hoverValueMap2 = new HashMap<>();
 					dataValue2.setData(plannedValueSum.toString());
@@ -170,7 +175,6 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 					dataValue2.setLineType(CommonConstant.DOTTED_LINE_TYPE);
 					dataValue2.setName(PLANNED_VALUE);
 					dataValue2.setValue(plannedValueSum);
-					dataValueList.add(dataValue1);
 					dataValueList.add(dataValue2);
 					dataCount.setDataValue(dataValueList);
 					dataCountList.add(dataCount);
@@ -273,7 +277,7 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 	@Getter
 	@Setter
-	public class ReleaseWiseLatestEpicData {
+	public class PiWiseLatestEpicData {
 		private String basicProjectConfigId;
 		private String piName;
 		private DateTime piEndDate;
