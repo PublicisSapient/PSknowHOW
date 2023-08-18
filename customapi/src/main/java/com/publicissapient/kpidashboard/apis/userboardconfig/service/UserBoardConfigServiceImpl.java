@@ -110,7 +110,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		} else {
 			UserBoardConfigDTO existingUserBoardConfigDTO = convertToUserBoardConfigDTO(existingUserBoardConfig);
 			if (checkKPIAddOrRemoveForExistingUser(existingUserBoardConfigDTO, kpiMasterMap)
-					&& checkCategories(existingUserBoardConfigDTO, kpiCategoryList)) {
+					&& checkCategories(existingUserBoardConfigDTO, kpiCategoryList)
+					&& checkSubCategories(existingUserBoardConfigDTO, kpiMasterMap)) {
 				setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 				filtersBoardsAndSetKpisForExistingUser(existingUserBoardConfigDTO.getScrum(),
 						defaultUserBoardConfigDTO.getScrum());
@@ -122,6 +123,32 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			}
 			filterKpis(existingUserBoardConfigDTO, kpiMasterMap);
 			return existingUserBoardConfigDTO;
+		}
+	}
+
+	/**
+	 * iteration sub categories are not present in the existing userboard
+	 * @param existingUserBoardConfigDTO
+	 * @param kpiMasterMap
+	 * @return
+	 */
+	private boolean checkSubCategories(UserBoardConfigDTO existingUserBoardConfigDTO,
+			Map<String, KpiMaster> kpiMasterMap) {
+		Set<String> existingSubCategories = existingUserBoardConfigDTO.getScrum().stream()
+				.filter(boardDTO -> boardDTO.getBoardName().equalsIgnoreCase(ITERATION))
+				.flatMap(boardDTO -> boardDTO.getKpis().stream().filter(kpi -> kpi.getSubCategoryBoard() != null)
+						.map(BoardKpisDTO::getSubCategoryBoard))
+				.collect(Collectors.toSet());
+		Set<String> kpiMasterSubCategories = kpiMasterMap.values().stream()
+				.filter(kpiMaster -> kpiMaster.getKpiCategory().equalsIgnoreCase(ITERATION))
+				.filter(kpi -> kpi.getKpiSubCategory() != null)
+				.map(KpiMaster::getKpiSubCategory).collect(Collectors.toSet());
+		if (kpiMasterSubCategories.size() > existingSubCategories.size()) {
+			return !CollectionUtils.containsAll(existingSubCategories, kpiMasterSubCategories);
+		} else if (kpiMasterSubCategories.size() < existingSubCategories.size()) {
+			return !CollectionUtils.containsAll(kpiMasterSubCategories, existingSubCategories);
+		} else {
+			return false;
 		}
 	}
 
@@ -264,7 +291,11 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				BoardKpisDTO existingKPI = kpiWiseUserBoardConfig.get(defaultKPIList.getKpiId());
 				boardKpis.setShown(existingKPI.isShown());
 				boardKpis.setIsEnabled(existingKPI.getIsEnabled());
-				boardKpis.setSubCategoryBoard(existingKPI.getSubCategoryBoard());
+				if(existingKPI.getSubCategoryBoard() != null) {
+					boardKpis.setSubCategoryBoard(existingKPI.getSubCategoryBoard());
+				} else {
+					boardKpis.setSubCategoryBoard(defaultKPIList.getSubCategoryBoard());
+				}
 				if (defaultBoardDTO.getBoardName().equals(ITERATION)) {
 					iterationOrderSize.getAndIncrement();
 					boardKpis.setOrder(existingKPI.getOrder());
