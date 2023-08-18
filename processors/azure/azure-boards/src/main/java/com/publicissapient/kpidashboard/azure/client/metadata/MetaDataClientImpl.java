@@ -267,6 +267,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDor(null);
 		}
 		fieldMapping.setJiraDod(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraIterationCompletionStatusCustomField(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraDefectSeepageIssueType(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setJiraDefectRemovalStatus(workflowMap.get(CommonConstant.DELIVERED));

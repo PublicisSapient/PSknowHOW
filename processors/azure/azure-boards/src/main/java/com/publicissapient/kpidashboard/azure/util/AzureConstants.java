@@ -41,6 +41,8 @@ public final class AzureConstants {
     public static final String COMBINE_IDS_SYMBOL = "_";
 
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String JIRA_ISSUE_CHANGE_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS";
+
     public static final String ID = "id";
     public static final String NAME = "name";
     public static final String SCRUM_DATA = "scrumDataCount";

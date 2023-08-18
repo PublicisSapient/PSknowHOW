@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.jira.fetchData;
 
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,5 @@ import java.util.Set;
 
 public interface CreateAccountHierarchy {
 
-    Set<AccountHierarchy> createAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig);
-
+    Set<AccountHierarchy> createAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet);
 }

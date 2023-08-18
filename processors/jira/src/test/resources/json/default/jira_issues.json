@@ -70,6 +70,8 @@
     "remainingEstimateMinutes" : 0,
     "productionDefect" : false,
     "updateDate" : "2023-02-05T23:19:32.0000000",
+    "originalType" : "abc",
+    "epicLinked" : "abc",
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
   }
 ]

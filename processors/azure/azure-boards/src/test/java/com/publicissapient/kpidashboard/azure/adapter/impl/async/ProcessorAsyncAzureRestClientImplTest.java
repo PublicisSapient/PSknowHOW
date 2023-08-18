@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.azure.adapter.impl.async.factory;
+package com.publicissapient.kpidashboard.azure.adapter.impl.async;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,15 +29,18 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.Base64;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -55,7 +58,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.publicissapient.kpidashboard.azure.adapter.impl.async.ProcessorAzureRestClient;
 import com.publicissapient.kpidashboard.azure.config.AzureProcessorConfig;
 import com.publicissapient.kpidashboard.azure.model.AzureServer;
 import com.publicissapient.kpidashboard.azure.model.AzureToolConfig;
@@ -69,17 +71,14 @@ import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUp
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlModel;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(SpringExtension.class)
-public class ProcessorAsynchAzureRestClientFactoryTest {
+public class ProcessorAsyncAzureRestClientImplTest {
 
 	@Mock
 	AzureProcessorConfig azureProcessorConfig;
 	
-	ProcessorAsynchAzureRestClientFactory azureRestClientFactory;
+	ProcessorAsyncAzureRestClientImpl processorAsyncAzureRestClient;
 
 	@Mock
 	private RestOperationsFactory<RestOperations> restOperationsFactory;
@@ -105,9 +104,9 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		Mockito.when(restOperationsFactory.getTypeInstance()).thenReturn(rest);
 		azureProcessorConfig = AzureProcessorConfig.builder().build();
 		mapper = new ObjectMapper();
-		restClient = azureRestClientFactory = new ProcessorAsynchAzureRestClientFactory(restOperationsFactory,
+		restClient = processorAsyncAzureRestClient = new ProcessorAsyncAzureRestClientImpl(restOperationsFactory,
 			azureProcessorConfig, mapper);
-
+		azureProcessorConfig.setStartDate("2022-01-07T00:00:00.0000000");
 	}
 
 	private AzureServer prepareAzureServer() {
@@ -131,7 +130,7 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		ResponseEntity<String> response = new ResponseEntity<>(createUpdateResponse(), HttpStatus.OK);
 		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class)))
 			.thenReturn(response);
-		AzureUpdatesModel actualModel = azureRestClientFactory.getUpdatesResponse(azureServer, "92");
+		AzureUpdatesModel actualModel = processorAsyncAzureRestClient.getUpdatesResponse(azureServer, "92");
 		AzureUpdatesModel expectedModel = new AzureUpdatesModel();
 		expectedModel.setCount(7);
 		assertEquals(expectedModel.getCount(), actualModel.getCount(), "Checking for count values");
@@ -146,19 +145,17 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 	public void getWiqlResponse() throws RestClientException, URISyntaxException, JsonParseException,
 		JsonMappingException, IOException, ParseException, IllegalAccessException, InvocationTargetException {
 		prepareProjectConfigFieldMapping();
-		long startTime1 = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-				.parse("2019-01-07T00:00:00.000000").getTime();
-		Map<String, Long> time = new HashMap();
-		time.put("User Story", startTime1);
-		time.put("Issue", startTime1);
-		long startTime = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-			.parse("2019-01-07T00:00:00.000000").getTime();
+		LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
+				DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
+		Map<String, LocalDateTime> time = new HashMap();
+		time.put("User Story", configuredStartDate);
+		time.put("Issue", configuredStartDate);
 		AzureServer azureServer = prepareAzureServer();
 		ResponseEntity<String> response = new ResponseEntity<>(createWiqlResponse(), HttpStatus.OK);
 		Mockito.when(
 			rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.POST),  Mockito.<HttpEntity<String>> any(), ArgumentMatchers.eq(String.class)))
 			.thenReturn(response);
-		AzureWiqlModel actualModel = azureRestClientFactory.getWiqlResponse(azureServer,time, projectConfFieldMapping,false);
+		AzureWiqlModel actualModel = processorAsyncAzureRestClient.getWiqlResponse(azureServer,time, projectConfFieldMapping,false);
 		AzureWiqlModel expectedModel = new AzureWiqlModel();
 		expectedModel.setAsOf("2020-07-17T12:01:50.663Z");;
 		assertEquals(expectedModel.getAsOf(), actualModel.getAsOf(), "Checking for values");
@@ -205,7 +202,7 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class)))
 			.thenReturn(response);
 		List<Integer> ids = Arrays.asList(1, 2, 3,4,41,92,127,128);
-		AzureBoardsWIModel actualModel = azureRestClientFactory.getWorkItemInfo(azureServer, ids);
+		AzureBoardsWIModel actualModel = processorAsyncAzureRestClient.getWorkItemInfo(azureServer, ids);
 		AzureBoardsWIModel expectedModel = new AzureBoardsWIModel();
 		expectedModel.setCount(8);
 		assertEquals(expectedModel.getCount(), actualModel.getCount(), "Checking for count values");
@@ -229,7 +226,7 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		ResponseEntity<String> response = new ResponseEntity<>(createIterationsResponse(), HttpStatus.OK);
 		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.GET), ArgumentMatchers.eq(new HttpEntity<>(headers)), ArgumentMatchers.eq(String.class)))
 			.thenReturn(response);
-		AzureIterationsModel actualModel = azureRestClientFactory.getIterationsResponse(azureServer);
+		AzureIterationsModel actualModel = processorAsyncAzureRestClient.getIterationsResponse(azureServer);
 		AzureIterationsModel expectedModel = new AzureIterationsModel();
 		expectedModel.setCount(3);
 		assertEquals(expectedModel.getCount(), actualModel.getCount(), "Checking for count values");
@@ -262,27 +259,24 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		azureToolConfig.setBoardQuery(
 				"Select [System.Id], [System.Title], [System.State] From WorkItems Where ([System.WorkItemType] ='Bug')order by [System.CreatedDate] asc");
 		projectConfFieldMapping.setAzure(azureToolConfig);
-		long startTime1 = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-				.parse("2019-01-07T00:00:00.000000").getTime();
-		Map<String, Long> time = new HashMap();
-		time.put("User Story", startTime1);
-		time.put("Issue", startTime1);
-		long startTime = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-				.parse("2019-01-07T00:00:00.000000").getTime();
+		LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
+				DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
+		Map<String, LocalDateTime> time = new HashMap();
+		time.put("User Story", configuredStartDate);
+		time.put("Issue", configuredStartDate);
 		AzureServer azureServer = prepareAzureServer();
 		ResponseEntity<String> response = new ResponseEntity<>(createWiqlResponse(), HttpStatus.OK);
 		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.POST), Mockito.<HttpEntity<String>>any(),
 				ArgumentMatchers.eq(String.class))).thenReturn(response);
-		AzureWiqlModel actualModel = azureRestClientFactory.getWiqlResponse(azureServer, time, projectConfFieldMapping,
+		AzureWiqlModel actualModel = processorAsyncAzureRestClient.getWiqlResponse(azureServer, time, projectConfFieldMapping,
 				false);
 		AzureWiqlModel expectedModel = new AzureWiqlModel();
 		expectedModel.setAsOf("2020-07-17T12:01:50.663Z");
-		;
 		assertEquals(expectedModel.getAsOf(), actualModel.getAsOf(), "Checking for values");
 		azureToolConfig.setBoardQuery(
 				"Select [System.Id], [System.Title], [System.State] From WorkItems Where ([System.WorkItemType] ='Bug' AND [system.changeddate] > '2020-01-01') order by [System.CreatedDate] asc");
 		projectConfFieldMapping.setAzure(azureToolConfig);
-		actualModel = azureRestClientFactory.getWiqlResponse(azureServer, time, projectConfFieldMapping, false);
+		actualModel = processorAsyncAzureRestClient.getWiqlResponse(azureServer, time, projectConfFieldMapping, false);
 	}
 
 	/**
@@ -307,18 +301,16 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		azureToolConfig.setBoardQuery(
 				"Select [System.Id], [System.Title], [System.State] From WorkItems Where ([System.WorkItemType] ='Bug')order by [System.CreatedDate] asc");
 		projectConfFieldMapping.setAzure(azureToolConfig);
-		long startTime1 = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-				.parse("2019-01-07T00:00:00.000000").getTime();
-		Map<String, Long> time = new HashMap();
-		time.put("User Story", startTime1);
-		time.put("Issue", startTime1);
-		long startTime = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-				.parse("2019-01-07T00:00:00.000000").getTime();
+		LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
+				DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
+		Map<String, LocalDateTime> time = new HashMap();
+		time.put("User Story", configuredStartDate);
+		time.put("Issue", configuredStartDate);
 		AzureServer azureServer = prepareAzureServer();
 		ResponseEntity<String> response = new ResponseEntity<>(createWiqlResponse(), HttpStatus.OK);
 		Mockito.when(rest.exchange(ArgumentMatchers.any(URI.class), ArgumentMatchers.eq(HttpMethod.POST), Mockito.<HttpEntity<String>>any(),
 				ArgumentMatchers.eq(String.class))).thenReturn(response);
-		AzureWiqlModel actualModel = azureRestClientFactory.getWiqlResponse(azureServer, time, projectConfFieldMapping,
+		AzureWiqlModel actualModel = processorAsyncAzureRestClient.getWiqlResponse(azureServer, time, projectConfFieldMapping,
 				true);
 		AzureWiqlModel expectedModel = new AzureWiqlModel();
 		expectedModel.setAsOf("2020-07-17T12:01:50.663Z");
@@ -326,7 +318,7 @@ public class ProcessorAsynchAzureRestClientFactoryTest {
 		azureToolConfig.setBoardQuery(
 				"Select [System.Id], [System.Title], [System.State] From WorkItems Where ([System.WorkItemType] ='Bug' AND [system.changeddate] > '2020-01-01') order by [System.CreatedDate] asc");
 		projectConfFieldMapping.setAzure(azureToolConfig);
-		actualModel = azureRestClientFactory.getWiqlResponse(azureServer, time, projectConfFieldMapping, true);
+		actualModel = processorAsyncAzureRestClient.getWiqlResponse(azureServer, time, projectConfFieldMapping, true);
 	}
 
 }

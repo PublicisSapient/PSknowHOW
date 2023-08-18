@@ -31,12 +31,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
-import com.publicissapient.kpidashboard.apis.model.ReleaseFilter;
-import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.IssueBacklog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;

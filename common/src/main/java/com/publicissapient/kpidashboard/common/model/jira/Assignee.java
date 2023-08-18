@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.common.model.jira;
 import java.util.Objects;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -29,12 +30,13 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class Assignee {
 
 	private String assigneeId;
 	private String assigneeName;
 
-	@Override
+    @Override
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;

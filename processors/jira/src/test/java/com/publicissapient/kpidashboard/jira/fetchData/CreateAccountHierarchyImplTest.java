@@ -5,6 +5,7 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.*;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import com.publicissapient.kpidashboard.jira.data.*;
@@ -70,7 +71,7 @@ public class CreateAccountHierarchyImplTest {
         when(hierarchyLevelService.getFullHierarchyLevels(false)).thenReturn(hierarchyLevelList);
         when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchyList);
         when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(any(),any())).thenReturn(accountHierarchies);
-        Assert.assertEquals(2,createAccountHierarchy.createAccountHierarchy(jiraIssues,createProjectConfig()).size());
+        Assert.assertEquals(2,createAccountHierarchy.createAccountHierarchy(jiraIssues,createProjectConfig(),new HashSet<SprintDetails>()).size());
     }
 
     private List<HierarchyLevel> getMockHierarchyLevel() {

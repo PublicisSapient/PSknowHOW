@@ -160,8 +160,8 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 
 				if (CollectionUtils.isNotEmpty(allIssues)) {
 					Set<SprintIssue> sprintIssues = new HashSet<>();
-					sprintIssues.addAll(sprintDetails.getTotalIssues());
-					sprintIssues.addAll(sprintDetails.getPuntedIssues());
+					sprintIssues.addAll(checkNullList(sprintDetails.getTotalIssues()));
+					sprintIssues.addAll(checkNullList(sprintDetails.getPuntedIssues()));
 					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
 							sprintDetails, sprintIssues, getJiraIssuesFromBaseClass(allIssues));
 					List<JiraIssueCustomHistory> allIssuesHistory = getJiraIssuesCustomHistoryFromBaseClass(allIssues);
@@ -193,6 +193,10 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 			}
 		}
 		return resultListMap;
+	}
+
+	private Set<SprintIssue> checkNullList(Set<SprintIssue> totalIssues) {
+		return CollectionUtils.isNotEmpty(totalIssues) ? totalIssues : new HashSet<>();
 	}
 
 	/*
@@ -380,7 +384,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 		Map<LocalDate, Set<JiraIssue>> removedFromClosed = (Map<LocalDate, Set<JiraIssue>>) resultMap
 				.get(REMOVED_FROM_CLOSED);
 		List<JiraIssue> totalIssueList = new ArrayList<>((Set<JiraIssue>) resultMap.get(ISSUES));
-		if (MapUtils.isNotEmpty(fullSprintIssuesMap)) {
+		if (ObjectUtils.isNotEmpty(sprintDetails)) {
 			log.info("Iteration Burnups -> request id : {} total jira Issues : {}", requestTrackerId,
 					fullSprintIssuesMap.size());
 			List<String> totalSprintDetailsIssues = sprintDetails.getTotalIssues().stream().map(SprintIssue::getNumber)
@@ -488,7 +492,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 		List<JiraIssue> allIssuesOrDefault = allIssues.getOrDefault(date, new ArrayList<>());
 		List<JiraIssue> removedJiraIssues = removedIssues.getOrDefault(date, new ArrayList<>());
 		List<JiraIssue> addedJiraIssues = addedIssues.getOrDefault(date, new ArrayList<>());
-		Set<String> puntedIssues = sprintDetails.getPuntedIssues().stream().map(SprintIssue::getNumber)
+		Set<String> puntedIssues = checkNullList(sprintDetails.getPuntedIssues()).stream().map(SprintIssue::getNumber)
 				.collect(Collectors.toSet());
 		removeExtraTransitionOnSprintEndDate(sprintDetails, maximumRemovalDate, removedJiraIssues,
 				sprintDetails.getTotalIssues().stream().map(SprintIssue::getNumber).collect(Collectors.toList()));

@@ -10,9 +10,14 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
@@ -121,6 +126,14 @@ public class ScrumAzureIssueClientImplTest {
 	@Mock
 	private ScrumHandleAzureIssueHistory scrumHandleAzureIssueHistory;
 
+	@Mock
+	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
+
+	private ProjectBasicConfig projectConfig = new ProjectBasicConfig();
+
 	Fields field;
 	com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields fields;
 	//AzureUpdatesModel azureUpdatesModel=new AzureUpdatesModel();
@@ -157,7 +170,8 @@ public class ScrumAzureIssueClientImplTest {
 		when(azureAdapter.getIterationsModel(any())).thenReturn(azureIterationsModel);
 		when(azureAdapter.getWiqlModel(any(), any(), any(), anyBoolean())).thenReturn(azureWiqlModel);
 		when(azureProcessorConfig.getMinsToReduce()).thenReturn(30);
-		when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.000000");
+		when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any() ,any())).thenReturn(null);
 		createIssue();
 
 		WorkItem work = new WorkItem();
@@ -168,6 +182,7 @@ public class ScrumAzureIssueClientImplTest {
 		Value value = new Value();
 		value.setId(3);
 		value.setFields(field);
+		Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 		when(azureWiqlModel.getWorkItems()).thenReturn(workItems);
 		when(processorAzureRestClient.getUpdatesResponse(any(),any())).thenReturn(azureUpdatesModel);
 		when(accountHierarchyRepo.findByLabelNameAndBasicProjectConfigId("Project", scrumProjectList.get(0).getId()))
@@ -176,24 +191,19 @@ public class ScrumAzureIssueClientImplTest {
 		when(azureAdapter.getUpdates(any(),anyString())).thenReturn(azureUpdatesModel);
 		projectConfFieldMapping.setProjectKey("prkey");
 		projectConfFieldMapping.setProjectName("prName");
+		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
 
 		scrumIssueClientImpl.processesAzureIssues(projectConfFieldMapping, "TestKey", azureAdapter);
 		scrumIssueClientImpl.purgeAzureIssues(issues, projectConfFieldMapping);
-		scrumIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping);
+		scrumIssueClientImpl.saveAzureIssueDetails(issues, projectConfFieldMapping , sprintDetailsSet);
 
 	}
 
 	private void prepareProjectData() {
-		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-		ProjectToolConfig jiraConfig = new ProjectToolConfig();
 		// Online Project Config data
 		projectConfig.setId(new ObjectId("5b674d58f47cae8935b1b26f"));
 		projectConfig.setProjectName("TestProject");
-		SubProjectConfig subProjectConfig = new SubProjectConfig();
-		subProjectConfig.setSubProjectIdentification("CustomField");
-		subProjectConfig.setSubProjectIdentSingleValue("customfield_37903");
-		List<SubProjectConfig> subProjectList = new ArrayList<>();
-		subProjectList.add(subProjectConfig);
+		projectConfig.setSaveAssigneeDetails(false);
 		projectConfig.setIsKanban(false);
 		scrumProjectList.add(projectConfig);
 	}

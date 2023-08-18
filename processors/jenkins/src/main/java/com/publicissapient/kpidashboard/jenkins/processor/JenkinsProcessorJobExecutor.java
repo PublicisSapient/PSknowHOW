@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.jenkins.processor;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +29,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +57,7 @@ import com.publicissapient.kpidashboard.common.repository.application.BuildRepos
 import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.jenkins.config.JenkinsConfig;
@@ -67,7 +65,6 @@ import com.publicissapient.kpidashboard.jenkins.factory.JenkinsClientFactory;
 import com.publicissapient.kpidashboard.jenkins.model.JenkinsProcessor;
 import com.publicissapient.kpidashboard.jenkins.processor.adapter.JenkinsClient;
 import com.publicissapient.kpidashboard.jenkins.repository.JenkinsProcessorRepository;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
 

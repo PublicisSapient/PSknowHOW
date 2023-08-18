@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.azure.adapter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,7 @@ public interface AzureAdapter {
 	 * 
 	 * @return the wiql model
 	 */
-	AzureWiqlModel getWiqlModel(AzureServer azureServer, Map<String, Long> startTimesByIssueType,
+	AzureWiqlModel getWiqlModel(AzureServer azureServer, Map<String, LocalDateTime> startTimesByIssueType,
 			ProjectConfFieldMapping projectConfig, boolean dataExist);
 
 	/**
@@ -121,5 +122,13 @@ public interface AzureAdapter {
 	 * @return list of issueLinkTypes
 	 */
 	List<IssuelinksType> getIssueLinkTypes();
+
+	/**
+	 * get all issues based on sprintId
+	 * @param azureServer
+	 * @param sprintId
+	 * @return
+	 */
+	List<String> getIssuesBySprint(AzureServer azureServer, String sprintId);
 
 }

@@ -119,33 +119,6 @@ public final class AzureProcessorUtil {
 		return formattedDate;
 	}
 
-	/**
-	 * Get Date in String formatted
-	 *
-	 * @param date
-	 *            Date Object
-	 * @return formatted Date as String
-	 */
-	public static String getFormattedDateString(Date date) {
-		DateFormat df = new SimpleDateFormat(AzureConstants.DATE_TIME_FORMAT, Locale.US);
-		return df.format(date);
-	}
-
-	/**
-	 * Subtracts minutes from given date
-	 *
-	 * @param date
-	 *            Date Object
-	 * @param minutes
-	 *            Minutes to subtract
-	 * @return Adjusted Date
-	 */
-	public static Date getTimeAdjustedDate(Date date, int minutes) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		calendar.add(Calendar.MINUTE, -1 * minutes);
-		return calendar.getTime();
-	}
 
 	/**
 	 * Adds parameter to the given url

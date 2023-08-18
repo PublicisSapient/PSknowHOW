@@ -153,7 +153,7 @@
 }
 ::ng-deep .sprint-details-overlay{
     width: auto !important;
-    max-width: 480px !important;
+    left: 20% !important; right: 20% !important;
     min-width: 450px;
     z-index: 0 !important;
 
@@ -174,11 +174,7 @@
     color: black;
   }
 
-  ::ng-deep .col1{
-   width: 80px !important;
-   word-break: break-all
 
-}
 
 .kpi-value-center{
     justify-content: center;

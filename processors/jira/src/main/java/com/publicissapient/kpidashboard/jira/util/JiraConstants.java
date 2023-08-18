@@ -36,6 +36,7 @@ public final class JiraConstants {
     public static final String LABELS = "Labels";
     public static final String CUSTOM_FIELD = "CustomField";
     public static final String ISSUE_TYPE = "IssueType";
+    public static final String FLAG_STATUS = "Flag as Impediment";
 	public static final String RCA_CAUSE_NONE = "None";
     public static final String RCA_NOT_AVAILABLE = "RCA Not Available";
 	public static final String ISSUE_TYPE_DEFECT = "Defect";

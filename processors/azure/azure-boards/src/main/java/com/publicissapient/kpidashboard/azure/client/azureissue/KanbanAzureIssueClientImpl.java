@@ -18,9 +18,8 @@
 
 package com.publicissapient.kpidashboard.azure.client.azureissue;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +33,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
@@ -58,10 +58,12 @@ import com.publicissapient.kpidashboard.azure.util.AzureProcessorUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.azureboards.AzureBoardsWIModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.Fields;
 import com.publicissapient.kpidashboard.common.model.azureboards.SystemAssignedTo;
@@ -70,14 +72,20 @@ import com.publicissapient.kpidashboard.common.model.azureboards.Value;
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUpdatesModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.WorkItem;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -125,6 +133,12 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
 
+	@Autowired
+	private AssigneeDetailsRepository assigneeDetailsRepository;
+
+	@Autowired
+	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+
 	/**
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
@@ -142,26 +156,20 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 									// //NOPMD
 									AzureAdapter azureAdapter) {
 		int count = 0;
+		int totalSavedCount = 0;
+		Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
+		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
+				projectConfig);
 		try {
 			boolean dataExist = (kanbanJiraRepo
 					.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
 
-			Map<String, String> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(
-					projectConfig.getBasicProjectConfigId(), projectConfig.getFieldMapping());
+			Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(projectConfig);
 
-			Map<String, Long> startTimesByIssueType = new HashMap<>();
+			Map<String, LocalDateTime> startTimesByIssueType = new HashMap<>();
 
-			maxChangeDatesByIssueType.forEach((k, v) -> {
-				String dateStrMinutePrior = AzureIssueClientUtil.getChangeDateMinutePrior(v, azureProcessorConfig);
-				Long startTime;
-				try {
-					startTime = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-							.parse(dateStrMinutePrior).getTime();
-					startTimesByIssueType.put(k, startTime);
-				} catch (ParseException e) {
-					log.error("Parsing exception occured", e);
-				}
-			});
+			maxChangeDatesByIssueType.forEach(
+					(k, v) -> startTimesByIssueType.put(k, v.minusMinutes(azureProcessorConfig.getMinsToReduce())));
 
 			int pageSize = azureAdapter.getPageSize();
 
@@ -199,7 +207,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 					 */
 
 					if (CollectionUtils.isNotEmpty(issues)) {
-						saveAzureIssueDetails(issues, projectConfig);
+						totalSavedCount += saveAzureIssueDetails(issues, projectConfig , new HashSet<>());
 						count += issues.size();
 					}
 					MDC.put("IssueCount", String.valueOf(issues.size()));
@@ -208,12 +216,29 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 						break;
 					}
 				}
+				
+				lastSavedJiraIssueChangedDateByType = findLastSavedJiraIssueByType(projectConfig.getBasicProjectConfigId() , projectConfig.getFieldMapping());
 			}
 		} catch (JSONException | NullPointerException e) {
 			log.error("Azure Processor | Error while updating Story information in kanban client", e);
+		} catch (Exception e) {
+			lastSavedJiraIssueChangedDateByType.clear();
+		} finally {
+			boolean isAttemptSuccess = isAttemptSuccess(totalSavedCount, count);
+			if (!isAttemptSuccess) {
+				lastSavedJiraIssueChangedDateByType.clear();
+				processorExecutionTraceLog.setLastSuccessfulRun(null);
+				log.error("Error in Fetching Issues");
+			} else {
+				processorExecutionTraceLog
+						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.DATE_TIME_FORMAT));
+			}
+			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess,
+					projectConfig.getProjectBasicConfig());
 		}
 
 		return count;
+
 	}
 
 	/**
@@ -259,25 +284,27 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 *             error while parsing JSON response
 	 */
 	@Override
-	public void saveAzureIssueDetails(List<Value> currentPagedAzureRs, ProjectConfFieldMapping projectConfig) // NOSONAR
+	public int saveAzureIssueDetails(List<Value> currentPagedAzureRs, ProjectConfFieldMapping projectConfig , Set<SprintDetails> sprintDetailsSet) // NOSONAR
 	// //NOPMD
 			throws JSONException {
 		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
 				.getFullHierarchyLevels(projectConfig.isKanban());
 		if (null == currentPagedAzureRs) {
 			log.error("Azure Processor |. No list of current paged Azure's issues found");
-			return;
+			return 0;
 		}
 		log.debug("Azure response:", currentPagedAzureRs.size());
+		Set<Assignee> assigneeSetToSave = new HashSet<>();
 		List<KanbanJiraIssue> kanbanIssuesToSave = new ArrayList<>();
 		List<KanbanIssueCustomHistory> kanbanIssueHistoryToSave = new ArrayList<>();
-
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(
+				projectConfig.getBasicProjectConfigId().toString(), ProcessorConstants.AZURE);
 		ObjectId azureProcessorId = azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE).getId();
 
 		for (Value issue : currentPagedAzureRs) {
 			FieldMapping fieldMapping = projectConfig.getFieldMapping();
 			if (null == fieldMapping) {
-				return;
+				return 0;
 			}
 
 			Set<String> issueTypeNames = new HashSet<>();
@@ -361,7 +388,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 
 				// Not able to find mapping in Azure for Affected Versions
 
-				setJiraAssigneeDetails(azureIssue, fields);
+				setJiraAssigneeDetails(azureIssue, fields , assigneeSetToSave, projectConfig);
 				// setting filter data from Jira issue to
 				// jira_issue_custom_history
 				setAzureIssueHistory(azureIssueHistory, azureIssue, issue, fieldMapping, projectConfig);
@@ -380,6 +407,8 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		kanbanJiraRepo.saveAll(kanbanIssuesToSave);
 		kanbanIssueHistoryRepo.saveAll(kanbanIssueHistoryToSave);
 		saveKanbanAccountHierarchy(kanbanIssuesToSave, projectConfig, hierarchyLevelList);
+		saveAssigneeDetailsToDb(projectConfig , assigneeSetToSave , assigneeDetails);
+		return kanbanIssuesToSave.size();
 	}
 
 	/**
@@ -668,7 +697,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 *            Jiraissue list to be saved in DB
 	 * @param projectConfig
 	 *            Project configuration Mapping
-	 * @param kanbanFilterCategoryList
+	 * @param hierarchyLevelList
 	 *            Kanban Filter category list
 	 */
 	private void saveKanbanAccountHierarchy(List<KanbanJiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig, // NOPMD //NOSONAR
@@ -883,7 +912,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 * @param fields
 	 *            the fields
 	 */
-	public void setJiraAssigneeDetails(KanbanJiraIssue azureIssue, Fields fields) {
+	public void setJiraAssigneeDetails(KanbanJiraIssue azureIssue, Fields fields , Set<Assignee> assigneeSetToSave, ProjectConfFieldMapping projectConfFieldMapping) {
 		SystemAssignedTo systemAssignedTo = fields.getSystemAssignedTo();
 		SystemCreatedBy systemCreatedBy = fields.getSystemCreatedBy();
 
@@ -902,6 +931,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 			azureIssue.setOwnersUsername(ownersUsername);
 			azureIssue.setOwnersID(ownersId);
 			azureIssue.setOwnersFullName(ownersFullname);
+			updateOwnerDetailsToggleWise(azureIssue , projectConfFieldMapping , ownersUsername , ownersId , ownersFullname);
 		}
 
 		if (systemAssignedTo == null) {
@@ -910,6 +940,30 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		} else {
 			azureIssue.setAssigneeId(systemAssignedTo.getId());
 			azureIssue.setAssigneeName(systemAssignedTo.getDisplayName());
+			updateAssigneeDetailsToggleWise(azureIssue, assigneeSetToSave, projectConfFieldMapping);
+		}
+	}
+
+	private void updateAssigneeDetailsToggleWise(KanbanJiraIssue jiraIssue, Set<Assignee> assigneeSetToSave,
+			ProjectConfFieldMapping projectConfig) {
+		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+			jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
+			jiraIssue.setAssigneeName(hash(jiraIssue.getAssigneeId() + jiraIssue.getAssigneeName()));
+		} else {
+			assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
+		}
+	}
+
+	private void updateOwnerDetailsToggleWise(KanbanJiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
+			List<String> assigneeName, List<String>  assigneeKey, List<String> assigneeDisplayName) {
+		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+			List<String> ownerName = assigneeName.stream().map(AzureIssueClient::hash).collect(Collectors.toList());
+			List<String> ownerId = assigneeKey.stream().map(AzureIssueClient::hash).collect(Collectors.toList());
+			List<String> ownerFullName = assigneeDisplayName.stream().map(AzureIssueClient::hash)
+					.collect(Collectors.toList());
+			jiraIssue.setOwnersUsername(ownerName);
+			jiraIssue.setOwnersID(ownerId);
+			jiraIssue.setOwnersFullName(ownerFullName);
 		}
 	}
 
@@ -1086,24 +1140,72 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		return projectKeyIssueId.toString();
 	}
 
-	private Map<String, String> getLastChangedDatesByIssueType(ObjectId projectConfigId, FieldMapping fieldMapping) {
+	private Map<String, LocalDateTime> getLastChangedDatesByIssueType(ProjectConfFieldMapping projectConfig) {
+		ObjectId basicProjectConfigId = projectConfig.getBasicProjectConfigId();
+		FieldMapping fieldMapping = projectConfig.getFieldMapping();
+		ProjectBasicConfig projectBasicConfig = projectConfig.getProjectBasicConfig();
+
 		String[] jiraIssueTypeNames = fieldMapping.getJiraIssueTypeNames();
 		Set<String> uniqueIssueTypes = new HashSet<>(Arrays.asList(jiraIssueTypeNames));
 
-		Map<String, String> lastUpdatedDateByIssueType = new HashMap<>();
+		Map<String, LocalDateTime> lastUpdatedDateByIssueType = new HashMap<>();
+
+		List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService
+				.getTraceLogs(ProcessorConstants.AZURE, basicProjectConfigId.toHexString());
+		ProcessorExecutionTraceLog projectTraceLog = null;
+
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(traceLogs)) {
+			projectTraceLog = traceLogs.get(0);
+		}
+		LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
+				DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
 
 		for (String issueType : uniqueIssueTypes) {
 
-			ObjectId processorId = azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE).getId();
-			KanbanJiraIssue jiraIssue = kanbanJiraRepo
-					.findTopByProcessorIdAndBasicProjectConfigIdAndTypeNameAndChangeDateGreaterThanOrderByChangeDateDesc(
-							processorId, projectConfigId.toString(), issueType, azureProcessorConfig.getStartDate());
-			if (jiraIssue != null) {
+			if (projectTraceLog != null) {
+				Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType = projectTraceLog
+						.getLastSavedEntryUpdatedDateByType();
+				if (MapUtils.isNotEmpty(lastSavedEntryUpdatedDateByType)) {
+					LocalDateTime maxDate = lastSavedEntryUpdatedDateByType.get(issueType);
+					lastUpdatedDateByIssueType.put(issueType, maxDate != null ? maxDate : configuredStartDate);
+				} else {
+					lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
+				}
 
-				lastUpdatedDateByIssueType.put(issueType, jiraIssue.getChangeDate() != null ? jiraIssue.getChangeDate()
-						: azureProcessorConfig.getStartDate());
+				// When toggle is On first time it will update lastUpdatedDateByIssueType to
+				// start date
+				setLastUpdatedDateToStartDate(projectBasicConfig, lastUpdatedDateByIssueType, projectTraceLog,
+						configuredStartDate, issueType);
+
 			} else {
-				lastUpdatedDateByIssueType.put(issueType, azureProcessorConfig.getStartDate());
+				lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
+			}
+
+		}
+
+		return lastUpdatedDateByIssueType;
+	}
+
+	private Map<String, LocalDateTime> findLastSavedJiraIssueByType(ObjectId projectConfigId,  FieldMapping fieldMapping) {
+		String[] jiraIssueTypeNames = fieldMapping.getJiraIssueTypeNames();
+		Set<String> uniqueIssueTypes = new HashSet<>(Arrays.asList(jiraIssueTypeNames));
+
+		Map<String, LocalDateTime> lastUpdatedDateByIssueType = new HashMap<>();
+		ObjectId azureProcessorId = azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE).getId();
+		for (String issueType : uniqueIssueTypes) {
+
+			KanbanJiraIssue kanbanJiraIssue = kanbanJiraRepo
+					.findTopByProcessorIdAndBasicProjectConfigIdAndTypeNameAndChangeDateGreaterThanOrderByChangeDateDesc(
+							azureProcessorId, projectConfigId.toString(), issueType, azureProcessorConfig.getStartDate());
+			LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
+					DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
+
+			if (kanbanJiraIssue != null && kanbanJiraIssue.getChangeDate() != null) {
+				LocalDateTime currentIssueDate = LocalDateTime.parse(kanbanJiraIssue.getChangeDate(),
+						DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
+				lastUpdatedDateByIssueType.put(issueType, currentIssueDate);
+			} else {
+				lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 			}
 		}
 
@@ -1228,4 +1330,66 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		baseUrl= baseUrl + (baseUrl.endsWith("/") ? "" : "/");
 		kanbanJiraIssue.setUrl(baseUrl.equals("")?"": baseUrl+azureProcessorConfig.getAzureDirectTicketLinkKey() + ticketNumber);
 	}
+
+	/**
+	 * save assignee details from jira issue and if already exist then update assignee list
+	 * @param projectConfig
+	 * @param assigneeSetToSave
+	 * @param assigneeDetails
+	 */
+	private void saveAssigneeDetailsToDb(ProjectConfFieldMapping projectConfig, Set<Assignee> assigneeSetToSave,
+			AssigneeDetails assigneeDetails) {
+		if (CollectionUtils.isNotEmpty(assigneeSetToSave)) {
+			if (assigneeDetails == null) {
+				assigneeDetails = new AssigneeDetails();
+				assigneeDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
+				assigneeDetails.setSource(ProcessorConstants.AZURE);
+				assigneeDetails.setAssignee(assigneeSetToSave);
+			} else {
+				Set<Assignee> updatedAssigneeSetToSave = new HashSet<>();
+				updatedAssigneeSetToSave.addAll(assigneeDetails.getAssignee());
+				updatedAssigneeSetToSave.addAll(assigneeSetToSave);
+				assigneeDetails.setAssignee(updatedAssigneeSetToSave);
+			}
+			assigneeDetailsRepository.save(assigneeDetails);
+		}
+	}
+
+	private ProcessorExecutionTraceLog createTraceLog(ProjectConfFieldMapping projectConfig) {
+		List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService
+				.getTraceLogs(ProcessorConstants.AZURE, projectConfig.getBasicProjectConfigId().toHexString());
+		ProcessorExecutionTraceLog processorExecutionTraceLog = null;
+
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(traceLogs)) {
+			processorExecutionTraceLog = traceLogs.get(0);
+			if (null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig()
+					.isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
+				processorExecutionTraceLog.setLastSuccessfulRun(azureProcessorConfig.getStartDate());
+			}
+		} else {
+			processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+			processorExecutionTraceLog.setProcessorName(ProcessorConstants.AZURE);
+			processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
+			processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
+			processorExecutionTraceLog.setLastSuccessfulRun(azureProcessorConfig.getStartDate());
+		}
+		return processorExecutionTraceLog;
+	}
+
+	private void saveExecutionTraceLog(ProcessorExecutionTraceLog processorExecutionTraceLog,
+			Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType, boolean isSuccess,
+			ProjectBasicConfig projectBasicConfig) {
+
+		if (lastSavedJiraIssueChangedDateByType.isEmpty()) {
+			processorExecutionTraceLog.setLastSavedEntryUpdatedDateByType(null);
+		} else {
+			processorExecutionTraceLog.setLastSavedEntryUpdatedDateByType(lastSavedJiraIssueChangedDateByType);
+		}
+		processorExecutionTraceLog.setExecutionSuccess(isSuccess);
+		processorExecutionTraceLog.setLastEnableAssigneeToggleState(projectBasicConfig.isSaveAssigneeDetails());
+		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+		processorExecutionTraceLogService.save(processorExecutionTraceLog);
+	}
+
+
 }

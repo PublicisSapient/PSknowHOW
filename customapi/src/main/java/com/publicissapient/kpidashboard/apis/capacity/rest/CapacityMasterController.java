@@ -1,8 +1,13 @@
 package com.publicissapient.kpidashboard.apis.capacity.rest;
 
-import java.util.List;
-
+import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
+import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterService;
+import com.publicissapient.kpidashboard.apis.capacity.service.HappinessKpiCapacityImpl;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.Role;
+import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
+import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiDTO;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
-import com.publicissapient.kpidashboard.apis.capacity.service.CapacityMasterService;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.CapacityMaster;
-
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author narsingh9
@@ -39,6 +39,9 @@ public class CapacityMasterController {
 	
 	@Autowired
 	private ContextAwarePolicyEnforcement policy;
+
+	@Autowired
+	private HappinessKpiCapacityImpl happinessKpiService;
 	
 	/**
 	 * This api saves capacity data.
@@ -97,6 +100,13 @@ public class CapacityMasterController {
 	@GetMapping("/assignee/roles")
 	public ResponseEntity<ServiceResponse> assigneeRolesSuggestion() {
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "All Roles", Role.getAllRoles()));
+	}
+
+	@PostMapping(value = "/jira/happiness", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> saveHappinessKPIData(
+			@Valid @RequestBody HappinessKpiDTO happinessKpiDTO) {
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(happinessKpiService.saveHappinessKpiData(happinessKpiDTO));
 	}
 
 }

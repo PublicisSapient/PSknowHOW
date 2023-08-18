@@ -229,6 +229,8 @@ public class JiraIssue extends BasicModel implements Cloneable {
     private String updateDate;
     private String devDueDate;
     private String boardId;
+    private String epicLinked;
+    private String originalType;
 
 	@Override public Object clone() throws CloneNotSupportedException {
 		return super.clone();

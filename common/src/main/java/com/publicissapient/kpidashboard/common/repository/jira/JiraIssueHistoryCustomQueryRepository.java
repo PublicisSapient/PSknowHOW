@@ -66,4 +66,8 @@ public interface JiraIssueHistoryCustomQueryRepository {
 	List<JiraIssueCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap);
 
-}
+	List<JiraIssueCustomHistory> findByFilterAndFromReleaseMap(List<String> basicProjectConfigId,
+															   List<String> releaseList);
+
+
+	}

@@ -1581,6 +1581,12 @@ db.getCollection('metadata_identifier').remove({});
                                               "value": [
                                                 "Effort"
                                               ]
+                                            },
+                                            {
+                                              "type": "storypoint",
+                                              "value": [
+                                                "Effort"
+                                              ]
                                             }
                                           ],
                                           "workflow": [
@@ -1595,7 +1601,8 @@ db.getCollection('metadata_identifier').remove({});
                                               "value": [
                                                 "Resolved",
                                                 "Closed",
-                                                "Removed"
+                                                "Removed",
+                                                "Done"
                                               ]
                                             },
                                             {

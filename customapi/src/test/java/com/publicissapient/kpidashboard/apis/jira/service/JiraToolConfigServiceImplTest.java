@@ -169,8 +169,7 @@ public class JiraToolConfigServiceImplTest {
 		assigneeSet.add(new Assignee("ankbhard" , "Ankita sharma"));
 		assigneeSet.add(new Assignee("llid" , "displayName"));
 		assigneeDetails.setAssignee(assigneeSet);
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(),
-				any())).thenReturn(assigneeDetails);
+		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(assigneeDetails);
 		AssigneeResponseDTO assigneeResponseDTO =  jiraToolConfigService.getProjectAssigneeDetails(basicConfigId);
 		assertEquals(2, assigneeResponseDTO.getAssigneeDetailsList().size());
 	}

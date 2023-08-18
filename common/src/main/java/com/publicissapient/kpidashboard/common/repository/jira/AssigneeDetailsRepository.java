@@ -31,4 +31,6 @@ import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 public interface AssigneeDetailsRepository extends MongoRepository<AssigneeDetails, ObjectId> {
 
 	AssigneeDetails findByBasicProjectConfigIdAndSource(String basicProjectConfigId, String source);
+
+	AssigneeDetails findByBasicProjectConfigId(String basicProjectConfigId);
 }

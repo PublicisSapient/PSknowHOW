@@ -315,17 +315,44 @@
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"
                         *ngIf="fieldstoShow?.includes('jiraBlockedStatus') || fieldstoShow.length === 0">
-                        <label class="field-title">Wastage - Blocked Status <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
+                        <label class="field-title">Wastage - Blocked Issues Criteria <span class="fa fa-info-circle" aria-hidden="true" pTooltip='<span>
                             The statuses that signify that team is unable to proceed on an issue due to internal or external dependency like On Hold, Waiting for user response, Blocked etc should be included.
                                                 </span>' tooltipPosition="top" tooltipEvent="hover"
                                 tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
-                        <div class="p-inputgroup">
-                            <p-chips [style]="{'max-width':'initial','width':'60vw', 'border-bottom-right-radius':'0'}"
-                                inputId="jiraBlockedStatus" formControlName="jiraBlockedStatus"
-                                placeholder="Enter Status to Identify 'Blocked' status" addOnBlur="true">
-                            </p-chips>
-                            <button type="button" pButton pRipple icon="pi pi-search"
-                                (click)="showDialogToAddValue(false, 'jiraBlockedStatus', 'workflow')"></button>
+                        <div class="fields-container p-p-2">
+                            <div class="p-d-flex p-justify-between">
+                                <div class="p-inputgroup">
+                                    <ng-container *ngFor="let wastgBlk of wastageBlockedCriteria">
+                                        <p-radioButton placeholder="Select"
+                                            formControlName="jiraIncludeBlockedStatus" value="{{wastgBlk.value}}"
+                                            label="{{wastgBlk.value}}" class="p-m-2">
+                                        </p-radioButton>
+                                    </ng-container>
+                                </div>
+                                <button pButton pRipple type="button" label="Reset" class="p-button-raised"
+                                    (click)="resetRadioButton('jiraIncludeBlockedStatus')"></button>
+                            </div>
+
+                            <div class="p-m-2"
+                                *ngIf="fieldMapping['jiraIncludeBlockedStatus'] && fieldMapping['jiraIncludeBlockedStatus'].value === 'Blocked Status'">
+                                <label class="field-title">Status to Identify 'Blocked' status <span class="fa fa-info-circle"
+                                        aria-hidden="true" pTooltip='<span>
+                                        Definition:
+                                        Provide Status to Identify Blocked Issues<br />
+                                        Example: On_Hold <hr>
+                                        KPI Impacted : Iteration Board - Wastage KPI
+                                      </span>' tooltipPosition="top" tooltipEvent="hover"
+                                        tooltipStyleClass="tooltiptext" [escape]="false"></span></label>
+                                <div class="p-mt-2">
+                                    <div class="p-inputgroup">
+                                        <p-chips [style]="{'width':'100%','max-width':'100%','display':'block'}" inputId="jiraBlockedStatus"
+                                            formControlName="jiraBlockedStatus" placeholder="Enter Status to Identify 'Blocked' status" addOnBlur="true">
+                                        </p-chips>
+                                        <button type="button" pButton pRipple icon="pi pi-search"
+                                            (click)="showDialogToAddValue(false, 'jiraBlockedStatus', 'workflow')"></button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="p-mb-3 p-d-flex p-align-center"

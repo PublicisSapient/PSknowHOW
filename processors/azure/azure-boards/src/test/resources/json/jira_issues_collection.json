@@ -1,0 +1,728 @@
+[
+  {
+    "_id": "6466028b757d723fdb0bf2a6",
+    "processorId": "6458ed81b378b009496e12a3",
+    "issueId": "Test ProjectThree-90",
+    "number": "Test ProjectThree-90",
+    "name": "test added issue",
+    "typeId": "Issue",
+    "typeName": "Bug",
+    "status": "To Do",
+    "state": "To Do",
+    "estimate": "0",
+    "storyPoints": "0",
+    "url": "https://test.com/testUser/Test ProjectThree/_workitems/edit/90",
+    "changeDate": "2023-05-18T16:13:09.0000000",
+    "isDeleted": "False",
+    "priority": "2",
+    "labels": [],
+    "createdDate": "2023-05-18T16:13:07.4230000",
+    "rootCauseList": [
+      "none"
+    ],
+    "ownersID": [
+      "137f86a6-b825-6818-8ffb-e5105e235446"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "user1@gmail.com"
+    ],
+    "ownersFullName": [
+      "user1Name"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "current",
+    "sprintEndDate": "2023-05-01T05:30:00.0000000",
+    "sprintBeginDate": "2023-04-27T05:30:00.0000000",
+    "sprintName": "sprint 18",
+    "sprintID": "cc4723c2-19db-4492-ac3a-0f3906ff22d9_testDummy_6464ab2d094f2b0192702ec7",
+    "sprintIdList": [
+      "cc4723c2-19db-4492-ac3a-0f3906ff22d9"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "testDummy",
+    "projectID": "testDummy_6464ab2d094f2b0192702ec7",
+    "projectKey": "Test ProjectThree",
+    "additionalFilters": [],
+    "assigneeId": "",
+    "assigneeName": "",
+    "defectRaisedBy": "",
+    "jiraStatus": "To Do",
+    "defectStoryID": [],
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6464ab2d094f2b0192702ec7",
+    "defectRaisedByQA": false,
+    "productionDefect": false,
+    "updateDate": "2023-05-18T16:13:09.0000000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6465fef1757d723fdb0bf290",
+    "processorId": "6458ed81b378b009496e12a3",
+    "issueId": "Test ProjectThree-89",
+    "number": "Test ProjectThree-89",
+    "name": "sprint issue 44",
+    "typeId": "Issue",
+    "typeName": "Bug",
+    "status": "To Do",
+    "state": "To Do",
+    "estimate": "0",
+    "storyPoints": "0",
+    "url": "https://test.com/testUser/Test ProjectThree/_workitems/edit/89",
+    "changeDate": "2023-05-18T15:44:20.3600000",
+    "isDeleted": "False",
+    "priority": "2",
+    "labels": [],
+    "createdDate": "2023-05-18T15:44:19.8270000",
+    "rootCauseList": [
+      "none"
+    ],
+    "ownersID": [
+      "137f86a6-b825-6818-8ffb-e5105e235446"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "user1@gmail.com"
+    ],
+    "ownersFullName": [
+      "user1Name"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "current",
+    "sprintEndDate": "2023-05-01T05:30:00.0000000",
+    "sprintBeginDate": "2023-04-27T05:30:00.0000000",
+    "sprintName": "sprint 18",
+    "sprintID": "cc4723c2-19db-4492-ac3a-0f3906ff22d9_testDummy_6464ab2d094f2b0192702ec7",
+    "sprintIdList": [
+      "cc4723c2-19db-4492-ac3a-0f3906ff22d9"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "testDummy",
+    "projectID": "testDummy_6464ab2d094f2b0192702ec7",
+    "projectKey": "Test ProjectThree",
+    "additionalFilters": [],
+    "assigneeId": "",
+    "assigneeName": "",
+    "defectRaisedBy": "",
+    "jiraStatus": "To Do",
+    "defectStoryID": [],
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6464ab2d094f2b0192702ec7",
+    "defectRaisedByQA": false,
+    "productionDefect": false,
+    "updateDate": "2023-05-18T15:44:20.3600000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6465fef1757d723fdb0bf28f",
+    "processorId": "6458ed81b378b009496e12a3",
+    "issueId": "Test ProjectThree-88",
+    "number": "Test ProjectThree-88",
+    "name": "test sprint issue21",
+    "typeId": "Issue",
+    "typeName": "Bug",
+    "status": "Doing",
+    "state": "Doing",
+    "estimate": "0",
+    "storyPoints": "0",
+    "url": "https://test.com/testUser/Test ProjectThree/_workitems/edit/88",
+    "changeDate": "2023-05-18T15:43:47.8300000",
+    "isDeleted": "False",
+    "priority": "2",
+    "labels": [],
+    "createdDate": "2023-05-18T15:43:44.7700000",
+    "rootCauseList": [
+      "none"
+    ],
+    "ownersID": [
+      "137f86a6-b825-6818-8ffb-e5105e235446"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "user1@gmail.com"
+    ],
+    "ownersFullName": [
+      "user1Name"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "current",
+    "sprintEndDate": "2023-05-01T05:30:00.0000000",
+    "sprintBeginDate": "2023-04-27T05:30:00.0000000",
+    "sprintName": "sprint 18",
+    "sprintID": "cc4723c2-19db-4492-ac3a-0f3906ff22d9_testDummy_6464ab2d094f2b0192702ec7",
+    "sprintIdList": [
+      "cc4723c2-19db-4492-ac3a-0f3906ff22d9"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "testDummy",
+    "projectID": "testDummy_6464ab2d094f2b0192702ec7",
+    "projectKey": "Test ProjectThree",
+    "additionalFilters": [],
+    "assigneeId": "",
+    "assigneeName": "",
+    "defectRaisedBy": "",
+    "jiraStatus": "Doing",
+    "defectStoryID": [],
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6464ab2d094f2b0192702ec7",
+    "defectRaisedByQA": false,
+    "productionDefect": false,
+    "updateDate": "2023-05-18T15:43:47.8300000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6465fef1757d723fdb0bf28e",
+    "processorId": "6458ed81b378b009496e12a3",
+    "issueId": "Test ProjectThree-87",
+    "number": "Test ProjectThree-87",
+    "name": "test task for new issue created",
+    "typeId": "Task",
+    "typeName": "Task",
+    "status": "Doing",
+    "state": "Doing",
+    "estimate": "0",
+    "storyPoints": "0",
+    "url": "https://test.com/testUser/Test ProjectThree/_workitems/edit/87",
+    "changeDate": "2023-05-18T16:10:31.7500000",
+    "isDeleted": "False",
+    "priority": "2",
+    "labels": [],
+    "createdDate": "2023-05-18T15:41:22.1000000",
+    "rootCauseList": [
+      "None"
+    ],
+    "ownersID": [
+      "137f86a6-b825-6818-8ffb-e5105e235446"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "user1@gmail.com"
+    ],
+    "ownersFullName": [
+      "user1Name"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "future",
+    "sprintEndDate": "2023-05-23T05:30:00.0000000",
+    "sprintBeginDate": "2023-05-22T05:30:00.0000000",
+    "sprintName": "sprint19",
+    "sprintID": "28fbadac-3f6d-487b-8407-09bbfa916dab_testDummy_6464ab2d094f2b0192702ec7",
+    "sprintIdList": [
+      "28fbadac-3f6d-487b-8407-09bbfa916dab"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "testDummy",
+    "projectID": "testDummy_6464ab2d094f2b0192702ec7",
+    "projectKey": "Test ProjectThree",
+    "additionalFilters": [],
+    "assigneeId": "",
+    "assigneeName": "",
+    "jiraStatus": "Doing",
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6464ab2d094f2b0192702ec7",
+    "defectRaisedByQA": false,
+    "productionDefect": false,
+    "updateDate": "2023-05-18T16:10:31.7500000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6465d92ccee78f682ce6a04c",
+    "processorId": "6458ed81b378b009496e12a3",
+    "issueId": "Test ProjectThree-86",
+    "number": "Test ProjectThree-86",
+    "name": "new issue created",
+    "typeId": "Issue",
+    "typeName": "Bug",
+    "status": "Doing",
+    "state": "Doing",
+    "estimate": "0",
+    "storyPoints": "0",
+    "url": "https://test.com/testUser/Test ProjectThree/_workitems/edit/86",
+    "changeDate": "2023-05-18T16:10:31.7500000",
+    "isDeleted": "False",
+    "priority": "2",
+    "labels": [],
+    "createdDate": "2023-05-17T20:19:38.0100000",
+    "rootCauseList": [
+      "none"
+    ],
+    "ownersID": [
+      "137f86a6-b825-6818-8ffb-e5105e235446"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "user1@gmail.com"
+    ],
+    "ownersFullName": [
+      "user1Name"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "future",
+    "sprintEndDate": "2023-05-23T05:30:00.0000000",
+    "sprintBeginDate": "2023-05-22T05:30:00.0000000",
+    "sprintName": "sprint19",
+    "sprintID": "28fbadac-3f6d-487b-8407-09bbfa916dab_testDummy_6464ab2d094f2b0192702ec7",
+    "sprintIdList": [
+      "28fbadac-3f6d-487b-8407-09bbfa916dab"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "testDummy",
+    "projectID": "testDummy_6464ab2d094f2b0192702ec7",
+    "projectKey": "Test ProjectThree",
+    "additionalFilters": [],
+    "assigneeId": "",
+    "assigneeName": "",
+    "defectRaisedBy": "",
+    "jiraStatus": "Doing",
+    "defectStoryID": [
+      "Test ProjectThree-87"
+    ],
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6464ab2d094f2b0192702ec7",
+    "defectRaisedByQA": false,
+    "productionDefect": false,
+    "updateDate": "2023-05-18T16:10:31.7500000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6464ad37d4e31f0789803b39",
+    "processorId": "6458ed81b378b009496e12a3",
+    "issueId": "Test ProjectThree-85",
+    "number": "Test ProjectThree-85",
+    "name": "backlog tab issue",
+    "typeId": "Issue",
+    "typeName": "Bug",
+    "status": "To Do",
+    "state": "To Do",
+    "estimate": "0",
+    "storyPoints": "0",
+    "url": "https://test.com/testUser/Test ProjectThree/_workitems/edit/85",
+    "changeDate": "2023-05-17T12:56:26.9730000",
+    "isDeleted": "False",
+    "priority": "2",
+    "labels": [],
+    "createdDate": "2023-05-17T12:56:26.9730000",
+    "rootCauseList": [
+      "none"
+    ],
+    "ownersID": [
+      "137f86a6-b825-6818-8ffb-e5105e235446"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "user1@gmail.com"
+    ],
+    "ownersFullName": [
+      "user1Name"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "future",
+    "sprintEndDate": "2023-05-23T05:30:00.0000000",
+    "sprintBeginDate": "2023-05-22T05:30:00.0000000",
+    "sprintName": "sprint19",
+    "sprintID": "28fbadac-3f6d-487b-8407-09bbfa916dab_testDummy_6464ab2d094f2b0192702ec7",
+    "sprintIdList": [
+      "28fbadac-3f6d-487b-8407-09bbfa916dab"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "testDummy",
+    "projectID": "testDummy_6464ab2d094f2b0192702ec7",
+    "projectKey": "Test ProjectThree",
+    "additionalFilters": [],
+    "assigneeId": "",
+    "assigneeName": "",
+    "defectRaisedBy": "",
+    "jiraStatus": "To Do",
+    "defectStoryID": [],
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6464ab2d094f2b0192702ec7",
+    "defectRaisedByQA": false,
+    "productionDefect": false,
+    "updateDate": "2023-05-17T12:56:26.9730000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6464ad37d4e31f0789803b38",
+    "processorId": "6458ed81b378b009496e12a3",
+    "issueId": "Test ProjectThree-84",
+    "number": "Test ProjectThree-84",
+    "name": "test sprint 19 future issue",
+    "typeId": "Issue",
+    "typeName": "Bug",
+    "status": "Done",
+    "state": "Done",
+    "estimate": "0",
+    "storyPoints": "0",
+    "url": "https://test.com/testUser/Test ProjectThree/_workitems/edit/84",
+    "changeDate": "2023-05-18T16:10:43.2300000",
+    "isDeleted": "False",
+    "priority": "2",
+    "labels": [],
+    "createdDate": "2023-05-17T12:55:55.4970000",
+    "rootCauseList": [
+      "none"
+    ],
+    "ownersID": [
+      "137f86a6-b825-6818-8ffb-e5105e235446"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "user1@gmail.com"
+    ],
+    "ownersFullName": [
+      "user1Name"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "current",
+    "sprintEndDate": "2023-05-01T05:30:00.0000000",
+    "sprintBeginDate": "2023-04-27T05:30:00.0000000",
+    "sprintName": "sprint 18",
+    "sprintID": "cc4723c2-19db-4492-ac3a-0f3906ff22d9_testDummy_6464ab2d094f2b0192702ec7",
+    "sprintIdList": [
+      "cc4723c2-19db-4492-ac3a-0f3906ff22d9"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "testDummy",
+    "projectID": "testDummy_6464ab2d094f2b0192702ec7",
+    "projectKey": "Test ProjectThree",
+    "additionalFilters": [],
+    "assigneeId": "137f86a6-b825-6818-8ffb-e5105e235446",
+    "assigneeName": "user1Name",
+    "defectRaisedBy": "",
+    "jiraStatus": "Done",
+    "defectStoryID": [],
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6464ab2d094f2b0192702ec7",
+    "defectRaisedByQA": false,
+    "productionDefect": false,
+    "updateDate": "2023-05-18T16:10:43.2300000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6464ad37d4e31f0789803b37",
+    "processorId": "6458ed81b378b009496e12a3",
+    "issueId": "Test ProjectThree-83",
+    "number": "Test ProjectThree-83",
+    "name": "old sprint issue12",
+    "typeId": "Issue",
+    "typeName": "Bug",
+    "status": "Done",
+    "state": "Done",
+    "estimate": "0",
+    "storyPoints": "0",
+    "url": "https://test.com/testUser/Test ProjectThree/_workitems/edit/83",
+    "changeDate": "2023-05-18T17:18:49.4030000",
+    "isDeleted": "False",
+    "priority": "2",
+    "labels": [],
+    "createdDate": "2023-05-05T11:29:44.9700000",
+    "rootCauseList": [
+      "none"
+    ],
+    "ownersID": [
+      "137f86a6-b825-6818-8ffb-e5105e235446"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "user1@gmail.com"
+    ],
+    "ownersFullName": [
+      "user1Name"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "future",
+    "sprintEndDate": "2023-05-23T05:30:00.0000000",
+    "sprintBeginDate": "2023-05-22T05:30:00.0000000",
+    "sprintName": "sprint19",
+    "sprintID": "28fbadac-3f6d-487b-8407-09bbfa916dab_testDummy_6464ab2d094f2b0192702ec7",
+    "sprintIdList": [
+      "28fbadac-3f6d-487b-8407-09bbfa916dab"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "testDummy",
+    "projectID": "testDummy_6464ab2d094f2b0192702ec7",
+    "projectKey": "Test ProjectThree",
+    "additionalFilters": [],
+    "assigneeId": "137f86a6-b825-6818-8ffb-e5105e235446",
+    "assigneeName": "user1Name",
+    "defectRaisedBy": "",
+    "jiraStatus": "Done",
+    "defectStoryID": [],
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6464ab2d094f2b0192702ec7",
+    "defectRaisedByQA": false,
+    "productionDefect": false,
+    "updateDate": "2023-05-18T17:18:49.4030000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6464ad37d4e31f0789803b36",
+    "processorId": "6458ed81b378b009496e12a3",
+    "issueId": "Test ProjectThree-82",
+    "number": "Test ProjectThree-82",
+    "name": "issue2",
+    "typeId": "Task",
+    "typeName": "Task",
+    "status": "Doing",
+    "state": "Doing",
+    "estimate": "0",
+    "storyPoints": "0",
+    "url": "https://test.com/testUser/Test ProjectThree/_workitems/edit/82",
+    "changeDate": "2023-04-25T16:58:12.5830000",
+    "isDeleted": "False",
+    "priority": "2",
+    "labels": [],
+    "createdDate": "2023-04-25T16:58:04.3830000",
+    "rootCauseList": [
+      "None"
+    ],
+    "ownersID": [
+      "137f86a6-b825-6818-8ffb-e5105e235446"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "user1@gmail.com"
+    ],
+    "ownersFullName": [
+      "user1Name"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "CLOSED",
+    "sprintEndDate": "2023-04-21T05:30:00.0000000",
+    "sprintBeginDate": "2023-04-20T05:30:00.0000000",
+    "sprintName": "sprint 16",
+    "sprintID": "7d5c5460-1827-4b5c-a2a4-e36f64510d40_testDummy_6464ab2d094f2b0192702ec7",
+    "sprintIdList": [
+      "7d5c5460-1827-4b5c-a2a4-e36f64510d40"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "testDummy",
+    "projectID": "testDummy_6464ab2d094f2b0192702ec7",
+    "projectKey": "Test ProjectThree",
+    "additionalFilters": [],
+    "assigneeId": "",
+    "assigneeName": "",
+    "jiraStatus": "Doing",
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6464ab2d094f2b0192702ec7",
+    "defectRaisedByQA": false,
+    "productionDefect": false,
+    "updateDate": "2023-04-25T16:58:12.5830000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6464ad37d4e31f0789803b35",
+    "processorId": "6458ed81b378b009496e12a3",
+    "issueId": "Test ProjectThree-81",
+    "number": "Test ProjectThree-81",
+    "name": "issue 1",
+    "typeId": "Task",
+    "typeName": "Task",
+    "status": "To Do",
+    "state": "To Do",
+    "estimate": "0",
+    "storyPoints": "0",
+    "url": "https://test.com/testUser/Test ProjectThree/_workitems/edit/81",
+    "changeDate": "2023-04-25T16:56:13.7100000",
+    "isDeleted": "False",
+    "priority": "2",
+    "labels": [],
+    "createdDate": "2023-04-25T16:56:13.7100000",
+    "rootCauseList": [
+      "None"
+    ],
+    "ownersID": [
+      "137f86a6-b825-6818-8ffb-e5105e235446"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "user1@gmail.com"
+    ],
+    "ownersFullName": [
+      "user1Name"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "CLOSED",
+    "sprintEndDate": "2023-04-26T05:30:00.0000000",
+    "sprintBeginDate": "2023-04-24T05:30:00.0000000",
+    "sprintName": "sprint 17",
+    "sprintID": "58b0f9a1-76bd-4a0d-8b64-9bfc167b7481_testDummy_6464ab2d094f2b0192702ec7",
+    "sprintIdList": [
+      "58b0f9a1-76bd-4a0d-8b64-9bfc167b7481"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "testDummy",
+    "projectID": "testDummy_6464ab2d094f2b0192702ec7",
+    "projectKey": "Test ProjectThree",
+    "additionalFilters": [],
+    "assigneeId": "",
+    "assigneeName": "",
+    "jiraStatus": "To Do",
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "6464ab2d094f2b0192702ec7",
+    "defectRaisedByQA": false,
+    "productionDefect": false,
+    "updateDate": "2023-04-25T16:56:13.7100000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  }
+]

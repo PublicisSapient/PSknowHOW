@@ -25,6 +25,7 @@ import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -68,8 +69,8 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 	 */
 	List<JiraIssueCustomHistory> findByStoryIDInAndBasicProjectConfigIdIn(List<String> storyID,
 			List<String> basicProjectConfigId);
-	
-	@Query(fields = "{'storyID' : 1}")
-	List<JiraIssueCustomHistory> findByBasicProjectConfigId(String basicProjectConfigId);
+
+	@Query(value = "{ 'basicProjectConfigId' : ?0  }", fields = "{ 'storyType' : 1, 'createdDate' : 1,'statusUpdationLog':1, 'fixVersionUpdationLog':1}")
+	List<JiraIssueCustomHistory> findByBasicProjectConfigIdIn(String basicProjectConfigId);
 
 }

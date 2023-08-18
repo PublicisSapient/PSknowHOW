@@ -29,6 +29,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -359,15 +361,14 @@ public class OnlineDataProcessorImplTest {
 	@Test
 	public void validateAndCollectIssuesKanban() throws URISyntaxException, JsonParseException, JsonMappingException,
 			IOException, IllegalAccessException, InvocationTargetException, ParseException {
-		long startTime1 = new SimpleDateFormat(AzureConstants.SETTING_DATE_FORMAT, Locale.US)
-				.parse("2019-01-07T00:00:00.000000").getTime();
-		Map<String, Long> time = new HashMap();
-		time.put("User Story", startTime1);
-		time.put("Issue", startTime1);
+		when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
+		LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
+				DateTimeFormatter.ofPattern(AzureConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
+		Map<String, LocalDateTime> time = new HashMap();
+		time.put("User Story", configuredStartDate);
+		time.put("Issue", configuredStartDate);
 		when(fieldMappingRepository.findAll()).thenReturn(fieldMappingList);
 		when(azureProcessorConfig.getThreadPoolSize()).thenReturn(3);
-		when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.000000");
-
 		when(azureIssueClientFactory.getAzureIssueDataClient(any())).thenReturn(kanbanJiraIssueClient);
 
 		when(azureProcessorConfig.getMinsToReduce()).thenReturn(30);

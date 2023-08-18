@@ -93,8 +93,6 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
             // Add RCA to Issue
             setRCA(fieldMapping, issue, jiraIssue, fields);
 
-            // Add device platform filed to issue
-            setDevicePlatform(fieldMapping, jiraIssue, fields);
             if (issueTypeNames.contains(
                     JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
                 // collectorId
@@ -104,6 +102,9 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
                 // Type
                 jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
                 jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+                jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+
+                setEpicLinked(fieldMapping, jiraIssue, fields);
 
                 // Label
                 jiraIssue.setLabels(getLabelsList(issue));
@@ -142,6 +143,15 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
 
         return kanbanIssuesToSave;
     }
+
+    private void setEpicLinked(FieldMapping fieldMapping, KanbanJiraIssue jiraIssue, Map<String, IssueField> fields) {
+        if (StringUtils.isNotEmpty(fieldMapping.getEpicLink())
+                && fields.get(fieldMapping.getEpicLink()) != null
+                && fields.get(fieldMapping.getEpicLink()).getValue() != null) {
+            jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+        }
+    }
+
 
     private static Set<String> getIssueTypeNames(FieldMapping fieldMapping){
         Set<String> issueTypeNames = new HashSet<>();
@@ -295,22 +305,6 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
         return rcaCauseResult.toLowerCase();
     }
 
-    private void setDevicePlatform(FieldMapping fieldMapping, KanbanJiraIssue jiraIssue,
-                                  Map<String, IssueField> fields) {
-
-        try {
-            String devicePlatform = null;
-            if (fields.get(fieldMapping.getDevicePlatform()) != null
-                    && fields.get(fieldMapping.getDevicePlatform()).getValue() != null) {
-                devicePlatform = ((JSONObject) fields.get(fieldMapping.getDevicePlatform()).getValue())
-                        .getString(JiraConstants.VALUE);
-            }
-            jiraIssue.setDevicePlatform(devicePlatform);
-        } catch (JSONException e) {
-            log.error("JIRA Processor | Error while parsing Device Platform ");
-        }
-    }
-
     private void processJiraIssueData(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
                                      FieldMapping fieldMapping, JiraProcessorConfig jiraProcessorConfig) throws JSONException {
 
@@ -342,8 +336,6 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
             timeSpent = ((Integer) fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue()) / 60;
         }
         jiraIssue.setTimeSpentInMinutes(timeSpent);
-
-        setEnvironmentImpacted(jiraIssue, fields, fieldMapping);
 
         jiraIssue.setChangeDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
         jiraIssue.setIsDeleted(JiraConstants.FALSE);
@@ -493,31 +485,6 @@ public class TransformFetchedIssueToKanbanJiraIssueImpl implements TransformFetc
         }
         jiraIssue.setEstimate(valueString);
         jiraIssue.setStoryPoints(value);
-    }
-
-    /**
-     * Sets the environment impacted custom field.
-     *
-     * @param jiraIssue
-     *            JiraIssue instance
-     * @param fields
-     *            Map of Issue Fields
-     * @param fieldMapping
-     *            fieldMapping provided by the User
-     */
-    private void setEnvironmentImpacted(KanbanJiraIssue jiraIssue, Map<String, IssueField> fields,
-                                        FieldMapping fieldMapping) {
-        if (fields.get(fieldMapping.getEnvImpacted()) != null
-                && fields.get(fieldMapping.getEnvImpacted()).getValue() != null) {
-            JSONObject customField;
-            try {
-                customField = new JSONObject(fields.get(fieldMapping.getEnvImpacted()).getValue().toString());
-                jiraIssue.setEnvImpacted(JiraProcessorUtil.deodeUTF8String(customField.get(JiraConstants.VALUE)));
-            } catch (JSONException e) {
-                log.error("JIRA Processor | Error while parsing the environment custom field Environment", e);
-            }
-
-        }
     }
 
     /**

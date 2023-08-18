@@ -44,7 +44,7 @@ public enum KPIExcelColumn {
     SPRINT_VELOCITY("kpi39", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Size(story point/hours)")),
     SPRINT_PREDICTABILITY("kpi5", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Size(story point/hours)")),
     SPRINT_CAPACITY_UTILIZATION("kpi46", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Original Time Estimate (in hours)", "Total Time Spent (in hours)")),
-    COMMITMENT_RELIABILITY("kpi72", Arrays.asList("Sprint Name", "Story ID", "Closed", "Size(story point/hours)")),
+    COMMITMENT_RELIABILITY("kpi72", Arrays.asList("Sprint Name", "Story ID", "Issue Status", "Initial Commitment","Size(story point/hours)")),
 
 
     DEFECT_INJECTION_RATE("kpi14", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Linked Defects")),
@@ -212,9 +212,11 @@ public enum KPIExcelColumn {
     DEFECT_COUNT_BY_PRIORITY_RELEASE("kpi144",Arrays.asList("Issue ID", "Issue Description", "Sprint Name","Issue Type","Issue Status","Root Cause", "Priority","Assignee")),
 
     RELEASE_PROGRESS("kpi147",Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Priority","Assignee", "Issue Status")),
-
+    HAPPINESS_INDEX_RATE("kpi149", Arrays.asList("Sprint Name", "User Name", "Sprint Rating")),
     FLOW_DISTRIBUTION("Kpi146",Arrays.asList("Date")),
-    FLOW_LOAD("kpi148",Arrays.asList("Date"));
+    FLOW_LOAD("kpi148",Arrays.asList("Date")),
+
+    RELEASE_BURNUP("kpi150",Arrays.asList("Issue ID", "Issue Type", "Issue Description","Story Size(In story point)","Priority","Assignee", "Issue Status"));
 
     // @formatter:on
 

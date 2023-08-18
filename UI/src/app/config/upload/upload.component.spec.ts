@@ -1545,10 +1545,66 @@ describe('UploadComponent', () => {
         "assigneeDetails": true
       }
     };
+    component.kanban=true;
 
     spyOn(httpService, "saveOrUpdateAssignee").and.returnValue(of(response));
     let getCapacityDataSpy = spyOn(component, 'getCapacityData');
     component.onSprintCapacitySave(selectedSprint);
+
+    fixture.detectChanges();
+    expect(getCapacityDataSpy).toHaveBeenCalled();
+  });
+
+  it('should send sprint happiness index', () => {
+    const selectedSprint = {
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
+      "sprintState": "CLOSED",
+      "capacity": 0,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
+          "userId": "testUserId13",
+          "happinessRating":2,
+          "userName": "testUser",
+          "role": "TESTER",
+          "plannedCapacity": 40,
+          "leaves": 0
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+
+    const response = {
+      "message": "Successfully added Capacity Data",
+      "success": true,
+      "data": {
+        "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+        "sprintNodeId": "40699_TestProject123_63d8bca4af279c1d507cb8b0",
+        "sprintName": "PS HOW |PI_11|ITR_6|07_Dec",
+        "capacity": 0,
+        "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+        "assigneeCapacity": [
+          {
+            "userId": "testUserId14",
+            "happinessRating":2,
+            "userName": "testUser",
+            "role": "TESTER",
+            "plannedCapacity": 40,
+            "leaves": 0
+          }
+        ],
+        "kanban": false,
+        "assigneeDetails": true
+      }
+    };
+
+    spyOn(httpService, "saveOrUpdateSprintHappinessIndex").and.returnValue(of(response));
+    let getCapacityDataSpy = spyOn(component, 'getCapacityData');
+    component.sendSprintHappinessIndex(selectedSprint);
 
     fixture.detectChanges();
     expect(getCapacityDataSpy).toHaveBeenCalled();

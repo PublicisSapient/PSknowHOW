@@ -1,6 +1,6 @@
 <div class="kpi-card-container">
     <div class="kpi-card-header">
-        <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)">
+        <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader>
             <div class="kpi-card-title-container">
                 <h3 *ngIf="kpiData">{{kpiData?.kpiName}}
                     <span *ngIf="kpiData?.kpiDetail?.kpiInfo" class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
@@ -8,7 +8,7 @@
                         <app-tooltip *ngIf="isTooltip" [data]="kpiData?.kpiDetail?.kpiInfo"
                             (mouseleave)="showTooltip(false)" [showChartView]="showChartView"></app-tooltip>
                     </span>
-                    <img src="../../../assets/img/database-svg.svg" *ngIf="sprintsOverlayVisible"  (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event) : '' ;" alt="Sprint Details" class="cursor-pointer p-ml-1 sprint-hover-icon"   pTooltip='<div class="inner-content">
+                    <img src="../../../assets/img/database-svg.svg" *ngIf="sprintsOverlayVisible"  (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event,kpiHeader) : '' ;" alt="Sprint Details" class="cursor-pointer p-ml-1 sprint-hover-icon"   pTooltip='<div class="inner-content">
                         Please click on icon for all sprint details.
                     </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper" />
                     <app-comments *ngIf="showCommentIcon" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName" [selectedTab]="selectedTab"></app-comments>
@@ -113,13 +113,13 @@
         <p-tabView [(activeIndex)]="selectedTabIndex">
 
             <ng-container *ngFor="let project of projectList;  let i = index;">
-                <p-tabPanel header="{{project}}" [headerStyleClass]="getColorCssClasses(selectedTabIndex)">
+                <p-tabPanel header="{{project.length > 15 ? project.substring(0,15)+'..' : project}}" [headerStyleClass]="getColorCssClasses(selectedTabIndex)">
                     <p-table *ngIf="(sprintDetailsList[selectedTabIndex] && sprintDetailsList[selectedTabIndex]['hoverList'].length >0 ) ; else showNoDataMessage" [columns]="columnList" [value]="sprintDetailsList[selectedTabIndex]['hoverList']" 
-                        styleClass="p-datatable-gridlines kpi-table" [scrollable]="true" scrollHeight="250px" [style]="{width: '450px'}">
+                        styleClass="p-datatable-gridlines kpi-table" [scrollable]="true" scrollHeight="250px">
                         <ng-template pTemplate="header" let-columns>
                             <tr>
                                 <ng-container *ngFor="let col of columns">
-                                <th *ngIf="hasData(col.field)" [pSortableColumn]="col.field" [ngClass]="{'col1':col.field ==='duration'}">
+                                <th *ngIf="hasData(col.field)" [pSortableColumn]="col.field" [ngClass]="{'kpi-value-center': col.field ==='value'}">
                                     {{ col.header }}
                                     <p-sortIcon *ngIf="col.field === 'value'" [field]="col.field"></p-sortIcon>
                                 </th>
@@ -129,7 +129,7 @@
                         <ng-template pTemplate="body" let-rowData let-columns="columns">
                             <tr>
                                 <ng-container *ngFor="let col of columns">
-                                    <td *ngIf="hasData(col.field)" [innerHTML]="col.field == 'value' ? rowData[col.field]+rowData['unit'] : rowData[col.field]" class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value','col1':col.field ==='duration'}">
+                                    <td *ngIf="hasData(col.field)" [innerHTML]="col.field == 'value' ? rowData[col.field]+rowData['unit'] : rowData[col.field]" class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}">
                                     </td>
                                </ng-container>
                             </tr>

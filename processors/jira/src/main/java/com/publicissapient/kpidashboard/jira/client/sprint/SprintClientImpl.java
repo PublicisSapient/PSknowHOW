@@ -19,19 +19,12 @@ package com.publicissapient.kpidashboard.jira.client.sprint;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,8 +34,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -57,7 +48,6 @@ import org.springframework.stereotype.Service;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -72,6 +62,8 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author yasbano
@@ -127,7 +119,6 @@ public class SprintClientImpl implements SprintClient {
 			List<SprintDetails> sprintToSave = new ArrayList<>();
 
 			sprintDetailsSet.forEach(sprint -> {
-			  PSLogData sprintLogData = new PSLogData();
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
 				log.info("processing sprint with sprintId: {}, state: {} and boardId: {} "

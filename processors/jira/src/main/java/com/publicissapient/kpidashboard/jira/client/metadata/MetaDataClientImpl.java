@@ -342,8 +342,6 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setRootCauseValue(valuesToIdentifyMap.get(CommonConstant.ROOT_CAUSE_VALUE));
 			fieldMapping.setResolutionTypeForRejection(
 					valuesToIdentifyMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setQaRootCauseValue(
-					valuesToIdentifyMap.getOrDefault(CommonConstant.QA_ROOT_CAUSE, new ArrayList<>()));
 			fieldMapping.setJiraQADefectDensityIssueType(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraDefectClosedStatus(

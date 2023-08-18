@@ -102,7 +102,6 @@ public class ScrumTemplateImpl  extends JiraKPIService<Double, List<Object>, Map
 			calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
 			List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
 			kpiElement.setTrendValueList(trendValues);
-			//kpiElement.setMaturityRange(configHelperService.calculateMaturity().get(Constant.DEFECT_INJECTION_RATE));
 			// end of simple line chart aggregation
 			
 			//Use these methods instead of above if kpi is line+filter, groupcolumn, grouped column+filter,column,column + filter
