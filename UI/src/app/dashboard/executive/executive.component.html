@@ -59,7 +59,7 @@
                               [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                               [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                               [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
-                              [selectedtype]="selectedtype">
+                              [selectedtype]="selectedtype" [viewType]="showChart">
                             </app-multiline-style>
                             <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
                               [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true" [unit]="kpi?.kpiDetail?.kpiUnit"

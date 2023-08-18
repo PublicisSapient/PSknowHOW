@@ -45,6 +45,8 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
   @Input() color?: Array<string>;
   @Input() selectedtype: string;
   elem;
+  sprintList : Array<any> = [];
+  @Input() viewType :string = 'chart'
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -55,6 +57,9 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
+    this.service.showTableViewObs.subscribe(view => {
+      this.viewType = view;
+     });
   }
 
   // Runs when property "data" changed
@@ -63,9 +68,7 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
       this.xCaption = this.service.getSelectedDateFilter();
     }
     if (Object.keys(changes)?.length > 0) {
-      if (changes['data']) {
         this.draw();
-      }
     } else {
       d3.select(this.elem).select('svg').remove();
       d3.select(this.elem).select('.bstimeslider').remove();
@@ -93,17 +96,22 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   draw() {
+    const viewType = this.viewType;
+    const selectedProjectCount = this.service.getSelectedTrends().length;
+    const sprintList = this.data[0].value.map(details=>details.sSprintName);
     const dataCategory = this.data.map(d => d.data);
     const lineTypes = this.data[0].value[0].dataValue.map(lineData => lineData.lineType);
     const lineDetails = this.data[0].value[0].dataValue.map(lineData => lineData.name);
-    this.data = this.transformData(this.data, lineTypes);
+    const formattedData = this.transformData(this.data, lineTypes);
 
     // this is used for removing svg already made when value is updated
     d3.select(this.elem).select('#verticalSVG').select('svg').remove();
     d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
+    d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+    d3.select(this.elem).select('#xCaptionContainer').select('div').remove();
 
-    const data = this.data;
+    const data = formattedData;
     const thresholdValue = this.thresholdValue;
     const elem = this.elem;
     let width = 450;
@@ -175,15 +183,25 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
       .domain(dataCategory)
       .range(color);
 
-    const xScale = d3
-      .scaleBand()
-      .rangeRound([0, width - margin])
-      .padding(0)
-      .domain(
-        data[maxObjectNo].value.map(function (d, i) {
-          return i + 1;
-        }),
-      );
+    let xScale;
+      if (viewType === 'large' && selectedProjectCount === 1) {
+        xScale = d3
+        .scaleBand()
+        .rangeRound([0, width - margin])
+        .padding(0)
+        .domain(sprintList);
+
+      }else{
+        xScale = d3
+        .scaleBand()
+        .rangeRound([0, width - margin])
+        .padding(0)
+        .domain(
+          data[maxObjectNo].value.map(function (d, i) {
+            return i + 1;
+          }),
+        );
+      }
 
     let divisor = 10;
     let power = 1;
@@ -215,6 +233,39 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
       .scaleLinear()
       .domain([0, maxYValue])
       .range([height - margin, 0]);
+
+    if (viewType === 'large' && selectedProjectCount === 1) {
+      d3.select(this.elem).select('#horizontalSVG').select('div').remove();
+      d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+      /** Adding tooltip container */
+      const tooltipContainer = d3.select(this.elem).select('#horizontalSVG').
+        append('div')
+        .attr('class', 'tooltip-container')
+        .attr('height', height + 35 + 'px')
+        .attr('width', width + 'px')
+
+        tooltipContainer
+        .selectAll('div')
+        .data(data[0].value)
+        .join('div')
+        .attr('class', 'tooltip2')
+        .style('left', d => {
+          let left = d.date || d.sSprintName
+          return (xScale(left) + xScale.bandwidth() / 2 - 5)+ 'px'
+        })
+        .style('top', d => {
+          return (yScale(d.value) + 7 ) +'px'
+        })
+        .text(d => Math.round(d.value * 100) / 100+' '+showUnit)
+        .transition()
+        .duration(500)
+        .style('display', 'block')
+        .style('opacity', 1);
+      }else{
+        d3.select(this.elem).select('#horizontalSVG').select('div').remove();
+        d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+      }
+
     /* Add SVG */
 
     const svgX = d3
@@ -345,10 +396,17 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
     /* Add line into SVG acoording to data */
     const line = d3
       .line()
-      .x((d, i) => xScale(i + 1))
+      .x((d, i) => {
+        if(viewType === 'large' && selectedProjectCount === 1){
+          return xScale(d.date || d.sSprintName)
+        }else{
+          return xScale(i+1)
+        }
+      })
       .y((d) => yScale(d.value));
 
-    const lines = svgX.append('g').attr('class', 'lines');
+    const lines = svgX.append('g').attr('class', 'lines')
+    .attr('transform', `translate(${xScale.bandwidth()/2}, ${0})`);
 
     function tweenDash() {
       const l = this.getTotalLength();
@@ -485,7 +543,11 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
       })
       .append('circle')
       .attr('cx', function (d, i) {
-        return xScale(i + 1);
+        if(viewType === 'large' && selectedProjectCount === 1){
+          return xScale(d.date || d.sSprintName)
+        }else{
+          return xScale(i+1)
+        }
       })
       .attr('cy', (d) => yScale(d.value))
       .attr('r', circleRadius)
