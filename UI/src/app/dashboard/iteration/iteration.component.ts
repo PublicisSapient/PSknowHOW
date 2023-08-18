@@ -106,8 +106,6 @@ export class IterationComponent implements OnInit, OnDestroy {
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
-      console.log(sharedobject);
-      
       if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'iteration') {
         this.allKpiArray = [];
         this.kpiChartData = {};
@@ -194,7 +192,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     click apply and call kpi
    **/
   receiveSharedData($event) {
-    console.log(this.service.currentSelectedSprint);
     if(this.service.currentSelectedSprint?.sprintState === 'ACTIVE'){
       this.navigationTabs =  [
         {'label':'Iteration Review', 'count': 0},
@@ -207,8 +204,6 @@ export class IterationComponent implements OnInit, OnDestroy {
         {'label':'Iteration Progress', 'count': 0},
       ];
     }
-
-    console.log(this.navigationTabs);
     this.activeIndex =0;
     if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
@@ -946,8 +941,4 @@ export class IterationComponent implements OnInit, OnDestroy {
 
   }
 
-  onTabChange(e){
-    console.log(e);
-    //this.activeIndex = e.index;
-  }
 }

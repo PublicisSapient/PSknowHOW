@@ -1,24 +1,24 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-daily-scrum',
   templateUrl: './daily-scrum.component.html',
   styleUrls: ['./daily-scrum.component.css']
 })
-export class DailyScrumComponent implements OnInit {
+export class DailyScrumComponent implements OnInit ,OnChanges{
 
-  @Input() filterData;
+  @Input() filterData=[];
   @Input() assigneeList = [];
   @Input() columns =[];
   @Input() displayModal=false;
   @Input() showLess = true;
   @Input() selectedUser = 'Overall';
-  @Input() selectedRole =null;
+  @Input() filters ={};
 
   @Output() onExpandOrCollapse = new EventEmitter<boolean>();
   @Output() onShowLessOrMore = new EventEmitter<boolean>();
   @Output() onSelectedUserChange = new EventEmitter<string>();
-  @Output() onSelectedRole = new EventEmitter<string>();
+  @Output() onFilterChange = new EventEmitter<{[key: string]: string}>();
 
   totals ={};
   allAssignee = [];
@@ -26,10 +26,23 @@ export class DailyScrumComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    if(this.assigneeList.length > 0){
-      this.allAssignee = [...this.assigneeList];
-      this.calculateTotal();
+    this.filterData.forEach(filter =>{
+      this.filters[filter.filterKey] = this.filters[filter.filterKey] ? this.filters[filter.filterKey] : null;
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['assigneeList']?.firstChange){
+      this.allAssignee = changes['assigneeList']?.currentValue;
     }
+      if(Object.keys(this.filters).length > 0){
+        for(const key in this.filters){
+          if(this.filters[key]){
+            this.assigneeList = this.allAssignee.filter(assignee => assignee[key] === this.filters[key]);
+          }
+        }
+      }
+      this.calculateTotal();
   }
 
   setSelectedUser(assigneeId){
@@ -44,10 +57,10 @@ export class DailyScrumComponent implements OnInit {
     this.onExpandOrCollapse.emit(!this.displayModal);
   }
 
-  handleSelectRole(e){
-    this.onSelectedRole.emit(this.selectedRole);
-    if(this.selectedRole){
-      this.assigneeList = this.allAssignee.filter(assignee => assignee.role === this.selectedRole);
+  handleSingleSelectChange(e,filterKey){
+    this.onFilterChange.emit(this.filters);
+    if(e){
+      this.assigneeList = this.allAssignee.filter(assignee => assignee[filterKey] === e);
     }else{
       this.assigneeList = this.allAssignee;
     }
@@ -55,11 +68,9 @@ export class DailyScrumComponent implements OnInit {
   }
 
   calculateTotal(){
-    console.log(this.columns, this.assigneeList);
-    
     this.totals['Team Member'] = this.assigneeList.length + ' Members';
     this.columns.forEach(col =>{
-      this.totals[col] = {...this.assigneeList[0].cardDetails[col]};
+      this.totals[col] = {...this.assigneeList[0]?.cardDetails[col]};
       if( 'value' in this.totals[col]){
         this.totals[col].value = 0;
       }
@@ -87,9 +98,6 @@ export class DailyScrumComponent implements OnInit {
     }
 
    });
-
-   console.log(this.totals);
-   
   }
 
   convertToHoursIfTime(val, unit) {

@@ -2,15 +2,24 @@
 
     <!-- filter section -->
     <section class="filter-header">
-        <div class="filters" >
-            <ng-select *ngIf="selectedUser === 'Overall'" [(ngModel)]="selectedRole" [dropdownPosition]="'bottom'"
-            (change)="handleSelectRole($event)" placeholder="Filter By Role"
-             class="p-pb-0" [style]="{'min-width' : '180px'}">
-            <ng-option *ngFor="let item of filterData[0].options" [value]="item">
-               {{item}}
-            </ng-option>
-         </ng-select>
-        </div>
+        <ng-container *ngIf="selectedUser === 'Overall'">
+            <ng-container *ngFor="let filter of filterData">
+                <ng-container [ngSwitch]="filter?.filterType">
+                    <div class="filters" *ngSwitchCase="'singleSelect'">
+                        <ng-select  [(ngModel)]="filters[filter?.filterKey]" [dropdownPosition]="'bottom'"
+                        (change)="handleSingleSelectChange($event,filter?.filterKey)" placeholder="Filter By Role"
+                         class="p-pb-0" [style]="{'min-width' : '180px'}">
+                        <ng-option *ngFor="let item of filter.options" [value]="item">
+                           {{item}}
+                        </ng-option>
+                     </ng-select>
+                    </div>
+                </ng-container>
+              
+            </ng-container>
+        </ng-container>
+
+       
         <p-button (click)="handleViewExpandCollapse()">{{displayModal ? 'Collapse' : 'Expand'}} </p-button>
     </section>
 

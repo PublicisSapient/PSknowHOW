@@ -14,6 +14,7 @@ export class DailyScrumTabComponent implements OnInit {
   showLess = true;
   selectedRole =null;
   selectedUser = 'Overall';
+  filters={};
 
   constructor() { }
 
@@ -21,6 +22,7 @@ export class DailyScrumTabComponent implements OnInit {
   }
 
   setExpandView(e){
+    this.assigneeList = this.assigneeList.slice();
     this.displayModal = e;
   }
 
@@ -28,8 +30,8 @@ export class DailyScrumTabComponent implements OnInit {
     this.showLess = !this.showLess;
   }
 
-  onSelectedRole(role){
-    this.selectedRole = role;
+  onFilterChange(filters){
+    this.filters = filters;
   }
 
   onSelectedUserChange(selectedUser){

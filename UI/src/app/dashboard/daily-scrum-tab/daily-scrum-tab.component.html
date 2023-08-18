@@ -6,11 +6,11 @@
     [filterData]="filterData"
     [displayModal]="displayModal" 
     [showLess]="showLess"
-    [selectedRole]="selectedRole"
+    [filters]="filters"
     [selectedUser]="selectedUser"
     (onExpandOrCollapse)="setExpandView($event)"
     (onShowLessOrMore)="onShowLessOrMore()"
-    (onSelectedRole)="onSelectedRole($event)"
+    (onFilterChange)="onFilterChange($event)"
     (onSelectedUserChange)="onSelectedUserChange($event)"
    >
 </app-daily-scrum>
@@ -22,11 +22,11 @@
     [filterData]="filterData"
     [displayModal]="displayModal" 
     [showLess]="showLess"
-    [selectedRole]="selectedRole"
+    [filters]="filters"
     [selectedUser]="selectedUser"
     (onExpandOrCollapse)="setExpandView($event)"
     (onShowLessOrMore)="onShowLessOrMore()"
-    (onSelectedRole)="onSelectedRole($event)"
+    (onFilterChange)="onFilterChange($event)"
     (onSelectedUserChange)="onSelectedUserChange($event)">
     </app-daily-scrum>
 </p-dialog>
