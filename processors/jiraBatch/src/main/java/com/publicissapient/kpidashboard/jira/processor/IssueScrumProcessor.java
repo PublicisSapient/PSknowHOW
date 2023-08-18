@@ -53,7 +53,8 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 	}
 
 	private JiraIssue convertIssueToJiraIssue(ReadData readData) throws JSONException {
-		return jiraIssueProcessor.convertToJiraIssue(readData.getIssue(), readData.getProjectConfFieldMapping());
+		return jiraIssueProcessor.convertToJiraIssue(readData.getIssue(), readData.getProjectConfFieldMapping(),
+				readData.getBoardId());
 	}
 
 	private JiraIssueCustomHistory convertIssueToJiraIssueHistory(ReadData readData, JiraIssue jiraIssue)

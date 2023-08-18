@@ -83,7 +83,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	AssigneeDetails assigneeDetails;
 
 	@Override
-	public JiraIssue convertToJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig) throws JSONException {
+	public JiraIssue convertToJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)
+			throws JSONException {
 
 		JiraIssue jiraIssue = null;
 
@@ -137,6 +138,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			setJiraAssigneeDetails(jiraIssue, assignee, projectConfig);
 			setEstimates(jiraIssue, issue);
 			setDueDates(jiraIssue, issue, fields, fieldMapping);
+			jiraIssue.setBoardId(boardId);
 		}
 		return jiraIssue;
 

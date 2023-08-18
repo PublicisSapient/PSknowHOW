@@ -10,10 +10,12 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class JobScheduler {
 
 	@Autowired
@@ -31,11 +33,11 @@ public class JobScheduler {
 
 	@Async
 	//@Scheduled(cron = "0 0/1 * 1/1 * ?")
-	public void fetchIssueScrumStarter() throws Exception {
+	public void fetchIssueScrumBoardStarter() throws Exception {
 		Map<String, JobParameter> params = new HashMap<>();
 		params.put("projectConfig", new JobParameter(System.currentTimeMillis()));
 		JobParameters jobParameters = new JobParameters(params);
-		System.out.println("Fetch Issue for Scrum Job Started .....");
+		log.info("Fetch Issue for Scrum Job Started .....");
 		jobLauncher.run(fetchIssueScrumBoardJob, jobParameters);
 		//jobLauncher.run(myJob, jobParameters);
 	

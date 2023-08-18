@@ -78,6 +78,7 @@ public final class JiraConstants {
     public static final String KEY = "key";
     public static final String USER="User";
     public static final String SPACE=" ";
+    public static final String EPIC="Epic";
 
     static {
         ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");

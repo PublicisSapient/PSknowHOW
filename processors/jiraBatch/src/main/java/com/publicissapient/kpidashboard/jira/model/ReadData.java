@@ -8,5 +8,6 @@ import lombok.Data;
 public class ReadData {
 	private Issue issue;
 	private ProjectConfFieldMapping projectConfFieldMapping;
+	private String boardId;
 
 }

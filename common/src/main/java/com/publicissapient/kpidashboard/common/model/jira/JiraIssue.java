@@ -18,23 +18,24 @@
 
 package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 
 @SuppressWarnings({"javadoc"})
 @Getter
@@ -52,7 +53,6 @@ public class JiraIssue extends BasicModel implements Cloneable {
      * Story data
      */
     // sId renamed to issueId
-    @Indexed
     private String issueId;
     private String number;
     private String name;
@@ -65,7 +65,6 @@ public class JiraIssue extends BasicModel implements Cloneable {
 
     private Integer estimateTime; // estimate in minutes
     private String url;
-    @Indexed
     private String changeDate;
     private String isDeleted;
     private String priority;
@@ -98,7 +97,6 @@ public class JiraIssue extends BasicModel implements Cloneable {
     private String teamAssetState;
     private String teamChangeDate;
     private String teamName;
-    @Indexed
     private String teamID;
 
     /*
@@ -117,12 +115,11 @@ public class JiraIssue extends BasicModel implements Cloneable {
 
     private String sprintChangeDate;
     private String sprintAssetState;
-    @Indexed
+ 
     private String sprintEndDate;
-    @Indexed
+
     private String sprintBeginDate;
     private String sprintName;
-    @Indexed
     private String sprintID;
     private String sprintUrl;
     private List<String> sprintIdList;
@@ -229,9 +226,9 @@ public class JiraIssue extends BasicModel implements Cloneable {
     private boolean productionDefect;
     private Integer aggregateTimeOriginalEstimateMinutes;
     private Integer aggregateTimeRemainingEstimateMinutes;
-    @Indexed
     private String updateDate;
     private String devDueDate;
+    private String boardId;
 
 	@Override public Object clone() throws CloneNotSupportedException {
 		return super.clone();

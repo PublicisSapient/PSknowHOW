@@ -69,6 +69,7 @@ import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
@@ -602,23 +603,22 @@ public class JiraCommonService {
 	}
 
 	public List<Issue> fetchIssueBasedOnBoard(ProjectConfFieldMapping projectConfig,
-			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, int pageNumber, String boardId) {
+			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, int pageNumber, String boardId,
+			String deltaDate) {
 
 		client = clientIncoming;
-		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(projectConfig);
 		List<Issue> issues = new ArrayList<>();
 		try {
 			// find deltaDate logic : processor successful run :
 			// latestSuccessful run -1 hour. First time : last n months data
 			// defined in properties file
-			JiraHelper.setStartDate(jiraProcessorConfig);
-			String queryDate = JiraHelper.getDeltaDate(processorExecutionTraceLog.getLastSuccessfulRun());
+			String queryDate = JiraHelper.getDeltaDate(deltaDate);
 
 			SearchResult searchResult = getIssues(boardId, projectConfig, queryDate, pageNumber);
 			issues = JiraHelper.getIssuesFromResult(searchResult);
 
 		} catch (InterruptedException e) {
-			log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
+			log.error("Interrupted exception thrown.", e);
 		}
 		return issues;
 	}
@@ -632,7 +632,7 @@ public class JiraCommonService {
 		} else {
 			String query = StringUtils.EMPTY;
 			try {
-				query = "updatedDate>='" + startDateTimeByIssueType + "' order by updatedDate desc";
+				query = "updatedDate>='" + startDateTimeByIssueType + "' order by updatedDate asc";
 				CustomAsynchronousIssueRestClient issueRestClient = client.getCustomIssueClient();
 				Promise<SearchResult> promisedRs = issueRestClient.searchBoardIssue(boardId, query,
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
@@ -650,4 +650,5 @@ public class JiraCommonService {
 
 		return searchResult;
 	}
+
 }

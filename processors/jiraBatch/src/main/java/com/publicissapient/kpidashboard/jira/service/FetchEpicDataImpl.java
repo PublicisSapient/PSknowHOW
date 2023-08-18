@@ -1,15 +1,10 @@
 package com.publicissapient.kpidashboard.jira.service;
 
-import static net.logstash.logback.argument.StructuredArguments.kv;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -26,9 +21,7 @@ import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
@@ -52,47 +45,38 @@ public class FetchEpicDataImpl implements FetchEpicData {
 	ProcessorJiraRestClient client;
 
 	@Override
-	public List<Issue> fetchEpic(Map.Entry<String, ProjectConfFieldMapping> entry, String boardId,
+	public List<Issue> fetchEpic(ProjectConfFieldMapping projectConfig, String boardId,
 			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client) throws InterruptedException {
 
-		ProjectConfFieldMapping projectConfig = entry.getValue();
 		List<String> epicList = new ArrayList<>();
-		PSLogData logData = new PSLogData();
-		logData.setBoardId(boardId);
-		logData.setAction(CommonConstant.EPIC_DATA);
 		client = clientIncoming;
 		try {
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
 			if (null != jiraToolConfig) {
 				boolean isLast = false;
 				int startIndex = 0;
-				Instant start = Instant.now();
 				do {
 					URL url = getEpicUrl(projectConfig, boardId, startIndex);
-					logData.setUrl(url.toString());
 					String jsonResponse = jiraCommonService.getDataFromClient(projectConfig, url, krb5Client);
 					isLast = populateData(jsonResponse, epicList);
 					startIndex = epicList.size();
 					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 				} while (!isLast);
-				logData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
-				logData.setEpicListFetched(epicList);
-				log.info("Epics fetched through board", kv(CommonConstant.PSLOGDATA, logData));
+
 			}
 		} catch (RestClientException rce) {
-			log.error("Client exception when loading epic data", rce, kv(CommonConstant.PSLOGDATA, logData));
+			log.error("Client exception when loading epic data", rce);
 			throw rce;
 		} catch (MalformedURLException mfe) {
-			log.error("Malformed url for loading epic data", mfe, kv(CommonConstant.PSLOGDATA, logData));
+			log.error("Malformed url for loading epic data", mfe);
 		} catch (IOException ioe) {
-			log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, logData));
+			log.error("IOException", ioe);
 		}
-		return getEpicIssuesQuery(epicList, logData);
+		return getEpicIssuesQuery(epicList);
 	}
 
-	private List<Issue> getEpicIssuesQuery(List<String> epicKeyList, PSLogData logData) throws InterruptedException {
+	private List<Issue> getEpicIssuesQuery(List<String> epicKeyList) throws InterruptedException {
 
-		PSLogData psLogData = new PSLogData();
 		List<Issue> issueList = new ArrayList<>();
 		SearchResult searchResult = null;
 		try {
@@ -102,7 +86,6 @@ public class FetchEpicDataImpl implements FetchEpicData {
 				int totalEpic = 0;
 				int fetchedEpic = 0;
 				boolean continueFlag = true;
-				Instant start = Instant.now();
 				do {
 					Promise<SearchResult> promise = client.getSearchClient().searchJql(query,
 							jiraProcessorConfig.getPageSize(), pageStart, null);
@@ -127,18 +110,11 @@ public class FetchEpicDataImpl implements FetchEpicData {
 					}
 					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 				} while (totalEpic < fetchedEpic || continueFlag);
-				logData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
-				logData.setTotalFetchedIssues(String.valueOf(totalEpic));
-				logData.setJql(query);
-				log.info("Issues in epic", kv(CommonConstant.PSLOGDATA, logData));
 
-			} else {
-				log.info("No Epic Found to fetch", kv(CommonConstant.PSLOGDATA, logData));
 			}
 		} catch (RestClientException e) {
-			log.error("Error while fetching issues", e.getCause(), kv(CommonConstant.PSLOGDATA, logData));
+			log.error("Error while fetching issues", e);
 		}
-		psLogData.setEpicIssuesFetched((issueList == null) ? "-1" : String.valueOf(issueList.size()));
 		return issueList;
 	}
 
@@ -161,12 +137,12 @@ public class FetchEpicDataImpl implements FetchEpicData {
 	}
 
 	private void getEpic(JSONArray valuesJson, List<String> epicList) {
-		valuesJson.forEach(values -> {
-			JSONObject sprintJson = (JSONObject) values;
+		for (int i = 0; i < valuesJson.size(); i++) {
+			JSONObject sprintJson = (JSONObject) valuesJson.get(i);
 			if (null != sprintJson) {
 				epicList.add(sprintJson.get(KEY).toString());
 			}
-		});
+		}
 	}
 
 	private URL getEpicUrl(ProjectConfFieldMapping projectConfig, String boardId, int startIndex)

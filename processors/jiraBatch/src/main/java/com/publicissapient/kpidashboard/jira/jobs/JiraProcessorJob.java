@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueStepListener;
+import com.publicissapient.kpidashboard.jira.listener.JiraIssueWriterListener;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.processor.IssueScrumProcessor;
@@ -45,6 +46,9 @@ public class JiraProcessorJob {
 	@Autowired
 	JiraIssueStepListener jiraIssueStepListener;
 
+	@Autowired
+	JiraIssueWriterListener jiraIssueWriterListener;
+
 	@Bean
 	public Job fetchIssueScrumBoardJob() {
 		return jobBuilderFactory.get("FetchIssueScrum Job").incrementer(new RunIdIncrementer()).start(metaDataStep())
@@ -60,8 +64,8 @@ public class JiraProcessorJob {
 	}
 
 	private Step fetchIssueScrumBoardChunkStep() {
-		return stepBuilderFactory.get("Fetch Issue-Scrum-board").<ReadData, CompositeResult>chunk(10)
+		return stepBuilderFactory.get("Fetch Issue-Scrum-board").<ReadData, CompositeResult>chunk(50)
 				.reader(issueScrumBoardReader).processor(issueScrumProcessor).writer(issueScrumWriter)
-				.listener(jiraIssueStepListener).build();
+				.listener(jiraIssueWriterListener).listener(jiraIssueStepListener).build();
 	}
 }
