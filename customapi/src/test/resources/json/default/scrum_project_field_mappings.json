@@ -58,6 +58,7 @@
     "jiraIssueDeliverdStatusAVR" : [ "Closed","Ready for Delivery" ],
     "jiraIssueDeliverdStatusKPI126" : [ "Closed","Ready for Delivery"],
     "jiraIssueDeliverdStatusKPI82" : [ "Closed","Ready for Delivery" ],
+    "readyForDevelopmentStatusKPI138" : [ "In Analysis" ],
     "jiraDorKPI3" : "Ready for Sprint Planning",
     "jiraIssueTypeKPI3" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraStoryIdentification" : [ ],

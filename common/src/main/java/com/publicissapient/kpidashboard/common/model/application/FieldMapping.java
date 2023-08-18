@@ -49,6 +49,8 @@ import lombok.Setter;
 @Document(collection = "field_mapping")
 public class FieldMapping extends BasicModel {
 
+	public static final String READY_FOR_TESTING = "Ready For Testing";
+	public static final String IN_TESTING = "In Testing";
 	private ObjectId projectToolConfigId;
 	private ObjectId basicProjectConfigId;
 	private String projectId;
@@ -76,13 +78,13 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForDevelopmentKPI82;
 	private List<String> jiraStatusForDevelopmentKPI135;
 	@Builder.Default
-	private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQa = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	@Builder.Default
-	private List<String> jiraStatusForQaKPI148 = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQaKPI148 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	@Builder.Default
-	private List<String> jiraStatusForQaKPI135 = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQaKPI135 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	@Builder.Default
-	private List<String> jiraStatusForQaKPI82 = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQaKPI82 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
 	private List<String> jiraDefectInjectionIssueTypeKPI14;
@@ -108,7 +110,6 @@ public class FieldMapping extends BasicModel {
 	private String jiraDefectRejectionStatusKPI151;
 	private String jiraDefectRejectionStatusAVR;
 	private String jiraDefectRejectionStatusKPI28;
-	private String jiraDefectRejectionStatusKPI34;
 	private String jiraDefectRejectionStatusKPI37;
 	private String jiraDefectRejectionStatusKPI35;
 	private String jiraDefectRejectionStatusKPI82;
@@ -128,7 +129,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDefectRemovalStatus;
 	private List<String> jiraDefectRemovalStatusKPI34;
 	private List<String> jiraDefectRemovalIssueType;
-	private List<String> jiraDefectRemovalIssueTypeKPI34;
 	// Added for Defect Reopen Rate KPI.
 	private List<String> jiraDefectClosedStatus;
 	private List<String> jiraDefectClosedStatusKPI137;
@@ -157,7 +157,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueDeliverdStatusKPI82;
 
 	private String readyForDevelopmentStatus;
-	private String readyForDevelopmentStatusKPI138;
+	private List<String> readyForDevelopmentStatusKPI138;
 
 	private String jiraDor;
 	private String jiraDorKPI3;
@@ -219,7 +219,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> resolutionTypeForRejection;
 	private List<String> resolutionTypeForRejectionAVR;
 	private List<String> resolutionTypeForRejectionKPI28;
-	private List<String> resolutionTypeForRejectionKPI34;
 	private List<String> resolutionTypeForRejectionKPI37;
 	private List<String> resolutionTypeForRejectionKPI35;
 	private List<String> resolutionTypeForRejectionKPI82;
@@ -309,6 +308,7 @@ public class FieldMapping extends BasicModel {
 	@Builder.Default
 	private String jiraDueDateField = CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
+	private String jiraDevDueDateField = CommonConstant.DEV_DUE_DATE;
 	private String jiraDevDueDateCustomField;
 	private List<String> jiraDevDoneStatus;
 	private List<String> jiraDevDoneStatusKPI119;
@@ -367,6 +367,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationIssuetypeKPI125;
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
+	private List<String> jiraIterationIssuetypeKPI39;
 	private LocalDateTime createdDate;
 
 	private List<String> jiraIssueEpicTypeKPI153;

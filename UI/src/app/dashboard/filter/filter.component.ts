@@ -118,6 +118,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   username: string;
   isGuest = false;
   isViewer = false;
+  isAdmin = false;
   logoImage: any;
   totalRequestCount = 0;
   selectedProjectData = {};
@@ -134,6 +135,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   kpiObj:object = {};
   totalProjectSelected : number = 1;
   selectedLevelValue : string = 'project';
+  displayModal: boolean = false;
 
   constructor(
     private service: SharedService,
@@ -249,7 +251,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.getAuthorizationService.checkIfSuperUser()) {
       this.isSuperAdmin = true;
     }
-    // this.username = this.service.getCurrentUserDetails('user_name');
+    if (this.getAuthorizationService.checkIfSuperUser() || this.getAuthorizationService.checkIfProjectAdmin()) {
+      this.isAdmin = true;
+    } else {
+      this.isAdmin = false;
+    }
 
     let authoritiesArr;
     if (this.service.getCurrentUserDetails('authorities')) {
@@ -259,9 +265,6 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.isGuest = true;
     }
 
-    if (authoritiesArr && authoritiesArr.includes('ROLE_PROJECT_VIEWER')) {
-      this.isViewer = true;
-    }
     if (!this.isGuest) {
       this.items.unshift({
         label: 'Settings',
@@ -1291,6 +1294,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   // when user would want to give access on project from notification list
   routeForAccess(type: string) {
     if (this.getAuthorizationService.checkIfSuperUser() || this.getAuthorizationService.checkIfProjectAdmin()) {
+      this.isAdmin = true;
       switch (type) {
         case 'Project Access Request':
           this.service.setSideNav(false);
@@ -1304,6 +1308,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     } else {
       this.router.navigate(['/dashboard/Config/Profile/RequestStatus']);
+      this.isAdmin = false;
     }
   }
 
@@ -1455,6 +1460,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       };
       this.selectedProjectLastSyncStatus = '';
       this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
+        this.displayModal = false;
         if (activeSprintStatus['success']) {
           interval(10000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
             if (response?.['success']) {
@@ -1577,5 +1583,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       return obj;
     });
     this.ga.setProjectData(gaArray);
+  }
+
+  redirectToCapacityPlanning() {
+    this.router.navigate(['./dashboard/Config/Capacity']);
   }
 }

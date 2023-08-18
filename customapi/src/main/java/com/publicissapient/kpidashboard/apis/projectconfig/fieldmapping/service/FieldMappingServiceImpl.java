@@ -606,7 +606,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraIterationIssuetypeKPI123",
 			"jiraIterationIssuetypeKPI125",
 			"jiraIterationIssuetypeKPI120",
-			"jiraIterationIssuetypeKPI124");
+			"jiraIterationIssuetypeKPI124",
+			"jiraIterationIssuetypeKPI39");
 
 			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE,
 					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus",

@@ -14,7 +14,7 @@
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                   (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                   [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOptionForCard($event, kpi)"
-                  [showExport]="false" [isShow]="true" [showChartView]="false"  [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]" (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
+                  [showExport]="false" [isShow]="true" [showChartView]="'table'"  [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]" (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                   <ng-container *ngIf="!noTabAccess else noDataAccess">
                     <div class="p-d-flex p-justify-around p-align-center w-100 p-h-100"
                       *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0 && !kpiLoader;else noData">
@@ -62,7 +62,7 @@
                     [trendData]="kpiChartData[kpi?.kpiId]"
                     (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                     [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
-                    [showExport]="true" [isShow]="true"
+                    [showExport]="true" [isShow]="true" [showChartView]="'chart'" 
                     [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true" [showCommentIcon]="true"
                     [commentCount]="kpiCommentsCountObj[kpi?.kpiId]" (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                     <ng-container *ngIf="!noTabAccess else noDataAccess">

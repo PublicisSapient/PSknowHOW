@@ -174,17 +174,7 @@
                   <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
                      Last Sync
                   </h4>
-                  <ng-container *ngIf="this.selectedSprint['sprintState'] === 'ACTIVE' && !isGuest && !isViewer">
-                     <span class="refresh-state p-p-1" (click)="fetchData()" *ngIf=" (lastSyncData | json) == '{}' || lastSyncData.errorInFetch">
-                        <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh"/>Refresh
-                     </span>
-                     <span class="refresh-state p-p-1" *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
-                        <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync"/>Syncing
-                     </span>
-                     <span class="success-state p-p-1" *ngIf="!((lastSyncData | json) == '{}') && lastSyncData?.fetchSuccessful" (click)="onUpdateKPI()">
-                        <img src="../../../assets/img/icon-update.svg" class="p-mr-1" alt="Update"/>Update
-                     </span>
-                  </ng-container>
+                  
                 
                </div>  
                <p class="last-sync-date p-m-0 p-text-right">
@@ -232,9 +222,15 @@
             </div>
 
             <!-- /show/hide kpi's ends -->
+            <!-- Capacity Planning link start -->
+            <div [ngClass]="{'disabled': !isAdmin}" class="btn-custom p-p-2 rounded filter-btn noti-btn-wraper"
+                role="button" (click)="redirectToCapacityPlanning()" title="Go to Capacity Planning">
+               <i class="pi pi-users" style="font-size: 20px;font-weight: bold;"></i>
+            </div>
+            <!-- Capacity Planning link end -->
             <!-- comments icon start -->
             <div class="position-relative">
-               <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn p-ml-2"  *ngIf="selectedTab?.toLowerCase() != 'maturity'"
+               <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn"  *ngIf="selectedTab?.toLowerCase() != 'maturity'"
                   [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project' 
                || (filterForm.get('selectedLevel')?.value == 'project' && selectedFilterArray?.length > 1)}">
                   <img #commentSummary class="p-p-2 " (click)="handleBtnClick();"
@@ -278,7 +274,6 @@
             </div>
             <p-menu #notification [popup]="true" [model]="notificationList"></p-menu>
             <!-- Notification button end -->
-
          </div>
       </div>
 
@@ -437,11 +432,36 @@
                   'NA'}}</p>
             </span>
          </div>
-         <button pButton pRipple type="button" [disabled]="kpisNewOrder?.length === 0"
-            [ngClass]="{'p-button-outlined' : kpisNewOrder?.length === 0 }" label="SAVE DASHBOARD VIEW"
-            class="p-button-secondary" (click)="setKPIOrder()"></button>
+         <div class="p-d-flex p-align-center">
+            <div class="p-mr-2" *ngIf="this.selectedSprint['sprintState'] === 'ACTIVE' && !isGuest && selectedTab?.toLowerCase() === 'iteration'">
+               <span class="refresh-state p-p-2" (click)="displayModal = true" 
+               *ngIf=" (lastSyncData | json) == '{}' || lastSyncData.errorInFetch">
+                  <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh"/>REFRESH
+               </span>
+               <span class="refresh-state p-p-2" *ngIf=" !((lastSyncData | json) == '{}') && !lastSyncData.fetchSuccessful && !lastSyncData.errorInFetch">
+                  <img src="../../../assets/img/icon-syncing.svg" class="p-mr-1" alt="Sync"/>SYNCING
+               </span>
+               <span class="success-state p-p-2" *ngIf="!((lastSyncData | json) == '{}') && lastSyncData?.fetchSuccessful" (click)="onUpdateKPI()">
+                  <img src="../../../assets/img/icon-update.svg" class="p-mr-1" alt="Update"/>UPDATE
+               </span>
+            </div>
+            <button pButton pRipple type="button" [disabled]="kpisNewOrder?.length === 0"
+               [ngClass]="{'p-button-outlined' : kpisNewOrder?.length === 0 }" label="SAVE DASHBOARD VIEW"
+               class="p-button-secondary" (click)="setKPIOrder()"></button>
+         </div>
       </div>
 
    </div>
 
 </div>
+<p-dialog [(visible)]="displayModal" [modal]="true">
+   <p-header>Are you sure you want to refresh?</p-header>
+   <p-footer>
+      <div class="ui-dialog-buttonpane ui-helper-clearfix">
+          <button type="button" pButton pRipple icon="pi pi-times" (click)="displayModal = false" label="Cancel"
+              class="p-button p-button-danger p-button-raised"></button>
+          <button type="button" pButton pRipple icon="fa fa-check" (click)="fetchData()" label="Ok"
+              class="p-button p-button-success p-button-raised"></button>
+      </div>
+  </p-footer>
+ </p-dialog>
