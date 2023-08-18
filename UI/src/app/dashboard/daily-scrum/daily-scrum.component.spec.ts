@@ -20,4 +20,26 @@ describe('DailyScrumComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should set selected user',()=>{
+    const spySelecteUserChange = spyOn(component.onSelectedUserChange,'emit');
+    component.setSelectedUser('dummyUserId');
+    expect(spySelecteUserChange).toHaveBeenCalledWith('dummyUserId');
+
+  });
+
+  it('should set showLess',()=>{
+    const spysetShowLess = spyOn(component.onShowLessOrMore,'emit');
+    component.setShowLess();
+    expect(spysetShowLess).toHaveBeenCalled();
+
+  });
+
+  it('should set showLess',()=>{
+    const spyhandleViewExpandCollapse = spyOn(component.onExpandOrCollapse,'emit');
+    component.handleViewExpandCollapse();
+    expect(spyhandleViewExpandCollapse).toHaveBeenCalled();
+
+  });
+
 });

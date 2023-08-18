@@ -37,12 +37,12 @@
 
     <!-- Capacity Info table -->
    <section class="p-p-3" *ngIf="selectedUser === 'Overall' else userInfo">
-    <p-table [value]="assigneeList" [columns]="columns" [tableStyle]="{'width': '100%'}">
+    <p-table [value]="assigneeList" [columns]="columns" [tableStyle]="{'width': '100%'}" (sortFunction)="customSort($event)" [customSort]="true">
         <ng-template pTemplate="header">
             <tr>
-                <th>Team Member</th>
-                <th *ngFor="let col of columns">
-                    {{col}}
+                <th pSortableColumn="Team Member">Team Member <p-sortIcon field="assigneeName"></p-sortIcon></th>
+                <th *ngFor="let col of columns" [pSortableColumn]="col">
+                    {{col}}  <p-sortIcon field="code"></p-sortIcon>
                 </th>
             </tr>
             <tr>

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { SortEvent } from 'primeng/api';
 
 @Component({
   selector: 'app-daily-scrum',
@@ -110,9 +111,7 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
     const rhours = Math.floor(hours);
     const minutes = (hours - rhours) * 60;
     const rminutes = Math.round(minutes);
-    if (unit?.toLowerCase() === 'hours') {
-      val = this.convertToHours(rminutes, rhours);
-    } else if (unit?.toLowerCase() === 'day') {
+    if (unit?.toLowerCase() === 'day') {
       if (val !== 0) {
         val = this.convertToDays(rminutes, rhours);
       } else {
@@ -140,6 +139,18 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
     const rdays = Math.floor(days);
     rhours = (days - rdays) * 8;
     return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}${(rminutes !== 0) ? rminutes + 'm' : ''}`;
+  }
+
+  customSort(event: SortEvent){
+    if(event.field === 'Team Member'){
+      this.assigneeList.sort((a,b) => event.order > 0  ?  a.assigneeName.localeCompare(b.assigneeName) : b.assigneeName.localeCompare(a.assigneeName) );
+    }else{
+      this.assigneeList.sort((a,b) => {
+        const value1 = a.cardDetails[event.field].value === '-' ? '' : a.cardDetails[event.field].value;
+        const value2 = b.cardDetails[event.field].value === '-' ? '' : b.cardDetails[event.field].value;
+        return event.order > 0  ?  value1.localeCompare(value2) : value2.localeCompare(value1);
+      });
+    }
   }
 
 
