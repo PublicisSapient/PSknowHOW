@@ -255,37 +255,6 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	/**
-	 * This method set Data count
-	 *
-	 * @param aggregatedValueList
-	 *            aggregatedValueList
-	 * @param node
-	 *            node
-	 * @param aggregatedDataCount
-	 *            aggregatedDataCount
-	 */
-	private void setDataCountWithoutAggregationMultiple(List<DataCount> aggregatedValueList, Node node,
-			List<DataCount> aggregatedDataCount, String kpiName) {
-		if (Constant.PROJECT.equalsIgnoreCase(node.getGroupName())) {
-			aggregatedDataCount.addAll(aggregatedValueList);
-		} else {
-			aggregatedValueList.forEach(dc -> {
-				DataCount dataCount = new DataCount();
-				dataCount.setSprintIds(dc.getSprintIds());
-				dataCount.setSprintNames(dc.getSprintNames());
-				dataCount.setProjectNames(dc.getProjectNames());
-				dataCount.setSProjectName(node.getName());
-				dataCount.setValue(dc.getValue());
-				dataCount.setLineValue(dc.getLineValue());
-				dataCount.setData(dc.getData());
-				dataCount.setHoverValue(dc.getHoverValue());
-				dataCount.setDate(dc.getDate() == null ? kpiName : dc.getDate());
-				aggregatedDataCount.add(dataCount);
-			});
-		}
-	}
-
-	/**
 	 * This method aggregate node values.
 	 *
 	 * @param kpiName
@@ -343,6 +312,14 @@ public abstract class ToolsKPIService<R, S> {
 		return aggregatedDataCount;
 	}
 
+	/**
+	 * calculate Aggregated MultipleValue based on projects and sprints wise data
+	 * @param kpiName
+	 * @param aggregatedValueList
+	 * @param node
+	 * @param kpiId
+	 * @return
+	 */
 	public List<DataCount> calculateAggregatedMultipleValueGroup(String kpiName, List<DataCount> aggregatedValueList, Node node,
 			String kpiId) {
 
@@ -386,7 +363,7 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	/**
-	 *
+	 * aggregated Data Values based on multi line chart
 	 * @param kpiId
 	 * @param dataCount
 	 * @param valueMultiLine
@@ -405,21 +382,7 @@ public abstract class ToolsKPIService<R, S> {
 				dataValueList.stream().forEach(dataValue -> {
 					aggregatedValues.add((R) dataValue.getValue());
 					aggregatedDataValue.setName(dataValue.getName());
-					if (MapUtils.isNotEmpty(dataValue.getHoverValue())) {
-						Map<String, Object> hoverValuee = new LinkedHashMap<>(dataValue.getHoverValue());
-						if (MapUtils.isNotEmpty(hoverValuee)) {
-							hoverValuee.forEach((key, value) -> {
-								if (value instanceof Integer) {
-									aggregatedHoverValue.computeIfPresent(key, (k, v) -> (Integer) v + (Integer) value);
-								} else if (value instanceof Double) {
-									aggregatedHoverValue.computeIfPresent(key, (k, v) -> (Double) v + (Double) value);
-								} else if (value instanceof Long) {
-									aggregatedHoverValue.computeIfPresent(key, (k, v) -> (Long) v + (Long) value);
-								}
-								aggregatedHoverValue.putIfAbsent(key, value);
-							});
-						}
-					}
+					collectHoverDataBaseOnLineType(dataValue.getHoverValue(), aggregatedHoverValue);
 				});
 				R aggregatedValue = calculateKpiValue(aggregatedValues, kpiId);
 				aggregatedDataValue.setData(aggregatedValue.toString());
@@ -433,7 +396,32 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	/**
-	 * 
+	 * Collect Hover data based On chart Type
+	 *
+	 * @param dataValue
+	 * @param aggregatedHoverValue
+	 */
+	private void collectHoverDataBaseOnLineType(Map<String, Object> dataValue,
+			Map<String, Object> aggregatedHoverValue) {
+		if (MapUtils.isNotEmpty(dataValue)) {
+			Map<String, Object> hoverValuee = new LinkedHashMap<>(dataValue);
+			if (MapUtils.isNotEmpty(hoverValuee)) {
+				hoverValuee.forEach((key, value) -> {
+					if (value instanceof Integer) {
+						aggregatedHoverValue.computeIfPresent(key, (k, v) -> (Integer) v + (Integer) value);
+					} else if (value instanceof Double) {
+						aggregatedHoverValue.computeIfPresent(key, (k, v) -> (Double) v + (Double) value);
+					} else if (value instanceof Long) {
+						aggregatedHoverValue.computeIfPresent(key, (k, v) -> (Long) v + (Long) value);
+					}
+					aggregatedHoverValue.putIfAbsent(key, value);
+				});
+			}
+		}
+	}
+
+	/**
+	 * Collect Aggregated Data based on multi Line chart type
 	 * @param valueMultiLine
 	 * @param dc
 	 */
@@ -450,21 +438,7 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	private void collectHoverData(Map<String, Object> hoverValue, DataCount dc ) {
-		if (MapUtils.isNotEmpty(dc.getHoverValue())) {
-			Map<String, Object> hoverValuee = new LinkedHashMap<>(dc.getHoverValue());
-			if (MapUtils.isNotEmpty(hoverValuee)) {
-				hoverValuee.forEach((key, value) -> {
-					if (value instanceof Integer) {
-						hoverValue.computeIfPresent(key, (k, v) -> (Integer) v + (Integer) value);
-					} else if (value instanceof Double) {
-						hoverValue.computeIfPresent(key, (k, v) -> (Double) v + (Double) value);
-					} else if (value instanceof Long) {
-						hoverValue.computeIfPresent(key, (k, v) -> (Long) v + (Long) value);
-					}
-					hoverValue.putIfAbsent(key, value);
-				});
-			}
-		}
+		collectHoverDataBaseOnLineType(dc.getHoverValue(), hoverValue);
 	}
 
 	private String prepareHowerValue(String kpiName) {
@@ -517,28 +491,6 @@ public abstract class ToolsKPIService<R, S> {
 		for (Map.Entry<String, List<DataCount>> entry : projectWiseDataCount.entrySet()) {
 			for (int i = 0; i < entry.getValue().size(); i++) {
 				DataCount dataCount = entry.getValue().get(i);
-				if (indexWiseValuesList.size() < (i + 1)) {
-					indexWiseValuesList.add(i, new ArrayList<>(Arrays.asList(dataCount)));
-				} else {
-					indexWiseValuesList.get(i).add(dataCount);
-				}
-			}
-		}
-		return indexWiseValuesList;
-	}
-
-	private List<List<DataCount>> aggregateIndexedValuesForMultipleData(Map<String, List<DataCount>> projectWiseDataCount) {
-		List<List<DataCount>> indexWiseValuesList = new ArrayList<>();
-		//project wise sprint list data merge -- 0 sp1 and sp6 , 1 sp2 and sp7
-		Map<String, List<List<DataCount>>> lineWiseIndexWiseValuesList = new HashMap<>();
-		// lineType
-		// line wise and project wise sprint data merge
-		// simple ,
-
-		for (Map.Entry<String, List<DataCount>> entry : projectWiseDataCount.entrySet()) {
-			for (int i = 0; i < entry.getValue().size(); i++) {
-				DataCount dataCount = entry.getValue().get(i);
-				//List<DataValue> dataValues = entry.getValue().get(i);
 				if (indexWiseValuesList.size() < (i + 1)) {
 					indexWiseValuesList.add(i, new ArrayList<>(Arrays.asList(dataCount)));
 				} else {

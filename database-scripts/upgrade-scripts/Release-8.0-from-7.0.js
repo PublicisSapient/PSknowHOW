@@ -2626,7 +2626,7 @@ db.getCollection('kpi_master').insertOne(
       },
       "xAxisLabel": "PIs",
       "yAxisLabel": "Business Value",
-      "isPositiveTrend": false,
+      "isPositiveTrend": true,
       "showTrend": true,
       "aggregationCriteria": "sum",
       "isAdditionalFilterSupport": false,
