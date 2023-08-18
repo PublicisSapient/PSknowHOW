@@ -252,21 +252,21 @@ export class DeveloperComponent implements OnInit {
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
     if (this.updatedConfigGlobalData?.length === 0) {
-        this.noKpis = true;
+      this.noKpis = true;
     } else {
-        this.noKpis = false;
+      this.noKpis = false;
     }
     this.configGlobalData?.forEach(element => {
-        if (element.shown && element.isEnabled) {
-            this.kpiConfigData[element.kpiId] = true;
-            if(!this.kpiTrendsObj.hasOwnProperty(element.kpiId)){
-                this.createTrendsData(element.kpiId);
-            }
-        } else {
-            this.kpiConfigData[element.kpiId] = false;
+      if (element.shown && element.isEnabled) {
+        this.kpiConfigData[element.kpiId] = true;
+        if (!this.kpiTrendsObj.hasOwnProperty(element.kpiId)) {
+          this.createTrendsData(element.kpiId);
         }
+      } else {
+        this.kpiConfigData[element.kpiId] = false;
+      }
     });
-}
+  }
 
   /** get array of the kpi level dropdown filter */
   getDropdownArray(kpiId) {
@@ -656,6 +656,28 @@ export class DeveloperComponent implements OnInit {
     }
     maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M' + maturity : maturity;
     return maturity;
+  }
+
+  handleSelectedOption(event, kpi) {
+    this.kpiSelectedFilterObj[kpi?.kpiId] = [];
+    if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
+      for (const key in event) {
+        if (event[key]?.length == 0) {
+          delete event[key];
+          this.kpiSelectedFilterObj[kpi?.kpiId] = event;
+        } else {
+          for (let i = 0; i < event[key]?.length; i++) {
+            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
+          }
+        }
+      }
+    } else {
+      this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
+    }
+
+    this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
+    this.kpiSelectedFilterObj['action'] = 'update';
+    this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
 
