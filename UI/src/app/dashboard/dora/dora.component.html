@@ -89,10 +89,10 @@
                                 <div class="kpi-summary p-p-3 p-mb-3 position-relative">
                                     <h4 class="p-m-0">Change Failure Rate</h4>
                                     <div
-                                        *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0 && updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData">
+                                        *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0 && updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData1">
                                         <div class="p-mt-3 summary-circle">{{kpiChartData['kpi116']?.[0]?.percentile90}}</div>
                                     </div>
-                                    <ng-template #noData>
+                                    <ng-template #noData1>
                                         <div class="overlay"
                                             *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length && !iSAdditionalFilterSelected) || (kpiChartData['kpi116'] && kpiChartData['kpi116']?.length && updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
                                             <div class="loading-img"></div>
@@ -111,12 +111,12 @@
                                 <div class="kpi-summary p-p-3 position-relative">
                                     <h4 class="p-m-0">Deployment Frequency</h4>
                                     <div
-                                        *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0 && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData">
+                                        *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0 && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData2">
                                         <div class="p-mt-3 summary-circle">{{kpiChartData['kpi118']?.[0]?.percentile90}}</div>
                                     </div>
-                                    <ng-template #noData>
+                                    <ng-template #noData2>
                                         <div class="overlay"
-                                            *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length && !iSAdditionalFilterSelected) || (kpiChartData['kpi118'] && kpiChartData['kpi118']?.length && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
+                                            *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0 && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
                                             <div class="loading-img"></div>
                                         </div>
                                         <div class="min-ht"
@@ -149,7 +149,7 @@
                                     (reloadKPITab)="reloadKPI($event)" [board]="'dora'">
                                     <ng-container *ngIf="!noTabAccess else noDataAccess">
                                         <ng-container
-                                            *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
+                                            *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData3">
                                             <div class="p-pl-3 p-pr-3" *ngIf="ifKpiExist('kpi118') != -1; else loader">
                                                 <ng-container
                                                     *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0 && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData">
@@ -168,9 +168,9 @@
                                                 </ng-container>
                                             </div>
                                         </ng-container>
-                                        <ng-template #noData>
+                                        <ng-template #noData3>
                                             <div class="overlay"
-                                                *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length && !iSAdditionalFilterSelected) || (kpiChartData['kpi118'] && kpiChartData['kpi118']?.length && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
+                                                *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0 && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
                                                 <div class="loading-img"></div>
                                             </div>
                                             <div class="min-ht"
