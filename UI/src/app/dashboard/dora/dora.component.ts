@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import * as Excel from 'exceljs';
 import * as fs from 'file-saver';
 import { HelperService } from 'src/app/services/helper.service';
 import { HttpService } from 'src/app/services/http.service';
+import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
 @Component({
   selector: 'app-dora',
@@ -12,6 +13,7 @@ import { HttpService } from 'src/app/services/http.service';
   styleUrls: ['./dora.component.css']
 })
 export class DoraComponent implements OnInit {
+  @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   masterData;
   filterData = [];
   jenkinsKpiData = {};
@@ -419,6 +421,11 @@ export class DoraComponent implements OnInit {
     }
   }
 
+  // download excel functionality
+  downloadExcel(kpiId, kpiName, isKanban,additionalFilterSupport) {
+    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport,this.filterApplyData,this.filterData,this.iSAdditionalFilterSelected);
+  }
+
   // Used for grouping all Jenkins kpi from master data and calling jenkins kpi.
   groupJenkinsKpi(kpiIdsForCurrentBoard) {
     this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
@@ -426,7 +433,7 @@ export class DoraComponent implements OnInit {
       for(let i = 0; i<this.kpiJenkins?.kpiList?.length; i++){
         this.kpiJenkins.kpiList[i]['filterDuration'] = {
           duration:'WEEKS',
-          value:2
+          value:5
         }
       }
       this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
