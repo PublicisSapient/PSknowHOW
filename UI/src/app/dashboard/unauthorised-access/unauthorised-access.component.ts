@@ -5,12 +5,9 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './unauthorised-access.component.html',
   styleUrls: ['./unauthorised-access.component.css']
 })
-export class UnauthorisedAccessComponent implements OnInit {
+export class UnauthorisedAccessComponent {
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
 
   reloadApp(){
     window.location.reload();

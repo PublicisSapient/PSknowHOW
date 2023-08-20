@@ -153,7 +153,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraIssueDeliverdStatusKPI82;
 
 	private String readyForDevelopmentStatus;
-	private String readyForDevelopmentStatusKPI138;
+	private List<String> readyForDevelopmentStatusKPI138;
 
 private String jiraDor;
 private String jiraDorKPI3;
@@ -228,6 +228,7 @@ private String jiraLiveStatusKPI127;
 
 	private List<String> jiraQADefectDensityIssueType;
 	private List<String> jiraQAKPI111IssueType;
+	private List<String> jiraItrQSIssueTypeKPI133;
 
 	private String jiraBugRaisedByQACustomField;
 	private String jiraBugRaisedByQAIdentification;
@@ -310,6 +311,7 @@ private String jiraLiveStatusKPI127;
 	@Builder.Default
 	private String jiraDueDateField = CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
+	private String jiraDevDueDateField = CommonConstant.DEV_DUE_DATE;
 	private String jiraDevDueDateCustomField;
 	private List<String> jiraDevDoneStatus;
 	private List<String> jiraDevDoneStatusKPI119;
@@ -371,6 +373,7 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraIterationIssuetypeKPI125;
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
+	private List<String> jiraIterationIssuetypeKPI39;
 
 	/**
 	 * Get jira issue type names string [ ].

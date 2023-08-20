@@ -33,7 +33,7 @@ public enum FieldMappingEnum {
 					"jiraBugRaisedByQACustomField", "jiraBugRaisedByQAIdentification", "jiraBugRaisedByQAValue",
 					"jiraBugRaisedByCustomField", "jiraBugRaisedByValue", "jiraBugRaisedByIdentification",
 					"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
-					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField", "jiraDevDueDateCustomField",
+					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField", "jiraDevDueDateField",
 					"jiraIssueEpicType", "storyFirstStatus", "jiraTestAutomationIssueType",
 					 "productionDefectCustomField", "productionDefectIdentifier",
 					"productionDefectValue", "productionDefectComponentValue")),
@@ -54,7 +54,7 @@ public enum FieldMappingEnum {
 
 	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKpi40")),
 
-	KPI39("Sprint Velocity", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKpi39")),
+	KPI39("Sprint Velocity", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKpi39" , "jiraIterationIssuetypeKPI39")),
 
 	KPI5("Sprint Predictability", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationIssuetypeKpi5", "jiraIterationCompletionStatusKpi5")),
@@ -113,7 +113,7 @@ public enum FieldMappingEnum {
 
 	KPI133("Quality Status", KPISource.JIRA.name(),
 			Arrays.asList("resolutionTypeForRejectionKPI133", "jiraDefectRejectionStatusKPI133", "defectPriorityKPI133",
-					"excludeRCAFromKPI133", "jiraIterationCompletionStatusKPI133")),
+					"excludeRCAFromKPI133", "jiraIterationCompletionStatusKPI133","jiraItrQSIssueTypeKPI133")),
 
 	KPI126("Created vs Resolved defects", KPISource.JIRA.name(), Arrays.asList("jiraIssueDeliverdStatusKPI126")),
 

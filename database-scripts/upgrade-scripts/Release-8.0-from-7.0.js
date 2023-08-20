@@ -3385,7 +3385,7 @@ var fieldNameToUpdate = "jiradefecttype";
     "tooltip.definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
     } },
     { multi: false }
-  );.
+  );
 
   var fieldNameToUpdate = "jiraDefectDroppedStatusKPI127";
   db.getCollection('field_mapping_structure').update(
@@ -3459,3 +3459,113 @@ db.field_mapping.updateOne({
         }
         );
 });
+
+
+// add kpi issue type mapping for sprint velocity
+db.getCollection('field_mapping_structure').insertMany([
+{
+        "fieldName": "jiraIterationIssuetypeKPI39",
+        "fieldLabel": "Issue type to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
+        }
+}
+]);
+
+//---------7.4.0 changes----------------------------------------------------------------------
+db.getCollection('field_mapping_structure').deleteOne(
+{
+    "fieldName": "jiraDevDueDateCustomField",
+    "fieldLabel": "Dev Due Date",
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+        "definition": "This field is to track dev due date of issues tagged in the iteration."
+    }
+});
+
+const fieldMappingField = ["jiraDevDueDateField"];
+var jiraDevDueDateField = db.getCollection('field_mapping_structure').find( {fieldName: { $in: fieldMappingField }}).toArray();
+if (jiraDevDueDateField.length === 0) {
+db.getCollection('field_mapping_structure').insertOne(
+{
+     "fieldName": "jiraDevDueDateField",
+     "fieldLabel": "Dev Due Date",
+     "fieldType": "radiobutton",
+     "section": "Custom Fields Mapping",
+     "tooltip": {
+       "definition": "This field is to track dev due date of issues tagged in the iteration."
+     },
+     "options": [
+       {
+         "label": "Custom Field",
+         "value": "CustomField"
+       },
+       {
+         "label": "Due Date",
+         "value": "Due Date"
+       }
+     ],
+     "nestedFields": [
+       {
+         "fieldName": "jiraDevDueDateCustomField",
+         "fieldLabel": "Dev Due Date Custom Field",
+         "fieldType": "text",
+         "fieldCategory": "fields",
+         "filterGroup": [
+           "CustomField"
+         ],
+         "tooltip": {
+           "definition": "This field is to track dev due date of issues tagged in the iteration."
+         }
+       }
+     ]
+   }
+);
+}
+
+//---------------------------- Release 7.6 ------------------------------------------------------------------------
+// --- Backlog Readiness KPI Fieldmapping Enhancement (DTS-27535)
+
+var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
+  db.getCollection('field_mapping_structure').update(
+    { "fieldName": fieldNameToUpdate },
+    { $set: {
+    "fieldType": "chips"
+    } },
+    { multi: false }
+  );
+
+// Update the String field by converting it into a list
+db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach(function(doc) {
+    db.field_mapping.updateMany(
+        { _id: doc._id },
+        {
+            $set: {
+                readyForDevelopmentStatusKPI138: [doc.readyForDevelopmentStatusKPI138]
+            }
+        }
+    );
+});
+
+])
+
+//------------------------- Release 7.7v ----------------------------------------------------------------------------------
+// kpi issue type mapping for Quality status  ---------------------------------------------------------------------------
+
+db.getCollection('field_mapping_structure').insertOne([
+    {
+            "fieldName": "jiraItrQSIssueTypeKPI133",
+            "fieldLabel": "Issue types which will have linked defects",
+            "fieldType": "chips",
+            "fieldCategory": "Issue_Type",
+            "section": "Issue Types Mapping",
+            "tooltip": {
+                "definition": "Consider issue types which have defects tagged to them"
+            }
+    }
+])
