@@ -233,11 +233,9 @@ public class MetaDataClientImpl implements MetadataClient {
 		FieldMapping fieldMapping=null;
 		Map<String, String> allCustomField = new HashMap<>();
 		List<Metadata> metadataList = boardMetadata.getMetadata();
-		for (Metadata metadata : metadataList){
-				metadata.getValue().stream().forEach(mv -> allCustomField.put(mv.getKey(), mv.getData()));
-		}
+		metadataList.forEach(metadata -> metadata.getValue().stream().forEach(mv -> allCustomField.put(mv.getKey(), mv.getData())));
 
-		if(projectConfig.isKanban() || metadataIdentifier.getTool().equalsIgnoreCase(AZURE)) {
+		if (metadataIdentifier.getTool().equalsIgnoreCase(AZURE) || projectConfig.isKanban()) {
 			if (templateName.equalsIgnoreCase(STANDARD_TEMPLATE)) {
 				valuesToIdentifyMap = metadataIdentifier.getValuestoidentify().stream()
 						.collect(Collectors.toMap(Identifier::getType, Identifier::getValue));
@@ -267,8 +265,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			workflowList.forEach(identifier1 -> workflowMap.put(identifier1.getType(),
 					CollectionUtils.isNotEmpty(identifier1.getValue())?identifier1.getValue():null));
 			Map<String, String> customField = compareCustomField(customFieldList, allCustomField);
-			fieldMapping=mapFieldMapping(issueTypeMap, workflowMap, customField, projectConfig,
-					templateName);
+			fieldMapping=mapFieldMapping(issueTypeMap, workflowMap, customField, projectConfig);
 		}
 
 		return fieldMapping;
@@ -276,7 +273,7 @@ public class MetaDataClientImpl implements MetadataClient {
 	}
 
 	private FieldMapping mapFieldMapping(Map<String, List<String>> issueTypeMap, Map<String, List<String>> workflowMap,
-			Map<String, String> customField, ProjectConfFieldMapping projectConfig, String templateName) {
+			Map<String, String> customField, ProjectConfFieldMapping projectConfig) {
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 		fieldMapping.setProjectToolConfigId(projectConfig.getJiraToolConfigId());
