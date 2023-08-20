@@ -2822,6 +2822,7 @@ db.getCollection('field_mapping_structure').insertOne(
 );
 }
 
+//---------------------------- Release 7.6 ------------------------------------------------------------------------
 // --- Backlog Readiness KPI Fieldmapping Enhancement (DTS-27535)
 
 var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
@@ -2844,3 +2845,21 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach
         }
     );
 });
+
+])
+
+//------------------------- Release 7.7v ----------------------------------------------------------------------------------
+// kpi issue type mapping for Quality status  ---------------------------------------------------------------------------
+
+db.getCollection('field_mapping_structure').insertOne([
+    {
+            "fieldName": "jiraItrQSIssueTypeKPI133",
+            "fieldLabel": "Issue types which will have linked defects",
+            "fieldType": "chips",
+            "fieldCategory": "Issue_Type",
+            "section": "Issue Types Mapping",
+            "tooltip": {
+                "definition": "Consider issue types which have defects tagged to them"
+            }
+    }
+])
