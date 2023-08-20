@@ -682,7 +682,7 @@ describe('DoraComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(DoraComponent);
     httpService = TestBed.inject(HttpService);
@@ -920,4 +920,366 @@ describe('DoraComponent', () => {
     tick();
     expect(spy).toHaveBeenCalledWith(postData.kpiList);
   }));
+
+  it('should get dropdown data', () => {
+    component.allKpiArray = [{
+      kpiId: 'kpi118',
+      kpiName: 'Deployment Frequency',
+      unit: 'MRs',
+      maxValue: '10',
+      chartType: '',
+      id: '633fbb9cef4cf185c987ad5c',
+      isDeleted: 'False',
+      kpiUnit: 'MRs',
+      kanban: false,
+      kpiSource: 'BitBucket',
+      thresholdValue: 55,
+      trendValueList: [
+        {
+          filter: 'Overall',
+          value: [
+            {
+              data: 'bittest',
+              value: [
+                {
+                  value: 0,
+                  hoverValue: {
+                    'No. of Check in': 0,
+                    'No. of Merge Requests': 0
+                  },
+                  date: '03/10/2022',
+                  lineValue: 0,
+                  sprojectName: 'bittest'
+                },
+                {
+                  value: 0,
+                  hoverValue: {
+                    'No. of Check in': 0,
+                    'No. of Merge Requests': 0
+                  },
+                  date: '04/10/2022',
+                  lineValue: 0,
+                  sprojectName: 'bittest'
+                },
+                {
+                  value: 0,
+                  hoverValue: {
+                    'No. of Check in': 0,
+                    'No. of Merge Requests': 0
+                  },
+                  date: '05/10/2022',
+                  lineValue: 0,
+                  sprojectName: 'bittest'
+                },
+                {
+                  value: 0,
+                  hoverValue: {
+                    'No. of Check in': 0,
+                    'No. of Merge Requests': 0
+                  },
+                  date: '06/10/2022',
+                  lineValue: 0,
+                  sprojectName: 'bittest'
+                },
+                {
+                  value: 0,
+                  hoverValue: {
+                    'No. of Check in': 0,
+                    'No. of Merge Requests': 0
+                  },
+                  date: '07/10/2022',
+                  lineValue: 0,
+                  sprojectName: 'bittest'
+                }
+              ]
+            },
+            {
+              data: 'Corpate1',
+              value: [
+                {
+                  data: '0',
+                  value: 0,
+                  hoverValue: {
+                    'No. of Check in': 0,
+                    'No. of Merge Requests': 0
+                  },
+                  date: '03/10/2022',
+                  sprintIds: [],
+                  sprintNames: [],
+                  projectNames: [
+                    'Bus1',
+                    'TestB'
+                  ],
+                  lineValue: 0,
+                  sprojectName: 'Corpate1'
+                },
+                {
+                  data: '0',
+                  value: 0,
+                  hoverValue: {
+                    'No. of Check in': 0,
+                    'No. of Merge Requests': 0
+                  },
+                  date: '04/10/2022',
+                  sprintIds: [],
+                  sprintNames: [],
+                  projectNames: [
+                    'Bus1',
+                    'TestB'
+                  ],
+                  lineValue: 0,
+                  sprojectName: 'Corpate1'
+                },
+                {
+                  data: '0',
+                  value: 0,
+                  hoverValue: {
+                    'No. of Check in': 0,
+                    'No. of Merge Requests': 0
+                  },
+                  date: '05/10/2022',
+                  sprintIds: [],
+                  sprintNames: [],
+                  projectNames: [
+                    'Bus1',
+                    'TestB'
+                  ],
+                  lineValue: 0,
+                  sprojectName: 'Corpate1'
+                },
+                {
+                  data: '0',
+                  value: 0,
+                  hoverValue: {
+                    'No. of Check in': 0,
+                    'No. of Merge Requests': 0
+                  },
+                  date: '06/10/2022',
+                  sprintIds: [],
+                  sprintNames: [],
+                  projectNames: [
+                    'Bus1',
+                    'TestB'
+                  ],
+                  lineValue: 0,
+                  sprojectName: 'Corpate1'
+                },
+                {
+                  data: '0',
+                  value: 0,
+                  hoverValue: {
+                    'No. of Check in': 0,
+                    'No. of Merge Requests': 0
+                  },
+                  date: '07/10/2022',
+                  sprintIds: [],
+                  sprintNames: [],
+                  projectNames: [
+                    'Bus1',
+                    'TestB'
+                  ],
+                  lineValue: 0,
+                  sprojectName: 'Corpate1'
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      groupId: 1
+    }];
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi118',
+        kpiName: 'Deployment Frequency',
+        isEnabled: true,
+        order: 23,
+        kpiDetail: {
+          id: '633fbb9cef4cf185c987ad5c',
+          kpiId: 'kpi118',
+          kpiName: 'Deployment Frequency',
+          isDeleted: 'False',
+          defaultOrder: 23,
+          kpiUnit: 'MRs',
+          chartType: 'grouped_column_plus_line',
+          showTrend: true,
+          isPositiveTrend: true,
+          lineLegend: 'Merge Requests',
+          barLegend: 'Commits',
+          calculateMaturity: true,
+          kpiSource: 'BitBucket',
+          maxValue: '10',
+          thresholdValue: 55,
+          kanban: false,
+          groupId: 1,
+          kpiInfo: {},
+          kpiFilter: 'dropDown',
+          aggregationCriteria: 'average',
+          yaxisLabel: 'Count',
+          additionalFilterSupport: false,
+          xaxisLabel: 'Days',
+          trendCalculative: false
+        },
+        shown: true
+      }
+    ];
+    component.getDropdownArray('kpi118');
+    expect(component.kpiDropdowns['kpi118'].length).toBeGreaterThan(0);
+  });
+
+  it('should call getDropdownArray', () => {
+    const kpiId = "kpi118";
+    component.allKpiArray = [
+      {
+        "kpiId": "kpi118",
+        "kpiName": "Deployment Frequency",
+        "unit": "%",
+        "maxValue": "200",
+        "chartType": "",
+        "id": "64a58c54600c3151b16a1196",
+        "isDeleted": "False",
+        "kpiUnit": "%",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "thresholdValue": 85,
+        "trendValueList": [
+          {
+            "filter": "81.200.188.111->KnowHOW",
+            "value": [
+              {
+                "data": "KnowHOW",
+                "value": [],
+                "maturity": "2",
+                "maturityValue": "1"
+              }
+            ],
+            "percentile90": "5"
+          },
+          {
+            "filter": "81.200.188.112->KnowHOW",
+            "value": [
+              {
+                "data": "KnowHOW",
+                "value": [],
+                "maturity": "2",
+                "maturityValue": "1"
+              }
+            ],
+            "percentile90": "5"
+          },
+          {
+            "filter": "81.200.188.113->KnowHOW",
+            "value": [
+              {
+                "data": "KnowHOW",
+                "value": [],
+                "maturity": "2",
+                "maturityValue": "1"
+              }
+            ],
+            "percentile90": "5"
+          },
+        ],
+        "maturityRange": [
+          "-40",
+          "40-60",
+          "60-75",
+          "75-90",
+          "90-"
+        ],
+        "groupId": 2
+      }
+    ];
+    component.colorObj = {
+      "KnowHOW": {
+        "nodeName": "KnowHOW",
+        "color": "#079FFF"
+      }
+    };
+
+    const response = [
+      {
+        "filterType": "Select a filter",
+        "options": [
+          "81.200.188.111->KnowHOW",
+          "81.200.188.112->KnowHOW",
+          "81.200.188.113->KnowHOW"
+        ]
+      },
+    ]
+    const spyData = component.getDropdownArray(kpiId);
+    expect(component.kpiDropdowns["kpi118"]).toEqual(response);
+  });
+
+  it('should sort Alphabetically', () => {
+    const objArray = [
+      {
+        "data": "AddingIterationProject",
+        "value": [
+        ],
+        "maturity": "1",
+        "maturityValue": "0.0"
+      }
+    ];
+
+    const value = [
+      {
+        "data": "AddingIterationProject",
+        "value": [
+        ],
+        "maturity": "1",
+        "maturityValue": "0.0"
+      }
+    ]
+    const result = component.sortAlphabetically(objArray);
+    expect(result).toEqual(value);
+
+  });
+
+  it('should generate colorObj', () => {
+    const arr = [
+      {
+        data: 'bittest',
+        value: [
+        ],
+        maturity: '5'
+      },
+      {
+        data: 'Corpate1',
+        value: [
+        ],
+        maturity: '4'
+      }
+    ];
+    component.colorObj = {
+      bittest_corporate: {
+        nodeName: 'bittest',
+        color: '#079FFF'
+      },
+      Corpate1_corporate: {
+        nodeName: 'Corpate1',
+        color: '#cdba38'
+      }
+    };
+    component.chartColorList = {};
+    component.generateColorObj('kpi118', arr);
+    expect(component.chartColorList['kpi118'].length).toEqual(2);
+  });
+
+  it('should call handleSelectedOption for kpi118', () => {
+    const event = {
+      "filter": ["81.200.188.111->KnowHOW"],
+    };
+    const kpi = {
+      "kpiId": "kpi118",
+      "kpiName": "Deployment Frequency",
+      "isEnabled": true,
+      "order": 18,
+      "shown": true
+    };
+    const response = ['81.200.188.111->KnowHOW'];
+    const spyData = component.handleSelectedOption(event, kpi);
+    expect(component.kpiSelectedFilterObj["kpi118"]).toEqual(response);
+  });
+
 });
