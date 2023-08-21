@@ -3,6 +3,8 @@ package com.publicissapient.kpidashboard.jira.fetchData;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.atlassian.jira.rest.client.api.domain.Status;
+import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -16,6 +18,7 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
@@ -80,6 +83,8 @@ public class JiraCommonService {
     private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
     private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
     private static final String NO_RESULT_QUERY = "No result available for query: {}";
+    private static final String EXCEPTION = "Exception";
+
 
     @Autowired
     private JiraProcessorConfig jiraProcessorConfig;
@@ -108,6 +113,9 @@ public class JiraCommonService {
 
     @Autowired
     private KanbanJiraIssueHistoryRepository kanbanIssueHistoryRepo;
+
+    @Autowired
+    private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 
     public int getPageSize() {
         return jiraProcessorConfig.getPageSize();
@@ -363,6 +371,36 @@ public class JiraCommonService {
         return null;
     }
 
+    public List<Status> getStatus() {
+        List<Status> statusList = new ArrayList<>();
+
+        if (client == null) {
+            log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
+        } else {
+            try {
+                Promise<Iterable<Status>> promisedRs = client.getMetadataClient().getStatuses();
+
+                Iterable<Status> fieldIt = promisedRs.claim();
+                if (fieldIt != null) {
+                    statusList = Lists.newArrayList(fieldIt.iterator());
+                }
+            } catch (RestClientException e) {
+                exceptionBlockProcess(e);
+            }
+        }
+
+        return statusList;
+    }
+
+    void exceptionBlockProcess(RestClientException e) {
+        if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+            log.error(ERROR_MSG_401);
+        } else {
+            log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+        }
+        log.debug(EXCEPTION, e);
+    }
+
     public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry, ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, boolean dataExist) throws JSONException {
 
         List<Issue> totalIssues = new ArrayList<>();
@@ -397,6 +435,9 @@ public class JiraCommonService {
             int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
             boolean latestDataFetched=false;
             Set<SprintDetails> setForCacheClean = new HashSet<>();
+
+            List<Status> projectStatuses = getStatus();
+            processAndSaveProjectStatusCategory(projectStatuses, projectConfig.getBasicProjectConfigId().toString());
 
             for (int i = 0; hasMore; i += pageSize) {
                 Instant startProcessingJiraIssues = Instant.now();
@@ -454,6 +495,35 @@ public class JiraCommonService {
             validateData.check(total,savedIsuesCount,processorFetchingComplete,psLogData,lastSavedJiraIssueChangedDateByType,projectConfig,processorExecutionTraceLog);
         }
         return totalIssues;
+    }
+
+    private void processAndSaveProjectStatusCategory(List<Status> listOfProjectStatus, String basicProjectConfigId) {
+        if (CollectionUtils.isNotEmpty(listOfProjectStatus)) {
+            JiraIssueReleaseStatus jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository
+                    .findByBasicProjectConfigId(basicProjectConfigId);
+            if (jiraIssueReleaseStatus == null) {
+                jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
+                jiraIssueReleaseStatus.setBasicProjectConfigId(basicProjectConfigId);
+            }
+            Map<Long, String> toDosList = new HashMap<>();
+            Map<Long, String> inProgressList = new HashMap<>();
+            Map<Long, String> closedList = new HashMap<>();
+
+            listOfProjectStatus.stream().forEach(status -> {
+                if (JiraConstants.TO_DO.equals(status.getStatusCategory().getName())) {
+                    toDosList.put(status.getId(), status.getName());
+                } else if (JiraConstants.DONE.equals(status.getStatusCategory().getName())) {
+                    closedList.put(status.getId(), status.getName());
+                } else {
+                    inProgressList.put(status.getId(), status.getName());
+                }
+            });
+            jiraIssueReleaseStatus.setToDoList(toDosList);
+            jiraIssueReleaseStatus.setInProgressList(inProgressList);
+            jiraIssueReleaseStatus.setClosedList(closedList);
+            jiraIssueReleaseStatusRepository.save(jiraIssueReleaseStatus);
+            log.debug("saved project status category");
+        }
     }
 
     private Map<String, LocalDateTime> getLastChangedDatesByIssueType(ProjectConfFieldMapping projectConfig) {
@@ -584,6 +654,8 @@ public class JiraCommonService {
             int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
             boolean latestDataFetched=false;
 
+            List<Status> projectStatuses = getStatus();
+            processAndSaveProjectStatusCategory(projectStatuses, projectConfig.getBasicProjectConfigId().toString());
             for (BoardDetails board : boardDetailsList) {
                 Instant startProcessingJiraIssues = Instant.now();
                 psLogData.setBoardId(board.getBoardId());
