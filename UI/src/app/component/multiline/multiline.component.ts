@@ -96,6 +96,7 @@ export class MultilineComponent implements OnChanges {
       const removeProject = XValue.includes(projectName) ? XValue.replace(projectName,'') : XValue;
        return {...details,sortSprint:removeProject};
     })
+    const isAllBelowFromThreshold = this.data[0].value.every(details => ((Math.round(details.value * 100) / 100 )< this.thresholdValue))
     this.data[0].value = formatedData;
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
@@ -211,6 +212,10 @@ export class MultilineComponent implements OnChanges {
       maxYValue += divisor;
     }
 
+    if(this.thresholdValue && this.thresholdValue !==0 && isAllBelowFromThreshold && viewType === 'large' && selectedProjectCount === 1){
+      maxYValue = this.thresholdValue + 5;
+    }
+
     if (this.kpiId === 'kpi149') {
       maxYValue = 5;
     }
@@ -237,10 +242,10 @@ export class MultilineComponent implements OnChanges {
         .attr('class', d=>{
           let cssClass = 'tooltip2';
           let value = Math.round(d.value * 100) / 100;
-          if(thresholdValue && thresholdValue !== 0 && value >= this.thresholdValue){
-            cssClass += ' above-thresold';
-          } else {
+          if(thresholdValue && thresholdValue !==0  && value < this.thresholdValue){
             cssClass += ' below-thresold';
+          } else {
+            cssClass += ' above-thresold';
           }
           return cssClass;
         })

@@ -179,13 +179,13 @@
 }
 
 :host ::ng-deep.below-thresold{
-   color: var(--color-gray-34);
-  background: rgba(255, 255, 255, 0.95);
+  color: white;
+  background: rgb(210, 22, 22)
 }
 
 :host ::ng-deep.above-thresold{
-  color: white;
-  background: rgb(210, 22, 22)
+  color: var(--color-gray-34);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 :host ::ng-deep.tooltip-container{

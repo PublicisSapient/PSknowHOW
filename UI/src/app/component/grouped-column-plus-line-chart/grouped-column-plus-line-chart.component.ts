@@ -156,6 +156,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
         return finalResult
       })
     }
+    const isAllBelowFromThreshold = data.every(details => (details.value[0].lineValue < this.thresholdValue))
 
 
     const self = this;
@@ -223,6 +224,10 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     if (!maxYValue) {
       maxYValue = 50;
     }
+
+    if(this.thresholdValue && this.thresholdValue !==0 && isAllBelowFromThreshold && viewType === 'large' && selectedProjectCount === 1){
+     maxYValue = this.thresholdValue + 5;
+   }
 
     y.domain([0, maxYValue]);
 
@@ -650,10 +655,10 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
             .attr('class', d=>{
               let cssClass = 'tooltip2';
               let value = d.lineValue;
-              if(value >= this.thresholdValue){
-                cssClass += ' above-thresold';
-              } else {
+              if(this.thresholdValue && this.thresholdValue !==0  && value < this.thresholdValue){
                 cssClass += ' below-thresold';
+              } else {
+                cssClass += ' above-thresold';
               }
               return cssClass;
             })
