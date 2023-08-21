@@ -691,8 +691,10 @@ describe('DoraComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create', (done) => {
+    spyOn(component, 'receiveSharedData');
     expect(component).toBeTruthy();
+    done();
   });
 
   it('should process kpi config Data', () => {
@@ -1281,5 +1283,41 @@ describe('DoraComponent', () => {
     const spyData = component.handleSelectedOption(event, kpi);
     expect(component.kpiSelectedFilterObj["kpi118"]).toEqual(response);
   });
+
+  it('should get kpi comments count', fakeAsync(() => {
+    component.filterApplyData = {
+      'selectedMap': {
+        'project': ["KnowHOW_6360fefc3fa9e175755f0728"]
+      },
+      'level': 5
+    };
+    const response = {
+      "message": "Found Comments Count",
+      "success": true,
+      "data": {
+        "kpi118": 1
+      }
+    };
+
+    component.kpiCommentsCountObj = {
+      'kpi118': 0
+    };
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi118',
+        kpiName: 'Deployment Frequency',
+        isEnabled: true,
+        order: 23,
+        kpiDetail: {
+         
+        },
+        shown: true
+      }
+    ];
+    spyOn(helperService, 'getKpiCommentsHttp').and.resolveTo(response);
+    component.getKpiCommentsCount();
+    tick();
+    expect(component.kpiCommentsCountObj['data']['kpi118']).toEqual(response.data['kpi118']);
+  }));
 
 });

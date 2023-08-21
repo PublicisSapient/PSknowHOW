@@ -140,7 +140,7 @@ export class DoraComponent implements OnInit {
 
     this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
       this.noProjects = res;
-      this.kanbanActivated = this.service.getSelectedType().toLowerCase() === 'kanban' ? true : false;
+      this.kanbanActivated = this.service.getSelectedType()?.toLowerCase() === 'kanban' ? true : false;
     }));
 
     this.service.getEmptyData().subscribe((val) => {
@@ -541,12 +541,7 @@ export class DoraComponent implements OnInit {
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
           this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
           let initialC = trendValueList[0].filter1;
-          if (data[key]?.kpiId === "kpi72") {
-            this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [initialC], 'filter2': ['Overall'] };
-          }
-          else {
-            this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter': ['Overall'] };
-          }
+          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter': ['Overall'] };
         } else {
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
         }
