@@ -2876,6 +2876,16 @@ db.kpi_category_mapping.deleteMany({
     "$in": doraKpis
   }
 });
+// change the x-axis of deployment freq
+db.kpi_master.updateOne(
+  {
+    "kpiId": "kpi118"
+  },
+  {
+    $set: { "xAxisLabel": "Weeks" }
+  }
+);
+
 // increment the boardId of backlog & kpi maturity
 db.user_board_config.updateMany(
   { "others.boardId": { $in: [12, 13] } },

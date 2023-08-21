@@ -237,6 +237,15 @@ db.kpi_category_mapping.insertMany([
     "category": "" // Replace "" with the actual category
   }
 ]);
+// reverse the deployment feq x-axis
+db.kpi_master.updateOne(
+  {
+    "kpiId": "kpi118"
+  },
+  {
+    $set: { "xAxisLabel": "Months" }
+  }
+);
 
 // Decrement the boardId of backlog & kpi maturity
 db.user_board_config.updateMany(
