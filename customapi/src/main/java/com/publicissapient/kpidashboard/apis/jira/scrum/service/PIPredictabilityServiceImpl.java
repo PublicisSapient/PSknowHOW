@@ -183,6 +183,9 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 				mapTmp.get(node.getId()).setValue(dataCountList);
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 					List<JiraIssue> sortedEpicList = epicList.stream()
+							.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())
+									&& jiraIssue.getReleaseVersions().get(0).getReleaseDate() != null)
+							.filter(jiraIssue -> jiraIssue.getReleaseVersions().get(0).getReleaseDate().isBefore(DateTime.now()))
 							.sorted(Comparator.comparing(epic -> epic.getReleaseVersions().get(0).getReleaseName()))
 							.collect(Collectors.toList());
 					KPIExcelUtility.populatePIPredictabilityExcelData(trendLineName, sortedEpicList, excelData);
