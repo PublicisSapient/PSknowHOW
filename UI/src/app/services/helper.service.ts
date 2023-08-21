@@ -448,7 +448,7 @@ export class HelperService {
             if (aggregationType?.toLowerCase() == 'sum') {
                 for (let i = 0; i < aggArr?.length; i++) {
                     if(aggArr[i]?.hasOwnProperty('aggregationValue')){
-                        aggArr[i]['aggregationValue'] = aggArr[i]['aggregationValue']?.reduce((partialSum, a) => (partialSum + parseInt(a)), 0);
+                        aggArr[i]['aggregationValue'] = aggArr[i]['aggregationValue']?.reduce((partialSum, a) => (partialSum + parseFloat(a)), 0);
                         
                     }
                     aggArr[i].value?.map(x => {

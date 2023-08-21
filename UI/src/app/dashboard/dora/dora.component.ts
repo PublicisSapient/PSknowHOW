@@ -473,38 +473,6 @@ export class DoraComponent implements OnInit {
         }
       }
     }
-    else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-      if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
-        && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
-        let tempArr = [];
-        tempArr = this.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
-        const preAggregatedValues = [];
-        for (let i = 0; i < tempArr?.length; i++) {
-          preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
-        }
-        this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
-      }
-      else if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')
-        || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
-        const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
-        let preAggregatedValues = [];
-        for (let i = 0; i < filters?.length; i++) {
-          preAggregatedValues = [...preAggregatedValues, ...(trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
-        }
-        this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
-      }
-      else {
-        this.kpiChartData[kpiId] = [];
-        if (trendValueList && trendValueList?.length > 0) {
-          this.kpiChartData[kpiId]?.push(trendValueList?.filter((x) => x['filter'] == 'Overall')[0]);
-        } else if (trendValueList?.length > 0) {
-          this.kpiChartData[kpiId] = [...trendValueList];
-        } else {
-          //const obj = JSON.parse(JSON.stringify(trendValueList));
-          this.kpiChartData[kpiId]?.push(trendValueList);
-        }
-      }
-    }
     else {
       if (trendValueList?.length > 0) {
         this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
