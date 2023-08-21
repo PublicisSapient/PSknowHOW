@@ -317,7 +317,7 @@ export class DoraComponent implements OnInit {
 
   // Used for grouping all Jenkins kpi from master data and calling jenkins kpi.
   groupJenkinsKpi(kpiIdsForCurrentBoard) {
-    this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
+    this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', 'dora');
     if (this.kpiJenkins?.kpiList?.length > 0) {
       for(let i = 0; i<this.kpiJenkins?.kpiList?.length; i++){
         this.kpiJenkins.kpiList[i]['filterDuration'] = {
