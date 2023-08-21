@@ -113,7 +113,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   isTooltip = false;
   projectIndex = 0;
   notificationList = [];
-  items: MenuItem[]  = [
+  items: MenuItem[] = [
   ];
   username: string;
   isGuest = false;
@@ -130,11 +130,11 @@ export class FilterComponent implements OnInit, OnDestroy {
   ssoLogin = environment.SSO_LOGIN;
   lastSyncData: object = {};
   commentList: Array<object> = [];
-  showCommentPopup:boolean = false;
+  showCommentPopup: boolean = false;
   showSpinner: boolean = false;
-  kpiObj:object = {};
-  totalProjectSelected : number = 1;
-  selectedLevelValue : string = 'project';
+  kpiObj: object = {};
+  totalProjectSelected: number = 1;
+  selectedLevelValue: string = 'project';
 
   constructor(
     private service: SharedService,
@@ -164,6 +164,9 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
 
     this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
+    if(this.selectedTab.toLowerCase() === 'developer') {
+      this.selectedDayType = 'Days';
+    }
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.service.setShowTableView(this.showChart);
     this.getNotification();
@@ -174,10 +177,10 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {
-        this.lastSyncData ={};
+        this.lastSyncData = {};
         this.subject.next(true);
         this.selectedTab = data.selectedTab;
-        if(this.toggleDropdown['commentSummary']){
+        if (this.toggleDropdown['commentSummary']) {
           this.toggleDropdown['commentSummary'] = false;
         }
         if (this.selectedTab?.toLowerCase() === 'iteration') {
@@ -186,13 +189,13 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.projectIndex = 0;
         this.selectedType(data.selectedType);
 
-        if(this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase()  === 'backlog' || this.selectedTab.toLowerCase()  === 'release' ){
+        if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release') {
           this.showChart = 'chart';
           this.selectedLevelValue = 'project';
           this.totalProjectSelected = 1;
           this.service.setShowTableView(this.showChart);
         }
-        if(this.selectedTab.toLowerCase() === 'maturity'){
+        if (this.selectedTab.toLowerCase() === 'maturity') {
           this.showChart = 'chart';
           this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase()
           this.totalProjectSelected = 1;
@@ -227,6 +230,20 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (filterData[0] !== 'error') {
         this.heirarchyCount = filterData?.hierarchySelectionCount;
         this.dateRangeFilter = filterData?.dateRangeFilter;
+
+        // different date filter for developer tab
+        if (this.selectedTab.toLowerCase() === 'developer') {
+          this.dateRangeFilter = {
+            "types": [
+              "Days",
+              "Weeks",
+            ],
+            "counts": [
+              5,
+              10
+            ]
+          }
+        }
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
       }
     });
@@ -279,8 +296,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   toggleFilter() {
     // getting document click event from dashboard and check if it is outside click of the filter and if filter is open then closing it
     this.service.getClickedItem().subscribe((target) => {
-      for(let key in this.toggleDropdown){
-        if(target && target !== this[key]?.nativeElement && target?.closest('.'+key+'Ddn') !== this[key+'Ddn']?.nativeElement){
+      for (let key in this.toggleDropdown) {
+        if (target && target !== this[key]?.nativeElement && target?.closest('.' + key + 'Ddn') !== this[key + 'Ddn']?.nativeElement) {
           this.toggleDropdown[key] = false;
         }
       }
@@ -372,7 +389,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
       if (idx == -1) {
         uniqueArray = [...uniqueArray, arr[i]];
-        uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']] ;
+        uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
         uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
       } else {
         uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
@@ -1094,7 +1111,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     1: onload
     2: onchange */
   handleIterationFilters(level) {
-    this.lastSyncData={};
+    this.lastSyncData = {};
     this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
       this.service.setNoSprints(false);
@@ -1218,8 +1235,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     } else {
       this.selectedProjectLastSyncStatus = "";
       this.selectedProjectLastSyncDate = "NA";
-   }
-  this.fetchActiveIterationStatus();
+    }
+    this.fetchActiveIterationStatus();
   }
   setSelectedDateType(label: string) {
     this.selectedDayType = label;
@@ -1393,7 +1410,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.filteredAddFilters['release'] = [];
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {
       this.filteredAddFilters['release'] = [...this.additionalFiltersDdn['release']?.filter((x) => x['parentId']?.includes(selectedProject))];
-      console.log(this.filteredAddFilters['release'] .map(re=> { return {name : re.nodeName , sDate : re.releaseStartDate , eDate: re.releaseEndDate}}));
+      console.log(this.filteredAddFilters['release'].map(re => { return { name: re.nodeName, sDate: re.releaseStartDate, eDate: re.releaseEndDate } }));
     }
     if (this.filteredAddFilters['release'].length) {
       this.filteredAddFilters['release'] = this.sortAlphabetically(this.filteredAddFilters['release']);
@@ -1424,9 +1441,9 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   findLatestPassedRelease(releaseList) {
     const currentDate = new Date();
-    const passedReleases = releaseList.filter((release) => release.releaseEndDate && new Date(release.releaseEndDate) < currentDate );
+    const passedReleases = releaseList.filter((release) => release.releaseEndDate && new Date(release.releaseEndDate) < currentDate);
     passedReleases.sort((a, b) => new Date(b.releaseEndDate).getTime() - new Date(a.releaseEndDate).getTime());
-    console.log("findLatestPassedRelease :",passedReleases);
+    console.log("findLatestPassedRelease :", passedReleases);
     return passedReleases.length > 0 ? passedReleases : null;
   }
 
@@ -1471,7 +1488,7 @@ export class FilterComponent implements OnInit, OnDestroy {
                 this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
                 this.selectedProjectLastSyncStatus = 'SUCCESS';
                 this.subject.next(true);
-              }else if(response['data']?.errorInFetch){
+              } else if (response['data']?.errorInFetch) {
                 this.lastSyncData = {};
                 this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
                 this.selectedProjectLastSyncStatus = 'FAILURE';
@@ -1496,34 +1513,34 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
-  onUpdateKPI(){
-    this.lastSyncData ={};
+  onUpdateKPI() {
+    this.lastSyncData = {};
     this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
   }
 
-  getRecentComments(){
+  getRecentComments() {
     this.showSpinner = true;
     let reqObj = {
       "level": this.filterApplyData?.['level'],
       "nodeChildId": this.filterApplyData?.['selectedMap']['sprint']?.[0] || this.filterApplyData?.['selectedMap']['release']?.[0] || "",
       "kpiIds": this.showKpisList?.map((item) => item.kpiId),
-      "nodes":[]
+      "nodes": []
     }
 
     this.showKpisList.forEach(x => {
       this.kpiObj[x.kpiId] = x.kpiName;
     });
-    
-    if(this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'release'){
+
+    if (this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'release') {
       reqObj['nodes'] = this.filterData.filter(x => x.nodeId == this.filterApplyData?.['ids'][0])[0]?.parentId;
-    }else{
+    } else {
       reqObj['nodes'] = [...this.filterApplyData?.['selectedMap']['project']];
     }
 
     this.httpService.getCommentSummary(reqObj).subscribe((response) => {
-      if(response['success']){
+      if (response['success']) {
         this.commentList = response['data'];
-      }else{
+      } else {
         this.commentList = [];
       }
       this.showSpinner = false;
@@ -1534,21 +1551,21 @@ export class FilterComponent implements OnInit, OnDestroy {
     })
   }
 
-  getNodeName(nodeId){
+  getNodeName(nodeId) {
     return this.trendLineValueList.filter((x) => x.nodeId == nodeId)[0]?.nodeName;
   }
 
-  handleBtnClick(){
+  handleBtnClick() {
     this.toggleDropdown['commentSummary'] = !this.toggleDropdown['commentSummary'];
-    if(this.toggleDropdown['commentSummary']){
-      this.getRecentComments(); 
+    if (this.toggleDropdown['commentSummary']) {
+      this.getRecentComments();
     }
   }
 
   compileGAData() {
     const gaArray = this.selectedFilterArray.map((item) => {
       const catArr = ['category1', 'category2', 'category3', 'category4', 'category5', 'category6'];
-      
+
       let obj = {};
       if (item.additionalFilters?.length > 0) {
         for (let i = 0; i < item.additionalFilters?.length; i++) {
@@ -1559,12 +1576,12 @@ export class FilterComponent implements OnInit, OnDestroy {
             let selected = this.filterData.filter((x) => x.nodeId == y)[0];
             pathData[catArr[i]] = selected?.nodeName;
           })
-            obj = {
-              'name': item.additionalFilters[i].nodeName,
-              'id': item.additionalFilters[i].nodeId,
-              'level': item.additionalFilters[i].labelName,
-              ...pathData,
-            }
+          obj = {
+            'name': item.additionalFilters[i].nodeName,
+            'id': item.additionalFilters[i].nodeId,
+            'level': item.additionalFilters[i].labelName,
+            ...pathData,
+          }
         }
       } else {
         let pathArr = item?.path[0]?.split('###');
