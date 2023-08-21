@@ -182,7 +182,7 @@
     border-radius: 5px;
     box-shadow: 0px 0px 6px #b9b9bb;
     z-index: 1;
-    display: flex;
+    display: none;
     justify-content: space-evenly;
     pointer-events: none;
   }
