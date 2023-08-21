@@ -916,7 +916,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
     const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event?.kpiDetail?.groupId,'Iteration');
     if (currentKPIGroup?.kpiList?.length > 0) {
-        this.postJiraKpi(this.kpiJira, 'jira');
+        this.postJiraKpi(currentKPIGroup, 'jira');
     }
   }
 
