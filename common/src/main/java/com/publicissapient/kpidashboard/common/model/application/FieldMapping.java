@@ -230,6 +230,7 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> jiraQADefectDensityIssueType;
 	private List<String> jiraQAKPI111IssueType;
+	private List<String> jiraItrQSIssueTypeKPI133;
 
 	private String jiraBugRaisedByQACustomField;
 	private String jiraBugRaisedByQAIdentification;

@@ -32,7 +32,7 @@
         <connection>scm:git:https://github.com/PublicisSapient/PSknowHOW.git</connection>
         <developerConnection>scm:git:https://github.com/PublicisSapient/PSknowHOW.git</developerConnection>
         <url>https://github.com/PublicisSapient/PSknowHOW.git</url>
-        <tag>7.6.0</tag>
+        <tag>4.6.1</tag>
     </scm>
 
     <profiles>
