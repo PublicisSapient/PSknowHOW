@@ -2884,3 +2884,19 @@ db.kpi_master.updateOne(
     $set: { "xAxisLabel": "Weeks" }
   }
 );
+
+// removing kpi118,kpi116 from scrum
+db.user_board_config.updateMany(
+  {
+    // Find object within the "scrum" array that has a "kpiId" of dora
+    "scrum.kpis.kpiId": { $in: ["kpi116", "kpi118"] }
+  },
+  {
+    $pull: {
+      // For each matched document, remove objects from the "scrum" array
+      "scrum": {
+        "kpis.kpiId": { $in: ["kpi116", "kpi118"] }
+      }
+    }
+  }
+);
