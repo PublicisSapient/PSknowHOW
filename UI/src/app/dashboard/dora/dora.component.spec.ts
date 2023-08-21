@@ -665,7 +665,163 @@ describe('DoraComponent', () => {
       required: true
     }
   ];
+  const allKpiArray = [
+    {
+      "kpiId": "kpi118",
+      "kpiName": "Deployment Frequency",
+      "unit": "%",
+      "maxValue": "200",
+      "chartType": "",
+      "id": "64a58c54600c3151b16a1196",
+      "isDeleted": "False",
+      "kpiUnit": "%",
+      "kanban": false,
+      "kpiSource": "Jira",
+      "thresholdValue": 85,
+      "trendValueList": [
+        {
+          "filter": "Overall",
+          "value": [
+            {
+              "data": "KnowHOW",
+              "value": [{
+                "data": "0",
+                "sSprintID": "27-Feb-2023 to 05-Mar-2023",
+                "sSprintName": "27-Feb-2023 to 05-Mar-2023",
+                "value": 0,
+                "hoverValue": {
+                  "81.200.188.111": 0,
+                  "81.200.188.112": 0,
+                  "81.200.188.113": 0
+                },
+                "date": "27-Feb-2023 to 05-Mar-2023",
+                "sprintIds": [
+                  "27-Feb-2023 to 05-Mar-2023"
+                ],
+                "sprintNames": [
+                  "27-Feb-2023 to 05-Mar-2023"
+                ],
+                "projectNames": [
+                  "KnowHOW"
+                ],
+                "sprojectName": "KnowHOW"
+              }],
+              "maturity": "2",
+              "maturityValue": "1"
+            }
+          ],
+          "percentile90": "5"
+        },
+        {
+          "filter": "81.200.188.111->KnowHOW",
+          "value": [
+            {
+              "data": "KnowHOW",
+              "value": [{
+                "data": "0",
+                "sSprintID": "27-Feb-2023 to 05-Mar-2023",
+                "sSprintName": "27-Feb-2023 to 05-Mar-2023",
+                "value": 0,
+                "hoverValue": {
+                  "81.200.188.111": 0
+                },
+                "date": "27-Feb-2023 to 05-Mar-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                  "27-Feb-2023 to 05-Mar-2023"
+                ],
+                "sprintNames": [
+                  "27-Feb-2023 to 05-Mar-2023"
+                ],
+                "sprojectName": "KnowHOW"
+              }],
+              "maturity": "2",
+              "maturityValue": "1"
+            }
+          ],
+          "percentile90": "5"
+        },
+        {
+          "filter": "81.200.188.112->KnowHOW",
+          "value": [
+            {
+              "data": "KnowHOW",
+              "value": [{
+                "data": "4",
+                "sSprintID": "03-Apr-2023 to 09-Apr-2023",
+                "sSprintName": "03-Apr-2023 to 09-Apr-2023",
+                "value": 4,
+                "hoverValue": {
+                  "81.200.188.112": 4
+                },
+                "date": "03-Apr-2023 to 09-Apr-2023",
+                "kpiGroup": "81.200.188.112",
+                "sprintIds": [
+                  "03-Apr-2023 to 09-Apr-2023"
+                ],
+                "sprintNames": [
+                  "03-Apr-2023 to 09-Apr-2023"
+                ],
+                "sprojectName": "KnowHOW"
+              }],
+              "maturity": "2",
+              "maturityValue": "1"
+            }
+          ],
+          "percentile90": "5"
+        },
+        {
+          "filter": "81.200.188.113->KnowHOW",
+          "value": [
+            {
+              "data": "KnowHOW",
+              "value": [],
+              "maturity": "2",
+              "maturityValue": "1"
+            }
+          ],
+          "percentile90": "5"
+        },
+      ],
+      "maturityRange": [
+        "-40",
+        "40-60",
+        "60-75",
+        "75-90",
+        "90-"
+      ],
+      "groupId": 2
+    }
+  ];
+  const kpiData = [
+    {
+      "kpiId": "kpi118",
+      "kpiName": "Deployment Frequency",
+      "unit": "Number",
+      "maxValue": "100",
+      "chartType": "",
+      "kpiInfo": {
+      },
+      "id": "64b4ed7acba3c12de1647304",
+      "isDeleted": "False",
+      "kpiUnit": "Number",
+      "kanban": false,
+      "kpiSource": "Jenkins",
+      "thresholdValue": 0,
+      "trendValueList": [],
+      "maturityRange": [
+        "-1",
+        "1-2",
+        "2-5",
+        "5-10",
+        "10-"
+      ],
+      "groupId": 1
+    }
+  ]
 
+  const fakeKpiData = require('../../../test/resource/fakeKpiData118.json');
+  const fakeKpiDataMultiple = require('../../../test/resource/fakeKpiDataMultiple.json');
   beforeEach(async () => {
     service = new SharedService();
     await TestBed.configureTestingModule({
@@ -1131,67 +1287,7 @@ describe('DoraComponent', () => {
 
   it('should call getDropdownArray', () => {
     const kpiId = "kpi118";
-    component.allKpiArray = [
-      {
-        "kpiId": "kpi118",
-        "kpiName": "Deployment Frequency",
-        "unit": "%",
-        "maxValue": "200",
-        "chartType": "",
-        "id": "64a58c54600c3151b16a1196",
-        "isDeleted": "False",
-        "kpiUnit": "%",
-        "kanban": false,
-        "kpiSource": "Jira",
-        "thresholdValue": 85,
-        "trendValueList": [
-          {
-            "filter": "81.200.188.111->KnowHOW",
-            "value": [
-              {
-                "data": "KnowHOW",
-                "value": [],
-                "maturity": "2",
-                "maturityValue": "1"
-              }
-            ],
-            "percentile90": "5"
-          },
-          {
-            "filter": "81.200.188.112->KnowHOW",
-            "value": [
-              {
-                "data": "KnowHOW",
-                "value": [],
-                "maturity": "2",
-                "maturityValue": "1"
-              }
-            ],
-            "percentile90": "5"
-          },
-          {
-            "filter": "81.200.188.113->KnowHOW",
-            "value": [
-              {
-                "data": "KnowHOW",
-                "value": [],
-                "maturity": "2",
-                "maturityValue": "1"
-              }
-            ],
-            "percentile90": "5"
-          },
-        ],
-        "maturityRange": [
-          "-40",
-          "40-60",
-          "60-75",
-          "75-90",
-          "90-"
-        ],
-        "groupId": 2
-      }
-    ];
+    component.allKpiArray = allKpiArray;
     component.colorObj = {
       "KnowHOW": {
         "nodeName": "KnowHOW",
@@ -1309,7 +1405,7 @@ describe('DoraComponent', () => {
         isEnabled: true,
         order: 23,
         kpiDetail: {
-         
+
         },
         shown: true
       }
@@ -1319,5 +1415,25 @@ describe('DoraComponent', () => {
     tick();
     expect(component.kpiCommentsCountObj['data']['kpi118']).toEqual(response.data['kpi118']);
   }));
+
+  it('should getchartdata for kpi when trendValueList is an object and with single filter', () => {
+    component.allKpiArray = allKpiArray;
+    component.kpiSelectedFilterObj['kpi118'] = ['Overall'];
+    const res = fakeKpiData;
+    component.getChartData('kpi118', 0, 'sum')
+    expect(component.kpiChartData['kpi118'][0]?.value.length).toEqual(res?.value?.length);
+  });
+
+  fit('should getchartdata for kpi when trendValueList is an object and with multiple filter', () => {
+    component.allKpiArray = allKpiArray;
+    component.kpiSelectedFilterObj['kpi118'] = ['81.200.188.111->KnowHOW', '81.200.188.112->KnowHOW'];
+    const res = fakeKpiDataMultiple;
+    component.tooltip = {
+      'percentile': 90
+    };
+    const spy = spyOn(helperService, 'applyAggregationLogic');
+    component.getChartData('kpi118', 0, 'sum')
+    expect(component.kpiChartData['kpi118'][0]?.value.length).toEqual(res?.value?.length);
+  })
 
 });
