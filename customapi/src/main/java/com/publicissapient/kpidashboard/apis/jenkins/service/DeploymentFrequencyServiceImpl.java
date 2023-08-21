@@ -110,12 +110,11 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
 			dataCountGroup.setFilter(envName);
 			dataCountGroup.setValue(dataList);
-			List<DataCount> dataCountValues = dataList.stream()
-					.map(dataCount -> (List<DataCount>) dataCount.getValue())
-					.flatMap(List::stream)
+			List<DataCount> dataCountValues = dataList.stream().map(dataCount -> (List<DataCount>) dataCount.getValue())
+					.flatMap(List::stream).collect(Collectors.toList());
+			List<Long> values = dataCountValues.stream().map(dataCount -> (Long) dataCount.getValue())
 					.collect(Collectors.toList());
-			List<Long> values = dataCountValues.stream().map(dataCount -> (Long) dataCount.getValue()).collect(Collectors.toList());
-			dataCountGroup.setPercentile90(KpiDataHelper.calculate90thPercentile(values));
+			dataCountGroup.setAggregationValue(KpiDataHelper.calculate90thPercentile(values));
 			dataCountGroups.add(dataCountGroup);
 		});
 		kpiElement.setTrendValueList(dataCountGroups);
@@ -135,7 +134,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 			KpiElement kpiElement) {
 
 		String requestTrackerId = getRequestTrackerId();
-		Map<String, Object> durationFilter =  KpiDataHelper.getDurationFilter(kpiElement);
+		Map<String, Object> durationFilter = KpiDataHelper.getDurationFilter(kpiElement);
 		LocalDateTime localStartDate = (LocalDateTime) durationFilter.get(Constant.DATE);
 		LocalDateTime localEndDate = LocalDateTime.now();
 		DateTimeFormatter formatterMonth = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
@@ -204,6 +203,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 
 	/**
 	 * Method to set value at project node.
+	 * 
 	 * @param deploymentListProjectWise
 	 * @param aggDataCountList
 	 * @param trendValueMap
@@ -212,15 +212,16 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 	 * @param durationFilter
 	 */
 	private void prepareProjectNodeValue(List<Deployment> deploymentListProjectWise, List<DataCount> aggDataCountList,
-										 Map<String, List<DataCount>> trendValueMap, String trendLineName,
-										 DeploymentFrequencyInfo deploymentFrequencyInfo, Map<String, Object> durationFilter) {
+			Map<String, List<DataCount>> trendValueMap, String trendLineName,
+			DeploymentFrequencyInfo deploymentFrequencyInfo, Map<String, Object> durationFilter) {
 		String duration = (String) durationFilter.getOrDefault(Constant.DURATION, CommonConstant.WEEK);
 		int previousTimeCount = (int) durationFilter.getOrDefault(Constant.COUNT, 5);
 		Map<String, List<Deployment>> deploymentMapEnvWise = deploymentListProjectWise.stream()
 				.collect(Collectors.groupingBy(Deployment::getEnvName, Collectors.toList()));
 
-		Map<String, List<Deployment>> deploymentMapTimeWise = duration.equalsIgnoreCase(CommonConstant.WEEK) ?
-				getLastNWeek(previousTimeCount) : getLastNMonth(previousTimeCount);
+		Map<String, List<Deployment>> deploymentMapTimeWise = duration.equalsIgnoreCase(CommonConstant.WEEK)
+				? getLastNWeek(previousTimeCount)
+				: getLastNMonth(previousTimeCount);
 
 		deploymentMapEnvWise.forEach((envName, deploymentListEnvWise) -> {
 			if (StringUtils.isNotEmpty(envName) && CollectionUtils.isNotEmpty(deploymentListEnvWise)) {
@@ -231,9 +232,9 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 					LocalDateTime dateValue = LocalDateTime.parse(deployment.getStartTime(), formatter);
 					LocalDate monday = dateValue.toLocalDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 					LocalDate sunday = dateValue.toLocalDate().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-					String timeValue = duration.equalsIgnoreCase(CommonConstant.WEEK) ?
-							DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday) :
-							dateValue.getYear() + Constant.DASH + dateValue.getMonthValue();
+					String timeValue = duration.equalsIgnoreCase(CommonConstant.WEEK)
+							? DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday)
+							: dateValue.getYear() + Constant.DASH + dateValue.getMonthValue();
 
 					deploymentMapTimeWise.computeIfPresent(timeValue, (key, deploymentListCurrentTime) -> {
 						deploymentListCurrentTime.add(deployment);
@@ -327,15 +328,14 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 		}
 		return lastNMonth;
 	}
+
 	private Map<String, List<Deployment>> getLastNWeek(int count) {
 		Map<String, List<Deployment>> lastNWeek = new LinkedHashMap<>();
 		LocalDate endDateTime = LocalDate.now();
 
 		for (int i = 0; i < count; i++) {
-			LocalDate monday = endDateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-			LocalDate sunday = endDateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
-			String currentWeekStr = DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday);
+			String currentWeekStr = DateUtil.getWeekRange(endDateTime);
 			lastNWeek.put(currentWeekStr, new ArrayList<>());
 
 			endDateTime = endDateTime.minusWeeks(1);

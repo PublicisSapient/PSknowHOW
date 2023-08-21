@@ -43,7 +43,7 @@ public class DataCountGroup implements Serializable {
 	private String filter2;
 	private List<DataCount> value;
 	//dora dashboard
-	private String percentile90;
+	private String aggregationValue;
 	// releaseBurnup kpi
 	private String duration;
 
