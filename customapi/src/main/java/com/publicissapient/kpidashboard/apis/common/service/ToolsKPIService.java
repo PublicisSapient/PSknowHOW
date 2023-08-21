@@ -463,7 +463,6 @@ public abstract class ToolsKPIService<R, S> {
 	 */
 	private void collectAggregatedData(List<R> values, List<R> lineValues, List<R> aggregatedMapValues, DataCount dc) {
 		Object obj = dc.getValue();
-		//dc.getDataValue().stream().filter(data )
 		if (obj instanceof HashMap<?, ?>) {
 			aggregatedMapValues.add((R) obj);
 
