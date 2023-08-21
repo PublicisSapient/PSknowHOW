@@ -218,3 +218,43 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 4}}).forEach(f
 db.field_mapping_structure.deleteMany({
     "fieldName": "jiraItrQSIssueTypeKPI133"
 });
+
+// Reverting Dora dashboard changes
+let doraKpis = ["kpi116", "kpi118"];
+db.kpi_master.updateMany(
+   { kpiId: { $in: doraKpis } },
+   { $unset: { kpiCategory: "" } }
+
+);
+
+db.kpi_category_mapping.insertMany([
+  {
+    "kpiId": "kpi116",
+    "category": "" // Replace "" with the actual category
+  },
+  {
+    "kpiId": "kpi118",
+    "category": "" // Replace "" with the actual category
+  }
+]);
+
+// Decrement the boardId of backlog & kpi maturity
+db.user_board_config.updateMany(
+  { "others.boardId": { $in: [13, 14] } },
+  { $inc: { "others.$[elem].boardId": -1 } },
+  { arrayFilters: [{ "elem.boardId": { $in: [13, 14] } }] }
+);
+
+// Restoring Dora KPIs to Quality & Value Boards
+db.user_board_config.updateMany(
+  {},
+  {
+    $pull: {
+      "scrum.3.kpis": { kpiId: "kpi118" },
+      "scrum.2.kpis": { kpiId: "kpi116" }
+    },
+    $pull: {
+      "others": { "boardId": 12, "boardName": "Dora" } // Remove the Dora board entry
+    }
+  }
+);
