@@ -574,23 +574,21 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (isAdditionalFilter?.length > 0) {
         for (let i = 0; i < Object.keys(this.additionalFiltersDdn)?.length; i++) {
           const additionalFilterFormVal = this.filterForm?.get(Object.keys(this.additionalFiltersDdn)[i])?.value;
-          if (additionalFilterFormVal) {
-            if (
-              typeof additionalFilterFormVal === 'object' && Object.keys(additionalFilterFormVal)?.length > 0) {
-              const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => additionalFilterFormVal[x['nodeId']] == true);
-              for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
-                const parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
-                if (parentNodeIdx >= 0) {
-                  this.selectedFilterArray[parentNodeIdx]['additionalFilters'] =
-                    [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter[j]];
-                }
-              }
-            } else {
-              const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => x['nodeId'] == additionalFilterFormVal)[0];
-              const parentNodeIdx = this.selectedFilterArray?.findIndex((x) => selectedAdditionalFilter['path'][0]?.includes(x.nodeId));
+          if (additionalFilterFormVal &&
+            typeof additionalFilterFormVal === 'object' && Object.keys(additionalFilterFormVal)?.length > 0) {
+            const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => additionalFilterFormVal[x['nodeId']] == true);
+            for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
+              const parentNodeIdx = this.selectedFilterArray?.findIndex((x) => x.nodeId == selectedAdditionalFilter[j]['parentId'][0]);
               if (parentNodeIdx >= 0) {
-                this.selectedFilterArray[parentNodeIdx]['additionalFilters'] = [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter];
+                this.selectedFilterArray[parentNodeIdx]['additionalFilters'] =
+                  [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter[j]];
               }
+            }
+          } else {
+            const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => x['nodeId'] == additionalFilterFormVal)[0];
+            const parentNodeIdx = this.selectedFilterArray?.findIndex((x) => selectedAdditionalFilter['path'][0]?.includes(x.nodeId));
+            if (parentNodeIdx >= 0) {
+              this.selectedFilterArray[parentNodeIdx]['additionalFilters'] = [...this.selectedFilterArray[parentNodeIdx]['additionalFilters'], selectedAdditionalFilter];
             }
           }
         }
@@ -763,7 +761,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.showKpisList.push(this.kpiList[i]);
         }
       }
-      if (this.showKpisList && this.showKpisList?.length > 0) {
+      if (this.showKpisList?.length > 0) {
         this.noAccessMsg = false;
         this.kpiForm = new UntypedFormGroup({
           enableAllKpis: new UntypedFormControl(count > 0 ? false : true),
@@ -1391,24 +1389,24 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedRelease = {};
     const selectedProject = this.selectedProjectData['nodeId'];
     this.filteredAddFilters['release'] = [];
-    if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {
+    if (this.additionalFiltersDdn?.['release']) {
       this.filteredAddFilters['release'] = [...this.additionalFiltersDdn['release']?.filter((x) => x['parentId']?.includes(selectedProject))];
       console.log(this.filteredAddFilters['release'] .map(re=> { return {name : re.nodeName , sDate : re.releaseStartDate , eDate: re.releaseEndDate}}));
     }
     if (this.filteredAddFilters['release'].length) {
       this.filteredAddFilters['release'] = this.sortAlphabetically(this.filteredAddFilters['release']);
       const letestPassedRelease = this.findLatestPassedRelease(this.filteredAddFilters['release']);
-      if (letestPassedRelease !== null && letestPassedRelease.length > 1) {
+      if (letestPassedRelease?.length > 1) {
         /** When more than one passed release */
         const letestPassedReleaseStartDate = letestPassedRelease[0].releaseEndDate;
         const letestPassedReleaseOnSameStartDate = letestPassedRelease.filter(release => release.releaseStartDate && (new Date(release.releaseEndDate).getTime() === new Date(letestPassedReleaseStartDate).getTime()));
-        if (letestPassedReleaseOnSameStartDate && letestPassedReleaseOnSameStartDate.length > 1) {
+        if (letestPassedReleaseOnSameStartDate?.length > 1) {
           this.selectedRelease = letestPassedReleaseOnSameStartDate.sort((a, b) => new Date(a.releaseStartDate).getTime() - new Date(b.releaseStartDate).getTime())[0];
         } else {
           /** First release with letest end date */
           this.selectedRelease = letestPassedRelease[0];
         }
-      } else if (letestPassedRelease !== null && letestPassedRelease.length === 1) {
+      } else if (letestPassedRelease?.length === 1) {
         /** First release with letest end date */
         this.selectedRelease = letestPassedRelease[0];
       } else {
