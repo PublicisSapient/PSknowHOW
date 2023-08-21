@@ -220,9 +220,8 @@ db.field_mapping_structure.deleteMany({
 });
 
 // Reverting Dora dashboard changes
-let doraKpis = ["kpi116", "kpi118"];
 db.kpi_master.updateMany(
-   { kpiId: { $in: doraKpis } },
+   { kpiId: { $in: ["kpi116", "kpi118"] } },
    { $unset: { kpiCategory: "" } }
 
 );
@@ -244,46 +243,5 @@ db.kpi_master.updateOne(
   },
   {
     $set: { "xAxisLabel": "Months" }
-  }
-);
-
-// Decrement the boardId of backlog & kpi maturity
-db.user_board_config.updateMany(
-  { "others.boardId": { $in: [13, 14] } },
-  { $inc: { "others.$[elem].boardId": -1 } },
-  { arrayFilters: [{ "elem.boardId": { $in: [13, 14] } }] }
-);
-
-// Restoring Dora KPIs to Quality & Value Boards
-db.user_board_config.updateMany(
-  {},
-  {
-    $push: {
-      "scrum.3.kpis": {
-        $each: [
-          {
-            "kpiId": "kpi118",
-            "kpiName": "Deployment Frequency",
-            "isEnabled": true,
-            "isShown": true,
-            "order": 1
-          }
-        ]
-      },
-      "scrum.2.kpis": {
-        $each: [
-          {
-            "kpiId": "kpi116",
-            "kpiName": "Change Failure Rate",
-            "isEnabled": true,
-            "isShown": true,
-            "order": 15
-          }
-        ]
-      }
-    },
-    $pull: {
-      "others": { "boardId": 12, "boardName": "Dora" } // Remove the Dora board entry
-    }
   }
 );

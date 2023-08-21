@@ -2865,15 +2865,14 @@ db.getCollection('field_mapping_structure').insertOne([
 ])
 
 //dora dashboard changes-----------------------------------------------
-let doraKpis = ["kpi116", "kpi118"];
 db.kpi_master.updateMany(
-   { kpiId: { $in: doraKpis } },
+   { kpiId: { $in: ["kpi116", "kpi118"] } },
    { $set: { kpiCategory: "Dora" } }
 )
 
 db.kpi_category_mapping.deleteMany({
   "kpiId": {
-    "$in": doraKpis
+    "$in": ["kpi116", "kpi118"]
   }
 });
 // change the x-axis of deployment freq
@@ -2883,49 +2882,5 @@ db.kpi_master.updateOne(
   },
   {
     $set: { "xAxisLabel": "Weeks" }
-  }
-);
-
-// increment the boardId of backlog & kpi maturity
-db.user_board_config.updateMany(
-  { "others.boardId": { $in: [12, 13] } },
-  { $inc: { "others.$[elem].boardId": 1 } },
-  { arrayFilters: [{ "elem.boardId": { $in: [12, 13] } }] }
-);
-
-db.user_board_config.updateMany(
-  {},
-  {// removing the dora kpis from quality & value
-    $pull: {
-      "scrum.3.kpis": { kpiId: "kpi118" },
-      "scrum.2.kpis": { kpiId: "kpi116" }
-    },
-    $push: {// pushing dora board at index 1
-      "others": {
-        $each: [
-          {
-            "boardId": 12,
-            "boardName": "Dora",
-            "kpis": [
-              {
-                "kpiId": "kpi118",
-                "kpiName": "Deployment Frequency",
-                "isEnabled": true,
-                "isShown": true,
-                "order": 1
-              },
-              {
-                "kpiId": "kpi116",
-                "kpiName": "Change Failure Rate",
-                "isEnabled": true,
-                "isShown": true,
-                "order": 2
-              }
-            ]
-          }
-        ],
-        $position: 1
-      }
-    }
   }
 );
