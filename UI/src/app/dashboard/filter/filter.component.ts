@@ -97,7 +97,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   processorName = ['jira', 'azure'];
   heirarchyCount: number;
   dateRangeFilter: any;
-  selectedDayType = 'Weeks';
+  selectedDayType;
   selectedDays: any;
   previousType = false; // to check if Scrum/Kanban selection has changed
   takeFiltersFromPreviousTab: boolean; // to check if previous tab was following the same filter format
@@ -165,9 +165,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
 
     this.selectedTab = this.service.getSelectedTab() || 'mydashboard';
-    if(this.selectedTab.toLowerCase() === 'developer') {
-      this.selectedDayType = 'Days';
-    }
+
     this.service.setSelectedDateFilter(this.selectedDayType);
     this.service.setShowTableView(this.showChart);
     this.getNotification();
@@ -202,6 +200,38 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.totalProjectSelected = 1;
           this.service.setShowTableView(this.showChart);
         }
+
+        if (this.selectedTab.toLowerCase() === 'developer') {
+          this.selectedDayType = 'Days';
+          // different date filter for developer tab
+          this.dateRangeFilter = {
+            "types": [
+              "Days",
+              "Weeks",
+            ],
+            "counts": [
+              5,
+              10
+            ]
+          }
+          this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
+        } else {
+          this.selectedDayType = 'Weeks';
+          this.dateRangeFilter = {
+            "types": [
+              "Days",
+              "Weeks",
+              "Months"
+            ],
+            "counts": [
+              5,
+              10,
+              15
+            ]
+          }
+        }
+        this.service.setSelectedDateFilter(this.selectedDayType);
+        this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
       }),
 
       this.service.mapColorToProjectObs.subscribe((x) => {
@@ -231,9 +261,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (filterData[0] !== 'error') {
         this.heirarchyCount = filterData?.hierarchySelectionCount;
         this.dateRangeFilter = filterData?.dateRangeFilter;
-
-        // different date filter for developer tab
         if (this.selectedTab.toLowerCase() === 'developer') {
+          this.selectedDayType = 'Days';
+          // different date filter for developer tab
           this.dateRangeFilter = {
             "types": [
               "Days",
