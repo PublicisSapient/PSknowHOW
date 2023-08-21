@@ -113,6 +113,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     noProjects = false;
     sprintsOverlayVisible : boolean = false;
     kpiCommentsCountObj: object = {};
+    kpiTableHeadingObj:object = {};
+    kpiTableDataObj:object={};
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -900,6 +902,17 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
         }
         this.createTrendsData(kpiId);
+        console.log(kpiId, this.kpiChartData[kpiId], this.kpiTrendsObj[kpiId]);
+        this.calculateTableData(kpiId);
+    }
+
+    calculateTableData(kpiId){
+        for(let key in this.colorObj){
+            this.kpiTableHeadingObj[this.colorObj[key]['nodeName']] = [];
+            this.kpiTableDataObj[this.colorObj[key]['nodeName']] = [];
+        }
+        
+       this.kpiChartData[kpiId]
     }
 
     createCombinations(arr1, arr2) {
