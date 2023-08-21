@@ -2645,15 +2645,6 @@ db.getCollection('metadata_identifier').update(
                       ]
                   },
                   {
-                      "type": "jiraDefectRemovalIssueTypeKPI34",
-                      "value": [
-                          "Story",
-                          "Enabler Story",
-                          "Tech Story",
-                          "Change request"
-                      ]
-                  },
-                  {
                       "type": "jiraTestAutomationIssueType",
                       "value": [
                           "Story",
@@ -2899,12 +2890,6 @@ db.getCollection('metadata_identifier').update(
                       ]
                   },
                   {
-                      "type": "jiraDefectRejectionStatusKPI34",
-                      "value": [
-                          "Rejected"
-                      ]
-                  },
-                  {
                       "type": "jiraDefectRejectionStatusKPI37",
                       "value": [
                           "Rejected"
@@ -3032,16 +3017,6 @@ db.getCollection('metadata_identifier').update(
                   },
                   {
                       "type": "resolutionTypeForRejectionKPI28",
-                      "value": [
-                          "Invalid",
-                          "Duplicate",
-                          "Unrequired",
-                          "Cannot Reproduce",
-                          "Won't Fix"
-                      ]
-                  },
-                  {
-                      "type": "resolutionTypeForRejectionKPI34",
                       "value": [
                           "Invalid",
                           "Duplicate",
