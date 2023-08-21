@@ -357,9 +357,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 			// Add RCA to JiraIssue
 			setRCA(fieldMapping, issue, azureIssue, fieldsMap, azureProcessorConfig.getRcaValuesForCodeIssue());
 
-			// Add device platform filed to issue
-			setDevicePlatform(fieldMapping, azureIssue, fieldsMap);
-
 			// Add UAT/Third Party identification field to JiraIssue
 			setThirdPartyDefectIdentificationField(fieldMapping, issue, azureIssue, fieldsMap);
 

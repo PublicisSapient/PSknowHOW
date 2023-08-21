@@ -79,6 +79,9 @@ public final class JiraConstants {
     public static final String KEY = "key";
     public static final String TO_DO = "To Do";
     public static final String DONE = "Done";
+    public static final String WORKLOG = "timespent";
+    public static final String FLAG_STATUS_FOR_SERVER = "Requires attention";
+    public static final String FLAG_STATUS_FOR_CLOUD = "Impediment";
 
     static {
         ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");

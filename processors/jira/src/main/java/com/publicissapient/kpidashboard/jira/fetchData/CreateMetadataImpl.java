@@ -68,6 +68,9 @@ public class CreateMetadataImpl implements CreateMetadata {
     @Autowired
     private JiraProcessorConfig jiraProcessorConfig;
 
+    @Autowired
+    private JiraCommonService jiraCommonService;
+
     private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
 
     private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
@@ -100,7 +103,7 @@ public class CreateMetadataImpl implements CreateMetadata {
         psLogData.setAction(CommonConstant.METADATA);
         List<Field> fieldList = getField();
         List<IssueType> issueTypeList = getIssueType();
-        List<Status> statusList = getStatus();
+        List<Status> statusList = jiraCommonService.getStatus();
         if (CollectionUtils.isNotEmpty(fieldList) && CollectionUtils.isNotEmpty(issueTypeList)
                 && CollectionUtils.isNotEmpty(statusList)) {
 
@@ -150,7 +153,7 @@ public class CreateMetadataImpl implements CreateMetadata {
                     fieldList = Lists.newArrayList(fieldIt.iterator());
                 }
             } catch (RestClientException e) {
-                exceptionBlockProcess(e);
+                jiraCommonService.exceptionBlockProcess(e);
             }
         }
 
@@ -171,42 +174,11 @@ public class CreateMetadataImpl implements CreateMetadata {
                     issueTypeList = Lists.newArrayList(fieldIt.iterator());
                 }
             } catch (RestClientException e) {
-                exceptionBlockProcess(e);
+                jiraCommonService.exceptionBlockProcess(e);
             }
         }
 
         return issueTypeList;
-    }
-
-
-    private List<Status> getStatus() {
-        List<Status> statusList = new ArrayList<>();
-
-        if (client == null) {
-            log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
-        } else {
-            try {
-                Promise<Iterable<Status>> promisedRs = client.getMetadataClient().getStatuses();
-
-                Iterable<Status> fieldIt = promisedRs.claim();
-                if (fieldIt != null) {
-                    statusList = Lists.newArrayList(fieldIt.iterator());
-                }
-            } catch (RestClientException e) {
-                exceptionBlockProcess(e);
-            }
-        }
-
-        return statusList;
-    }
-
-    private void exceptionBlockProcess(RestClientException e) {
-        if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-            log.error(ERROR_MSG_401);
-        } else {
-            log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
-        }
-        log.debug(EXCEPTION, e);
     }
 
     private List<Metadata> mapFields(List<Field> fieldList, String type) {

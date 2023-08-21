@@ -338,9 +338,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 			// Add RCA to Issue
 			setRCA(fieldMapping, issue, azureIssue, fieldsMap);
 
-			// Add device platform filed to issue
-			setDevicePlatform(fieldMapping, azureIssue, fieldsMap);
-
 			if (issueTypeNames
 					.contains(AzureProcessorUtil.deodeUTF8String(issueType).toLowerCase(Locale.getDefault()))) {
 
@@ -779,27 +776,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	}
 
 	/**
-	 * Sets Device Platform.
-	 *
-	 * @param fieldMapping
-	 *            fieldMapping provided by the User
-	 * @param azureIssue
-	 *            KanbanJiraIssue instance
-	 * @param fieldsMap
-	 *            the fields map
-	 */
-	public void setDevicePlatform(FieldMapping fieldMapping, KanbanJiraIssue azureIssue,
-								  Map<String, Object> fieldsMap) {
-		String devicePlatformFromFieldMapping = fieldMapping.getDevicePlatform();
-		String devicePlatform = null;
-		if (fieldsMap.containsKey(devicePlatformFromFieldMapping)
-				&& fieldsMap.get(devicePlatformFromFieldMapping) != null) {
-			devicePlatform = fieldsMap.get(devicePlatformFromFieldMapping).toString();
-		}
-		azureIssue.setDevicePlatform(devicePlatform);
-	}
-
-	/**
 	 * Process Jira issue Data.
 	 *
 	 * @param azureIssue
@@ -842,8 +818,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 			timeSpent = fields.getMicrosoftVSTSSchedulingCompletedWork() * 60;
 		}
 		azureIssue.setTimeSpentInMinutes(timeSpent);
-
-		setEnvironmentImpacted(azureIssue, fieldsMap, fieldMapping);
 
 		azureIssue.setChangeDate(AzureProcessorUtil.getFormattedDate(AzureProcessorUtil.deodeUTF8String(changeDate)));
 		azureIssue.setIsDeleted(AzureConstants.FALSE);
@@ -1023,26 +997,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 			}
 		}
 
-	}
-
-	/**
-	 * Sets the environment impacted custom field.
-	 *
-	 * @param azureIssue
-	 *            JiraIssue instance
-	 * @param fieldsMap
-	 *            Map of Issue Fields
-	 * @param fieldMapping
-	 *            fieldMapping provided by the User
-	 */
-	private void setEnvironmentImpacted(KanbanJiraIssue azureIssue, Map<String, Object> fieldsMap,
-										FieldMapping fieldMapping) {
-		String envImpacted = fieldMapping.getEnvImpacted();
-		if (StringUtils.isNotEmpty(envImpacted) && fieldsMap.containsKey(envImpacted)
-				&& fieldsMap.get(envImpacted) != null) {
-			azureIssue.setEnvImpacted(AzureProcessorUtil.deodeUTF8String(fieldsMap.get(envImpacted)));
-
-		}
 	}
 
 	/**

@@ -23,12 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FetchIssuesBasedOnJQLImpl implements FetchIssuesBasedOnJQL {
 
-	String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
-	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
-	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
-	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
-	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
-	private static final String NO_RESULT_QUERY = "No result available for query: {}";
 
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;

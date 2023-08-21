@@ -285,7 +285,6 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraFTPRStoryIdentification(issueTypeMap.get(CommonConstant.STORY));
 		fieldMapping.setRootCauseValue(valuesToIdentifyMap.get(CommonConstant.ROOT_CAUSE_VALUE));
 		fieldMapping.setResolutionTypeForRejection(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
-		fieldMapping.setQaRootCauseValue(valuesToIdentifyMap.get(CommonConstant.QA_ROOT_CAUSE));
 		fieldMapping.setJiraQADefectDensityIssueType(issueTypeMap.get(CommonConstant.STORY));
 
 		if (projectConfig.isKanban()) {

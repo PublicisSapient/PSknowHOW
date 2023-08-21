@@ -322,7 +322,6 @@ public class KanbanAzureIssueClientImplTest {
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Support Request", "Incident", "Project Request",
 				"Member Account Request", "DOJO Consulting Request", "Test Case" }));
 		fieldMapping.setTicketCountIssueType(jiraType);
-		fieldMapping.setEnvImpacted("customfield_13131");
 		fieldMapping.setJiraTicketVelocityIssueType(jiraType);
 		fieldMapping.setKanbanJiraTechDebtIssueType(jiraType);
 		fieldMapping.setKanbanCycleTimeIssueType(jiraType);
@@ -364,7 +363,6 @@ public class KanbanAzureIssueClientImplTest {
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Ready for Testing");
 		fieldMapping.setJiraStatusForQa(jiraSegData);
-		fieldMapping.setDevicePlatform("customfield_18181");
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("segregationLabel");
