@@ -28,9 +28,6 @@ import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
-import { Table } from 'primeng/table';
 import { MessageService } from 'primeng/api';
 import { distinctUntilChanged } from 'rxjs/operators';
 
@@ -81,6 +78,7 @@ export class DeveloperComponent implements OnInit {
   bitBucketKpiRequest;
   bitBucketKpiData = {};
   enableByeUser: boolean;
+  showChart = 'chart';
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService) {
 
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -91,6 +89,9 @@ export class DeveloperComponent implements OnInit {
         this.kpiDropdowns = {};
         this.sharedObject = sharedobject;
         if (this.globalConfig || this.service.getDashConfigData()) {
+          if(!this.globalConfig) {
+            this.globalConfig = this.service.getDashConfigData();
+          }
           this.receiveSharedData(sharedobject);
         }
         this.noTabAccess = false;
@@ -99,14 +100,21 @@ export class DeveloperComponent implements OnInit {
       }
     }));
 
+    this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
+      this.loaderBitBucket = false;
+      this.serviceObject = {};
+      this.selectedtype = data.selectedType;
+      this.selectedTab = data.selectedTab;
+      this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
+    }));
+
     /** When click on show/Hide button on filter component */
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       if (globalConfig) {
+        this.globalConfig = globalConfig;
         if (this.sharedObject || this.service.getFilterObject()) {
           this.receiveSharedData(this.service.getFilterObject());
         }
-        this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'developer')[0]?.kpis;
-        this.processKpiConfigData();
       }
     }));
 
@@ -120,10 +128,21 @@ export class DeveloperComponent implements OnInit {
             const nodeName = key.slice(0, idx);
             this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
           }
+        } else {
+          this.trendBoxColorObj = { ...x };
+          for (const key in this.trendBoxColorObj) {
+            const idx = key.lastIndexOf('_');
+            const nodeName = key.slice(0, idx);
+            this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+          }
         }
       }
     }));
 
+    /**observable to get the type of view */
+    this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
+      this.showChart = view;
+    }));
   }
 
   ngOnInit(): void {
@@ -185,6 +204,7 @@ export class DeveloperComponent implements OnInit {
           this.noTabAccess = false;
           // call kpi request according to tab selected
           if (this.masterData && Object.keys(this.masterData).length) {
+            this.configGlobalData = this.globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'developer')[0]?.kpis;
             this.processKpiConfigData();
             if (this.service.getSelectedType().toLowerCase() === 'kanban') {
               // this.configGlobalData = this.service.getDashConfigData()[this.selectedtype.toLowerCase()].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
@@ -201,36 +221,6 @@ export class DeveloperComponent implements OnInit {
           // alert('no call');
           this.allKpiArray.forEach(element => {
             this.getDropdownArray(element?.kpiId);
-            // For kpi3 and kpi53 generating table column headers and table data
-            if (element.kpiId === 'kpi3' || element.kpiId === 'kpi53') {
-              //generating column headers
-              const columnHeaders = [];
-              if (Object.keys(this.kpiSelectedFilterObj)?.length && this.kpiSelectedFilterObj[element.kpiId]?.length && this.kpiSelectedFilterObj[element.kpiId][0]) {
-                columnHeaders.push({ field: 'name', header: this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelName + ' Name' });
-                columnHeaders.push({ field: 'value', header: this.kpiSelectedFilterObj[element.kpiId][0] });
-                columnHeaders.push({ field: 'maturity', header: 'Maturity' });
-              }
-              if (this.kpiChartData[element.kpiId]) {
-                this.kpiChartData[element.kpiId].columnHeaders = columnHeaders;
-              }
-              //generating Table data
-              const kpiUnit = this.updatedConfigGlobalData?.find(kpi => kpi.kpiId === element.kpiId)?.kpiDetail?.kpiUnit;
-              const data = [];
-              if (this.kpiChartData[element.kpiId] && this.kpiChartData[element.kpiId].length) {
-                for (let i = 0; i < this.kpiChartData[element.kpiId].length; i++) {
-                  const rowData = {
-                    name: this.kpiChartData[element.kpiId][i].data,
-                    maturity: 'M' + this.kpiChartData[element.kpiId][i].maturity,
-                    value: this.kpiChartData[element.kpiId][i].value[0].data + ' ' + kpiUnit
-                  };
-                  data.push(rowData);
-                }
-
-                this.kpiChartData[element.kpiId].data = data;
-              }
-              this.showKpiTrendIndicator[element.kpiId] = false;
-
-            }
           });
         } else {
           this.noTabAccess = true;
@@ -582,15 +572,11 @@ export class DeveloperComponent implements OnInit {
             "hierarchyName": this.kpiChartData[kpiId][i]?.data,
             "value": latest,
             "trend": trend,
-            "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
-              this.checkMaturity(this.kpiChartData[kpiId][i])
-              : 'M' + this.kpiChartData[kpiId][i]?.maturity,
+            "maturity": 'M' + this.kpiChartData[kpiId][i]?.maturity,
             "maturityValue": this.kpiChartData[kpiId][i]?.maturityValue,
             "kpiUnit": unit
           };
-          if (kpiId === 'kpi997') {
-            trendObj['value'] = 'NA';
-          }
+
           this.kpiTrendsObj[kpiId]?.push(trendObj);
         }
       }
@@ -670,12 +656,19 @@ export class DeveloperComponent implements OnInit {
       }
       this.kpiSelectedFilterObj[kpi?.kpiId] = event;
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId] = {"filter1":[event]};
+      this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
 
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
 
+  }
+
+  // unsubscribing all Kpi Request
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.sharedObject = null;
+    this.globalConfig = null;
   }
 
 
