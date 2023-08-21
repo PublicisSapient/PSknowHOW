@@ -688,7 +688,8 @@ public final class KpiDataHelper {
 					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
 							fieldMappingCompletionType, fieldMappingCompletionStatus);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
-					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus, projectWiseDuplicateIssuesWithMinCloseDate);
+					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus,
+							projectWiseDuplicateIssuesWithMinCloseDate);
 					dbSprintDetail.setCompletedIssues(newCompletedSet);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
 					Set<SprintIssue> totalIssue = new HashSet<>();
@@ -927,7 +928,8 @@ public final class KpiDataHelper {
 	}
 
 	/**
-	 *  Create 90th percentile
+	 * Create 90th percentile
+	 * 
 	 * @param values
 	 * @return
 	 * @param <T>
@@ -937,6 +939,7 @@ public final class KpiDataHelper {
 		int index = (int) Math.ceil(0.9 * values.size()) - 1;
 		return values.get(index).toString();
 	}
+
 	public static Map<String, Object> getDurationFilter(KpiElement kpiElement) {
 		LinkedHashMap<String, Object> filterDuration = (LinkedHashMap<String, Object>) kpiElement.getFilterDuration();
 		int value = 5; // Default value for 'value'
@@ -957,7 +960,7 @@ public final class KpiDataHelper {
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put(Constant.DATE, startDateTime);
 		resultMap.put(Constant.DURATION, duration);
-		resultMap.put(Constant.COUNT,value);
+		resultMap.put(Constant.COUNT, value);
 		return resultMap;
 	}
 }
