@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +38,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -935,5 +937,27 @@ public final class KpiDataHelper {
 		int index = (int) Math.ceil(0.9 * values.size()) - 1;
 		return values.get(index).toString();
 	}
+	public static Map<String, Object> getDurationFilter(KpiElement kpiElement) {
+		LinkedHashMap<String, Object> filterDuration = (LinkedHashMap<String, Object>) kpiElement.getFilterDuration();
+		int value = 5; // Default value for 'value'
+		String duration = CommonConstant.WEEK; // Default value for 'duration'
+		LocalDateTime startDateTime = null;
 
+		if (filterDuration != null) {
+			value = (int) filterDuration.getOrDefault("value", 5);
+			duration = (String) filterDuration.getOrDefault(Constant.DURATION, CommonConstant.WEEK);
+		}
+
+		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+			startDateTime = LocalDateTime.now().minusWeeks(value);
+		} else if (duration.equalsIgnoreCase(CommonConstant.MONTH)) {
+			startDateTime = LocalDateTime.now().minusMonths(value);
+		}
+
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put(Constant.DATE, startDateTime);
+		resultMap.put(Constant.DURATION, duration);
+		resultMap.put(Constant.COUNT,value);
+		return resultMap;
+	}
 }

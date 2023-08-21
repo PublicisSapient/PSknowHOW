@@ -135,7 +135,8 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 			KpiElement kpiElement) {
 
 		String requestTrackerId = getRequestTrackerId();
-		LocalDateTime localStartDate = LocalDateTime.now().minusMonths(customApiConfig.getJenkinsWeekCount());
+		Map<String, Object> durationFilter =  KpiDataHelper.getDurationFilter(kpiElement);
+		LocalDateTime localStartDate = (LocalDateTime) durationFilter.get(Constant.DATE);
 		LocalDateTime localEndDate = LocalDateTime.now();
 		DateTimeFormatter formatterMonth = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 		String startDate = localStartDate.format(formatterMonth);
@@ -160,7 +161,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 
 			if (CollectionUtils.isNotEmpty(deploymentListProjectWise)) {
 				prepareProjectNodeValue(deploymentListProjectWise, dataCountAggList, trendValueMap, trendLineName,
-						deploymentFrequencyInfo);
+						deploymentFrequencyInfo, durationFilter);
 			}
 			if (CollectionUtils.isEmpty(dataCountAggList)) {
 				mapTmp.get(node.getId()).setValue(null);
@@ -203,61 +204,54 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 
 	/**
 	 * Method to set value at project node.
-	 *
 	 * @param deploymentListProjectWise
 	 * @param aggDataCountList
 	 * @param trendValueMap
 	 * @param trendLineName
 	 * @param deploymentFrequencyInfo
+	 * @param durationFilter
 	 */
 	private void prepareProjectNodeValue(List<Deployment> deploymentListProjectWise, List<DataCount> aggDataCountList,
-			Map<String, List<DataCount>> trendValueMap, String trendLineName,
-			DeploymentFrequencyInfo deploymentFrequencyInfo) {
-
+										 Map<String, List<DataCount>> trendValueMap, String trendLineName,
+										 DeploymentFrequencyInfo deploymentFrequencyInfo, Map<String, Object> durationFilter) {
+		String duration = (String) durationFilter.getOrDefault(Constant.DURATION, CommonConstant.WEEK);
+		int previousTimeCount = (int) durationFilter.getOrDefault(Constant.COUNT, 5);
 		Map<String, List<Deployment>> deploymentMapEnvWise = deploymentListProjectWise.stream()
 				.collect(Collectors.groupingBy(Deployment::getEnvName, Collectors.toList()));
-		for (Map.Entry<String, List<Deployment>> entry : deploymentMapEnvWise.entrySet()) {
-			if (StringUtils.isNotEmpty(entry.getKey()) && CollectionUtils.isNotEmpty(entry.getValue())) {
-				String envName = entry.getKey();
-				List<Deployment> deploymentListEnvWise = entry.getValue();
+
+		Map<String, List<Deployment>> deploymentMapTimeWise = duration.equalsIgnoreCase(CommonConstant.WEEK) ?
+				getLastNWeek(previousTimeCount) : getLastNMonth(previousTimeCount);
+
+		deploymentMapEnvWise.forEach((envName, deploymentListEnvWise) -> {
+			if (StringUtils.isNotEmpty(envName) && CollectionUtils.isNotEmpty(deploymentListEnvWise)) {
 				List<DataCount> dataCountList = new ArrayList<>();
-/*
-				Map<String, List<Deployment>> deploymentMapMonthWise = getLastNMonth(
-						customApiConfig.getJenkinsWeekCount());
-*/
-				Map<String, List<Deployment>> deploymentMapMonthWise = getLastNWeek(25);
+
 				for (Deployment deployment : deploymentListEnvWise) {
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 					LocalDateTime dateValue = LocalDateTime.parse(deployment.getStartTime(), formatter);
-//					String deploymentMonth = dateValue.getYear() + Constant.DASH + dateValue.getMonthValue();
-					/*LocalDate monday = dateValue.toLocalDate();
-					LocalDate sunday = dateValue.toLocalDate();
-					while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
-						monday = monday.minusDays(1);
-					}
-					while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
-						sunday = sunday.plusDays(1);
-					}*/
 					LocalDate monday = dateValue.toLocalDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 					LocalDate sunday = dateValue.toLocalDate().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-					String deploymentMonth = DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday);
-					deploymentMapMonthWise.computeIfPresent(deploymentMonth, (key, deploymentListCurrentMonth) -> {
-						deploymentListCurrentMonth.add(deployment);
-						return deploymentListCurrentMonth;
+					String timeValue = duration.equalsIgnoreCase(CommonConstant.WEEK) ?
+							DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday) :
+							dateValue.getYear() + Constant.DASH + dateValue.getMonthValue();
+
+					deploymentMapTimeWise.computeIfPresent(timeValue, (key, deploymentListCurrentTime) -> {
+						deploymentListCurrentTime.add(deployment);
+						return deploymentListCurrentTime;
 					});
 				}
 
-				deploymentMapMonthWise.forEach((month, deploymentListCurrentMonth) -> {
-					DataCount dataCount = createDataCount(trendLineName, envName, month, deploymentListCurrentMonth);
+				deploymentMapTimeWise.forEach((time, deploymentListCurrentTime) -> {
+					DataCount dataCount = createDataCount(trendLineName, envName, time, deploymentListCurrentTime);
 					dataCountList.add(dataCount);
-					setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo, deploymentListCurrentMonth);
-
+					setDeploymentFrequencyInfoForExcel(deploymentFrequencyInfo, deploymentListCurrentTime);
 				});
+
 				aggDataCountList.addAll(dataCountList);
 				trendValueMap.putIfAbsent(envName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
 				trendValueMap.get(envName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
 			}
-		}
+		});
 	}
 
 	/**

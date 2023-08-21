@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -62,7 +63,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List<Object>, Map<ObjectId, List<Build>>> {
 
 	private static final DecimalFormat decimalFormat = new DecimalFormat("#0.00");
-	private static final long DAYS_IN_WEEKS = 7;
 	private static final String TOTAL_CHANGES = "Total number of Changes";
 	private static final String FAILED_CHANGES = "Failed Changes";
 
@@ -164,8 +164,8 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 			List<Node> projectLeafNodeList) {
 
 		String requestTrackerId = getRequestTrackerId();
-		LocalDateTime localStartDate = LocalDateTime.now()
-				.minusDays(customApiConfig.getJenkinsWeekCount() * DAYS_IN_WEEKS);
+		Map<String, Object> durationFilter =  KpiDataHelper.getDurationFilter(kpiElement);
+		LocalDateTime localStartDate = (LocalDateTime) durationFilter.get(Constant.DATE);
 		LocalDateTime localEndDate = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 		String startDate = localStartDate.format(formatter);
@@ -182,7 +182,7 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 			Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 			String trendLineName = node.getProjectFilter().getName();
 			ChangeFailureRateInfo changeFailureRateInfo = new ChangeFailureRateInfo();
-			LocalDateTime end = localEndDate;
+
 			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
 
 			List<Build> buildListProjectWise = buildGroup.get(basicProjectConfigId);
@@ -206,12 +206,8 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 						jobName = entry.getKey();
 					}
 					aggBuildList.addAll(buildList);
-/*
-					prepareInfoForBuild(changeFailureRateInfo, end, buildList, trendLineName, trendValueMap, jobName,
-							dataCountAggList);
-*/
-					prepareInfoForBuildMonthWise(changeFailureRateInfo, end, buildList, trendLineName, trendValueMap, jobName,
-							dataCountAggList);
+					prepareInfoForBuildTimeWise(changeFailureRateInfo, buildList, trendLineName, trendValueMap, jobName,
+							dataCountAggList,durationFilter);
 				}
 			}
 			if (CollectionUtils.isEmpty(aggBuildList)) {
@@ -240,86 +236,72 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 
 	/**
 	 * Sets build info to holder object and duration list
-	 *
 	 * @param changeFailureRateInfo
-	 * @param endTime
 	 * @param buildList
 	 * @param trendLineName
 	 * @param trendValueMap
 	 * @param jobName
 	 * @param dataCountAggList
+	 * @param durationFilter
 	 */
-	private void prepareInfoForBuild(ChangeFailureRateInfo changeFailureRateInfo, LocalDateTime endTime,
-			List<Build> buildList, String trendLineName, Map<String, List<DataCount>> trendValueMap, String jobName,
-			List<DataCount> dataCountAggList) {
-		LocalDate endDateTime = endTime.toLocalDate();
-		List<DataCount> dataCountList = new ArrayList<>();
-		for (int i = 0; i < customApiConfig.getJenkinsWeekCount(); i++) {
-			Double failureBuildCount = 0.0d;
-			Double buildFailurePercentage = 0.0d;
-			Double totalBuildCount = 0.0d;
-			LocalDate monday = endDateTime;
-			while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
-				monday = monday.minusDays(1);
-			}
-			LocalDate sunday = endDateTime;
-			while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
-				sunday = sunday.plusDays(1);
-			}
-			for (Build build : buildList) {
-				if (checkDateIsInWeeks(monday, sunday, build)) {
-					failureBuildCount = getFailureBuildCount(failureBuildCount, build);
-					totalBuildCount = getTotalBuildCount(totalBuildCount, build);
-				}
-			}
-			if (totalBuildCount > 0 && failureBuildCount > 0) {
-				buildFailurePercentage = Double
-						.parseDouble(decimalFormat.format(failureBuildCount / totalBuildCount * 100));
-			}
-			String date = DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday);
-			DataCount dataCount = createDataCount(trendLineName, buildFailurePercentage, date,
-					totalBuildCount.intValue(), failureBuildCount.intValue(), jobName);
-			setChangeFailureRateInfoForExcel(changeFailureRateInfo, jobName, totalBuildCount, failureBuildCount,
-					buildFailurePercentage, date);
-			dataCountList.add(dataCount);
-			endDateTime = endDateTime.minusWeeks(1);
-		}
-		trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
-		trendValueMap.get(jobName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
-		dataCountAggList.addAll(dataCountList);
-	}
-	private void prepareInfoForBuildMonthWise(ChangeFailureRateInfo changeFailureRateInfo, LocalDateTime endTime,
-			List<Build> buildList, String trendLineName, Map<String, List<DataCount>> trendValueMap, String jobName,
-			List<DataCount> dataCountAggList) {
-		LocalDate currentDate = endTime.toLocalDate();
-		List<DataCount> dataCountList = new ArrayList<>();
-		for (int i = 0; i < customApiConfig.getJenkinsWeekCount(); i++) {
-			Double failureBuildCount = 0.0d;
-			Double buildFailurePercentage = 0.0d;
-			Double totalBuildCount = 0.0d;
-			for (Build build : buildList) {
-				if (checkDateIsInMonth(currentDate, build)) {
-					failureBuildCount = getFailureBuildCount(failureBuildCount, build);
-					totalBuildCount = getTotalBuildCount(totalBuildCount, build);
-				}
-			}
-			if (totalBuildCount > 0 && failureBuildCount > 0) {
-				buildFailurePercentage = Double
-						.parseDouble(decimalFormat.format(failureBuildCount / totalBuildCount * 100));
-			}
-			String date = currentDate.getYear() + Constant.DASH + currentDate.getMonthValue();
-			DataCount dataCount = createDataCount(trendLineName, buildFailurePercentage, date,
-					totalBuildCount.intValue(), failureBuildCount.intValue(), jobName);
-			setChangeFailureRateInfoForExcel(changeFailureRateInfo, jobName, totalBuildCount, failureBuildCount,
-					buildFailurePercentage, date);
-			dataCountList.add(dataCount);
-			currentDate = currentDate.minusMonths(1);
-		}
-		trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
-		trendValueMap.get(jobName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
-		dataCountAggList.addAll(dataCountList);
-	}
+	private void prepareInfoForBuildTimeWise(ChangeFailureRateInfo changeFailureRateInfo,
+											 List<Build> buildList, String trendLineName, Map<String, List<DataCount>> trendValueMap,
+											 String jobName, List<DataCount> dataCountAggList, Map<String, Object> durationFilter) {
 
+		String weekOrMonth = (String) durationFilter.getOrDefault(Constant.DURATION, CommonConstant.WEEK);
+		int previousTimeCount = (int) durationFilter.getOrDefault(Constant.COUNT, 5);
+		LocalDate endDateTime = LocalDate.now();
+		List<DataCount> dataCountList = new ArrayList<>();
+
+		for (int i = 0; i < previousTimeCount; i++) {
+			Double failureBuildCount = 0.0d;
+			Double buildFailurePercentage = 0.0d;
+			Double totalBuildCount = 0.0d;
+
+			LocalDate currentDate = endDateTime;
+			if (weekOrMonth.equalsIgnoreCase(CommonConstant.WEEK)) {
+				currentDate = currentDate.minusWeeks(i);
+			} else if (weekOrMonth.equalsIgnoreCase(CommonConstant.MONTH)) {
+				currentDate = currentDate.minusMonths(i);
+			}
+
+			for (Build build : buildList) {
+				if ((weekOrMonth.equalsIgnoreCase(CommonConstant.WEEK) && checkDateIsInWeeks(currentDate, build))
+						|| (weekOrMonth.equalsIgnoreCase(CommonConstant.MONTH) && checkDateIsInMonth(currentDate, build))) {
+
+					failureBuildCount = getFailureBuildCount(failureBuildCount, build);
+					totalBuildCount = getTotalBuildCount(totalBuildCount, build);
+				}
+			}
+
+
+			if (totalBuildCount > 0 && failureBuildCount > 0) {
+				buildFailurePercentage = Double.parseDouble(decimalFormat.format(failureBuildCount / totalBuildCount * 100));
+			}
+
+			String date = getDateFormatted(weekOrMonth,currentDate);
+
+			DataCount dataCount = createDataCount(trendLineName, buildFailurePercentage, date,
+					totalBuildCount.intValue(), failureBuildCount.intValue(), jobName);
+			setChangeFailureRateInfoForExcel(changeFailureRateInfo, jobName, totalBuildCount, failureBuildCount,
+					buildFailurePercentage, date);
+
+			dataCountList.add(dataCount);
+		}
+
+		trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
+		trendValueMap.get(jobName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
+		dataCountAggList.addAll(dataCountList);
+	}
+	private String getDateFormatted(String weekOrMonth, LocalDate currentDate) {
+		if (weekOrMonth.equalsIgnoreCase(CommonConstant.WEEK)) {
+			LocalDate monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+			LocalDate sunday = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+			return DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday);
+		} else {
+			return currentDate.getYear() + Constant.DASH + currentDate.getMonthValue();
+		}
+	}
 	private boolean checkDateIsInMonth(LocalDate currentDate, Build build) {
 		LocalDate buildTime = Instant.ofEpochMilli(build.getStartTime()).atZone(ZoneId.systemDefault()).toLocalDate();
 		return currentDate.getYear() == buildTime.getYear() &&
@@ -328,14 +310,15 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 
 	/**
 	 * check build date is between given weeks or not
-	 *
-	 * @param monday
-	 * @param sunday
+	 * @param currentDate
 	 * @param build
-	 * @return double
+	 * @return
 	 */
-	private boolean checkDateIsInWeeks(LocalDate monday, LocalDate sunday, Build build) {
+	private boolean checkDateIsInWeeks(LocalDate currentDate, Build build) {
 		LocalDate buildTime = Instant.ofEpochMilli(build.getStartTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		LocalDate sunday = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
 		return (buildTime.isAfter(monday) || buildTime.isEqual(monday))
 				&& (buildTime.isBefore(sunday) || buildTime.isEqual(sunday));
 	}
