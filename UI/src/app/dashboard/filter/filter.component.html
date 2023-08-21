@@ -348,12 +348,15 @@
             <div id="comment-popup" class="recommendation-Ddn" *ngIf="isShowRecommendations">
                <div class="comment-inner-section">
                  <span  *ngIf="showSpinner"><i class="fas fa-circle-notch icon-spinner"></i> Fetching..</span>
-                  <ng-container *ngIf="recommendationList?.length > 0 && !showSpinner; else noComments">
-                     <h3 class="p-m-0 font-grey font-bold">PS Chat Suggestions</h3>
+                 <ng-container *ngIf="recommendationObj && (recommendationObj | json) !== '{}'  && !showSpinner; else noComments">
+                  <h3 class="p-m-0 font-grey font-bold">PS Chat Suggestions</h3>
+                  <ng-container *ngFor="let insightKey of psChatPoints">
+                     <h4 class="p-m-0 font-grey font-bold">{{ insightKey }}</h4>
                      <ol>
-                        <li *ngFor="let para of recommendationList" class="p-mt-2">{{para}}</li>
+                       <li *ngFor="let point of recommendationObj[insightKey]">{{ point }}</li>
                      </ol>
-                  </ng-container>
+                   </ng-container>
+               </ng-container>
                </div>
                <ng-template #noComments>
                   <h3 class="p-m-0 font-grey font-bold" *ngIf="!showSpinner && (!pschatErrorMsg)">NO PS Chat Suggestions</h3>
@@ -479,11 +482,14 @@
             <div id="comment-popup" class="recommendation-Ddn" *ngIf="isShowRecommendations">
                <div class="comment-inner-section">
                  <span  *ngIf="showSpinner"><i class="fas fa-circle-notch icon-spinner"></i> Fetching..</span>
-                  <ng-container *ngIf="recommendationList?.length > 0 && !showSpinner; else noComments">
+                  <ng-container *ngIf="recommendationObj && (recommendationObj | json) !== '{}'  && !showSpinner; else noComments">
                      <h3 class="p-m-0 font-grey font-bold">PS Chat Suggestions</h3>
-                     <ol>
-                        <li *ngFor="let para of recommendationList" class="p-mt-2">{{para}}</li>
-                     </ol>
+                     <ng-container *ngFor="let insightKey of psChatPoints">
+                        <h4 class="p-m-0 font-grey font-bold">{{ insightKey }}</h4>
+                        <ol>
+                          <li *ngFor="let point of recommendationObj[insightKey]">{{ point }}</li>
+                        </ol>
+                      </ng-container>
                   </ng-container>
                </div>
                <ng-template #noComments>

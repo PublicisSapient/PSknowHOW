@@ -136,8 +136,9 @@ export class FilterComponent implements OnInit, OnDestroy {
   totalProjectSelected : number = 1;
   selectedLevelValue : string = 'project';
   isShowRecommendations : boolean = false;
-  recommendationList : any = [];
+  recommendationObj : any = {};
   pschatErrorMsg : string;
+  psChatPoints : any = [];
 
   constructor(
     private service: SharedService,
@@ -1603,13 +1604,15 @@ export class FilterComponent implements OnInit, OnDestroy {
       data = this.filterApplyData;
     }
     this.pschatErrorMsg = "";
-    this.recommendationList = [];
+    this.recommendationObj = {};
+    this.psChatPoints = [];
     this.isShowRecommendations = !this.isShowRecommendations;
     this.showSpinner = true;
     if (this.isShowRecommendations) {
       this.httpService.getRecommendations(identifier, id, data).subscribe(response => {
         if(response && response['success']){
-          this.recommendationList = response['data'];
+          this.recommendationObj = response['data'];
+          this.psChatPoints = Object.keys(this.recommendationObj);
           this.showSpinner = false;
         }else{
           this.pschatErrorMsg = response['message'];
@@ -1617,7 +1620,8 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
       }, error => {
         console.log(error);
-        this.recommendationList = [];
+        this.recommendationObj = {};
+        this.psChatPoints = [];
         this.showSpinner = false;
       })
     }
