@@ -140,9 +140,10 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 						.map(BoardKpisDTO::getSubCategoryBoard))
 				.collect(Collectors.toSet());
 		Set<String> kpiMasterSubCategories = kpiMasterMap.values().stream()
-				.filter(kpiMaster -> kpiMaster.getKpiCategory().equalsIgnoreCase(ITERATION))
-				.filter(kpi -> kpi.getKpiSubCategory() != null)
-				.map(KpiMaster::getKpiSubCategory).collect(Collectors.toSet());
+				.filter(kpiMaster -> kpiMaster.getKpiCategory() != null
+						&& kpiMaster.getKpiCategory().equalsIgnoreCase(ITERATION))
+				.filter(kpi -> kpi.getKpiSubCategory() != null).map(KpiMaster::getKpiSubCategory)
+				.collect(Collectors.toSet());
 		if (kpiMasterSubCategories.size() > existingSubCategories.size()) {
 			return !CollectionUtils.containsAll(existingSubCategories, kpiMasterSubCategories);
 		} else if (kpiMasterSubCategories.size() < existingSubCategories.size()) {
