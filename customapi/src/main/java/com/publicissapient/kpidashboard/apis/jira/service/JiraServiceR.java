@@ -22,11 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
@@ -109,6 +107,7 @@ public class JiraServiceR {
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private List<String> releaseList;
+	private List<JiraIssue> totalProjectWiseJiraIssues;
 
 	/**
 	 * This method process scrum JIRA based kpi request, cache data and call service
@@ -191,6 +190,7 @@ public class JiraServiceR {
 			sprintDetails = null;
 			jiraIssueList = null;
 			jiraIssueCustomHistoryList = null;
+			totalProjectWiseJiraIssues = null;
 		} catch (Exception e) {
 			log.error("Error while KPI calculation for data {} {}", kpiRequest.getKpiList(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
@@ -233,7 +233,7 @@ public class JiraServiceR {
 	 * @param treeAggregatorDetail
 	 * @return
 	 */
-	private List<String> getReleaseList(TreeAggregatorDetail treeAggregatorDetail) {
+	public List<String> getReleaseList(TreeAggregatorDetail treeAggregatorDetail) {
 		List<Node> nodes = treeAggregatorDetail.getMapOfListOfLeafNodes().get(Filters.RELEASE.toString().toLowerCase());
 		List<String> processedList = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(nodes)) {
@@ -307,6 +307,7 @@ public class JiraServiceR {
 		sprintDetails = modifieldSprintDetails;
 	}
 
+	@SuppressWarnings("java:S4034")
 	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList, String board) {
 		if (board.equalsIgnoreCase(CommonConstant.ITERATION)) {
 			jiraIssueList = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(sprintIssuesList,
@@ -322,7 +323,16 @@ public class JiraServiceR {
 			mapOfProjectFilters.put(CommonConstant.RELEASE,
 					CommonUtils.convertToPatternListForSubString(sprintIssuesList));
 			uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
-			jiraIssueList = jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
+			totalProjectWiseJiraIssues = jiraIssueRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
+			jiraIssueList = totalProjectWiseJiraIssues.stream()
+					.filter(jiraIssue -> jiraIssue.getReleaseVersions().stream()
+							.anyMatch(rv -> sprintIssuesList.contains(rv.getReleaseName())))
+					.collect(Collectors.toList());
+			totalProjectWiseJiraIssues = totalProjectWiseJiraIssues.stream()
+					.filter(jiraIssue -> !jiraIssue.getReleaseVersions().stream()
+							.anyMatch(rv -> sprintIssuesList.contains(rv.getReleaseName()))
+							&& jiraIssue.getTypeName().equalsIgnoreCase("Bug"))
+					.collect(Collectors.toList());
 		}
 	}
 
@@ -355,6 +365,10 @@ public class JiraServiceR {
 
 	public List<JiraIssue> getJiraIssuesForCurrentSprint() {
 		return jiraIssueList;
+	}
+
+	public List<JiraIssue> getProjectWiseDefectList() {
+		return totalProjectWiseJiraIssues;
 	}
 
 	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, List<String> sprintIssuesList, String board) {

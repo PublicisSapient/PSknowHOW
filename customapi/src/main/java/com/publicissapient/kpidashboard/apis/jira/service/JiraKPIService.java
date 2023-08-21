@@ -18,6 +18,24 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
@@ -40,23 +58,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This class is extention of ApplicationKPIService. All Jira KPIs service have
@@ -220,8 +221,8 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
 		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
 			devCompleteDate = filterStatusUpdationLog.stream()
-					.filter(jiraHistoryChangeLog -> fieldMapping.contains(
-							jiraHistoryChangeLog.getChangedTo()) && jiraHistoryChangeLog.getUpdatedOn() != null)
+					.filter(jiraHistoryChangeLog -> fieldMapping.contains(jiraHistoryChangeLog.getChangedTo())
+							&& jiraHistoryChangeLog.getUpdatedOn() != null)
 					.findFirst()
 					.map(jiraHistoryChangeLog -> LocalDate
 							.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
@@ -271,7 +272,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		SprintDetails sprintDetails;
 		try {
 			sprintDetails = (SprintDetails) jiraService.getCurrentSprintDetails().clone();
-		}catch (CloneNotSupportedException e) {
+		} catch (CloneNotSupportedException e) {
 			sprintDetails = null;
 		}
 		return sprintDetails;
@@ -292,9 +293,37 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return jiraService.getJiraIssuesCustomHistoryForCurrentSprint();
 	}
 
-	public List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(Map<String, Set<String>> projectWiseDefectTypes) {
+	public List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(Map<String, Set<String>> projectWiseDefectTypes,
+			String board) {
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		List<JiraIssue> jiraIssuesForCurrentSprint = jiraService.getJiraIssuesForCurrentSprint();
+		List<JiraIssue> defectsList = jiraService.getProjectWiseDefectList();
+		Set<JiraIssue> linkedDefectList;
+		List<JiraIssue> unTaggedDefectForCurentSprint = new ArrayList<>();
+
+		if (board.equalsIgnoreCase(CommonConstant.RELEASE) && !jiraIssuesForCurrentSprint.isEmpty()
+				&& !defectsList.isEmpty()) {
+
+			List<String> storyIDs = jiraIssuesForCurrentSprint.stream()
+					.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Story")).map(JiraIssue::getNumber)
+					.collect(Collectors.toList());
+
+			linkedDefectList = defectsList.stream()
+					.filter(jiraIssue -> jiraIssue.getDefectStoryID().stream().anyMatch(storyIDs::contains))
+					.collect(Collectors.toSet());
+
+			Set<String> issues = jiraIssuesForCurrentSprint.stream()
+					.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Bug")).map(JiraIssue::getNumber)
+					.collect(Collectors.toSet());
+			for (JiraIssue linkedDefect : linkedDefectList) {
+				if (!issues.contains(linkedDefect.getNumber())) {
+					issues.add(linkedDefect.getNumber());
+					unTaggedDefectForCurentSprint.add(linkedDefect);
+				}
+			}
+			filteredJiraIssue = unTaggedDefectForCurentSprint;
+		}
+
 		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(jiraIssuesForCurrentSprint)) {
 			List<JiraIssue> finalFilteredJiraIssue = filteredJiraIssue;
 			projectWiseDefectTypes.forEach((project,

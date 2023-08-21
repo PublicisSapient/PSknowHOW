@@ -76,7 +76,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Release Progress -> Requested sprint : {}", leafNode.getName());
-			List<JiraIssue> releaseIssues = getFilteredReleaseJiraIssuesFromBaseClass(null);
+			List<JiraIssue> releaseIssues = getFilteredReleaseJiraIssuesFromBaseClass(null, CommonConstant.RELEASE);
 			resultListMap.put(TOTAL_ISSUES, releaseIssues);
 			JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus();
 			resultListMap.put(RELEASE_JIRA_ISSUE_STATUS, jiraIssueReleaseStatus);

@@ -98,7 +98,7 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, 
 				}
 				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 				mapOfProjectFilters.put(basicProjectConfigId, defectType);
-				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(mapOfProjectFilters);
+				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(mapOfProjectFilters, CommonConstant.RELEASE);
 				resultListMap.put(TOTAL_DEFECT, releaseDefects);
 			}
 		}
