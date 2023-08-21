@@ -464,7 +464,7 @@ export class DoraComponent implements OnInit {
         const tempArr = {};
         for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
           tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['percentile90'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.percentile90;
+          tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.aggregationValue;
         }
         this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
         
@@ -473,10 +473,10 @@ export class DoraComponent implements OnInit {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value;
           console.log(trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]);
           
-          this.kpiChartData[kpiId][0]['percentile90'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.percentile90;
+          this.kpiChartData[kpiId][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.aggregationValue;
         } else {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
-          this.kpiChartData[kpiId][0]['percentile90'] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.percentile90;
+          this.kpiChartData[kpiId][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.aggregationValue;
         }
       }
     }
