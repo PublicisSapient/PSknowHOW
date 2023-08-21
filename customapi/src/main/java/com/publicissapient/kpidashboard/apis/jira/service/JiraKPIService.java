@@ -297,25 +297,16 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 			String board) {
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		List<JiraIssue> jiraIssuesForCurrentSprint = jiraService.getJiraIssuesForCurrentSprint();
-		List<JiraIssue> defectsList = jiraService.getProjectWiseDefectList();
-		Set<JiraIssue> linkedDefectList;
+		Set<JiraIssue> defectsList = jiraService.getSubTaskDefects();
 		List<JiraIssue> unTaggedDefectForCurentSprint = new ArrayList<>();
 
 		if (board.equalsIgnoreCase(CommonConstant.RELEASE) && !jiraIssuesForCurrentSprint.isEmpty()
 				&& !defectsList.isEmpty()) {
 
-			List<String> storyIDs = jiraIssuesForCurrentSprint.stream()
-					.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Story")).map(JiraIssue::getNumber)
-					.collect(Collectors.toList());
-
-			linkedDefectList = defectsList.stream()
-					.filter(jiraIssue -> jiraIssue.getDefectStoryID().stream().anyMatch(storyIDs::contains))
-					.collect(Collectors.toSet());
-
 			Set<String> issues = jiraIssuesForCurrentSprint.stream()
 					.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Bug")).map(JiraIssue::getNumber)
 					.collect(Collectors.toSet());
-			for (JiraIssue linkedDefect : linkedDefectList) {
+			for (JiraIssue linkedDefect : defectsList) {
 				if (!issues.contains(linkedDefect.getNumber())) {
 					issues.add(linkedDefect.getNumber());
 					unTaggedDefectForCurentSprint.add(linkedDefect);

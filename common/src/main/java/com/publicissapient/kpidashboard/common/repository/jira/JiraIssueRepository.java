@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.common.repository.jira;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
@@ -167,4 +168,5 @@ public interface JiraIssueRepository
 	 */
 	List<JiraIssue> findByBasicProjectConfigIdIn(String basicProjectConfigId);
 
+	Set<JiraIssue> findByDefectStoryIDInAndTypeName(List<String> storyIDs, String typeName);
 }
