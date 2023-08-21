@@ -77,7 +77,7 @@ public class IssueScrumBoardReader implements ItemReader<ReadData> {
 	String boardId = "";
 	List<Issue> issues = new ArrayList<>();
 	Map<String, Map<String, String>> projectBoardWiseDeltaDate;
-	int boardIssueSize=0;
+	int boardIssueSize = 0;
 
 	public void initializeReader() {
 		log.info("**** Jira Issue fetch for Scrum started * * *");
@@ -97,57 +97,67 @@ public class IssueScrumBoardReader implements ItemReader<ReadData> {
 			initializeReader();
 		}
 		ReadData readData = null;
-		if (projectConfigIterator == null || !projectConfigIterator.hasNext()) {
-			if (projectConfMapIterator.hasNext()) {
-				Map.Entry<String, List<ProjectConfFieldMapping>> entry = projectConfMapIterator.next();
-				projectConfigIterator = entry.getValue().iterator();
-			}
+		try {
 
-		}
-		if (boardIterator == null || !boardIterator.hasNext()) {
-			if (projectConfigIterator.hasNext()) {
-				projectConfFieldMapping = projectConfigIterator.next();
-				if (CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
-					boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
+			if (projectConfigIterator == null || !projectConfigIterator.hasNext()) {
+				if (projectConfMapIterator.hasNext()) {
+					Map.Entry<String, List<ProjectConfFieldMapping>> entry = projectConfMapIterator.next();
+					projectConfigIterator = entry.getValue().iterator();
 				}
+
 			}
-		}
-		if (issueIterator == null || !issueIterator.hasNext()) {
-			KerberosClient krb5Client = null;
-			List<Issue> epicIssues;
-			ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
-			if (null == issueIterator || boardIssueSize < pageSize) {
-				if (boardIterator.hasNext()) {
-					BoardDetails boardDetails = boardIterator.next();
-					boardId = boardDetails.getBoardId();
-					fetchIssues(krb5Client, client);
-					epicIssues = fetchEpics(krb5Client, client);
-					if (CollectionUtils.isNotEmpty(epicIssues)) {
-						issues.addAll(epicIssues);
+			if (boardIterator == null || !boardIterator.hasNext()) {
+				if (projectConfigIterator.hasNext()) {
+					projectConfFieldMapping = projectConfigIterator.next();
+					if (CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
+						boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
 					}
 				}
+			}
+			if (issueIterator == null || !issueIterator.hasNext()) {
+				KerberosClient krb5Client = null;
+				List<Issue> epicIssues;
+				ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
+				if (null == issueIterator || boardIssueSize < pageSize) {
+					pageNumber = 0;
+					if (boardIterator.hasNext()) {
+						BoardDetails boardDetails = boardIterator.next();
+						boardId = boardDetails.getBoardId();
+						fetchIssues(krb5Client, client);
+						epicIssues = fetchEpics(krb5Client, client);
+						if (CollectionUtils.isNotEmpty(epicIssues)) {
+							issues.addAll(epicIssues);
+						}
+					}
 
-			} else {
-				fetchIssues(krb5Client, client);
+				} else {
+					fetchIssues(krb5Client, client);
+				}
+
+				if (CollectionUtils.isNotEmpty(issues)) {
+					issueIterator = issues.iterator();
+				}
+
+			}
+			if (null != issueIterator && issueIterator.hasNext()) {
+				Issue issue = issueIterator.next();
+				readData = new ReadData();
+				readData.setIssue(issue);
+				readData.setProjectConfFieldMapping(projectConfFieldMapping);
+				readData.setBoardId(boardId);
 			}
 
-			if (CollectionUtils.isNotEmpty(issues)) {
-				issueIterator = issues.iterator();
+			if ((null == projectConfMapIterator) || (!projectConfigIterator.hasNext() && !boardIterator.hasNext()
+					&& (!issueIterator.hasNext() && boardIssueSize < pageSize))) {
+				log.info("Data of all projects has been fetched");
+				readData = null;
 			}
-
-		}
-		if (null != issueIterator && issueIterator.hasNext()) {
-			Issue issue = issueIterator.next();
-			readData = new ReadData();
-			readData.setIssue(issue);
-			readData.setProjectConfFieldMapping(projectConfFieldMapping);
-			readData.setBoardId(boardId);
-		}
-
-		if ((null == projectConfMapIterator) || (!projectConfigIterator.hasNext() && !boardIterator.hasNext()
-				&& (!issueIterator.hasNext() && boardIssueSize < pageSize))) {
-			log.info("Data of all projects has been fetched");
-			readData = null;
+		} catch (Exception e) {
+			log.error("Exception while fetching data for the project {}", projectConfFieldMapping.getProjectName(), e);
+			boardIterator = null;
+			issueIterator = null;
+			boardIssueSize=0;
+			//send mail to project admin or superadmin here..
 		}
 		return readData;
 
@@ -161,7 +171,7 @@ public class IssueScrumBoardReader implements ItemReader<ReadData> {
 
 		issues = jiraCommonService.fetchIssueBasedOnBoard(projectConfFieldMapping, client, krb5Client, pageNumber,
 				boardId, deltaDate);
-		boardIssueSize=issues.size();
+		boardIssueSize = issues.size();
 		pageNumber += pageSize;
 	}
 
@@ -185,7 +195,7 @@ public class IssueScrumBoardReader implements ItemReader<ReadData> {
 					}
 				}
 				// this code is to support backward compatibility. Initially no
-				// board was saved with project in in trace log
+				// board was saved with project in trace log
 				if (MapUtils.isEmpty(boardWiseDate)) {
 					log.info(
 							"project: {} found but board {} not found in trace log so data will be fetched from beginning",
@@ -213,7 +223,7 @@ public class IssueScrumBoardReader implements ItemReader<ReadData> {
 			} else {
 				String lastSuccessRun = boardWiseDate.get(boardId);
 				log.info("project: {} and board {} found in trace log. Data will be fetched from {}",
-						projectConfFieldMapping.getProjectName(),boardId,lastSuccessRun);
+						projectConfFieldMapping.getProjectName(), boardId, lastSuccessRun);
 				if (!StringUtils.isBlank(lastSuccessRun)) {
 					deltaDate = lastSuccessRun;
 				}

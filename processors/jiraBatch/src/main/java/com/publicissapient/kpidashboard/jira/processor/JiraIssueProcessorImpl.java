@@ -119,7 +119,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
 			setURL(issue.getKey(), jiraIssue, projectConfig);
 			setRCA(fieldMapping, issue, jiraIssue, fields);
-			setDevicePlatform(fieldMapping, jiraIssue, fields);
 			setThirdPartyDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setDefectIssueType(jiraIssue, issueType, fieldMapping);
 			jiraIssue.setLabels(getLabelsList(issue));
@@ -411,21 +410,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 		jiraIssue.setEstimate(valueString);
 		jiraIssue.setStoryPoints(value);
-	}
-
-	private void setDevicePlatform(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
-
-		try {
-			String devicePlatform = null;
-			if (fields.get(fieldMapping.getDevicePlatform()) != null
-					&& fields.get(fieldMapping.getDevicePlatform()).getValue() != null) {
-				devicePlatform = ((JSONObject) fields.get(fieldMapping.getDevicePlatform()).getValue())
-						.getString(JiraConstants.VALUE);
-			}
-			jiraIssue.setDevicePlatform(devicePlatform);
-		} catch (JSONException e) {
-			log.error("JIRA Processor | Error while parsing Device Platform data", e);
-		}
 	}
 
 	private void setAdditionalFilters(JiraIssue jiraIssue, Issue issue, ProjectConfFieldMapping projectConfig) {
