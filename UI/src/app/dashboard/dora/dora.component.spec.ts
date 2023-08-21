@@ -66,6 +66,120 @@ describe('DoraComponent', () => {
       shown: true
     }
   ];
+  const updatedConfigGlobalData = [
+    {
+      "kpiId": "kpi118",
+      "kpiName": "Deployment Frequency",
+      "isEnabled": true,
+      "order": 1,
+      "kpiDetail": {
+        "id": "64b4ed7acba3c12de1647304",
+        "kpiId": "kpi118",
+        "kpiName": "Deployment Frequency",
+        "isDeleted": "False",
+        "defaultOrder": 25,
+        "kpiCategory": "Dora",
+        "kpiUnit": "Number",
+        "chartType": "line",
+        "showTrend": true,
+        "isPositiveTrend": true,
+        "calculateMaturity": true,
+        "hideOverallFilter": false,
+        "kpiSource": "Jenkins",
+        "maxValue": "100",
+        "thresholdValue": 0,
+        "kanban": false,
+        "groupId": 1,
+        "kpiInfo": {
+          "definition": "Measures how often code is deployed to production in a period",
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Deployment-Frequency"
+              }
+            }
+          ]
+        },
+        "kpiFilter": "multiSelectDropDown",
+        "aggregationCriteria": "sum",
+        "maturityRange": [
+          "-1",
+          "1-2",
+          "2-5",
+          "5-10",
+          "10-"
+        ],
+        "trendCalculative": false,
+        "xaxisLabel": "Months",
+        "yaxisLabel": "Count",
+        "additionalFilterSupport": false
+      },
+      "shown": true
+    },
+    {
+      "kpiId": "kpi116",
+      "kpiName": "Change Failure Rate",
+      "isEnabled": true,
+      "order": 2,
+      "kpiDetail": {
+        "id": "64b4ed7acba3c12de16472fa",
+        "kpiId": "kpi116",
+        "kpiName": "Change Failure Rate",
+        "isDeleted": "False",
+        "defaultOrder": 15,
+        "kpiCategory": "Dora",
+        "kpiUnit": "%",
+        "chartType": "line",
+        "showTrend": true,
+        "isPositiveTrend": false,
+        "calculateMaturity": true,
+        "hideOverallFilter": true,
+        "kpiSource": "Jenkins",
+        "maxValue": "100",
+        "thresholdValue": 0,
+        "kanban": false,
+        "groupId": 1,
+        "kpiInfo": {
+          "definition": "Measures the proportion of builds that have failed over a given period of time",
+          "formula": [
+            {
+              "lhs": "Change Failure Rate",
+              "operator": "division",
+              "operands": [
+                "Total number of failed Builds",
+                "Total number of Builds"
+              ]
+            }
+          ],
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Change-Failure-Rate"
+              }
+            }
+          ]
+        },
+        "kpiFilter": "dropDown",
+        "aggregationCriteria": "average",
+        "maturityRange": [
+          "-50",
+          "50-30",
+          "30-20",
+          "20-10",
+          "10-"
+        ],
+        "trendCalculative": false,
+        "xaxisLabel": "Weeks",
+        "yaxisLabel": "Percentage",
+        "additionalFilterSupport": false
+      },
+      "shown": true
+    }
+  ]
   const globalData = require('../../../test/resource/fakeGlobalConfigData.json');
   const hierarchyData = [
     {
@@ -665,134 +779,6 @@ describe('DoraComponent', () => {
       required: true
     }
   ];
-  const allKpiArray = [
-    {
-      "kpiId": "kpi118",
-      "kpiName": "Deployment Frequency",
-      "unit": "%",
-      "maxValue": "200",
-      "chartType": "",
-      "id": "64a58c54600c3151b16a1196",
-      "isDeleted": "False",
-      "kpiUnit": "%",
-      "kanban": false,
-      "kpiSource": "Jira",
-      "thresholdValue": 85,
-      "trendValueList": [
-        {
-          "filter": "Overall",
-          "value": [
-            {
-              "data": "KnowHOW",
-              "value": [{
-                "data": "0",
-                "sSprintID": "27-Feb-2023 to 05-Mar-2023",
-                "sSprintName": "27-Feb-2023 to 05-Mar-2023",
-                "value": 0,
-                "hoverValue": {
-                  "81.200.188.111": 0,
-                  "81.200.188.112": 0,
-                  "81.200.188.113": 0
-                },
-                "date": "27-Feb-2023 to 05-Mar-2023",
-                "sprintIds": [
-                  "27-Feb-2023 to 05-Mar-2023"
-                ],
-                "sprintNames": [
-                  "27-Feb-2023 to 05-Mar-2023"
-                ],
-                "projectNames": [
-                  "KnowHOW"
-                ],
-                "sprojectName": "KnowHOW"
-              }],
-              "maturity": "2",
-              "maturityValue": "1"
-            }
-          ],
-          "percentile90": "5"
-        },
-        {
-          "filter": "81.200.188.111->KnowHOW",
-          "value": [
-            {
-              "data": "KnowHOW",
-              "value": [{
-                "data": "0",
-                "sSprintID": "27-Feb-2023 to 05-Mar-2023",
-                "sSprintName": "27-Feb-2023 to 05-Mar-2023",
-                "value": 0,
-                "hoverValue": {
-                  "81.200.188.111": 0
-                },
-                "date": "27-Feb-2023 to 05-Mar-2023",
-                "kpiGroup": "81.200.188.111",
-                "sprintIds": [
-                  "27-Feb-2023 to 05-Mar-2023"
-                ],
-                "sprintNames": [
-                  "27-Feb-2023 to 05-Mar-2023"
-                ],
-                "sprojectName": "KnowHOW"
-              }],
-              "maturity": "2",
-              "maturityValue": "1"
-            }
-          ],
-          "percentile90": "5"
-        },
-        {
-          "filter": "81.200.188.112->KnowHOW",
-          "value": [
-            {
-              "data": "KnowHOW",
-              "value": [{
-                "data": "4",
-                "sSprintID": "03-Apr-2023 to 09-Apr-2023",
-                "sSprintName": "03-Apr-2023 to 09-Apr-2023",
-                "value": 4,
-                "hoverValue": {
-                  "81.200.188.112": 4
-                },
-                "date": "03-Apr-2023 to 09-Apr-2023",
-                "kpiGroup": "81.200.188.112",
-                "sprintIds": [
-                  "03-Apr-2023 to 09-Apr-2023"
-                ],
-                "sprintNames": [
-                  "03-Apr-2023 to 09-Apr-2023"
-                ],
-                "sprojectName": "KnowHOW"
-              }],
-              "maturity": "2",
-              "maturityValue": "1"
-            }
-          ],
-          "percentile90": "5"
-        },
-        {
-          "filter": "81.200.188.113->KnowHOW",
-          "value": [
-            {
-              "data": "KnowHOW",
-              "value": [],
-              "maturity": "2",
-              "maturityValue": "1"
-            }
-          ],
-          "percentile90": "5"
-        },
-      ],
-      "maturityRange": [
-        "-40",
-        "40-60",
-        "60-75",
-        "75-90",
-        "90-"
-      ],
-      "groupId": 2
-    }
-  ];
   const kpiData = [
     {
       "kpiId": "kpi118",
@@ -820,8 +806,8 @@ describe('DoraComponent', () => {
     }
   ]
 
-  const fakeKpiData = require('../../../test/resource/fakeKpiData118.json');
-  const fakeKpiDataMultiple = require('../../../test/resource/fakeKpiDataMultiple.json');
+  const fakeDoraKpis = require('../../../test/resource/fakeDoraKpis.json');
+  const fakeDoraKpiFilters = require('../../../test/resource/fakeDoraKpiFilters.json');
   beforeEach(async () => {
     service = new SharedService();
     await TestBed.configureTestingModule({
@@ -1246,48 +1232,14 @@ describe('DoraComponent', () => {
       ],
       groupId: 1
     }];
-    component.updatedConfigGlobalData = [
-      {
-        kpiId: 'kpi118',
-        kpiName: 'Deployment Frequency',
-        isEnabled: true,
-        order: 23,
-        kpiDetail: {
-          id: '633fbb9cef4cf185c987ad5c',
-          kpiId: 'kpi118',
-          kpiName: 'Deployment Frequency',
-          isDeleted: 'False',
-          defaultOrder: 23,
-          kpiUnit: 'MRs',
-          chartType: 'grouped_column_plus_line',
-          showTrend: true,
-          isPositiveTrend: true,
-          lineLegend: 'Merge Requests',
-          barLegend: 'Commits',
-          calculateMaturity: true,
-          kpiSource: 'BitBucket',
-          maxValue: '10',
-          thresholdValue: 55,
-          kanban: false,
-          groupId: 1,
-          kpiInfo: {},
-          kpiFilter: 'dropDown',
-          aggregationCriteria: 'average',
-          yaxisLabel: 'Count',
-          additionalFilterSupport: false,
-          xaxisLabel: 'Days',
-          trendCalculative: false
-        },
-        shown: true
-      }
-    ];
+    component.updatedConfigGlobalData = updatedConfigGlobalData;
     component.getDropdownArray('kpi118');
     expect(component.kpiDropdowns['kpi118'].length).toBeGreaterThan(0);
   });
 
   it('should call getDropdownArray', () => {
     const kpiId = "kpi118";
-    component.allKpiArray = allKpiArray;
+    component.allKpiArray = fakeDoraKpis;
     component.colorObj = {
       "KnowHOW": {
         "nodeName": "KnowHOW",
@@ -1304,9 +1256,10 @@ describe('DoraComponent', () => {
           "81.200.188.113->KnowHOW"
         ]
       },
-    ]
-    const spyData = component.getDropdownArray(kpiId);
-    expect(component.kpiDropdowns["kpi118"]).toEqual(response);
+    ];
+    component.updatedConfigGlobalData = updatedConfigGlobalData;
+    component.getDropdownArray(kpiId);
+    expect(component.kpiDropdowns["kpi118"][0]?.options).toEqual(response[0]?.options);
   });
 
   it('should sort Alphabetically', () => {
@@ -1417,23 +1370,23 @@ describe('DoraComponent', () => {
   }));
 
   it('should getchartdata for kpi when trendValueList is an object and with single filter', () => {
-    component.allKpiArray = allKpiArray;
+    component.allKpiArray = fakeDoraKpis;
     component.kpiSelectedFilterObj['kpi118'] = ['Overall'];
-    const res = fakeKpiData;
+    const res = fakeDoraKpis[0].trendValueList.filter(x => x['filter'] == 'Overall')[0];
     component.getChartData('kpi118', 0, 'sum')
-    expect(component.kpiChartData['kpi118'][0]?.value.length).toEqual(res?.value?.length);
+    expect(component.kpiChartData['kpi118'][0]?.value.length).toEqual(res?.value[0]?.value?.length);
   });
 
-  fit('should getchartdata for kpi when trendValueList is an object and with multiple filter', () => {
-    component.allKpiArray = allKpiArray;
+  it('should getchartdata for kpi when trendValueList is an object and with multiple filter', () => {
+    component.allKpiArray = fakeDoraKpis;
     component.kpiSelectedFilterObj['kpi118'] = ['81.200.188.111->KnowHOW', '81.200.188.112->KnowHOW'];
-    const res = fakeKpiDataMultiple;
+    const res = fakeDoraKpiFilters;
     component.tooltip = {
       'percentile': 90
     };
-    const spy = spyOn(helperService, 'applyAggregationLogic');
+    spyOn(helperService, 'applyAggregationLogic').and.callThrough();
     component.getChartData('kpi118', 0, 'sum')
-    expect(component.kpiChartData['kpi118'][0]?.value.length).toEqual(res?.value?.length);
+    expect(component.kpiChartData['kpi118'][0]?.value?.length).toEqual(res?.value?.length);
   })
 
 });

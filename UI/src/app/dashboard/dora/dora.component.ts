@@ -450,16 +450,12 @@ export class DoraComponent implements OnInit {
           this.kpiDropdowns[kpiId].push(obj2);
         }
       }
-      console.log(this.kpiDropdowns[kpiId]);
-      
     }
   }
 
   getChartData(kpiId, idx, aggregationType) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
-      console.log(this.kpiSelectedFilterObj[kpiId]);
-      
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
         const tempArr = {};
         for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
@@ -467,12 +463,9 @@ export class DoraComponent implements OnInit {
           tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.aggregationValue;
         }
         this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
-        
       } else {
         if (this.kpiSelectedFilterObj[kpiId]?.length > 0) {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value;
-          console.log(trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]);
-          
           this.kpiChartData[kpiId][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.aggregationValue;
         } else {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
@@ -527,9 +520,6 @@ export class DoraComponent implements OnInit {
     if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     }
-
-    console.log(kpiId, this.kpiChartData[kpiId]);
-    
   }
 
   createAllKpiArray(data, inputIsChartData = false) {
@@ -539,30 +529,22 @@ export class DoraComponent implements OnInit {
         this.allKpiArray.splice(idx, 1);
       }
       this.allKpiArray.push(data[key]);
-      console.log("0");
-      
       const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
       if ((trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) || (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1'))) {
         this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
-        console.log("1")
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
-          console.log("2")
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
         } else if (formType?.toLowerCase() == 'dropdown') {
-          console.log("3")
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
           this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
           let initialC = trendValueList[0].filter1;
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter': ['Overall'] };
         } else {
-          console.log("4")
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
         }
         this.kpiSelectedFilterObj['action'] = 'new';
-        console.log(this.kpiSelectedFilterObj[data[key]]);
-        
         this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
       }
       const agType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.aggregationCriteria;
