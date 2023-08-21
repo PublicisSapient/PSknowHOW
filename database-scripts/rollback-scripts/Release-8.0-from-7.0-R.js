@@ -452,3 +452,7 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 4}}).forEach(f
 db.field_mapping_structure.deleteMany({
     "fieldName": "jiraItrQSIssueTypeKPI133"
 });
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": "notificationEnabler"
+});

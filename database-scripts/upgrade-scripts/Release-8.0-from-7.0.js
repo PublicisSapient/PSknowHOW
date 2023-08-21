@@ -3544,3 +3544,25 @@ db.getCollection('field_mapping_structure').insertOne([
             }
     }
 ])
+
+// add Enable Notification option
+db.getCollection('field_mapping_structure').insertMany([
+{
+        "fieldName": "notificationEnabler",
+        "fieldLabel": "Processor Failure Notification",
+        "fieldType": "radiobutton",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+             "definition": "On/Off notification in case processor failure."
+        },
+        "options": [{
+             "label": "On",
+             "value": "On"
+        },
+        {
+             "label": "Off",
+             "value": "Off"
+        }
+        ]
+}
+]);

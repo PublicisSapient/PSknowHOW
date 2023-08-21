@@ -372,6 +372,9 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraIterationIssuetypeKPI124;
 	private List<String> jiraIterationIssuetypeKPI39;
 
+	@Builder.Default
+	private String notificationEnabler="On";
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *
