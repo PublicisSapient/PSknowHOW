@@ -249,9 +249,29 @@ db.user_board_config.updateMany(
 db.user_board_config.updateMany(
   {},
   {
-    $pull: {
-      "scrum.3.kpis": { kpiId: "kpi118" },
-      "scrum.2.kpis": { kpiId: "kpi116" }
+    $push: {
+      "scrum.3.kpis": {
+        $each: [
+          {
+            "kpiId": "kpi118",
+            "kpiName": "Deployment Frequency",
+            "isEnabled": true,
+            "isShown": true,
+            "order": 1
+          }
+        ]
+      },
+      "scrum.2.kpis": {
+        $each: [
+          {
+            "kpiId": "kpi116",
+            "kpiName": "Change Failure Rate",
+            "isEnabled": true,
+            "isShown": true,
+            "order": 15
+          }
+        ]
+      }
     },
     $pull: {
       "others": { "boardId": 12, "boardName": "Dora" } // Remove the Dora board entry
