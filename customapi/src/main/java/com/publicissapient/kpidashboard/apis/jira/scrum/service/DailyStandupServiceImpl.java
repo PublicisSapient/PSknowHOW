@@ -239,8 +239,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
             calculateRemainingCapacity(sprintDetails, capacityKpiData, userWiseRole, userWiseRemainingCapacity);
 
             StandUpViewKpiData defaultRemainingWork = estimationCriteria.equalsIgnoreCase(CommonConstant.STORY_POINT)
-                    ? StandUpViewKpiData.builder().value(Constant.DASH).value1(Constant.DASH).unit1(CommonConstant.SP).build()
-                    : StandUpViewKpiData.builder().value(Constant.DASH).value1(Constant.DASH).unit1(CommonConstant.HOURS).build();
+                    ? StandUpViewKpiData.builder().value(Constant.DASH).unit1(CommonConstant.SP).build()
+                    : StandUpViewKpiData.builder().value(Constant.DASH).unit1(CommonConstant.HOURS).build();
 
             Set<String> allRoles = new HashSet<>();
             for (Map.Entry<String, List<JiraIssue>> listEntry : assigneeWiseList.entrySet()) {
