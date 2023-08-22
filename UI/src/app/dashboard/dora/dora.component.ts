@@ -83,15 +83,10 @@ export class DoraComponent implements OnInit {
       this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
     }));
 
-    // this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-    //   console.log(globalConfig);
-
-    // this.configGlobalData = globalConfig[this.kanbanActivated ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-    const boardData = this.service.getDashConfigData();
-    this.configGlobalData = boardData?.['others']?.filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-
-    this.processKpiConfigData();
-    // }));
+    this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
+      this.configGlobalData = globalConfig['others'].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
+      this.processKpiConfigData();
+    }));
 
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
       if (Object.keys(x).length > 0) {
@@ -535,9 +530,7 @@ export class DoraComponent implements OnInit {
             this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
           }
         } else {
-          for (let i = 0; i < event[key]?.length; i++) {
-            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
-          }
+          this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];         
         }
       }
     } else {
