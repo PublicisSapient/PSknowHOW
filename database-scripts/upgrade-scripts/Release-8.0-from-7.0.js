@@ -2851,7 +2851,7 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach
 //------------------------- Release 7.7v ----------------------------------------------------------------------------------
 // kpi issue type mapping for Quality status  ---------------------------------------------------------------------------
 
-db.getCollection('field_mapping_structure').insertOne([
+db.getCollection('field_mapping_structure').insertMany([
     {
             "fieldName": "jiraItrQSIssueTypeKPI133",
             "fieldLabel": "Issue types which will have linked defects",
@@ -2860,6 +2860,21 @@ db.getCollection('field_mapping_structure').insertOne([
             "section": "Issue Types Mapping",
             "tooltip": {
                 "definition": "Consider issue types which have defects tagged to them"
+            }
+    }
+])
+
+//------------------------- Release 7.8v ----------------------------------------------------------------------------------
+// New FieldMapping Field to consider subtask defect  ---------------------------------------------------------------------------
+db.getCollection('field_mapping_structure').insertMany([
+    {
+            "fieldName": "jiraSubTaskDefectType",
+            "fieldLabel": "** Issue type for sub-task defect",
+            "fieldType": "chips",
+            "fieldCategory": "Issue_Type",
+            "section": "Issue Types Mapping",
+            "tooltip": {
+                "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
             }
     }
 ])

@@ -7971,6 +7971,16 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
     }
-}
+   },
+   {
+            "fieldName": "jiraSubTaskDefectType",
+            "fieldLabel": "** Issue type for sub-task defect",
+            "fieldType": "chips",
+            "fieldCategory": "Issue_Type",
+            "section": "Issue Types Mapping",
+            "tooltip": {
+                "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+            }
+    }
 ]
 );
