@@ -329,5 +329,15 @@ db.getCollection('action_policy_rule').insertMany([
             "createdDate": new Date(),
             "lastModifiedDate": new Date(),
             "isDeleted": false
-        }
+        },
+        {
+            "name": "Fetch Sprint",
+            "roleAllowed": "",
+            "description": "Any user can run active sprint fetch except guest user",
+            "roleActionCheck": "!subject.authorities.contains('ROLE_GUEST') && action == 'TRIGGER_SPRINT_FETCH'",
+            "condition": "true",
+            "createdDate": new Date(),
+            "lastModifiedDate": new Date(),
+            "isDeleted": false
+    }
     ]);

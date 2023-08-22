@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -89,6 +88,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Helper class for kpi requests . Utility to process for kpi requests.
@@ -567,7 +568,7 @@ public class KpiHelperService { // NOPMD
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
 
-			Map<ObjectId, Set<String>> duplicateIssues = getProjectWiseDuplicateIssueInSprintDetails(
+			Map<ObjectId, Set<String>> duplicateIssues = getProjectWiseTotalSprintDetail(
 					projectWiseTotalSprintDetails);
 			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
@@ -590,7 +591,7 @@ public class KpiHelperService { // NOPMD
 						.get(dbSprintDetail.getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-						new ArrayList<>(),
+						fieldMapping.getJiraIterationIssuetypeKPI39(),
 						fieldMapping.getJiraIterationCompletionStatusKpi39(), finalProjectWiseDuplicateIssuesWithMinCloseDate).get(0);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
@@ -1505,23 +1506,18 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * get duplicate issues from all the sprints selected
+	 * get projectWiseTotalIssues
 	 * @param projectWiseTotalSprintDetails
 	 * @return
 	 */
-	public Map<ObjectId, Set<String>> getProjectWiseDuplicateIssueInSprintDetails(
+	public Map<ObjectId, Set<String>> getProjectWiseTotalSprintDetail(
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails) {
 		Map<ObjectId, Set<String>> duplicateIssues = new HashMap<>();
 		projectWiseTotalSprintDetails.forEach((projectId, sprintDetails) -> {
-			List<String> allIssues = sprintDetails.stream().flatMap(
-							sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(Collections.emptySet()).stream())
-					.map(SprintIssue::getNumber).collect(Collectors.toList());
-
-			Set<String> duplicate = allIssues.stream()
-					.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet().stream()
-					.filter(m -> m.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
-
-			duplicateIssues.put(projectId, duplicate);
+			Set<String> allIssues = sprintDetails.stream().flatMap(
+					sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(Collections.emptySet()).stream())
+					.map(SprintIssue::getNumber).collect(Collectors.toSet());
+			duplicateIssues.put(projectId, allIssues);
 		});
 		return duplicateIssues;
 	}

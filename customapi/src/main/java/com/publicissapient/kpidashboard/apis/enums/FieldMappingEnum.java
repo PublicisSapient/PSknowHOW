@@ -27,55 +27,34 @@ import java.util.List;
 @SuppressWarnings("java:S1192")
 public enum FieldMappingEnum {
 
-	KPI0("Processor",KPISource.JIRA.name(),
-			Arrays.asList("jiradefecttype", "jiraIssueTypeNames",
-					"jiraIterationCompletionStatusCustomField", "estimationCriteria", "jiraStoryPointsCustomField",
-					"jiraDod", "jiraBugRaisedByQACustomField", "jiraBugRaisedByQAIdentification",
-					"jiraBugRaisedByQAValue", "jiraBugRaisedByCustomField", "jiraBugRaisedByValue",
-					"jiraBugRaisedByIdentification", "epicCostOfDelay", "epicRiskReduction",
-					"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize","additionalFilterConfig","jiraDueDateField","jiraDevDueDateCustomField","jiraIssueEpicType",
-					"rootCause",
-					"storyFirstStatus",
-	"jiraTestAutomationIssueType",
-	"jiraStoryIdentification",
+	KPI0("Processor", KPISource.JIRA.name(),
+			Arrays.asList("jiradefecttype", "jiraIssueTypeNames", "jiraIterationCompletionStatusCustomField",
+					"rootCause", "sprintName", "estimationCriteria", "jiraStoryPointsCustomField",
+					"jiraBugRaisedByQACustomField", "jiraBugRaisedByQAIdentification", "jiraBugRaisedByQAValue",
+					"jiraBugRaisedByCustomField", "jiraBugRaisedByValue", "jiraBugRaisedByIdentification",
+					"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
+					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField", "jiraDevDueDateField",
+					"jiraIssueEpicType", "storyFirstStatus", "jiraTestAutomationIssueType",
+					 "productionDefectCustomField", "productionDefectIdentifier",
+					"productionDefectValue", "productionDefectComponentValue")),
 
-	"jiraDefectDroppedStatus",
-	"productionDefectCustomField",
-	"productionDefectIdentifier",
-	"productionDefectValue",
-	"productionDefectComponentValue")),
-
-	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList(
-			"jiraIssueTypeNames",
-			"storyFirstStatus",
-			"epicCostOfDelay", "epicRiskReduction",
-			"epicUserBusinessValue", "epicWsjf", "epicTimeCriticality", "epicJobSize"
-			,"jiraIssueEpicType",
-			"rootCause"
-			,"additionalFilterConfig",
-			"estimationCriteria", "jiraStoryPointsCustomField",
-			"jiraLiveStatusLTK",
-			"jiraLiveStatusNOPK",
-			"jiraLiveStatusNOSK",
-			"jiraLiveStatusNORK",
-			"jiraLiveStatusOTA",
-			"ticketCountIssueType",
+	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNames", "storyFirstStatus",
+			"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
+			"epicJobSize", "jiraIssueEpicType", "rootCause", "additionalFilterConfig", "estimationCriteria",
+			"jiraStoryPointsCustomField", "jiraLiveStatusLTK", "jiraLiveStatusNOPK", "jiraLiveStatusNOSK",
+			"jiraLiveStatusNORK", "jiraLiveStatusOTA", "ticketCountIssueType",
 
 			"kanbanRCACountIssueType",
 
 			"jiraTicketVelocityIssueType",
 
-			"ticketDeliverdStatus",
-			"jiraTicketClosedStatus",
-			"kanbanCycleTimeIssueType",
-			"jiraTicketTriagedStatus",
+			"ticketDeliverdStatus", "jiraTicketClosedStatus", "kanbanCycleTimeIssueType", "jiraTicketTriagedStatus",
 
 			"jiraTicketRejectedStatus")),
 
 	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKpi40")),
 
-	KPI39("Sprint Velocity", KPISource.JIRA.name(), Arrays.asList(
-			"jiraIterationCompletionStatusKpi39")),
+	KPI39("Sprint Velocity", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKpi39" , "jiraIterationIssuetypeKPI39")),
 
 	KPI5("Sprint Predictability", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationIssuetypeKpi5", "jiraIterationCompletionStatusKpi5")),
@@ -96,25 +75,16 @@ public enum FieldMappingEnum {
 	KPI3("Lead Time (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeKPI3", "jiraDorKPI3", "jiraDodKPI3",
 			"jiraLiveStatusKPI3", "storyFirstStatusKPI3")),
 
-	KPI34("Defect Removal Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraDefectRemovalStatusKPI34",
-			"resolutionTypeForRejectionKPI34", "jiraDefectRejectionStatusKPI34", "jiraDefectRemovalIssueTypeKPI34")),
+	KPI34("Defect Removal Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraDefectRemovalStatusKPI34")),
 
 	KPI37("Defect Rejection Rate", KPISource.JIRA.name(),
-			Arrays.asList("resolutionTypeForRejectionKPI37", "jiraDefectRejectionStatusKPI37", "jiraIssueTypeKPI37")),
+			Arrays.asList("resolutionTypeForRejectionKPI37", "jiraDefectRejectionStatusKPI37", "jiraDodKPI37")),
 
 	KPI28("Defect Count By Priority (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraDefectCountlIssueTypeKPI28",
 			"resolutionTypeForRejectionKPI28", "jiraDefectRejectionStatusKPI28")),
 
 	KPI140("Defect Count by Priority (Iteration)", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusKPI140")),
-
-	KPI144("Defect Count by Priority (Release)", KPISource.JIRA.name(), Arrays.asList()),
-
-	KPI143("Defect Count by Assignee (Release)", KPISource.JIRA.name(), Arrays.asList()),
-
-	KPI142("Defect Count by RCA (Release)", KPISource.JIRA.name(), Arrays.asList()),
-
-	KPI141("Defect Count by Status (Release)", KPISource.JIRA.name(), Arrays.asList()),
 
 	KPI36("Defect Count by RCA (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraDefectCountlIssueTypeKPI36",
 			"resolutionTypeForRejectionRCAKPI36", "jiraDefectRejectionStatusRCAKPI36")),
@@ -135,14 +105,15 @@ public enum FieldMappingEnum {
 					"excludeRCAFromQAKPI111", "resolutionTypeForRejectionQAKPI111",
 					"jiraDefectRejectionStatusQAKPI111")),
 
-	KPI127("Production Defects Ageing", KPISource.JIRA.name(), Arrays.asList("jiraDodKPI127", "jiraLiveStatusKPI127","jiraDefectDroppedStatusKPI127")),
+	KPI127("Production Defects Ageing", KPISource.JIRA.name(),
+			Arrays.asList("jiraDodKPI127", "jiraLiveStatusKPI127", "jiraDefectDroppedStatusKPI127")),
 
 	KPI35("Defect Seepage Rate", KPISource.JIRA.name(),
 			Arrays.asList("jiraIssueTypeKPI35", "resolutionTypeForRejectionKPI35", "jiraDefectRejectionStatusKPI35")),
 
 	KPI133("Quality Status", KPISource.JIRA.name(),
 			Arrays.asList("resolutionTypeForRejectionKPI133", "jiraDefectRejectionStatusKPI133", "defectPriorityKPI133",
-					"excludeRCAFromKPI133", "jiraIterationCompletionStatusKPI133")),
+					"excludeRCAFromKPI133", "jiraIterationCompletionStatusKPI133","jiraItrQSIssueTypeKPI133")),
 
 	KPI126("Created vs Resolved defects", KPISource.JIRA.name(), Arrays.asList("jiraIssueDeliverdStatusKPI126")),
 
@@ -182,21 +153,25 @@ public enum FieldMappingEnum {
 	KPI131("Wastage", KPISource.JIRA.name(), Arrays.asList("jiraIncludeBlockedStatusKPI131",
 			"jiraIterationCompletionStatusKPI131", "jiraIterationIssuetypeKPI131", "jiraWaitStatusKPI131")),
 
-	KPI138("Backlog Readiness Efficiency", KPISource.JIRA.name(),
-			Arrays.asList("jiraIterationCompletionStatusKPI138", "jiraIterationIssuetypeKPI138","readyForDevelopmentStatusKPI138","jiraIssueDeliverdStatusKPI138")),
+	KPI138("Backlog Readiness Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKPI138",
+			"jiraIterationIssuetypeKPI138", "readyForDevelopmentStatusKPI138", "jiraIssueDeliverdStatusKPI138")),
 
 	KPI137("Defect Reopen Rate (Backlog)", KPISource.JIRA.name(), Arrays.asList("jiraDefectClosedStatusKPI137")),
 
-	KPI129("Issues Without Story Link", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI129","excludeStatusKpi129")),
+	KPI129("Issues Without Story Link", KPISource.JIRA.name(),
+			Arrays.asList("jiraStoryIdentificationKPI129", "excludeStatusKpi129")),
 
-	KPI139("Refinement Rejection Rate", KPISource.JIRA.name(), Arrays.asList("jiraAcceptedInRefinementKPI139","jiraReadyForRefinementKPI139","jiraRejectedInRefinementKPI139")),
+	KPI139("Refinement Rejection Rate", KPISource.JIRA.name(), Arrays.asList("jiraAcceptedInRefinementKPI139",
+			"jiraReadyForRefinementKPI139", "jiraRejectedInRefinementKPI139")),
 
-	KPI148("Flow Load", KPISource.JIRA.name(), Arrays.asList("storyFirstStatusKPI148","jiraStatusForQaKPI148","jiraStatusForInProgressKPI148")),
+	KPI148("Flow Load", KPISource.JIRA.name(),
+			Arrays.asList("storyFirstStatusKPI148", "jiraStatusForQaKPI148", "jiraStatusForInProgressKPI148")),
 
-	KPI151("Backlog Count By Status", KPISource.JIRA.name(), Arrays.asList("jiraDodKPI151","jiraDefectRejectionStatusKPI151","jiraLiveStatusKPI151")),
+	KPI151("Backlog Count By Status", KPISource.JIRA.name(),
+			Arrays.asList("jiraDodKPI151", "jiraDefectRejectionStatusKPI151", "jiraLiveStatusKPI151")),
 
-	KPI152("Backlog Count By Issue Type", KPISource.JIRA.name(), Arrays.asList("jiraDodKPI152","jiraDefectRejectionStatusKPI152","jiraLiveStatusKPI152"));
-
+	KPI152("Backlog Count By Issue Type", KPISource.JIRA.name(),
+			Arrays.asList("jiraDodKPI152", "jiraDefectRejectionStatusKPI152", "jiraLiveStatusKPI152"));
 
 	private List<String> fields;
 	private String kpiName;

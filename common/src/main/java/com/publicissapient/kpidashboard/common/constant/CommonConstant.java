@@ -177,6 +177,7 @@ public final class CommonConstant {
 	public static final String INITIALHOURS = "InitialHours";
 	public static final String ORIGINAL_ESTIMATE = "Original Estimate";
 	public static final String DUE_DATE = "Due Date";
+	public static final String DEV_DUE_DATE = "Dev Due Date";
 
 	public static final String REJECTED = "Rejected";
 	public static final String ITERATION = "Iteration";
@@ -189,6 +190,7 @@ public final class CommonConstant {
 	public static final String CACHE_PROJECT_TOOL_CONFIG= "cache_project_tool_config";
 	public static final String CUSTOM_TEMPLATE_CODE_SCRUM="10";
 	public static final String CUSTOM_TEMPLATE_CODE_KANBAN="9";
+	public static final String EPICLINK="epicLink";
 
     private CommonConstant() {
 

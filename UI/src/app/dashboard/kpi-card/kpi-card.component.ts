@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter, OnDestroy,OnChanges, Si
 import { faShareSquare } from '@fortawesome/free-solid-svg-icons';
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 @Component({
   selector: 'app-kpi-card',
   templateUrl: './kpi-card.component.html',
@@ -27,7 +28,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   @Input() isShow?: any;
   @Input() showExport: boolean;
   @Input() showTrendIndicator =true;
-  @Input() showChartView = true;
+  @Input() showChartView = 'chart';
   @Input() cols: Array<object> = [];
   @Input() iSAdditionalFilterSelected =false;
   @Input() showCommentIcon: boolean;
@@ -56,13 +57,18 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
  noData : boolean = false
  @Input() commentCount : string;
  @Output() getCommentCountByKpi = new EventEmitter();
+ userRole : string;
+ checkIfViewer : boolean;
 
-  constructor(private service: SharedService,
-    private http : HttpService) {
+  constructor(public service: SharedService,
+    private http : HttpService,
+    private authService : GetAuthorizationService) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
     // changes['dropdownArr']?.currentValue ? true : this.dropdownArr = [];
+    this.userRole = this.authService.getRole();
+   this.checkIfViewer =  (this.authService.checkIfViewer({id : this.service.getSelectedTrends()[0]?.basicProjectConfigId}));
   }
 
   ngOnInit(): void {
@@ -197,7 +203,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
         selectedProjectTrend.value.forEach(element => {
           let tempObj = {};
           tempObj['duration'] = element['sSprintName'] || element['date'];
-          tempObj['value'] = (Math.round(element['value'] * 100) / 100);
+          tempObj['value'] = element['lineValue'] !== undefined ? element['lineValue'] : (Math.round(element['value'] * 100) / 100);
           tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
           if (element['hoverValue'] && Object.keys(element['hoverValue'])?.length > 0) {
             tempObj['params'] = Object.entries(element['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
@@ -240,6 +246,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     const selectedTrend = this.service.getSelectedTrends();
     if (selectedType === 'scrum' && selectedTrend.length == 1  && selectedTab !== 'release') {
       this.loading = true;
+      this.noData = false;
       this.displayConfigModel = true;
       this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData?.kpiId}`).subscribe(data => {
         if(data && data['success']){
