@@ -36,21 +36,15 @@ public enum FieldMappingEnum {
 					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField", "jiraDevDueDateField",
 					"jiraIssueEpicType", "storyFirstStatus", "jiraTestAutomationIssueType",
 					 "productionDefectCustomField", "productionDefectIdentifier",
-					"productionDefectValue", "productionDefectComponentValue")),
+					"productionDefectValue", "productionDefectComponentValue", "jiraSubTaskDefectType")),
 
 	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNames", "storyFirstStatus",
 			"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
 			"epicJobSize", "jiraIssueEpicType", "rootCause", "additionalFilterConfig", "estimationCriteria",
 			"jiraStoryPointsCustomField", "jiraLiveStatusLTK", "jiraLiveStatusNOPK", "jiraLiveStatusNOSK",
-			"jiraLiveStatusNORK", "jiraLiveStatusOTA", "ticketCountIssueType",
-
-			"kanbanRCACountIssueType",
-
-			"jiraTicketVelocityIssueType",
-
-			"ticketDeliverdStatus", "jiraTicketClosedStatus", "kanbanCycleTimeIssueType", "jiraTicketTriagedStatus",
-
-			"jiraTicketRejectedStatus")),
+			"jiraLiveStatusNORK", "jiraLiveStatusOTA", "ticketCountIssueType", "kanbanRCACountIssueType",
+			"jiraTicketVelocityIssueType", "ticketDeliverdStatus", "jiraTicketClosedStatus", "kanbanCycleTimeIssueType",
+			"jiraTicketTriagedStatus", "jiraTicketRejectedStatus", "jiraSubTaskDefectType")),
 
 	KPI40("Issue Count", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKpi40")),
 

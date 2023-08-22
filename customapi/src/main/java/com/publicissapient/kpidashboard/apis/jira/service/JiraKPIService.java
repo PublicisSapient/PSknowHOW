@@ -74,6 +74,8 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> implements ApplicationKPIService<R, S, T> {
 
 	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+	public static final String BUG = "Bug";
+	public static final String BASIC_PROJECT_CONFIG_ID = "basicProjectConfigId";
 	@Autowired
 	private CacheService cacheService;
 	@Autowired
@@ -294,27 +296,38 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 	}
 
 	public List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(Map<String, Set<String>> projectWiseDefectTypes,
-			String board) {
+			Set<String> subTaskDefectType) {
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
-		List<JiraIssue> jiraIssuesForCurrentSprint = jiraService.getJiraIssuesForCurrentSprint();
-		Set<JiraIssue> defectsList = jiraService.getSubTaskDefects();
-		List<JiraIssue> unTaggedDefectForCurentSprint = new ArrayList<>();
-
-		if (board.equalsIgnoreCase(CommonConstant.RELEASE) && !jiraIssuesForCurrentSprint.isEmpty()
-				&& !defectsList.isEmpty()) {
-
-			Set<String> issues = jiraIssuesForCurrentSprint.stream()
-					.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Bug")).map(JiraIssue::getNumber)
-					.collect(Collectors.toSet());
-			for (JiraIssue linkedDefect : defectsList) {
-				if (!issues.contains(linkedDefect.getNumber())) {
-					issues.add(linkedDefect.getNumber());
-					unTaggedDefectForCurentSprint.add(linkedDefect);
-				}
-			}
-			filteredJiraIssue = unTaggedDefectForCurentSprint;
+		List<JiraIssue> subtaskDefects = new ArrayList<>();
+		List<JiraIssue> jiraIssuesForCurrentRelease = jiraService.getJiraIssuesForSelectedRelease();
+		Set<String> storyIDs = jiraIssuesForCurrentRelease.stream()
+				.filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(BUG)).map(JiraIssue::getNumber)
+				.collect(Collectors.toSet());
+		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(subTaskDefectType)
+				&& !storyIDs.isEmpty()) {
+			Set<JiraIssue> defectsList = jiraService.getSubTaskDefects(projectWiseDefectTypes.keySet(), storyIDs,
+					subTaskDefectType);
+			defectsList.removeIf(jiraIssuesForCurrentRelease::contains);
+			subtaskDefects.addAll(defectsList);
+			filteredJiraIssue = subtaskDefects;
 		}
 
+		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(jiraIssuesForCurrentRelease)) {
+			List<JiraIssue> finalFilteredJiraIssue = filteredJiraIssue;
+			projectWiseDefectTypes.forEach((project,
+					values) -> finalFilteredJiraIssue.addAll(jiraIssuesForCurrentRelease.stream()
+							.filter(jiraIssue -> values.contains(jiraIssue.getTypeName())
+									&& project.equalsIgnoreCase(jiraIssue.getBasicProjectConfigId()))
+							.collect(Collectors.toList())));
+
+		} else
+			filteredJiraIssue = jiraIssuesForCurrentRelease;
+		return filteredJiraIssue;
+	}
+
+	public List<JiraIssue> getBackLogJiraIssuesFromBaseClass(Map<String, Set<String>> projectWiseDefectTypes) {
+		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
+		List<JiraIssue> jiraIssuesForCurrentSprint = jiraService.getJiraIssuesForCurrentSprint();
 		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(jiraIssuesForCurrentSprint)) {
 			List<JiraIssue> finalFilteredJiraIssue = filteredJiraIssue;
 			projectWiseDefectTypes.forEach((project,

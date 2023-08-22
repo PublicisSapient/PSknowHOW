@@ -168,5 +168,9 @@ public interface JiraIssueRepository
 	 */
 	List<JiraIssue> findByBasicProjectConfigIdIn(String basicProjectConfigId);
 
-	Set<JiraIssue> findByDefectStoryIDInAndTypeName(List<String> storyIDs, String typeName);
+	List<JiraIssue> findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(String projectConfigId,
+			List<String> releaseVersions);
+
+	Set<JiraIssue> findByBasicProjectConfigIdInAndDefectStoryIDInAndOriginalTypeIn(Set<String> basicProjectConfigID,
+			Set<String> storyIDs, Set<String> originalType);
 }

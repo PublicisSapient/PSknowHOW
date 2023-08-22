@@ -21,10 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
@@ -42,7 +39,6 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -106,9 +102,9 @@ public class JiraServiceR {
 
 	JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
 	private List<JiraIssue> jiraIssueList;
+	private List<JiraIssue> jiraIssueReleaseList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private List<String> releaseList;
-	private Set<JiraIssue> totalSubTaskDefects;
 
 	/**
 	 * This method process scrum JIRA based kpi request, cache data and call service
@@ -191,7 +187,7 @@ public class JiraServiceR {
 			sprintDetails = null;
 			jiraIssueList = null;
 			jiraIssueCustomHistoryList = null;
-			totalSubTaskDefects = null;
+			jiraIssueReleaseList = null;
 		} catch (Exception e) {
 			log.error("Error while KPI calculation for data {} {}", kpiRequest.getKpiList(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
@@ -315,22 +311,8 @@ public class JiraServiceR {
 		} else if (board.equalsIgnoreCase(CommonConstant.BACKLOG)) {
 			jiraIssueList = jiraIssueRepository.findByBasicProjectConfigIdIn(basicProjectConfigId);
 		} else if (board.equalsIgnoreCase(CommonConstant.RELEASE)) {
-			Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
-			mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-					Collections.singletonList(basicProjectConfigId));
-			Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			mapOfProjectFilters.put(CommonConstant.RELEASE,
-					CommonUtils.convertToPatternListForSubString(sprintIssuesList));
-			uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
-			jiraIssueList = jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
-
-			List<String> storyIDs = jiraIssueList.stream()
-					.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Story")).map(JiraIssue::getNumber)
-					.collect(Collectors.toList());
-
-			totalSubTaskDefects = jiraIssueRepository.findByDefectStoryIDInAndTypeName(storyIDs, "Bug");
-
+			jiraIssueReleaseList = jiraIssueRepository
+					.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, sprintIssuesList);
 		}
 	}
 
@@ -365,8 +347,14 @@ public class JiraServiceR {
 		return jiraIssueList;
 	}
 
-	public Set<JiraIssue> getSubTaskDefects() {
-		return totalSubTaskDefects;
+	public List<JiraIssue> getJiraIssuesForSelectedRelease() {
+		return jiraIssueReleaseList;
+	}
+
+	public Set<JiraIssue> getSubTaskDefects(Set<String> basicProjectConfigID, Set<String> storyIDs,
+			Set<String> subTaskDefectType) {
+		return jiraIssueRepository.findByBasicProjectConfigIdInAndDefectStoryIDInAndOriginalTypeIn(basicProjectConfigID,
+				storyIDs, subTaskDefectType);
 	}
 
 	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, List<String> sprintIssuesList, String board) {

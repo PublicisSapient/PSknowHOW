@@ -90,6 +90,7 @@ public class ReleaseDefectCountByStatusServiceImpl extends JiraKPIService<Intege
 			log.info("Defect count by Status Release -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 			Set<String> defectType = new HashSet<>();
+			Set<String> subTaskDefectType = new HashSet<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 
@@ -98,9 +99,13 @@ public class ReleaseDefectCountByStatusServiceImpl extends JiraKPIService<Intege
 				if (fieldMapping.getJiradefecttype() != null) {
 					defectType.addAll(fieldMapping.getJiradefecttype());
 				}
+
+				if(fieldMapping.getJiraSubTaskDefectType() != null) {
+					subTaskDefectType.addAll(fieldMapping.getJiraSubTaskDefectType());
+				}
 				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
 				mapOfProjectFilters.put(basicProjectConfigId, defectType);
-				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(mapOfProjectFilters, CommonConstant.RELEASE);
+				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(mapOfProjectFilters, subTaskDefectType);
 				resultListMap.put(TOTAL_DEFECT, releaseDefects);
 			}
 		}
