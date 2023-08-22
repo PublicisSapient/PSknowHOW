@@ -394,7 +394,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 		Map<String, Object> resultList = new HashMap<>();
 
 		// filtering statusUpdationLogs lies in between sprintStart and sprintEnd
-		filterStatusUpdationLogs = getFilterStatusUpdationLogs(issueCustomHistory, filterStatusUpdationLogs,
+		filterStatusUpdationLogs = getFilterStatusUpdationLog(issueCustomHistory, filterStatusUpdationLogs,
 				sprintStartDate, sprintEndDate);
 
 		// Creating the set of completed status
@@ -438,7 +438,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 
 	// Filtering the history which happened inside the sprint on basis of activity
 	// date
-	private List<JiraHistoryChangeLog> getFilterStatusUpdationLogs(JiraIssueCustomHistory issueCustomHistory,
+	private List<JiraHistoryChangeLog> getFilterStatusUpdationLog(JiraIssueCustomHistory issueCustomHistory,
 			List<JiraHistoryChangeLog> filterStatusUpdationLogs, LocalDate sprintStartDate, LocalDate sprintEndDate) {
 		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
 			filterStatusUpdationLogs = issueCustomHistory.getStatusUpdationLog().stream()

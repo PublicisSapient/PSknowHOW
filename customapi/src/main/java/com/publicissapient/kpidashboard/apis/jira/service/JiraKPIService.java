@@ -232,6 +232,20 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return devCompleteDate;
 	}
 
+	// Filtering the history which happened inside the sprint on basis of activity
+	// date
+	public List<JiraHistoryChangeLog> getFilterStatusUpdationLogs(JiraIssueCustomHistory issueCustomHistory,
+																   List<JiraHistoryChangeLog> filterStatusUpdationLogs, LocalDate sprintStartDate, LocalDate sprintEndDate) {
+		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
+			filterStatusUpdationLogs = issueCustomHistory.getStatusUpdationLog().stream()
+					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(
+							LocalDate.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"),
+									DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+							sprintStartDate, sprintEndDate))
+					.collect(Collectors.toList());
+		}
+		return filterStatusUpdationLogs;
+	}
 	/**
 	 * to maintain values upto 2 places of decimal
 	 * 

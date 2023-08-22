@@ -381,19 +381,19 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
-		Map<LocalDate, List<JiraIssue>> fullSprintIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
-				.get(FULL_SPRINT_ISSUES);
-		Map<LocalDate, List<JiraIssue>> removedIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
-				.get(CommonConstant.PUNTED_ISSUES);
-		Map<LocalDate, List<JiraIssue>> addedIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
-				.get(CommonConstant.ADDED_ISSUES);
-		Map<LocalDate, List<JiraIssue>> completedIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
-				.get(CommonConstant.COMPLETED_ISSUES);
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT);
-		Map<LocalDate, Set<JiraIssue>> removedFromClosed = (Map<LocalDate, Set<JiraIssue>>) resultMap
-				.get(REMOVED_FROM_CLOSED);
-		List<JiraIssue> totalIssueList = new ArrayList<>((Set<JiraIssue>) resultMap.get(ISSUES));
 		if (ObjectUtils.isNotEmpty(sprintDetails)) {
+			Map<LocalDate, List<JiraIssue>> fullSprintIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+					.get(FULL_SPRINT_ISSUES);
+			Map<LocalDate, List<JiraIssue>> removedIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+					.get(CommonConstant.PUNTED_ISSUES);
+			Map<LocalDate, List<JiraIssue>> addedIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+					.get(CommonConstant.ADDED_ISSUES);
+			Map<LocalDate, List<JiraIssue>> completedIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+					.get(CommonConstant.COMPLETED_ISSUES);
+			Map<LocalDate, Set<JiraIssue>> removedFromClosed = (Map<LocalDate, Set<JiraIssue>>) resultMap
+					.get(REMOVED_FROM_CLOSED);
+			List<JiraIssue> totalIssueList = new ArrayList<>((Set<JiraIssue>) resultMap.get(ISSUES));
 			log.info("Iteration Burnups -> request id : {} total jira Issues : {}", requestTrackerId,
 					fullSprintIssuesMap.size());
 			List<String> totalSprintDetailsIssues = sprintDetails.getTotalIssues().stream().map(SprintIssue::getNumber)
