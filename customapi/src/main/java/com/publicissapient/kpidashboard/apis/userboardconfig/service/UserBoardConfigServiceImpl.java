@@ -108,7 +108,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		Map<String, KpiMaster> kpiMasterMap = StreamSupport.stream(allKPIs.spliterator(), false)
 				.collect(Collectors.toMap(KpiMaster::getKpiId, Function.identity()));
 		List<KpiCategory> kpiCategoryList = kpiCategoryRepository.findAll();
-		UserBoardConfigDTO defaultUserBoardConfigDTO = new UserBoardConfigDTO();
+ 		UserBoardConfigDTO defaultUserBoardConfigDTO = new UserBoardConfigDTO();
 		if (null == existingUserBoardConfig) {
 			setUserBoardConfigBasedOnCategoryForFreshUser(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 			return defaultUserBoardConfigDTO;
@@ -320,6 +320,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		}
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), ITERATION,
 				scrumBoards, false);
+		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), DEVELOPER,
+				scrumBoards, false);
 		newUserBoardConfig.setScrum(scrumBoards);
 
 		List<BoardDTO> kanbanBoards = new ArrayList<>();
@@ -330,6 +332,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		}
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), ITERATION,
 				kanbanBoards, true);
+		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), DEVELOPER,
+				kanbanBoards, true);
 		newUserBoardConfig.setKanban(kanbanBoards);
 
 		List<BoardDTO> otherBoards = new ArrayList<>();
@@ -337,8 +341,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				otherBoards, false);
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), BACKLOG,
 				otherBoards, false);
-        setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), DEVELOPER,
-                otherBoards, false);
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), KPI_MATURITY,
 				otherBoards, false);
 		newUserBoardConfig.setOthers(otherBoards);
