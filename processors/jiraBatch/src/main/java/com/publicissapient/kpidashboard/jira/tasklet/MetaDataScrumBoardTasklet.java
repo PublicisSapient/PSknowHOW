@@ -38,16 +38,20 @@ public class MetaDataScrumBoardTasklet implements Tasklet {
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		log.info("**** Metadata fetch for Scrum Board started * * *");
-		Map<String, List<ProjectConfFieldMapping>> projConfFieldMapping = fetchProjectConfiguration
-				.fetchConfiguration(false);
-		if (jiraProcessorConfig.isFetchMetadata()) {
-			projConfFieldMapping.forEach((url, projConfFieldMappings) -> {
-				projConfFieldMappings.forEach(projectConfFieldMapping -> {
-					KerberosClient krb5Client = null;
-					ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
-					createMetadata.collectMetadata(projectConfFieldMapping, client);
+		try {
+			Map<String, List<ProjectConfFieldMapping>> projConfFieldMapping = fetchProjectConfiguration
+					.fetchConfiguration(false);
+			if (jiraProcessorConfig.isFetchMetadata()) {
+				projConfFieldMapping.forEach((url, projConfFieldMappings) -> {
+					projConfFieldMappings.forEach(projectConfFieldMapping -> {
+						KerberosClient krb5Client = null;
+						ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
+						createMetadata.collectMetadata(projectConfFieldMapping, client);
+					});
 				});
-			});
+			}
+		} catch (Exception e) {
+			log.error("Exception while fetching metadata", e);
 		}
 		log.info("**** Metadata fetch for Scrum Board ended * * *");
 		return RepeatStatus.FINISHED;

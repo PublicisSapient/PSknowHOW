@@ -41,17 +41,21 @@ public class SprintScrumBoardTasklet implements Tasklet {
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		log.info("**** Sprint report for Scrum Board started * * *");
-		Map<String, List<ProjectConfFieldMapping>> projConfFieldMapping = fetchProjectConfiguration
-				.fetchConfiguration(false);
-		for (Map.Entry<String, List<ProjectConfFieldMapping>> entry : projConfFieldMapping.entrySet()) {
-			for (ProjectConfFieldMapping projectConfFieldMapping : entry.getValue()) {
-				KerberosClient krb5Client = null;
-				ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
-				Set<SprintDetails> setForCacheClean = new HashSet<>();
-				List<SprintDetails> sprintDetailsList = fetchSprintReport
-						.createSprintDetailBasedOnBoard(projectConfFieldMapping, setForCacheClean, krb5Client);
-				sprintRepository.saveAll(sprintDetailsList);
+		try {
+			Map<String, List<ProjectConfFieldMapping>> projConfFieldMapping = fetchProjectConfiguration
+					.fetchConfiguration(false);
+			for (Map.Entry<String, List<ProjectConfFieldMapping>> entry : projConfFieldMapping.entrySet()) {
+				for (ProjectConfFieldMapping projectConfFieldMapping : entry.getValue()) {
+					KerberosClient krb5Client = null;
+					ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
+					Set<SprintDetails> setForCacheClean = new HashSet<>();
+					List<SprintDetails> sprintDetailsList = fetchSprintReport
+							.createSprintDetailBasedOnBoard(projectConfFieldMapping, setForCacheClean, krb5Client);
+					sprintRepository.saveAll(sprintDetailsList);
+				}
 			}
+		} catch (Exception e) {
+			log.error("Exception while fetching sprint data for scrum project and board setup", e);
 		}
 		log.info("**** Sprint report for Scrum Board ended * * *");
 		return RepeatStatus.FINISHED;
