@@ -1,4 +1,4 @@
-<main class="container" *ngIf="assigneeList.length > 0 && filterData else loader">
+<main class="container" *ngIf="assigneeList.length > 0 && filterData else noData">
 
     <!-- filter section -->
     <section class="filter-header">
@@ -72,9 +72,9 @@
     </section>
    </ng-template>
 </main>
-<ng-template #loader>
-    <div class="overlay">
-      <div class="loading-img"></div>
+<ng-template #noData>
+    <div [style]="{'text-align': 'center'}">
+     <h1>No Data Available</h1>
     </div>
 </ng-template>
 
