@@ -340,7 +340,7 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
       .call(yAxis)
       .append('text')
       .attr('x', -30)
-      .attr('y', -30)
+      .attr('y', -45)
       .attr('transform', 'rotate(-90)')
       .attr('fill', '#437495')
       .attr('font-size', '12px');
@@ -640,7 +640,7 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
         for (let d of dataCategory) {
           htmlString += `<div>`;
           lineTypes.forEach((lineType, i) => {
-            htmlString += `<div class="legend-item"><div class="legend_color_indicator_dashed" style="border-top:  ${lineType === 'solid' ? '3px solid ' : '3px dashed '}${colorCategory(d)}"></div> <span class="p-m-1">:${d} ${lineDetails[i]}</span></div>`;
+            htmlString += `<div class="legend-item"><span>${lineDetails[i]}: &nbsp &nbsp</span><div class="legend_color_indicator_dashed" style="border-top:  ${lineType === 'solid' ? '3px solid ' : '3px dashed '}${colorCategory(d)}"></div> <span class="p-m-1">&nbsp${d} </span></div>`;
           });
           htmlString += `</div>`;
         }
