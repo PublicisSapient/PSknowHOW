@@ -182,7 +182,7 @@ export class DeveloperComponent implements OnInit {
       }
     }
     if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
-      this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
+      this.configGlobalData = this.service.getDashConfigData()[this.service.getSelectedType().toLowerCase() === 'kanban' ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
       if (JSON.stringify(this.filterApplyData) !== JSON.stringify($event.filterApplyData) || this.configGlobalData) {
         if (this.serviceObject['makeAPICall']) {
@@ -204,7 +204,7 @@ export class DeveloperComponent implements OnInit {
           this.noTabAccess = false;
           // call kpi request according to tab selected
           if (this.masterData && Object.keys(this.masterData).length) {
-            this.configGlobalData = this.globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'developer')[0]?.kpis;
+            this.configGlobalData = this.globalConfig[this.service.getSelectedType().toLowerCase() === 'kanban' ? 'kanban' : 'scrum'].filter((item) => item.boardName.toLowerCase() == 'developer')[0]?.kpis;
             this.processKpiConfigData();
             if (this.service.getSelectedType().toLowerCase() === 'kanban') {
               // this.configGlobalData = this.service.getDashConfigData()[this.selectedtype.toLowerCase()].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
