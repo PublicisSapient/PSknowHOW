@@ -109,6 +109,7 @@ public class RepoToolConfigServiceImplTest {
         connection.setType(toolType);
         connection.setSshUrl("testSshUrl");
         connection.setHttpUrl("testHttpUrl");
+        connection.setRepoToolProvider("github");
 
         doReturn(mock(RepoToolsClient.class)).when(repoToolsConfigService).createRepoToolsClient();
 
@@ -124,7 +125,8 @@ public class RepoToolConfigServiceImplTest {
                 .thenReturn(Collections.singletonList(new ProjectToolConfigDTO()));
         when(restAPIUtils.decryptPassword(anyString())).thenReturn("decryptedApiKey");
         when(projectBasicConfigRepository.findById(any(ObjectId.class))).thenReturn(Optional.of(new ProjectBasicConfig()));
-        when(customApiConfig.getRepoToolURL()).thenReturn("http://localhost:8080/api");
+        String testRepoToolsUrl = "http://example.com"; // Replace with your desired URL
+        when(customApiConfig.getRepoToolURL()).thenReturn(testRepoToolsUrl);
         when(customApiConfig.getRepoToolAPIKey()).thenReturn("repoToolAPIKey");
         ResponseEntity<String> expectedResponse = new ResponseEntity<>("response body", HttpStatus.OK);
 
@@ -143,8 +145,8 @@ public class RepoToolConfigServiceImplTest {
         when(restAPIUtils.decryptPassword(anyString()))
                 .thenReturn("decryptedApiKey");
 
-        when(repoToolsClient.enrollProjectCall(any(), any(), any()))
-                .thenReturn(HttpStatus.OK.value()); // Mock the response status
+//        when(repoToolsClient.enrollProjectCall(any(), any(), any()))
+//                .thenReturn(HttpStatus.OK.value()); // Mock the response status
 
         // Set the mock RepoToolsClient instance in the service
         Whitebox.setInternalState(repoToolsConfigService, "repoToolsClient", repoToolsClient);

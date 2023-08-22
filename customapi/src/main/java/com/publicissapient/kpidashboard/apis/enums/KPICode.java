@@ -420,6 +420,7 @@ public enum KPICode {
 
     PICKUP_TIME("kpi154", KPISource.BITBUCKET.name()),
     REPO_TOOL_MEAN_TIME_TO_MERGE("kpi155", KPISource.BITBUCKET.name()),
+    REPO_TOOL_NUMBER_OF_CHECK_INS("kpi157", KPISource.BITBUCKETKANBAN.name()),
 
     REPO_TOOL_CODE_COMMIT("kpi156", KPISource.BITBUCKET.name()),
 	/**

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.repotools.RepoToolsClient;
 import com.publicissapient.kpidashboard.apis.repotools.model.*;
@@ -23,7 +24,7 @@ import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLo
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -34,6 +35,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class RepoToolsConfigServiceImpl {
@@ -49,7 +51,7 @@ public class RepoToolsConfigServiceImpl {
 
 	@Autowired
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
-	
+
 	@Autowired
 	CustomApiConfig customApiConfig;
 
@@ -69,8 +71,15 @@ public class RepoToolsConfigServiceImpl {
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+	private RestTemplate restTemplate;
+	private static final String REPO_TOOLS_ENROLL_URL = "/beta/repositories/";
 
-	private static final String QUERY_PARAMS = "?projects=%s&start_date=%s&end_date=%s&frequency=%s";
+	private static final String REPO_TOOLS_DELETE_REPO_URL = "/beta/repositories/%s";
+	private static final String REPO_TOOLS_TRIGGER_SCAN_URL = "/metric/%s/trigger-scan";
+
+	private static final String X_API_KEY = "X_API_KEY";
+	private HttpHeaders httpHeaders;
+
 	private static final String METRIC = "/metric/";
 	public static final String TOOL_BRANCH = "branch";
 	public static final String SCM = "scm";
@@ -78,13 +87,10 @@ public class RepoToolsConfigServiceImpl {
 	public static final String REPO_BRANCH = "defaultBranch";
 	public static final String DELETE_REPO = "/project/delete/%s/?only_data=%s";
 
-
-	private RepoToolsClient repoToolsClient; // Declare RepoToolsClient instance
-
-	// Other constants and methods
+	private RepoToolsClient repoToolsClient;
 
 	public RepoToolsClient createRepoToolsClient() {
-		return new RepoToolsClient(); // Instantiate and return a new RepoToolsClient
+		return new RepoToolsClient();
 	}
 
 
@@ -103,7 +109,6 @@ public class RepoToolsConfigServiceImpl {
 					projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
 					fistScan.toString().replace("T", " "), toolCredential, branchNames);
-			repoToolsClient = createRepoToolsClient();
 			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig, customApiConfig.getRepoToolURL(),
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 
@@ -174,19 +179,18 @@ public class RepoToolsConfigServiceImpl {
 		return httpStatus == HttpStatus.OK.value();
 	}
 
-	public List<RepoToolKpiMetricResponse> getRepoToolKpiMetrics(List<String> projectCodeList, String repoToolKpi,
-															   String startDate, String endDate, String frequency) {
+	public List<RepoToolKpiMetricResponse> getRepoToolKpiMetrics(List<String> projectCode, String repoToolKpi,
+			String startDate, String endDate, String frequency) {
 		repoToolsClient = createRepoToolsClient();
-		String repoToolUrl = customApiConfig.getRepoToolURL() + METRIC + repoToolKpi + QUERY_PARAMS;
+		String repoToolUrl = customApiConfig.getRepoToolURL() + METRIC + repoToolKpi;
 		String repoToolApiKey = restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey());
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons = new ArrayList<>();
-		StringJoiner projectCodeParam = new StringJoiner(",", "[\"", "\"]");
-		for (String project : projectCodeList) {
-			projectCodeParam.add(project);
-		}
+		RepoToolKpiRequestBody repoToolKpiRequestBody = new RepoToolKpiRequestBody(projectCode,
+				startDate, endDate, frequency);
 		try {
-			String url = String.format(repoToolUrl, projectCodeParam, startDate, endDate, frequency);
-			RepoToolKpiBulkMetricResponse repoToolKpiBulkMetricResponse = repoToolsClient.kpiMetricCall(url, repoToolApiKey);
+			String url = String.format(repoToolUrl, startDate, endDate, frequency);
+			RepoToolKpiBulkMetricResponse repoToolKpiBulkMetricResponse = repoToolsClient.kpiMetricCall(url,
+					repoToolApiKey, repoToolKpiRequestBody);
 			repoToolKpiMetricRespons = repoToolKpiBulkMetricResponse.getValues().stream().flatMap(List::stream)
 					.collect(Collectors.toList());
 		} catch (HttpClientErrorException ex) {
@@ -194,7 +198,6 @@ public class RepoToolsConfigServiceImpl {
 		}
 		return repoToolKpiMetricRespons;
 	}
-	
 
 	private List<ProcessorItem> createProcessorItemList(List<ProjectToolConfig> toolList, ObjectId processorId) {
 		List<ProcessorItem> processorItemList = new ArrayList<>();
@@ -213,11 +216,12 @@ public class RepoToolsConfigServiceImpl {
 		return processorItemList;
 	}
 
-	public int  deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean onlyData) {
+	public int deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean onlyData) {
 		String deleteUrl = customApiConfig.getRepoToolURL() + String.format(DELETE_REPO,
 				projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId(), onlyData);
 		repoToolsClient = createRepoToolsClient();
-		return  repoToolsClient.deleteProject(deleteUrl, restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+		return repoToolsClient.deleteProject(deleteUrl,
+				restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 	}
 
 	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
@@ -230,6 +234,12 @@ public class RepoToolsConfigServiceImpl {
 				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		return processorExecutionTraceLog;
+	}
+
+	public void setHttpHeaders(String apiKey) {
+		httpHeaders = new HttpHeaders();
+		httpHeaders.add(X_API_KEY, apiKey);
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 	}
 
 }
