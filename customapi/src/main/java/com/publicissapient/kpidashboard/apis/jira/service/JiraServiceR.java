@@ -123,7 +123,7 @@ public class JiraServiceR {
 	@SuppressWarnings({ "PMD.AvoidCatchingGenericException", "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 		long jiraRequestStartTime = System.currentTimeMillis();
-		log.info("** time start method process :{}",String.valueOf(jiraRequestStartTime));
+
 		log.info("Processing KPI calculation for data {}", kpiRequest.getKpiList());
 		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
 				.collect(Collectors.toList());
@@ -133,37 +133,46 @@ public class JiraServiceR {
 			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
 			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
 					false);
+			log.info("** time start method process :{}",jiraRequestStartTime);
 			if (null != groupName) {
 				kpiRequest.setLabel(groupName.toUpperCase());
 			} else {
 				log.error("label name for selected hierarchy not found");
 			}
+			long jiraTime = System.currentTimeMillis();
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
 					groupName);
+			log.info("** time start method filteredAccountDataList :{}",System.currentTimeMillis()-jiraTime);
+			long jiraTime1 = System.currentTimeMillis();
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
 				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
 
 				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
+				log.info("** time start method getProjectKeyCache and getAuthorizedFilteredList :{}",System.currentTimeMillis()-jiraTime1);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
-
+				long jiraTime4 = System.currentTimeMillis();
 				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
 						groupId, kpiRequest.getSprintIncluded());
+				log.info("** time start method getProjectKeyCache and getAuthorizedFilteredList :{}",System.currentTimeMillis()-jiraTime4);
+
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 						&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
 					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
 					return (List<KpiElement>) cachedData;
 				}
-
+               long jiraTime3 = System.currentTimeMillis();
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
-
+				log.info("** time start method getTreeLeafNodesGroupedByFilter  :{}",System.currentTimeMillis()-jiraTime3);
 				if (!CollectionUtils.isEmpty(origRequestedKpis)
 						&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
+					long jiraTime2 = System.currentTimeMillis();
 					updateJiraIssueList(kpiRequest, origRequestedKpis, filteredAccountDataList, treeAggregatorDetail);
+					log.info("** time start method updateJiraIssueList  :{}",System.currentTimeMillis()-jiraTime2);
 				}
 
 				// set filter value to show on trend line. If sub-projects are
@@ -174,13 +183,13 @@ public class JiraServiceR {
 				int numThreads = Runtime.getRuntime().availableProcessors();
 				log.info("** number of available core processor :{}",numThreads);
 				List<ParallelJiraServices> listOfTask = new ArrayList<>();
-
+				long jiraRequestStartTime1= System.currentTimeMillis();
 				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 
 					listOfTask.add(new ParallelJiraServices(kpiRequest, responseList, kpiEle, treeAggregatorDetail));
 				}
 				ForkJoinTask.invokeAll(listOfTask);
-				log.info("** time start after thread :{}",System.currentTimeMillis() - jiraRequestStartTime);
+				log.info("** time start after thread :{}",System.currentTimeMillis() - jiraRequestStartTime1);
 				List<KpiElement> missingKpis = origRequestedKpis.stream()
 						.filter(reqKpi -> responseList.stream()
 								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))

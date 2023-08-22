@@ -220,8 +220,9 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter().getStartDate()
 				.compareTo(o2.getSprintFilter().getStartDate()));
-
+		long time = System.currentTimeMillis();
 		Map<String, Object> defectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
+		log.info("DSR taking fetchKPIDataFromDb {}",String.valueOf(System.currentTimeMillis() - time));
 
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) defectDataListMap.get(SPRINTSTORIES);
 		Map<String, FieldMapping> projFieldMapping = (Map<String, FieldMapping>) defectDataListMap.get(PROJFMAPPING);

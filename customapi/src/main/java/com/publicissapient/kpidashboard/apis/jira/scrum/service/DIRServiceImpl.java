@@ -162,9 +162,11 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
+        long jiraTime = System.currentTimeMillis();
 
 		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
 				kpiRequest);
+		log.info("DIR taking fetchKPIDataFromDb:{}",System.currentTimeMillis()-jiraTime);
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap.get(STORY_DATA);
 		List<JiraIssue> jiraIssueList = (List<JiraIssue>) storyDefectDataListMap.get(ISSUE_DATA);
 		Map<String, Set<JiraIssue>> projectWiseStories = jiraIssueList.stream()
@@ -178,7 +180,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		Map<Pair<String, String>, List<String>> sprintWiseTotalStoryIdList = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseDefectListMap = new HashMap<>();
-
+        long jiraTime1= System.currentTimeMillis();
 		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
 			List<JiraIssue> sprintWiseDefectList = new ArrayList<>();
 
@@ -201,7 +203,9 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			sprintWiseDIRMap.put(sprint, dirForCurrentLeaf);
 			setHowerMap(sprintWiseHowerMap, sprint, totalStoryIdList, sprintWiseDefectList);
 		});
+		log.info("DIR taking sprintWiseMap:{}",System.currentTimeMillis()-jiraTime1);
 		List<KPIExcelData> excelData = new ArrayList<>();
+		long jiraTime2 = System.currentTimeMillis();
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
@@ -243,6 +247,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			trendValueList.add(dataCount);
 		});
+		log.info("DIR taking sprintLeafNodeList:{}",System.currentTimeMillis()-jiraTime2);
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_INJECTION_RATE.getColumns());
 	}

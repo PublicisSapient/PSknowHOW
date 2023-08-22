@@ -144,8 +144,9 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
-
+        long time = System.currentTimeMillis();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
+		log.info("FirstTimePassRate taking fetchKPIDataFromDb {}",String.valueOf(System.currentTimeMillis() - time));
 
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) resultMap.get(SPRINT_WISE_CLOSED_STORIES);
 
@@ -161,6 +162,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
+		//log.info("*********Total time taken FirstTimePassRateServiceImpl {}",String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
+		long jiraRequestStartTime1 =System.currentTimeMillis();
 		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
 			List<Double> addFilterFtprList = new ArrayList<>();
 			List<String> totalStoryIdList = new ArrayList<>();
@@ -183,7 +186,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			sprintWiseFTPRMap.put(sprint, sprintWiseFtpr);
 			setHowerMap(sprintWiseHowerMap, sprint, totalStoryIdList, ftpStoriesList);
 		});
-
+		log.info("*********Total time taken FirstTimePassRateServiceImpl end of sprint details {}",String.valueOf(System.currentTimeMillis() - jiraRequestStartTime1));
+        long jiraRequestStartTime2 =System.currentTimeMillis();
 		sprintLeafNodeList.forEach(node -> {
 
 			String trendLineName = node.getProjectFilter().getName();
@@ -225,6 +229,9 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 			trendValueList.add(dataCount);
 		});
+
+		log.info("*********Total time taken FirstTimePassRateServiceImpl end of sprintLeafNodeList details {}",String.valueOf(System.currentTimeMillis() - jiraRequestStartTime2));
+
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.FIRST_TIME_PASS_RATE.getColumns());
 
