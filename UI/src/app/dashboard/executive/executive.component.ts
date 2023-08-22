@@ -902,7 +902,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
         }
         this.createTrendsData(kpiId);
-        console.log(kpiId, this.kpiChartData[kpiId], this.kpiTrendsObj[kpiId]);
         this.calculateTableData(kpiId);
     }
 
