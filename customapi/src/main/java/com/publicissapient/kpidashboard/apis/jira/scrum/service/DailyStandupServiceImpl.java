@@ -338,7 +338,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
                 : CommonConstant.HOURS;
 
         assigneeWiseNotCompleted.forEach((assigneeId, jiraIssueList) -> {
-            int totalEstimate = (int) jiraIssueList.stream()
+            double totalEstimate = jiraIssueList.stream()
                     .mapToDouble(issue -> estimationCriteria.equalsIgnoreCase(CommonConstant.STORY_POINT)
                             ? Optional.ofNullable(issue.getStoryPoints()).orElse(0d)
                             : Optional.ofNullable(issue.getOriginalEstimateMinutes()).orElse(0))
