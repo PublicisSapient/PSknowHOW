@@ -369,6 +369,9 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationIssuetypeKPI39;
 	private LocalDateTime createdDate;
 
+	@Builder.Default
+	private String notificationEnabler="On";
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *
