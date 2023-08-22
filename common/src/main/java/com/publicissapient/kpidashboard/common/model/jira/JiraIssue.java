@@ -54,7 +54,6 @@ public class JiraIssue extends BasicModel implements Cloneable {
 	// sId renamed to issueId
 	@Indexed
 	private String issueId;
-	@Indexed(unique = true)
 	private String number;
 	private String name;
 	private String typeId;
