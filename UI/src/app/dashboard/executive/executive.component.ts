@@ -29,8 +29,6 @@ import * as Excel from 'exceljs';
 import * as fs from 'file-saver';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 declare let require: any;
-
-
 @Component({
     selector: 'app-executive',
     templateUrl: './executive.component.html',
@@ -153,6 +151,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     const idx = key.lastIndexOf('_');
                     const nodeName = key.slice(0, idx);
                     this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+                    /** initializing tabs for table view */
+                    this.kpiTableHeadingObj['nodeName'] = [];
+                    this.kpiTableDataObj['nodeName'] = [];
                 }
             }
             return this.service.passDataToDashboard;
@@ -902,16 +903,43 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
         }
         this.createTrendsData(kpiId);
-        this.calculateTableData(kpiId);
     }
 
-    calculateTableData(kpiId){
-        for(let key in this.colorObj){
-            this.kpiTableHeadingObj[this.colorObj[key]['nodeName']] = [];
-            this.kpiTableDataObj[this.colorObj[key]['nodeName']] = [];
+    /** to prepare table data */
+    getTableData(kpiId, idx){
+        const trendValueList = this.allKpiArray[idx]?.trendValueList;
+        let selectedIdx:number = -1;
+        let iterativeEle = JSON.parse(JSON.stringify(trendValueList));
+        if(trendValueList?.length > 0){
+            for(let i = 0; i < trendValueList?.length; i++){
+                if(trendValueList?.[0]?.hasOwnProperty('filter')){
+                    selectedIdx = trendValueList?.find(x => x['filter']?.toLowerCase() == 'overall');
+                    if(selectedIdx < 0){
+                        selectedIdx = 0;
+                    }
+                }
+                iterativeEle = JSON.parse(JSON.stringify(trendValueList[selectedIdx]?.value));
+            }
+            // if(selectedIdx > -1){
+                let obj = {
+                    'kpiName': this.allKpiArray[idx]?.kpiName,
+                }
+                iterativeEle.forEach((x) => {
+                    let projectName = x['data'];
+                    x['value'].forEach((y, index) => {
+                        obj[index+1] = y['sprintNames']?.length > 0 ? y['sprintNames'].join(',') : y['date'];
+                    })
+                    obj['latest'] = this.kpiTrendsObj[kpiId]?.latest + this.kpiTrendsObj[kpiId]?.kpiUnit;
+                    obj['trend'] = this.kpiTrendsObj[kpiId]?.trend;
+                    obj['maturity'] = this.kpiTrendsObj[kpiId]?.maturity;
+                    console.log(projectName, obj);
+                    
+                    this.kpiTableDataObj[projectName].push(obj);
+                })
+            // }
         }
+        console.log(kpiId, this.kpiTableDataObj);
         
-       this.kpiChartData[kpiId]
     }
 
     createCombinations(arr1, arr2) {
@@ -962,6 +990,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             const agType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.aggregationCriteria;
             if (!inputIsChartData) {
                 this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1), agType);
+                this.getTableData(data[key]?.kpiId, (this.allKpiArray?.length - 1))
             }
         }
     }
