@@ -928,18 +928,10 @@ public final class KpiDataHelper {
 	}
 
 	/**
-	 * Create 90th percentile
-	 * 
-	 * @param values
+	 * Return the duration filter details for dora dashboard
+	 * @param kpiElement
 	 * @return
-	 * @param <T>
 	 */
-	public static <T extends Number> String calculate90thPercentile(List<T> values) {
-		values.sort((a, b) -> Double.compare(a.doubleValue(), b.doubleValue()));
-		int index = (int) Math.ceil(0.9 * values.size()) - 1;
-		return values.get(index).toString();
-	}
-
 	public static Map<String, Object> getDurationFilter(KpiElement kpiElement) {
 		LinkedHashMap<String, Object> filterDuration = (LinkedHashMap<String, Object>) kpiElement.getFilterDuration();
 		int value = 5; // Default value for 'value'

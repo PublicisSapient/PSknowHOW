@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -114,7 +115,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 					.flatMap(List::stream).collect(Collectors.toList());
 			List<Long> values = dataCountValues.stream().map(dataCount -> (Long) dataCount.getValue())
 					.collect(Collectors.toList());
-			dataCountGroup.setAggregationValue(KpiDataHelper.calculate90thPercentile(values));
+			dataCountGroup.setAggregationValue(String.valueOf(AggregationUtils.percentilesLong(values, 90d)));
 			dataCountGroups.add(dataCountGroup);
 		});
 		kpiElement.setTrendValueList(dataCountGroups);

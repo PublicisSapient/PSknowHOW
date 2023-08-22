@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -119,7 +120,7 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 					.flatMap(List::stream).collect(Collectors.toList());
 			List<Double> values = dataCountValues.stream().map(dataCount -> (Double) dataCount.getValue())
 					.collect(Collectors.toList());
-			dataCountGroup.setAggregationValue(KpiDataHelper.calculate90thPercentile(values));
+			dataCountGroup.setAggregationValue(String.valueOf(AggregationUtils.percentiles(values, 90.0D)));
 			dataCountGroups.add(dataCountGroup);
 		});
 		kpiElement.setTrendValueList(dataCountGroups);
