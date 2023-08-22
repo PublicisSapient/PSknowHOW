@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -231,10 +232,8 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 				for (Deployment deployment : deploymentListEnvWise) {
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 					LocalDateTime dateValue = LocalDateTime.parse(deployment.getStartTime(), formatter);
-					LocalDate monday = dateValue.toLocalDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-					LocalDate sunday = dateValue.toLocalDate().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 					String timeValue = duration.equalsIgnoreCase(CommonConstant.WEEK)
-							? DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday)
+							? DateUtil.getWeekRange(dateValue.toLocalDate())
 							: dateValue.getYear() + Constant.DASH + dateValue.getMonthValue();
 
 					deploymentMapTimeWise.computeIfPresent(timeValue, (key, deploymentListCurrentTime) -> {
