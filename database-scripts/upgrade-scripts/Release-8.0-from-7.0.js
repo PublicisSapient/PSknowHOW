@@ -2461,16 +2461,6 @@ db.getCollection('field_mapping_structure').insertMany([
         "tooltip": {
             "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
         }
-    },
-    {
-        "fieldName": "sprintName",
-        "fieldLabel": "Sprint Name",
-        "fieldType": "text",
-        "fieldCategory": "fields",
-        "section": "Custom Fields Mapping",
-        "tooltip": {
-            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
-        }
     }
 ])
 
@@ -2510,6 +2500,18 @@ db.kpi_master.updateOne(
   }
 );
 
+db.getCollection('field_mapping_structure').insertMany([
+   {
+      "fieldName": "sprintName",
+      "fieldLabel": "Sprint Name",
+      "fieldType": "text",
+      "fieldCategory": "fields",
+      "section": "Custom Fields Mapping",
+      "tooltip": {
+          "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
+      }
+   }
+]);
 //----------------7.6.0 Changes ---------------------------
 //updating epicLink from documents of metadata_identifier
 db.getCollection('metadata_identifier').updateMany(
@@ -2586,6 +2588,685 @@ db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
 			"isDefault" : false
 		}
 	]}});
+
+//updating metadata_identifier
+db.getCollection('metadata_identifier').update(
+     { "templateCode": "7" }, // Match documents with templateCode equal to "7"
+     {
+     $set:
+     {
+              "tool": "Jira",
+              "templateName": "Standard Template",
+              "templateCode": "7",
+              "isKanban": false,
+              "disabled": false,
+              "issues": [
+                  {
+                      "type": "jiradefecttype",
+                      "value": [
+                          "Defect",
+                          "Bug"
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueTypeNames",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request",
+                          "Defect",
+                          "Bug",
+                          "Epic"
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueEpicType",
+                      "value": [
+                          "Epic"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectInjectionIssueTypeKPI14",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueTypeKPI35",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraTestAutomationIssueType",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraSprintVelocityIssueTypeKPI138",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraSprintCapacityIssueTypeKpi46",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectCountlIssueTypeKPI28",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectCountlIssueTypeKPI36",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueTypeKPI3",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+
+                      ]
+                  },
+                  {
+                      "type": "jiraQAKPI111IssueType",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraStoryIdentificationKPI129",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraStoryIdentificationKpi40",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraTechDebtIssueType",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraKPI82StoryIdentification",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraKPI135StoryIdentification",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  }
+              ],
+              "customfield": [
+                  {
+                      "type": "jiraStoryPointsCustomField",
+                      "value": [
+                          "Story Points"
+                      ]
+                  },
+                  {
+                      "type": "epicCostOfDelay",
+                      "value": [
+                          "Story Points"
+                      ]
+                  },
+                  {
+                      "type": "epicRiskReduction",
+                      "value": [
+                          "Risk Reduction-Opportunity Enablement Value"
+                      ]
+                  },
+                  {
+                      "type": "epicUserBusinessValue",
+                      "value": [
+                          "User-Business Value"
+                      ]
+                  },
+                  {
+                      "type": "epicWsjf",
+                      "value": [
+                          "WSJF"
+                      ]
+                  },
+                  {
+                      "type": "epicTimeCriticality",
+                      "value": [
+                          "Time Criticality"
+                      ]
+                  },
+                  {
+                      "type": "epicJobSize",
+                      "value": [
+                          "Job Size"
+                      ]
+                  },
+                 {
+                     "type": "epicLink",
+                     "value": [
+                         "Epic Link"
+                     ]
+                 },
+                  {
+                      "type": "rootcause",
+                      "value": [
+                          "Root Cause"
+                      ]
+                  },
+                  {
+                      "type": "sprintName",
+                      "value": [
+                          "Sprint"
+                      ]
+                  }
+              ],
+              "workflow": [
+                  {
+                      "type": "storyFirstStatusKPI148",
+                      "value": [
+                          "Open"
+                      ]
+                  },
+                  {
+                      "type": "storyFirstStatusKPI3",
+                      "value": [
+                          "Open"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForQaKPI148",
+                      "value": [
+                          "In Testing"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForQaKPI135",
+                      "value": [
+                          "In Testing"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForQaKPI82",
+                      "value": [
+                          "In Testing"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForDevelopmentKPI82",
+                      "value": [
+                          "Implementing",
+                          "In Development",
+                          "In Analysis"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForDevelopmentKPI135",
+                      "value": [
+                          "Implementing",
+                          "In Development",
+                          "In Analysis"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectCreatedStatusKPI14",
+                      "value": [
+                          "Open"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI152",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI151",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI28",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI37",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI35",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI82",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI135",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI133",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusRCAKPI36",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI14",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusQAKPI111",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRemovalStatusKPI34",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Ready for Release",
+                          "Done"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectClosedStatusKPI137",
+                      "value": [
+                          "Closed",
+                          "CLOSED"
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueDeliverdStatusKPI138",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Ready for Release",
+                          "Done"
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueDeliverdStatusKPI126",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Ready for Release",
+                          "Done"
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueDeliverdStatusKPI82",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Ready for Release",
+                          "Done"
+                      ]
+                  },
+                  {
+                      "type": "jiraDorKPI3",
+                      "value": [
+                          "Ready for Sprint Planning"
+
+                      ]
+                  },
+                  {
+                      "type": "jiraLiveStatusKPI3",
+                      "value": [
+                          "Live"
+                      ]
+                  },
+                  {
+                      "type": "jiraLiveStatusKPI127",
+                      "value": [
+                          "Live"
+                      ]
+                  },
+                  {
+                      "type": "jiraLiveStatusKPI152",
+                      "value": [
+                          "Live"
+                      ]
+                  },
+                  {
+                      "type": "jiraLiveStatusKPI151",
+                      "value": [
+                          "Live"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI28",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI37",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI35",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI135",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI82",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI133",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionRCAKPI36",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionQAKPI111",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI14",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "issueStatusExcluMissingWorkKPI124",
+                      "value": [
+                          "Open"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectDroppedStatusKPI127",
+                      "value": [
+                          "Dropped",
+                          "Canceled"
+                      ]
+                  },
+                  {
+                      "type": "jiraBlockedStatusKPI131",
+                      "value": [
+                          "On Hold",
+                          "Blocked"
+                      ]
+                  },
+                  {
+                      "type": "jiraWaitStatusKPI131",
+                      "value": [
+                          "Ready for Testing",
+                          "Code Review"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI148",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI122",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI145",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI125",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI128",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI123",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI119",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodKPI14",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodQAKPI111",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodKPI3",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodKPI127",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodKPI152",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodKPI151",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodKPI37",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  }
+              ]
+     },
+     $unset: {
+         "valuestoidentify":1
+     }
+     },
+     { multi: false }
+);
+
 
 //---- KPI info update for KPI 137 (Defect Reopen Rate)
 
@@ -2863,3 +3544,25 @@ db.getCollection('field_mapping_structure').insertOne([
             }
     }
 ])
+
+// add Enable Notification option
+db.getCollection('field_mapping_structure').insertMany([
+{
+        "fieldName": "notificationEnabler",
+        "fieldLabel": "Processor Failure Notification",
+        "fieldType": "radiobutton",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+             "definition": "On/Off notification in case processor failure."
+        },
+        "options": [{
+             "label": "On",
+             "value": "On"
+        },
+        {
+             "label": "Off",
+             "value": "Off"
+        }
+        ]
+}
+]);
