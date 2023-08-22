@@ -182,7 +182,7 @@ export class DeveloperComponent implements OnInit {
       }
     }
     if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
-      this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
+      this.configGlobalData = this.service.getDashConfigData()[this.service.getSelectedType().toLowerCase() === 'kanban' ? 'kanban' : 'scrum'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
       this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
       if (JSON.stringify(this.filterApplyData) !== JSON.stringify($event.filterApplyData) || this.configGlobalData) {
         if (this.serviceObject['makeAPICall']) {
