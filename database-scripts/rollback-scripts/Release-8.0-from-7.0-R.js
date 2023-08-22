@@ -212,6 +212,12 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 4}}).forEach(f
     );
 });
 
+// --------------------- Release 7.7 -----------------------------------------------------------------
+// delete mapping for Quality Status
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraItrQSIssueTypeKPI133"
+});
 
 //---------7.7.0 changes------------------------------------------------------------------
 //deleting dailyStandup kpi

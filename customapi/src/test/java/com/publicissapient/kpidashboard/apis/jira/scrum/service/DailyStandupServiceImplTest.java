@@ -137,8 +137,8 @@ public class DailyStandupServiceImplTest {
 		capacityKpiData.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
 		capacityKpiData.setCapacityPerSprint(12.0);
 
-		Assert.assertThrows(NullPointerException.class,
-				() -> dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0), treeAggregatorDetail));
+		KpiElement kpiData = dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+		assertNotNull(kpiData.getTrendValueList());
 
 	}
 
