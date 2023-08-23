@@ -36,7 +36,7 @@ public enum FieldMappingEnum {
 					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField", "jiraDevDueDateField",
 					"jiraIssueEpicType", "storyFirstStatus", "jiraTestAutomationIssueType",
 					 "productionDefectCustomField", "productionDefectIdentifier",
-					"productionDefectValue", "productionDefectComponentValue")),
+					"productionDefectValue", "productionDefectComponentValue","notificationEnabler")),
 
 	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNames", "storyFirstStatus",
 			"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
@@ -113,7 +113,7 @@ public enum FieldMappingEnum {
 
 	KPI133("Quality Status", KPISource.JIRA.name(),
 			Arrays.asList("resolutionTypeForRejectionKPI133", "jiraDefectRejectionStatusKPI133", "defectPriorityKPI133",
-					"excludeRCAFromKPI133", "jiraIterationCompletionStatusKPI133")),
+					"excludeRCAFromKPI133", "jiraIterationCompletionStatusKPI133","jiraItrQSIssueTypeKPI133")),
 
 	KPI126("Created vs Resolved defects", KPISource.JIRA.name(), Arrays.asList("jiraIssueDeliverdStatusKPI126")),
 
@@ -124,7 +124,7 @@ public enum FieldMappingEnum {
 			"jiraIterationIssuetypeKPI122", "jiraStatusForInProgressKPI122")),
 
 	KPI145("Dev Completion Status", KPISource.JIRA.name(), Arrays.asList("jiraIterationCompletionStatusKPI145",
-			"jiraIterationIssuetypeKPI145", "jiraStatusForInProgressDCS", "jiraDevDoneStatusKPI145")),
+			"jiraIterationIssuetypeKPI145", "jiraStatusForInProgressKPI145", "jiraDevDoneStatusKPI145")),
 
 	KPI75("Estimate vs Actual", KPISource.JIRA.name(),
 			Arrays.asList("jiraIterationCompletionStatusKPI75", "jiraIterationIssuetypeKPI75")),

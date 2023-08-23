@@ -6266,6 +6266,16 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
+        "fieldName": "jiraItrQSIssueTypeKPI133",
+        "fieldLabel": "Issue types which will have linked defects",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "Consider issue types which have defects tagged to them"
+        }
+    },
+    {
         "fieldName": "jiraSprintVelocityIssueTypeBR",
         "fieldLabel": "Sprint Velocity - Issue Types with Linked Defect",
         "fieldType": "chips",
@@ -7980,6 +7990,23 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
     }
+},{
+        "fieldName": "notificationEnabler",
+        "fieldLabel": "Processor Failure Notification",
+        "fieldType": "radiobutton",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+             "definition": "On/Off notification in case processor failure."
+        },
+        "options": [{
+             "label": "On",
+             "value": "On"
+        },
+        {
+             "label": "Off",
+             "value": "Off"
+        }
+        ]
 }
 ]
 );

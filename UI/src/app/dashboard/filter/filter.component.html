@@ -335,17 +335,16 @@
                <img src="../../../assets/img/ico-graph-white.svg" alt="Chart View" class="ico-active" />
                <img src="../../../assets/img/ico-graph-black.svg" alt="Chart View" class="ico-default" />
             </label>
-            <input id="table-view" class="table-view" type="radio" name="view" [checked]="showChart === 'table'">
-            <label class="label2" for="table-view" (click)="showChartToggle('table')" id="Layout-Table">
-               <img src="../../../assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
-               <img src="../../../assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
-            </label>
             <input id="large-view" class="large-view" type="radio" name="view" [checked]="showChart === 'large'" [ngClass]="{'large-view-disabled': totalProjectSelected !==1 || selectedLevelValue !== 'project'}">
             <label class="label3" for="large-view" (click)="showChartToggle('large')" id="Layout-Chart" [ngClass]="{'large-view-disabled': totalProjectSelected !==1 || selectedLevelValue !== 'project'}">
                <img src="../../../assets/img/full-screen-white.svg" alt="Large View" class="ico-active" />
                <img src="../../../assets/img/full-screen-black.svg" alt="Large View" class="ico-default" />
             </label>
-
+            <input id="table-view" class="table-view" type="radio" name="view" [checked]="showChart === 'table'">
+            <label class="label2" for="table-view" (click)="showChartToggle('table')" id="Layout-Table">
+               <img src="../../../assets/img/ico-table-black.svg" alt="Table View" class="ico-default" />
+               <img src="../../../assets/img/ico-table-white.svg" alt="Table View" class="ico-active" />
+            </label>
             <!-- SHow/Hide start -->
 
             <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity'"

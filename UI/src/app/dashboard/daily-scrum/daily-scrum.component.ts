@@ -27,7 +27,7 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
   constructor() { }
 
   ngOnInit(): void {
-    this.filterData.forEach(filter =>{
+    this.filterData?.forEach(filter =>{
       this.filters[filter.filterKey] = this.filters[filter.filterKey] ? this.filters[filter.filterKey] : null;
     });
   }
@@ -39,7 +39,7 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
       if(Object.keys(this.filters).length > 0){
         for(const key in this.filters){
           if(this.filters[key]){
-            this.assigneeList = this.allAssignee.filter(assignee => assignee[key] === this.filters[key]);
+            this.assigneeList = this.allAssignee?.filter(assignee => assignee[key] === this.filters[key]);
           }
         }
       }
@@ -70,18 +70,18 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
 
   calculateTotal(){
     this.totals['Team Member'] = this.assigneeList.length + ' Members';
-    this.columns.forEach(col =>{
+    this.columns?.forEach(col =>{
       this.totals[col] = {...this.assigneeList[0]?.cardDetails[col]};
       if( 'value' in this.totals[col]){
         this.totals[col].value = 0;
       }
-      if('value1' in this.totals[col]){
+      if('value1' in this.totals[col] || 'unit1' in this.totals[col]){
         this.totals[col].value1 = 0;
       }
     });
 
     this.assigneeList.forEach((assignee) =>{
-      this.columns.forEach(col =>{
+      this.columns?.forEach(col =>{
         this.totals[col].value += isNaN(assignee.cardDetails[col].value) ? 0 : +assignee.cardDetails[col].value;
         if('value1' in this.totals[col]){
           this.totals[col].value1 += isNaN(assignee.cardDetails[col].value1) ? 0 : +assignee.cardDetails[col].value1;
@@ -89,7 +89,7 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
       });
     });
 
-   this.columns.forEach(col =>{
+   this.columns?.forEach(col =>{
     if(this.totals[col]?.unit === 'day'){
       this.totals[col].value = this.convertToHoursIfTime(this.totals[col].value,this.totals[col].unit)
     }
