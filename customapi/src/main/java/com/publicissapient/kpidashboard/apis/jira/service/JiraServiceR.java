@@ -21,10 +21,8 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
@@ -108,6 +106,8 @@ public class JiraServiceR {
 	private ThreadLocal<List<SprintDetails>> threadLocalSprintDetails = ThreadLocal.withInitial(ArrayList::new);
 	private ThreadLocal<List<JiraIssue>> threadLocalJiraIssues = ThreadLocal.withInitial(ArrayList::new);
 	private ThreadLocal<List<JiraIssueCustomHistory>> threadLocalHistory = ThreadLocal.withInitial(ArrayList::new);
+	private ThreadLocal<List<JiraIssue>> threadReleaseIssues = ThreadLocal.withInitial(ArrayList::new);
+	private ThreadLocal<Set<JiraIssue>> threadSubtaskDefects = ThreadLocal.withInitial(HashSet::new);
 	private List<SprintDetails> sprintDetails;
 	JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
 	private List<JiraIssue> jiraIssueList;
@@ -197,11 +197,12 @@ public class JiraServiceR {
 		} catch (Exception e) {
 			log.error("Error while KPI calculation for data {} {}", kpiRequest.getKpiList(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
-		}
-		finally {
+		} finally {
 			threadLocalSprintDetails.remove();
 			threadLocalJiraIssues.remove();
 			threadLocalHistory.remove();
+			threadReleaseIssues.remove();
+			threadSubtaskDefects.remove();
 		}
 
 		return responseList;
@@ -363,11 +364,11 @@ public class JiraServiceR {
 	}
 
 	public List<JiraIssue> getJiraIssuesForSelectedRelease() {
-		return jiraIssueReleaseList;
+		return threadReleaseIssues.get();
 	}
 
 	public Set<JiraIssue> getSubTaskDefects() {
-		return subtaskDefectReleaseList;
+		return threadSubtaskDefects.get();
 	}
 
 	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, List<String> sprintIssuesList, String board) {
@@ -455,6 +456,8 @@ public class JiraServiceR {
 				threadLocalSprintDetails.set(sprintDetails);
 				threadLocalJiraIssues.set(jiraIssueList);
 				threadLocalHistory.set(jiraIssueCustomHistoryList);
+				threadReleaseIssues.set(jiraIssueReleaseList);
+				threadSubtaskDefects.set(subtaskDefectReleaseList);
 				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
 			} catch (Exception e) {
 				log.error("[PARALLEL_JIRA_SERVICE].Exception occured {}", e);
