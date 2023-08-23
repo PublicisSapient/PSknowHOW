@@ -2397,58 +2397,6 @@ db.getCollection('field_mapping_structure').insert(
    }
  );
 
- db.getCollection('field_mapping_structure').deleteOne(
- {
-     "fieldName": "jiraDevDueDateCustomField",
-     "fieldLabel": "Dev Due Date",
-     "fieldType": "text",
-     "fieldCategory": "fields",
-     "section": "Custom Fields Mapping",
-     "tooltip": {
-         "definition": "This field is to track dev due date of issues tagged in the iteration."
-     }
- });
-
- const fieldMappingField = ["jiraDevDueDateField"];
- var jiraDevDueDateField = db.getCollection('field_mapping_structure').find( {fieldName: { $in: fieldMappingField }}).toArray();
- if (jiraDevDueDateField.length === 0) {
- db.getCollection('field_mapping_structure').insertOne(
- {
-      "fieldName": "jiraDevDueDateField",
-      "fieldLabel": "Dev Due Date",
-      "fieldType": "radiobutton",
-      "section": "Custom Fields Mapping",
-      "tooltip": {
-        "definition": "This field is to track dev due date of issues tagged in the iteration."
-      },
-      "options": [
-        {
-          "label": "Custom Field",
-          "value": "CustomField"
-        },
-        {
-          "label": "Due Date",
-          "value": "Due Date"
-        }
-      ],
-      "nestedFields": [
-        {
-          "fieldName": "jiraDevDueDateCustomField",
-          "fieldLabel": "Dev Due Date Custom Field",
-          "fieldType": "text",
-          "fieldCategory": "fields",
-          "filterGroup": [
-            "CustomField"
-          ],
-          "tooltip": {
-            "definition": "This field is to track dev due date of issues tagged in the iteration."
-          }
-        }
-      ]
-    }
- );
- }
-
  //---------7.5.0 changes------------------------------------------------------------------
 //Defect fix for DTS-27477 (Remove one In-Sprint Automation mapping which is appearing twice)
 
@@ -2511,6 +2459,16 @@ db.getCollection('field_mapping_structure').insertMany([
         "tooltip": {
             "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
         }
+    },
+    {
+        "fieldName": "sprintName",
+        "fieldLabel": "Sprint Name",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
+        }
     }
 ])
 
@@ -2550,18 +2508,6 @@ db.kpi_master.updateOne(
   }
 );
 
-db.getCollection('field_mapping_structure').insertMany([
-   {
-      "fieldName": "sprintName",
-      "fieldLabel": "Sprint Name",
-      "fieldType": "text",
-      "fieldCategory": "fields",
-      "section": "Custom Fields Mapping",
-      "tooltip": {
-          "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
-      }
-   }
-]);
 //----------------7.6.0 Changes ---------------------------
 //updating epicLink from documents of metadata_identifier
 db.getCollection('metadata_identifier').updateMany(
@@ -3514,6 +3460,7 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach
 //------------------------- 7.7.0 changes----------------------------------------------------------------------------------
 // kpi issue type mapping for Quality status  ---------------------------------------------------------------------------
 // add Enable Notification option
+// PI predictability field mapping structure
 
 db.getCollection('field_mapping_structure').insertMany([
     {
@@ -3543,13 +3490,76 @@ db.getCollection('field_mapping_structure').insertMany([
                  "value": "Off"
             }
             ]
-    }
+    },
+    {
+            "fieldName": "epicPlannedValue",
+            "fieldLabel": "Custom field for Epic Planned Value",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+        }
+        },
+    {
+            "fieldName": "epicAchievedValue",
+            "fieldLabel": "Custom field for Epic Achieved Value",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+        }
+        },
+    {
+        "fieldName": "jiraIssueEpicTypeKPI153",
+        "fieldLabel": "Epic Issue Type",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "This field is used to identify Epic Issue type.",
+        }
+        }
 
 ])
 
 //adding dailyStandup kpi
+//added PI Predictability KPI for categoryThree board
 db.getCollection('kpi_master').insertMany(
 [
+{
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "maxValue": "200",
+      "kpiUnit": "",
+      "isDeleted": "False",
+      "defaultOrder": 29,
+      "kpiSource": "Jira",
+      "groupId": 4,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "multipleline",
+      "kpiInfo": {
+        "definition": "PI predictability is calculated by the sum of the actual value achieved against the planned value at the beginning of the PI",
+        "details": [
+          {
+            "type": "link",
+            "kpiLinkDetail": {
+              "text": "Detailed Information at",
+              "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#PI-Predictability"
+            }
+          }
+        ]
+      },
+      "xAxisLabel": "PIs",
+      "yAxisLabel": "Business Value",
+      "isPositiveTrend": true,
+      "showTrend": true,
+      "aggregationCriteria": "sum",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": false
+    },
 {
     "kpiId": "kpi154",
     "kpiName": "Daily Standup View",
@@ -3570,6 +3580,62 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": false
   }
  ]);
+
+
+// PI predictability KPI column config
+db.getCollection('kpi_column_configs').insertOne({
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi153',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Project Name',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		},  {
+                                 			columnName: 'Epic ID',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Epic Name',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Status',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'PI Name',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Planned Value',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Achieved Value',
+                                 			order: 7,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}
+                                 		]
+});
+
+// Note : below code only For Opensource project
+// PI predictability KPI category mapping
+db.getCollection('kpi_category_mapping').insertOne( {
+                                                    		"kpiId": "kpi153",
+                                                    		"categoryId": "categoryThree",
+                                                    		"kpiOrder": 4,
+                                                    		"kanban": false
+                                                    	});
+
+
+
 
 
 //dora dashboard changes-----------------------------------------------
