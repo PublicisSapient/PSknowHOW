@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @StepScope
-public class MetaDataScrumBoardTasklet implements Tasklet {
+public class MetaDataBoardTasklet implements Tasklet {
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
 
@@ -38,7 +38,7 @@ public class MetaDataScrumBoardTasklet implements Tasklet {
 	private String projectId;
 
 	@Autowired
-	public MetaDataScrumBoardTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
+	public MetaDataBoardTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
 		this.projectId = projectId;
 	}
 
@@ -56,7 +56,7 @@ public class MetaDataScrumBoardTasklet implements Tasklet {
 		}catch (Exception e) {
 			log.error("Exception while fetching metadata", e);
 		}
-		log.info("**** Metadata fetch for Scrum Board ended ****");
+		log.info("**** Metadata fetch ended ****");
 		return RepeatStatus.FINISHED;
 	}
 

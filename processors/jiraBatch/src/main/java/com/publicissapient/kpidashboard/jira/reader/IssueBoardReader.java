@@ -39,7 +39,7 @@ import net.logstash.logback.util.StringUtils;
 @Slf4j
 @Component
 @StepScope
-public class IssueScrumBoardReader implements ItemReader<ReadData> {
+public class IssueBoardReader implements ItemReader<ReadData> {
 
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
@@ -72,13 +72,13 @@ public class IssueScrumBoardReader implements ItemReader<ReadData> {
 	private String projectId;
 
 	@Autowired
-	public IssueScrumBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
+	public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
 		this.projectId = projectId;
 	}
 
 
 	public void initializeReader(String projectId) {
-		log.info("**** Jira Issue fetch for Scrum started * * *");
+		log.info("**** Jira Issue fetch started * * *");
 		pageSize = jiraProcessorConfig.getPageSize();
 		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 	}
