@@ -27,6 +27,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -36,6 +37,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -59,6 +61,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
@@ -464,7 +467,7 @@ public final class KpiDataHelper {
 	/**
 	 * if remaining time is 0 and sprint is closed, then PCD is sprint end time
 	 * otherwise will create PCD
-	 * 
+	 *
 	 * @param sprintDetails
 	 * @param pivotPCD
 	 * @param estimatedTime
@@ -484,6 +487,8 @@ public final class KpiDataHelper {
 		iterationPotentialDelay.setPotentialDelay((sprintClosed && remainingEstimateTime == 0) ? 0 : potentialDelay);
 		iterationPotentialDelay.setDueDate(dueDate.toString());
 		iterationPotentialDelay.setPredictedCompletedDate(potentialClosedDate.toString());
+		iterationPotentialDelay.setAssigneeId(issue.getAssigneeId());
+		iterationPotentialDelay.setStatus(issue.getStatus());
 		return iterationPotentialDelay;
 
 	}
@@ -491,7 +496,7 @@ public final class KpiDataHelper {
 	/**
 	 * if due date is less than potential closed date, then potential delay will be
 	 * negative
-	 * 
+	 *
 	 * @param dueDate
 	 * @param potentialClosedDate
 	 * @return
@@ -572,30 +577,6 @@ public final class KpiDataHelper {
 			remainingEstimate = (issueObject.getRemainingEstimateMinutes() / 60) / 8;
 		}
 		return remainingEstimate;
-	}
-
-	/**
-	 * setting in progress and open issues
-	 * 
-	 * @param fieldMapping
-	 * @param allIssues
-	 * @param inProgressIssues
-	 * @param openIssues
-	 * @return
-	 */
-	public static void arrangeJiraIssueList(List<String> fieldMapping, List<JiraIssue> allIssues,
-			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
-		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
-				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
-			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> fieldMapping.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
-			openIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> !fieldMapping.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
-		} else {
-			openIssues.addAll(jiraIssuesWithDueDate);
-		}
-
 	}
 
 	/**

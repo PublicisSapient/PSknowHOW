@@ -200,7 +200,30 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
       const selectedProjectTrend = this.trendValueList.find(obj=>obj.data === project);
       const tempColorObjArray = Object.values(this.colors).find(obj=>obj['nodeName'] === project)['color'];
       if(selectedProjectTrend && selectedProjectTrend.value){
-        let hoverObjectListTemp = []
+        let hoverObjectListTemp = [];
+
+        if(selectedProjectTrend.value[0]?.dataValue?.length > 0){
+          this.columnList = [  { field: 'duration', header: 'Duration'  }];
+         selectedProjectTrend.value[0].dataValue.forEach(d => { 
+            this.columnList.push({ field: d.name+' value', header: d.name+' KPI Value', unit : 'unit' });
+            this.columnList.push({ field: d.name+' params', header: d.name+' Calculation Details', unit : 'unit' });
+          });
+
+          selectedProjectTrend.value.forEach(element => {
+            let tempObj = {};
+            tempObj['duration'] = element['sSprintName'] || element['date'];
+
+            element.dataValue.forEach((d,i) =>{
+              tempObj[d.name+' value'] = (Math.round(d['value'] * 100) / 100);
+              tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
+              if (d['hoverValue'] && Object.keys(d['hoverValue'])?.length > 0) {
+                tempObj[d.name+' params'] = Object.entries(d['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
+              }
+            });
+
+            hoverObjectListTemp.push(tempObj);
+          });
+        }else{
         selectedProjectTrend.value.forEach(element => {
           let tempObj = {};
           tempObj['duration'] = element['sSprintName'] || element['date'];
@@ -211,19 +234,20 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
           }
           hoverObjectListTemp.push(tempObj);
         });
+        }
         this.sprintDetailsList.push({
           ['project']: selectedProjectTrend['data'],
           ['hoverList']: hoverObjectListTemp,
           ['color']:tempColorObjArray
-        })
+        });
       }else{
         this.sprintDetailsList.push({
           ['project']: project,
           ['hoverList']: [],
           ['color']:tempColorObjArray
-        })
+        });
       }
-    })
+    });
     this.displaySprintDetailsModal = true;
   }
 
