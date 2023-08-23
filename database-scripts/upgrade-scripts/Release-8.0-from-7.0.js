@@ -2350,8 +2350,6 @@ db.getCollection('field_mapping_structure').insert(
     print("Field Mapping Structure already executed. Skipping...");
   }
 
-
-
 //DTS-25767 Commitment Reliability - Add Filter by Issue type (add one column for issue type in excel)
  db.kpi_column_configs.updateOne(
    { "kpiId": "kpi72" },
@@ -2575,71 +2573,6 @@ db.getCollection('metadata_identifier').updateMany(
       }
    }}
 );
-
-//DTS-26121 Enchancement of Quality Status Overlay
-db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
-{$set:{"kpiColumnDetails" : [
-		{
-			"columnName" : "Issue Id",
-			"order" : Double("0"),
-			"isShown" : true,
-			"isDefault" : true
-		},
-		{
-			"columnName" : "Issue Type",
-			"order" : Double("1"),
-			"isShown" : true,
-			"isDefault" : true
-		},
-		{
-			"columnName" : "Issue Description",
-			"order" : Double("2"),
-			"isShown" : true,
-			"isDefault" : true
-		},
-		{
-			"columnName" : "Issue Status",
-			"order" : Double("3"),
-			"isShown" : true,
-			"isDefault" : true
-		},
-		{
-			"columnName" : "Priority",
-			"order" : Double("4"),
-			"isShown" : true,
-			"isDefault" : true
-		},
-		{
-			"columnName" : "Linked Defect",
-			"order" : Double("5"),
-			"isShown" : true,
-			"isDefault" : false
-		},
-		{
-			"columnName" : "Size(story point/hours)",
-			"order" : Double("6"),
-			"isShown" : true,
-			"isDefault" : false
-		},
-		{
-			"columnName" : "DIR",
-			"order" : Double("7"),
-			"isShown" : true,
-			"isDefault" : false
-		},
-		{
-			"columnName" : "Defect Density",
-			"order" : Double("8"),
-			"isShown" : true,
-			"isDefault" : false
-		},
-		{
-			"columnName" : "Assignee",
-			"order" : Double("9"),
-			"isShown" : true,
-			"isDefault" : false
-		}
-	]}});
 
 //updating metadata_identifier
 db.getCollection('metadata_identifier').update(
@@ -3319,9 +3252,72 @@ db.getCollection('metadata_identifier').update(
      { multi: false }
 );
 
+//DTS-26121 Enchancement of Quality Status Overlay
+db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
+{$set:{"kpiColumnDetails" : [
+		{
+			"columnName" : "Issue Id",
+			"order" : Double("0"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Type",
+			"order" : Double("1"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Description",
+			"order" : Double("2"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Issue Status",
+			"order" : Double("3"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Priority",
+			"order" : Double("4"),
+			"isShown" : true,
+			"isDefault" : true
+		},
+		{
+			"columnName" : "Linked Defect",
+			"order" : Double("5"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Size(story point/hours)",
+			"order" : Double("6"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "DIR",
+			"order" : Double("7"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Defect Density",
+			"order" : Double("8"),
+			"isShown" : true,
+			"isDefault" : false
+		},
+		{
+			"columnName" : "Assignee",
+			"order" : Double("9"),
+			"isShown" : true,
+			"isDefault" : false
+		}
+	]}});
 
 //---- KPI info update for KPI 137 (Defect Reopen Rate)
-
 db.getCollection('kpi_master').updateOne(
   { "kpiId": "kpi137" },
   { $set: { "kpiInfo.definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available." } }
@@ -3527,10 +3523,11 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach
 
 ])
 
-//------------------------- Release 7.7v ----------------------------------------------------------------------------------
+//------------------------- 7.7.0 changes----------------------------------------------------------------------------------
 // kpi issue type mapping for Quality status  ---------------------------------------------------------------------------
+// add Enable Notification option
 
-db.getCollection('field_mapping_structure').insertOne([
+db.getCollection('field_mapping_structure').insertMany([
     {
             "fieldName": "jiraItrQSIssueTypeKPI133",
             "fieldLabel": "Issue types which will have linked defects",
@@ -3540,34 +3537,30 @@ db.getCollection('field_mapping_structure').insertOne([
             "tooltip": {
                 "definition": "Consider issue types which have defects tagged to them"
             }
+    },
+    {
+            "fieldName": "notificationEnabler",
+            "fieldLabel": "Processor Failure Notification",
+            "fieldType": "radiobutton",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                 "definition": "On/Off notification in case processor failure."
+            },
+            "options": [{
+                 "label": "On",
+                 "value": "On"
+            },
+            {
+                 "label": "Off",
+                 "value": "Off"
+            }
+            ]
     }
-])
 
-// add Enable Notification option
-db.getCollection('field_mapping_structure').insertMany([
-{
-        "fieldName": "notificationEnabler",
-        "fieldLabel": "Processor Failure Notification",
-        "fieldType": "radiobutton",
-        "section": "Custom Fields Mapping",
-        "tooltip": {
-             "definition": "On/Off notification in case processor failure."
-        },
-        "options": [{
-             "label": "On",
-             "value": "On"
-        },
-        {
-             "label": "Off",
-             "value": "Off"
-        }
-        ]
-}
-]);
+])
 
 //adding dailyStandup kpi
 var dailyStandupKPI = db.getCollection('kpi_master').find( {kpiId: "kpi154"}).toArray();
-if (dailyStandupKPI.length === 0) {
 db.getCollection('kpi_master').insertMany(
 [
 {
@@ -3590,6 +3583,3 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": false
   }
  ]);
- } else {
-     print("Daily Standup View KPI is already present in Kpi master");
- }
