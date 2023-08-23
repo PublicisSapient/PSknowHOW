@@ -1,3 +1,7 @@
+
+//---------7.4.0 changes------------------------------------------------------------------
+db.field_mapping_structure.drop();
+
 //---------7.5.0 changes------------------------------------------------------------------
 // Reversing "Fetch Sprint" action policy
 db.action_policy_rule.deleteMany({
