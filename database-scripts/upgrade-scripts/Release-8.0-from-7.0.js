@@ -3339,17 +3339,6 @@ db.action_policy_rule.updateOne({
     }
 });
 
-//we dont need to keep these on processor side
-db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraDefectDroppedStatus"
-});
-db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraStoryIdentification"
-});
-db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraDod"
-});
-
 //DTS-27561-Mapping name to be corrected 'Priority to be Excluded'
 var fieldNameToUpdate = "jiradefecttype";
   db.getCollection('field_mapping_structure').update(
@@ -3457,13 +3446,14 @@ var fieldNameToUpdate = "jiradefecttype";
 
 //dts-27545_Unrequired fields should be removed from DRE KPI field mapping
 db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraDefectRemovalIssueTypeKPI34"
-});
-db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraDefectRejectionStatusKPI34"
-});
-db.field_mapping_structure.deleteMany({
-    "fieldName": "resolutionTypeForRejectionKPI34"
+    $or: [
+        { "fieldName": "jiraDefectRemovalIssueTypeKPI34" },
+        { "fieldName": "jiraDefectRejectionStatusKPI34" },
+        { "fieldName": "resolutionTypeForRejectionKPI34" },
+        { "fieldName": "jiraDefectDroppedStatus" },
+        { "fieldName": "jiraStoryIdentification" },
+        { "fieldName": "jiraDod" }
+    ]
 });
 
 const fieldMappings = db.field_mapping.find({});
