@@ -1,0 +1,218 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+ #multiLineChart {
+    text-align: center;
+    position: relative;
+  }
+  
+  ::ng-deep .y.axis line {
+    stroke: #dedede;
+    z-index: 2;
+  }
+  
+  ::ng-deep .y.axis .domain {
+    display: none;
+  }
+  
+  ::ng-deep .thresholdlinetext {
+    stroke: #333333;
+    font-size: 12px;
+    font-weight: 400;
+  }
+  
+  ::ng-deep .thresholdline {
+    stroke-dasharray: (3, 3);
+  }
+  
+  ::ng-deep div.tooltip {
+    position: absolute;
+    text-align: center;
+    max-width: 220px;
+    padding: 5px;
+    font-size: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--color-gray-34);
+    border-radius: 5px;
+    box-shadow: 0px 0px 6px #b9b9bb;
+    z-index: 1;
+  }
+  
+  ::ng-deep div.tooltip p {
+    margin-bottom: 0;
+  }
+  
+  ::ng-deep .toolTipValue {
+    font-weight: bold;
+  }
+  
+  ::ng-deep .legend {
+    overflow-x: auto;
+  }
+  
+  ::ng-deep .legend,
+  ::ng-deep .legendsPriority {
+    width: 430px;
+    overflow-x: auto;
+    margin-left: 2px;
+  }
+  
+  ::ng-deep #yAxisG path {
+    display: none;
+  }
+  
+  ::ng-deep #yAxisG line {
+    stroke: #dedede;
+  }
+  ::ng-deep .bstimeslider {
+  
+    width: 435px;
+    height: 30px;
+    position: relative;
+  }
+  ::ng-deep .bktibx {
+    float: left;
+    font-size: 18px;
+    display: block;
+    color: #000;
+  }
+  
+  ::ng-deep #tslshow {
+    position: absolute;
+    left: 0;
+  }
+  
+  ::ng-deep #tslshow text {
+    font-size: 13px;
+  }
+  ::ng-deep #leftArrow {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    left: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+    background-color: var(--color-black);
+    margin-left: 15px;
+    z-index: 5;
+    opacity: 0.3;
+    cursor: default;
+  }
+  
+  ::ng-deep #leftArrow span {
+    color: var(--color-white);
+    font-size: 24px;
+    vertical-align: top;
+    opacity: 1;
+    line-height: 28px;
+    padding: 0px 7px;
+  }
+  
+  ::ng-deep #rightArrow span {
+    color: var(--color-white);
+    font-size: 24px;
+    vertical-align: top;
+    opacity: 1;
+    line-height: 28px;
+    padding: 0 7px;
+  }
+  
+  ::ng-deep #rightArrow {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    right: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+    background-color: var(--color-black);
+    z-index: 5;
+    opacity: 0.3;
+    cursor: default;
+  }
+  
+  ::ng-deep #leftArrow:hover {
+    opacity: 0.6;
+  }
+  
+  ::ng-deep #rightArrow:hover {
+    opacity: 0.6;
+  }
+  
+  ::ng-deep #viewContainer {
+    width: 360px;
+    height: 100%;
+    position: absolute;
+    left: 50%;
+    margin-left: -180px;
+    overflow: hidden;
+  }
+  :host::ng-deep .x.axis .domain { display: none; }
+  
+  #xCaptionContainer {
+    text-align: center;
+    color: #437495;
+  }
+
+  :host::ng-deep .legend-container {
+    display: flex;
+  }
+
+
+  :host::ng-deep.legend-tooltip{
+    position: absolute;
+    text-align: center;
+    max-width: 220px;
+    padding: 5px;
+    font-size: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--color-gray-34);
+    border-radius: 5px;
+    box-shadow: 0px 0px 6px #b9b9bb;
+    z-index: 1;
+    display: none;
+    justify-content: space-evenly;
+    pointer-events: none;
+  }
+
+  :host::ng-deep.legend-item{
+    display: flex;
+    align-items: center;
+    width: auto;
+  }
+
+  :host::ng-deep .legend_color_indicator_dashed{
+    width: 2rem;
+    border-top: 3px dashed #D8725F;
+  }
+
+  :host ::ng-deep.tooltip2{
+    display: none;
+    font-size: 0.7rem;
+    padding: 2px;
+    position: absolute;
+    color: var(--color-gray-34);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 2px;
+    box-shadow: 0px 0px 6px #b9b9bb;
+    opacity: 0.5;
+    pointer-events: none;
+    width: max-content;
+  }
+  
+  :host ::ng-deep.tooltip-container{
+    position: relative
+  }
+  

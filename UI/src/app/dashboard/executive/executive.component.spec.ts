@@ -5797,6 +5797,85 @@ describe('ExecutiveComponent', () => {
     const spy = spyOn(component,'postJiraKanbanKpi');
     component.reloadKPI(fakeKPiDetails);
     expect(spy).toBeDefined();
-  })
+  });
+
+  it('should checkLatestAndTrendValue for kpi',()=>{
+    let kpiData = {
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "isEnabled": true,
+      "order": 29,
+      "kpiDetail": {
+          "id": "64d475511a944f265d7760be",
+          "kpiId": "kpi153",
+          "kpiName": "PI Predictability",
+          "isDeleted": "False",
+          "defaultOrder": 29,
+          "kpiUnit": "",
+          "chartType": "multipleline",
+          "showTrend": true,
+          "isPositiveTrend": true,
+          "calculateMaturity": false,
+          "aggregationCriteria": "sum",
+          "trendCalculative": false,
+          "additionalFilterSupport": true,
+          "yaxisLabel": "Business Value",
+          "xaxisLabel": "PIs"
+      },
+      "shown": true
+  };
+
+  const item = {
+    "data": "KnowHOW",
+    "value": [
+        {
+            "sSprintID": "KnowHOW PI-12",
+            "sSprintName": "KnowHOW PI-12",
+            "dataValue": [
+                {
+                    "name": "Achieved Value",
+                    "lineType": "solid",
+                    "data": "116.0",
+                    "value": 64.67,
+                    "hoverValue": {}
+                },
+                {
+                    "name": "Planned Value",
+                    "lineType": "dotted",
+                    "data": "116.0",
+                    "value": 116,
+                    "hoverValue": {}
+                }
+            ],
+            "sprojectName": "KnowHOW"
+        },
+        {
+            "sSprintID": "KnowHOW PI-13",
+            "sSprintName": "KnowHOW PI-13",
+            "dataValue": [
+                {
+                    "name": "Achieved Value",
+                    "lineType": "solid",
+                    "data": "56.0",
+                    "value": 14.6,
+                    "hoverValue": {}
+                },
+                {
+                    "name": "Planned Value",
+                    "lineType": "dotted",
+                    "data": "56.0",
+                    "value": 56,
+                    "hoverValue": {}
+                }
+            ],
+            "sprojectName": "KnowHOW"
+        }
+    ]
+};
+
+const result = component.checkLatestAndTrendValueForKpi(kpiData,item);
+expect(result[0]).toEqual('14.6');
+expect(result[1]).toEqual('-ve');
+  });
 
 });

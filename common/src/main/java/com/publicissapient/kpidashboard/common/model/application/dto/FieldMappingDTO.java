@@ -242,6 +242,8 @@ private String jiraLiveStatusKPI127;
 	private String epicWsjf;
 	private String epicTimeCriticality;
 	private String epicJobSize;
+	private String epicPlannedValue;
+	private String epicAchievedValue;
 
 	private String atmSubprojectField;
 
@@ -375,6 +377,8 @@ private String jiraLiveStatusKPI127;
 
 	@Builder.Default
 	private String notificationEnabler="On";
+
+	private List<String> jiraIssueEpicTypeKPI153;
 
 	/**
 	 * Get jira issue type names string [ ].

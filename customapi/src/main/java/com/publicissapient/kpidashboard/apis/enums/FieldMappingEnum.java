@@ -36,7 +36,7 @@ public enum FieldMappingEnum {
 					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField", "jiraDevDueDateField",
 					"jiraIssueEpicType", "storyFirstStatus", "jiraTestAutomationIssueType",
 					 "productionDefectCustomField", "productionDefectIdentifier",
-					"productionDefectValue", "productionDefectComponentValue", "jiraSubTaskDefectType", "notificationEnabler")),
+					"productionDefectValue", "productionDefectComponentValue", "notificationEnabler", "epicPlannedValue", "epicAchievedValue", "jiraSubTaskDefectType")),
 
 	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNames", "storyFirstStatus",
 			"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
