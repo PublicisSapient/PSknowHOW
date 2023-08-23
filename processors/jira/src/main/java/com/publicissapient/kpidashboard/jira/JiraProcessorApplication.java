@@ -36,7 +36,7 @@ import org.springframework.web.client.RestTemplate;
 @EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
 public class JiraProcessorApplication {
 
-	private static boolean sslHostNameFlag = false;
+	private static boolean sslHostNameFlag = true;
 
 	public static void main(String[] args) {
 		HttpsURLConnection.setDefaultHostnameVerifier((s, sslSession) -> sslHostNameFlag);

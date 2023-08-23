@@ -6116,7 +6116,47 @@ db.kpi_column_configs.insertMany([
                                       isShown: true,
                                       isDefault: true
                                     }]
-                                  }
+                                  },
+                                   {
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi153',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Project Name',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		},  {
+                                 			columnName: 'Epic ID',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Epic Name',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Status',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'PI Name',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Planned Value',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Achieved Value',
+                                 			order: 7,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		 }]
+                                 	}
                                  ]);
 
 //default fields mapping structure for KPI, these fields are used to populate the config JIRA for any
