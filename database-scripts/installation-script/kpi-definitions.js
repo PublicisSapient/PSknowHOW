@@ -8106,6 +8106,16 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "This field is used to identify Epic Issue type.",
     }
+    },
+    {
+      "fieldName": "jiraSubTaskDefectType",
+      "fieldLabel": "** Issue type for sub-task defect",
+      "fieldType": "chips",
+      "fieldCategory": "Issue_Type",
+      "section": "Issue Types Mapping",
+      "tooltip": {
+           "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+      }
     }
 ]
 );
