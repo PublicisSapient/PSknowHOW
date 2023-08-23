@@ -3511,8 +3511,6 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach
     );
 });
 
-])
-
 //------------------------- 7.7.0 changes----------------------------------------------------------------------------------
 // kpi issue type mapping for Quality status  ---------------------------------------------------------------------------
 // add Enable Notification option
@@ -3610,3 +3608,9 @@ db.user_board_config.updateMany(
     }
   }
 );
+
+//changing dora kpi groupId
+db.kpi_master.updateMany(
+   { kpiId: { $in: ["kpi116", "kpi118"] } },
+   { $set: { groupId: 14 } }
+)

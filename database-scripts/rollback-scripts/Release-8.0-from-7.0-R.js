@@ -442,3 +442,8 @@ db.kpi_master.updateOne(
     $set: { "xAxisLabel": "Months" }
   }
 );
+
+db.kpi_master.updateMany(
+   { kpiId: { $in: ["kpi116", "kpi118"] } },
+   { $set: { groupId: 1 } }
+)

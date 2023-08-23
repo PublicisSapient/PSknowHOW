@@ -180,7 +180,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         StackedAreaChartComponent,
         FeedbackComponent,
         DailyScrumComponent,
-        DailyScrumTabComponent
+        DailyScrumTabComponent,
         DoraComponent
     ],
     imports: [
