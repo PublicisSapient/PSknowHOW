@@ -404,14 +404,10 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 4}}).forEach(f
 });
 
 // --------------------- Release 7.7 -----------------------------------------------------------------
-// delete mapping for Quality Status
+// delete mapping for Quality Status and notification enabler
 
 db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraItrQSIssueTypeKPI133"
-});
-
-db.field_mapping_structure.deleteMany({
-    "fieldName": "notificationEnabler"
+    "fieldName": { $in: [ "jiraItrQSIssueTypeKPI133", "notificationEnabler"]}
 });
 
 //deleting dailyStandup kpi
