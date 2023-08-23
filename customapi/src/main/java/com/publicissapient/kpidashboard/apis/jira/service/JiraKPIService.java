@@ -48,6 +48,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
@@ -74,7 +75,6 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> implements ApplicationKPIService<R, S, T> {
 
 	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-	public static final String BUG = "Bug";
 	public static final String BASIC_PROJECT_CONFIG_ID = "basicProjectConfigId";
 	@Autowired
 	private CacheService cacheService;
@@ -295,31 +295,25 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return jiraService.getJiraIssuesCustomHistoryForCurrentSprint();
 	}
 
-	public List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(Map<String, Set<String>> projectWiseDefectTypes,
-			Set<String> subTaskDefectType) {
+	public List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(FieldMapping fieldMapping) {
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		List<JiraIssue> subtaskDefects = new ArrayList<>();
+		List<String> defectType = new ArrayList<>();
 		List<JiraIssue> jiraIssuesForCurrentRelease = jiraService.getJiraIssuesForSelectedRelease();
-		Set<String> storyIDs = jiraIssuesForCurrentRelease.stream()
-				.filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(BUG)).map(JiraIssue::getNumber)
-				.collect(Collectors.toSet());
-		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(subTaskDefectType)
-				&& !storyIDs.isEmpty()) {
-			Set<JiraIssue> defectsList = jiraService.getSubTaskDefects(projectWiseDefectTypes.keySet(), storyIDs,
-					subTaskDefectType);
-			defectsList.removeIf(jiraIssuesForCurrentRelease::contains);
+		Set<JiraIssue> defectsList = jiraService.getSubTaskDefects();
+		if (CollectionUtils.isNotEmpty(defectsList)) {
 			subtaskDefects.addAll(defectsList);
+			subtaskDefects.removeIf(jiraIssuesForCurrentRelease::contains);
 			filteredJiraIssue = subtaskDefects;
 		}
 
-		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(jiraIssuesForCurrentRelease)) {
+		if (fieldMapping != null && CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())
+				&& CollectionUtils.isNotEmpty(jiraIssuesForCurrentRelease)) {
+			defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
+			defectType.addAll(fieldMapping.getJiradefecttype());
 			List<JiraIssue> finalFilteredJiraIssue = filteredJiraIssue;
-			projectWiseDefectTypes.forEach((project,
-					values) -> finalFilteredJiraIssue.addAll(jiraIssuesForCurrentRelease.stream()
-							.filter(jiraIssue -> values.contains(jiraIssue.getTypeName())
-									&& project.equalsIgnoreCase(jiraIssue.getBasicProjectConfigId()))
-							.collect(Collectors.toList())));
-
+			finalFilteredJiraIssue.addAll(jiraIssuesForCurrentRelease.stream()
+					.filter(jiraIssue -> defectType.contains(jiraIssue.getTypeName())).collect(Collectors.toList()));
 		} else
 			filteredJiraIssue = jiraIssuesForCurrentRelease;
 		return filteredJiraIssue;

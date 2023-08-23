@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
@@ -76,6 +78,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JiraServiceR {
 
+	public static final String BUG = "Bug";
 	@Autowired
 	private KpiHelperService kpiHelperService;
 
@@ -103,6 +106,7 @@ public class JiraServiceR {
 	JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssue> jiraIssueReleaseList;
+	private Set<JiraIssue> subtaskDefectReleaseList;
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 	private List<String> releaseList;
 
@@ -188,6 +192,7 @@ public class JiraServiceR {
 			jiraIssueList = null;
 			jiraIssueCustomHistoryList = null;
 			jiraIssueReleaseList = null;
+			subtaskDefectReleaseList = null;
 		} catch (Exception e) {
 			log.error("Error while KPI calculation for data {} {}", kpiRequest.getKpiList(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
@@ -313,6 +318,10 @@ public class JiraServiceR {
 		} else if (board.equalsIgnoreCase(CommonConstant.RELEASE)) {
 			jiraIssueReleaseList = jiraIssueRepository
 					.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, sprintIssuesList);
+			Set<String> storyIDs = jiraIssueReleaseList.stream()
+					.filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(BUG)).map(JiraIssue::getNumber)
+					.collect(Collectors.toSet());
+			fetchSubTaskDefectsRelease(basicProjectConfigId, storyIDs);
 		}
 	}
 
@@ -351,10 +360,8 @@ public class JiraServiceR {
 		return jiraIssueReleaseList;
 	}
 
-	public Set<JiraIssue> getSubTaskDefects(Set<String> basicProjectConfigID, Set<String> storyIDs,
-			Set<String> subTaskDefectType) {
-		return jiraIssueRepository.findByBasicProjectConfigIdInAndDefectStoryIDInAndOriginalTypeIn(basicProjectConfigID,
-				storyIDs, subTaskDefectType);
+	public Set<JiraIssue> getSubTaskDefects() {
+		return subtaskDefectReleaseList;
 	}
 
 	public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, List<String> sprintIssuesList, String board) {
@@ -379,6 +386,17 @@ public class JiraServiceR {
 
 		if (board.equalsIgnoreCase(CommonConstant.BACKLOG) || board.equalsIgnoreCase(CommonConstant.RELEASE)) {
 			jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId);
+		}
+	}
+
+	private void fetchSubTaskDefectsRelease(String projectConfigId, Set<String> storyIDs) {
+		ObjectId basicProjectConfigId = new ObjectId(projectConfigId);
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+		if (CollectionUtils.isNotEmpty(storyIDs) && fieldMapping != null
+				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskDefectType())) {
+			subtaskDefectReleaseList = jiraIssueRepository
+					.findByBasicProjectConfigIdAndDefectStoryIDInAndOriginalTypeIn(projectConfigId, storyIDs,
+							fieldMapping.getJiraSubTaskDefectType());
 		}
 	}
 
