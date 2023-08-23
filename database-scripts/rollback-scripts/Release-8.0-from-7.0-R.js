@@ -1,5 +1,4 @@
 //---------7.5.0 changes------------------------------------------------------------------
-
 // Reversing "Fetch Sprint" action policy
 db.action_policy_rule.deleteMany({
     "name": "Fetch Sprint"
@@ -46,6 +45,11 @@ db.kpi_master.updateOne(
     ]
   }
 );
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": "sprintName"
+});
+
 //----------------7.6.0 Changes ---------------------------
 //DTS-26121 Enchancement of Quality Status Overlay
 db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},{$set:{"kpiColumnDetails" : [
@@ -351,6 +355,7 @@ db.getCollection('metadata_identifier').updateMany(
    }}
 );
 
+//updated action_policy "Fetch Sprint"
 db.action_policy_rule.updateOne(
 {
     "name": "Fetch Sprint"
@@ -374,54 +379,6 @@ db.field_mapping_structure.deleteMany({
 });
 
 
-//------ DTS-27515
-db.getCollection('field_mapping_structure').insertOne(
-{
-    "fieldName": "jiraDevDueDateCustomField",
-    "fieldLabel": "Dev Due Date",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "This field is to track dev due date of issues tagged in the iteration."
-    }
-});
-
-db.getCollection('field_mapping_structure').deleteOne(
-{
-     "fieldName": "jiraDevDueDateField",
-     "fieldLabel": "Dev Due Date",
-     "fieldType": "radiobutton",
-     "section": "Custom Fields Mapping",
-     "tooltip": {
-       "definition": "This field is to track dev due date of issues tagged in the iteration."
-     },
-     "options": [
-       {
-         "label": "Custom Field",
-         "value": "CustomField"
-       },
-       {
-         "label": "Due Date",
-         "value": "Due Date"
-       }
-     ],
-     "nestedFields": [
-       {
-         "fieldName": "jiraDevDueDateCustomField",
-         "fieldLabel": "Dev Due Date Custom Field",
-         "fieldType": "text",
-         "fieldCategory": "fields",
-         "filterGroup": [
-           "CustomField"
-         ],
-         "tooltip": {
-           "definition": "This field is to track dev due date of issues tagged in the iteration."
-         }
-       }
-     ]
-   }
-);
 // --- Reverse fieldType for KPI 138
 var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
   db.getCollection('field_mapping_structure').update(
@@ -447,17 +404,12 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 4}}).forEach(f
 });
 
 // --------------------- Release 7.7 -----------------------------------------------------------------
-// delete mapping for Quality Status
+// delete mapping for Quality Status and notification enabler
 
 db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraItrQSIssueTypeKPI133"
+    "fieldName": { $in: [ "jiraItrQSIssueTypeKPI133", "notificationEnabler"]}
 });
 
-db.field_mapping_structure.deleteMany({
-    "fieldName": "notificationEnabler"
-});
-
-//---------7.7.0 changes------------------------------------------------------------------
 //deleting dailyStandup kpi
 db.getCollection('kpi_master').deleteMany(
   { "kpiId": "kpi154" }
