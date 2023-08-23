@@ -94,13 +94,15 @@ export class IterationComponent implements OnInit, OnDestroy {
   markerInfo=[];
   globalConfig;
   sharedObject;
-  navigationTabs:Array<object> = [
+  activeIndex = 0;
+  navigationTabs:Array<object> =[
     {'label':'Iteration Review', 'count': 0},
-    {'label':'Iteration Progress', 'count': 0}
+    {'label':'Iteration Progress', 'count': 0},
   ];
   forzenColumns = ['issue id','issue description'];
   commitmentReliabilityKpi;
   kpiCommentsCountObj: object = {};
+  currentSelectedSprint;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -153,8 +155,11 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi120');
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {
-      return { ...x, count: 0}
-    })
+      if(x['label'] === 'Daily Standup'){
+        return x;
+      }
+      return { ...x, count: 0};
+    });
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
       let board = this.upDatedConfigData[i]?.subCategoryBoard;
       let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
@@ -187,6 +192,19 @@ export class IterationComponent implements OnInit, OnDestroy {
     click apply and call kpi
    **/
   receiveSharedData($event) {
+    if(this.service.currentSelectedSprint?.sprintState === 'ACTIVE'){
+      this.navigationTabs =  [
+        {'label':'Iteration Review', 'count': 0},
+        {'label':'Iteration Progress', 'count': 0},
+        {'label':'Daily Standup','count':1}
+      ];
+    }else{
+      this.navigationTabs =  [
+        {'label':'Iteration Review', 'count': 0},
+        {'label':'Iteration Progress', 'count': 0},
+      ];
+    }
+    this.activeIndex =0;
     if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
       this.processKpiConfigData();
@@ -295,6 +313,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         }
       }
     }));
+
 
     this.service.getEmptyData().subscribe((val) => {
       if (val) {
@@ -897,7 +916,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
     const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event?.kpiDetail?.groupId,'Iteration');
     if (currentKPIGroup?.kpiList?.length > 0) {
-        this.postJiraKpi(this.kpiJira, 'jira');
+        this.postJiraKpi(currentKPIGroup, 'jira');
     }
   }
 
@@ -921,4 +940,5 @@ export class IterationComponent implements OnInit, OnDestroy {
     }
 
   }
+
 }
