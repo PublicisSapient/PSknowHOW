@@ -2399,6 +2399,58 @@ db.getCollection('field_mapping_structure').insert(
    }
  );
 
+ db.getCollection('field_mapping_structure').deleteOne(
+ {
+     "fieldName": "jiraDevDueDateCustomField",
+     "fieldLabel": "Dev Due Date",
+     "fieldType": "text",
+     "fieldCategory": "fields",
+     "section": "Custom Fields Mapping",
+     "tooltip": {
+         "definition": "This field is to track dev due date of issues tagged in the iteration."
+     }
+ });
+
+ const fieldMappingField = ["jiraDevDueDateField"];
+ var jiraDevDueDateField = db.getCollection('field_mapping_structure').find( {fieldName: { $in: fieldMappingField }}).toArray();
+ if (jiraDevDueDateField.length === 0) {
+ db.getCollection('field_mapping_structure').insertOne(
+ {
+      "fieldName": "jiraDevDueDateField",
+      "fieldLabel": "Dev Due Date",
+      "fieldType": "radiobutton",
+      "section": "Custom Fields Mapping",
+      "tooltip": {
+        "definition": "This field is to track dev due date of issues tagged in the iteration."
+      },
+      "options": [
+        {
+          "label": "Custom Field",
+          "value": "CustomField"
+        },
+        {
+          "label": "Due Date",
+          "value": "Due Date"
+        }
+      ],
+      "nestedFields": [
+        {
+          "fieldName": "jiraDevDueDateCustomField",
+          "fieldLabel": "Dev Due Date Custom Field",
+          "fieldType": "text",
+          "fieldCategory": "fields",
+          "filterGroup": [
+            "CustomField"
+          ],
+          "tooltip": {
+            "definition": "This field is to track dev due date of issues tagged in the iteration."
+          }
+        }
+      ]
+    }
+ );
+ }
+
  //---------7.5.0 changes------------------------------------------------------------------
 //Defect fix for DTS-27477 (Remove one In-Sprint Automation mapping which is appearing twice)
 
@@ -3450,60 +3502,6 @@ db.getCollection('field_mapping_structure').insertMany([
 }
 ]);
 
-//---------7.4.0 changes----------------------------------------------------------------------
-db.getCollection('field_mapping_structure').deleteOne(
-{
-    "fieldName": "jiraDevDueDateCustomField",
-    "fieldLabel": "Dev Due Date",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "This field is to track dev due date of issues tagged in the iteration."
-    }
-});
-
-const fieldMappingField = ["jiraDevDueDateField"];
-var jiraDevDueDateField = db.getCollection('field_mapping_structure').find( {fieldName: { $in: fieldMappingField }}).toArray();
-if (jiraDevDueDateField.length === 0) {
-db.getCollection('field_mapping_structure').insertOne(
-{
-     "fieldName": "jiraDevDueDateField",
-     "fieldLabel": "Dev Due Date",
-     "fieldType": "radiobutton",
-     "section": "Custom Fields Mapping",
-     "tooltip": {
-       "definition": "This field is to track dev due date of issues tagged in the iteration."
-     },
-     "options": [
-       {
-         "label": "Custom Field",
-         "value": "CustomField"
-       },
-       {
-         "label": "Due Date",
-         "value": "Due Date"
-       }
-     ],
-     "nestedFields": [
-       {
-         "fieldName": "jiraDevDueDateCustomField",
-         "fieldLabel": "Dev Due Date Custom Field",
-         "fieldType": "text",
-         "fieldCategory": "fields",
-         "filterGroup": [
-           "CustomField"
-         ],
-         "tooltip": {
-           "definition": "This field is to track dev due date of issues tagged in the iteration."
-         }
-       }
-     ]
-   }
-);
-}
-
-//---------------------------- Release 7.6 ------------------------------------------------------------------------
 // --- Backlog Readiness KPI Fieldmapping Enhancement (DTS-27535)
 
 var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
@@ -3567,7 +3565,6 @@ db.getCollection('field_mapping_structure').insertMany([
 }
 ]);
 
-//----------------7.7.0 Changes ---------------------------
 //adding dailyStandup kpi
 var dailyStandupKPI = db.getCollection('kpi_master').find( {kpiId: "kpi154"}).toArray();
 if (dailyStandupKPI.length === 0) {
