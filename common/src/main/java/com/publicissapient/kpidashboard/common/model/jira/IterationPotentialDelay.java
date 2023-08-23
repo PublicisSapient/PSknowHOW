@@ -21,6 +21,8 @@ public class IterationPotentialDelay {
 	private int potentialDelay;
 	private String predictedCompletedDate;
 	private boolean maxMarker;
+	private String assigneeId;
+	private String status;
 
 	@Override
 	public boolean equals(Object o) {
@@ -30,11 +32,11 @@ public class IterationPotentialDelay {
 			return false;
 		IterationPotentialDelay that = (IterationPotentialDelay) o;
 		return issueId.equals(that.issueId) && dueDate.equals(that.dueDate) && potentialDelay == that.potentialDelay
-				&& predictedCompletedDate.equals(that.predictedCompletedDate);
+				&& predictedCompletedDate.equals(that.predictedCompletedDate) && assigneeId.equals(that.assigneeId);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(issueId, dueDate, potentialDelay, predictedCompletedDate);
+		return Objects.hash(issueId, dueDate, potentialDelay, predictedCompletedDate, assigneeId);
 	}
 }

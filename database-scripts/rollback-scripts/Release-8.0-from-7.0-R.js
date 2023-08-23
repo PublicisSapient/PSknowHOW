@@ -1,5 +1,4 @@
 //---------7.5.0 changes------------------------------------------------------------------
-
 // Reversing "Fetch Sprint" action policy
 db.action_policy_rule.deleteMany({
     "name": "Fetch Sprint"
@@ -46,6 +45,11 @@ db.kpi_master.updateOne(
     ]
   }
 );
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": "sprintName"
+});
+
 //----------------7.6.0 Changes ---------------------------
 //DTS-26121 Enchancement of Quality Status Overlay
 db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},{$set:{"kpiColumnDetails" : [
@@ -106,6 +110,240 @@ db.getCollection('kpi_master').updateOne(
   { $set: { "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available." } }
 );
 
+//reversing metadata_identifier back when we use to compare metadata_identifier with boardMetadata
+db.getCollection('metadata_identifier').update({
+        "templateCode": "7"
+    }, // Match documents with templateCode equal to "7"
+    {
+        $set: {
+            "tool": "Jira",
+            "templateName": "Standard Template",
+            "templateCode": "7",
+            "isKanban": false,
+            "disabled": false,
+            "issues": [{
+                    "type": "story",
+                    "value": [
+                        "Story",
+                        "Enabler Story",
+                        "Tech Story",
+                        "Change request"
+                    ]
+                },
+                {
+                    "type": "bug",
+                    "value": [
+                        "Defect",
+                        "Bug"
+                    ]
+                },
+                {
+                    "type": "epic",
+                    "value": [
+                        "Epic"
+                    ]
+                },
+                {
+                    "type": "issuetype",
+                    "value": [
+                        "Story",
+                        "Enabler Story",
+                        "Tech Story",
+                        "Change request",
+                        "Defect",
+                        "Bug",
+                        "Epic"
+                    ]
+                },
+                {
+                    "type": "uatdefect",
+                    "value": [
+                        "UAT Defect"
+                    ]
+                }
+            ],
+            "customfield": [{
+                    "type": "storypoint",
+                    "value": [
+                        "Story Points"
+                    ]
+                },
+                {
+                    "type": "sprint",
+                    "value": [
+                        "Sprint"
+                    ]
+                },
+                {
+                    "type": "rootcause",
+                    "value": [
+                        "Root Cause"
+                    ]
+                },
+                {
+                    "type": "techdebt",
+                    "value": [
+                        "Tech Debt"
+                    ]
+                },
+                {
+                    "type": "uat",
+                    "value": [
+                        "UAT"
+                    ]
+                },
+                {
+                    "type": "timeCriticality",
+                    "value": [
+                        "Time Criticality"
+                    ]
+                },
+                {
+                    "type": "wsjf",
+                    "value": [
+                        "WSJF"
+                    ]
+                },
+                {
+                    "type": "costOfDelay",
+                    "value": [
+                        "Cost of Delay"
+                    ]
+                },
+                {
+                    "type": "businessValue",
+                    "value": [
+                        "User-Business Value"
+                    ]
+                },
+                {
+                    "type": "riskReduction",
+                    "value": [
+                        "Risk Reduction-Opportunity Enablement Value"
+                    ]
+                },
+                {
+                    "type": "jobSize",
+                    "value": [
+                        "Job Size"
+                    ]
+                },
+                {
+                    "type": "epicLink",
+                    "value": [
+                        "Epic Link"
+                    ]
+                }
+            ],
+            "workflow": [{
+                    "type": "dor",
+                    "value": [
+                        "Ready for Sprint Planning",
+                        "In Progress"
+                    ]
+                },
+                {
+                    "type": "dod",
+                    "value": [
+                        "Closed",
+                        "Resolved",
+                        "Ready for Delivery"
+                    ]
+                },
+                {
+                    "type": "development",
+                    "value": [
+                        "Implementing",
+                        "In Development",
+                        "In Analysis"
+                    ]
+                },
+                {
+                    "type": "qa",
+                    "value": [
+                        "In Testing"
+                    ]
+                },
+                {
+                    "type": "firststatus",
+                    "value": [
+                        "Open"
+                    ]
+                },
+                {
+                    "type": "rejection",
+                    "value": [
+                        "Closed",
+                        "Rejected"
+                    ]
+                },
+                {
+                    "type": "delivered",
+                    "value": [
+                        "Closed",
+                        "Resolved",
+                        "Ready for Delivery",
+                        "Ready for Release"
+                    ]
+                },
+                {
+                    "type": "jiraWaitStatus",
+                    "value": [
+                        "Ready for Testing"
+                    ]
+                },
+                {
+                    "type": "jiraBlockedStatus",
+                    "value": [
+                        "On Hold",
+                        "Blocked"
+                    ]
+                },
+                {
+                    "type": "jiraStatusForInProgress",
+                    "value": [
+                        "In Analysis",
+                        "In Development",
+                        "In Progress"
+                    ]
+                },
+                {
+                    "type": "jiraStatusForClosed",
+                    "value": [
+                        "Closed",
+                        "CLOSED"
+                    ]
+                }
+            ],
+            "valuestoidentify": [{
+                    "type": "rootCauseValue",
+                    "value": [
+                        "Coding"
+                    ]
+                },
+                {
+                    "type": "rejectionResolution",
+                    "value": [
+                        "Invalid",
+                        "Duplicate",
+                        "Unrequired"
+                    ]
+                },
+                {
+                    "type": "qaRootCause",
+                    "value": [
+                        "Coding",
+                        "Configuration",
+                        "Regression",
+                        "Data"
+                    ]
+                }
+            ]
+        }
+    }, {
+        multi: false
+    }
+);
 
 //removing epicLink from documents of metadata_identifier
 db.getCollection('metadata_identifier').updateMany(
@@ -117,6 +355,7 @@ db.getCollection('metadata_identifier').updateMany(
    }}
 );
 
+//updated action_policy "Fetch Sprint"
 db.action_policy_rule.updateOne(
 {
     "name": "Fetch Sprint"
@@ -140,54 +379,6 @@ db.field_mapping_structure.deleteMany({
 });
 
 
-//------ DTS-27515
-db.getCollection('field_mapping_structure').insertOne(
-{
-    "fieldName": "jiraDevDueDateCustomField",
-    "fieldLabel": "Dev Due Date",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "This field is to track dev due date of issues tagged in the iteration."
-    }
-});
-
-db.getCollection('field_mapping_structure').deleteOne(
-{
-     "fieldName": "jiraDevDueDateField",
-     "fieldLabel": "Dev Due Date",
-     "fieldType": "radiobutton",
-     "section": "Custom Fields Mapping",
-     "tooltip": {
-       "definition": "This field is to track dev due date of issues tagged in the iteration."
-     },
-     "options": [
-       {
-         "label": "Custom Field",
-         "value": "CustomField"
-       },
-       {
-         "label": "Due Date",
-         "value": "Due Date"
-       }
-     ],
-     "nestedFields": [
-       {
-         "fieldName": "jiraDevDueDateCustomField",
-         "fieldLabel": "Dev Due Date Custom Field",
-         "fieldType": "text",
-         "fieldCategory": "fields",
-         "filterGroup": [
-           "CustomField"
-         ],
-         "tooltip": {
-           "definition": "This field is to track dev due date of issues tagged in the iteration."
-         }
-       }
-     ]
-   }
-);
 // --- Reverse fieldType for KPI 138
 var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
   db.getCollection('field_mapping_structure').update(
@@ -213,11 +404,17 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 4}}).forEach(f
 });
 
 // --------------------- Release 7.7 -----------------------------------------------------------------
-// delete mapping for Quality Status
+// delete mapping for Quality Status and notification enabler
 
 db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraItrQSIssueTypeKPI133"
+    "fieldName": { $in: [ "jiraItrQSIssueTypeKPI133", "notificationEnabler"]}
 });
+
+//deleting dailyStandup kpi
+db.getCollection('kpi_master').deleteMany(
+  { "kpiId": "kpi154" }
+);
+
 
 //------------------------- Release 7.8v ----------------------------------------------------------------------------------
 // delete FieldMapping Field which consider subtask defect  ---------------------------------------------------------------------------

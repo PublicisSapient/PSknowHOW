@@ -1,0 +1,32 @@
+
+
+<app-daily-scrum *ngIf="!displayModal" 
+    [assigneeList]="assigneeList" 
+    [columns]="columns" 
+    [filterData]="filterData"
+    [displayModal]="displayModal" 
+    [showLess]="showLess"
+    [filters]="filters"
+    [selectedUser]="selectedUser"
+    (onExpandOrCollapse)="setExpandView($event)"
+    (onShowLessOrMore)="onShowLessOrMore()"
+    (onFilterChange)="onFilterChange($event)"
+    (onSelectedUserChange)="onSelectedUserChange($event)"
+   >
+</app-daily-scrum>
+
+<p-dialog [(visible)]="displayModal">
+    <app-daily-scrum 
+    [assigneeList]="assigneeList" 
+    [columns]="columns" 
+    [filterData]="filterData"
+    [displayModal]="displayModal" 
+    [showLess]="showLess"
+    [filters]="filters"
+    [selectedUser]="selectedUser"
+    (onExpandOrCollapse)="setExpandView($event)"
+    (onShowLessOrMore)="onShowLessOrMore()"
+    (onFilterChange)="onFilterChange($event)"
+    (onSelectedUserChange)="onSelectedUserChange($event)">
+    </app-daily-scrum>
+</p-dialog>

@@ -21,7 +21,10 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
@@ -93,7 +96,6 @@ public class JiraServiceR {
 
 	@Autowired
 	private SprintRepository sprintRepository;
-	private List<SprintDetails> sprintDetails;
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
@@ -103,6 +105,10 @@ public class JiraServiceR {
 	@Autowired
 	private ConfigHelperService configHelperService;
 
+	private ThreadLocal<List<SprintDetails>> threadLocalSprintDetails = ThreadLocal.withInitial(ArrayList::new);
+	private ThreadLocal<List<JiraIssue>> threadLocalJiraIssues = ThreadLocal.withInitial(ArrayList::new);
+	private ThreadLocal<List<JiraIssueCustomHistory>> threadLocalHistory = ThreadLocal.withInitial(ArrayList::new);
+	private List<SprintDetails> sprintDetails;
 	JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssue> jiraIssueReleaseList;
@@ -164,7 +170,6 @@ public class JiraServiceR {
 						&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
 					updateJiraIssueList(kpiRequest, origRequestedKpis, filteredAccountDataList, treeAggregatorDetail);
 				}
-
 				// set filter value to show on trend line. If sub-projects are
 				// in
 				// selection then show sub-projects on trend line else show
@@ -188,14 +193,15 @@ public class JiraServiceR {
 			} else {
 				responseList.addAll(origRequestedKpis);
 			}
-			sprintDetails = null;
-			jiraIssueList = null;
-			jiraIssueCustomHistoryList = null;
-			jiraIssueReleaseList = null;
-			subtaskDefectReleaseList = null;
+
 		} catch (Exception e) {
 			log.error("Error while KPI calculation for data {} {}", kpiRequest.getKpiList(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
+		}
+		finally {
+			threadLocalSprintDetails.remove();
+			threadLocalJiraIssues.remove();
+			threadLocalHistory.remove();
 		}
 
 		return responseList;
@@ -235,7 +241,7 @@ public class JiraServiceR {
 	 * @param treeAggregatorDetail
 	 * @return
 	 */
-	public List<String> getReleaseList(TreeAggregatorDetail treeAggregatorDetail) {
+	private List<String> getReleaseList(TreeAggregatorDetail treeAggregatorDetail) {
 		List<Node> nodes = treeAggregatorDetail.getMapOfListOfLeafNodes().get(Filters.RELEASE.toString().toLowerCase());
 		List<String> processedList = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(nodes)) {
@@ -302,7 +308,7 @@ public class JiraServiceR {
 	}
 
 	public SprintDetails getCurrentSprintDetails() {
-		return sprintDetails.stream().findFirst().orElse(null);
+		return threadLocalSprintDetails.get().stream().findFirst().orElse(null);
 	}
 
 	public void setSprintDetails(List<SprintDetails> modifieldSprintDetails) {
@@ -353,7 +359,7 @@ public class JiraServiceR {
 	}
 
 	public List<JiraIssue> getJiraIssuesForCurrentSprint() {
-		return jiraIssueList;
+		return threadLocalJiraIssues.get();
 	}
 
 	public List<JiraIssue> getJiraIssuesForSelectedRelease() {
@@ -379,7 +385,7 @@ public class JiraServiceR {
 	}
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryForCurrentSprint() {
-		return jiraIssueCustomHistoryList;
+		return threadLocalHistory.get();
 	}
 
 	public void fetchJiraIssueReleaseForProject(String basicProjectConfigId, String board) {
@@ -446,6 +452,9 @@ public class JiraServiceR {
 		@Override
 		public void compute() {
 			try {
+				threadLocalSprintDetails.set(sprintDetails);
+				threadLocalJiraIssues.set(jiraIssueList);
+				threadLocalHistory.set(jiraIssueCustomHistoryList);
 				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
 			} catch (Exception e) {
 				log.error("[PARALLEL_JIRA_SERVICE].Exception occured {}", e);
