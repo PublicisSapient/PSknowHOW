@@ -18,7 +18,7 @@
 <ng-container *ngIf="!noProjects else noProjectsTemplate">
     <div *ngIf="!noKpis else noKpiTemplate">
         <div id="message"></div>
-        <div class="{{selectedtype}}" id="{{selectedtype}}">
+        <div *ngIf="selectedtype.toLowerCase() === 'scrum'">
             <div class="clearfix">
                 <div class="right-container col">
                     <div class="p-grid justify-content-start p-pt-3">
@@ -28,25 +28,22 @@
                             <div class="p-sm-5 p-pl-4">
                                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj"
                                     [kpiData]="updatedConfigDataObj['kpi116']" [trendData]="kpiTrendsObj['kpi116']"
-                                    [cols]="kpiChartData['kpi116']?.columnHeaders"
-                                    [showTrendIndicator]="showKpiTrendIndicator['kpi116'] ==false ? showKpiTrendIndicator['kpi116'] : true"
                                     [dropdownArr]="kpiDropdowns['kpi116']"
                                     (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi116']?.kpiId, updatedConfigDataObj['kpi116']?.kpiName, updatedConfigDataObj['kpi116']?.kpiDetail.kanban,updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport)"
                                     (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi116'])"
-                                    [showExport]="(showChart === 'chart' || showChart === 'large')" [showChartView]="showChart"
-                                    [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"
+                                    [showExport]="true" [showChartView]="showChart"
                                     [sprintsOverlayVisible]="sprintsOverlayVisible && updatedConfigDataObj['kpi116']?.kpiDetail?.chartType !== 'table'"
-                                    [isShow]="(updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false) || (!iSAdditionalFilterSelected && kpiLoader === false) && (ifKpiExist('kpi116') != -1) ? true : false"
+                                    [isShow]="(kpiLoader === false) && (ifKpiExist('kpi116') != -1) ? true : false"
                                     [trendValueList]="kpiChartData['kpi116']" [colors]="this.colorObj"
                                     [showCommentIcon]="showCommentIcon" [commentCount]="kpiCommentsCountObj['kpi116']"
                                     (getCommentCountByKpi)="getKpiCommentsCount($event)"
                                     (reloadKPITab)="reloadKPI($event)" [board]="'dora'">
                                     <ng-container *ngIf="!noTabAccess else noDataAccess">
                                         <ng-container
-                                            *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
+                                        *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
                                             <div class="p-pl-3 p-pr-3" *ngIf="ifKpiExist('kpi116') != -1; else loader">
                                                 <ng-container
-                                                    *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0 && kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData">
+                                                    *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList?.length>0); else noData">
                                                     <ng-container *ngIf="showChart">
                                                         <app-multiline
                                                             [thresholdValue]="updatedConfigDataObj['kpi116']?.kpiDetail?.thresholdValue"
@@ -55,7 +52,7 @@
                                                             [xCaption]="updatedConfigDataObj['kpi116']?.kpiDetail?.xaxisLabel"
                                                             [yCaption]="updatedConfigDataObj['kpi116']?.kpiDetail?.yaxisLabel"
                                                             [name]="updatedConfigDataObj['kpi116']?.kpiName"
-                                                            [kpiId]="'kpi116'" [color]="chartColorList['kpi116']"
+                                                            [kpiId]="'kpi116'" [color]="chartColorList"
                                                             [selectedtype]="selectedtype" [board]="'dora'">
                                                         </app-multiline>
                                                     </ng-container>
@@ -64,17 +61,12 @@
                                         </ng-container>
                                         <ng-template #noData>
                                             <div class="overlay"
-                                                *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length && !iSAdditionalFilterSelected) || (kpiChartData['kpi116'] && kpiChartData['kpi116']?.length && updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
+                                                *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length) || kpiLoader">
                                                 <div class="loading-img"></div>
                                             </div>
                                             <div class="min-ht"
-                                                *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length === 0 && !iSAdditionalFilterSelected && kpiLoader === false) || (kpiChartData['kpi116'] && kpiChartData['kpi116']?.length === 0 && updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false)">
+                                                *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length === 0 && kpiLoader === false)">
                                                 <div class="err">No Data Available</div>
-                                            </div>
-                                            <div class="min-ht"
-                                                *ngIf="updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected && kpiLoader === false">
-                                                <div class="err squad-err-msg">KPI cannot be measured for a Squad
-                                                </div>
                                             </div>
                                         </ng-template>
                                         <ng-template #loader>
@@ -89,44 +81,34 @@
                                 <div class="kpi-summary p-p-3 p-mb-3 position-relative">
                                     <h4 class="p-m-0">Change Failure Rate</h4>
                                     <div
-                                        *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0 && updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData1">
+                                        *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList?.length>0); else noData1">
                                         <div class="p-mt-3 summary-circle">{{kpiChartData['kpi116']?.[0]?.aggregationValue}}</div>
                                     </div>
                                     <ng-template #noData1>
                                         <div class="overlay"
-                                            *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length && !iSAdditionalFilterSelected) || (kpiChartData['kpi116'] && kpiChartData['kpi116']?.length && updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
+                                            *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length) || kpiLoader">
                                             <div class="loading-img"></div>
                                         </div>
                                         <div class="min-ht"
-                                            *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length === 0 && !iSAdditionalFilterSelected && kpiLoader === false) || (kpiChartData['kpi116'] && kpiChartData['kpi116']?.length === 0 && updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false)">
+                                            *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length === 0 && kpiLoader === false)">
                                             <div class="err">No Data Available</div>
-                                        </div>
-                                        <div class="min-ht"
-                                            *ngIf="updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected && kpiLoader === false">
-                                            <div class="err squad-err-msg">KPI cannot be measured for a Squad
-                                            </div>
                                         </div>
                                     </ng-template>
                                 </div>
                                 <div class="kpi-summary p-p-3 position-relative">
                                     <h4 class="p-m-0">Deployment Frequency</h4>
                                     <div
-                                        *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0 && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData2">
+                                        *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList?.length>0); else noData2">
                                         <div class="p-mt-3 summary-circle">{{kpiChartData['kpi118']?.[0]?.aggregationValue}}</div>
                                     </div>
                                     <ng-template #noData2>
                                         <div class="overlay"
-                                            *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0 && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
+                                            *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0) || kpiLoader">
                                             <div class="loading-img"></div>
                                         </div>
                                         <div class="min-ht"
-                                            *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length === 0 && !iSAdditionalFilterSelected && kpiLoader === false) || (kpiChartData['kpi118'] && kpiChartData['kpi118']?.length === 0 && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false)">
+                                            *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length === 0 && kpiLoader === false)">
                                             <div class="err">No Data Available</div>
-                                        </div>
-                                        <div class="min-ht"
-                                            *ngIf="updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected && kpiLoader === false">
-                                            <div class="err squad-err-msg">KPI cannot be measured for a Squad
-                                            </div>
                                         </div>
                                     </ng-template>
                                 </div>
@@ -134,14 +116,11 @@
                             <div class="p-sm-5 p-pr-4">
                                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj"
                                     [kpiData]="updatedConfigDataObj['kpi118']" [trendData]="kpiTrendsObj['kpi118']"
-                                    [cols]="kpiChartData['kpi118']?.columnHeaders"
-                                    [showTrendIndicator]="showKpiTrendIndicator['kpi118'] ==false ? showKpiTrendIndicator['kpi118'] : true"
                                     [dropdownArr]="kpiDropdowns['kpi118']"
                                     (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi118'])"
                                     (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi118']?.kpiId, updatedConfigDataObj['kpi118']?.kpiName, updatedConfigDataObj['kpi118']?.kpiDetail.kanban,updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport)"
-                                    [showExport]="(showChart === 'chart' || showChart === 'large')" [showChartView]="showChart"
-                                    [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"
-                                    [isShow]="(updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false) || (!iSAdditionalFilterSelected && kpiLoader === false) && (ifKpiExist('kpi118') != -1) ? true : false"
+                                    [showExport]="true" [showChartView]="showChart"
+                                    [isShow]="(kpiLoader === false) && (ifKpiExist('kpi118') != -1) ? true : false"
                                     [sprintsOverlayVisible]="sprintsOverlayVisible && updatedConfigDataObj['kpi118']?.kpiDetail?.chartType !== 'table'"
                                     [trendValueList]="kpiChartData['kpi118']" [colors]="this.colorObj"
                                     [showCommentIcon]="showCommentIcon" [commentCount]="kpiCommentsCountObj['kpi118']"
@@ -152,7 +131,7 @@
                                             *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData3">
                                             <div class="p-pl-3 p-pr-3" *ngIf="ifKpiExist('kpi118') != -1; else loader">
                                                 <ng-container
-                                                    *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0 && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData3">
+                                                    *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList?.length>0); else noData3">
                                                     <ng-container *ngIf="showChart">
                                                         <app-multiline
                                                             [thresholdValue]="updatedConfigDataObj['kpi118']?.kpiDetail?.thresholdValue"
@@ -161,7 +140,7 @@
                                                             [xCaption]="updatedConfigDataObj['kpi118']?.kpiDetail?.xaxisLabel"
                                                             [yCaption]="updatedConfigDataObj['kpi118']?.kpiDetail?.yaxisLabel"
                                                             [name]="updatedConfigDataObj['kpi118']?.kpiName"
-                                                            [kpiId]="'kpi118'" [color]="chartColorList['kpi118']"
+                                                            [kpiId]="'kpi118'" [color]="chartColorList"
                                                             [selectedtype]="selectedtype" [board]="'dora'">
                                                         </app-multiline>
                                                     </ng-container>
@@ -170,17 +149,12 @@
                                         </ng-container>
                                         <ng-template #noData3>
                                             <div class="overlay"
-                                                *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0 && !iSAdditionalFilterSelected) || (kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0 && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected)|| kpiLoader">
+                                                *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0) || kpiLoader">
                                                 <div class="loading-img"></div>
                                             </div>
                                             <div class="min-ht"
-                                                *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length === 0 && !iSAdditionalFilterSelected && kpiLoader === false) || (kpiChartData['kpi118'] && kpiChartData['kpi118']?.length === 0 && updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected && kpiLoader === false)">
+                                                *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length === 0 && kpiLoader === false)">
                                                 <div class="err">No Data Available</div>
-                                            </div>
-                                            <div class="min-ht"
-                                                *ngIf="updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected && kpiLoader === false">
-                                                <div class="err squad-err-msg">KPI cannot be measured for a Squad
-                                                </div>
                                             </div>
                                         </ng-template>
                                         <ng-template #loader>
@@ -211,7 +185,7 @@
 </ng-container>
 <ng-template #noProjectsTemplate>
     <div class="p-d-flex p-align-center p-justify-center no-projects">
-        <h2>You do not have access to any {{kanbanActivated ? 'Kanban' : 'Scrum'}} project</h2>
+        <h2>You do not have access to any Scrum project</h2>
     </div>
 </ng-template>
 

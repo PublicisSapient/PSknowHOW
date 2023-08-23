@@ -187,7 +187,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.projectIndex = 0;
         this.selectedType(data.selectedType);
 
-        if(this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase()  === 'backlog' || this.selectedTab.toLowerCase()  === 'release' ){
+        if(this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase()  === 'backlog' || this.selectedTab.toLowerCase()  === 'release' ||  this.selectedTab.toLowerCase()  === 'dora'){
           this.showChart = 'chart';
           this.selectedLevelValue = 'project';
           this.totalProjectSelected = 1;

@@ -4,7 +4,6 @@ import { DoraComponent } from './dora.component';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { APP_CONFIG, AppConfig } from 'src/app/services/app.config';
 import { HelperService } from 'src/app/services/helper.service';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
@@ -1285,36 +1284,6 @@ describe('DoraComponent', () => {
     const result = component.sortAlphabetically(objArray);
     expect(result).toEqual(value);
 
-  });
-
-  it('should generate colorObj', () => {
-    const arr = [
-      {
-        data: 'bittest',
-        value: [
-        ],
-        maturity: '5'
-      },
-      {
-        data: 'Corpate1',
-        value: [
-        ],
-        maturity: '4'
-      }
-    ];
-    component.colorObj = {
-      bittest_corporate: {
-        nodeName: 'bittest',
-        color: '#079FFF'
-      },
-      Corpate1_corporate: {
-        nodeName: 'Corpate1',
-        color: '#cdba38'
-      }
-    };
-    component.chartColorList = {};
-    component.generateColorObj('kpi118', arr);
-    expect(component.chartColorList['kpi118'].length).toEqual(2);
   });
 
   it('should call handleSelectedOption for kpi118', () => {

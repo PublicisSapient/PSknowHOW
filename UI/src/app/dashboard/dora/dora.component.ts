@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
-import * as Excel from 'exceljs';
-import * as fs from 'file-saver';
 import { HelperService } from 'src/app/services/helper.service';
 import { HttpService } from 'src/app/services/http.service';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
@@ -29,7 +27,7 @@ export class DoraComponent implements OnInit {
   serviceObject = {};
   allKpiArray: any = [];
   colorObj = {};
-  chartColorList = {};
+  chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
   kpiSelectedFilterObj = {};
   kpiChartData = {};
   noKpis = false;
@@ -39,7 +37,6 @@ export class DoraComponent implements OnInit {
   kpiLoader = true;
   noTabAccess = false;
   trendBoxColorObj: any;
-  iSAdditionalFilterSelected = false;
   kpiDropdowns = {};
   showKpiTrendIndicator = {};
   hierarchyLevel;
@@ -56,6 +53,8 @@ export class DoraComponent implements OnInit {
   selectedTab = 'dora';
   showCommentIcon = false;
   noProjects = false;
+  globalConfig;
+  sharedObject;
   sprintsOverlayVisible: boolean = false;
   kpiCommentsCountObj: object = {};
   noOfFilterSelected = 0;
@@ -73,52 +72,28 @@ export class DoraComponent implements OnInit {
   updatedConfigDataObj: object = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
-    const selectedTab = window.location.hash.substring(1);
-    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-    this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
-      this.loaderJenkins = false;
-      this.serviceObject = {};
-      this.selectedtype = data.selectedType;
-      this.selectedTab = data.selectedTab;
-      this.kanbanActivated = this.selectedtype.toLowerCase() === 'kanban' ? true : false;
-    }));
-
-    this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      this.configGlobalData = globalConfig['others'].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-      this.processKpiConfigData();
-    }));
-
-    this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
-      if (Object.keys(x).length > 0) {
-        this.colorObj = x;
-        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-          for (const key in this.kpiChartData) {
-            this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
-          }
+    this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
+      if(sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'dora') {
+        this.allKpiArray = [];
+        this.kpiChartData = {};
+        this.kpiSelectedFilterObj = {};
+        this.kpiDropdowns = {};
+        this.sharedObject = sharedobject;
+        if(this.globalConfig || this.service.getDashConfigData()){
+          this.receiveSharedData(sharedobject);
         }
-        this.trendBoxColorObj = { ...x };
-        for (const key in this.trendBoxColorObj) {
-          const idx = key.lastIndexOf('_');
-          const nodeName = key.slice(0, idx);
-          this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-        }
-      }
-      return this.service.passDataToDashboard;
-    }), distinctUntilChanged()).subscribe((sharedobject: any) => {
-      // used to get all filter data when user click on apply button in filter
-      if (sharedobject?.filterData?.length) {
-        this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
-        this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
-        this.receiveSharedData(sharedobject);
         this.noTabAccess = false;
       } else {
         this.noTabAccess = true;
-      }
+    }
     }));
 
-    /**observable to get the type of view */
-    this.subscriptions.push(this.service.showTableViewObs.subscribe(view => {
-      this.showChart = view;
+    this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
+      if(this.sharedObject || this.service.getFilterObject()){
+        this.receiveSharedData(this.service.getFilterObject());
+      }
+      this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
+      this.processKpiConfigData();
     }));
   }
 
@@ -171,28 +146,6 @@ export class DoraComponent implements OnInit {
     );
   }
 
-  generateColorObj(kpiId, arr) {
-    const finalArr = [];
-    if (arr?.length > 0) {
-      this.chartColorList[kpiId] = [];
-      for (let i = 0; i < arr?.length; i++) {
-        for (const key in this.colorObj) {
-          if (kpiId == 'kpi17') {
-            if (this.colorObj[key]?.nodeName == arr[i].value[0].sprojectName) {
-              this.chartColorList[kpiId].push(this.colorObj[key]?.color);
-              finalArr.push(JSON.parse(JSON.stringify(arr[i])));
-            }
-
-          } else if (this.colorObj[key]?.nodeName == arr[i]?.data) {
-            this.chartColorList[kpiId].push(this.colorObj[key]?.color);
-            finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
-            // break;
-          }
-        }
-      }
-    }
-    return finalArr;
-  }
 
   getKpiCommentsCount(kpiId?) {
     let requestObj = {
@@ -215,99 +168,28 @@ export class DoraComponent implements OnInit {
   }
 
   receiveSharedData($event) {
-    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false
-    if (localStorage?.getItem('completeHierarchyData')) {
-      const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
-      if (Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype.toLowerCase()]) {
-        this.hierarchyLevel = hierarchyData[this.selectedtype.toLowerCase()];
+    this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
+    this.processKpiConfigData();
+    this.masterData = $event.masterData;
+    this.filterData = $event.filterData;
+    this.filterApplyData = $event.filterApplyData;
+    this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
+    if(this.filterData?.length) {
+      this.noTabAccess = false;
+      const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
+      // call kpi request according to tab selected
+      if (this.masterData && Object.keys(this.masterData).length) {
+        this.groupJenkinsKpi(kpiIdsForCurrentBoard);
+        this.getKpiCommentsCount();
       }
-    }
-    if (this.service.getDashConfigData() && Object.keys(this.service.getDashConfigData()).length > 0 && $event?.selectedTab?.toLowerCase() !== 'iteration') {
-      this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase()) || (item.boardName.toLowerCase() === $event?.selectedTab?.toLowerCase().split('-').join(' ')))[0]?.kpis;
-      this.updatedConfigGlobalData = this.configGlobalData?.filter(item => item.shown && item.isEnabled);
-      if (JSON.stringify(this.filterApplyData) !== JSON.stringify($event.filterApplyData) || this.configGlobalData) {
-        if (this.serviceObject['makeAPICall']) {
-          this.allKpiArray = [];
-          this.kpiChartData = {};
-          this.chartColorList = {};
-          this.kpiSelectedFilterObj = {};
-          this.kpiDropdowns = {};
-          this.kpiTrendsObj = {};
-          this.kpiLoader = true;
-        }
-        const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
-        this.masterData = $event.masterData;
-        this.filterData = $event.filterData;
-        this.filterApplyData = $event.filterApplyData;
-        this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
-        this.selectedJobFilter = 'Select';
-        if (this.filterData?.length && $event.makeAPICall) {
-          this.noTabAccess = false;
-          // call kpi request according to tab selected
-          if (this.masterData && Object.keys(this.masterData).length) {
-            this.processKpiConfigData();
-            if (this.service.getSelectedType()?.toLowerCase() === 'kanban') {
-              this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => (item.boardName.toLowerCase() === this.selectedTab.toLowerCase()) || (item.boardName.toLowerCase() === this.selectedTab.toLowerCase().split('-').join(' ')))[0]?.kpis;
-
-              this.groupJenkinsKanbanKpi(kpiIdsForCurrentBoard);
-            } else {
-              this.groupJenkinsKpi(kpiIdsForCurrentBoard);
-            }
-            let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
-            if (projectLevel) {
-              if (this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
-            }
-          }
-        } else if (this.filterData?.length && !$event.makeAPICall) {
-          // alert('no call');
-          this.allKpiArray.forEach(element => {
-            this.getDropdownArray(element?.kpiId);
-            // For kpi3 and kpi53 generating table column headers and table data
-            if (element.kpiId === 'kpi3' || element.kpiId === 'kpi53') {
-              //generating column headers
-              const columnHeaders = [];
-              if (Object.keys(this.kpiSelectedFilterObj)?.length && this.kpiSelectedFilterObj[element.kpiId]?.length && this.kpiSelectedFilterObj[element.kpiId][0]) {
-                columnHeaders.push({ field: 'name', header: this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelName + ' Name' });
-                columnHeaders.push({ field: 'value', header: this.kpiSelectedFilterObj[element.kpiId][0] });
-                columnHeaders.push({ field: 'maturity', header: 'Maturity' });
-              }
-              if (this.kpiChartData[element.kpiId]) {
-                this.kpiChartData[element.kpiId].columnHeaders = columnHeaders;
-              }
-              //generating Table data
-              const kpiUnit = this.updatedConfigGlobalData?.find(kpi => kpi.kpiId === element.kpiId)?.kpiDetail?.kpiUnit;
-              const data = [];
-              if (this.kpiChartData[element.kpiId] && this.kpiChartData[element.kpiId].length) {
-                for (let i = 0; i < this.kpiChartData[element.kpiId].length; i++) {
-                  const rowData = {
-                    name: this.kpiChartData[element.kpiId][i].data,
-                    maturity: 'M' + this.kpiChartData[element.kpiId][i].maturity,
-                    value: this.kpiChartData[element.kpiId][i].value[0].data + ' ' + kpiUnit
-                  };
-                  data.push(rowData);
-                }
-
-                this.kpiChartData[element.kpiId].data = data;
-              }
-              this.showKpiTrendIndicator[element.kpiId] = false;
-
-            }
-          });
-        } else {
-          this.noTabAccess = true;
-        }
-        if (this.hierarchyLevel && this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelId === 'project') {
-          this.showCommentIcon = true;
-        } else {
-          this.showCommentIcon = false;
-        }
-      }
+    } else {
+      this.noTabAccess = true;
     }
   }
 
   // download excel functionality
   downloadExcel(kpiId, kpiName, isKanban,additionalFilterSupport) {
-    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport,this.filterApplyData,this.filterData,this.iSAdditionalFilterSelected);
+    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport,this.filterApplyData,this.filterData,false);
   }
 
   // Used for grouping all Jenkins kpi from master data and calling jenkins kpi.
@@ -475,10 +357,6 @@ export class DoraComponent implements OnInit {
         this.kpiChartData[kpiId] = [];
       }
     }
-    if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
-      this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
-    }
-
     // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
     if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
@@ -545,6 +423,8 @@ export class DoraComponent implements OnInit {
   // unsubscribing all Kpi Request
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.sharedObject = null;
+    this.globalConfig = null;
   }
 
 }
