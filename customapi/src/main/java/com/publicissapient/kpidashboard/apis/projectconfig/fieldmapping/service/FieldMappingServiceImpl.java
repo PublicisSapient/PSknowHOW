@@ -66,6 +66,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	public static final String EPIC_WSJF = "epicWsjf";
 	public static final String EPIC_TIME_CRITICALITY = "epicTimeCriticality";
 	public static final String EPIC_JOB_SIZE = "epicJobSize";
+	public static final String EPIC_PLANNED_VALUE = "epicPlannedValue";
+
+	public static final String EPIC_ACHIEVED_VALUE = "epicAchievedValue";
 	public static final String READY_FOR_DEVELOPMENT_STATUS = "readyForDevelopmentStatusKPI138";
 	public static final String ESTIMATION_CRITERIA = "estimationCriteria";
 	public static final String JIRA_ISSUE_EPIC_TYPE = "jiraIssueEpicType";
@@ -337,7 +340,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION,
 					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_TIME_CRITICALITY, EPIC_JOB_SIZE,
 					READY_FOR_DEVELOPMENT_STATUS, "additionalFilterConfig", "jiraDueDateField",
-					"jiraDueDateCustomField");
+					"jiraDueDateCustomField", EPIC_PLANNED_VALUE , EPIC_ACHIEVED_VALUE);
 
 			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE,
 					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS);

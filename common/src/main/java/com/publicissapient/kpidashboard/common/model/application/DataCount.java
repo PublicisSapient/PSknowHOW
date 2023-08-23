@@ -82,6 +82,8 @@ public class DataCount implements Serializable {
 	private transient Map<String, Object> subfilterValues;
 	private String graphType;// for non-clustered bar and line graph
 
+	private List<DataValue> dataValue; // for multiple line graph
+
 	/**
 	 * Instantiates a new Data count.
 	 *

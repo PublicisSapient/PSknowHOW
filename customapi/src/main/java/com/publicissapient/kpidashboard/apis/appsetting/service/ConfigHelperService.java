@@ -48,6 +48,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.stream.Collectors;
 
 /**
@@ -244,6 +245,7 @@ public class ConfigHelperService {
 		log.info("loading KPI Master data");
 		return kpiMasterRepository.findAll();
 	}
+
 
 	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_MATURITY_RANGE)
