@@ -18,6 +18,24 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.publicissapient.kpidashboard.apis.common.service.ApplicationKPIService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
@@ -40,23 +58,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This class is extention of ApplicationKPIService. All Jira KPIs service have
@@ -234,10 +235,11 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 
 	// Filtering the history which happened inside the sprint on basis of activity
 	// date
-	public List<JiraHistoryChangeLog> getFilterStatusUpdationLogs(JiraIssueCustomHistory issueCustomHistory,
-																   List<JiraHistoryChangeLog> filterStatusUpdationLogs, LocalDate sprintStartDate, LocalDate sprintEndDate) {
-		if (CollectionUtils.isNotEmpty(issueCustomHistory.getStatusUpdationLog())) {
-			filterStatusUpdationLogs = issueCustomHistory.getStatusUpdationLog().stream()
+	public List<JiraHistoryChangeLog> getInSprintStatusLogs(List<JiraHistoryChangeLog> issueHistoryLogs,
+			LocalDate sprintStartDate, LocalDate sprintEndDate) {
+		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(issueHistoryLogs)) {
+			filterStatusUpdationLogs = issueHistoryLogs.stream()
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(
 							LocalDate.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"),
 									DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),

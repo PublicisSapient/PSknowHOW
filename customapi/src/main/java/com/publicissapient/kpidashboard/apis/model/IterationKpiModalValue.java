@@ -19,9 +19,9 @@
 package com.publicissapient.kpidashboard.apis.model;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -161,7 +161,10 @@ public class IterationKpiModalValue implements Serializable {
 	Map<String, List<String>> assigneeLogGroup;
 	private Long timeWithUser;
 	private Long timeWithStatus;
-	private Long worklogged;
+	private Long loggedWorkInSeconds;
 	private String epicName;
 	private String previousSprintName;
+	private Long remainingEstimateInSeconds;
+	private Long originalEstimateInSeconds;
+	private Set<String> subTask;
 }
