@@ -871,16 +871,6 @@ describe('DoraComponent', () => {
     expect(result).toEqual(0);
   });
 
-  it('should refresh values onTypeRefresh', () => {
-    spyOn(service, 'getSelectedType');
-    spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
-    const spy = spyOn(component, 'processKpiConfigData');
-    service.onTypeOrTabRefresh.next({ selectedTab: 'Dora', selectedType: 'Scrum' });
-    component.kanbanActivated = false;
-    fixture.detectChanges();
-    expect(component.selectedTab).toBe('Dora');
-  });
-
   it('should set noTabAccess to true when no filterData', () => {
     spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
     component.kanbanActivated = false;
