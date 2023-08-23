@@ -107,7 +107,7 @@ db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},{$set:{"kpiColumnDetails" 
 
 db.getCollection('kpi_master').updateOne(
   { "kpiId": "kpi137" },
-  { $set: { "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available." } }
+  { $set: { "kpiInfo.definition" : "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available." } }
 );
 
 //reversing metadata_identifier back when we use to compare metadata_identifier with boardMetadata
@@ -424,11 +424,9 @@ db.kpi_master.deleteOne({
 
 
 // delete mapping for PI Predictability KPI
-db.field_mapping_structure.deleteMany([
-    "fieldName": "epicPlannedValue",
-    "fieldName": "epicAchievedValue",
-    "fieldName": "jiraIssueEpicTypeKPI153"
-]);
+db.field_mapping_structure.deleteMany({
+    "fieldName": { $in: [ "epicPlannedValue", "epicAchievedValue", "jiraIssueEpicTypeKPI153"]}
+});
 
 // delete column config for PI Predictability KPI
 db.kpi_column_configs.deleteOne({
