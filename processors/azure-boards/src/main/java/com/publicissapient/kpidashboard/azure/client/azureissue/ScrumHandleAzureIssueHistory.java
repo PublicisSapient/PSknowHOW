@@ -17,7 +17,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields;
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.Value;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +55,12 @@ public class ScrumHandleAzureIssueHistory {
 		if (key.trim().equalsIgnoreCase(AzureConstants.ASSIGNEE)) {
 			jiraHistoryChangeLog.setChangedFrom(handleAssigneeStr(value, OLD_VALUE));
 			jiraHistoryChangeLog.setChangedTo(handleAssigneeStr(value, NEW_VALUE));
-		} else {
+		}
+		else if (key.trim().equalsIgnoreCase(AzureConstants.WORKLOG)) {
+			jiraHistoryChangeLog.setChangedFrom(convertToSeconds(value, OLD_VALUE));
+			jiraHistoryChangeLog.setChangedTo(convertToSeconds(value, NEW_VALUE));
+		}
+		else {
 			jiraHistoryChangeLog.setChangedFrom(handleStr(value, OLD_VALUE));
 			jiraHistoryChangeLog.setChangedTo(handleStr(value, NEW_VALUE));
 		}
@@ -204,6 +208,21 @@ public class ScrumHandleAzureIssueHistory {
 			return changeValues.get(valueState).toString();
 		return "";
 	}
+	
+	public String convertToSeconds(Map<String, Object> changeValues, String valueState) {
+		String mutlipliedValue = "";
+		try {
+			if (changeValues.containsKey(valueState)) {
+				int multipliedValue = (int) Double.parseDouble(changeValues.get(valueState).toString()) * 3600;
+				mutlipliedValue = Integer.toString(multipliedValue);
+			}
+		} catch (NumberFormatException e) {
+			log.error(e + "cannot process value" + changeValues);
+			return mutlipliedValue;
+		}
+		return mutlipliedValue;
+	}
+
 
 	private String handleAssigneeStr(Map<String, Object> changeValues, String valueState) {
 		if (changeValues.containsKey(valueState)) {
@@ -222,6 +241,9 @@ public class ScrumHandleAzureIssueHistory {
 				AzureConstants.PRIORITY);
 		List<JiraHistoryChangeLog> labelsChangeLog = getJiraFieldChangeLogFromAdditionProps(updateValueList,
 				AzureConstants.LABEL);
+		List<JiraHistoryChangeLog> workLog = getJiraFieldChangeLogFromAdditionProps(updateValueList,
+				AzureConstants.WORKLOG);
+
 		List<JiraHistoryChangeLog> dueDateChangeLog = getDueDateChangeLog(updateValueList, fieldMapping, fieldsMap);
 		List<JiraHistoryChangeLog> sprintChangeLog = getIterationChangeLog(updateValueList);
 
@@ -233,6 +255,7 @@ public class ScrumHandleAzureIssueHistory {
 		jiraIssueCustomHistory.setLabelUpdationLog(labelsChangeLog);
 		jiraIssueCustomHistory.setDueDateUpdationLog(dueDateChangeLog);
 		jiraIssueCustomHistory.setSprintUpdationLog(sprintChangeLog);
+		jiraIssueCustomHistory.setWorkLog(workLog);
 	}
 
 }

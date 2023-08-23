@@ -527,6 +527,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 			"jiraQAKPI111IssueType",
 			"jiraDefectDroppedStatusKPI127",
+			"jiraItrQSIssueTypeKPI133",
 
 			EPIC_COST_OF_DELAY,
 			EPIC_RISK_REDUCTION,

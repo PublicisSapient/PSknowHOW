@@ -23,9 +23,9 @@
       <div class="{{selectedtype}}" id="{{selectedtype}}">
         <div class="clearfix">
           <div class="right-container col">
-            <p-tabView class="iteration-tabs" [activeIndex]="navigationTabs[0].count > 0 ? 0 : 1">
+            <p-tabView class="iteration-tabs" [(activeIndex)]="activeIndex">
               <p-tabPanel *ngFor="let board of navigationTabs" [header]="board.label" [disabled]="board.count == 0">
-                <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
+                <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined && activeIndex!==2">
                   <!-- Iteration commitment kpi start -->
                   <div class="p-grid justify-content-start p-mt-0 p-pl-3 iteration-dashboard w-100"
                     *ngIf="commitmentReliabilityKpi && commitmentReliabilityKpi?.subCategoryBoard == board.label">
@@ -238,6 +238,13 @@
                       </div>
                     </ng-template>
                   </div>
+                </ng-container>
+                <ng-container *ngIf="activeIndex === 2">
+                  <app-daily-scrum-tab 
+                    [assigneeList]="kpiChartData['kpi154']" 
+                    [columns]="jiraKpiData['kpi154']?.modalHeads"
+                    [filterData]="jiraKpiData['kpi154']?.filterData">
+                  </app-daily-scrum-tab>
                 </ng-container>
               </p-tabPanel>
             </p-tabView>

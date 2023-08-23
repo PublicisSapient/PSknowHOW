@@ -420,7 +420,11 @@ public enum KPICode {
 	/**
 	 * PI Predictability
 	 */
-	PI_PREDICTABILITY("kpi153", KPISource.JIRA.name());
+	PI_PREDICTABILITY("kpi153", KPISource.JIRA.name()),
+    /**
+     *
+     */
+    DAILY_STANDUP_VIEW("kpi154", KPISource.JIRA.name());
 
 
     // @formatter:on

@@ -3058,6 +3058,26 @@ db.getCollection('kpi_master').insertMany(
       "isAdditionalFilterSupport": false,
       "calculateMaturity": false
     }
+  },
+  {
+    "kpiId": "kpi154",
+    "kpiName": "Daily Standup View",
+    "maxValue": "",
+    "isDeleted": "False",
+    "defaultOrder": 8,
+    "kpiCategory": "Iteration",
+    "kpiSubCategory": "Daily Standup",
+    "kpiSource": "Jira",
+    "groupId": 13,
+    "thresholdValue": "",
+    "kanban": false,
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiselectdropdown",
+    "kpiWidth": 100,
+    "calculateMaturity": false
+  }
 ]
 );
 
@@ -6096,48 +6116,7 @@ db.kpi_column_configs.insertMany([
                                       isShown: true,
                                       isDefault: true
                                     }]
-                                  },
-                                  {
-                                 		basicProjectConfigId: null,
-                                 		kpiId: 'kpi153',
-                                 		kpiColumnDetails: [{
-                                 			columnName: 'Project Name',
-                                 			order: 0,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		},  {
-                                 			columnName: 'Epic ID',
-                                 			order: 2,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
-                                 			columnName: 'Epic Name',
-                                 			order: 3,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
-                                 			columnName: 'Status',
-                                 			order: 4,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
-                                 			columnName: 'PI Name',
-                                 			order: 5,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
-                                 			columnName: 'Planned Value',
-                                 			order: 6,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
-                                 			columnName: 'Achieved Value',
-                                 			order: 7,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		},
-                                 		]
-                                 	}
+                                  }
                                  ]);
 
 //default fields mapping structure for KPI, these fields are used to populate the config JIRA for any
@@ -8040,6 +8019,23 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
     }
+},{
+        "fieldName": "notificationEnabler",
+        "fieldLabel": "Processor Failure Notification",
+        "fieldType": "radiobutton",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+             "definition": "On/Off notification in case processor failure."
+        },
+        "options": [{
+             "label": "On",
+             "value": "On"
+        },
+        {
+             "label": "Off",
+             "value": "Off"
+        }
+        ]
     },
     {
         "fieldName": "epicPlannedValue",

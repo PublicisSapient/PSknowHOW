@@ -260,7 +260,9 @@ public enum KPIExcelColumn {
 			"Priority", "Assignee", "Issue Status")),
 
 	PI_PREDICTABILITY("kpi153", Arrays.asList("Project Name", "Epic ID", "Epic Name", "Status", "PI Name",
-			"Planned Value", "Achieved Value"));
+			"Planned Value", "Achieved Value")),
+
+	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay"));
 
 	// @formatter:on
 

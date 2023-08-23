@@ -226,7 +226,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
         selectedProjectTrend.value.forEach(element => {
           let tempObj = {};
           tempObj['duration'] = element['sSprintName'] || element['date'];
-          tempObj['value'] = (Math.round(element['value'] * 100) / 100);
+          tempObj['value'] = element['lineValue'] !== undefined ? element['lineValue'] : (Math.round(element['value'] * 100) / 100);
           tempObj['unit'] = ' ' + this.kpiData.kpiDetail?.kpiUnit
           if (element['hoverValue'] && Object.keys(element['hoverValue'])?.length > 0) {
             tempObj['params'] = Object.entries(element['hoverValue']).map(([key, value]) => `${key} : ${value}`).join(', ');
