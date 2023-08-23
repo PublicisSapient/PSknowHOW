@@ -3550,7 +3550,6 @@ db.getCollection('field_mapping_structure').insertMany([
 ])
 
 //adding dailyStandup kpi
-var dailyStandupKPI = db.getCollection('kpi_master').find( {kpiId: "kpi154"}).toArray();
 db.getCollection('kpi_master').insertMany(
 [
 {
