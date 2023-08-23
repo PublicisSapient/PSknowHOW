@@ -84,7 +84,7 @@ public class CreateJiraIssueHistoryImplTest {
     @Test
     public void createIssueCustomHistory(){
         when(jiraIssueCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(any(),any())).thenReturn(Collections.EMPTY_LIST);
-        Assert.assertEquals("63c04dc7b7617e260763ca4e",createJiraIssueHistory.createIssueCustomHistory(createProjectConfig(),"12345",jiraIssue,issue,fieldMapping,fields).getBasicProjectConfigId());
+        Assert.assertEquals("63c04dc7b7617e260763ca4e",createJiraIssueHistory.createIssueCustomHistory(createProjectConfig(),"12345",jiraIssue,issue,fields).getBasicProjectConfigId());
     }
 
     private ProjectConfFieldMapping createProjectConfig(){

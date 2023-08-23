@@ -104,7 +104,7 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 	private void populateProjectWiseIssues(ProjectConfFieldMapping projectConfig) {
 		log.info("Checking if jira history issue exist in Db for  project : {}", projectConfig.getProjectName());
 		List<JiraIssueCustomHistory> existingJiraHistoryIssues = jiraIssueCustomHistoryRepository
-				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
+				.findByBasicProjectConfigIdIn(projectConfig.getBasicProjectConfigId().toString());
 		if (CollectionUtils.isNotEmpty(existingJiraHistoryIssues)) {
 			Map<String, JiraIssueCustomHistory> issueIdWiseJiraIssue = existingJiraHistoryIssues.stream()
 					.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID, Function.identity()));

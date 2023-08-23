@@ -50,7 +50,6 @@
                 <module>processors/github</module>
                 <module>processors/githubaction</module>
                 <module>processors/sonar</module>
-                <module>processors/jira</module>
                 <module>processors/jiraBatch</module>
                 <module>processors/jiratest</module>
                 <module>processors/jenkins</module>
@@ -221,13 +220,13 @@
                 </testResources>
             </build>
         </profile>
-        <profile>
-            <id>jiraProcessor</id>
-            <modules>
-                <module>common</module>
-                <module>processors/jira</module>
-            </modules>
-        </profile>
+<!--        <profile>-->
+<!--            <id>jiraProcessor</id>-->
+<!--            <modules>-->
+<!--                <module>common</module>-->
+<!--                <module>processors/jira</module>-->
+<!--            </modules>-->
+<!--        </profile>-->
              <profile>
             <id>jiraProcessorBatch</id>
             <modules>

@@ -11,5 +11,5 @@ import java.util.Map;
 
 public interface CreateJiraIssueHistory {
     JiraIssueCustomHistory createIssueCustomHistory(ProjectConfFieldMapping projectConfig, String issueId, JiraIssue jiraIssue, Issue issue,
-                                                    FieldMapping fieldMapping, Map<String, IssueField> fields);
+                                                     Map<String, IssueField> fields);
 }

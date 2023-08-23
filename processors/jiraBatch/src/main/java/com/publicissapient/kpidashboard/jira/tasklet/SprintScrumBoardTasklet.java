@@ -2,14 +2,15 @@ package com.publicissapient.kpidashboard.jira.tasklet;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
@@ -25,7 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@StepScope
 public class SprintScrumBoardTasklet implements Tasklet {
+
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
 
@@ -38,22 +41,24 @@ public class SprintScrumBoardTasklet implements Tasklet {
 	@Autowired
 	private SprintRepository sprintRepository;
 
+	private String projectId;
+
+	@Autowired
+	public SprintScrumBoardTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
+		this.projectId = projectId;
+	}
+
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		log.info("**** Sprint report for Scrum Board started * * *");
 		try {
-			Map<String, List<ProjectConfFieldMapping>> projConfFieldMapping = fetchProjectConfiguration
-					.fetchConfiguration(false);
-			for (Map.Entry<String, List<ProjectConfFieldMapping>> entry : projConfFieldMapping.entrySet()) {
-				for (ProjectConfFieldMapping projectConfFieldMapping : entry.getValue()) {
-					KerberosClient krb5Client = null;
-					ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
-					Set<SprintDetails> setForCacheClean = new HashSet<>();
-					List<SprintDetails> sprintDetailsList = fetchSprintReport
-							.createSprintDetailBasedOnBoard(projectConfFieldMapping, setForCacheClean, krb5Client);
-					sprintRepository.saveAll(sprintDetailsList);
-				}
-			}
+		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+				KerberosClient krb5Client = null;
+				ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
+				Set<SprintDetails> setForCacheClean = new HashSet<>();
+				List<SprintDetails> sprintDetailsList = fetchSprintReport
+						.createSprintDetailBasedOnBoard(projConfFieldMapping, setForCacheClean, krb5Client);
+				sprintRepository.saveAll(sprintDetailsList);
 		} catch (Exception e) {
 			log.error("Exception while fetching sprint data for scrum project and board setup", e);
 		}
