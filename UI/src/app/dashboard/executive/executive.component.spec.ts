@@ -61,7 +61,8 @@ describe('ExecutiveComponent', () => {
   let helperService: HelperService;
 
   const baseUrl = environment.baseUrl;  // Servers Env
-
+  const fakeDoraKpis = require('../../../test/resource/fakeDoraKpis.json');
+  const fakeDoraKpiFilters = require('../../../test/resource/fakeDoraKpiFilters.json');
   const globalData =require('../../../test/resource/fakeGlobalConfigData.json');
   const configGlobalData = [
     {
@@ -5913,5 +5914,25 @@ expect(result[1]).toEqual('-ve');
     tick();
     expect(component.kpiCommentsCountObj['data']['kpi118']).toEqual(response.data['kpi118']);
   }));
+
+  it('should getchartdata for kpi when trendValueList is an object and with single filter', () => {
+    component.allKpiArray = fakeDoraKpis;
+    component.kpiSelectedFilterObj['kpi118'] = ['Overall'];
+    const res = fakeDoraKpis[0].trendValueList.filter(x => x['filter'] == 'Overall')[0];
+    component.getChartData('kpi118', 0, 'sum')
+    expect(component.kpiChartData['kpi118'][0]?.value.length).toEqual(res?.value[0]?.value?.length);
+  });
+
+  it('should getchartdata for kpi when trendValueList is an object and with multiple filter', () => {
+    component.allKpiArray = fakeDoraKpis;
+    component.kpiSelectedFilterObj['kpi118'] = ['81.200.188.111->KnowHOW', '81.200.188.112->KnowHOW'];
+    const res = fakeDoraKpiFilters;
+    component.tooltip = {
+      'percentile': 90
+    };
+    spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+    component.getChartData('kpi118', 0, 'sum')
+    expect(component.kpiChartData['kpi118'][0]?.value?.length).toEqual(res?.value?.length);
+  })
 
 });

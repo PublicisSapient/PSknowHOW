@@ -253,16 +253,6 @@ export class DoraComponent implements OnInit {
     return id;
   }
 
-  createCombinations(arr1, arr2) {
-    let arr = [];
-    for (let i = 0; i < arr1?.length; i++) {
-      for (let j = 0; j < arr2?.length; j++) {
-        arr.push({ filter1: arr1[i], filter2: arr2[j] });
-      }
-    }
-    return arr;
-  }
-
   sortAlphabetically(objArray) {
     if (objArray && objArray?.length > 1) {
       objArray?.sort((a, b) => a.data?.localeCompare(b.data));
