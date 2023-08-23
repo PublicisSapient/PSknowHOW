@@ -16,24 +16,20 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pschat.model;
+package com.publicissapient.kpidashboard.apis.openai.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
-import java.util.Set;
-
 @Data
-public class PsChatSprintDetails {
-	private String sprintID;
-	private String sprintName;
-	private String state;
-	private String startDate;
-	private String endDate;
-	private String completeDate;
-	private String activatedDate;
-	private Set<String> completedIssues;
-	private Set<String> notCompletedIssues;
-	private Set<String> removedIssues;
-	private Set<String> addedIssues;
-	private Set<IssueDetail> issueDetails;
+@Builder
+public class PromptDetailsDTO {
+
+	private String id;
+
+	private String message;
+
+	private Boolean async;
+
+	private OptionsDTO options;
 }

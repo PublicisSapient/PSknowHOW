@@ -16,14 +16,18 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pschat.model;
+package com.publicissapient.kpidashboard.apis.openai.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ChatDTO {
-	// fields based on the API response
-	private String id;
+public class ChatDataResponseDTO {
+
+	@JsonProperty("data")
+	private ChatDataDTO data;
+
+	@JsonProperty("message")
 	private String message;
 
 }

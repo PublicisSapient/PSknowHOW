@@ -16,24 +16,16 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pschat.model;
+package com.publicissapient.kpidashboard.apis.openai.dto;
 
+import lombok.Builder;
 import lombok.Data;
-import java.util.List;
 
 @Data
-public class PromptRequest {
-	private String message;
-	private String id;
-	private String name;
-	private List<Tag> tags;
-	private String type;
-	private int messageid;
-	private boolean async;
-	private String options;
-}
+@Builder
+public class OptionsDTO {
 
-@Data
-class Tag {
-	private String label;
+	private String assistant;
+
+	private String model;
 }

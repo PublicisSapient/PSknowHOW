@@ -16,21 +16,14 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pschat.dto.enums;
+package com.publicissapient.kpidashboard.apis.openai.model;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Data;
 
-public enum GPTModel {
-	GPT_4("gpt4"), GPT_35_TURBO("gpt35turbo");
+@Data
+public class ChatDTO {
+	// fields based on the API response
+	private String id;
+	private String message;
 
-	private final String value;
-
-	GPTModel(String model) {
-		this.value = model;
-	}
-
-	@JsonValue
-	public String getValue() {
-		return value;
-	}
 }

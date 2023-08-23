@@ -16,13 +16,13 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pschat.service;
+package com.publicissapient.kpidashboard.apis.openai.service;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.pschat.dto.enums.AssistantType;
-import com.publicissapient.kpidashboard.apis.pschat.dto.enums.GPTModel;
-import com.publicissapient.kpidashboard.apis.pschat.model.ChatDTO;
-import com.publicissapient.kpidashboard.apis.pschat.model.PromptRequest;
+import com.publicissapient.kpidashboard.apis.openai.dto.enums.AssistantType;
+import com.publicissapient.kpidashboard.apis.openai.dto.enums.GPTModel;
+import com.publicissapient.kpidashboard.apis.openai.model.ChatDTO;
+import com.publicissapient.kpidashboard.apis.openai.model.PromptRequest;
 import org.apache.kafka.common.errors.InvalidRequestException;
 import org.springframework.web.client.HttpClientErrorException;
 

@@ -16,25 +16,28 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pschat.dto;
+package com.publicissapient.kpidashboard.apis.openai.model;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.publicissapient.kpidashboard.common.model.jira.ReleaseVersion;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.util.Set;
+
 @Data
-public class ChatDataDTO {
-
-	@JsonProperty("id")
-	private String id;
-
-	@JsonProperty("userid")
-	private String userId;
-
-	@JsonProperty("name")
-	private String name;
-
-	@JsonProperty("messages")
-	private List<ChatMessageDTO> messages;
+public class IssueDetail {
+	private String issueKey;
+	private String assignee;
+	private ReleaseVersion releaseVersion;
+	private String dueDate;
+	private String priority;
+	private String status;
+	private LocalDate issueCompleteDate;
+	private LocalDate issueStartDate;
+	private String predictedCompletedDate;
+	private Set<String> linkedStoryIds;
+	private String typeName;
+	private Double storyPoint;
+	private Integer originalEstimateInMin;
+	private Integer remainingEstimateInMin;
 }

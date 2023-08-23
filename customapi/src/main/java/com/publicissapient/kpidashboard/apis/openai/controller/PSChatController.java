@@ -1,11 +1,11 @@
-package com.publicissapient.kpidashboard.apis.pschat.controller;
+package com.publicissapient.kpidashboard.apis.openai.controller;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.pschat.dto.enums.AssistantType;
-import com.publicissapient.kpidashboard.apis.pschat.dto.enums.GPTModel;
-import com.publicissapient.kpidashboard.apis.pschat.model.ChatDTO;
-import com.publicissapient.kpidashboard.apis.pschat.model.PromptRequest;
-import com.publicissapient.kpidashboard.apis.pschat.service.PsChatService;
+import com.publicissapient.kpidashboard.apis.openai.dto.enums.AssistantType;
+import com.publicissapient.kpidashboard.apis.openai.dto.enums.GPTModel;
+import com.publicissapient.kpidashboard.apis.openai.model.ChatDTO;
+import com.publicissapient.kpidashboard.apis.openai.model.PromptRequest;
+import com.publicissapient.kpidashboard.apis.openai.service.PsChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,8 +56,8 @@ public class PSChatController {
     @PostMapping("/getChat/{sprintId}")
     public ServiceResponse getRecommendationForIteration(@PathVariable String sprintId) {
 
-        ServiceResponse a =  psChatService.getIterationPrompt(GPTModel.GPT_4,
-                AssistantType.DEFAULT_ASSISTANT, sprintId);
+        ServiceResponse a =  psChatService.getIterationPrompt(GPTModel.GPT_35_TURBO,
+                AssistantType.PS_ASSISTANT, sprintId);
 
         return a;
     }

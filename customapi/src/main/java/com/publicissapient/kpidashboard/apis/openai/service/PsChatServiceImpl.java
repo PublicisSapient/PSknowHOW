@@ -1,22 +1,5 @@
-/*******************************************************************************
- * Copyright 2014 CapitalOne, LLC.
- * Further development Copyright 2022 Sapient Corporation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pschat.service;
+package com.publicissapient.kpidashboard.apis.openai.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -28,7 +11,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.OpenAiTraceLog;
+import com.publicissapient.kpidashboard.common.repository.application.OpenAiTraceLogRepository;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.kafka.common.errors.InvalidRequestException;
+import org.apache.kafka.common.quota.ClientQuotaAlteration;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -42,16 +30,16 @@ import org.springframework.web.client.RestTemplate;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.pschat.dto.ChatDataResponseDTO;
-import com.publicissapient.kpidashboard.apis.pschat.dto.ChatMessageDTO;
-import com.publicissapient.kpidashboard.apis.pschat.dto.OptionsDTO;
-import com.publicissapient.kpidashboard.apis.pschat.dto.PromptDetailsDTO;
-import com.publicissapient.kpidashboard.apis.pschat.dto.enums.AssistantType;
-import com.publicissapient.kpidashboard.apis.pschat.dto.enums.GPTModel;
-import com.publicissapient.kpidashboard.apis.pschat.model.ChatDTO;
-import com.publicissapient.kpidashboard.apis.pschat.model.IssueDetail;
-import com.publicissapient.kpidashboard.apis.pschat.model.PromptRequest;
-import com.publicissapient.kpidashboard.apis.pschat.model.PsChatSprintDetails;
+import com.publicissapient.kpidashboard.apis.openai.dto.ChatDataResponseDTO;
+import com.publicissapient.kpidashboard.apis.openai.dto.ChatMessageDTO;
+import com.publicissapient.kpidashboard.apis.openai.dto.OptionsDTO;
+import com.publicissapient.kpidashboard.apis.openai.dto.PromptDetailsDTO;
+import com.publicissapient.kpidashboard.apis.openai.dto.enums.AssistantType;
+import com.publicissapient.kpidashboard.apis.openai.dto.enums.GPTModel;
+import com.publicissapient.kpidashboard.apis.openai.model.ChatDTO;
+import com.publicissapient.kpidashboard.apis.openai.model.IssueDetail;
+import com.publicissapient.kpidashboard.apis.openai.model.PromptRequest;
+import com.publicissapient.kpidashboard.apis.openai.model.PsChatSprintDetails;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -80,6 +68,8 @@ public class PsChatServiceImpl implements PsChatService {
 	SprintRepository sprintRepository;
 	@Autowired
 	JiraIssueRepository jiraIssueRepository;
+	@Autowired
+	OpenAiTraceLogRepository openAiTraceLogRepository;
 	@Autowired
 	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	private String url = "https://api.psnext.info";
@@ -137,14 +127,23 @@ public class PsChatServiceImpl implements PsChatService {
 	public ServiceResponse getIterationPrompt(GPTModel gptModel, AssistantType assistantType, String sprintId)
 			throws InvalidRequestException {
 		SprintDetails sprintDetail = sprintRepository.findBySprintID(sprintId);
-		final PsChatSprintDetails psChatSprintDetails = getPsChatSprintDetails(sprintDetail);
+		OpenAiTraceLog existingSprintChat = openAiTraceLogRepository.findBySprintId(sprintId);
 		ServiceResponse response = new ServiceResponse(false, "Server Gateway Error", null);
+		if(!sprintDetail.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE) && existingSprintChat != null){
+			response.setMessage("Recommendation fetched successfully form db");
+			response.setSuccess(true);
+			response.setData(existingSprintChat.getRecommendations());
+			return response;
+		}
+		final PsChatSprintDetails psChatSprintDetails = getPsChatSprintDetails(sprintDetail);
 
 		OptionsDTO optionsDTO = OptionsDTO.builder().model(gptModel.getValue()).assistant(assistantType.getRole())
 				.build();
 
+/*
 		PromptDetailsDTO promptDetails = PromptDetailsDTO.builder().async(true).message(psChatSprintDetails.toString())
 				.options(optionsDTO).build();
+*/
 
 		List<String> prompt = new ArrayList<>();
 		prompt.add(
@@ -162,81 +161,72 @@ public class PsChatServiceImpl implements PsChatService {
 		prompt.add(
 				"What percentage of issues get completed in the initial 50% of activatedDate and final 50% of completedDate use issueDetails for details regarding issue");
 
+
 		HttpHeaders headers = new HttpHeaders();
 		String bearerToken = customApiConfig.getPsChatToken();
 		headers.set("Authorization", "Bearer " + bearerToken);
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
 		// Split the psChatSprintDetails string into chunks of 7000 tokens
-		String psChatSprintDetailsStr = psChatSprintDetails.toString();
-		List<String> psChatSprintDetailsChunks = splitStringByTokenCount(psChatSprintDetailsStr, 7000);
-
-		/*
-		 * List<String> responses = new ArrayList<>();
-		 * 
-		 * // Send all the chunks first for (String chunk : psChatSprintDetailsChunks) {
-		 * PromptDetailsDTO chunkPromptDetailsDTO = PromptDetailsDTO.builder()
-		 * .async(false) .message(chunk) .options(optionsDTO) .build();
-		 * 
-		 * HttpEntity<PromptDetailsDTO> chunkEntity = new
-		 * HttpEntity<>(chunkPromptDetailsDTO, headers);
-		 * 
-		 * try { restTemplate.exchange( url + "/api/chat", HttpMethod.POST, chunkEntity,
-		 * ChatDataResponseDTO.class); } catch (Exception e) {
-		 * log.error("Error in fetching the data from psChat"+e); } }
-		 * 
-		 * // Wait for some time before sending the prompts try { Thread.sleep(5000); //
-		 * Wait for 5 seconds } catch (InterruptedException e) { e.printStackTrace(); }
-		 * 
-		 * // Send prompts one by one for (String promptQuestion : prompt) {
-		 * PromptDetailsDTO promptDetailsDTO = PromptDetailsDTO.builder() .async(false)
-		 * .message(promptQuestion) .options(optionsDTO) .build();
-		 * 
-		 * HttpEntity<PromptDetailsDTO> entity = new HttpEntity<>(promptDetailsDTO,
-		 * headers);
-		 * 
-		 * try { ResponseEntity<ChatDataResponseDTO> response = restTemplate.exchange(
-		 * url + "/api/chat", HttpMethod.POST, entity, ChatDataResponseDTO.class);
-		 * 
-		 * if(chatResponse.getStatusCode().is2xxSuccessful()){
-		 * response.setMessage("Recommendation fetched successfully from ps-chat");
-		 * response.setSuccess(true); List<ChatMessageDTO> chatMessages =
-		 * Objects.requireNonNull(chatResponse.getBody()).getData().getMessages();
-		 * responses.add(chatMessages.get(chatMessages.size() - 1).getContent());
-		 * response.setData(responses); }else if
-		 * (chatResponse.getStatusCode().is5xxServerError()){
-		 * response.setMessage("Server Error"); } } catch (Exception e) {
-		 * log.error("Error in fetching the data from psChat"+e); } }
-		 * 
-		 * return response;
-		 */
+		StringBuilder psChatSprintDetailsStr = new StringBuilder();
+		psChatSprintDetailsStr.append("First i will be sending sprint details in few prompt store them first & latter prompt will be asked around it ");
+		psChatSprintDetailsStr.append(psChatSprintDetails.toString().replaceAll("\\s", ""));
+		List<String> psChatSprintDetailsChunks = splitStringByTokenCount(psChatSprintDetailsStr.toString(), 1900);
 
 		List<String> responses = new ArrayList<>();
 
+		  // Send all the chunks first
+
+		String chatId = "";
+		for (String chunk : psChatSprintDetailsChunks) {
+			PromptDetailsDTO chunkPromptDetailsDTO = PromptDetailsDTO.builder().id(chatId).async(false).message(chunk)
+				  .options(optionsDTO).build();
+
+		  HttpEntity<PromptDetailsDTO> chunkEntity = new HttpEntity<>(chunkPromptDetailsDTO, headers);
+
+		  try {
+			  ResponseEntity<ChatDataResponseDTO> contextResponse = restTemplate.exchange(url + "/api/chat", HttpMethod.POST, chunkEntity, ChatDataResponseDTO.class);
+			  chatId = Objects.requireNonNull(contextResponse.getBody()).getData().getId();
+			  log.debug(contextResponse.toString());
+		  } catch (Exception e) {
+			  log.error("Error in fetching the data from psChat" + e);
+		  }
+	  }
+
+	  // Send prompts one by one
 		for (String promptQuestion : prompt) {
-			for (String chunk : psChatSprintDetailsChunks) {
-				PromptDetailsDTO promptDetailsDTO = PromptDetailsDTO.builder().async(false)
-						.message(chunk + promptQuestion).options(optionsDTO).build();
 
-				HttpEntity<PromptDetailsDTO> entity = new HttpEntity<>(promptDetailsDTO, headers);
+			PromptDetailsDTO promptDetailsDTO = PromptDetailsDTO.builder().id(chatId).async(false).message(promptQuestion)
+					.options(optionsDTO).build();
 
-				try {
-					ResponseEntity<ChatDataResponseDTO> chatResponse = restTemplate.exchange(url + "/api/chat",
-							HttpMethod.POST, entity, ChatDataResponseDTO.class);
-					if (chatResponse.getStatusCode().is2xxSuccessful()) {
-						response.setMessage("Recommendation fetched successfully from ps-chat");
-						response.setSuccess(true);
-						List<ChatMessageDTO> chatMessages = Objects.requireNonNull(chatResponse.getBody()).getData()
-								.getMessages();
-						responses.add(chatMessages.get(chatMessages.size() - 1).getContent());
-						response.setData(responses);
-					} else if (chatResponse.getStatusCode().is5xxServerError()) {
-						response.setMessage("Server Error");
-					}
-				} catch (Exception e) {
-					log.error("Error in fetching the data from psChat" + e);
+			HttpEntity<PromptDetailsDTO> entity = new HttpEntity<>(promptDetailsDTO,
+					headers);
+
+			try {
+				ResponseEntity<ChatDataResponseDTO> chatResponse = restTemplate.exchange(url + "/api/chat", HttpMethod.POST,
+						entity, ChatDataResponseDTO.class);
+				log.debug("Fetching ps-chat response for api [{}] ",promptQuestion);
+				if (chatResponse.getStatusCode().is2xxSuccessful()) {
+					response.setMessage("Recommendation fetched successfully from ps-chat");
+					response.setSuccess(true);
+					List<ChatMessageDTO> chatMessages = Objects.requireNonNull(chatResponse.getBody()).getData()
+							.getMessages();
+					responses.add(chatMessages.get(chatMessages.size() - 1).getContent());
+					response.setData(responses);
+				} else if (chatResponse.getStatusCode().is5xxServerError()) {
+					response.setMessage("Server Error");
 				}
+			} catch (Exception e) {
+				log.error("Error in fetching the data from psChat" + e);
 			}
+		}
+		if(CollectionUtils.isNotEmpty(responses)){
+			OpenAiTraceLog openAiTraceLog = existingSprintChat == null ? new OpenAiTraceLog() : existingSprintChat;
+			openAiTraceLog.setSprintId(sprintId);
+			openAiTraceLog.setRecommendations(responses);
+			openAiTraceLog.setLastSyncDateTime(System.currentTimeMillis());
+			openAiTraceLogRepository.save(openAiTraceLog);
+			log.debug("Saving ps-chat response for sprint {} ",sprintId);
 		}
 		return response;
 	}

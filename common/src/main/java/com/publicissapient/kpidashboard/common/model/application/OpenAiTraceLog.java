@@ -16,18 +16,32 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pschat.dto;
+package com.publicissapient.kpidashboard.common.model.application;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
+/**
+ * Represents entity to store details of openAi fetch record
+ */
 @Data
-public class ChatDataResponseDTO {
-
-	@JsonProperty("data")
-	private ChatDataDTO data;
-
-	@JsonProperty("message")
-	private String message;
-
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Document(collection = "openai_trace_log")
+public class OpenAiTraceLog extends BasicModel {
+    private String sprintId;
+    private List<String> recommendations;
+    // in millisecond
+    private long lastSyncDateTime;
 }

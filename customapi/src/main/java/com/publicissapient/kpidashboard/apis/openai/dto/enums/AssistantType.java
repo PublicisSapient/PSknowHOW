@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.pschat.dto.enums;
+package com.publicissapient.kpidashboard.apis.openai.dto.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,11 +24,12 @@ public enum AssistantType {
 	DEFAULT_ASSISTANT("You are a helpful AI assistant. If you do not know the answer to a question, "
 			+ "respond by saying \"I do not know the answer to your question\". Respond in markdown "
 			+ "format when possible.code parts should start with ```langauge and end with ``` . "
-			+ "if asked only give the answer not the code"), PS_CHAT_ASSISTANT(
-					"You are a helpful AI assistant. If you do not know the answer to a question, "
-							+ "respond by saying \"I do not know the answer to your question\". Respond in short & to the point "
-							+ "format when possible.response parts should be short & concise "
-							+ "if asked any prompt refer to the psSprintDetails which has been send earlier for response"),;
+			+ "if asked only give the answer not the code"),
+	PS_ASSISTANT("You are a scrum master. If you do not know the answer to a question, \"\n" +
+			"+ \"respond by saying \\\"Unable to call LLM\\\""+
+			"1. Provide short and to-the-point responses.\n"+
+			"2. Avoid sharing code or calculations, only providing the results.\n"+
+			"4. Utilize the previously given context about `sprintDetails` to answer the prompts."),;
 
 	private final String role;
 

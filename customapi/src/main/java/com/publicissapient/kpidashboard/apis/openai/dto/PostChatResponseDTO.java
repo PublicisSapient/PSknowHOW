@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.pschat.dto;
+package com.publicissapient.kpidashboard.apis.openai.dto;
 
 import lombok.Data;
 
