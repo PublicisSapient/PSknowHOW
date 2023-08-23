@@ -1,0 +1,81 @@
+<main class="container" *ngIf="assigneeList.length > 0 && filterData else noData">
+
+    <!-- filter section -->
+    <section class="filter-header">
+        <ng-container *ngIf="selectedUser === 'Overall'">
+            <ng-container *ngFor="let filter of filterData">
+                <ng-container [ngSwitch]="filter?.filterType">
+                    <div class="filters" *ngSwitchCase="'singleSelect'">
+                        <ng-select  [(ngModel)]="filters[filter?.filterKey]" [dropdownPosition]="'bottom'"
+                        (change)="handleSingleSelectChange($event,filter?.filterKey)" placeholder="Filter By Role"
+                         class="p-pb-0" [style]="{'min-width' : '180px'}">
+                        <ng-option *ngFor="let item of filter.options" [value]="item">
+                           {{item}}
+                        </ng-option>
+                     </ng-select>
+                    </div>
+                </ng-container>
+              
+            </ng-container>
+        </ng-container>
+
+       
+        <p-button (click)="handleViewExpandCollapse()">{{displayModal ? 'Collapse' : 'Expand'}} </p-button>
+    </section>
+
+    <!-- user filter section -->
+    <section class="p-d-flex p-w-100 p-align-center">
+        <div class="user-filter" [ngClass]="{'show-less': showLess}">
+            <p-button class="p-m-1" [ngClass]="{'selected-user' : selectedUser === 'Overall'}" (click)="setSelectedUser('Overall')"><span class="filter-user">Overall</span></p-button>
+            <p-button  class="p-m-1" *ngFor="let assignee of assigneeList" [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" (click)="setSelectedUser(assignee.assigneeId)"><span class="filter-user">{{assignee.assigneeName}}</span></p-button>
+            <p-button class="p-m-1" *ngIf="!showLess" (click)="setShowLess()">Show fewer...</p-button>
+        </div>
+        <div *ngIf="showLess" class="p-p-3 show-more" [style]="{'height':'62px'}">
+            <p-button class="p-m-1" (click)="setShowLess()">Show More...</p-button>
+        </div>
+    </section>
+
+    <!-- Capacity Info table -->
+   <section class="p-p-3" *ngIf="selectedUser === 'Overall' else userInfo">
+    <p-table [value]="assigneeList" [columns]="columns" [tableStyle]="{'width': '100%'}" (sortFunction)="customSort($event)" [customSort]="true">
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="Team Member">Team Member <p-sortIcon field="assigneeName"></p-sortIcon></th>
+                <th *ngFor="let col of columns" [pSortableColumn]="col">
+                    {{col}}  <p-sortIcon field="code"></p-sortIcon>
+                </th>
+            </tr>
+            <tr>
+                <th>{{totals['Team Member']}}</th>
+                <th *ngFor="let col of columns">
+                    {{totals[col]?.value}} {{totals[col]?.unit !== 'day' ? totals[col].unit : ''}}
+                    {{totals[col]?.unit1 ? ' / ' + totals[col]?.value1 +' '+ totals[col].unit1 : ''}}
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-assignee>
+            <tr>
+                <td> <span class="user-name">{{assignee.assigneeName}}</span></td>
+                <td *ngFor="let col of columns">
+                    {{convertToHoursIfTime(assignee.cardDetails[col]['value'],assignee.cardDetails[col]['unit'])}} {{(assignee.cardDetails[col]['unit'] !== 'day' && assignee.cardDetails[col]['value'] !== '-')  ? assignee.cardDetails[col]['unit'] : ''}} 
+                    {{assignee.cardDetails[col]['value1'] ? ' / ' + assignee.cardDetails[col]['value1'] +' '+ assignee.cardDetails[col]['unit1'] : ''}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+   </section>
+
+   <!-- Assignee Issue details -->
+   <ng-template #userInfo>
+    <section class="user-info p-m-2">
+        <h1 [style]="{'text-align': 'center'}">User issue details</h1>
+    </section>
+   </ng-template>
+</main>
+<ng-template #noData>
+    <div [style]="{'text-align': 'center'}">
+     <h1>No Data Available</h1>
+    </div>
+</ng-template>
+
+

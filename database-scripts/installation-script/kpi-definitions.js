@@ -3025,6 +3025,25 @@ db.getCollection('kpi_master').insertMany(
       "kpiFilter": "dropdown",
       "boxType": "chart",
       "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi154",
+    "kpiName": "Daily Standup View",
+    "maxValue": "",
+    "isDeleted": "False",
+    "defaultOrder": 8,
+    "kpiCategory": "Iteration",
+    "kpiSubCategory": "Daily Standup",
+    "kpiSource": "Jira",
+    "groupId": 13,
+    "thresholdValue": "",
+    "kanban": false,
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiselectdropdown",
+    "kpiWidth": 100,
+    "calculateMaturity": false
   }
 ]
 );

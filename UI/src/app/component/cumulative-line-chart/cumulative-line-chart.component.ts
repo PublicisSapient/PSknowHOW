@@ -20,7 +20,7 @@ export class CumulativeLineChartComponent implements OnInit,OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.graphData= this.data[0]['dataGroup'];
+    this.graphData= this.data[0]['dataGroup'].map(d => ({...d}));
     this.draw();
   }
 
