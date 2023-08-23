@@ -3462,6 +3462,7 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach
 //------------------------- 7.7.0 changes----------------------------------------------------------------------------------
 // kpi issue type mapping for Quality status  ---------------------------------------------------------------------------
 // add Enable Notification option
+// PI predictability field mapping structure
 
 db.getCollection('field_mapping_structure').insertMany([
     {
@@ -3491,42 +3492,44 @@ db.getCollection('field_mapping_structure').insertMany([
                  "value": "Off"
             }
             ]
-    }
+    },
+    {
+            "fieldName": "epicPlannedValue",
+            "fieldLabel": "Custom field for Epic Planned Value",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+        }
+        },
+    {
+            "fieldName": "epicAchievedValue",
+            "fieldLabel": "Custom field for Epic Achieved Value",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+        }
+        },
+    {
+        "fieldName": "jiraIssueEpicTypeKPI153",
+        "fieldLabel": "Epic Issue Type",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "This field is used to identify Epic Issue type.",
+        }
+        }
 
 ])
 
 //adding dailyStandup kpi
+//added PI Predictability KPI for categoryThree board
 db.getCollection('kpi_master').insertMany(
 [
-{
-    "kpiId": "kpi154",
-    "kpiName": "Daily Standup View",
-    "maxValue": "",
-    "isDeleted": "False",
-    "defaultOrder": 8,
-    "kpiCategory": "Iteration",
-    "kpiSubCategory": "Daily Standup",
-    "kpiSource": "Jira",
-    "groupId": 13,
-    "thresholdValue": "",
-    "kanban": false,
-    "isPositiveTrend": true,
-    "showTrend": false,
-    "isAdditionalFilterSupport": false,
-    "kpiFilter": "multiselectdropdown",
-    "kpiWidth": 100,
-    "calculateMaturity": false
-  }
- ]);
-
-
-
-
-
-//----------------7.7.0 Changes ---------------------------
-
-// added PI Predictability KPI for categoryThree board
-db.getCollection('kpi_master').insertOne(
 {
       "kpiId": "kpi153",
       "kpiName": "PI Predictability",
@@ -3558,41 +3561,28 @@ db.getCollection('kpi_master').insertOne(
       "aggregationCriteria": "sum",
       "isAdditionalFilterSupport": false,
       "calculateMaturity": false
-    });
-
-// PI predictability field mapping structure
-db.getCollection('field_mapping_structure').insertMany([
+    },
 {
-        "fieldName": "epicPlannedValue",
-        "fieldLabel": "Custom field for Epic Planned Value",
-        "fieldType": "text",
-        "fieldCategory": "fields",
-        "section": "Custom Fields Mapping",
-        "tooltip": {
-            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
-    }
-    },
-    {
-        "fieldName": "epicAchievedValue",
-        "fieldLabel": "Custom field for Epic Achieved Value",
-        "fieldType": "text",
-        "fieldCategory": "fields",
-        "section": "Custom Fields Mapping",
-        "tooltip": {
-            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
-    }
-    },
-    {
-    "fieldName": "jiraIssueEpicTypeKPI153",
-    "fieldLabel": "Epic Issue Type",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "This field is used to identify Epic Issue type.",
-    }
-    }
-])
+    "kpiId": "kpi154",
+    "kpiName": "Daily Standup View",
+    "maxValue": "",
+    "isDeleted": "False",
+    "defaultOrder": 8,
+    "kpiCategory": "Iteration",
+    "kpiSubCategory": "Daily Standup",
+    "kpiSource": "Jira",
+    "groupId": 13,
+    "thresholdValue": "",
+    "kanban": false,
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiselectdropdown",
+    "kpiWidth": 100,
+    "calculateMaturity": false
+  }
+ ]);
+
 
 // PI predictability KPI column config
 db.getCollection('kpi_column_configs').insertOne({
@@ -3633,7 +3623,7 @@ db.getCollection('kpi_column_configs').insertOne({
                                  			order: 7,
                                  			isShown: true,
                                  			isDefault: false
-                                 		},
+                                 		}
                                  		]
 });
 
