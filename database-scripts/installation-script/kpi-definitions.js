@@ -8106,6 +8106,54 @@ db.getCollection('field_mapping_structure').insertMany(
         "tooltip": {
             "definition": "JIRA applications let you add custom fields in addition to the built-in fields.Provide value of Epic Linkage to the story/defect<br />Example:customfield_11111<hr>"
         }
+    },
+    {
+        "fieldName": "jiraStatusStartDevelopmentKPI154",
+        "fieldLabel": "Start of Development",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status from workflow on which issue is started development. <br> Example: In Analysis<hr>"
+        }
+    },
+    {
+        "fieldName": "jiraDevDoneStatusKPI154",
+        "fieldLabel": "Status to identify Dev completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
+        }
+    },
+    {
+        "fieldName": "jiraQADoneStatusKPI154",
+        "fieldLabel": "Status to identify QA completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status that confirms that the QA work is completed and an issue can be ready for signoff/close",
+        }
+    },
+    {
+        "fieldName": "jiraIterationCompletionStatusKPI154",
+        "fieldLabel": "Status to identify completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
+        }
+    },
+    {
+        "fieldName": "jiraStatusForInProgressKPI154",
+        "fieldLabel": "Status to identify In Progress issues",
+        "readOnly": true,
+        "tooltip": {
+            "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI",
+        }
     }
 ]
 );

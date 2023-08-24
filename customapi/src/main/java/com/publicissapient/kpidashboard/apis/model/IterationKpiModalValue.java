@@ -167,4 +167,5 @@ public class IterationKpiModalValue implements Serializable {
 	private Long remainingEstimateInSeconds;
 	private Long originalEstimateInSeconds;
 	private Set<String> subTask;
+	private Set<String> parentStory;
 }

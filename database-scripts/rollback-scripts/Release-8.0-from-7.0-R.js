@@ -464,3 +464,8 @@ db.kpi_category_mapping.insertMany([
   	"kanban" : false
   },
 ]);
+
+//------------------------- 7.9.0 changes----------------------------------------------------------------------------------
+db.field_mapping_structure.deleteMany({
+    "fieldName": { $in: [ "jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154", "epicPlannedValue", "epicAchievedValue", "jiraIssueEpicTypeKPI153","epicLink"]}
+});
