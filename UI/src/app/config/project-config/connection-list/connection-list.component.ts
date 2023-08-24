@@ -601,7 +601,6 @@ export class ConnectionListComponent implements OnInit {
         this.zephyrUrl = response.data;
       }
 
-    }, error => {
     });
   }
 
@@ -687,7 +686,6 @@ export class ConnectionListComponent implements OnInit {
         this.httpService.deleteConnection(connection).subscribe(response => {
           this.reloadConnections(response);
           this.getConnectionList();
-        }, error => {
         });
       },
       reject: () => {
@@ -709,11 +707,6 @@ export class ConnectionListComponent implements OnInit {
         message: response.message + ' in <br/>' + projectListHTML,
         header: 'Connection Deletion Status',
         key: 'cannotDeleteMessageDialog',
-        // icon: 'fa fa-times-circle text-danger',
-        accept: () => {
-        },
-        reject: () => {
-        }
       });
     }
   }
@@ -721,8 +714,6 @@ export class ConnectionListComponent implements OnInit {
   getConnectionList() {
     this.httpService.getAllConnections().subscribe(response => {
       this.renderConnectionList(response);
-    }, error => {
-
     });
   }
 

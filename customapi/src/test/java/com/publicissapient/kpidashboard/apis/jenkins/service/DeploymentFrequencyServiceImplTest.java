@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,6 +63,7 @@ public class DeploymentFrequencyServiceImplTest {
 	private Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolProjectMap = new HashMap<>();
 	private Map<String, List<String>> maturityRangeMap = new HashMap<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
+	Map<String, Object> durationFilter =  new LinkedHashMap<>();
 
 	@Mock
 	private DeploymentRepository deploymentRepository;
@@ -114,7 +116,9 @@ public class DeploymentFrequencyServiceImplTest {
 	}
 
 	private void setTreadValuesDataCount() {
-		DataCount dataCount = setDataCountValues("KnowHow", "3", "4", 5L);
+		List<DataCount> listOfDc = new ArrayList<>();
+		listOfDc.add(setDataCountValues("KnowHow", "3", "4", 5L));
+		DataCount dataCount = setDataCountValues("KnowHow", "3", "4", listOfDc);
 		trendValues.add(dataCount);
 		trendValueMap.put("OverAll", trendValues);
 		trendValueMap.put("prod -> KnowHow", trendValues);
@@ -132,7 +136,7 @@ public class DeploymentFrequencyServiceImplTest {
 	}
 
 	@Test
-	public void getKpiData() throws ApplicationException {
+	public void getKpiDataWeek() throws ApplicationException {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -145,7 +149,38 @@ public class DeploymentFrequencyServiceImplTest {
 
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put(KPICode.DEPLOYMENT_FREQUENCY.name(), Arrays.asList("-1", "1-2", "2-5", "5-10", "10-"));
-		when(customApiConfig.getJenkinsWeekCount()).thenReturn(5);
+		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+
+		Map<String, String> kpiWiseAggregation = new HashMap<>();
+		kpiWiseAggregation.put(KPICode.DEPLOYMENT_FREQUENCY.name(), "sum");
+		when(configHelperService.calculateCriteria()).thenReturn(kpiWiseAggregation);
+
+		try {
+			KpiElement kpiElement = deploymentFrequencyService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertThat("Deployment Frequency Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(),
+					equalTo(4));
+		} catch (ApplicationException exception) {
+
+		}
+	}
+	@Test
+	public void getKpiDataMonth() throws ApplicationException {
+		durationFilter.put(Constant.DURATION,CommonConstant.MONTH);
+		durationFilter.put(Constant.COUNT,20);
+		kpiElement.setFilterDuration(durationFilter);
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		when(deploymentRepository.findDeploymentList(anyMap(), anySet(), anyString(), anyString()))
+				.thenReturn(deploymentList);
+
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name()))
+				.thenReturn(kpiRequest.getRequestTrackerId());
+
+		Map<String, List<String>> maturityRangeMap = new HashMap<>();
+		maturityRangeMap.put(KPICode.DEPLOYMENT_FREQUENCY.name(), Arrays.asList("-1", "1-2", "2-5", "5-10", "10-"));
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 
