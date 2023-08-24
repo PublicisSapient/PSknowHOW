@@ -33,6 +33,7 @@ import { SSOGuard } from '../services/sso.guard';
 import { SsoAuthFailureComponent } from '../component/sso-auth-failure/sso-auth-failure.component';
 import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
 import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
+import { DoraComponent } from '../dashboard/dora/dora.component';
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -59,6 +60,7 @@ const routes: Routes = [
       { path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard] },
+      { path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
       { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
       {

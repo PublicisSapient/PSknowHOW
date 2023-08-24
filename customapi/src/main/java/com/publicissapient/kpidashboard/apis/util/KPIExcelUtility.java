@@ -845,9 +845,8 @@ public class KPIExcelUtility {
 				excelData.setProjectName(projectName);
 				excelData.setDate(deploymentFrequencyInfo.getDeploymentDateList().get(i));
 				excelData.setJobName(deploymentFrequencyInfo.getJobNameList().get(i));
-				excelData.setMonth(deploymentFrequencyInfo.getMonthList().get(i));
+				excelData.setWeeks(deploymentFrequencyInfo.getMonthList().get(i));
 				excelData.setDeploymentEnvironment(deploymentFrequencyInfo.getEnvironmentList().get(i));
-				excelData.setMonth(deploymentFrequencyInfo.getMonthList().get(i));
 				kpiExcelData.add(excelData);
 
 			}

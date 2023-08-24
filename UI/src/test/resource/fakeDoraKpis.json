@@ -1,0 +1,457 @@
+[
+    {
+        "kpiId": "kpi118",
+        "kpiName": "Deployment Frequency",
+        "unit": "%",
+        "maxValue": "200",
+        "chartType": "",
+        "id": "64a58c54600c3151b16a1196",
+        "isDeleted": "False",
+        "kpiUnit": "%",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "thresholdValue": 85,
+        "maturityRange": [
+            "-40",
+            "40-60",
+            "60-75",
+            "75-90",
+            "90-"
+        ],
+        "groupId": 2,
+        "trendValueList": [
+            {
+                "filter": "Overall",
+                "value": [
+                    {
+                        "data": "KnowHOW",
+                        "value": [
+                            {
+                                "data": "0",
+                                "sSprintID": "24-Jul to 30-Jul 23",
+                                "sSprintName": "24-Jul to 30-Jul 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.111": 0,
+                                    "81.200.188.112": 0,
+                                    "81.200.188.113": 0
+                                },
+                                "date": "24-Jul to 30-Jul 23",
+                                "sprintIds": [
+                                    "24-Jul to 30-Jul 23"
+                                ],
+                                "sprintNames": [
+                                    "24-Jul to 30-Jul 23"
+                                ],
+                                "projectNames": [
+                                    "KnowHOW"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "31-Jul to 6-Aug 23",
+                                "sSprintName": "31-Jul to 6-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.111": 0,
+                                    "81.200.188.112": 0,
+                                    "81.200.188.113": 0
+                                },
+                                "date": "31-Jul to 6-Aug 23",
+                                "sprintIds": [
+                                    "31-Jul to 6-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "31-Jul to 6-Aug 23"
+                                ],
+                                "projectNames": [
+                                    "KnowHOW"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "7-Aug to 13-Aug 23",
+                                "sSprintName": "7-Aug to 13-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.111": 0,
+                                    "81.200.188.112": 0,
+                                    "81.200.188.113": 0
+                                },
+                                "date": "7-Aug to 13-Aug 23",
+                                "sprintIds": [
+                                    "7-Aug to 13-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "7-Aug to 13-Aug 23"
+                                ],
+                                "projectNames": [
+                                    "KnowHOW"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "14-Aug to 20-Aug 23",
+                                "sSprintName": "14-Aug to 20-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.111": 0,
+                                    "81.200.188.112": 0,
+                                    "81.200.188.113": 0
+                                },
+                                "date": "14-Aug to 20-Aug 23",
+                                "sprintIds": [
+                                    "14-Aug to 20-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "14-Aug to 20-Aug 23"
+                                ],
+                                "projectNames": [
+                                    "KnowHOW"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "21-Aug to 27-Aug 23",
+                                "sSprintName": "21-Aug to 27-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.111": 0,
+                                    "81.200.188.112": 0,
+                                    "81.200.188.113": 0
+                                },
+                                "date": "21-Aug to 27-Aug 23",
+                                "sprintIds": [
+                                    "21-Aug to 27-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "21-Aug to 27-Aug 23"
+                                ],
+                                "projectNames": [
+                                    "KnowHOW"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            }
+                        ],
+                        "maturity": "1",
+                        "maturityValue": "0"
+                    }
+                ],
+                "aggregationValue": "0"
+            },
+            {
+                "filter": "81.200.188.111->KnowHOW",
+                "value": [
+                    {
+                        "data": "KnowHOW",
+                        "value": [
+                            {
+                                "data": "0",
+                                "sSprintID": "24-Jul to 30-Jul 23",
+                                "sSprintName": "24-Jul to 30-Jul 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.111": 0
+                                },
+                                "date": "24-Jul to 30-Jul 23",
+                                "kpiGroup": "81.200.188.111",
+                                "sprintIds": [
+                                    "24-Jul to 30-Jul 23"
+                                ],
+                                "sprintNames": [
+                                    "24-Jul to 30-Jul 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "31-Jul to 6-Aug 23",
+                                "sSprintName": "31-Jul to 6-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.111": 0
+                                },
+                                "date": "31-Jul to 6-Aug 23",
+                                "kpiGroup": "81.200.188.111",
+                                "sprintIds": [
+                                    "31-Jul to 6-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "31-Jul to 6-Aug 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "7-Aug to 13-Aug 23",
+                                "sSprintName": "7-Aug to 13-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.111": 0
+                                },
+                                "date": "7-Aug to 13-Aug 23",
+                                "kpiGroup": "81.200.188.111",
+                                "sprintIds": [
+                                    "7-Aug to 13-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "7-Aug to 13-Aug 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "14-Aug to 20-Aug 23",
+                                "sSprintName": "14-Aug to 20-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.111": 0
+                                },
+                                "date": "14-Aug to 20-Aug 23",
+                                "kpiGroup": "81.200.188.111",
+                                "sprintIds": [
+                                    "14-Aug to 20-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "14-Aug to 20-Aug 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "21-Aug to 27-Aug 23",
+                                "sSprintName": "21-Aug to 27-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.111": 0
+                                },
+                                "date": "21-Aug to 27-Aug 23",
+                                "kpiGroup": "81.200.188.111",
+                                "sprintIds": [
+                                    "21-Aug to 27-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "21-Aug to 27-Aug 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            }
+                        ],
+                        "maturity": "1",
+                        "maturityValue": "0"
+                    }
+                ],
+                "aggregationValue": "0"
+            },
+            {
+                "filter": "81.200.188.112->KnowHOW",
+                "value": [
+                    {
+                        "data": "KnowHOW",
+                        "value": [
+                            {
+                                "data": "0",
+                                "sSprintID": "24-Jul to 30-Jul 23",
+                                "sSprintName": "24-Jul to 30-Jul 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.112": 0
+                                },
+                                "date": "24-Jul to 30-Jul 23",
+                                "kpiGroup": "81.200.188.112",
+                                "sprintIds": [
+                                    "24-Jul to 30-Jul 23"
+                                ],
+                                "sprintNames": [
+                                    "24-Jul to 30-Jul 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "31-Jul to 6-Aug 23",
+                                "sSprintName": "31-Jul to 6-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.112": 0
+                                },
+                                "date": "31-Jul to 6-Aug 23",
+                                "kpiGroup": "81.200.188.112",
+                                "sprintIds": [
+                                    "31-Jul to 6-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "31-Jul to 6-Aug 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "7-Aug to 13-Aug 23",
+                                "sSprintName": "7-Aug to 13-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.112": 0
+                                },
+                                "date": "7-Aug to 13-Aug 23",
+                                "kpiGroup": "81.200.188.112",
+                                "sprintIds": [
+                                    "7-Aug to 13-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "7-Aug to 13-Aug 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "14-Aug to 20-Aug 23",
+                                "sSprintName": "14-Aug to 20-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.112": 0
+                                },
+                                "date": "14-Aug to 20-Aug 23",
+                                "kpiGroup": "81.200.188.112",
+                                "sprintIds": [
+                                    "14-Aug to 20-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "14-Aug to 20-Aug 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "21-Aug to 27-Aug 23",
+                                "sSprintName": "21-Aug to 27-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.112": 0
+                                },
+                                "date": "21-Aug to 27-Aug 23",
+                                "kpiGroup": "81.200.188.112",
+                                "sprintIds": [
+                                    "21-Aug to 27-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "21-Aug to 27-Aug 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            }
+                        ],
+                        "maturity": "1",
+                        "maturityValue": "0"
+                    }
+                ],
+                "aggregationValue": "0"
+            },
+            {
+                "filter": "81.200.188.113->KnowHOW",
+                "value": [
+                    {
+                        "data": "KnowHOW",
+                        "value": [
+                            {
+                                "data": "0",
+                                "sSprintID": "24-Jul to 30-Jul 23",
+                                "sSprintName": "24-Jul to 30-Jul 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.113": 0
+                                },
+                                "date": "24-Jul to 30-Jul 23",
+                                "kpiGroup": "81.200.188.113",
+                                "sprintIds": [
+                                    "24-Jul to 30-Jul 23"
+                                ],
+                                "sprintNames": [
+                                    "24-Jul to 30-Jul 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "31-Jul to 6-Aug 23",
+                                "sSprintName": "31-Jul to 6-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.113": 0
+                                },
+                                "date": "31-Jul to 6-Aug 23",
+                                "kpiGroup": "81.200.188.113",
+                                "sprintIds": [
+                                    "31-Jul to 6-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "31-Jul to 6-Aug 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "7-Aug to 13-Aug 23",
+                                "sSprintName": "7-Aug to 13-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.113": 0
+                                },
+                                "date": "7-Aug to 13-Aug 23",
+                                "kpiGroup": "81.200.188.113",
+                                "sprintIds": [
+                                    "7-Aug to 13-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "7-Aug to 13-Aug 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "14-Aug to 20-Aug 23",
+                                "sSprintName": "14-Aug to 20-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.113": 0
+                                },
+                                "date": "14-Aug to 20-Aug 23",
+                                "kpiGroup": "81.200.188.113",
+                                "sprintIds": [
+                                    "14-Aug to 20-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "14-Aug to 20-Aug 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "21-Aug to 27-Aug 23",
+                                "sSprintName": "21-Aug to 27-Aug 23",
+                                "value": 0,
+                                "hoverValue": {
+                                    "81.200.188.113": 0
+                                },
+                                "date": "21-Aug to 27-Aug 23",
+                                "kpiGroup": "81.200.188.113",
+                                "sprintIds": [
+                                    "21-Aug to 27-Aug 23"
+                                ],
+                                "sprintNames": [
+                                    "21-Aug to 27-Aug 23"
+                                ],
+                                "sprojectName": "KnowHOW"
+                            }
+                        ],
+                        "maturity": "1",
+                        "maturityValue": "0"
+                    }
+                ],
+                "aggregationValue": "0"
+            }
+        ]
+    }
+]

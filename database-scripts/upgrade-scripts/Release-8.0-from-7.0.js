@@ -3457,8 +3457,6 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach
     );
 });
 
-])
-
 //------------------------- 7.7.0 changes----------------------------------------------------------------------------------
 // kpi issue type mapping for Quality status  ---------------------------------------------------------------------------
 // add Enable Notification option
@@ -3536,64 +3534,6 @@ db.getCollection('field_mapping_structure').insertMany([
 
 ])
 
-//adding dailyStandup kpi
-//added PI Predictability KPI for categoryThree board
-db.getCollection('kpi_master').insertMany(
-[
-{
-      "kpiId": "kpi153",
-      "kpiName": "PI Predictability",
-      "maxValue": "200",
-      "kpiUnit": "",
-      "isDeleted": "False",
-      "defaultOrder": 29,
-      "kpiSource": "Jira",
-      "groupId": 4,
-      "thresholdValue": "",
-      "kanban": false,
-      "chartType": "multipleline",
-      "kpiInfo": {
-        "definition": "PI predictability is calculated by the sum of the actual value achieved against the planned value at the beginning of the PI",
-        "details": [
-          {
-            "type": "link",
-            "kpiLinkDetail": {
-              "text": "Detailed Information at",
-              "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#PI-Predictability"
-            }
-          }
-        ]
-      },
-      "xAxisLabel": "PIs",
-      "yAxisLabel": "Business Value",
-      "isPositiveTrend": true,
-      "showTrend": true,
-      "aggregationCriteria": "sum",
-      "isAdditionalFilterSupport": false,
-      "calculateMaturity": false
-    },
-{
-    "kpiId": "kpi154",
-    "kpiName": "Daily Standup View",
-    "maxValue": "",
-    "isDeleted": "False",
-    "defaultOrder": 8,
-    "kpiCategory": "Iteration",
-    "kpiSubCategory": "Daily Standup",
-    "kpiSource": "Jira",
-    "groupId": 13,
-    "thresholdValue": "",
-    "kanban": false,
-    "isPositiveTrend": true,
-    "showTrend": false,
-    "isAdditionalFilterSupport": false,
-    "kpiFilter": "multiselectdropdown",
-    "kpiWidth": 100,
-    "calculateMaturity": false
-  }
- ]);
-
-
 // PI predictability KPI column config
 db.getCollection('kpi_column_configs').insertOne({
                                  		basicProjectConfigId: null,
@@ -3637,6 +3577,110 @@ db.getCollection('kpi_column_configs').insertOne({
                                  		]
 });
 
+// delete dora kpi
+db.kpi_category_mapping.deleteMany({
+  "kpiId": {
+    "$in": ["kpi116", "kpi118"]
+  }
+});
+
+//adding dailyStandup kpi
+//added PI Predictability KPI for categoryThree board
+// dora kpi master changes
+db.kpi_master.bulkWrite([{
+  updateMany: { //changing dora kpi groupId
+    filter: {
+      kpiId: {
+        $in: ["kpi116", "kpi118"]
+      }
+    },
+    update: {
+      $set: {
+        groupId: 14
+      }
+    }
+  }
+}, { // change the x-axis of deployment freq
+  updateOne: {
+    filter: {
+      kpiId: "kpi118"
+    },
+    update: {
+      $set: {
+        xAxisLabel: "Weeks"
+      }
+    }
+  }
+}, { // adding kpi category dora
+  updateMany: {
+    filter: {
+      kpiId: {
+        $in: ["kpi116", "kpi118"]
+      }
+    },
+    update: {
+      $set: {
+        kpiCategory: "Dora"
+      }
+    }
+  }
+}, {
+  insertOne: {
+    document: {
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "maxValue": "200",
+      "kpiUnit": "",
+      "isDeleted": "False",
+      "defaultOrder": 29,
+      "kpiSource": "Jira",
+      "groupId": 4,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "multipleline",
+      "kpiInfo": {
+        "definition": "PI predictability is calculated by the sum of the actual value achieved against the planned value at the beginning of the PI",
+        "details": [{
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#PI-Predictability"
+          }
+        }]
+      },
+      "xAxisLabel": "PIs",
+      "yAxisLabel": "Business Value",
+      "isPositiveTrend": true,
+      "showTrend": true,
+      "aggregationCriteria": "sum",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": false
+    },
+  }
+}, {
+  insertOne: {
+    document: {
+      "kpiId": "kpi154",
+      "kpiName": "Daily Standup View",
+      "maxValue": "",
+      "isDeleted": "False",
+      "defaultOrder": 8,
+      "kpiCategory": "Iteration",
+      "kpiSubCategory": "Daily Standup",
+      "kpiSource": "Jira",
+      "groupId": 13,
+      "thresholdValue": "",
+      "kanban": false,
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiselectdropdown",
+      "kpiWidth": 100,
+      "calculateMaturity": false
+    }
+  }
+}]);
+
 // Note : below code only For Opensource project
 // PI predictability KPI category mapping
 db.getCollection('kpi_category_mapping').insertOne( {
@@ -3645,6 +3689,3 @@ db.getCollection('kpi_category_mapping').insertOne( {
                                                     		"kpiOrder": 4,
                                                     		"kanban": false
                                                     	});
-
-
-

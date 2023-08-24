@@ -395,6 +395,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 			Deployment existing = null;
 			Deployment deploymentData = deploymentRepository
 					.findByProjectToolConfigIdAndNumber(azurePipelineServer.getId(), job.getNumber());
+
 			if (!CollectionUtils.isEmpty(existingJobs) && existingJobs.contains(job)) {
 				existing = existingJobs.get(existingJobs.indexOf(job));
 			}
@@ -405,7 +406,7 @@ public class AzurePipelineProcessorJobExecutor extends ProcessorJobExecutor<Azur
 				count++;
 			}
 
-			if (proBasicConfig.isSaveAssigneeDetails() && deploymentData.getDeployedBy() == null
+			if (proBasicConfig.isSaveAssigneeDetails() && deploymentData != null && deploymentData.getDeployedBy() == null
 					&& job.getDeployedBy() != null) {
 				deploymentData.setDeployedBy(job.getDeployedBy());
 				newJobs.add(deploymentData);
