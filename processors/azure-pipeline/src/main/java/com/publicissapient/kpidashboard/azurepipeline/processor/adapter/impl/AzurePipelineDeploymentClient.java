@@ -121,6 +121,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 				JSONObject jsonDeploy = (JSONObject) deployObject;
 				JSONObject jsonReleaseEnv = AzurePipelineUtils.getJsonObject(jsonDeploy, "releaseEnvironment");
 				JSONObject jsonDeployedBy = AzurePipelineUtils.getJsonObject(jsonDeploy, "requestedBy");
+				JSONObject jsonDeployRelease = AzurePipelineUtils.getJsonObject(jsonDeploy, "release");
 
 				deploymentJob.setEnvId(String.valueOf(jsonReleaseEnv.get("id")));
 				deploymentJob.setEnvName(AzurePipelineUtils.getString(jsonReleaseEnv, "name"));
@@ -132,7 +133,7 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 					deploymentJob.setDeployedBy(AzurePipelineUtils.getString(jsonDeployedBy, "displayName"));
 				}
 				deploymentJob.setDeploymentStatus(getDeploymentStatus(jsonDeploy));
-				deploymentJob.setNumber(String.valueOf(jsonDeploy.get("id")));
+				deploymentJob.setNumber(String.valueOf(jsonDeployRelease.get("id")));
 				deploymentJob.setJobId(azurePipelineServer.getJobName());
 				deploymentJob.setJobName(azurePipelineServer.getDeploymentProjectName());
 				setTime(jsonDeploy, deploymentJob);
