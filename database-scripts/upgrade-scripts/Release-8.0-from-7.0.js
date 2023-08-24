@@ -3520,6 +3520,16 @@ db.getCollection('field_mapping_structure').insertMany([
         "tooltip": {
             "definition": "This field is used to identify Epic Issue type.",
         }
+        },
+        {
+            "fieldName": "epicLink",
+            "fieldLabel": "Custom field for Epic Link",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "JIRA applications let you add custom fields in addition to the built-in fields.Provide value of Epic Linkage to the story/defect<br />Example:customfield_11111<hr>"
+            }
         }
 
 ])
