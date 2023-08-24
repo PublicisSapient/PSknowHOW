@@ -618,6 +618,12 @@ export class MultilineComponent implements OnChanges {
             );
         }
       });
+      if(board == 'dora'){
+        svgX
+        .select('.x')
+        .selectAll('.tick').selectAll('text').attr('transform', 'translate(0, 5) rotate(-35)')
+      }
+      
     if (this.kpiId == 'kpi17') {
       d3.select(this.elem).select('#legendContainer').remove();
       const legendDiv = d3.select(this.elem).select('#multiLineChart').append('div')
