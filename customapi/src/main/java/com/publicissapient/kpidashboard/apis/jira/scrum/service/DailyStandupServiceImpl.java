@@ -308,7 +308,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					role = userWiseRole.getOrDefault(listEntry.getKey(), UNASSIGNED);
 				}
 				List<JiraIssue> jiraIssueList = listEntry.getValue();
-				populateModal(jiraIssueList, resultMap, sprintDetails,linkedSubTasks, issueWiseDelay, mapOfModalObject, fieldMapping);
+				populateModal(jiraIssueList, resultMap, sprintDetails, linkedSubTasks, issueWiseDelay, mapOfModalObject,
+						fieldMapping);
 				String assigneeId = listEntry.getKey();
 				String assigneeName = jiraIssueList.stream().findFirst().orElse(new JiraIssue()).getAssigneeName();
 
@@ -338,8 +339,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	}
 
 	private void populateModal(List<JiraIssue> jiraIssueList, Map<String, Object> resultMap,
-							   SprintDetails sprintDetails, Set<JiraIssue> linkedSubTasks, Map<String, IterationPotentialDelay> issueWiseDelay,
-							   Map<String, IterationKpiModalValue> mapOfModalObject, FieldMapping fieldMapping) {
+			SprintDetails sprintDetails, Set<JiraIssue> linkedSubTasks,
+			Map<String, IterationPotentialDelay> issueWiseDelay, Map<String, IterationKpiModalValue> mapOfModalObject,
+			FieldMapping fieldMapping) {
 		List<JiraIssue> epicList = new ArrayList<>((Set<JiraIssue>) resultMap.get(EPICS));
 		List<SprintDetails> sprintIdList = (List<SprintDetails>) resultMap.get(PREVIOS_SPRINTS);
 
@@ -353,7 +355,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
 					DATE_TIME_FORMATTER);
 			LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0], DATE_TIME_FORMATTER);
-
 
 			for (JiraIssue jiraIssue : jiraIssueList) {
 				KPIExcelUtility.populateIterationKPI(null, null, jiraIssue, fieldMapping, mapOfModalObject);
@@ -390,12 +391,11 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					return v;
 				});
 				getLastSprint(iterationKpiModalValue, jiraIssue, previousSprintMap);
-				Set<String> linkedSubTask= new HashSet<>();
+				Set<String> linkedSubTask = new HashSet<>();
 				linkedSubTasks.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
 						.forEach(defect -> linkedSubTask.add(defect.getNumber()));
-				if(CollectionUtils.isNotEmpty(linkedSubTask))
-				   iterationKpiModalValue.setSubTask(linkedSubTask);
-
+				if (CollectionUtils.isNotEmpty(linkedSubTask))
+					iterationKpiModalValue.setSubTask(linkedSubTask);
 
 			}
 		}
@@ -407,10 +407,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			Set<String> tasks = new HashSet<>();
 			tasks.add("Studio Task");
 			tasks.add("Task");
-			linkedSubTask = jiraIssueList.stream()
-					.filter(issue -> tasks.contains(issue.getOriginalType())
-							&& CollectionUtils.isNotEmpty(issue.getDefectStoryID()))
-					.collect(Collectors.toSet());
+			linkedSubTask = jiraIssueList.stream().filter(issue -> tasks.contains(issue.getOriginalType())
+					&& CollectionUtils.isNotEmpty(issue.getDefectStoryID())).collect(Collectors.toSet());
 		}
 
 		return linkedSubTask;
@@ -462,7 +460,11 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				});
 				dateWiseLogMap.computeIfAbsent(changedOn, k -> new ArrayList<>()).add(log.getChangedTo());
 			}
+			dateWiseLogMap = dateWiseLogMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(
+					Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
 		}
+
 		return dateWiseLogMap;
 	}
 
