@@ -676,6 +676,7 @@ db.getCollection('kpi_master').insertMany(
   {
     "kpiId": "kpi116",
     "kpiName": "Change Failure Rate",
+    "kpiCategory": "Dora",
     "maxValue": "100",
     "kpiUnit": "%",
     "isDeleted": "False",
@@ -1119,6 +1120,7 @@ db.getCollection('kpi_master').insertMany(
   {
     "kpiId": "kpi118",
     "kpiName": "Deployment Frequency",
+    "kpiCategory": "Dora",
     "maxValue": "100",
     "kpiUnit": "Number",
     "isDeleted": "False",
@@ -3216,21 +3218,9 @@ db.getCollection('kpi_category_mapping').insertMany(
 		"kanban": false
 	},
 	{
-		"kpiId": "kpi116",
-		"categoryId": "categoryTwo",
-		"kpiOrder": 15,
-		"kanban": false
-	},
-	{
 		"kpiId": "kpi70",
 		"categoryId": "categoryTwo",
 		"kpiOrder": 16,
-		"kanban": false
-	},
-	{
-		"kpiId": "kpi118",
-		"categoryId": "categoryThree",
-		"kpiOrder": 1,
 		"kanban": false
 	},
 	{
@@ -8106,6 +8096,16 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "This field is used to identify Epic Issue type.",
     }
+    },
+    {
+        "fieldName": "epicLink",
+        "fieldLabel": "Custom field for Epic Link",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields.Provide value of Epic Linkage to the story/defect<br />Example:customfield_11111<hr>"
+        }
     },
     {
       "fieldName": "jiraSubTaskDefectType",

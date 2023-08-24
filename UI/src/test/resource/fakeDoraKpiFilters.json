@@ -1,0 +1,118 @@
+{
+    "data": "KnowHOW",
+    "value": [
+        {
+            "data": 0,
+            "sSprintID": "24-Jul to 30-Jul 23",
+            "sSprintName": "24-Jul to 30-Jul 23",
+            "value": 0,
+            "hoverValue": {
+                "81.200.188.111": 0,
+                "81.200.188.112": 0
+            },
+            "date": "24-Jul to 30-Jul 23",
+            "kpiGroup": "81.200.188.111",
+            "sprintIds": [
+                "24-Jul to 30-Jul 23"
+            ],
+            "sprintNames": [
+                "24-Jul to 30-Jul 23"
+            ],
+            "sprojectName": "KnowHOW",
+            "sortSprint": "24-Jul to 30-Jul 23",
+            "xName": 1,
+            "lineValue": null
+        },
+        {
+            "data": 0,
+            "sSprintID": "31-Jul to 6-Aug 23",
+            "sSprintName": "31-Jul to 6-Aug 23",
+            "value": 0,
+            "hoverValue": {
+                "81.200.188.111": 0,
+                "81.200.188.112": 0
+            },
+            "date": "31-Jul to 6-Aug 23",
+            "kpiGroup": "81.200.188.111",
+            "sprintIds": [
+                "31-Jul to 6-Aug 23"
+            ],
+            "sprintNames": [
+                "31-Jul to 6-Aug 23"
+            ],
+            "sprojectName": "KnowHOW",
+            "sortSprint": "31-Jul to 6-Aug 23",
+            "xName": 2,
+            "lineValue": null
+        },
+        {
+            "data": 0,
+            "sSprintID": "7-Aug to 13-Aug 23",
+            "sSprintName": "7-Aug to 13-Aug 23",
+            "value": 0,
+            "hoverValue": {
+                "81.200.188.111": 0,
+                "81.200.188.112": 0
+            },
+            "date": "7-Aug to 13-Aug 23",
+            "kpiGroup": "81.200.188.111",
+            "sprintIds": [
+                "7-Aug to 13-Aug 23"
+            ],
+            "sprintNames": [
+                "7-Aug to 13-Aug 23"
+            ],
+            "sprojectName": "KnowHOW",
+            "sortSprint": "7-Aug to 13-Aug 23",
+            "xName": 3,
+            "lineValue": null
+        },
+        {
+            "data": 0,
+            "sSprintID": "14-Aug to 20-Aug 23",
+            "sSprintName": "14-Aug to 20-Aug 23",
+            "value": 0,
+            "hoverValue": {
+                "81.200.188.111": 0,
+                "81.200.188.112": 0
+            },
+            "date": "14-Aug to 20-Aug 23",
+            "kpiGroup": "81.200.188.111",
+            "sprintIds": [
+                "14-Aug to 20-Aug 23"
+            ],
+            "sprintNames": [
+                "14-Aug to 20-Aug 23"
+            ],
+            "sprojectName": "KnowHOW",
+            "sortSprint": "14-Aug to 20-Aug 23",
+            "xName": 4,
+            "lineValue": null
+        },
+        {
+            "data": 0,
+            "sSprintID": "21-Aug to 27-Aug 23",
+            "sSprintName": "21-Aug to 27-Aug 23",
+            "value": 0,
+            "hoverValue": {
+                "81.200.188.111": 0,
+                "81.200.188.112": 0
+            },
+            "date": "21-Aug to 27-Aug 23",
+            "kpiGroup": "81.200.188.111",
+            "sprintIds": [
+                "21-Aug to 27-Aug 23"
+            ],
+            "sprintNames": [
+                "21-Aug to 27-Aug 23"
+            ],
+            "sprojectName": "KnowHOW",
+            "sortSprint": "21-Aug to 27-Aug 23",
+            "xName": 5,
+            "lineValue": null
+        }
+    ],
+    "maturity": "1",
+    "maturityValue": "0",
+    "aggregationValue": 0
+}

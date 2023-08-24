@@ -403,29 +403,11 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 4}}).forEach(f
     );
 });
 
-// --------------------- Release 7.7 -----------------------------------------------------------------
-// delete mapping for Quality Status and notification enabler
-
-db.field_mapping_structure.deleteMany({
-    "fieldName": { $in: [ "jiraItrQSIssueTypeKPI133", "notificationEnabler"]}
-});
-
-//deleting dailyStandup kpi
-db.getCollection('kpi_master').deleteMany(
-  { "kpiId": "kpi154" }
-);
-
 //----------------7.7.0 Changes ---------------------------
-
-// delete PI Predictability KPI
-db.kpi_master.deleteOne({
-    "kpiId": "kpi153"
-});
-
-
+// delete mapping for Quality Status and notification enabler
 // delete mapping for PI Predictability KPI
 db.field_mapping_structure.deleteMany({
-    "fieldName": { $in: [ "epicPlannedValue", "epicAchievedValue", "jiraIssueEpicTypeKPI153"]}
+    "fieldName": { $in: [ "jiraItrQSIssueTypeKPI133", "notificationEnabler", "epicPlannedValue", "epicAchievedValue", "jiraIssueEpicTypeKPI153","epicLink"]}
 });
 
 // delete column config for PI Predictability KPI
@@ -437,6 +419,51 @@ db.kpi_column_configs.deleteOne({
 db.kpi_category_mapping.deleteOne({
     "kpiId": "kpi153"
 });
+
+db.kpi_master.bulkWrite([
+  // Reverting Dora dashboard changes
+  {
+    updateMany: {
+      filter: { kpiId: { $in: ["kpi116", "kpi118"] } },
+      update: { $unset: { kpiCategory: "" } }
+    }
+  },
+  // Reverse the deployment freq x-axis
+  {
+    updateOne: {
+      filter: { kpiId: "kpi118" },
+      update: { $set: { xAxisLabel: "Months" } }
+    }
+  },
+  {
+    updateMany: {
+      filter: { kpiId: { $in: ["kpi116", "kpi118"] } },
+      update: { $set: { groupId: 1 } }
+    }
+  },
+// delete PI Predictability KPI (153)deleting dailyStandup kpi (154)
+  {
+    deleteMany: {
+      filter: { kpiId: { $in: ["kpi153", "kpi154"] } }
+    }
+  }
+]);
+
+// Note : below code only For Opensource project
+db.kpi_category_mapping.insertMany([
+  {
+  	"kpiId" : "kpi116",
+  	"categoryId" : "categoryTwo",
+  	"kpiOrder" : 15,
+  	"kanban" : false
+  },
+  {
+  	"kpiId" : "kpi118",
+  	"categoryId" : "categoryThree",
+  	"kpiOrder" : 1,
+  	"kanban" : false
+  },
+]);
 
 
 //------------------------- 7.8.0 changes----------------------------------------------------------------------------------
