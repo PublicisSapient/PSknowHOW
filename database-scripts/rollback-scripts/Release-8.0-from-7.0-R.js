@@ -410,12 +410,6 @@ db.field_mapping_structure.deleteMany({
     "fieldName": { $in: [ "jiraItrQSIssueTypeKPI133", "notificationEnabler", "epicPlannedValue", "epicAchievedValue", "jiraIssueEpicTypeKPI153","epicLink"]}
 });
 
-
-// delete PI Predictability KPI (153)deleting dailyStandup kpi (154)
-db.getCollection('kpi_master').deleteMany(
-  {"kpiId": { $in: ["kpi153","kpi154"]}}
-);
-
 // delete column config for PI Predictability KPI
 db.kpi_column_configs.deleteOne({
     "kpiId": "kpi153"
@@ -426,28 +420,34 @@ db.kpi_category_mapping.deleteOne({
     "kpiId": "kpi153"
 });
 
-
-// Reverting Dora dashboard changes
-db.kpi_master.updateMany(
-   { kpiId: { $in: ["kpi116", "kpi118"] } },
-   { $unset: { kpiCategory: "" } }
-
-);
-
-// reverse the deployment feq x-axis
-db.kpi_master.updateOne(
+db.kpi_master.bulkWrite([
+  // Reverting Dora dashboard changes
   {
-    "kpiId": "kpi118"
+    updateMany: {
+      filter: { kpiId: { $in: ["kpi116", "kpi118"] } },
+      update: { $unset: { kpiCategory: "" } }
+    }
+  },
+  // Reverse the deployment freq x-axis
+  {
+    updateOne: {
+      filter: { kpiId: "kpi118" },
+      update: { $set: { xAxisLabel: "Months" } }
+    }
   },
   {
-    $set: { "xAxisLabel": "Months" }
+    updateMany: {
+      filter: { kpiId: { $in: ["kpi116", "kpi118"] } },
+      update: { $set: { groupId: 1 } }
+    }
+  },
+// delete PI Predictability KPI (153)deleting dailyStandup kpi (154)
+  {
+    deleteMany: {
+      filter: { kpiId: { $in: ["kpi153", "kpi154"] } }
+    }
   }
-);
-
-db.kpi_master.updateMany(
-   { kpiId: { $in: ["kpi116", "kpi118"] } },
-   { $set: { groupId: 1 } }
-)
+]);
 
 // Note : below code only For Opensource project
 db.kpi_category_mapping.insertMany([
