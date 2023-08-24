@@ -149,7 +149,7 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, 
 					middleOverallData.setData(latestRelease.getProjectFilter().getName());
 					middleOverallData.setValue(trendValueListOverAll);
 					middleTrendValueListOverAll.add(middleOverallData);
-					populateExcelDataObject(requestTrackerId, excelData, totalDefects,fieldMapping);
+					populateExcelDataObject(requestTrackerId, excelData, totalDefects, fieldMapping);
 
 					IterationKpiValue filterDataOverall = new IterationKpiValue(CommonConstant.OVERALL,
 							middleTrendValueListOverAll);
