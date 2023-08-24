@@ -436,7 +436,7 @@ div.main {
 :host ::ng-deep .p-datatable thead tr {
   display: block;
   background: #0175BE;
-    color: #fff;
+  color: #fff;
 }
 
 :host ::ng-deep .p-datatable thead tr th:first-child {
