@@ -265,58 +265,21 @@ export class DoraComponent implements OnInit {
     const idx = this.ifKpiExist(kpiId);
     let trendValueList = [];
     const optionsArr = [];
-    const optionsArr2 = [];
+
     if (idx != -1) {
-      trendValueList = this.allKpiArray[idx]?.trendValueList;
-      if ((trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) || (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1'))) {
-        const obj = {};
-        const obj2 = {};
-        for (let i = 0; i < trendValueList?.length; i++) {
-          for (let key in this.colorObj) {
-            let kpiFilter = trendValueList[i]?.value?.findIndex(x => this.colorObj[key]?.nodeName == x.data);
-            if (kpiFilter != -1) {
-              let ifExist = trendValueList[i]?.filter1 ? optionsArr.findIndex(x => x == trendValueList[i]?.filter1) : optionsArr.findIndex(x => x == trendValueList[i]?.filter);
-              if (ifExist == -1) {
-                optionsArr?.push(trendValueList[i]?.filter1 ? trendValueList[i]?.filter1 : trendValueList[i]?.filter);
-              }
-              if (trendValueList[i]?.hasOwnProperty('filter2')) {
-                let ifF1Exist = optionsArr2.findIndex(x => x == trendValueList[i]?.filter2);
-                // if (ifF1Exist == -1 && trendValueList[i]?.filter2?.toLowerCase() !=="overall") {
-                if (ifF1Exist == -1) {
-                  optionsArr2?.push(trendValueList[i]?.filter2);
-
+        trendValueList = this.allKpiArray[idx]?.trendValueList;
+        if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
+            const obj = {};
+            for (let i = 0; i < trendValueList?.length; i++) {
+                if(trendValueList[i]?.filter?.toLowerCase() != 'overall'){
+                    optionsArr?.push(trendValueList[i]?.filter);
                 }
-              }
             }
-          }
+            obj['filterType'] = 'Select a filter';
+            obj['options'] = optionsArr;
+            this.kpiDropdowns[kpiId] = [];
+            this.kpiDropdowns[kpiId].push(obj);
         }
-        const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
-        if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
-          const index = optionsArr?.findIndex(x => x?.toLowerCase() == 'overall');
-          if (index > -1) {
-            optionsArr?.splice(index, 1);
-          }
-        }
-        obj['filterType'] = 'Select a filter';
-        obj['options'] = optionsArr;
-        this.kpiDropdowns[kpiId] = [];
-        this.kpiDropdowns[kpiId].push(obj);
-
-        if (optionsArr2.length > 0) {
-          optionsArr2.sort((a, b) => {
-            if (a === "Overall") {
-              return -1; // "Overall" should be moved to the beginning (0 index)
-            } else if (b === "Overall") {
-              return 1; // "Overall" should be moved to the beginning (0 index)
-            } else {
-              return 0; // Maintain the original order of other elements
-            }
-          });
-          obj2['filterType'] = 'Filter by issue type';
-          obj2['options'] = optionsArr2;
-          this.kpiDropdowns[kpiId].push(obj2);
-        }
-      }
     }
   }
 
@@ -351,6 +314,7 @@ export class DoraComponent implements OnInit {
     if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     }
+    console.log(kpiId, this.kpiDropdowns[kpiId]);
   }
 
   createAllKpiArray(data, inputIsChartData = false) {
