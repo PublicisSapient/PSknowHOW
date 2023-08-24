@@ -61,8 +61,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long, Map<ObjectId, List<Deployment>>> {
 
-	private static final String MONTH_YEAR_FORMAT = "MMM yyyy";
-
 	@Autowired
 	private ConfigHelperService configHelperService;
 	@Autowired
@@ -304,7 +302,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 						DateUtil.TIME_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 				LocalDateTime dateTime = LocalDateTime.parse(deployment.getStartTime(), formatter);
-				deploymentFrequencyInfo.addMonthList(dateTime.format(DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT)));
+				deploymentFrequencyInfo.addMonthList(DateUtil.getWeekRange(dateTime.toLocalDate()));
 			});
 		}
 	}
