@@ -415,8 +415,6 @@ db.getCollection('kpi_master').deleteMany(
   { "kpiId": "kpi154" }
 );
 
-//----------------7.7.0 Changes ---------------------------
-
 // delete PI Predictability KPI
 db.kpi_master.deleteOne({
     "kpiId": "kpi153"
@@ -446,16 +444,6 @@ db.kpi_master.updateMany(
 
 );
 
-db.kpi_category_mapping.insertMany([
-  {
-    "kpiId": "kpi116",
-    "category": "" // Replace "" with the actual category
-  },
-  {
-    "kpiId": "kpi118",
-    "category": "" // Replace "" with the actual category
-  }
-]);
 // reverse the deployment feq x-axis
 db.kpi_master.updateOne(
   {
@@ -470,3 +458,19 @@ db.kpi_master.updateMany(
    { kpiId: { $in: ["kpi116", "kpi118"] } },
    { $set: { groupId: 1 } }
 )
+
+// Note : below code only For Opensource project
+db.kpi_category_mapping.insertMany([
+  {
+  	"kpiId" : "kpi116",
+  	"categoryId" : "categoryTwo",
+  	"kpiOrder" : 15,
+  	"kanban" : false
+  },
+  {
+  	"kpiId" : "kpi118",
+  	"categoryId" : "categoryThree",
+  	"kpiOrder" : 1,
+  	"kanban" : false
+  },
+]);
