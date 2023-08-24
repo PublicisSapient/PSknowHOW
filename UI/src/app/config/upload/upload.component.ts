@@ -163,6 +163,22 @@ export class UploadComponent implements OnInit {
                 {
                     header: 'Passed Test Case',
                     field: 'passedTestCase'
+                },
+                {
+                    header: 'Automatable Test cases',
+                    field: 'automatableTestCases'
+                },
+                {
+                    header: 'Test Case Automated',
+                    field: 'automatedTestCases'
+                },
+                {
+                    header: 'Total Regression Test cases',
+                    field: 'totalRegressionTestCases'
+                },
+                {
+                    header: 'Regression test cases automated',
+                    field: 'automatedRegressionTestCases'
                 }
             ],
             testExecutionKanbanKeys: [
@@ -181,6 +197,22 @@ export class UploadComponent implements OnInit {
                 {
                     header: 'Passed Test Case',
                     field: 'passedTestCase'
+                },
+                {
+                    header: 'Automatable Test cases',
+                    field: 'automatableTestCases'
+                },
+                {
+                    header: 'Test Case Automated',
+                    field: 'automatedTestCases'
+                },
+                {
+                    header: 'Total Regression Test cases',
+                    field: 'totalRegressionTestCases'
+                },
+                {
+                    header: 'Regression test cases automated',
+                    field: 'automatedRegressionTestCases'
                 }
             ]
         };
@@ -261,13 +293,21 @@ export class UploadComponent implements OnInit {
                     executionDate: new UntypedFormControl(),
                     totalTestCases: new UntypedFormControl(),
                     executedTestCase: new UntypedFormControl(),
-                    passedTestCase: new UntypedFormControl()
+                    passedTestCase: new UntypedFormControl(),
+                    automatedTestCases: new UntypedFormControl(),
+                    automatableTestCases: new UntypedFormControl(),
+                    automatedRegressionTestCases: new UntypedFormControl(),
+                    totalRegressionTestCases: new UntypedFormControl()
                 });
             } else {
                 this.popupForm = new UntypedFormGroup({
                     totalTestCases: new UntypedFormControl(),
                     executedTestCase: new UntypedFormControl(),
-                    passedTestCase: new UntypedFormControl()
+                    passedTestCase: new UntypedFormControl(),
+                    automatedTestCases: new UntypedFormControl(),
+                    automatableTestCases: new UntypedFormControl(),
+                    automatedRegressionTestCases: new UntypedFormControl(),
+                    totalRegressionTestCases: new UntypedFormControl()
                 });
             }
         }
@@ -645,12 +685,20 @@ export class UploadComponent implements OnInit {
             this.popupForm = new UntypedFormGroup({
                 totalTestCases: new UntypedFormControl(data?.totalTestCases ? data?.totalTestCases : ''),
                 executedTestCase: new UntypedFormControl(data?.executedTestCase ? data?.executedTestCase : ''),
-                passedTestCase: new UntypedFormControl(data?.passedTestCase ? data?.passedTestCase : '')
+                passedTestCase: new UntypedFormControl(data?.passedTestCase ? data?.passedTestCase : ''),
+                automatedTestCases: new UntypedFormControl(data?.automatedTestCases ? data?.automatedTestCases : ''),
+                automatableTestCases: new UntypedFormControl(data?.automatableTestCases ? data?.automatableTestCases : ''),
+                automatedRegressionTestCases: new UntypedFormControl(data?.automatedRegressionTestCases ? data?.automatedRegressionTestCases : ''),
+                totalRegressionTestCases: new UntypedFormControl(data?.totalRegressionTestCases ? data?.totalRegressionTestCases : ''),
             });
 
             this.reqObj['totalTestCases'] = data?.totalTestCases;
             this.reqObj['executedTestCase'] = data?.executedTestCase;
             this.reqObj['passedTestCase'] = data?.passedTestCase;
+            this.reqObj['automatedTestCases'] = data?.automatedTestCases;
+            this.reqObj['automatableTestCases'] = data?.automatableTestCases;
+            this.reqObj['automatedRegressionTestCases'] = data?.automatedRegressionTestCases;
+            this.reqObj['totalRegressionTestCases'] = data?.totalRegressionTestCases;
 
         }
         this.enableDisableSubmitButton();
@@ -660,6 +708,10 @@ export class UploadComponent implements OnInit {
         this.reqObj['totalTestCases'] = this.popupForm?.get('totalTestCases').value;
         this.reqObj['executedTestCase'] = this.popupForm?.get('executedTestCase').value;
         this.reqObj['passedTestCase'] = this.popupForm?.get('passedTestCase').value;
+        this.reqObj['automatedTestCases'] = this.popupForm?.get('automatedTestCases').value;
+        this.reqObj['automatableTestCases'] = this.popupForm?.get('automatableTestCases').value;
+        this.reqObj['automatedRegressionTestCases'] = this.popupForm?.get('automatedRegressionTestCases').value;
+        this.reqObj['totalRegressionTestCases'] = this.popupForm?.get('totalRegressionTestCases').value;
         this.http_service.saveTestExecutionPercent(this.reqObj)
             .subscribe(response => {
                 if (response.success) {
