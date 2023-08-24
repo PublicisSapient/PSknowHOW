@@ -328,7 +328,7 @@ public class JiraServiceR {
 			Set<String> storyIDs = jiraIssueReleaseList.stream()
 					.filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(BUG)).map(JiraIssue::getNumber)
 					.collect(Collectors.toSet());
-			fetchSubTaskDefectsRelease(basicProjectConfigId, storyIDs);
+			 subtaskDefectReleaseList = fetchSubTaskDefectsRelease(basicProjectConfigId, storyIDs);
 		}
 	}
 
@@ -396,15 +396,16 @@ public class JiraServiceR {
 		}
 	}
 
-	private void fetchSubTaskDefectsRelease(String projectConfigId, Set<String> storyIDs) {
+	private Set<JiraIssue> fetchSubTaskDefectsRelease(String projectConfigId, Set<String> storyIDs) {
 		ObjectId basicProjectConfigId = new ObjectId(projectConfigId);
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 		if (CollectionUtils.isNotEmpty(storyIDs) && fieldMapping != null
 				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskDefectType())) {
-			subtaskDefectReleaseList = jiraIssueRepository
+			return jiraIssueRepository
 					.findByBasicProjectConfigIdAndDefectStoryIDInAndOriginalTypeIn(projectConfigId, storyIDs,
 							fieldMapping.getJiraSubTaskDefectType());
 		}
+		return new HashSet<>();
 	}
 
 	public JiraIssueReleaseStatus getJiraIssueReleaseForProject() {
