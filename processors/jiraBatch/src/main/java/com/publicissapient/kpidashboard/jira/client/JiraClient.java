@@ -12,7 +12,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;

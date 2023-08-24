@@ -45,7 +45,6 @@ public class MetaDataBoardTasklet implements Tasklet {
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		log.info("**** Metadata fetch started ****");
-//		Map<String, List<ProjectConfFieldMapping>> projConfFieldMapping=new HashMap<>();
 		try {
 			ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 			if (jiraProcessorConfig.isFetchMetadata()) {
@@ -53,7 +52,7 @@ public class MetaDataBoardTasklet implements Tasklet {
 				ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
 				createMetadata.collectMetadata(projConfFieldMapping, client);
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Exception while fetching metadata", e);
 		}
 		log.info("**** Metadata fetch ended ****");

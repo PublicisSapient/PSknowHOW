@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -16,6 +14,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,42 +37,49 @@ public class JobController {
 	Job fetchIssueKanbanBoardJob;
 
 	@Autowired
-	private ProjectBasicConfigRepository projectConfigRepository;
+	private FetchProjectConfiguration fetchProjectConfiguration;
+
+	private static String PROJECT_ID = "projectId";
+	private static String CURRENTTIME = "currentTime";
 
 	@GetMapping("/startscrumboardjob")
 	public String startScrumBoardJob() throws Exception {
-		log.info("Request coming for job");
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findByKanban(false);
-		List<JobParameters> parameterSets = getDynamicParameterSets(allProjects); // Implement this method
+		log.info("Request coming for job for Scrum project configured with board");
+
+		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
+				false, false);
+
+		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
 
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
 			executorService.submit(() -> {
-			try {
-				jobLauncher.run(fetchIssueScrumBoardJob, params);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+				try {
+					jobLauncher.run(fetchIssueScrumBoardJob, params);
+				} catch (Exception e) {
+					log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}",
+							params.getString(PROJECT_ID));
+					e.printStackTrace();
+				}
 			});
 		}
 		executorService.shutdown();
-		return "job started ....";
+		return "Scrum job for boards started ....";
 	}
 
-	private List<JobParameters> getDynamicParameterSets(List<ProjectBasicConfig> allProjects) {
+	private List<JobParameters> getDynamicParameterSets(List<String> scrumBoardbasicProjConfIds) {
 		List<JobParameters> parameterSets = new ArrayList<>();
 
-		for (ProjectBasicConfig project : allProjects) {
+		scrumBoardbasicProjConfIds.forEach(configId -> {
 			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
-
 			// Add dynamic parameters as needed
-			jobParametersBuilder.addString("projectId", String.valueOf(project.getId()));
-			jobParametersBuilder.addLong("currentTime",System.currentTimeMillis());
+			jobParametersBuilder.addString(PROJECT_ID, configId);
+			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
 
 			JobParameters params = jobParametersBuilder.toJobParameters();
 			parameterSets.add(params);
-		}
+		});
 
 		return parameterSets;
 	}
@@ -79,8 +87,9 @@ public class JobController {
 	@GetMapping("/startkanbanboardjob")
 	public String startKanbanJob() throws Exception {
 		log.info("Request coming for job");
-		List<ProjectBasicConfig> allProjects = projectConfigRepository.findByKanban(true);
-		List<JobParameters> parameterSets = getDynamicParameterSets(allProjects); // Implement this method
+		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
+				false, true);
+		List<JobParameters> parameterSets = getDynamicParameterSets(kanbanBoardbasicProjConfIds);
 
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -89,13 +98,14 @@ public class JobController {
 				try {
 					jobLauncher.run(fetchIssueKanbanBoardJob, params);
 				} catch (Exception e) {
+					log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}",
+							params.getString(PROJECT_ID));
 					e.printStackTrace();
 				}
 			});
 		}
 		executorService.shutdown();
-		return "Kanban job started ....";
+		return "Kanban job for boards started ....";
 	}
-
 
 }

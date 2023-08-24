@@ -67,7 +67,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	String boardId = "";
 	List<Issue> issues = new ArrayList<>();
 	Map<String, Map<String, String>> projectBoardWiseDeltaDate;
-	int boardIssueSize=0;
+	int boardIssueSize = 0;
 
 	private String projectId;
 
@@ -75,7 +75,6 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
 		this.projectId = projectId;
 	}
-
 
 	public void initializeReader(String projectId) {
 		log.info("**** Jira Issue fetch started * * *");
@@ -92,56 +91,54 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		try {
-		if (boardIterator == null || !boardIterator.hasNext()) {
+			if (boardIterator == null || !boardIterator.hasNext()) {
 				if (CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
 					boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
 				}
-		}
-		if (issueIterator == null || !issueIterator.hasNext()) {
-			KerberosClient krb5Client = null;
-			List<Issue> epicIssues;
-			ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
-			if (null == issueIterator || boardIssueSize < pageSize) {
-				pageNumber = 0;
-				if (boardIterator.hasNext()) {
-					BoardDetails boardDetails = boardIterator.next();
-					boardId = boardDetails.getBoardId();
-					fetchIssues(krb5Client, client);
-					epicIssues = fetchEpics(krb5Client, client);
-					if (CollectionUtils.isNotEmpty(epicIssues)) {
-						issues.addAll(epicIssues);
+			}
+			if (issueIterator == null || !issueIterator.hasNext()) {
+				KerberosClient krb5Client = null;
+				List<Issue> epicIssues;
+				ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
+				if (null == issueIterator || boardIssueSize < pageSize) {
+					pageNumber = 0;
+					if (boardIterator.hasNext()) {
+						BoardDetails boardDetails = boardIterator.next();
+						boardId = boardDetails.getBoardId();
+						fetchIssues(krb5Client, client);
+						epicIssues = fetchEpics(krb5Client, client);
+						if (CollectionUtils.isNotEmpty(epicIssues)) {
+							issues.addAll(epicIssues);
+						}
 					}
+
+				} else {
+					fetchIssues(krb5Client, client);
 				}
 
-			} else {
-				fetchIssues(krb5Client, client);
+				if (CollectionUtils.isNotEmpty(issues)) {
+					issueIterator = issues.iterator();
+				}
+
+			}
+			if (null != issueIterator && issueIterator.hasNext()) {
+				Issue issue = issueIterator.next();
+				readData = new ReadData();
+				readData.setIssue(issue);
+				readData.setProjectConfFieldMapping(projectConfFieldMapping);
+				readData.setBoardId(boardId);
 			}
 
-			if (CollectionUtils.isNotEmpty(issues)) {
-				issueIterator = issues.iterator();
+			if ((null == projectConfFieldMapping)
+					|| !boardIterator.hasNext() && (!issueIterator.hasNext() && boardIssueSize < pageSize)) {
+				log.info("Data of all projects has been fetched");
+				readData = null;
 			}
-
-		}
-		if (null != issueIterator && issueIterator.hasNext()) {
-			Issue issue = issueIterator.next();
-			readData = new ReadData();
-			readData.setIssue(issue);
-			readData.setProjectConfFieldMapping(projectConfFieldMapping);
-			readData.setBoardId(boardId);
-		}
-
-		if ((null == projectConfFieldMapping) || !boardIterator.hasNext()
-				&& (!issueIterator.hasNext() && boardIssueSize < pageSize)) {
-			log.info("Data of all projects has been fetched");
+		} catch (Exception e) {
+			log.error("Exception while fetching data for the project {}", projectConfFieldMapping.getProjectName(), e);
 			readData = null;
+			// send mail to project admin or superadmin here..
 		}
-	} catch (Exception e) {
-		log.error("Exception while fetching data for the project {}", projectConfFieldMapping.getProjectName(), e);
-		boardIterator = null;
-		issueIterator = null;
-		boardIssueSize=0;
-		//send mail to project admin or superadmin here..
-	}
 		return readData;
 
 	}
@@ -154,7 +151,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 
 		issues = jiraCommonService.fetchIssueBasedOnBoard(projectConfFieldMapping, client, krb5Client, pageNumber,
 				boardId, deltaDate);
-		boardIssueSize=issues.size();
+		boardIssueSize = issues.size();
 		pageNumber += pageSize;
 	}
 
@@ -206,7 +203,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 			} else {
 				String lastSuccessRun = boardWiseDate.get(boardId);
 				log.info("project: {} and board {} found in trace log. Data will be fetched from {}",
-						projectConfFieldMapping.getProjectName(),boardId,lastSuccessRun);
+						projectConfFieldMapping.getProjectName(), boardId, lastSuccessRun);
 				if (!StringUtils.isBlank(lastSuccessRun)) {
 					deltaDate = lastSuccessRun;
 				}
