@@ -403,30 +403,18 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 4}}).forEach(f
     );
 });
 
-// --------------------- Release 7.7 -----------------------------------------------------------------
-// delete mapping for Quality Status and notification enabler
-
-db.field_mapping_structure.deleteMany({
-    "fieldName": { $in: [ "jiraItrQSIssueTypeKPI133", "notificationEnabler"]}
-});
-
-//deleting dailyStandup kpi
-db.getCollection('kpi_master').deleteMany(
-  { "kpiId": "kpi154" }
-);
-
 //----------------7.7.0 Changes ---------------------------
-
-// delete PI Predictability KPI
-db.kpi_master.deleteOne({
-    "kpiId": "kpi153"
-});
-
-
+// delete mapping for Quality Status and notification enabler
 // delete mapping for PI Predictability KPI
 db.field_mapping_structure.deleteMany({
-    "fieldName": { $in: [ "epicPlannedValue", "epicAchievedValue", "jiraIssueEpicTypeKPI153"]}
+    "fieldName": { $in: [ "jiraItrQSIssueTypeKPI133", "notificationEnabler", "epicPlannedValue", "epicAchievedValue", "jiraIssueEpicTypeKPI153","epicLink"]}
 });
+
+
+// delete PI Predictability KPI (153)deleting dailyStandup kpi (154)
+db.getCollection('kpi_master').deleteMany(
+  {"kpiId": { $in: ["kpi153","kpi154"]}}
+);
 
 // delete column config for PI Predictability KPI
 db.kpi_column_configs.deleteOne({
