@@ -435,6 +435,8 @@ div.main {
 :host ::ng-deep .custom-grid .p-datatable thead.sprint,
 :host ::ng-deep .p-datatable thead tr {
   display: block;
+  background: #0175BE;
+    color: #fff;
 }
 
 :host ::ng-deep .p-datatable thead tr th:first-child {
@@ -529,10 +531,18 @@ div.main {
 }
 
 .upload_tep_width {
+  width: calc(100% / 6);
+}
+
+.upload_tep_width_10column {
   width: calc(100% / 10);
 }
 
 .upload_tep_width_kanban {
+  width: calc(100% / 5);
+}
+
+.upload_tep_width_kanban_9column {
   width: calc(100% / 9);
 }
 
@@ -556,6 +566,11 @@ div.main {
 }
 .certupload {
   margin: 0 !important;
+}
+
+:host ::ng-deep .custom-grid .p-datatable .p-datatable-thead > tr > th{
+  text-align: center;
+  vertical-align: text-top;
 }
 
 /*-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Filter css-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/

@@ -138,6 +138,26 @@ export class UploadComponent implements OnInit {
     selectedSprintAssigneFormArray = [];
     selectedSprintAssigneValidator = [];
     jiraAssigneeLoader = false;
+    isAddtionalTestField = false;
+    addtionalTestFieldColumn = [
+        {
+            header: 'Automatable Test cases',
+            field: 'automatableTestCases'
+        },
+        {
+            header: 'Test Case Automated',
+            field: 'automatedTestCases'
+        },
+        {
+            header: 'Total Regression Test cases',
+            field: 'totalRegressionTestCases'
+        },
+        {
+            header: 'Regression test cases automated',
+            field: 'automatedRegressionTestCases'
+        }
+    ]
+
     constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService, private cdr: ChangeDetectorRef) {
     }
 
@@ -164,22 +184,7 @@ export class UploadComponent implements OnInit {
                     header: 'Passed Test Case',
                     field: 'passedTestCase'
                 },
-                {
-                    header: 'Automatable Test cases',
-                    field: 'automatableTestCases'
-                },
-                {
-                    header: 'Test Case Automated',
-                    field: 'automatedTestCases'
-                },
-                {
-                    header: 'Total Regression Test cases',
-                    field: 'totalRegressionTestCases'
-                },
-                {
-                    header: 'Regression test cases automated',
-                    field: 'automatedRegressionTestCases'
-                }
+              
             ],
             testExecutionKanbanKeys: [
                 {
@@ -198,24 +203,11 @@ export class UploadComponent implements OnInit {
                     header: 'Passed Test Case',
                     field: 'passedTestCase'
                 },
-                {
-                    header: 'Automatable Test cases',
-                    field: 'automatableTestCases'
-                },
-                {
-                    header: 'Test Case Automated',
-                    field: 'automatedTestCases'
-                },
-                {
-                    header: 'Total Regression Test cases',
-                    field: 'totalRegressionTestCases'
-                },
-                {
-                    header: 'Regression test cases automated',
-                    field: 'automatedRegressionTestCases'
-                }
             ]
         };
+
+        this.cols.testExecutionKanbanKeys = this.cols.testExecutionKanbanKeys.concat(this.addtionalTestFieldColumn);
+        this.cols.testExecutionScrumKeys = this.cols.testExecutionScrumKeys.concat(this.addtionalTestFieldColumn);
         this.isSuperAdmin = this.getAuthorisation.checkIfSuperUser();
         this.items = [
             {
@@ -708,10 +700,17 @@ export class UploadComponent implements OnInit {
         this.reqObj['totalTestCases'] = this.popupForm?.get('totalTestCases').value;
         this.reqObj['executedTestCase'] = this.popupForm?.get('executedTestCase').value;
         this.reqObj['passedTestCase'] = this.popupForm?.get('passedTestCase').value;
-        this.reqObj['automatedTestCases'] = this.popupForm?.get('automatedTestCases').value;
-        this.reqObj['automatableTestCases'] = this.popupForm?.get('automatableTestCases').value;
-        this.reqObj['automatedRegressionTestCases'] = this.popupForm?.get('automatedRegressionTestCases').value;
-        this.reqObj['totalRegressionTestCases'] = this.popupForm?.get('totalRegressionTestCases').value;
+        if (this.isAddtionalTestField) {
+            this.reqObj['automatedTestCases'] = this.popupForm?.get('automatedTestCases').value;
+            this.reqObj['automatableTestCases'] = this.popupForm?.get('automatableTestCases').value;
+            this.reqObj['automatedRegressionTestCases'] = this.popupForm?.get('automatedRegressionTestCases').value;
+            this.reqObj['totalRegressionTestCases'] = this.popupForm?.get('totalRegressionTestCases').value;
+        }else{
+            this.reqObj['automatedTestCases'] = "NA"
+            this.reqObj['automatableTestCases'] = "NA"
+            this.reqObj['automatedRegressionTestCases'] = "NA"
+            this.reqObj['totalRegressionTestCases'] = "NA";
+        }
         this.http_service.saveTestExecutionPercent(this.reqObj)
             .subscribe(response => {
                 if (response.success) {
@@ -886,10 +885,15 @@ export class UploadComponent implements OnInit {
     }
 
     getTestExecutionData(projectId) {
+        this.isAddtionalTestField = false
         this.http_service.getTestExecutionData(projectId).subscribe((response) => {
             if (response && response?.success && response?.data) {
                 if (this.kanban) {
                     this.testExecutionKanbanData = response?.data;
+                    this.isAddtionalTestField = (this.testExecutionKanbanData[0].automatedTestCases === 'NA' || this.testExecutionKanbanData[0].automatedTestCases === undefined) ? false : true;
+                    if(!this.isAddtionalTestField){
+                        this.cols.testExecutionKanbanKeys = this.cols.testExecutionKanbanKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
+                    }
                     if (this.testExecutionKanbanData?.length > 0) {
                         this.noData = false;
                     } else {
@@ -897,6 +901,10 @@ export class UploadComponent implements OnInit {
                     }
                 } else {
                     this.testExecutionScrumData = response?.data;
+                    this.isAddtionalTestField = (this.testExecutionScrumData[0].automatedTestCases === 'NA' || this.testExecutionScrumData[0].automatedTestCases === undefined) ? false : true;
+                    if(!this.isAddtionalTestField){
+                        this.cols.testExecutionScrumKeys = this.cols.testExecutionScrumKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
+                    }
                     if (this.testExecutionScrumData?.length > 0) {
                         this.noData = false;
                     } else {
