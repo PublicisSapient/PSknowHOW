@@ -1142,7 +1142,7 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
-    "xAxisLabel": "Months",
+    "xAxisLabel": "Weeks",
     "yAxisLabel": "Count",
     "isPositiveTrend": true,
     "showTrend": true,
@@ -3059,7 +3059,6 @@ db.getCollection('kpi_master').insertMany(
       "aggregationCriteria": "sum",
       "isAdditionalFilterSupport": false,
       "calculateMaturity": false
-    }
   },
   {
     "kpiId": "kpi154",
