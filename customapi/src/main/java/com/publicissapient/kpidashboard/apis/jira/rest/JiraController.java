@@ -21,9 +21,13 @@ package com.publicissapient.kpidashboard.apis.jira.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
+import java.util.Objects;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
+import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +74,9 @@ public class JiraController {
 
 	@Autowired
 	private JiraServiceKanbanR jiraServiceKanban;
+
+	@Autowired
+	private AuthExposeAPIService authExposeAPIService;
 
 	@Autowired
 	private CacheService cacheService;
@@ -170,5 +177,42 @@ public class JiraController {
 			response = new ServiceResponse(false, "Error while fetching Assignee List", assigneeResponseDTO);
 		}
 		return response;
+	}
+
+	/**
+	 * This method handles Jira Scrum KPIs request.
+	 *
+	 * @param kpiRequest
+	 * @return List of KPIs with trend and aggregated data.
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/maturity/jira/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<List<KpiElement>> getJiraAggregatedMetricsForMaturity(HttpServletRequest request,
+			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception {// NOSONAR
+
+		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
+		log.info("Received Jira KPI request {}", kpiRequest);
+		ExposeApiToken exposeApiToken = authExposeAPIService.validateToken(request);
+		long jiraRequestStartTime = System.currentTimeMillis();
+		MDC.put("JiraRequestStartTime", String.valueOf(jiraRequestStartTime));
+		if(Objects.nonNull(exposeApiToken)) {
+			cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name(), kpiRequest.getRequestTrackerId());
+			if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
+				throw new MissingServletRequestParameterException("kpiList", "List");
+			}
+
+			List<KpiElement> responseList = jiraService.process(kpiRequest);
+			MDC.put("TotalJiraRequestTime", String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
+
+			log.info("");
+			MDC.clear();
+			if (responseList.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
+			} else {
+				return ResponseEntity.ok().body(responseList);
+			}
+		} else {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		}
 	}
 }
