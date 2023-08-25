@@ -111,8 +111,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     noProjects = false;
     sprintsOverlayVisible : boolean = false;
     kpiCommentsCountObj: object = {};
-    kpiTableHeadingObj:object = {};
+    kpiTableHeadingArr:Array<object> = [{
+        'field': 'kpiName',
+        'header': 'Kpi Name'
+    }];
     kpiTableDataObj:object={};
+    noOfColumns:number = 5;
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -143,7 +147,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
                     for (const key in this.kpiChartData) {
                         this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
-                        this.createTrendsData(key);
+                        // this.createTrendsData(key);
                     }
                 }
                 this.trendBoxColorObj = { ...x };
@@ -151,8 +155,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     const idx = key.lastIndexOf('_');
                     const nodeName = key.slice(0, idx);
                     this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-                    /** initializing tabs for table view */
-                    this.kpiTableHeadingObj[nodeName] = [];
                     this.kpiTableDataObj[nodeName] = [];
                 }
             }
@@ -195,9 +197,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.configGlobalData?.forEach(element => {
             if (element.shown && element.isEnabled) {
                 this.kpiConfigData[element.kpiId] = true;
-                if(!this.kpiTrendsObj.hasOwnProperty(element.kpiId)){
-                    this.createTrendsData(element.kpiId);
-                }
+                // if(!this.kpiTrendsObj.hasOwnProperty(element.kpiId)){
+                //     this.createTrendsData(element.kpiId);
+                // }
             } else {
                 this.kpiConfigData[element.kpiId] = false;
             }
@@ -902,6 +904,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.showKpiTrendIndicator[kpiId] = false;
 
         }
+        console.log(kpiId, this.kpiChartData[kpiId]);
+        
         this.createTrendsData(kpiId, idx);
     }
 
@@ -913,7 +917,23 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }else{
             trendValueList = this.allKpiArray?.filter((x) => x[kpiId] == kpiId)[0]?.trendValueList;
         }
-
+        /**To create KPI table headings */
+        if(this.kpiTableHeadingArr?.length == 0){
+            if(trendValueList?.length > 0){
+                this.noOfColumns = trendValueList?.[0]?.value?.length;
+                let hasFilter = trendValueList[0]?.hasOwnProperty('filter') || trendValueList[0]?.hasOwnProperty('filter1');
+                if(hasFilter){
+                    this.noOfColumns = trendValueList?.[0]?.value[0]?.value?.length;
+                }
+            }
+            for(let i = 0; i < this.noOfColumns; i++){
+                this.kpiTableHeadingArr?.push({'field':i+1, 'header': i+1});
+            }
+            this.kpiTableHeadingArr?.push({'field': 'trend', 'header': 'Trend'});
+            this.kpiTableHeadingArr?.push({'field': 'maturity', 'header': 'Maturity'});
+            console.log(this.kpiTableHeadingArr);
+        }
+        
         if(trendValueList?.length > 0){
             let selectedIdx:number = -1;
             let iterativeEle = JSON.parse(JSON.stringify(trendValueList));
@@ -946,10 +966,22 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 obj['maturity'] = trendData?.maturity;
                 this.kpiTableDataObj[hierarchyName].push(obj);
             })
-         
-            console.log(kpiId, this.kpiTableDataObj);
+        }else{
+            /** when no data available */
+            let obj = {
+                'kpiName': this.allKpiArray[idx]?.kpiName,
+            }
+            for(let i=0; i<this.noOfColumns;i++){
+                obj[i+1] = '-';
+            }
+            obj['latest'] = '-';
+            obj['trend'] = '-';
+            obj['maturity'] = '-';
+            for(let key in this.kpiTableDataObj){
+                this.kpiTableDataObj[key]?.push(obj)
+            }
         }
-        
+        // console.log(kpiId, this.kpiTableDataObj);
     }
 
     createCombinations(arr1, arr2) {
@@ -1344,6 +1376,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     this.kpiTrendsObj[kpiId]?.push(trendObj);
                 }
             }
+            console.log(kpiId, this.kpiTrendsObj[kpiId]);
+            
             this.getTableData(kpiId, idx);
         }
       }
