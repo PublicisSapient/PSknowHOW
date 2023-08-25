@@ -3572,3 +3572,52 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": false
   }
  ]);
+
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+ //DTS-26123 start
+ db.getCollection('field_mapping_structure').insertMany([
+ {
+        "fieldName" : "jiraDefectRejectionStatusKPI155",
+        	"fieldLabel" : "Ticket Rejected/Dropped Status",
+        	"fieldType" : "text",
+        	"fieldCategory" : "workflow",
+        	"section" : "WorkFlow Status Mapping",
+        	"tooltip" : {
+        		"definition" : "Status from workflow on which ticket is considered as Rejected/Dropped."
+        	}
+ },
+ {
+        "fieldName": "jiraDodKPI155",
+        "fieldLabel": "DOD Status",
+        "fieldType": "chips",
+         "fieldCategory": "workflow",
+         "section": "WorkFlow Status Mapping",
+         "tooltip": {
+             "definition": "......."
+         }
+ },
+ {
+        "fieldName": "jiraLiveStatusKPI155",
+         "fieldLabel": "Status to identify Live status",
+         "fieldType": "text",
+         "fieldCategory": "workflow",
+         "section": "WorkFlow Status Mapping",
+         "tooltip": {
+             "definition": "Provide any status from workflow on which Live is considered."
+         }
+ }
+ ]);
+
+ const fieldMappings = db.field_mapping.find({});
+ fieldMappings.forEach(function(fm) {
+ 	db.field_mapping.updateOne({
+             "_id": fm._id
+         }, {
+              $set: {
+ 			  "jiraDefectRejectionStatusKPI155": fm.jiraDefectRejectionStatus,
+ 			  "jiraDodKPI155": fm.jiraDod,
+ 			  "jiraLiveStatusKPI155": fm.jiraLiveStatus
+ 			  }
+         });
+ });
+  //DTS-26123 end

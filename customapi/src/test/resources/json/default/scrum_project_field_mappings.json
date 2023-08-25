@@ -9,7 +9,7 @@
     "basicProjectConfigId":
     "6335363749794a18e8a4479b",
     "sprintName" : "customfield_12700",
-    "jiradefecttype" : [ "Defect" ],
+    "jiradefecttype" : [ "Defect", "Bug" ],
     "jiraIssueTypeNames" : [ "Enabler Story", "Change request", "Defect" ],
     "jiraIssueTypeNamesAVR" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraIssueEpicType" : [ ],
@@ -136,6 +136,9 @@
     "defectPriorityKPI14": [],
     "defectPriorityQAKPI111": [],
     "defectPriorityKPI82": [],
-    "defectPriorityKPI133": []
+    "defectPriorityKPI133": [],
+    "jiraDefectRejectionStatusKPI155" : "Dropped",
+    "jiraDodKPI155" : [ "Done", "Closed" ],
+    "jiraLiveStatusKPI155" : "LIVE"
   }
 ]

@@ -371,6 +371,11 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
 	private List<String> jiraIterationIssuetypeKPI39;
+	//DTS-26123 start
+	private String jiraDefectRejectionStatusKPI155;
+	private List<String> jiraDodKPI155;
+	private String jiraLiveStatusKPI155;
+	//DTS-26123 end
 
 	@Builder.Default
 	private String notificationEnabler="On";
