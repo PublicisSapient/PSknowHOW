@@ -27,7 +27,7 @@ export class DoraComponent implements OnInit {
   serviceObject = {};
   allKpiArray: any = [];
   colorObj = {};
-  chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
+  chartColorList:object = {};
   kpiSelectedFilterObj = {};
   kpiChartData = {};
   noKpis = false;
@@ -73,27 +73,53 @@ export class DoraComponent implements OnInit {
 
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
-      if(sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'dora') {
+      if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'dora') {
         this.allKpiArray = [];
         this.kpiChartData = {};
         this.kpiSelectedFilterObj = {};
         this.kpiDropdowns = {};
         this.sharedObject = sharedobject;
-        if(this.globalConfig || this.service.getDashConfigData()){
+        if (this.globalConfig || this.service.getDashConfigData()) {
           this.receiveSharedData(sharedobject);
         }
         this.noTabAccess = false;
       } else {
         this.noTabAccess = true;
-    }
+      }
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      if(this.sharedObject || this.service.getFilterObject()){
-        this.receiveSharedData(this.service.getFilterObject());
-      }
       this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
       this.processKpiConfigData();
+    }));
+
+    this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
+      if (Object.keys(x).length > 0) {
+        console.log(x);
+        
+        this.colorObj = x;
+        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
+          for (const key in this.kpiChartData) {
+            this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
+          }
+        }
+        this.trendBoxColorObj = { ...x };
+        for (const key in this.trendBoxColorObj) {
+          const idx = key.lastIndexOf('_');
+          const nodeName = key.slice(0, idx);
+          this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+        }
+      }
+      return this.service.passDataToDashboard;
+    }), distinctUntilChanged()).subscribe((sharedobject: any) => {
+      // used to get all filter data when user click on apply button in filter
+      if (sharedobject?.filterData?.length) {
+        this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
+        this.receiveSharedData(sharedobject);
+        this.noTabAccess = false;
+      } else {
+        this.noTabAccess = true;
+      }
     }));
   }
 
@@ -146,6 +172,23 @@ export class DoraComponent implements OnInit {
     );
   }
 
+  generateColorObj(kpiId, arr) {
+    const finalArr = [];
+    if (arr?.length > 0) {
+      this.chartColorList[kpiId] = [];
+      for (let i = 0; i < arr?.length; i++) {
+        for (const key in this.colorObj) {
+          if (this.colorObj[key]?.nodeName == arr[i]?.data) {
+            this.chartColorList[kpiId].push(this.colorObj[key]?.color);
+            finalArr.push(arr.filter((a) => a.data === this.colorObj[key].nodeName)[0]);
+            // break;
+          }
+        }
+      }
+    }
+    return finalArr;
+  }
+
 
   getKpiCommentsCount(kpiId?) {
     let requestObj = {
@@ -168,13 +211,20 @@ export class DoraComponent implements OnInit {
   }
 
   receiveSharedData($event) {
+    this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false;
+    if (localStorage?.getItem('completeHierarchyData')) {
+      const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
+      if (Object.keys(hierarchyData).length > 0 && hierarchyData[this.selectedtype.toLowerCase()]) {
+        this.hierarchyLevel = hierarchyData[this.selectedtype.toLowerCase()];
+      }
+    }
     this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
     this.processKpiConfigData();
     this.masterData = $event.masterData;
     this.filterData = $event.filterData;
     this.filterApplyData = $event.filterApplyData;
     this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
-    if(this.filterData?.length) {
+    if (this.filterData?.length) {
       this.noTabAccess = false;
       const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
       // call kpi request according to tab selected
@@ -185,21 +235,26 @@ export class DoraComponent implements OnInit {
     } else {
       this.noTabAccess = true;
     }
+    if (this.hierarchyLevel && this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelId === 'project') {
+      this.showCommentIcon = true;
+    } else {
+      this.showCommentIcon = false;
+    }
   }
 
   // download excel functionality
-  downloadExcel(kpiId, kpiName, isKanban,additionalFilterSupport) {
-    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport,this.filterApplyData,this.filterData,false);
+  downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport) {
+    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, this.filterApplyData, this.filterData, false);
   }
 
   // Used for grouping all Jenkins kpi from master data and calling jenkins kpi.
   groupJenkinsKpi(kpiIdsForCurrentBoard) {
     this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', 'dora');
     if (this.kpiJenkins?.kpiList?.length > 0) {
-      for(let i = 0; i<this.kpiJenkins?.kpiList?.length; i++){
+      for (let i = 0; i < this.kpiJenkins?.kpiList?.length; i++) {
         this.kpiJenkins.kpiList[i]['filterDuration'] = {
-          duration:'WEEKS',
-          value:5
+          duration: 'WEEKS',
+          value: 5
         }
       }
       this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
@@ -267,19 +322,19 @@ export class DoraComponent implements OnInit {
     const optionsArr = [];
 
     if (idx != -1) {
-        trendValueList = this.allKpiArray[idx]?.trendValueList;
-        if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
-            const obj = {};
-            for (let i = 0; i < trendValueList?.length; i++) {
-                if(trendValueList[i]?.filter?.toLowerCase() != 'overall'){
-                    optionsArr?.push(trendValueList[i]?.filter);
-                }
-            }
-            obj['filterType'] = 'Select a filter';
-            obj['options'] = optionsArr;
-            this.kpiDropdowns[kpiId] = [];
-            this.kpiDropdowns[kpiId].push(obj);
+      trendValueList = this.allKpiArray[idx]?.trendValueList;
+      if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
+        const obj = {};
+        for (let i = 0; i < trendValueList?.length; i++) {
+          if (trendValueList[i]?.filter?.toLowerCase() != 'overall') {
+            optionsArr?.push(trendValueList[i]?.filter);
+          }
         }
+        obj['filterType'] = 'Select a filter';
+        obj['options'] = optionsArr;
+        this.kpiDropdowns[kpiId] = [];
+        this.kpiDropdowns[kpiId].push(obj);
+      }
     }
   }
 
@@ -310,11 +365,15 @@ export class DoraComponent implements OnInit {
         this.kpiChartData[kpiId] = [];
       }
     }
+
+    if (this.colorObj && Object.keys(this.colorObj)?.length > 0) {
+      this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
+    }
+
     // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
     if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     }
-    console.log(kpiId, this.kpiDropdowns[kpiId]);
   }
 
   createAllKpiArray(data, inputIsChartData = false) {
@@ -362,7 +421,7 @@ export class DoraComponent implements OnInit {
             this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
           }
         } else {
-          this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];         
+          this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
         }
       }
     } else {
