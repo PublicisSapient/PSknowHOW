@@ -1,7 +1,5 @@
 package com.publicissapient.kpidashboard.jira.service;
 
-import static net.logstash.logback.argument.StructuredArguments.kv;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,31 +8,18 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
-import org.bson.types.ObjectId;
-import org.codehaus.jettison.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -59,20 +44,15 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.client.CustomAsynchronousIssueRestClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -80,7 +60,6 @@ import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.helper.JiraHelper;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
@@ -90,9 +69,6 @@ import lombok.extern.slf4j.Slf4j;
 public class JiraCommonService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraCommonService.class);
-
-	String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
-	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
 	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
 	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
 	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
@@ -103,11 +79,6 @@ public class JiraCommonService {
 
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
-	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	PSLogData psLogData = new PSLogData();
 
 	private ProcessorJiraRestClient client;
 
@@ -384,210 +355,62 @@ public class JiraCommonService {
 		return null;
 	}
 
-	public List<Issue> fetchIssues(Map.Entry<String, ProjectConfFieldMapping> entry,
-			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, boolean dataExist) throws JSONException {
-
-		List<Issue> totalIssues = new ArrayList<>();
-		ProjectConfFieldMapping projectConfig = entry.getValue();
-
-		PSLogData psLogData = new PSLogData();
-		psLogData.setProjectName(projectConfig.getProjectName());
-		int total = 0;
-		int savedIsuesCount = 0;
+	public List<Issue> fetchIssuesBasedOnJql(ProjectConfFieldMapping projectConfig,
+			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, int pageNumber, String deltaDate) {
 
 		client = clientIncoming;
+		List<Issue> issues = new ArrayList<>();
+		if (client == null) {
+			log.error(MSG_JIRA_CLIENT_SETUP_FAILED);
+		} else {
+			try {
+				// find deltaDate logic : processor successful run :
+				// latestSuccessful run -1 day. First time : last n months data
+				// defined in properties file
 
-		Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
-		JiraHelper.setStartDate(jiraProcessorConfig);
-		boolean processorFetchingComplete = false;
-		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(projectConfig);
-		try {
-			if (projectConfig.isKanban()) {
-				dataExist = (kanbanJiraRepo
-						.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-				psLogData.setKanban("true");
-			} else {
-				dataExist = (jiraIssueRepository
-						.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
-				psLogData.setKanban("false");
+				String queryDate = DateUtil
+						.dateTimeFormatter(DateUtil.stringToLocalDateTime(deltaDate, JiraConstants.QUERYDATEFORMAT)
+								.minusDays(jiraProcessorConfig.getDaysToReduce()), JiraConstants.QUERYDATEFORMAT);
+
+				SearchResult searchResult = getJqlIssues(projectConfig, queryDate, pageNumber);
+				issues = JiraHelper.getIssuesFromResult(searchResult);
+
+			} catch (InterruptedException e) {
+				log.error("Interrupted exception thrown.", e);
 			}
-
-			Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(projectConfig);
-
-			Map<String, LocalDateTime> maxChangeDatesByIssueTypeWithAddedTime = new HashMap<>();
-
-			maxChangeDatesByIssueType.forEach((k, v) -> {
-				long extraMinutes = jiraProcessorConfig.getMinsToReduce();
-				maxChangeDatesByIssueTypeWithAddedTime.put(k, v.minusMinutes(extraMinutes));
-			});
-
-			int pageSize = getPageSize();
-			boolean hasMore = true;
-			String userTimeZone = getUserTimeZone(projectConfig, krb5Client);
-
-			int sprintCount = jiraProcessorConfig.getSprintCountForCacheClean();
-			boolean latestDataFetched = false;
-			Set<SprintDetails> setForCacheClean = new HashSet<>();
-
-			for (int i = 0; hasMore; i += pageSize) {
-				Instant startProcessingJiraIssues = Instant.now();
-				SearchResult searchResult = getIssues(entry, maxChangeDatesByIssueTypeWithAddedTime, userTimeZone, i,
-						dataExist);
-				List<Issue> issues = JiraHelper.getIssuesFromResult(searchResult);
-				totalIssues.addAll(issues);
-				if (total == 0) {
-					total = JiraHelper.getTotal(searchResult);
-					psLogData.setTotalFetchedIssues(String.valueOf(total));
-				}
-
-				// if (CollectionUtils.isNotEmpty(issues)) {
-				// List<JiraIssueCustomHistory> jiraIssueHistoryToSave = new
-				// ArrayList<>();
-				// Set<SprintDetails> sprintDetailsSet=new HashSet<>();
-				// Set<Assignee> assigneeSetToSave = new HashSet<>();
-				// boolean dataFromBoard =false;
-				// List<JiraIssue> jiraIssues =
-				// transformFetchedIssue.convertToJiraIssue(issues,
-				// projectConfig, dataFromBoard,
-				// jiraIssueHistoryToSave,sprintDetailsSet,assigneeSetToSave);
-				// Set<AccountHierarchy>
-				// createAccountHierarchySet=createAccountHierarchy.createAccountHierarchy(jiraIssues,projectConfig);
-				// List<SprintDetails> sprintDetailsList =new ArrayList<>();
-				// //now we will be putting setCacheClean in fetchSprints fn
-				// if (!dataFromBoard) {
-				// sprintDetailsList=fetchSprintReport.fetchSprints(projectConfig,sprintDetailsSet,setForCacheClean,krb5Client);
-				// }
-				// AssigneeDetails
-				// assigneeDetails=createAssigneeDetails.createAssigneeDetails(projectConfig,assigneeSetToSave);
-				// saveData.saveData(jiraIssues,jiraIssueHistoryToSave,sprintDetailsList,createAccountHierarchySet,assigneeDetails,null,null,null);
-				// JiraHelper.findLastSavedJiraIssueByType(jiraIssues,lastSavedJiraIssueChangedDateByType);
-				// savedIsuesCount += issues.size();
-				// savingIssueLogs(savedIsuesCount, jiraIssues,
-				// startProcessingJiraIssues,false,psLogData);
-				// }
-
-				if (!dataExist && !latestDataFetched && setForCacheClean.size() > sprintCount) {
-					latestDataFetched = cleanCache();
-					setForCacheClean.clear();
-					log.info("latest sprint fetched cache cleaned.");
-				}
-
-				if (issues.size() < pageSize) {
-					break;
-				}
-			}
-			processorFetchingComplete = true;
 		}
-		// catch (JSONException e) {
-		// log.error("Error while updating Story information in scrum client",
-		// e,
-		// kv(CommonConstant.PSLOGDATA, psLogData));
-		// lastSavedJiraIssueChangedDateByType.clear();
-		// processorFetchingComplete = false;
-		// }
-		catch (InterruptedException e) {
-			log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
-			lastSavedJiraIssueChangedDateByType.clear();
-			processorFetchingComplete = false;
-		} finally {
-			validateData.check(total, savedIsuesCount, processorFetchingComplete, psLogData,
-					lastSavedJiraIssueChangedDateByType, projectConfig, processorExecutionTraceLog);
-		}
-		return totalIssues;
+		return issues;
 	}
 
-	private Map<String, LocalDateTime> getLastChangedDatesByIssueType(ProjectConfFieldMapping projectConfig) {
-		ObjectId basicProjectConfigId = projectConfig.getBasicProjectConfigId();
-		FieldMapping fieldMapping = projectConfig.getFieldMapping();
-		ProjectBasicConfig projectBasicConfig = projectConfig.getProjectBasicConfig();
-
-		String[] jiraIssueTypeNames = fieldMapping.getJiraIssueTypeNames();
-		Set<String> uniqueIssueTypes = new HashSet<>(Arrays.asList(jiraIssueTypeNames));
-
-		Map<String, LocalDateTime> lastUpdatedDateByIssueType = new HashMap<>();
-
-		List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService
-				.getTraceLogs(ProcessorConstants.JIRA, basicProjectConfigId.toHexString());
-		ProcessorExecutionTraceLog projectTraceLog = null;
-
-		if (CollectionUtils.isNotEmpty(traceLogs)) {
-			projectTraceLog = traceLogs.get(0);
-		}
-		LocalDateTime configuredStartDate = LocalDateTime.parse(jiraProcessorConfig.getStartDate(),
-				DateTimeFormatter.ofPattern(QUERYDATEFORMAT));
-
-		for (String issueType : uniqueIssueTypes) {
-
-			if (projectTraceLog != null) {
-				Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType = projectTraceLog
-						.getLastSavedEntryUpdatedDateByType();
-				if (MapUtils.isNotEmpty(lastSavedEntryUpdatedDateByType)) {
-					LocalDateTime maxDate = lastSavedEntryUpdatedDateByType.get(issueType);
-					lastUpdatedDateByIssueType.put(issueType, maxDate != null ? maxDate : configuredStartDate);
-				} else {
-					lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
-				}
-
-				// When toggle is On first time it will update
-				// lastUpdatedDateByIssueType to start date
-				JiraHelper.setLastUpdatedDateToStartDate(projectBasicConfig, lastUpdatedDateByIssueType,
-						projectTraceLog, configuredStartDate, issueType);
-
-			} else {
-				lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
-			}
-
-		}
-
-		return lastUpdatedDateByIssueType;
-	}
-
-	private SearchResult getIssues(Map.Entry<String, ProjectConfFieldMapping> entry,
-			Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart, boolean dataExist)
+	private SearchResult getJqlIssues(ProjectConfFieldMapping projectConfig, String deltaDate, int pageStart)
 			throws InterruptedException {
-		ProjectConfFieldMapping projectConfig = entry.getValue();
 		SearchResult searchResult = null;
-
+		String[] jiraIssueTypeNames = projectConfig.getFieldMapping().getJiraIssueTypeNames();
 		if (client == null) {
 			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
 		} else if (StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())
-				|| StringUtils.isEmpty(projectConfig.getProjectToolConfig().getBoardQuery())) {
-			log.info("Either Project key is empty or boardQuery not provided. key {} boardquery {}",
+				|| StringUtils.isEmpty(projectConfig.getProjectToolConfig().getBoardQuery())
+				|| null == jiraIssueTypeNames) {
+			log.error(
+					"Either Project key is empty or Jql Query not provided or jiraIssueTypeNames not configured in fieldmapping . key {} jql query {} ",
 					projectConfig.getProjectToolConfig().getProjectKey(),
 					projectConfig.getProjectToolConfig().getBoardQuery());
 		} else {
+			String issueTypes = Arrays.stream(jiraIssueTypeNames)
+					.map(array -> "\"" + String.join("\", \"", array) + "\"").collect(Collectors.joining(", "));
 			StringBuilder query = new StringBuilder("project in (")
-					.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") AND ");
+					.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") and ");
 			try {
-				Map<String, String> startDateTimeStrByIssueType = new HashMap<>();
+				String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase()
+						.split(JiraConstants.ORDERBY)[0];
+				query.append(userQuery);
+				query.append(" and issuetype in (" + issueTypes + " ) and updatedDate>='" + deltaDate + "' ");
+				query.append(" order BY updated asc");
 
-				startDateTimeByIssueType.forEach((type, localDateTime) -> {
-					ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of(userTimeZone));
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
-					String dateTimeStr = zonedDateTime.format(formatter);
-					startDateTimeStrByIssueType.put(type, dateTimeStr);
-
-				});
-
-				query.append(JiraProcessorUtil.processJql(projectConfig.getJira().getBoardQuery(),
-						startDateTimeStrByIssueType, dataExist));
-				psLogData.setUserTimeZone(userTimeZone);
-				psLogData.setSprintId(null);
-				psLogData.setJql(query.toString());
-				Instant start = Instant.now();
+				log.info("jql query :{}", query);
 				Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
-				psLogData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
-				log.debug("jql query processed for JQL", kv(CommonConstant.PSLOGDATA, psLogData));
-				if (searchResult != null) {
-					psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
-					psLogData.setAction(CommonConstant.FETCHING_ISSUE);
-					log.info(String.format("Processing issues %d - %d out of %d", pageStart,
-							Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
-							kv(CommonConstant.PSLOGDATA, psLogData));
-				}
-				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 			} catch (RestClientException e) {
 				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
 					log.error(ERROR_MSG_401);
@@ -608,31 +431,45 @@ public class JiraCommonService {
 
 		client = clientIncoming;
 		List<Issue> issues = new ArrayList<>();
-		try {
-			// find deltaDate logic : processor successful run :
-			// latestSuccessful run -1 hour. First time : last n months data
-			// defined in properties file
-			String queryDate = JiraHelper.getDeltaDate(deltaDate);
+		if (client == null) {
+			log.error(MSG_JIRA_CLIENT_SETUP_FAILED);
+		} else {
+			try {
+				// find deltaDate logic : processor successful run :
+				// latestSuccessful run -1 day. First time : last n months data
+				// defined in properties file
 
-			SearchResult searchResult = getIssues(boardId, projectConfig, queryDate, pageNumber);
-			issues = JiraHelper.getIssuesFromResult(searchResult);
+				String queryDate = DateUtil
+						.dateTimeFormatter(DateUtil.stringToLocalDateTime(deltaDate, JiraConstants.QUERYDATEFORMAT)
+								.minusDays(jiraProcessorConfig.getDaysToReduce()), JiraConstants.QUERYDATEFORMAT);
 
-		} catch (InterruptedException e) {
-			log.error("Interrupted exception thrown.", e);
+				SearchResult searchResult = getBoardIssues(boardId, projectConfig, queryDate, pageNumber);
+				issues = JiraHelper.getIssuesFromResult(searchResult);
+
+			} catch (InterruptedException e) {
+				log.error("Interrupted exception thrown.", e);
+			}
 		}
 		return issues;
 	}
 
-	public SearchResult getIssues(String boardId, ProjectConfFieldMapping projectConfig,
-			String startDateTimeByIssueType, int pageStart) throws InterruptedException {
+	public SearchResult getBoardIssues(String boardId, ProjectConfFieldMapping projectConfig, String deltaDate,
+			int pageStart) throws InterruptedException {
 		SearchResult searchResult = null;
-
+		String[] jiraIssueTypeNames = projectConfig.getFieldMapping().getJiraIssueTypeNames();
 		if (client == null) {
 			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
+		} else if (StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())
+				|| null == jiraIssueTypeNames) {
+			log.error("Either Project key is empty or jiraIssueTypeNames not provided. key {} ",
+					projectConfig.getProjectToolConfig().getProjectKey());
 		} else {
+			String issueTypes = Arrays.stream(jiraIssueTypeNames)
+					.map(array -> "\"" + String.join("\", \"", array) + "\"").collect(Collectors.joining(", "));
 			String query = StringUtils.EMPTY;
 			try {
-				query = "updatedDate>='" + startDateTimeByIssueType + "' order by updatedDate asc";
+				query = "issuetype in (" + issueTypes + " ) and updatedDate>='" + deltaDate
+						+ "' order by updatedDate asc";
 				CustomAsynchronousIssueRestClient issueRestClient = client.getCustomIssueClient();
 				Promise<SearchResult> promisedRs = issueRestClient.searchBoardIssue(boardId, query,
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);

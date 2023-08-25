@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @StepScope
-public class MetaDataBoardTasklet implements Tasklet {
+public class MetaDataTasklet implements Tasklet {
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
 
@@ -38,7 +38,7 @@ public class MetaDataBoardTasklet implements Tasklet {
 	private String projectId;
 
 	@Autowired
-	public MetaDataBoardTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
+	public MetaDataTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
 		this.projectId = projectId;
 	}
 

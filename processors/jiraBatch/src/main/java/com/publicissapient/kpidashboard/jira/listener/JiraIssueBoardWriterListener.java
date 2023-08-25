@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class JiraIssueWriterListener implements ItemWriteListener<CompositeResult> {
+public class JiraIssueBoardWriterListener implements ItemWriteListener<CompositeResult> {
 
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;

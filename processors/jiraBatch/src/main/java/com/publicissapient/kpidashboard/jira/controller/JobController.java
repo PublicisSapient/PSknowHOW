@@ -31,6 +31,10 @@ public class JobController {
 	@Qualifier("fetchIssueScrumBoardJob")
 	@Autowired
 	Job fetchIssueScrumBoardJob;
+	
+	@Qualifier("fetchIssueScrumJqlJob")
+	@Autowired
+	Job fetchIssueScrumJqlJob;
 
 	@Qualifier("fetchIssueKanbanBoardJob")
 	@Autowired
@@ -67,6 +71,33 @@ public class JobController {
 		executorService.shutdown();
 		return "Scrum job for boards started ....";
 	}
+	
+	@GetMapping("/startscrumjqljob")
+	public String startScrumJqlJob() throws Exception {
+		log.info("Request coming for job for Scrum project configured with JQL");
+
+		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
+				true, false);
+
+		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
+
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+		for (JobParameters params : parameterSets) {
+			executorService.submit(() -> {
+				try {
+					jobLauncher.run(fetchIssueScrumJqlJob, params);
+				} catch (Exception e) {
+					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}",
+							params.getString(PROJECT_ID));
+					e.printStackTrace();
+				}
+			});
+		}
+		executorService.shutdown();
+		return "Scrum job for boards started ....";
+	}
+	
 
 	private List<JobParameters> getDynamicParameterSets(List<String> scrumBoardbasicProjConfIds) {
 		List<JobParameters> parameterSets = new ArrayList<>();

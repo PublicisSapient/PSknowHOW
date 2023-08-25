@@ -79,6 +79,7 @@ public final class JiraConstants {
     public static final String USER="User";
     public static final String SPACE=" ";
     public static final String EPIC="Epic";
+    public static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
 
     static {
         ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");

@@ -331,6 +331,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		String createdDate = issue.getCreationDate().toString();
 		jiraIssue.setNumber(JiraProcessorUtil.deodeUTF8String(issue.getKey()));
 		jiraIssue.setName(JiraProcessorUtil.deodeUTF8String(issue.getSummary()));
+		log.info("Issue : {}",jiraIssue.getNumber());
 		jiraIssue.setStatus(JiraProcessorUtil.deodeUTF8String(status));
 		jiraIssue.setState(JiraProcessorUtil.deodeUTF8String(status));
 

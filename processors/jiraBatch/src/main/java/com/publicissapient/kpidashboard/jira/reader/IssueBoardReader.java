@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.jira.reader;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
@@ -86,7 +88,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	public ReadData read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
 
 		if (null == projectConfFieldMapping) {
-			log.info("Gathering data for batch");
+			log.info("Gathering data for batch - Scrum projects with Board configuration");
 			initializeReader(projectId);
 		}
 		ReadData readData = null;
@@ -131,7 +133,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 
 			if ((null == projectConfFieldMapping)
 					|| !boardIterator.hasNext() && (!issueIterator.hasNext() && boardIssueSize < pageSize)) {
-				log.info("Data of all projects has been fetched");
+				log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
 				readData = null;
 			}
 		} catch (Exception e) {
@@ -155,7 +157,9 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	}
 
 	private String getDeltaDateFromTraceLog() {
-		String deltaDate = jiraProcessorConfig.getStartDate();
+		String deltaDate = DateUtil.dateTimeFormatter(
+				LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()),
+				JiraConstants.QUERYDATEFORMAT);
 		if (MapUtils.isEmpty(projectBoardWiseDeltaDate) || MapUtils
 				.isEmpty(projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
 			log.info("fetching project status from trace log for project: {} board id :{}",
@@ -166,7 +170,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 			if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 				projectBoardWiseDeltaDate = new HashMap<>();
 				Map<String, String> boardWiseDate = new HashMap<>();
-				String lastSuccessfulRun = jiraProcessorConfig.getStartDate();
+				String lastSuccessfulRun = deltaDate;
 				for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
 					lastSuccessfulRun = processorExecutionTraceLog.getLastSuccessfulRun();
 					if (!StringUtils.isBlank(processorExecutionTraceLog.getBoardId())) {
@@ -180,7 +184,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 							"project: {} found but board {} not found in trace log so data will be fetched from beginning",
 							projectConfFieldMapping.getProjectName(), boardId);
 					if (null == lastSuccessfulRun) {
-						lastSuccessfulRun = jiraProcessorConfig.getStartDate();
+						lastSuccessfulRun = deltaDate;
 					}
 					boardWiseDate.put("noBoard", lastSuccessfulRun);
 				}

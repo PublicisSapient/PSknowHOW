@@ -53,8 +53,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class JiraProcessorUtil {
 
-    private static final JiraProcessorUtil INSTANCE = new JiraProcessorUtil();
-
     // not static because not thread safe
     private static final String SPRINT_SPLIT = "(?=,\\w+=)";
     private static final String NULL_STR = "null";
@@ -353,71 +351,6 @@ public final class JiraProcessorUtil {
         return stringBuilder.toString();
     }
 
-    /**
-     * process jql
-     *
-     * @param query                       jqlquery
-     * @param startDateTimeStrByIssueType datewise issuetype map
-     * @param dataExist                   data already exist in db or not
-     * @return processed JQL
-     */
-    public static String processJql(String query, Map<String, String> startDateTimeStrByIssueType, boolean dataExist) {
-
-        String finalQuery = StringUtils.EMPTY;
-        if (StringUtils.isEmpty(query) || startDateTimeStrByIssueType == null) {
-            return finalQuery;
-        }
-        query = query.toLowerCase().split(JiraConstants.ORDERBY)[0];
-        StringBuilder issueTypeDateQuery = new StringBuilder();
-
-        int size = startDateTimeStrByIssueType.entrySet().size();
-        int count = 0;
-        issueTypeDateQuery.append(" (");
-        for (Map.Entry<String, String> entry : startDateTimeStrByIssueType.entrySet()) {
-            count++;
-            String type = entry.getKey();
-            String dateTime = entry.getValue();
-
-            issueTypeDateQuery.append("(issuetype IN ('" + type + "') AND updatedDate>='" + dateTime + "')");
-            if (count < size) {
-                issueTypeDateQuery.append(" OR ");
-            }
-        }
-
-        issueTypeDateQuery.append(") ");
-
-        if (dataExist) {
-            if (StringUtils.containsIgnoreCase(query, JiraConstants.UPDATEDDATE)) {
-                finalQuery = replaceDateQuery(query, issueTypeDateQuery.toString());
-            } else {
-                finalQuery = appendDateQuery(issueTypeDateQuery.toString(), "AND " + query);
-            }
-        } else {
-            if (StringUtils.containsIgnoreCase(query, JiraConstants.UPDATEDDATE)) {
-                finalQuery = appendDateQuery(query, "");
-            } else {
-                finalQuery = appendDateQuery(issueTypeDateQuery.toString(), "AND " + query);
-            }
-        }
-
-        return finalQuery;
-    }
-
-    /**
-     * append pre and post query
-     *
-     * @param preQuery
-     * @param postQuery
-     * @return appended query
-     */
-    private static String appendDateQuery(String preQuery, String postQuery) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(preQuery);
-        sb.append(" ");
-        sb.append(postQuery);
-        sb.append(" ORDER BY updated DESC");
-        return sb.toString();
-    }
 
     /**
      * find project key from query
@@ -438,19 +371,6 @@ public final class JiraProcessorUtil {
         return projectKey;
     }
 
-    /**
-     * replace updated date
-     *
-     * @param preQuery
-     * @param postQuery
-     * @return replaced query
-     */
-    private static String replaceDateQuery(String preQuery, String postQuery) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(preQuery.replace(JiraConstants.UPDATEDDATE, postQuery));
-        sb.append(" ORDER BY updated DESC");
-        return sb.toString();
-    }
 
     public static String convertToNewFormat(String dateStr) {
         TimeZone utc = TimeZone.getTimeZone("UTC");
