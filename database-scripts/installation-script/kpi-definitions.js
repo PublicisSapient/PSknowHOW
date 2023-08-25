@@ -682,7 +682,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 15,
     "kpiSource": "Jenkins",
-    "groupId": 1,
+    "groupId": 14,
     "thresholdValue": 0,
     "kanban": false,
     "chartType": "line",
@@ -905,7 +905,6 @@ db.getCollection('kpi_master').insertMany(
     "groupId": 2,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "grouped_column_plus_line",
     "kpiInfo": {
       "definition": "Measures the rate of delivery across Sprints. Average velocity is calculated for the latest 5 sprints",
       "details": [
@@ -1126,7 +1125,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 25,
     "kpiSource": "Jenkins",
-    "groupId": 1,
+    "groupId": 14,
     "thresholdValue": 0,
     "kanban": false,
     "chartType": "line",
