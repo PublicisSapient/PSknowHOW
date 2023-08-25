@@ -323,14 +323,15 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	@Override
 	public boolean deleteTool(String basicProjectConfigId, String projectToolId) {
 
-		ProjectToolConfig tool = toolRepository.findById(projectToolId);
+		List<ProjectToolConfig> toolList = toolRepository
+				.findByBasicProjectConfigId(new ObjectId(basicProjectConfigId));
+		ProjectToolConfig tool = toolList.stream()
+				.filter(projectToolConfig -> projectToolConfig.getId().equals(new ObjectId(projectToolId))).findFirst()
+				.get();
 		if (isValidTool(basicProjectConfigId, tool)) {
-			if (isRepoTool(tool)) {
-				String connectionId = tool.getConnectionId().toString();
-				if (!repoToolsConfigService.updateRepoToolProjectConfiguration(basicProjectConfigId,
-						new ObjectId(connectionId))) {
-					return false;
-				}
+			if (isRepoTool(tool) && !repoToolsConfigService.updateRepoToolProjectConfiguration(toolList,
+					tool.getConnectionId(), basicProjectConfigId)) {
+				return false;
 			}
 			cleanData(tool);
 			toolRepository.deleteById(new ObjectId(projectToolId));

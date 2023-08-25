@@ -1,12 +1,9 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import java.text.DecimalFormat;
-import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,10 +15,14 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -39,12 +40,6 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -97,7 +92,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 
 			Filters filters = Filters.getFilter(k);
 			if (Filters.PROJECT == filters) {
-				projectWiseLeafNodeValue(kpiElement, mapTmp, v);
+				projectWiseLeafNodeValue(kpiElement, mapTmp, v, kpiRequest);
 			}
 
 		});
@@ -128,17 +123,19 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 	}
 
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
-			List<Node> projectLeafNodeList) {
+			List<Node> projectLeafNodeList, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
-		LocalDateTime localStartDate = LocalDateTime.now().minusDays(69);
-		LocalDateTime localEndDate = LocalDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
-		String startDate = localStartDate.format(formatter);
-		String endDate = localEndDate.format(formatter);
+		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
+		LocalDate localStartDate = dateRange.getStartDate();
+		LocalDate localEndDate = dateRange.getEndDate();
+
+		Integer dataPoints = NumberUtils.isCreatable(kpiRequest.getIds()[0]) ? Integer.parseInt(kpiRequest.getIds()[0])
+				: 5;
+		String duration = kpiRequest.getSelectedMap().get(CommonConstant.date).get(0);
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-		List<MergeRequests> mergeRequestsList = fetchKPIDataFromDb(projectLeafNodeList, startDate, endDate, null);
+		List<MergeRequests> mergeRequestsList = fetchKPIDataFromDb(projectLeafNodeList, localStartDate.toString(), localEndDate.toString(), null);
 
 		// converting to map with keys collectorItemId
 		Map<ObjectId, List<MergeRequests>> mergeRequestsListItemId = mergeRequestsList.stream()
@@ -147,7 +144,6 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		List<KPIExcelData> excelData = new ArrayList<>();
 		projectLeafNodeList.stream().forEach(node -> {
 			String projectName = node.getProjectFilter().getName();
-			LocalDateTime end = localEndDate;
 
 			ProjectFilter accountHierarchyData = node.getProjectFilter();
 			ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
@@ -175,16 +171,16 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 						aggMergeRequests.addAll(mergeReqList);
 
 						String branchName = getBranchSubFilter(repo, projectName);
-						setWeekWiseMeanTimeToMerge(mergeReqList, end, excelDataLoader, branchName, projectName,
-								aggDataMap);
+						setWeekWiseMeanTimeToMerge(mergeReqList, excelDataLoader, branchName, projectName,
+								aggDataMap, duration, dataPoints);
 						repoWiseMRList.add(excelDataLoader);
 						repoList.add(repo.getUrl());
 						branchList.add(repo.getBranch());
 					}
 				}
 			});
-			setWeekWiseMeanTimeToMerge(aggMergeRequests, end, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
-					aggDataMap);
+			setWeekWiseMeanTimeToMerge(aggMergeRequests, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
+					aggDataMap, duration, dataPoints);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 			populateExcelDataObject(requestTrackerId, repoWiseMRList, repoList, branchList, excelData, node);
 		});
@@ -192,39 +188,29 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		kpiElement.setExcelColumns(KPIExcelColumn.MEAN_TIME_TO_MERGE.getColumns());
 	}
 
-	private void setWeekWiseMeanTimeToMerge(List<MergeRequests> mergeReqList, LocalDateTime end,
-			Map<String, Double> excelDataLoader, String branchName, String projectName,
-			Map<String, List<DataCount>> aggDataMap) {
-		LocalDate endDateTime = end.toLocalDate();
+	private void setWeekWiseMeanTimeToMerge(List<MergeRequests> mergeReqList, Map<String, Double> excelDataLoader, String branchName, String projectName,
+			Map<String, List<DataCount>> aggDataMap, String duration, Integer dataPoints) {
 		List<Double> valueForCurrentLeafList = new ArrayList<>();
 		Map<String, Double> weekRange = new TreeMap<>();
-		for (int i = 0; i < customApiConfig.getRepoXAxisCount(); i++) {
+		LocalDate currentDate = LocalDate.now();
+		for (int i = 0; i < dataPoints; i++) {
+			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
 			List<Double> durationList = new ArrayList<>();
-			LocalDate monday = endDateTime;
-			while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
-				monday = monday.minusDays(1);
-			}
-			LocalDate sunday = endDateTime;
-			while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
-				sunday = sunday.plusDays(1);
-			}
 			for (MergeRequests mergeReq : mergeReqList) {
 				LocalDate closedDate = Instant.ofEpochMilli(mergeReq.getClosedDate()).atZone(ZoneId.systemDefault())
 						.toLocalDate();
-				if (closedDate.isAfter(monday) && closedDate.isBefore(sunday)) {
-					double duration = (double) (mergeReq.getClosedDate()) - mergeReq.getCreatedDate();
-					durationList.add(duration);
+				if (closedDate.compareTo(dateRange.getStartDate()) >= 0 && closedDate.compareTo(dateRange.getEndDate()) <= 0) {
+					double mergeDuration = (double) (mergeReq.getClosedDate()) - mergeReq.getCreatedDate();
+					durationList.add(mergeDuration);
 				}
 			}
-			String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT) + WEEK_SEPERATOR
-					+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+			String date = getDateRange(dateRange, duration);
 			Double valueForCurrentLeaf = ObjectUtils.defaultIfNull(AggregationUtils.average(durationList), 0.0d);
 			if (null != valueForCurrentLeaf) {
 				valueForCurrentLeafList.add(valueForCurrentLeaf);
 				weekRange.put(date, valueForCurrentLeaf);
 			}
-			endDateTime = endDateTime.minusWeeks(1);
+			currentDate = getNextRangeDate(duration, currentDate);
 		}
 		aggDataMap.putIfAbsent(branchName, new ArrayList<>());
 		weekRange.forEach((week, value) -> {
@@ -232,6 +218,28 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			aggDataMap.get(branchName).add(dataCount);
 			excelDataLoader.put(week, (double) TimeUnit.MILLISECONDS.toHours(value.longValue()));
 		});
+	}
+
+	private String getDateRange(CustomDateRange dateRange, String duration) {
+		String range = null;
+		if (CommonConstant.WEEK.equalsIgnoreCase(duration)) {
+			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT);
+		} else {
+			range = dateRange.getStartDate().toString();
+		}
+		return range;
+	}
+
+	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
+			currentDate = currentDate.minusWeeks(1);
+		} else {
+			currentDate = currentDate.minusDays(1);
+		}
+		return currentDate;
 	}
 
 	/**

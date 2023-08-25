@@ -13,8 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import springfox.documentation.spring.web.json.Json;
 
+import java.net.URI;
 import java.util.List;
 
+/**
+ * rest template for repo tools
+ */
 public class RepoToolsClient {
 
 	private RestTemplate restTemplate;
@@ -30,68 +34,94 @@ public class RepoToolsClient {
 		this.restTemplate = new RestTemplate();
 	}
 
-	public int enrollProjectCall(RepoToolConfig repoToolConfig, String REPO_TOOLSUrl, String apiKey) {
+	/**
+	 * enroll project
+	 * @param repoToolConfig
+	 * @param repoToolsUrl
+	 * @param apiKey
+	 * @return http status
+	 */
+	public int enrollProjectCall(RepoToolConfig repoToolConfig, String repoToolsUrl, String apiKey) {
 		setHttpHeaders(apiKey);
 		Gson gson = new Gson();
 		String payload = gson.toJson(repoToolConfig);
+		URI url = URI.create(repoToolsUrl + REPO_TOOLS_ENROLL_URL);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
-		ResponseEntity<String> response = restTemplate.exchange(REPO_TOOLSUrl + REPO_TOOLS_ENROLL_URL, HttpMethod.POST,
-				entity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 		return response.getStatusCode().value();
 	}
 
-	public int deleteRepositories(String masterSystemId, String REPO_TOOLSUrl, String apiKey) {
-		String deleteRepoUrl = String.format(REPO_TOOLS_DELETE_REPO_URL, masterSystemId);
-		setHttpHeaders(apiKey);
-		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-		ResponseEntity<String> response = restTemplate.exchange(REPO_TOOLSUrl + deleteRepoUrl, HttpMethod.DELETE,
-				entity, String.class);
-		return response.getStatusCode().value();
-
-	}
-
-	public int triggerScanCall(String projectKey, String REPO_TOOLSUrl, String apiKey) {
+	/**
+	 * scann a project
+	 * @param projectKey
+	 * @param repoToolsUrl
+	 * @param apiKey
+	 * @return http status
+	 */
+	public int triggerScanCall(String projectKey, String repoToolsUrl, String apiKey) {
 		setHttpHeaders(apiKey);
 		String triggerScanUrl = String.format(REPO_TOOLS_TRIGGER_SCAN_URL, projectKey);
+		URI url = URI.create(repoToolsUrl + triggerScanUrl);
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-		ResponseEntity<String> response = restTemplate.exchange(REPO_TOOLSUrl + triggerScanUrl, HttpMethod.GET, entity,
-				String.class);
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 		return response.getStatusCode().value();
 
 	}
 
-	public RepoToolKpiBulkMetricResponse kpiMetricCall(String REPO_TOOLSKpiUrl, String apiKey,
+	/**
+	 * get kpi data of a project
+	 * @param repoToolsUrl
+	 * @param apiKey
+	 * @param repoToolKpiRequestBody
+	 * @return kpi data
+	 */
+	public RepoToolKpiBulkMetricResponse kpiMetricCall(String repoToolsUrl, String apiKey,
 			RepoToolKpiRequestBody repoToolKpiRequestBody) {
 		setHttpHeaders(apiKey);
 		Gson gson = new Gson();
 		String payload = gson.toJson(repoToolKpiRequestBody);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
-		ResponseEntity<RepoToolKpiBulkMetricResponse> response = restTemplate.exchange(REPO_TOOLSKpiUrl, HttpMethod.POST,
-				entity, RepoToolKpiBulkMetricResponse.class);
+		ResponseEntity<RepoToolKpiBulkMetricResponse> response = restTemplate.exchange(URI.create(repoToolsUrl),
+				HttpMethod.POST, entity, RepoToolKpiBulkMetricResponse.class);
 		return response.getBody();
 
 	}
 
-	public List<RepoToolKpiMetricResponse> kpiMetricRepoActivityCall(String projectKey, String REPO_TOOLSKpiUrl,
-			String apiKey) {
-		setHttpHeaders(apiKey);
-		REPO_TOOLSKpiUrl = String.format(REPO_TOOLSKpiUrl, projectKey);
-		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-		ResponseEntity<RepoToolKpiBulkMetricResponse> response = restTemplate.exchange(REPO_TOOLSKpiUrl, HttpMethod.GET,
-				entity, RepoToolKpiBulkMetricResponse.class);
-		RepoToolKpiBulkMetricResponse repoToolKpiBulkMetricResponse = response.getBody();
-		return repoToolKpiBulkMetricResponse.getValues().get(0);
-
-	}
-
-	public int deleteProject(String REPO_TOOLSUrl, String apiKey) {
+	/**
+	 * delete a project
+	 * @param repoToolsUrl
+	 * @param apiKey
+	 * @return http status
+	 */
+	public int deleteProject(String repoToolsUrl, String apiKey) {
 		setHttpHeaders(apiKey);
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-		ResponseEntity<JsonNode> response = restTemplate.exchange(REPO_TOOLSUrl, HttpMethod.DELETE, entity,
+		ResponseEntity<JsonNode> response = restTemplate.exchange(URI.create(repoToolsUrl), HttpMethod.DELETE, entity,
 				JsonNode.class);
 		return response.getStatusCode().value();
 	}
 
+	/**
+	 * delete repository of the project
+	 * @param masterSystemId
+	 * @param repoToolsUrl
+	 * @param apiKey
+	 * @return http status
+	 */
+	public int deleteRepositories(String masterSystemId, String repoToolsUrl, String apiKey) {
+		String deleteRepoUrl = String.format(REPO_TOOLS_DELETE_REPO_URL, masterSystemId);
+		setHttpHeaders(apiKey);
+		URI url = URI.create(repoToolsUrl + deleteRepoUrl);
+		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+		return response.getStatusCode().value();
+
+	}
+
+	/**
+	 * set headers for api call
+	 * @param apiKey
+	 */
 	public void setHttpHeaders(String apiKey) {
 		httpHeaders = new HttpHeaders();
 		httpHeaders.add(X_API_KEY, apiKey);
