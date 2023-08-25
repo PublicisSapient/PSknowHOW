@@ -214,7 +214,6 @@ export class FilterComponent implements OnInit, OnDestroy {
               10
             ]
           }
-          this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
         } else {
           this.selectedDayType = 'Weeks';
           this.dateRangeFilter = {
@@ -232,6 +231,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
         this.service.setSelectedDateFilter(this.selectedDayType);
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
+        this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
       }),
 
       this.service.mapColorToProjectObs.subscribe((x) => {
@@ -275,7 +275,10 @@ export class FilterComponent implements OnInit, OnDestroy {
             ]
           }
         }
+        // this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
+        this.service.setSelectedDateFilter(this.selectedDayType);
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
+        this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
       }
     });
 
@@ -646,7 +649,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (!applySource) {
         this.filterAdditionalFilters();
       }
-      if ((applySource?.toLowerCase() == 'date' && this.kanban) || (applySource?.toLowerCase() == 'date' && this.selectedTab.toLowerCase() === 'developer')) {
+      if ((applySource?.toLowerCase() == 'date' || this.selectedTab.toLowerCase() === 'developer')) {
         this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
         this.service.setSelectedDateFilter(this.selectedDayType);
         this.toggleDateDropdown = false;
