@@ -8098,6 +8098,16 @@ db.getCollection('field_mapping_structure').insertMany(
     }
     },
     {
+        "fieldName": "jiraItrQSIssueTypeKPI133",
+        "fieldLabel": "Issue types which will have linked defects",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "Consider issue types which have defects tagged to them"
+        }
+    },
+    {
         "fieldName": "epicLink",
         "fieldLabel": "Custom field for Epic Link",
         "fieldType": "text",
