@@ -3059,7 +3059,6 @@ db.getCollection('kpi_master').insertMany(
       "aggregationCriteria": "sum",
       "isAdditionalFilterSupport": false,
       "calculateMaturity": false
-    }
   },
   {
     "kpiId": "kpi154",
