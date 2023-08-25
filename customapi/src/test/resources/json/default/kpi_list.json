@@ -4096,6 +4096,38 @@
     "calculateMaturity": false
   },
   {
+    "kpiId": "kpi153",
+    "kpiName": "PI Predictability",
+    "maxValue": "200",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 29,
+    "kpiSource": "Jira",
+    "groupId": 2,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "multipleline",
+    "kpiInfo": {
+      "definition": "PI predictability is calculated by the sum of the actual value achieved against the planned value at the beginning of the PI",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#PI-Predictability"
+          }
+        }
+      ]
+    },
+    "xAxisLabel": "PIs",
+    "yAxisLabel": "Business Value",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+  },
+  {
     "kpiId": "kpi155",
     "kpiName": "Defect Count By Type",
     "kpiUnit": "Count",

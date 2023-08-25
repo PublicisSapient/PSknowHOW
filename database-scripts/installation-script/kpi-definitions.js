@@ -676,12 +676,13 @@ db.getCollection('kpi_master').insertMany(
   {
     "kpiId": "kpi116",
     "kpiName": "Change Failure Rate",
+    "kpiCategory": "Dora",
     "maxValue": "100",
     "kpiUnit": "%",
     "isDeleted": "False",
     "defaultOrder": 15,
     "kpiSource": "Jenkins",
-    "groupId": 1,
+    "groupId": 14,
     "thresholdValue": 0,
     "kanban": false,
     "chartType": "line",
@@ -904,7 +905,6 @@ db.getCollection('kpi_master').insertMany(
     "groupId": 2,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "grouped_column_plus_line",
     "kpiInfo": {
       "definition": "Measures the rate of delivery across Sprints. Average velocity is calculated for the latest 5 sprints",
       "details": [
@@ -1119,12 +1119,13 @@ db.getCollection('kpi_master').insertMany(
   {
     "kpiId": "kpi118",
     "kpiName": "Deployment Frequency",
+    "kpiCategory": "Dora",
     "maxValue": "100",
     "kpiUnit": "Number",
     "isDeleted": "False",
     "defaultOrder": 25,
     "kpiSource": "Jenkins",
-    "groupId": 1,
+    "groupId": 14,
     "thresholdValue": 0,
     "kanban": false,
     "chartType": "line",
@@ -1140,7 +1141,7 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
-    "xAxisLabel": "Months",
+    "xAxisLabel": "Weeks",
     "yAxisLabel": "Count",
     "isPositiveTrend": true,
     "showTrend": true,
@@ -3027,6 +3028,38 @@ db.getCollection('kpi_master').insertMany(
       "calculateMaturity": false
   },
   {
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "maxValue": "200",
+      "kpiUnit": "",
+      "isDeleted": "False",
+      "defaultOrder": 29,
+      "kpiSource": "Jira",
+      "groupId": 4,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "multipleline",
+      "kpiInfo": {
+        "definition": "PI predictability is calculated by the sum of the actual value achieved against the planned value at the beginning of the PI",
+        "details": [
+          {
+            "type": "link",
+            "kpiLinkDetail": {
+              "text": "Detailed Information at",
+              "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#PI-Predictability"
+            }
+          }
+        ]
+      },
+      "xAxisLabel": "PIs",
+      "yAxisLabel": "Business Value",
+      "isPositiveTrend": true,
+      "showTrend": true,
+      "aggregationCriteria": "sum",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": false
+  },
+  {
     "kpiId": "kpi154",
     "kpiName": "Daily Standup View",
     "maxValue": "",
@@ -3183,21 +3216,9 @@ db.getCollection('kpi_category_mapping').insertMany(
 		"kanban": false
 	},
 	{
-		"kpiId": "kpi116",
-		"categoryId": "categoryTwo",
-		"kpiOrder": 15,
-		"kanban": false
-	},
-	{
 		"kpiId": "kpi70",
 		"categoryId": "categoryTwo",
 		"kpiOrder": 16,
-		"kanban": false
-	},
-	{
-		"kpiId": "kpi118",
-		"categoryId": "categoryThree",
-		"kpiOrder": 1,
 		"kanban": false
 	},
 	{
@@ -3210,6 +3231,12 @@ db.getCollection('kpi_category_mapping').insertMany(
 		"kpiId": "kpi113",
 		"categoryId": "categoryThree",
 		"kpiOrder": 3,
+		"kanban": false
+	},
+    {
+		"kpiId": "kpi153",
+		"categoryId": "categoryThree",
+		"kpiOrder": 4,
 		"kanban": false
 	},
 	{
@@ -6077,7 +6104,47 @@ db.kpi_column_configs.insertMany([
                                       isShown: true,
                                       isDefault: true
                                     }]
-                                  }
+                                  },
+                                   {
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi153',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Project Name',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		},  {
+                                 			columnName: 'Epic ID',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Epic Name',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Status',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'PI Name',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Planned Value',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Achieved Value',
+                                 			order: 7,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		 }]
+                                 	}
                                  ]);
 
 //default fields mapping structure for KPI, these fields are used to populate the config JIRA for any
@@ -6263,16 +6330,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "section": "Issue Types Mapping",
         "tooltip": {
             "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
-        }
-    },
-    {
-        "fieldName": "jiraItrQSIssueTypeKPI133",
-        "fieldLabel": "Issue types which will have linked defects",
-        "fieldType": "chips",
-        "fieldCategory": "Issue_Type",
-        "section": "Issue Types Mapping",
-        "tooltip": {
-            "definition": "Consider issue types which have defects tagged to them"
         }
     },
     {
@@ -8007,6 +8064,56 @@ db.getCollection('field_mapping_structure').insertMany(
              "value": "Off"
         }
         ]
-}
+    },
+    {
+        "fieldName": "epicPlannedValue",
+        "fieldLabel": "Custom field for Epic Planned Value",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+    }
+    },
+    {
+        "fieldName": "epicAchievedValue",
+        "fieldLabel": "Custom field for Epic Achieved Value",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+    }
+    },
+    {
+    "fieldName": "jiraIssueEpicTypeKPI153",
+    "fieldLabel": "Epic Issue Type",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "This field is used to identify Epic Issue type.",
+    }
+    },
+    {
+        "fieldName": "jiraItrQSIssueTypeKPI133",
+        "fieldLabel": "Issue types which will have linked defects",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "Consider issue types which have defects tagged to them"
+        }
+    },
+    {
+        "fieldName": "epicLink",
+        "fieldLabel": "Custom field for Epic Link",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields.Provide value of Epic Linkage to the story/defect<br />Example:customfield_11111<hr>"
+        }
+    }
 ]
 );

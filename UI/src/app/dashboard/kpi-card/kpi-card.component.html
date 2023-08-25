@@ -85,7 +85,7 @@
     </div>
     <div class="kpi-card-body" 
     [ngStyle]="{'height': !(showChartView === 'table') ? '400px' : '150px', 
-    'min-height': !(showChartView === 'table')  ? '330px' : '100px'}">
+    'min-height': !(showChartView === 'table')  ? '330px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
         <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf=" (showChartView !== 'large') && isShow && trendData?.length > 0 && showTrendIndicator"
             [ngClass]="{'p-d-none':kpiData?.kpiId == 'kpi17' && trendData.length != 1}">
             <div *ngFor="let item of trendData; let i = index;" class="trend-box">
@@ -141,7 +141,7 @@
                         <ng-template pTemplate="body" let-rowData let-columns="columns">
                             <tr>
                                 <ng-container *ngFor="let col of columns">
-                                    <td *ngIf="hasData(col.field)" [innerHTML]="col.field == 'value' ? rowData[col.field]+rowData['unit'] : rowData[col.field]" class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}">
+                                    <td *ngIf="hasData(col.field)" [innerHTML]="col.field == 'value' || col.field.includes('value') ? rowData[col.field]+rowData['unit'] : rowData[col.field]" class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}">
                                     </td>
                                </ng-container>
                             </tr>

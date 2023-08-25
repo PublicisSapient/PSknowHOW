@@ -114,6 +114,8 @@ import { StackedAreaChartComponent } from './component/stacked-area-chart/stacke
 import { FeedbackComponent } from './feedback/feedback.component';
 import { DailyScrumComponent } from './dashboard/daily-scrum/daily-scrum.component';
 import { DailyScrumTabComponent } from './dashboard/daily-scrum-tab/daily-scrum-tab.component';
+import { MultilineStyleComponent } from './component/multiline-style/multiline-style.component';
+import { DoraComponent } from './dashboard/dora/dora.component';
 
 /******************************************************/
 
@@ -179,7 +181,9 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         StackedAreaChartComponent,
         FeedbackComponent,
         DailyScrumComponent,
-        DailyScrumTabComponent
+        DailyScrumTabComponent,
+        MultilineStyleComponent,
+        DoraComponent
     ],
     imports: [
         DropdownModule,

@@ -245,6 +245,8 @@ public class FieldMapping extends BasicModel {
 	private String epicWsjf;
 	private String epicTimeCriticality;
 	private String epicJobSize;
+	private String epicPlannedValue;
+	private String epicAchievedValue;
 
 	// Squad Mapping
 	private String squadIdentifier;
@@ -376,6 +378,8 @@ public class FieldMapping extends BasicModel {
 
 	@Builder.Default
 	private String notificationEnabler="On";
+
+	private List<String> jiraIssueEpicTypeKPI153;
 
 	/**
 	 * Get jira issue type names string [ ].
