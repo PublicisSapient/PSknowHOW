@@ -91,7 +91,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		try {
-			if (boardIterator == null || !boardIterator.hasNext()) {
+			if (boardIterator == null) {
 				if (CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
 					boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
 				}
