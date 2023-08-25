@@ -1,4 +1,4 @@
-#chart{
+#chart, #chart2{
     position: relative;
     height: 290px;
     width: 100%;
@@ -41,4 +41,10 @@
     font-size: 12px;
     color: var(--color-gray-34);
     position: absolute !important;
+  }
+
+  .tooltip-chart-container {
+    background-color: #fff;
+    border: 2px solid #BDBDBD;
+    border-radius: 5px;
   }

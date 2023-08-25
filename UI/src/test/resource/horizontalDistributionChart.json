@@ -1,0 +1,68 @@
+[
+    {
+        "filter1": "Overall",
+        "filter2": "Overall",
+        "value": [
+            {
+                "data": "17.0",
+                "value": [
+                    {
+                        "To Do": 0,
+                        "distribution": {
+                            "kpiGroup": "To Do",
+                            "data": "0.0",
+                            "value": [
+                            ]
+                        }
+                    },
+                    {
+                        "In Progress": 3,
+                        "distribution": {
+                            "kpiGroup": "In Progress",
+                            "data": "3.0",
+                            "value": [
+                                {
+                                    "In Analysis": 2
+                                },
+                                {
+                                    "In development": 1
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Done": 30,
+                        "distribution": {
+                            "kpiGroup": "Done",
+                            "data": "50.0",
+                            "value": [
+                                {
+                                    "In Testing": 3
+                                },
+                                {
+                                    "Deployed": 7
+                                },
+                                {
+                                    "Live": 5
+                                },
+                                {
+                                    "In Testing2": 3
+                                },
+                                {
+                                    "Deployed2": 7
+                                },
+                                {
+                                    "Live2": 5
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "kpiGroup": "Issue Count",
+                "To Do": 0,
+                "In Progress": 17.647058823529413,
+                "Done": 82.35294117647058
+            }
+        ]
+    }
+]
