@@ -63,21 +63,30 @@ export class AdSettingsComponent implements OnInit {
     // this.standardLoginForm = this.formBuilder.group(this.standardLoginFormObj);
     // this.pingAuthenticationForm = this.formBuilder.group(this.pingAuthenticationFormObj);
     this.http.getAuthConfig().subscribe(response => {
-      if (response && response.success) {
-        if (response && response.data && response.data.authTypeStatus) {
+        if (response && response?.success && response?.data) {
           this.selectedTypes = [];
-          if (response.data.authTypeStatus.standardLogin) {
+          if (response?.data?.authTypeStatus?.standardLogin) {
             this.selectedTypes.push({
               name: 'standardLogin',
               label: 'KnowHOW Local Authentication'
             });
           }
 
-          if (response.data.authTypeStatus.adLogin) {
+          if (response?.data?.authTypeStatus?.adLogin) {
             this.selectedTypes.push({
               name: 'adLogin',
               label: 'AD Authentication'
             });
+          }
+
+          if ( response?.data?.adServerDetail) {
+            for (const obj in response?.data?.adServerDetail) {
+              if (obj !== 'password') {
+                if (this.adSettingsForm && this.adSettingsForm.controls[obj]) {
+                  this.adSettingsForm.controls[obj].setValue(response.data.adServerDetail[obj]);
+                }
+              }
+            }
           }
         } else {
           this.selectedTypes.push({
@@ -85,16 +94,8 @@ export class AdSettingsComponent implements OnInit {
             label: 'KnowHOW Local Authentication'
           });
         }
-        if (response.success && response.data && response.data.adServerDetail) {
-          for (const obj in response.data.adServerDetail) {
-            if (obj !== 'password') {
-              if (this.adSettingsForm && this.adSettingsForm.controls[obj]) {
-                this.adSettingsForm.controls[obj].setValue(response.data.adServerDetail[obj]);
-              }
-            }
-          }
-        }
-      }
+        
+      
     });
   }
 

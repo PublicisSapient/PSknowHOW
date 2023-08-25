@@ -118,6 +118,8 @@ import { AssigneeBoardComponent } from './dashboard/assignee-board/assignee-boar
 import { IssueCardComponent } from './dashboard/issue-card/issue-card.component';
 import { IssueBodyComponent } from './dashboard/issue-body/issue-body.component';
 import { DailyScrumGraphComponent } from './dashboard/daily-scrum-graph/daily-scrum-graph.component';
+import { MultilineStyleComponent } from './component/multiline-style/multiline-style.component';
+import { DoraComponent } from './dashboard/dora/dora.component';
 
 /******************************************************/
 
@@ -187,7 +189,9 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         AssigneeBoardComponent,
         IssueCardComponent,
         IssueBodyComponent,
-        DailyScrumGraphComponent
+        DailyScrumGraphComponent,
+        MultilineStyleComponent,
+        DoraComponent
     ],
     imports: [
         DropdownModule,

@@ -245,6 +245,8 @@ public class FieldMapping extends BasicModel {
 	private String epicWsjf;
 	private String epicTimeCriticality;
 	private String epicJobSize;
+	private String epicPlannedValue;
+	private String epicAchievedValue;
 
 	// Squad Mapping
 	private String squadIdentifier;
@@ -266,6 +268,17 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForInProgressKPI128;
 	private List<String> jiraStatusForInProgressKPI123;
 	private List<String> jiraStatusForInProgressKPI119;
+
+	public List<String> getJiraStatusForInProgressKPI119() {
+		return jiraStatusForInProgressKPI119;
+	}
+
+	public void setJiraStatusForInProgressKPI119(List<String> status) {
+		this.jiraStatusForInProgressKPI154 = status;
+		this.jiraStatusForInProgressKPI119 = status;
+	}
+
+	private List<String> jiraStatusForInProgressKPI154;
 
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
@@ -313,6 +326,8 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDevDoneStatusKPI119;
 	private List<String> jiraDevDoneStatusKPI145;
 	private List<String> jiraDevDoneStatusKPI128;
+	private List<String> jiraDevDoneStatusKPI154;
+	private List<String> jiraQADoneStatusKPI154;
 
 	// For DTS_21154 - field for Team refinement status
 	private List<String> jiraRejectedInRefinement;
@@ -350,6 +365,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationCompletionStatusKPI119;
 	private List<String> jiraIterationCompletionStatusKPI131;
 	private List<String> jiraIterationCompletionStatusKPI138;
+	private List<String> jiraIterationCompletionStatusKPI154;
 
 	private List<String> jiraIterationCompletionTypeCustomField;
 	private List<String> jiraIterationIssuetypeKPI122;
@@ -367,10 +383,14 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
 	private List<String> jiraIterationIssuetypeKPI39;
+
+	private List<String> jiraStatusStartDevelopmentKPI154;
 	private LocalDateTime createdDate;
 
 	@Builder.Default
 	private String notificationEnabler="On";
+
+	private List<String> jiraIssueEpicTypeKPI153;
 
 	/**
 	 * Get jira issue type names string [ ].

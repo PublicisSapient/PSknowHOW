@@ -40,6 +40,7 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -668,7 +669,8 @@ public final class KpiDataHelper {
 					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
 							fieldMappingCompletionType, fieldMappingCompletionStatus);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
-					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus, projectWiseDuplicateIssuesWithMinCloseDate);
+					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus,
+							projectWiseDuplicateIssuesWithMinCloseDate);
 					dbSprintDetail.setCompletedIssues(newCompletedSet);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
 					Set<SprintIssue> totalIssue = new HashSet<>();
@@ -904,5 +906,34 @@ public final class KpiDataHelper {
 
 		});
 		return subTaskTaggedWithSprint;
+	}
+
+	/**
+	 * Return the duration filter details for dora dashboard
+	 * @param kpiElement
+	 * @return
+	 */
+	public static Map<String, Object> getDurationFilter(KpiElement kpiElement) {
+		LinkedHashMap<String, Object> filterDuration = (LinkedHashMap<String, Object>) kpiElement.getFilterDuration();
+		int value = 5; // Default value for 'value'
+		String duration = CommonConstant.WEEK; // Default value for 'duration'
+		LocalDateTime startDateTime = null;
+
+		if (filterDuration != null) {
+			value = (int) filterDuration.getOrDefault("value", 5);
+			duration = (String) filterDuration.getOrDefault(Constant.DURATION, CommonConstant.WEEK);
+		}
+
+		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+			startDateTime = LocalDateTime.now().minusWeeks(value);
+		} else if (duration.equalsIgnoreCase(CommonConstant.MONTH)) {
+			startDateTime = LocalDateTime.now().minusMonths(value);
+		}
+
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put(Constant.DATE, startDateTime);
+		resultMap.put(Constant.DURATION, duration);
+		resultMap.put(Constant.COUNT, value);
+		return resultMap;
 	}
 }

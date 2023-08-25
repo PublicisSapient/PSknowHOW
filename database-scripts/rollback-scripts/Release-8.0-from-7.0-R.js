@@ -107,7 +107,7 @@ db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},{$set:{"kpiColumnDetails" 
 
 db.getCollection('kpi_master').updateOne(
   { "kpiId": "kpi137" },
-  { $set: { "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available." } }
+  { $set: { "kpiInfo.definition" : "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available." } }
 );
 
 //reversing metadata_identifier back when we use to compare metadata_identifier with boardMetadata
@@ -403,14 +403,69 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 4}}).forEach(f
     );
 });
 
-// --------------------- Release 7.7 -----------------------------------------------------------------
+//----------------7.7.0 Changes ---------------------------
 // delete mapping for Quality Status and notification enabler
-
+// delete mapping for PI Predictability KPI
 db.field_mapping_structure.deleteMany({
-    "fieldName": { $in: [ "jiraItrQSIssueTypeKPI133", "notificationEnabler"]}
+    "fieldName": { $in: [ "jiraItrQSIssueTypeKPI133", "notificationEnabler", "epicPlannedValue", "epicAchievedValue", "jiraIssueEpicTypeKPI153","epicLink"]}
 });
 
-//deleting dailyStandup kpi
-db.getCollection('kpi_master').deleteMany(
-  { "kpiId": "kpi154" }
-);
+// delete column config for PI Predictability KPI
+db.kpi_column_configs.deleteOne({
+    "kpiId": "kpi153"
+});
+
+// delete kpi_category_mapping for PI Predictability KPI
+db.kpi_category_mapping.deleteOne({
+    "kpiId": "kpi153"
+});
+
+db.kpi_master.bulkWrite([
+  // Reverting Dora dashboard changes
+  {
+    updateMany: {
+      filter: { kpiId: { $in: ["kpi116", "kpi118"] } },
+      update: { $unset: { kpiCategory: "" } }
+    }
+  },
+  // Reverse the deployment freq x-axis
+  {
+    updateOne: {
+      filter: { kpiId: "kpi118" },
+      update: { $set: { xAxisLabel: "Months" } }
+    }
+  },
+  {
+    updateMany: {
+      filter: { kpiId: { $in: ["kpi116", "kpi118"] } },
+      update: { $set: { groupId: 1 } }
+    }
+  },
+// delete PI Predictability KPI (153)deleting dailyStandup kpi (154)
+  {
+    deleteMany: {
+      filter: { kpiId: { $in: ["kpi153", "kpi154"] } }
+    }
+  }
+]);
+
+// Note : below code only For Opensource project
+db.kpi_category_mapping.insertMany([
+  {
+  	"kpiId" : "kpi116",
+  	"categoryId" : "categoryTwo",
+  	"kpiOrder" : 15,
+  	"kanban" : false
+  },
+  {
+  	"kpiId" : "kpi118",
+  	"categoryId" : "categoryThree",
+  	"kpiOrder" : 1,
+  	"kanban" : false
+  },
+]);
+
+//------------------------- 7.9.0 changes----------------------------------------------------------------------------------
+db.field_mapping_structure.deleteMany({
+    "fieldName": { $in: [ "jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154", "epicPlannedValue", "epicAchievedValue", "jiraIssueEpicTypeKPI153","epicLink"]}
+});

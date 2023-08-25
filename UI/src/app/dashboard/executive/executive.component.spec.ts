@@ -61,7 +61,8 @@ describe('ExecutiveComponent', () => {
   let helperService: HelperService;
 
   const baseUrl = environment.baseUrl;  // Servers Env
-
+  const fakeDoraKpis = require('../../../test/resource/fakeDoraKpis.json');
+  const fakeDoraKpiFilters = require('../../../test/resource/fakeDoraKpiFilters.json');
   const globalData =require('../../../test/resource/fakeGlobalConfigData.json');
   const configGlobalData = [
     {
@@ -5797,6 +5798,141 @@ describe('ExecutiveComponent', () => {
     const spy = spyOn(component,'postJiraKanbanKpi');
     component.reloadKPI(fakeKPiDetails);
     expect(spy).toBeDefined();
+  });
+
+  it('should checkLatestAndTrendValue for kpi',()=>{
+    let kpiData = {
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "isEnabled": true,
+      "order": 29,
+      "kpiDetail": {
+          "id": "64d475511a944f265d7760be",
+          "kpiId": "kpi153",
+          "kpiName": "PI Predictability",
+          "isDeleted": "False",
+          "defaultOrder": 29,
+          "kpiUnit": "",
+          "chartType": "multipleline",
+          "showTrend": true,
+          "isPositiveTrend": true,
+          "calculateMaturity": false,
+          "aggregationCriteria": "sum",
+          "trendCalculative": false,
+          "additionalFilterSupport": true,
+          "yaxisLabel": "Business Value",
+          "xaxisLabel": "PIs"
+      },
+      "shown": true
+  };
+
+  const item = {
+    "data": "KnowHOW",
+    "value": [
+        {
+            "sSprintID": "KnowHOW PI-12",
+            "sSprintName": "KnowHOW PI-12",
+            "dataValue": [
+                {
+                    "name": "Achieved Value",
+                    "lineType": "solid",
+                    "data": "116.0",
+                    "value": 64.67,
+                    "hoverValue": {}
+                },
+                {
+                    "name": "Planned Value",
+                    "lineType": "dotted",
+                    "data": "116.0",
+                    "value": 116,
+                    "hoverValue": {}
+                }
+            ],
+            "sprojectName": "KnowHOW"
+        },
+        {
+            "sSprintID": "KnowHOW PI-13",
+            "sSprintName": "KnowHOW PI-13",
+            "dataValue": [
+                {
+                    "name": "Achieved Value",
+                    "lineType": "solid",
+                    "data": "56.0",
+                    "value": 14.6,
+                    "hoverValue": {}
+                },
+                {
+                    "name": "Planned Value",
+                    "lineType": "dotted",
+                    "data": "56.0",
+                    "value": 56,
+                    "hoverValue": {}
+                }
+            ],
+            "sprojectName": "KnowHOW"
+        }
+    ]
+};
+
+const result = component.checkLatestAndTrendValueForKpi(kpiData,item);
+expect(result[0]).toEqual('14.6');
+expect(result[1]).toEqual('-ve');
+  });
+
+  it('should get kpi comments count', fakeAsync(() => {
+    component.filterApplyData = {
+      'selectedMap': {
+        'project': ["KnowHOW_6360fefc3fa9e175755f0728"]
+      },
+      'level': 5
+    };
+    const response = {
+      "message": "Found Comments Count",
+      "success": true,
+      "data": {
+        "kpi118": 1
+      }
+    };
+
+    component.kpiCommentsCountObj = {
+      'kpi118': 0
+    };
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi118',
+        kpiName: 'Deployment Frequency',
+        isEnabled: true,
+        order: 23,
+        kpiDetail: {
+         
+        },
+        shown: true
+      }
+    ];
+    spyOn(helperService, 'getKpiCommentsHttp').and.resolveTo(response);
+    component.getKpiCommentsCount();
+    tick();
+    expect(component.kpiCommentsCountObj['data']['kpi118']).toEqual(response.data['kpi118']);
+  }));
+
+  it('should getchartdata for kpi when trendValueList is an object and with single filter', () => {
+    component.allKpiArray = fakeDoraKpis;
+    component.kpiSelectedFilterObj['kpi118'] = ['Overall'];
+    const res = fakeDoraKpis[0].trendValueList.filter(x => x['filter'] == 'Overall')[0];
+    component.getChartData('kpi118', 0, 'sum')
+    expect(component.kpiChartData['kpi118'][0]?.value.length).toEqual(res?.value[0]?.value?.length);
+  });
+
+  it('should getchartdata for kpi when trendValueList is an object and with multiple filter', () => {
+    component.allKpiArray = fakeDoraKpis;
+    component.kpiSelectedFilterObj['kpi118'] = ['81.200.188.111->KnowHOW', '81.200.188.112->KnowHOW'];
+    const res = fakeDoraKpiFilters;
+    component.tooltip = {
+      'percentile': 90
+    };
+    spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+    component.getChartData('kpi118', 0, 'sum')
+    expect(component.kpiChartData['kpi118'][0]?.value?.length).toEqual(res?.value?.length);
   })
 
 });

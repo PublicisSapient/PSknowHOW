@@ -258,7 +258,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			CapacityKpiData capacityKpiData = (CapacityKpiData) resultMap.get(ASSIGNEE_DETAILS);
 			List<JiraIssue> totalIssueList = new ArrayList<>((Set<JiraIssue>) resultMap.get(ISSUES));
 
-			Set<JiraIssue> linkedSubTasks = findLinkedSubTasks(totalIssueList, fieldMapping);
+			Map<String, Set<String>> parentChildRelation = findLinkedSubTasks(totalIssueList, fieldMapping);
 
 			List<Filter> filtersList = new ArrayList<>();
 			Map<String, String> userWiseRole = new HashMap<>();
@@ -285,11 +285,11 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					estimationCriteria);
 
 			// Calculate Delay
-			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper
-					.calculatePotentialDelay(sprintDetails, notCompletedJiraIssue, fieldMapping);
+			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper.calculatePotentialDelay(
+					sprintDetails, notCompletedJiraIssue, fieldMapping.getJiraStatusForInProgressKPI154());
 
-			Map<String, IterationPotentialDelay> issueWiseDelay = CalculatePCDHelper
-					.checkMaxDelayAssigneeWise(iterationPotentialDelayList, fieldMapping);
+			Map<String, IterationPotentialDelay> issueWiseDelay = CalculatePCDHelper.checkMaxDelayAssigneeWise(
+					iterationPotentialDelayList, fieldMapping.getJiraStatusForInProgressKPI154());
 			calculateAssigneeWiseMaxDelay(issueWiseDelay, assigneeWiseMaxDelay);
 
 			// Calculate Remaining Capacity
@@ -308,7 +308,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					role = userWiseRole.getOrDefault(listEntry.getKey(), UNASSIGNED);
 				}
 				List<JiraIssue> jiraIssueList = listEntry.getValue();
-				populateModal(jiraIssueList, resultMap, sprintDetails,linkedSubTasks, issueWiseDelay, mapOfModalObject, fieldMapping);
+				populateModal(jiraIssueList, resultMap, sprintDetails, parentChildRelation, issueWiseDelay,
+						mapOfModalObject, fieldMapping);
 				String assigneeId = listEntry.getKey();
 				String assigneeName = jiraIssueList.stream().findFirst().orElse(new JiraIssue()).getAssigneeName();
 
@@ -338,8 +339,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	}
 
 	private void populateModal(List<JiraIssue> jiraIssueList, Map<String, Object> resultMap,
-							   SprintDetails sprintDetails, Set<JiraIssue> linkedSubTasks, Map<String, IterationPotentialDelay> issueWiseDelay,
-							   Map<String, IterationKpiModalValue> mapOfModalObject, FieldMapping fieldMapping) {
+			SprintDetails sprintDetails, Map<String, Set<String>> linkedSubTasks,
+			Map<String, IterationPotentialDelay> issueWiseDelay, Map<String, IterationKpiModalValue> mapOfModalObject,
+			FieldMapping fieldMapping) {
 		List<JiraIssue> epicList = new ArrayList<>((Set<JiraIssue>) resultMap.get(EPICS));
 		List<SprintDetails> sprintIdList = (List<SprintDetails>) resultMap.get(PREVIOS_SPRINTS);
 
@@ -353,7 +355,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
 					DATE_TIME_FORMATTER);
 			LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0], DATE_TIME_FORMATTER);
-
 
 			for (JiraIssue jiraIssue : jiraIssueList) {
 				KPIExcelUtility.populateIterationKPI(null, null, jiraIssue, fieldMapping, mapOfModalObject);
@@ -390,30 +391,34 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					return v;
 				});
 				getLastSprint(iterationKpiModalValue, jiraIssue, previousSprintMap);
-				Set<String> linkedSubTask= new HashSet<>();
-				linkedSubTasks.stream().filter(d -> d.getDefectStoryID().contains(jiraIssue.getNumber()))
-						.forEach(defect -> linkedSubTask.add(defect.getNumber()));
-				if(CollectionUtils.isNotEmpty(linkedSubTask))
-				   iterationKpiModalValue.setSubTask(linkedSubTask);
-
-
+				if (MapUtils.isNotEmpty(linkedSubTasks))
+					linkedSubTasks.computeIfPresent(jiraIssue.getNumber(), (k, v) -> {
+						iterationKpiModalValue.setSubTask(v);
+						return v;
+					});
+				iterationKpiModalValue.setParentStory(jiraIssue.getDefectStoryID());
 			}
 		}
 	}
 
-	private Set<JiraIssue> findLinkedSubTasks(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		Set<JiraIssue> linkedSubTask = new HashSet<>();
+	private Map<String, Set<String>> findLinkedSubTasks(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		Map<String, Set<String>> parentChild = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForQa())) {
 			Set<String> tasks = new HashSet<>();
 			tasks.add("Studio Task");
 			tasks.add("Task");
-			linkedSubTask = jiraIssueList.stream()
+			jiraIssueList.stream()
 					.filter(issue -> tasks.contains(issue.getOriginalType())
 							&& CollectionUtils.isNotEmpty(issue.getDefectStoryID()))
-					.collect(Collectors.toSet());
+					.forEach(childIssue -> childIssue.getDefectStoryID().forEach(parent -> {
+						parentChild.computeIfPresent(parent, (k, v) -> {
+							v.add(childIssue.getNumber());
+							return v;
+						});
+						parentChild.computeIfAbsent(parent, k -> new HashSet<>()).add(childIssue.getNumber());
+					}));
 		}
-
-		return linkedSubTask;
+		return parentChild;
 	}
 
 	private void setEstimatesInSeconds(JiraIssue jiraIssue, IterationKpiModalValue iterationKpiModalValue) {
@@ -462,7 +467,11 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				});
 				dateWiseLogMap.computeIfAbsent(changedOn, k -> new ArrayList<>()).add(log.getChangedTo());
 			}
+			dateWiseLogMap = dateWiseLogMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(
+					Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
 		}
+
 		return dateWiseLogMap;
 	}
 
@@ -529,7 +538,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		assigneeWiseNotCompleted.forEach((assigneeId, jiraIssueList) -> {
 			double totalEstimate = jiraIssueList.stream()
 					.mapToDouble(issue -> estimationCriteria.equalsIgnoreCase(CommonConstant.STORY_POINT)
-							? Optional.ofNullable(issue.getStoryPoints()).orElse(0d)
+							? Optional.ofNullable(issue.getStoryPoints()).orElse(0d) // NOSONAR
 							: Optional.ofNullable(issue.getOriginalEstimateMinutes()).orElse(0))
 					.sum();
 			remainingWork.put(assigneeId, new StandUpViewKpiData(String.valueOf(jiraIssueList.size()),
