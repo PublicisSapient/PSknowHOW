@@ -1,11 +1,5 @@
 package com.publicissapient.kpidashboard.jira.jobs;
 
-import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueStepListener;
-import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueWriterListener;
-import com.publicissapient.kpidashboard.jira.processor.IssueKanbanProcessor;
-import com.publicissapient.kpidashboard.jira.reader.IssueBoardReader;
-import com.publicissapient.kpidashboard.jira.tasklet.MetaDataBoardTasklet;
-import com.publicissapient.kpidashboard.jira.writer.IssueKanbanWriter;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -17,10 +11,17 @@ import org.springframework.context.annotation.Configuration;
 
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueStepListener;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueWriterListener;
+import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueStepListener;
+import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueWriterListener;
+import com.publicissapient.kpidashboard.jira.listener.NotificationJobListener;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
+import com.publicissapient.kpidashboard.jira.processor.IssueKanbanProcessor;
 import com.publicissapient.kpidashboard.jira.processor.IssueScrumProcessor;
+import com.publicissapient.kpidashboard.jira.reader.IssueBoardReader;
+import com.publicissapient.kpidashboard.jira.tasklet.MetaDataBoardTasklet;
 import com.publicissapient.kpidashboard.jira.tasklet.SprintScrumBoardTasklet;
+import com.publicissapient.kpidashboard.jira.writer.IssueKanbanWriter;
 import com.publicissapient.kpidashboard.jira.writer.IssueScrumWriter;
 
 @Configuration
@@ -40,7 +41,7 @@ public class JiraProcessorJob {
 
 	@Autowired
 	IssueScrumWriter issueScrumWriter;
-    @Autowired
+	@Autowired
 	IssueKanbanWriter issueKanbanWriter;
 
 	@Autowired
@@ -54,6 +55,9 @@ public class JiraProcessorJob {
 
 	@Autowired
 	JiraIssueWriterListener jiraIssueWriterListener;
+
+	@Autowired
+	NotificationJobListener notificationJobListener;
 
 	@Autowired
 	IssueKanbanProcessor issueKanbanProcessor;
@@ -81,7 +85,8 @@ public class JiraProcessorJob {
 	private Step fetchIssueScrumBoardChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Scrum-board").<ReadData, CompositeResult>chunk(50)
 				.reader(issueBoardReader).processor(issueScrumProcessor).writer(issueScrumWriter)
-				.listener(jiraIssueWriterListener).listener(jiraIssueStepListener).build();
+				.listener(jiraIssueWriterListener).listener(jiraIssueStepListener).listener(notificationJobListener)
+				.build();
 	}
 
 	@Bean

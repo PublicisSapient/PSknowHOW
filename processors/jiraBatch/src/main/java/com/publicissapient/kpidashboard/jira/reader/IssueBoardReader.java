@@ -137,7 +137,6 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		} catch (Exception e) {
 			log.error("Exception while fetching data for the project {}", projectConfFieldMapping.getProjectName(), e);
 			readData = null;
-			// send mail to project admin or superadmin here..
 		}
 		return readData;
 
@@ -202,7 +201,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 				deltaDate = boardWiseDate.get("noBoard");
 			} else {
 				String lastSuccessRun = boardWiseDate.get(boardId);
-				log.info("project: {} and board {} found in trace log. Data will be fetched from {}",
+				log.info("project: {} and board {} found in trace log. Data will be fetched from one day before {}",
 						projectConfFieldMapping.getProjectName(), boardId, lastSuccessRun);
 				if (!StringUtils.isBlank(lastSuccessRun)) {
 					deltaDate = lastSuccessRun;
