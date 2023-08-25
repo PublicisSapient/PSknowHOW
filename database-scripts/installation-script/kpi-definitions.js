@@ -1142,7 +1142,7 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
-    "xAxisLabel": "Months",
+    "xAxisLabel": "Weeks",
     "yAxisLabel": "Count",
     "isPositiveTrend": true,
     "showTrend": true,
