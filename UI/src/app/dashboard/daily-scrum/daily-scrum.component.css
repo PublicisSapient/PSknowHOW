@@ -47,6 +47,7 @@
     background-color: white;
     cursor: pointer;
     margin: 0.15rem;
+    font-weight: bold;
 }
 
 .user-filter button.assignee.selected-user{

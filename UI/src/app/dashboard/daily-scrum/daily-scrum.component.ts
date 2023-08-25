@@ -175,7 +175,7 @@ getCurrentAssigneeIssueData(assigneeName){
       issue['subTask'] = this.getSubTaskIssueDetails(issue['subTask']);
     }
   });
-  console.log(this.currentAssigneeissueData);
+  // console.log(this.currentAssigneeissueData);
 }
 
 getSubTaskIssueDetails(subTaskList){

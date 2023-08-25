@@ -10,11 +10,12 @@ export class AssigneeBoardComponent implements OnInit {
 
 @Input() issueDataList =[];
 currentIssueIndex = 0;
+currentSprint;
 
   constructor(private sharedService: SharedService) { }
 
   ngOnInit(): void {
-    console.log(this.sharedService.currentSelectedSprint);
+    this.currentSprint = this.sharedService.currentSelectedSprint;
   }
 
   onPreviousIssue(){

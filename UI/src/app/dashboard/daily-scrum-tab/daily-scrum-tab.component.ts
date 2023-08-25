@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-daily-scrum-tab',
@@ -17,9 +18,11 @@ export class DailyScrumTabComponent implements OnInit {
   selectedUser = 'Overall';
   filters={};
 
-  constructor() { }
+  constructor(private sharedService: SharedService) { }
 
   ngOnInit(): void {
+    this.sharedService.setVisibleSideBar(false);
+    this.sharedService.setSideNav(false);
   }
 
   setExpandView(e){
