@@ -520,7 +520,6 @@ export class DeveloperComponent implements OnInit {
         } else if (trendValueList?.length > 0) {
           this.kpiChartData[kpiId] = [...trendValueList];
         } else {
-          //const obj = JSON.parse(JSON.stringify(trendValueList));
           this.kpiChartData[kpiId]?.push(trendValueList);
         }
       }

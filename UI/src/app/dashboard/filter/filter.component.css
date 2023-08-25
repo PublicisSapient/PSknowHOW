@@ -799,7 +799,8 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 }
 
 .filter-date {
-  height: 135px;
+  height: auto;
+  padding-bottom: 10px;
   border-bottom: 1px solid #cacaca;
 }
 

@@ -62,7 +62,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
    }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this.selectedtype?.toLowerCase() === 'kanban') {
+    if (this.selectedtype?.toLowerCase() === 'kanban'|| this.service.getSelectedTab().toLowerCase() === 'developer') {
       this.xCaption = this.service.getSelectedDateFilter();
     }
       this.elem = this.viewContainerRef.element.nativeElement;
