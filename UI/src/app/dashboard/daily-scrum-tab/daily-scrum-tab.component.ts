@@ -10,6 +10,7 @@ export class DailyScrumTabComponent implements OnInit {
   @Input() filterData;
   @Input() assigneeList = [];
   @Input() columns =[];
+  @Input() issueData =[];
   displayModal = false;
   showLess = true;
   selectedRole =null;
@@ -35,6 +36,6 @@ export class DailyScrumTabComponent implements OnInit {
   }
 
   onSelectedUserChange(selectedUser){
-    this.selectedUser = selectedUser;
+    this.selectedUser = this.selectedUser === selectedUser ? 'Overall' : selectedUser ;
   }
 }
