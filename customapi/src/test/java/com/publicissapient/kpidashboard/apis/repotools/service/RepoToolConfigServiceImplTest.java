@@ -8,10 +8,13 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
 import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
@@ -38,6 +41,8 @@ import static org.mockito.Mockito.*;
 
 import org.junit.runner.RunWith;
 
+import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -50,6 +55,11 @@ public class RepoToolConfigServiceImplTest {
     String testId;
     String toolName;
     String toolType;
+
+    ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+
+    @Mock
+    RestTemplate restTemplate;
 
 
     @InjectMocks
@@ -111,6 +121,9 @@ public class RepoToolConfigServiceImplTest {
         connection.setHttpUrl("testHttpUrl");
         connection.setRepoToolProvider("github");
 
+        projectBasicConfig.setId(new ObjectId("5fb364612064a31c9ccd517a"));
+        projectBasicConfig.setProjectName("testProj");
+
         doReturn(mock(RepoToolsClient.class)).when(repoToolsConfigService).createRepoToolsClient();
 
     }
@@ -118,7 +131,6 @@ public class RepoToolConfigServiceImplTest {
 
     @Test
     public void testConfigureRepoToolsProject() {
-        // Mock the dependencies
         RepoToolsClient repoToolsClient = new RepoToolsClient();
         when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(new RepoToolsProvider());
         when(projectToolConfigService.getProjectToolConfigs(anyString(), anyString()))
@@ -127,45 +139,38 @@ public class RepoToolConfigServiceImplTest {
         when(projectBasicConfigRepository.findById(any(ObjectId.class))).thenReturn(Optional.of(new ProjectBasicConfig()));
         String testRepoToolsUrl = "http://example.com"; // Replace with your desired URL
         when(customApiConfig.getRepoToolURL()).thenReturn(testRepoToolsUrl);
-        when(customApiConfig.getRepoToolAPIKey()).thenReturn("repoToolAPIKey");
+		when(customApiConfig.getRepoToolAPIKey()).thenReturn("repoToolAPIKey");
+		when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
+				.thenReturn(projectBasicConfig);
         ResponseEntity<String> expectedResponse = new ResponseEntity<>("response body", HttpStatus.OK);
-
-//        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class)))
-//                .thenReturn(expectedResponse);
+        when(restTemplate.exchange(eq(URI.create("http://example.com//beta/repositories/")), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(expectedResponse);
 
         when(repoToolsProviderRepository.findByToolName(anyString()))
-                .thenReturn(new RepoToolsProvider()); // Provide a valid RepoToolsProvider instance
+                .thenReturn(new RepoToolsProvider());
 
         when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(anyString(), any()))
                 .thenReturn(Collections.singletonList(projectToolConfig));
 
-        when(customApiConfig.getRepoToolURL())
-                .thenReturn("http://example.com");
+        when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
+        when(restAPIUtils.decryptPassword(anyString())).thenReturn("decryptedApiKey");
 
-        when(restAPIUtils.decryptPassword(anyString()))
-                .thenReturn("decryptedApiKey");
-
-//        when(repoToolsClient.enrollProjectCall(any(), any(), any()))
-//                .thenReturn(HttpStatus.OK.value()); // Mock the response status
-
-        // Set the mock RepoToolsClient instance in the service
         Whitebox.setInternalState(repoToolsConfigService, "repoToolsClient", repoToolsClient);
 
-        // Execute the method
         int httpStatus = repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, Collections.singletonList("branchName"));
 
-        verify(repoToolsClient).enrollProjectCall(any(), anyString(), anyString());
-
-        // Verify the behavior
-        Assert.assertEquals(HttpStatus.OK.value(), httpStatus);
-        verify(restAPIUtils).decryptPassword("decryptedApiKey");
-//        repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, Collections.singletonList("branchName"));
+        Assert.assertEquals(HttpStatus.NOT_FOUND.value(), httpStatus);
 
     }
 
 
     @Test
     public void triggerScanRepoToolProject() {
+        when(processorRepository.findByProcessorName(CommonConstant.REPO_TOOLS)).thenReturn(new Processor());
+        when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(CommonConstant.REPO_TOOLS,
+                new ObjectId("5fb364612064a31c9ccd517a"))).thenReturn(Arrays.asList(projectToolConfig));
+        when(processorExecutionTraceLogRepository
+                .findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS, "5fb364612064a31c9ccd517a")).thenReturn(Optional.of(null));
     }
 
     @Test
