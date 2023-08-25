@@ -71,6 +71,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private static final String ITERATION = "Iteration";
 	private static final String BACKLOG = "Backlog";
 	private static final String RELEASE = "Release";
+	private static final String DORA = "Dora";
 	private static final String KPI_MATURITY = "Kpi Maturity";
 	private static final String DEFAULT_BOARD_NAME = "My KnowHow";
 	@Autowired
@@ -144,6 +145,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				.collect(Collectors.toList());
 		defaultKpiCategory.add(ITERATION);
 		defaultKpiCategory.add(RELEASE);
+		defaultKpiCategory.add(DORA);
 		defaultKpiCategory.add(BACKLOG);
 		defaultKpiCategory.add(KPI_MATURITY);
 		return (!defaultKpiCategory.containsAll(existingCategories));
@@ -304,6 +306,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		List<String> defaultKpiCategory = new ArrayList<>();
 		defaultKpiCategory.add(ITERATION);
 		defaultKpiCategory.add(RELEASE);
+		defaultKpiCategory.add(DORA);
 		defaultKpiCategory.add(BACKLOG);
 		defaultKpiCategory.add(KPI_MATURITY);
 		setDefaultBoardInfoFromKpiMaster(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), false,
@@ -327,6 +330,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 		List<BoardDTO> otherBoards = new ArrayList<>();
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), RELEASE,
+				otherBoards, false);
+		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), DORA,
 				otherBoards, false);
 		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), BACKLOG,
 				otherBoards, false);

@@ -113,7 +113,7 @@ public enum KPIExcelColumn {
 	RELEASE_FREQUENCY("kpi73",
 			Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
-	DEPLOYMENT_FREQUENCY("kpi118", Arrays.asList("Project Name", "Date", "Job Name", "Month", "Environment")),
+	DEPLOYMENT_FREQUENCY("kpi118", Arrays.asList("Project Name", "Date", "Job Name", "Weeks", "Environment")),
 
 	DEFECTS_WITHOUT_STORY_LINK("kpi80",
 			Arrays.asList("Project Name", "Priority", "Defects Without Story Link", "Issue Description")),
@@ -257,7 +257,12 @@ public enum KPIExcelColumn {
 									Arrays.asList("Date")), FLOW_LOAD("kpi148", Arrays.asList("Date")),
 
 	RELEASE_BURNUP("kpi150", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
-			"Priority", "Assignee", "Issue Status"));
+			"Priority", "Assignee", "Issue Status")),
+
+	PI_PREDICTABILITY("kpi153", Arrays.asList("Project Name", "Epic ID", "Epic Name", "Status", "PI Name",
+			"Planned Value", "Achieved Value")),
+
+	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay"));
 
 	// @formatter:on
 

@@ -1145,4 +1145,5 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   pointer-events: none;
   background-color: rgba(0, 0, 0, 0.1) !important;
   border: 1px solid rgba(0,0,0,0.2) !important;
+  opacity: 0.6;
 }

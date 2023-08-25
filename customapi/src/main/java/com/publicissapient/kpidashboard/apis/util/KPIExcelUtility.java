@@ -713,6 +713,27 @@ public class KPIExcelUtility {
 		}
 	}
 
+	public static void populatePIPredictabilityExcelData(String projectName, List<JiraIssue> epicList,
+			List<KPIExcelData> kpiExcelData) {
+		if (CollectionUtils.isNotEmpty(epicList)) {
+			epicList.forEach(epic -> {
+				if (null != epic) {
+					Map<String, String> epicLink = new HashMap<>();
+					epicLink.put(epic.getNumber(), checkEmptyURL(epic));
+					KPIExcelData excelData = new KPIExcelData();
+					excelData.setProjectName(projectName);
+					excelData.setEpicID(epicLink);
+					excelData.setEpicName(checkEmptyName(epic));
+					excelData.setStatus(epic.getStatus());
+					excelData.setPiName(epic.getReleaseVersions().get(0).getReleaseName());
+					excelData.setPlannedValue(String.valueOf(epic.getEpicPlannedValue()));
+					excelData.setAchievedValue(String.valueOf(epic.getEpicAchievedValue()));
+					kpiExcelData.add(excelData);
+				}
+			});
+		}
+	}
+
 	public static void populateDailyClosureExcelData(List<KPIExcelData> excelDataList, List<JiraIssue> issuesExcel,
 			FieldMapping fieldMapping, Map<String, IterationPotentialDelay> issueWiseDelay,
 			List<JiraIssue> completedIssue) {
@@ -824,9 +845,8 @@ public class KPIExcelUtility {
 				excelData.setProjectName(projectName);
 				excelData.setDate(deploymentFrequencyInfo.getDeploymentDateList().get(i));
 				excelData.setJobName(deploymentFrequencyInfo.getJobNameList().get(i));
-				excelData.setMonth(deploymentFrequencyInfo.getMonthList().get(i));
+				excelData.setWeeks(deploymentFrequencyInfo.getMonthList().get(i));
 				excelData.setDeploymentEnvironment(deploymentFrequencyInfo.getEnvironmentList().get(i));
-				excelData.setMonth(deploymentFrequencyInfo.getMonthList().get(i));
 				kpiExcelData.add(excelData);
 
 			}

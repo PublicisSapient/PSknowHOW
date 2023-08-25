@@ -25,6 +25,7 @@ import java.util.Set;
 import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
 /**
@@ -253,4 +254,12 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 
 	List<JiraIssue> findByRelease(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap);
+
+	/**
+	 * find unique Release Version Name group by type name
+	 * @param mapOfFilters
+	 * @param  @return
+	 */
+
+	List<ReleaseWisePI> findUniqueReleaseVersionByUniqueTypeName(Map<String, List<String>> mapOfFilters);
 }
