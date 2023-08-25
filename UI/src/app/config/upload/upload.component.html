@@ -106,15 +106,15 @@
                 <p-table [columns]="cols.testExecutionKanbanKeys" [value]="testExecutionKanbanData" class="custom-grid"  [loadingIcon]="loading-img">
                   <ng-template pTemplate="header" let-columns>
                     <tr>
-                      <th *ngFor="let col of columns" class="upload_tep_width_kanban">
+                      <th *ngFor="let col of columns" [ngClass]="{'upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}">
                         {{col.header}}
                     </th>
-                      <th class="upload_tep_width_kanban">Action</th>
+                      <th [ngClass]="{'upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}">Action</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body"  let-item let-columns="columns">
                     <tr class="sprint" [ngClass]="{'tr-active': ((currentDate  | date: 'dd/MMM/yyyy') === (item?.executionDate | date: 'dd/MMM/yyyy'))}">
-                      <td *ngFor="let col of columns" [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number'}" class="upload_tep_width_kanban">
+                      <td *ngFor="let col of columns" [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number','upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}">
                         <span *ngIf="col.field === 'executionDate' else otherFieldsTemp">
                           {{item[col.field] | date: 'dd/MMM/yyyy'}}
                         </span>
@@ -122,7 +122,7 @@
                           {{item[col.field] ? item[col.field] : '- -'}}
                         </ng-template>
                   </td>
-                  <td class="upload_tep_width_kanban"><button pButton type="button" class="p-button-sm btn-active edit-btn"  label="{{(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit' : 'Add'}}"
+                  <td [ngClass]="{'upload_tep_width_kanban': !isAddtionalTestField,'upload_tep_width_kanban_9column' : isAddtionalTestField}"><button pButton type="button" class="p-button-sm btn-active edit-btn"  label="{{(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit' : 'Add'}}"
                       (click)="AddOrUpdateData(item)"></button></td>
                     </tr>
                   </ng-template>
@@ -145,18 +145,18 @@
                 <p-table [columns]="cols.testExecutionScrumKeys" [value]="testExecutionScrumData" class="custom-grid"  loadingIcon="loading-img">
                   <ng-template pTemplate="header" let-columns>
                     <tr>
-                      <th *ngFor="let col of columns" class="upload_tep_width">
+                      <th *ngFor="let col of columns" [ngClass]="{'upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}">
                         {{col.header}}
                     </th>
-                      <th class="upload_tep_width">Action</th>
+                      <th [ngClass]="{'upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}">Action</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body"  let-item let-columns="columns">
                     <tr class="sprint" [ngClass]="{'tr-active': item?.sprintState?.toLowerCase() === 'active'}">
-                      <td *ngFor="let col of columns"  [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number'}"  class="upload_tep_width">
+                      <td *ngFor="let col of columns"  [ngClass]="{'text-blue':(item[col.field] | typeof) === 'number','upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}"  class="upload_tep_width">
                           <span>{{item[col.field] ? item[col.field] : '- -'}}</span>
                       </td>
-                  <td  class="upload_tep_width"><button pButton type="button" class="p-button-sm btn-active edit-btn" label="{{(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit' : 'Add'}}"
+                  <td [ngClass]="{'upload_tep_width': !isAddtionalTestField,'upload_tep_width_10column' : isAddtionalTestField}"><button pButton type="button" class="p-button-sm btn-active edit-btn" label="{{(item?.totalTestCases && item?.executedTestCase && item?.passedTestCase) ? 'Edit' : 'Add'}}"
                       (click)="AddOrUpdateData(item)"></button></td>
                     </tr>
                   </ng-template>
@@ -502,6 +502,40 @@
         formControlName="passedTestCase" (input)="numericInputUpDown($event)"
           (keydown)="enterNumericValue($event)">
       </div>
+     <ng-container *ngIf="isAddtionalTestField">
+      <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
+        <label for="automatedTestCases" class="mr-sm-2 float-left">
+          <span>Enter "Automated test cases"</span>
+        </label>
+        <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter passed test cases'"
+        formControlName="automatedTestCases" (input)="numericInputUpDown($event)"
+          (keydown)="enterNumericValue($event)">
+      </div>
+      <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
+        <label for="automatableTestCases" class="mr-sm-2 float-left">
+          <span>Enter "Automatable test cases"</span>
+        </label>
+        <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter passed test cases'"
+        formControlName="automatableTestCases" (input)="numericInputUpDown($event)"
+          (keydown)="enterNumericValue($event)">
+      </div>
+      <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
+        <label for="automatedRegressionTestCases" class="mr-sm-2 float-left">
+          <span>Enter "Automated regression test cases"</span>
+        </label>
+        <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter passed test cases'"
+        formControlName="automatedRegressionTestCases" (input)="numericInputUpDown($event)"
+          (keydown)="enterNumericValue($event)">
+      </div>
+      <div class="form-group p-field p-mb-0 required p-xl-12 pad-l-0">
+        <label for="totalRegressionTestCases" class="mr-sm-2 float-left">
+          <span>Enter "Total regression test cases"</span>
+        </label>
+        <input type="number" pInputText class="form-control p-p-2 mb-2 mr-sm-2" [placeholder]="'Enter passed test cases'"
+        formControlName="totalRegressionTestCases" (input)="numericInputUpDown($event)"
+          (keydown)="enterNumericValue($event)">
+      </div>
+    </ng-container>
     </form>
     <ng-template #sprintCapacityPopupFormTemp>
       <form [formGroup]="popupForm" class="p-xl-12 p-p-0" *ngIf="selectedView === 'upload_Sprint_Capacity'">
