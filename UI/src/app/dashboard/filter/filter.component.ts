@@ -540,7 +540,10 @@ export class FilterComponent implements OnInit, OnDestroy {
     } else if (this.selectedTab?.toLowerCase() === 'release') {
       this.projectIndex = 0;
       this.handleMilestoneFilter('project');
-    } else {
+    } else if (this.selectedTab?.toLowerCase() === 'developer') {
+      this.selectedDayType = 'Days';
+      this.applyChanges();
+    }else {
       this.applyChanges();
     }
   }
