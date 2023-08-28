@@ -92,7 +92,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private CacheService cacheService;
 
 	/**
-	 * This method return user board config if present in db else return a default
+	 * .This method return user board config if present in db else return a default
 	 * configuration.
 	 *
 	 * @return UserBoardConfigDTO
@@ -110,8 +110,9 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			return defaultUserBoardConfigDTO;
 		} else {
 			UserBoardConfigDTO existingUserBoardConfigDTO = convertToUserBoardConfigDTO(existingUserBoardConfig);
-			if (checkKPIAddOrRemoveForExistingUser(existingUserBoardConfigDTO, kpiMasterMap)
-					&& checkCategories(existingUserBoardConfigDTO, kpiCategoryList)) {
+			if ((checkKPIAddOrRemoveForExistingUser(existingUserBoardConfigDTO, kpiMasterMap)
+					&& checkCategories(existingUserBoardConfigDTO, kpiCategoryList))
+					|| checkKPISubCategory(existingUserBoardConfigDTO, kpiMasterMap)) {
 				setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 				filtersBoardsAndSetKpisForExistingUser(existingUserBoardConfigDTO.getScrum(),
 						defaultUserBoardConfigDTO.getScrum());
@@ -123,6 +124,34 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			}
 			filterKpis(existingUserBoardConfigDTO, kpiMasterMap);
 			return existingUserBoardConfigDTO;
+		}
+	}
+
+	/**
+	 * This method checks sub tabs for existing user on release board
+	 *
+	 * @param existingUserBoardConfigDTO
+	 * @param kpiMasterMap
+	 * @return
+	 */
+	private boolean checkKPISubCategory(UserBoardConfigDTO existingUserBoardConfigDTO,
+			Map<String, KpiMaster> kpiMasterMap) {
+		Set<String> existingUserSubCategories = existingUserBoardConfigDTO.getOthers().stream()
+				.filter(boardDTO -> boardDTO.getBoardName().equalsIgnoreCase(RELEASE))
+				.flatMap(boardDTO -> boardDTO.getKpis().stream().filter(kpi -> kpi.getSubCategoryBoard() != null)
+						.map(BoardKpisDTO::getSubCategoryBoard))
+				.collect(Collectors.toSet());
+		Set<String> kpiMasterSubCategories = kpiMasterMap.values().stream()
+				.filter(kpiMaster -> kpiMaster.getKpiCategory() != null
+						&& kpiMaster.getKpiCategory().equalsIgnoreCase(RELEASE)
+						&& kpiMaster.getKpiSubCategory() != null)
+				.map(KpiMaster::getKpiSubCategory).collect(Collectors.toSet());
+		if (kpiMasterSubCategories.size() > existingUserSubCategories.size()) {
+			return !CollectionUtils.containsAll(existingUserSubCategories, kpiMasterSubCategories);
+		} else if (kpiMasterSubCategories.size() < existingUserSubCategories.size()) {
+			return !CollectionUtils.containsAll(kpiMasterSubCategories, existingUserSubCategories);
+		} else {
+			return false;
 		}
 	}
 
