@@ -49,6 +49,20 @@
                     <p class="p-mt-1 font-bold">{{issueData['timeWithStatus']}}</p>
                 </span>
             </div>
+            <div class="p-d-flex p-mb-2" [style]="{'width':'50%'}">
+                <div class="indicator"></div>
+                <span>
+                    <h4 class="p-mb-1 p-mt-2" [style]="{'color':'#666666'}">Original Estimate</h4>
+                    <p class="p-mt-1 font-bold">{{issueData['Original Estimate']}}</p>
+                </span>
+            </div>
+            <div class="p-d-flex p-mb-2" [style]="{'width':'50%'}">
+                <div class="indicator"></div>
+                <span>
+                    <h4 class="p-mb-1 p-mt-2" [style]="{'color':'#666666'}">Remaining Estimate</h4>
+                    <p class="p-mt-1 font-bold">{{issueData['Remaining Estimate']}}</p>
+                </span>
+            </div>
         </div>
     </div>
 
