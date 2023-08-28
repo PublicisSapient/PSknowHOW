@@ -212,6 +212,7 @@ public class JiraController {
 				return ResponseEntity.ok().body(responseList);
 			}
 		} else {
+			log.info("Generate Token Push Data via KnowHow tool configuration screen {}", kpiRequest.getRequestTrackerId());
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 		}
 	}
