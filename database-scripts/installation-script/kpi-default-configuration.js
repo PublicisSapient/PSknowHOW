@@ -1,3 +1,4 @@
+        db.getCollection('metadata_identifier').remove({});
         db.metadata_identifier.insertMany([
 										{
                                                 "tool": "Jira",
@@ -619,6 +620,14 @@
                       ]
                   },
                   {
+                      "type": "jiraStatusForInProgressKPI154",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
                       "type": "jiraDodKPI14",
                       "value": [
                           "Closed",
@@ -687,8 +696,19 @@
                           "Done",
                           "Ready for Sign-off"
                       ]
+                  },
+                  {
+                       "type": "jiraStatusStartDevelopmentKPI154",
+                        "value": [
+                              "In Analysis",
+                              "IN ANALYSIS",
+                              "In Development",
+                               "In Progress"
+                        ]
                   }
-              ]                                            },
+
+              ]
+                                        },
                                         {
                                           "tool": "Jira",
                                           "templateName": "Standard Template",
@@ -908,6 +928,15 @@
                                                 "Open"
                                               ]
                                             },
+                                            {
+                                               "type": "firstDevstatus",
+                                               "value": [
+                                                   "In Analysis",
+                                                   "IN ANALYSIS",
+                                                   "In Development",
+                                                   "In Progress"
+                                               ]
+                                           },
                                             {
                                               "type": "rejection",
                                               "value": [
@@ -1143,6 +1172,15 @@
                                               ]
                                             },
                                             {
+                                               "type": "firstDevstatus",
+                                               "value": [
+                                                   "In Analysis",
+                                                   "IN ANALYSIS",
+                                                   "In Development",
+                                                   "In Progress"
+                                               ]
+                                            },
+                                            {
                                               "type": "rejection",
                                               "value": [
                                                 "Rejected",
@@ -1335,6 +1373,15 @@
                                                 "New"
                                               ]
                                             },
+                                            {
+                                               "type": "firstDevstatus",
+                                               "value": [
+                                                   "In Analysis",
+                                                   "IN ANALYSIS",
+                                                   "In Development",
+                                                   "In Progress"
+                                               ]
+                                           },
                                             {
                                               "type": "rejection",
                                               "value": [

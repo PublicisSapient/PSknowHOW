@@ -156,6 +156,8 @@ public class IterationKpiModalValue implements Serializable {
 	private String devCompletionDateInTime;
 	@JsonProperty("Actual-Completion-Date")
 	private String actualCompletionDateInTime;
+	@JsonProperty("Actual-Start-Date")
+	private String actualStartDateInTime;
 	Map<String, List<String>> statusLogGroup;
 	Map<String, List<String>> workLogGroup;
 	Map<String, List<String>> assigneeLogGroup;
@@ -163,7 +165,7 @@ public class IterationKpiModalValue implements Serializable {
 	private Long timeWithStatus;
 	private Long loggedWorkInSeconds;
 	private String epicName;
-	private String previousSprintName;
+	private boolean spill;
 	private Long remainingEstimateInSeconds;
 	private Long originalEstimateInSeconds;
 	private Set<String> subTask;

@@ -8154,6 +8154,16 @@ db.getCollection('field_mapping_structure').insertMany(
         "tooltip": {
             "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI",
         }
-    }
+    },
+    {
+   "fieldName": "jiraSubTaskDefectType",
+   "fieldLabel": "Issue type for sub-task defect",
+   "fieldType": "chips",
+   "fieldCategory": "Issue_Type",
+   "section": "Issue Types Mapping",
+   "tooltip": {
+   "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard and Daily Scrum"
+   }
+   }
 ]
 );

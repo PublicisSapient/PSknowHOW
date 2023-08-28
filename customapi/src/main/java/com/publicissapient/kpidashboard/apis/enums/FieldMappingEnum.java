@@ -33,10 +33,12 @@ public enum FieldMappingEnum {
 					"jiraBugRaisedByQACustomField", "jiraBugRaisedByQAIdentification", "jiraBugRaisedByQAValue",
 					"jiraBugRaisedByCustomField", "jiraBugRaisedByValue", "jiraBugRaisedByIdentification",
 					"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
-					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField", "jiraDevDueDateField",
-					"jiraIssueEpicType", "storyFirstStatus", "jiraTestAutomationIssueType",
-					"productionDefectCustomField", "productionDefectIdentifier",
-					"productionDefectValue", "productionDefectComponentValue", "notificationEnabler", "epicPlannedValue", "epicAchievedValue", "epicLink")),
+					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField",
+					"jiraDevDueDateField", "jiraIssueEpicType", "storyFirstStatus", "jiraTestAutomationIssueType",
+					"productionDefectCustomField", "productionDefectIdentifier", "productionDefectValue",
+					"productionDefectComponentValue", "notificationEnabler", "epicPlannedValue", "epicAchievedValue",
+					"epicLink", "jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154", "jiraQADoneStatusKPI154",
+					"jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154", "jiraSubTaskDefectType")),
 
 	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNames", "storyFirstStatus",
 			"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
@@ -175,7 +177,7 @@ public enum FieldMappingEnum {
 
 	KPI154("Daily StandUp View", KPISource.JIRA.name(),
 			Arrays.asList("jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154", "jiraQADoneStatusKPI154",
-					"jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154"));
+					"jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154","jiraSubTaskDefectType"));
 
 	private List<String> fields;
 	private String kpiName;

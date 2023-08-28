@@ -129,6 +129,15 @@ db.metadata_identifier.insert([{
                 ]
             },
             {
+                "type": "firstDevstatus",
+                "value": [
+                    "In Analysis",
+                    "IN ANALYSIS",
+                    "In Development",
+                    "In Progress"
+                ]
+            },
+            {
                 "type": "delivered",
                 "value": [
                     "Closed"
@@ -306,6 +315,15 @@ db.metadata_identifier.insert([{
                 ]
             },
             {
+                "type": "firstDevstatus",
+                "value": [
+                    "In Analysis",
+                    "IN ANALYSIS",
+                    "In Development",
+                    "In Progress"
+                ]
+            },
+            {
                 "type": "delivered",
                 "value": [
                     "Closed"
@@ -480,6 +498,15 @@ db.metadata_identifier.insert([{
                 "type": "firststatus",
                 "value": [
                     "Open"
+                ]
+            },
+            {
+                "type": "firstDevstatus",
+                "value": [
+                    "In Analysis",
+                    "IN ANALYSIS",
+                    "In Development",
+                    "In Progress"
                 ]
             },
             {
@@ -1125,6 +1152,14 @@ db.metadata_identifier.insert([{
                       ]
                   },
                   {
+                      "type": "jiraStatusForInProgressKPI154",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
                       "type": "jiraDodKPI14",
                       "value": [
                           "Closed",
@@ -1193,6 +1228,11 @@ db.metadata_identifier.insert([{
                           "Done",
                           "Ready for Sign-off"
                       ]
+                  },
+                  {
+                      "type": "jiraStatusStartDevelopmentKPI154",
+
+
                   }
               ]
 
@@ -1793,6 +1833,14 @@ db.metadata_identifier.insert([{
                       ]
                   },
                   {
+                      "type": "jiraStatusForInProgressKPI154",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
                       "type": "jiraDodKPI14",
                       "value": [
                           "Closed",
@@ -1861,6 +1909,15 @@ db.metadata_identifier.insert([{
                           "Done",
                           "Ready for Sign-off"
                       ]
+                  },
+                  {
+                       "type": "jiraStatusStartDevelopmentKPI154",
+                        "value": [
+                              "In Analysis",
+                              "IN ANALYSIS",
+                              "In Development",
+                               "In Progress"
+                        ]
                   }
               ]
 
@@ -2461,6 +2518,14 @@ db.metadata_identifier.insert([{
                       ]
                   },
                   {
+                      "type": "jiraStatusForInProgressKPI154",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
                       "type": "jiraDodKPI14",
                       "value": [
                           "Closed",
@@ -2529,6 +2594,12 @@ db.metadata_identifier.insert([{
                           "Done",
                           "Ready for Sign-off"
                       ]
+                  },
+                  {
+                       "type": "jiraStatusStartDevelopmentKPI154",
+                        "value": [
+                            "In Analysis"
+                          ]
                   }
               ]
 
@@ -3129,6 +3200,14 @@ db.metadata_identifier.insert([{
                       ]
                   },
                   {
+                      "type": "jiraStatusForInProgressKPI154",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
                       "type": "jiraDodKPI14",
                       "value": [
                           "Closed",
@@ -3196,6 +3275,12 @@ db.metadata_identifier.insert([{
                           "Ready for Delivery",
                           "Done",
                           "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusStartDevelopmentKPI154",
+                      "value": [
+                          "In Analysis"
                       ]
                   }
               ]
@@ -3415,6 +3500,15 @@ db.metadata_identifier.insert([{
                 "type": "firststatus",
                 "value": [
                     "Open"
+                ]
+            },
+            {
+                "type": "firstDevstatus",
+                "value": [
+                    "In Analysis",
+                    "IN ANALYSIS",
+                    "In Development",
+                    "In Progress"
                 ]
             },
             {

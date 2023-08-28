@@ -3735,9 +3735,92 @@ db.getCollection('field_mapping_structure').insertMany([
     {
         "fieldName": "jiraStatusForInProgressKPI154",
         "fieldLabel": "Status to identify In Progress issues",
+        "section": "WorkFlow Status Mapping",
+        "fieldType": "text",
         "readOnly": true,
         "tooltip": {
             "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI",
         }
-    }
+    },
+   {
+   "fieldName": "jiraSubTaskDefectType",
+   "fieldLabel": "Issue type for sub-task defect",
+   "fieldType": "chips",
+   "fieldCategory": "Issue_Type",
+   "section": "Issue Types Mapping",
+   "tooltip": {
+   "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard and Daily Scrum"
+   }
+   }
 ])
+// Initialize an array to store the bulk write operations
+var metaDataOperations = [];
+
+// Add the first update operation to the bulk operations array
+metaDataOperations.push({
+   updateMany: {
+      filter: {
+         $or: [
+            { "templateCode": "8" },
+            { "tool": "Azure" }
+         ]
+      },
+      update: {
+         $push: {
+            "workflow": {
+               "type": "firstDevstatus",
+               "value": [
+                  "In Analysis",
+                  "IN ANALYSIS",
+                  "In Development",
+                  "In Progress"
+               ]
+            }
+         }
+      }
+   }
+});
+
+metaDataOperations.push({
+   updateMany: {
+      filter: {
+         "templateCode": "7"
+      },
+      update: {
+         $push: {
+            "workflow": {
+               "type": "jiraStatusForInProgressKPI154",
+               "value": [
+                  "In Analysis",
+                  "In Development",
+                  "In Progress"
+               ]
+            }
+         }
+      }
+   }
+});
+
+metaDataOperations.push({
+   updateMany: {
+      filter: {
+         "templateCode": "7"
+      },
+      update: {
+         $push: {
+            "workflow": {
+               "type": "jiraStatusStartDevelopmentKPI154",
+               "value": [
+                  "In Analysis",
+                  "IN ANALYSIS",
+                  "In Development",
+                  "In Progress"
+               ]
+            }
+         }
+      }
+   }
+});
+
+// Execute the bulk write operations
+db.getCollection('metadata_identifier').bulkWrite(metaDataOperations);
