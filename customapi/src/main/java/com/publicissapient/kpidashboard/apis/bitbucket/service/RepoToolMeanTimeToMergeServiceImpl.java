@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -279,6 +280,9 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
 			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
 				startDate = LocalDate.now().minusWeeks(dataPoint);
+				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+					startDate = startDate.minusDays(1);
+				}
 			}
 			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
 			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,

@@ -10,6 +10,7 @@ import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.ser
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
@@ -133,12 +134,6 @@ public class RepoToolConfigServiceImplTest {
     public void testConfigureRepoToolsProject() {
         RepoToolsClient repoToolsClient = new RepoToolsClient();
         when(repoToolsProviderRepository.findByToolName(anyString())).thenReturn(new RepoToolsProvider());
-        when(projectToolConfigService.getProjectToolConfigs(anyString(), anyString()))
-                .thenReturn(Collections.singletonList(new ProjectToolConfigDTO()));
-        when(restAPIUtils.decryptPassword(anyString())).thenReturn("decryptedApiKey");
-        when(projectBasicConfigRepository.findById(any(ObjectId.class))).thenReturn(Optional.of(new ProjectBasicConfig()));
-        String testRepoToolsUrl = "http://example.com"; // Replace with your desired URL
-        when(customApiConfig.getRepoToolURL()).thenReturn(testRepoToolsUrl);
 		when(customApiConfig.getRepoToolAPIKey()).thenReturn("repoToolAPIKey");
 		when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
 				.thenReturn(projectBasicConfig);
@@ -148,9 +143,6 @@ public class RepoToolConfigServiceImplTest {
 
         when(repoToolsProviderRepository.findByToolName(anyString()))
                 .thenReturn(new RepoToolsProvider());
-
-        when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(anyString(), any()))
-                .thenReturn(Collections.singletonList(projectToolConfig));
 
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
         when(restAPIUtils.decryptPassword(anyString())).thenReturn("decryptedApiKey");
@@ -165,12 +157,21 @@ public class RepoToolConfigServiceImplTest {
 
 
     @Test
-    public void triggerScanRepoToolProject() {
+    public void testTriggerScanRepoToolProject() {
         when(processorRepository.findByProcessorName(CommonConstant.REPO_TOOLS)).thenReturn(new Processor());
         when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(CommonConstant.REPO_TOOLS,
                 new ObjectId("5fb364612064a31c9ccd517a"))).thenReturn(Arrays.asList(projectToolConfig));
         when(processorExecutionTraceLogRepository
-                .findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS, "5fb364612064a31c9ccd517a")).thenReturn(Optional.of(null));
+                .findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS, "5fb364612064a31c9ccd517a")).thenReturn(Optional.of(new ProcessorExecutionTraceLog()));
+        when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
+        when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
+                .thenReturn(projectBasicConfig);
+
+        Whitebox.setInternalState(repoToolsConfigService, "repoToolsClient", repoToolsClient);
+
+        int httpStatus = repoToolsConfigService.triggerScanRepoToolProject(Arrays.asList("5fb364612064a31c9ccd517a"));
+
+        Assert.assertEquals(0, httpStatus);
     }
 
     @Test

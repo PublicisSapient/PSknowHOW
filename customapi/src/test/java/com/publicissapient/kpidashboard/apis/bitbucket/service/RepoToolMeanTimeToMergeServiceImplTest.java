@@ -8,15 +8,12 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.publicissapient.kpidashboard.apis.data.RepoToolsKpiRequestDataFactory;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -96,6 +93,7 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi84");
 		kpiRequest.setLabel("PROJECT");
+		kpiRequest.getSelectedMap().put(CommonConstant.date, Arrays.asList("DAYS"));
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
@@ -131,17 +129,6 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 		dataCount.setMaturityValue(maturityValue);
 		dataCount.setValue(value);
 		return dataCount;
-	}
-
-	private MergeRequests createMergeRequests(String state, String toBranch, String repoSlug, String projKey,
-			ObjectId collectorItemId) {
-		MergeRequests mergeRequests = new MergeRequests();
-		mergeRequests.setState(state);
-		mergeRequests.setToBranch(toBranch);
-		mergeRequests.setRepoSlug(repoSlug);
-		mergeRequests.setProjKey(projKey);
-		mergeRequests.setProcessorItemId(collectorItemId);
-		return mergeRequests;
 	}
 
 	private void setToolMap() {

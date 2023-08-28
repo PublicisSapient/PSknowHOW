@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,11 +31,6 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeComparator;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -67,17 +63,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object>, Map<String, Object>> {
 
-	private static final int MILISEC_ONE_DAY = 86_399_999;
-	private static final String AZURE_REPO = "AzureRepository";
-	private static final String BITBUCKET = "Bitbucket";
-	private static final String GITLAB = "GitLab";
-	private static final String GITHUB = "GitHub";
 	private static final String YYYYMMDD = "yyyy-MM-dd";
 	private static final String NO_CHECKIN = "No. of Check in";
 	private static final String NO_MERGE = "No. of Merge Requests";
 	public static final String REPO_TOOLS_COMMIT_KPI = "repo-activity-bulk/";
 	public static final String REPO_TOOLS_MR_KPI = "mr-life-cycle-bulk/";
-	public static final String FREQUENCY = "day";
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
 	private static final String REPO_TOOLS = "RepoTool";
@@ -209,7 +199,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 
 				}
 			});
-			List<DataCount> dayWiseCount = setDayWiseCountForProject(aggMergeCountForRepo, aggCommitCountForRepo,
+			List<DataCount> dayWiseCount = setDayWiseCountForProject(aggCommitCountForRepo, aggMergeCountForRepo,
 					new HashMap<>(), projectName, new HashMap<>(), duration, dataPoints);
 			aggDataMap.put(Constant.AGGREGATED_VALUE, dayWiseCount);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
@@ -371,6 +361,9 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
 			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
 				startDate = LocalDate.now().minusWeeks(dataPoint);
+				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+					startDate = startDate.minusDays(1);
+				}
 			}
 			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
 			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,

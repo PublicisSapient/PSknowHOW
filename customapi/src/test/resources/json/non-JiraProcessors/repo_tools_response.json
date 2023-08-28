@@ -1,5 +1,6 @@
 {
   "values": [
+    [
     {
       "project_name": "TestP1_64748074f15d7843b3735db5",
       "project_code": "TestP1_64748074f15d7843b3735db5",
@@ -32,6 +33,32 @@
           ]
         }
       ],
+      "projectRepositories": [
+        {
+          "repository": "PSknowHOW",
+          "commit_count": 142,
+          "repoGrade": 8.142857142857142,
+          "filteredBranch": null,
+          "branchesCommitsCount": [
+            {
+              "branch__name": "debbie_integration",
+              "count": 130,
+              "grade": 10
+            },
+            {
+              "branch__name": "DTS-26342_daily_scrum_view",
+              "count": 130,
+              "grade": 10
+            },
+            {
+              "branch__name": "master",
+              "count": 134,
+              "grade": 10
+            }
+          ]
+        }
+      ],
+
       "users": [
         {
           "email": "string",
@@ -41,5 +68,6 @@
       ],
       "date_label": "2023-07-01"
     }
+  ]
   ]
 }
