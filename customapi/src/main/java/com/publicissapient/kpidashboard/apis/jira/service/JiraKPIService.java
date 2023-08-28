@@ -329,4 +329,8 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return jiraService.getReleaseList();
 	}
 
+	public List<JiraIssue> getTotalIssuesOfProject() {
+		return jiraService.getJiraIssuesForCurrentSprint();
+	}
+
 }

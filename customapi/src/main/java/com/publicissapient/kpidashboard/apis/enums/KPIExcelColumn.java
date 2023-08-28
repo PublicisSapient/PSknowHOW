@@ -266,7 +266,7 @@ public enum KPIExcelColumn {
 
 	//DTS-26123 start
 	DEFECT_COUNT_BY_TYPE("kpi155", Arrays.asList("Issue ID", "Issue Description", "Issue Type",
-			"Issue Status", "Priority","Created Date","Updated Date", "Assignee"));
+			"Issue Status", "Sprint Name", "Priority","Created Date","Updated Date", "Assignee"));
 	//DTS-26123 end
 
 	// @formatter:on

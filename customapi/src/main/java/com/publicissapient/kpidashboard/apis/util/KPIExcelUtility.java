@@ -1456,6 +1456,16 @@ public class KPIExcelUtility {
 				populateAssignee(jiraIssue, excelData);
 				excelData.setPriority(jiraIssue.getPriority());
 				excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());
+				// DTS-26123 start
+				// setting the sprintName is currently for only KPI155, to enable for other
+				// KPI's,
+				// add the column in KPIExcelColumn
+				List<String> sprintStatusList = Arrays.asList(CommonConstant.ACTIVE, CommonConstant.FUTURE);
+				excelData.setSprintName(StringUtils.isNotEmpty(jiraIssue.getSprintName())
+						&& StringUtils.isNotEmpty(jiraIssue.getSprintAssetState())
+						&& sprintStatusList.contains(jiraIssue.getSprintAssetState()) ? jiraIssue.getSprintName()
+								: "-");
+				// DTS-26123 end
 				String date = Constant.EMPTY_STRING;
 				if (jiraIssue.getCreatedDate() != null) {
 					date = DateUtil.dateTimeConverter(jiraIssue.getCreatedDate(), DATE_FORMAT_PRODUCTION_DEFECT_AGEING,
