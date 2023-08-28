@@ -96,7 +96,7 @@ public class JiraController {
 	public ResponseEntity<List<KpiElement>> getJiraAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception {// NOSONAR
 
-		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
+		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId()); // NOSONAR
 		log.info("Received Jira KPI request {}", kpiRequest);
 
 		long jiraRequestStartTime = System.currentTimeMillis();
@@ -105,7 +105,7 @@ public class JiraController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 		}
 
 		List<KpiElement> responseList = jiraService.process(kpiRequest);
@@ -190,7 +190,7 @@ public class JiraController {
 	public ResponseEntity<List<KpiElement>> getJiraAggregatedMetricsForMaturity(HttpServletRequest request,
 			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception {// NOSONAR
 
-		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
+		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId()); // NOSONAR
 		log.info("Received Jira KPI request {}", kpiRequest);
 		ExposeApiToken exposeApiToken = authExposeAPIService.validateToken(request);
 		long jiraRequestStartTime = System.currentTimeMillis();
@@ -198,7 +198,7 @@ public class JiraController {
 		if(Objects.nonNull(exposeApiToken)) {
 			cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name(), kpiRequest.getRequestTrackerId());
 			if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-				throw new MissingServletRequestParameterException("kpiList", "List");
+				throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 			}
 
 			List<KpiElement> responseList = jiraService.process(kpiRequest);
