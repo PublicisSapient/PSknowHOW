@@ -111,34 +111,72 @@ export class TestConnectionService {
     );
   }
 
-  testSonar(baseUrl, username, password, accesstoken, cloudEnv, vault, accessTokenEnabled): Observable<any> {
+  testSonar(baseUrl, username, password, accesstoken, cloudEnv, vault, accessTokenEnabled,bearerToken,patOAuthToken): Observable<any> {
 
     let postData = {};
 
-    if (cloudEnv) {
+    // if (cloudEnv) {
+    //   postData = {
+    //     baseUrl,
+    //     accessToken: accesstoken ? accesstoken : '',
+    //     cloudEnv: true,
+    //     vault,
+    //     accessTokenEnabled
+    //   };
+    // } else {
+    //   postData = {
+    //     baseUrl,
+    //     cloudEnv: false,
+    //     vault,
+    //     accessTokenEnabled : accessTokenEnabled === undefined ? false : accessTokenEnabled
+    //   };
 
-      postData = {
-        baseUrl,
-        accessToken: accesstoken ? accesstoken : '',
-        cloudEnv: true,
-        vault,
-        accessTokenEnabled
-      };
-    } else {
-      postData = {
-        baseUrl,
-        cloudEnv: false,
-        vault,
-        accessTokenEnabled : accessTokenEnabled === undefined ? false : accessTokenEnabled
-      };
+    
 
-      if (accessTokenEnabled) {
-        postData['accessToken'] = accesstoken ? accesstoken : '';
-      } else {
-        postData['password'] = password ? password : '';
-        postData['username'] =  username;
+      // if (accessTokenEnabled) {
+      //   postData['accessToken'] = accesstoken ? accesstoken : '';
+      // } else {
+      //   postData['password'] = password ? password : '';
+      //   postData['username'] =  username;
+      // }
+    // }
+
+    if (!vault && !accessTokenEnabled && !bearerToken) {
+      postData = {
+        baseUrl: baseUrl,
+        cloudEnv: cloudEnv,
+        vault: vault,
+        accessTokenEnabled: accessTokenEnabled,
+        password: password,
+        username: username
+      }
+    } else if (bearerToken) {
+      postData = {
+        baseUrl: baseUrl,
+        cloudEnv: cloudEnv,
+        vault: vault,
+        bearerToken: bearerToken,
+        patOAuthToken: patOAuthToken,
+      }
+    } else if (vault) {
+      postData = {
+        baseUrl: baseUrl,
+        cloudEnv: cloudEnv,
+        vault: vault,
+        bearerToken: bearerToken,
+        patOAuthToken: patOAuthToken,
+        username: username
+      }
+    } else if (accessTokenEnabled) {
+      postData = {
+        baseUrl: baseUrl,
+        cloudEnv: cloudEnv,
+        vault: vault,
+        accessTokenEnabled: accessTokenEnabled,
+        accessToken: accesstoken
       }
     }
+     
 
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');

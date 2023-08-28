@@ -88,8 +88,8 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Sonar',
       connectionLabel: 'Sonar',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', ['Use Password', 'Use Token'], 'Password', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault','accessTokenEnabled', 'password', 'accessToken', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url','Username','Password', 'Use vault password', 'Use Token','Access Token', 'Use bearer token', 'PAT OAuthToken','Is Connection Private'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl','username', 'password', 'vault','accessTokenEnabled','accessToken', 'bearerToken', 'patOAuthToken', 'connPrivate']
     },
     {
       connectionType: 'Jenkins',
@@ -160,9 +160,19 @@ export class ConnectionListComponent implements OnInit {
         {
           field: 'apiKey',
           isEnabled: false
-        }
+        },
+        {
+          field : 'patOAuthToken',
+          isEnabled: false
+        },
       ],
-      accessTokenEnabled:[]
+      accessTokenEnabled:[],
+      bearerToken : [
+        {
+          field : 'patOAuthToken',
+          isEnabled: false
+        },
+      ]
     },
     enableDisableAnotherTime: {
       cloudEnv: [],
@@ -216,6 +226,14 @@ export class ConnectionListComponent implements OnInit {
         },
         {
           field: 'apiKey',
+          isEnabled: false
+        },
+        {
+          field : 'patOAuthToken',
+          isEnabled: false
+        },
+        {
+          field : 'bearerToken',
           isEnabled: false
         }
       ],
@@ -984,6 +1002,7 @@ export class ConnectionListComponent implements OnInit {
       this.basicConnectionForm.controls['password'].enable();
       this.basicConnectionForm.controls['accessTokenEnabled'].enable();
       this.basicConnectionForm.controls['accessToken'].disable();
+      this.basicConnectionForm.controls['patOAuthToken'].disable();
     }
     if(this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true){
       this.basicConnectionForm.controls['password'].disable();
@@ -1065,6 +1084,38 @@ export class ConnectionListComponent implements OnInit {
 
     this.checkZephyr();
     this.enableDisableFieldsOnIsCloudSwithChange();
+
+    if (field === 'bearerToken' && type.toLowerCase() === 'sonar') {
+      if (event.checked) {
+        this.basicConnectionForm.controls['accessToken'].disable();
+        this.basicConnectionForm.controls['accessTokenEnabled'].setValue(false);
+        this.basicConnectionForm.controls['patOAuthToken'].enable();
+        this.basicConnectionForm.controls['password'].disable();
+        this.basicConnectionForm.controls['username'].disable();
+        this.basicConnectionForm.controls['accessTokenEnabled'].disable();
+      } else {
+        this.basicConnectionForm.controls['patOAuthToken'].disable();
+        this.basicConnectionForm.controls['accessTokenEnabled'].enable();
+      }
+    }
+
+    if (field === 'accessTokenEnabled' && type.toLowerCase() === 'sonar') {
+      if (event.checked) {
+        this.basicConnectionForm.controls['bearerToken'].setValue(false);
+        this.basicConnectionForm.controls['bearerToken'].disable();
+        this.basicConnectionForm.controls['accessToken'].enable();
+        this.basicConnectionForm.controls['patOAuthToken'].disable();
+      } else {
+        this.basicConnectionForm.controls['accessToken'].disable();
+        this.basicConnectionForm.controls['bearerToken'].enable();
+      }
+    }
+
+    if (field === 'vault' && type.toLowerCase() === 'sonar') {
+      if (!event.checked) {
+        this.basicConnectionForm.controls['patOAuthToken'].disable();
+      }
+    }
   }
 
   testConnection() {
@@ -1168,7 +1219,7 @@ export class ConnectionListComponent implements OnInit {
       });
         break;
       case 'Sonar':
-        this.testConnectionService.testSonar(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['accessToken'], reqData['cloudEnv'], reqData['vault'],reqData['accessTokenEnabled']).subscribe(next => {
+        this.testConnectionService.testSonar(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['accessToken'], reqData['cloudEnv'], reqData['vault'],reqData['accessTokenEnabled'],reqData['bearerToken'],reqData['patOAuthToken']).subscribe(next => {
           if (next.success && next.data === 200) {
             this.testConnectionMsg = 'Valid Connection';
             this.testConnectionValid = true;
@@ -1410,6 +1461,7 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['accessTokenEnabled'].enable();
         this.enableDisableFieldsOnAccessTokenORPasswordToggle();
       }
+
     }
   }
 

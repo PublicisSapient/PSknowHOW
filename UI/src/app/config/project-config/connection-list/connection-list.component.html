@@ -142,7 +142,7 @@
                         <div class="p-field"
                              *ngIf="connectionFieldLabels.inputFields[i] === 'bearerToken' || connectionFieldLabels.inputFields[i] === 'vault' || connectionFieldLabels.inputFields[i] === 'cloudEnv' || connectionFieldLabels.inputFields[i] === 'isOAuth' || connectionFieldLabels.inputFields[i] === 'offline' || connectionFieldLabels.inputFields[i] === 'accessTokenEnabled'">
 
-                            <label for="connection_{{connectionFieldLabels.inputFields[i]}}">{{ connectionFieldLabels.inputFields[i] !== 'accessTokenEnabled' ? connectionLabelFields : connectionLabelFields[0]
+                            <label for="connection_{{connectionFieldLabels.inputFields[i]}}">{{ connectionFieldLabels.inputFields[i] !== 'accessTokenEnabled' ? connectionLabelFields : connectionLabelFields
                                 }}</label>
 
                             <p-inputSwitch id="connection_{{connectionFieldLabels.inputFields[i]}}"
@@ -152,7 +152,7 @@
                                 onLabel="true" offLabel="false" value="true" required class="p-ml-2 p-mr-2">
                             </p-inputSwitch>
 
-                            <label>{{ connectionFieldLabels.inputFields[i] === 'accessTokenEnabled' ? connectionLabelFields[1] : ''}}</label>
+                            <!-- <label>{{ connectionFieldLabels.inputFields[i] === 'accessTokenEnabled' ? connectionLabelFields[1] : ''}}</label> -->
                         </div>
 
                         <div class="p-field d-flex align-items-center"
