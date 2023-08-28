@@ -19,7 +19,7 @@
 <div *ngIf="!noKpis else noKpiTemplate">
   <div id="message"></div>
   <div class="{{selectedtype}}" id="{{selectedtype}}">
-    <div class="clearfix">
+    <div class="clearfix" *ngIf="showChart !== 'table'">
       <div class="right-container col">
         <div class="p-grid justify-content-start p-pt-3 p-pl-2 p-pr-2">
           <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
@@ -93,7 +93,7 @@
                     </ng-template>
                   </ng-container>
                 </app-kpi-card>
-                <app-kpi-table *ngIf="showChart === 'table'"></app-kpi-table>
+                
               </div>
             </ng-container>
             <ng-template #noDataAccess>
@@ -105,6 +105,7 @@
         </div>
       </div>
     </div>
+    <app-kpi-table *ngIf="showChart === 'table'" [cols]="kpiTableHeadingArr" [kpiData]="kpiTableDataObj"></app-kpi-table>
   </div>
 </div>
 <ng-template #noKpiTemplate>
