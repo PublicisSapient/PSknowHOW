@@ -59,7 +59,7 @@ public class JiraIssueAssigneeProcessorImpl implements JiraIssueAssigneeProcesso
 			} else {
 				return null;
 			}
-		}else {
+		} else {
 			return null;
 		}
 		return assigneeDetails;

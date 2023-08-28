@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.batch.item.ItemWriter;
@@ -42,12 +44,16 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
+	@Autowired
+	private SprintRepository sprintRepository;
+
 	@Override
 	public void write(List<? extends CompositeResult> compositeResults) throws Exception {
 		List<JiraIssue> jiraIssues = new ArrayList<>();
 		List<JiraIssueCustomHistory> jiraHistoryItems = new ArrayList<>();
 		Set<AccountHierarchy> accountHierarchies = new HashSet<>();
 		Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
+		Set<SprintDetails> sprintDetailsSet=new HashSet<>();
 
 		for (CompositeResult compositeResult : compositeResults) {
 			if (null != compositeResult.getJiraIssue()) {
@@ -55,6 +61,9 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 			}
 			if (null != compositeResult.getJiraIssueCustomHistory()) {
 				jiraHistoryItems.add(compositeResult.getJiraIssueCustomHistory());
+			}
+			if (null != compositeResult.getSprintDetailsSet()){
+				sprintDetailsSet.addAll(compositeResult.getSprintDetailsSet());
 			}
 			if (CollectionUtils.isNotEmpty(compositeResult.getAccountHierarchies())) {
 				accountHierarchies.addAll(compositeResult.getAccountHierarchies());
@@ -69,6 +78,9 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		}
 		if (CollectionUtils.isNotEmpty(jiraHistoryItems)) {
 			writeJiraHistory(jiraHistoryItems);
+		}
+		if (CollectionUtils.isNotEmpty(sprintDetailsSet)){
+			writeSprintDetail(sprintDetailsSet);
 		}
 		if (CollectionUtils.isNotEmpty(accountHierarchies)) {
 			writeAccountHierarchy(accountHierarchies);
@@ -87,6 +99,11 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 	public void writeJiraHistory(List<JiraIssueCustomHistory> jiraHistoryItems) {
 		log.info("Writing issues to Jira_Issue_custom_history Collection");
 		jiraIssueCustomHistoryRepository.saveAll(jiraHistoryItems);
+	}
+
+	private void writeSprintDetail(Set<SprintDetails> sprintDetailsSet) {
+		log.info("Writing issues to SprintDetails Collection");
+		sprintRepository.saveAll(sprintDetailsSet);
 	}
 
 	public void writeAccountHierarchy(Set<AccountHierarchy> accountHierarchies) {

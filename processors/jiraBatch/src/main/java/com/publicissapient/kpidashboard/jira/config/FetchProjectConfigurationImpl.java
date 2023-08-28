@@ -70,17 +70,17 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 	}
 
 	private JiraToolConfig createJiraToolConfig(ProjectToolConfig projectToolConfig, Optional<Connection> jiraConnOpt) {
-		JiraToolConfig JiraToolConfig = new JiraToolConfig();
+		JiraToolConfig jiraToolConfig = new JiraToolConfig();
 		try {
-			BeanUtils.copyProperties(JiraToolConfig, projectToolConfig);
+			BeanUtils.copyProperties(jiraToolConfig, projectToolConfig);
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			log.error("Could not set JiraToolConfig", e);
 		}
 		if (jiraConnOpt.isPresent()) {
 
-			JiraToolConfig.setConnection(jiraConnOpt);
+			jiraToolConfig.setConnection(jiraConnOpt);
 		}
-		return JiraToolConfig;
+		return jiraToolConfig;
 	}
 
 	private ProjectConfFieldMapping createProjectConfFieldMapping(FieldMapping fieldMapping,

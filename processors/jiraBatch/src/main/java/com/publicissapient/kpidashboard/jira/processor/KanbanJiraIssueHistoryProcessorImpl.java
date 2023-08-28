@@ -31,200 +31,200 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class KanbanJiraIssueHistoryProcessorImpl implements KanbanJiraIssueHistoryProcessor{
-    
-    @Autowired
-    private KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
+public class KanbanJiraIssueHistoryProcessorImpl implements KanbanJiraIssueHistoryProcessor {
 
-    Map<String, Map<String, KanbanIssueCustomHistory>> projectWiseIssues;
+	@Autowired
+	private KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
 
-    @Override
-    public KanbanIssueCustomHistory convertToKanbanIssueHistory(Issue issue, ProjectConfFieldMapping projectConfig, KanbanJiraIssue kanbanJiraIssue) {
+	Map<String, Map<String, KanbanIssueCustomHistory>> projectWiseIssues;
 
-        String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
-        Map<String, IssueField> fields = com.publicissapient.kpidashboard.jira.util.JiraIssueClientUtil.buildFieldMap(issue.getFields());
-        FieldMapping fieldMapping = projectConfig.getFieldMapping();
-        KanbanIssueCustomHistory jiraIssueHistory = searchIssueInDb(projectConfig, issueNumber);
-        setJiraIssueHistory(jiraIssueHistory,kanbanJiraIssue,issue,fieldMapping);
+	@Override
+	public KanbanIssueCustomHistory convertToKanbanIssueHistory(Issue issue, ProjectConfFieldMapping projectConfig,
+			KanbanJiraIssue kanbanJiraIssue) {
 
-        return jiraIssueHistory;
-    }
+		String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
+		FieldMapping fieldMapping = projectConfig.getFieldMapping();
+		KanbanIssueCustomHistory jiraIssueHistory = searchIssueInDb(projectConfig, issueNumber);
+		setJiraIssueHistory(jiraIssueHistory, kanbanJiraIssue, issue, fieldMapping);
 
-    private KanbanIssueCustomHistory searchIssueInDb(ProjectConfFieldMapping projectConfig, String issueId) {
+		return jiraIssueHistory;
+	}
 
-        KanbanIssueCustomHistory jiraIssue = new KanbanIssueCustomHistory();
-        if (MapUtils.isEmpty(projectWiseIssues)) {
-            populateProjectWiseIssues(projectConfig);
-        }
-        if (MapUtils.isNotEmpty(projectWiseIssues)) {
-            Map<String, KanbanIssueCustomHistory> issueIdWiseJiraIssue = projectWiseIssues
-                    .get(projectConfig.getBasicProjectConfigId().toString());
-            if (MapUtils.isNotEmpty(issueIdWiseJiraIssue)) {
-                jiraIssue = initializeJiraIssue(issueId, issueIdWiseJiraIssue);
-            } else if (MapUtils.isNotEmpty(projectWiseIssues)) {
-                projectWiseIssues = new HashMap<>();
-                populateProjectWiseIssues(projectConfig);
-                Map<String, KanbanIssueCustomHistory> updatedIdWiseIssues = projectWiseIssues
-                        .get(projectConfig.getBasicProjectConfigId().toString());
-                if (MapUtils.isNotEmpty(updatedIdWiseIssues)) {
-                    jiraIssue = initializeJiraIssue(issueId, updatedIdWiseIssues);
-                }
+	private KanbanIssueCustomHistory searchIssueInDb(ProjectConfFieldMapping projectConfig, String issueId) {
 
-            }
-        }
-        return jiraIssue;
-    }
+		KanbanIssueCustomHistory jiraIssue = new KanbanIssueCustomHistory();
+		if (MapUtils.isEmpty(projectWiseIssues)) {
+			populateProjectWiseIssues(projectConfig);
+		}
+		if (MapUtils.isNotEmpty(projectWiseIssues)) {
+			Map<String, KanbanIssueCustomHistory> issueIdWiseJiraIssue = projectWiseIssues
+					.get(projectConfig.getBasicProjectConfigId().toString());
+			if (MapUtils.isNotEmpty(issueIdWiseJiraIssue)) {
+				jiraIssue = initializeJiraIssue(issueId, issueIdWiseJiraIssue);
+			} else if (MapUtils.isNotEmpty(projectWiseIssues)) {
+				projectWiseIssues = new HashMap<>();
+				populateProjectWiseIssues(projectConfig);
+				Map<String, KanbanIssueCustomHistory> updatedIdWiseIssues = projectWiseIssues
+						.get(projectConfig.getBasicProjectConfigId().toString());
+				if (MapUtils.isNotEmpty(updatedIdWiseIssues)) {
+					jiraIssue = initializeJiraIssue(issueId, updatedIdWiseIssues);
+				}
 
-    private KanbanIssueCustomHistory initializeJiraIssue(String issueId,
-                                                       Map<String, KanbanIssueCustomHistory> issueIdWiseJiraIssue) {
-        KanbanIssueCustomHistory jiraIssue = null;
-        jiraIssue = issueIdWiseJiraIssue.get(issueId);
-        if (null == jiraIssue) {
-            jiraIssue = new KanbanIssueCustomHistory();
-        }
-        issueIdWiseJiraIssue = null;
-        return jiraIssue;
-    }
+			}
+		}
+		return jiraIssue;
+	}
 
-    private void populateProjectWiseIssues(ProjectConfFieldMapping projectConfig) {
-        log.info("Checking if jira history issue exist in Db for  project : {}", projectConfig.getProjectName());
-        List<KanbanIssueCustomHistory> existingJiraHistoryIssues = kanbanJiraIssueHistoryRepository
-                .findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
-        if (CollectionUtils.isNotEmpty(existingJiraHistoryIssues)) {
-            Map<String, KanbanIssueCustomHistory> issueIdWiseJiraIssue = existingJiraHistoryIssues.stream()
-                    .collect(Collectors.toMap(KanbanIssueCustomHistory::getStoryID, Function.identity()));
-            projectWiseIssues = new HashMap<>();
-            projectWiseIssues.put(projectConfig.getBasicProjectConfigId().toString(), issueIdWiseJiraIssue);
-        }
-    }
-    
-    public void setJiraIssueHistory(KanbanIssueCustomHistory jiraIssueHistory, KanbanJiraIssue jiraIssue, Issue issue,
-                                    FieldMapping fieldMapping) {
+	private KanbanIssueCustomHistory initializeJiraIssue(String issueId,
+			Map<String, KanbanIssueCustomHistory> issueIdWiseJiraIssue) {
+		KanbanIssueCustomHistory jiraIssue = null;
+		jiraIssue = issueIdWiseJiraIssue.get(issueId);
+		if (null == jiraIssue) {
+			jiraIssue = new KanbanIssueCustomHistory();
+		}
+		issueIdWiseJiraIssue = null;
+		return jiraIssue;
+	}
 
-        jiraIssueHistory.setProjectID(jiraIssue.getProjectName());
-        jiraIssueHistory.setProjectComponentId(jiraIssue.getProjectID());
-        jiraIssueHistory.setProjectKey(jiraIssue.getProjectKey());
-        jiraIssueHistory.setProjectName(jiraIssue.getProjectName());
-        jiraIssueHistory.setPriority(jiraIssue.getPriority());
-        jiraIssueHistory.setRootCauseList(jiraIssue.getRootCauseList());
-        jiraIssueHistory.setStoryType(jiraIssue.getTypeName());
-        jiraIssueHistory.setAdditionalFilters(jiraIssue.getAdditionalFilters());
-        jiraIssueHistory.setUrl(jiraIssue.getUrl());
-        jiraIssueHistory.setDescription(jiraIssue.getName());
-        // This method is not setup method. write it to keep
-        // custom history
-        processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);
-        jiraIssueHistory.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
-    }
+	private void populateProjectWiseIssues(ProjectConfFieldMapping projectConfig) {
+		log.info("Checking if jira history issue exist in Db for  project : {}", projectConfig.getProjectName());
+		List<KanbanIssueCustomHistory> existingJiraHistoryIssues = kanbanJiraIssueHistoryRepository
+				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
+		if (CollectionUtils.isNotEmpty(existingJiraHistoryIssues)) {
+			Map<String, KanbanIssueCustomHistory> issueIdWiseJiraIssue = existingJiraHistoryIssues.stream()
+					.collect(Collectors.toMap(KanbanIssueCustomHistory::getStoryID, Function.identity()));
+			projectWiseIssues = new HashMap<>();
+			projectWiseIssues.put(projectConfig.getBasicProjectConfigId().toString(), issueIdWiseJiraIssue);
+		}
+	}
 
-    private void processJiraIssueHistory(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
-                                         Issue issue, FieldMapping fieldMapping) {
-        List<ChangelogGroup> changeLogList = JiraIssueClientUtil.sortChangeLogGroup(issue);
-        List<ChangelogGroup> modChangeLogList = new ArrayList<>();
-        for (ChangelogGroup changeLog : changeLogList) {
-            List<ChangelogItem> changeLogCollection = Lists.newArrayList(changeLog.getItems().iterator());
-            ChangelogGroup grp = new ChangelogGroup(changeLog.getAuthor(), changeLog.getCreated(), changeLogCollection);
-            modChangeLogList.add(grp);
-        }
+	public void setJiraIssueHistory(KanbanIssueCustomHistory jiraIssueHistory, KanbanJiraIssue jiraIssue, Issue issue,
+			FieldMapping fieldMapping) {
 
-        if (null != jiraIssue.getDevicePlatform()) {
-            jiraIssueCustomHistory.setDevicePlatform(jiraIssue.getDevicePlatform());
-        }
+		jiraIssueHistory.setProjectID(jiraIssue.getProjectName());
+		jiraIssueHistory.setProjectComponentId(jiraIssue.getProjectID());
+		jiraIssueHistory.setProjectKey(jiraIssue.getProjectKey());
+		jiraIssueHistory.setProjectName(jiraIssue.getProjectName());
+		jiraIssueHistory.setPriority(jiraIssue.getPriority());
+		jiraIssueHistory.setRootCauseList(jiraIssue.getRootCauseList());
+		jiraIssueHistory.setStoryType(jiraIssue.getTypeName());
+		jiraIssueHistory.setAdditionalFilters(jiraIssue.getAdditionalFilters());
+		jiraIssueHistory.setUrl(jiraIssue.getUrl());
+		jiraIssueHistory.setDescription(jiraIssue.getName());
+		// This method is not setup method. write it to keep
+		// custom history
+		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping);
+		jiraIssueHistory.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
+	}
 
-        if (null == jiraIssueCustomHistory.getStoryID()) {
-            addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, fieldMapping);
-        } else {
-            addHistoryInJiraIssue(jiraIssueCustomHistory, jiraIssue, modChangeLogList);
-        }
+	private void processJiraIssueHistory(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
+			Issue issue, FieldMapping fieldMapping) {
+		List<ChangelogGroup> changeLogList = JiraIssueClientUtil.sortChangeLogGroup(issue);
+		List<ChangelogGroup> modChangeLogList = new ArrayList<>();
+		for (ChangelogGroup changeLog : changeLogList) {
+			List<ChangelogItem> changeLogCollection = Lists.newArrayList(changeLog.getItems().iterator());
+			ChangelogGroup grp = new ChangelogGroup(changeLog.getAuthor(), changeLog.getCreated(), changeLogCollection);
+			modChangeLogList.add(grp);
+		}
 
-    }
+		if (null != jiraIssue.getDevicePlatform()) {
+			jiraIssueCustomHistory.setDevicePlatform(jiraIssue.getDevicePlatform());
+		}
 
-    private void addStoryHistory(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
-                                 Issue issue, List<ChangelogGroup> changeLogList, FieldMapping fieldMapping) {
-        List<KanbanIssueHistory> kanbanIssueHistoryList = getChangeLog(jiraIssue, changeLogList,
-                issue.getCreationDate(), fieldMapping);
-        jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
-        jiraIssueCustomHistory.setHistoryDetails(kanbanIssueHistoryList);
-        jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate().toString());
-        // estimate
-        jiraIssueCustomHistory.setEstimate(jiraIssue.getEstimate());
-        jiraIssueCustomHistory.setBufferedEstimateTime(jiraIssue.getBufferedEstimateTime());
-        if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
-            jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
-        }
+		if (null == jiraIssueCustomHistory.getStoryID()) {
+			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, fieldMapping);
+		} else {
+			addHistoryInJiraIssue(jiraIssueCustomHistory, jiraIssue, modChangeLogList);
+		}
 
-    }
+	}
 
-    private void addHistoryInJiraIssue(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
-                                       List<ChangelogGroup> changeLogList) {
-        if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
-            jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
-        }
-        createKanbanIssueHistory(jiraIssueCustomHistory, changeLogList);
-        jiraIssueCustomHistory.setEstimate(jiraIssue.getEstimate());
-    }
+	private void addStoryHistory(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
+			Issue issue, List<ChangelogGroup> changeLogList, FieldMapping fieldMapping) {
+		List<KanbanIssueHistory> kanbanIssueHistoryList = getChangeLog(jiraIssue, changeLogList,
+				issue.getCreationDate(), fieldMapping);
+		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
+		jiraIssueCustomHistory.setHistoryDetails(kanbanIssueHistoryList);
+		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate().toString());
+		// estimate
+		jiraIssueCustomHistory.setEstimate(jiraIssue.getEstimate());
+		jiraIssueCustomHistory.setBufferedEstimateTime(jiraIssue.getBufferedEstimateTime());
+		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
+			jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
+		}
 
-    private void createKanbanIssueHistory(KanbanIssueCustomHistory jiraIssueCustomHistory,
-                                          List<ChangelogGroup> changeLogList) {
-        List<KanbanIssueHistory> issueHistoryList = new ArrayList<>();
-        for (ChangelogGroup history : changeLogList) {
-            for (ChangelogItem changelogItem : history.getItems()) {
-                if (changelogItem.getField().equalsIgnoreCase(JiraConstants.STATUS)) {
-                    KanbanIssueHistory kanbanIssueHistory = new KanbanIssueHistory();
-                    kanbanIssueHistory.setStatus(changelogItem.getToString());
-                    kanbanIssueHistory.setActivityDate(history.getCreated().toString());
-                    issueHistoryList.add(kanbanIssueHistory);
+	}
 
-                }
-            }
-            jiraIssueCustomHistory.setHistoryDetails(issueHistoryList);
-        }
+	private void addHistoryInJiraIssue(KanbanIssueCustomHistory jiraIssueCustomHistory, KanbanJiraIssue jiraIssue,
+			List<ChangelogGroup> changeLogList) {
+		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
+			jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
+		}
+		createKanbanIssueHistory(jiraIssueCustomHistory, changeLogList);
+		jiraIssueCustomHistory.setEstimate(jiraIssue.getEstimate());
+	}
 
-    }
+	private void createKanbanIssueHistory(KanbanIssueCustomHistory jiraIssueCustomHistory,
+			List<ChangelogGroup> changeLogList) {
+		List<KanbanIssueHistory> issueHistoryList = new ArrayList<>();
+		for (ChangelogGroup history : changeLogList) {
+			for (ChangelogItem changelogItem : history.getItems()) {
+				if (changelogItem.getField().equalsIgnoreCase(JiraConstants.STATUS)) {
+					KanbanIssueHistory kanbanIssueHistory = new KanbanIssueHistory();
+					kanbanIssueHistory.setStatus(changelogItem.getToString());
+					kanbanIssueHistory.setActivityDate(history.getCreated().toString());
+					issueHistoryList.add(kanbanIssueHistory);
 
-    private List<KanbanIssueHistory> getChangeLog(KanbanJiraIssue jiraIssue, List<ChangelogGroup> changeLogList,
-                                                  DateTime issueCreatedDate, FieldMapping fieldMapping) {
-        List<KanbanIssueHistory> historyDetails = new ArrayList<>();
-        // creating first entry of issue
-        if (null != issueCreatedDate) {
-            KanbanIssueHistory kanbanHistory = new KanbanIssueHistory();
-            kanbanHistory.setActivityDate(issueCreatedDate.toString());
-            kanbanHistory.setStatus(fieldMapping.getStoryFirstStatus());
-            historyDetails.add(kanbanHistory);
-        }
-        if (CollectionUtils.isNotEmpty(changeLogList)) {
-            for (ChangelogGroup history : changeLogList) {
-                historyDetails.addAll(getIssueHistory(jiraIssue, history));
-            }
-        }
-        return historyDetails;
-    }
+				}
+			}
+			jiraIssueCustomHistory.setHistoryDetails(issueHistoryList);
+		}
 
-    private List<KanbanIssueHistory> getIssueHistory(KanbanJiraIssue jiraIssue, ChangelogGroup history) {
-        List<KanbanIssueHistory> historyDetails = new ArrayList<>();
-        for (ChangelogItem changelogItem : history.getItems()) {
-            if (changelogItem.getField().equalsIgnoreCase(JiraConstants.TEST_AUTOMATED)) {
-                if (changelogItem.getToString().equalsIgnoreCase(JiraConstants.YES)) {
-                    jiraIssue.setTestAutomatedDate(JiraProcessorUtil
-                            .getFormattedDate(JiraProcessorUtil.deodeUTF8String(history.getCreated().toString())));
-                } else {
-                    jiraIssue.setTestAutomatedDate("");
-                }
-            }
+	}
 
-            if (changelogItem.getField().equalsIgnoreCase(JiraConstants.STATUS)) {
-                KanbanIssueHistory kanbanHistory = new KanbanIssueHistory();
-                kanbanHistory.setActivityDate(history.getCreated().toString());
-                kanbanHistory.setStatus(changelogItem.getToString());
-                historyDetails.add(kanbanHistory);
-            }
-        }
-        return historyDetails;
+	private List<KanbanIssueHistory> getChangeLog(KanbanJiraIssue jiraIssue, List<ChangelogGroup> changeLogList,
+			DateTime issueCreatedDate, FieldMapping fieldMapping) {
+		List<KanbanIssueHistory> historyDetails = new ArrayList<>();
+		// creating first entry of issue
+		if (null != issueCreatedDate) {
+			KanbanIssueHistory kanbanHistory = new KanbanIssueHistory();
+			kanbanHistory.setActivityDate(issueCreatedDate.toString());
+			kanbanHistory.setStatus(fieldMapping.getStoryFirstStatus());
+			historyDetails.add(kanbanHistory);
+		}
+		if (CollectionUtils.isNotEmpty(changeLogList)) {
+			for (ChangelogGroup history : changeLogList) {
+				historyDetails.addAll(getIssueHistory(jiraIssue, history));
+			}
+		}
+		return historyDetails;
+	}
 
-    }
+	private List<KanbanIssueHistory> getIssueHistory(KanbanJiraIssue jiraIssue, ChangelogGroup history) {
+		List<KanbanIssueHistory> historyDetails = new ArrayList<>();
+		for (ChangelogItem changelogItem : history.getItems()) {
+			if (changelogItem.getField().equalsIgnoreCase(JiraConstants.TEST_AUTOMATED)) {
+				if (changelogItem.getToString().equalsIgnoreCase(JiraConstants.YES)) {
+					jiraIssue.setTestAutomatedDate(JiraProcessorUtil
+							.getFormattedDate(JiraProcessorUtil.deodeUTF8String(history.getCreated().toString())));
+				} else {
+					jiraIssue.setTestAutomatedDate("");
+				}
+			}
 
-    @Override
-    public void cleanAllObjects() {
-        projectWiseIssues = null;
-    }
+			if (changelogItem.getField().equalsIgnoreCase(JiraConstants.STATUS)) {
+				KanbanIssueHistory kanbanHistory = new KanbanIssueHistory();
+				kanbanHistory.setActivityDate(history.getCreated().toString());
+				kanbanHistory.setStatus(changelogItem.getToString());
+				historyDetails.add(kanbanHistory);
+			}
+		}
+		return historyDetails;
+
+	}
+
+	@Override
+	public void cleanAllObjects() {
+		projectWiseIssues = null;
+	}
 }

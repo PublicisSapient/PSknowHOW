@@ -1,0 +1,87 @@
+package com.publicissapient.kpidashboard.jira.processor;
+
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
+import com.publicissapient.kpidashboard.jira.util.JiraIssueClientUtil;
+import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jettison.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+@Slf4j
+@Service
+public class SprintDataProcessorImpl implements SprintDataProcessor {
+
+    @Autowired
+    private FetchSprintReport fetchSprintReport;
+
+    @Override
+    public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId) {
+        Set<SprintDetails> sprintDetailsSet=new HashSet<>();
+        FieldMapping fieldMapping = projectConfig.getFieldMapping();
+        Map<String, IssueField> fields = JiraIssueClientUtil.buildFieldMap(issue.getFields());
+        IssueField sprintField = fields.get(fieldMapping.getSprintName());
+        if (null != sprintField && null != sprintField.getValue()
+                && !JiraConstants.EMPTY_STR.equals(sprintField.getValue())) {
+            Object sValue = sprintField.getValue();
+            try {
+                List<SprintDetails> sprints = JiraProcessorUtil.processSprintDetail(sValue);
+                // Now sort so we can use the most recent one
+                // yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
+                Collections.sort(sprints, JiraIssueClientUtil.SPRINT_COMPARATOR);
+                setSprintData(sprints, sValue, projectConfig, sprintDetailsSet);
+            } catch (ParseException | JSONException e) {
+                log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
+            }
+        }
+        KerberosClient krb5Client = null;
+        Set<SprintDetails> setForCacheClean = new HashSet<>();
+            if(StringUtils.isEmpty(boardId)) {
+                try {
+                    return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, setForCacheClean, krb5Client);
+                } catch (InterruptedException e) {
+                    log.error("JIRA Processor | Failed to fetch Sprint {}",e);
+                }
+            }
+
+        return sprintDetailsSet;
+    }
+
+    private void setSprintData(List<SprintDetails> sprints, Object sValue,
+                               ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet) {
+        List<String> sprintsList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(sprints)) {
+            for (SprintDetails sprint : sprints) {
+                sprintsList.add(sprint.getOriginalSprintId());
+                sprint.setSprintID(
+                        sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + projectConfig.getProjectName()
+                                + JiraConstants.COMBINE_IDS_SYMBOL + projectConfig.getBasicProjectConfigId());
+                sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
+            }
+            sprintDetailsSet.addAll(sprints);
+
+        } else {
+            log.error("JIRA Processor | Failed to obtain sprint data for {}", sValue);
+        }
+
+    }
+
+
+}

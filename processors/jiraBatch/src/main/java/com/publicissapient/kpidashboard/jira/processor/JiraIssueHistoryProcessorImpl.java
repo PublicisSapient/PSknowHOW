@@ -9,9 +9,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -57,9 +59,8 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 
 		String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
 		Map<String, IssueField> fields = JiraIssueClientUtil.buildFieldMap(issue.getFields());
-		FieldMapping fieldMapping = projectConfig.getFieldMapping();
 		JiraIssueCustomHistory jiraIssueHistory = searchIssueInDb(projectConfig, issueNumber);
-		setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
+		setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, projectConfig, fields);
 
 		return jiraIssueHistory;
 	}
@@ -114,7 +115,7 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 	}
 
 	private void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,
-			FieldMapping fieldMapping, Map<String, IssueField> fields) {
+									 ProjectConfFieldMapping projectConfig, Map<String, IssueField> fields) {
 
 		jiraIssueHistory.setProjectID(jiraIssue.getProjectName());
 		jiraIssueHistory.setProjectComponentId(jiraIssue.getProjectID());
@@ -123,13 +124,15 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 		jiraIssueHistory.setAdditionalFilters(jiraIssue.getAdditionalFilters());
 		jiraIssueHistory.setUrl(jiraIssue.getUrl());
 		jiraIssueHistory.setDescription(jiraIssue.getName());
-		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, fieldMapping, fields);
+		// This method is not setup method. write it to keep
+		// custom history
+		processJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, projectConfig, fields);
 
 		jiraIssueHistory.setBasicProjectConfigId(jiraIssue.getBasicProjectConfigId());
 	}
 
 	private void processJiraIssueHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue,
-			Issue issue, FieldMapping fieldMapping, Map<String, IssueField> fields) {
+										 Issue issue, ProjectConfFieldMapping projectConfig, Map<String, IssueField> fields) {
 		List<ChangelogGroup> changeLogList = JiraHelper.sortChangeLogGroup(issue);
 		List<ChangelogGroup> modChangeLogList = new ArrayList<>();
 
@@ -143,21 +146,21 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 			jiraIssueCustomHistory.setDevicePlatform(jiraIssue.getDevicePlatform());
 		}
 		if (null == jiraIssueCustomHistory.getStoryID()) {
-			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, fieldMapping, fields);
+			addStoryHistory(jiraIssueCustomHistory, jiraIssue, issue, modChangeLogList, projectConfig, fields);
 		} else {
 			if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 				jiraIssueCustomHistory.setDefectStoryID(jiraIssue.getDefectStoryID());
 			}
 
-			setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
+			setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, projectConfig, fields, issue);
 		}
 
 	}
 
 	private void addStoryHistory(JiraIssueCustomHistory jiraIssueCustomHistory, JiraIssue jiraIssue, Issue issue,
-			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields) {
+								 List<ChangelogGroup> changeLogList, ProjectConfFieldMapping projectConfig, Map<String, IssueField> fields) {
 
-		setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, fieldMapping, fields, issue);
+		setJiraIssueCustomHistoryUpdationLog(jiraIssueCustomHistory, changeLogList, projectConfig, fields, issue);
 		jiraIssueCustomHistory.setStoryID(jiraIssue.getNumber());
 		jiraIssueCustomHistory.setCreatedDate(issue.getCreationDate());
 
@@ -169,6 +172,8 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 		}
 
 	}
+
+
 
 	private List<JiraHistoryChangeLog> getJiraFieldChangeLog(List<ChangelogGroup> changeLogList, String jiraField) {
 
@@ -200,11 +205,11 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 	private String parseStringToLocalDateTime(String date) {
 		return StringUtils.isEmpty(date) ? ""
 				: LocalDateTime.parse(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(date)))
-						.toString();
+				.toString();
 	}
 
 	private List<JiraHistoryChangeLog> getDueDateChangeLog(List<ChangelogGroup> changeLogList,
-			FieldMapping fieldMapping, Map<String, IssueField> fields) {
+														   FieldMapping fieldMapping, Map<String, IssueField> fields) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
 			String field = "";
 			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE))
@@ -215,26 +220,31 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 				if (ObjectUtils.isNotEmpty(issueField.getName()))
 					field = issueField.getName();
 			}
-			List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
-			if (CollectionUtils.isNotEmpty(changeLogList)) {
-				for (ChangelogGroup history : changeLogList) {
-					String finalField = field;
-					history.getItems().forEach(item -> {
-						if (item.getField().trim().equalsIgnoreCase(finalField)) {
-							JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
-							jiraHistoryChangeLog.setChangedFrom(parseStringToLocalDateTime(item.getFrom()));
-							jiraHistoryChangeLog.setChangedTo(parseStringToLocalDateTime(item.getTo()));
-							jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(JiraProcessorUtil
-									.getFormattedDate(JiraProcessorUtil.deodeUTF8String(history.getCreated()))));
-							fieldHistoryLog.add(jiraHistoryChangeLog);
-						}
-					});
-				}
-			}
-			return fieldHistoryLog;
+			return createDueDateChangeLogs(changeLogList, field);
 		}
 		return new ArrayList<>();
 	}
+
+	private List<JiraHistoryChangeLog> createDueDateChangeLogs(List<ChangelogGroup> changeLogList, String field) {
+		List<JiraHistoryChangeLog> fieldHistoryLog = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(changeLogList)) {
+			for (ChangelogGroup history : changeLogList) {
+				String finalField = field;
+				history.getItems().forEach(item -> {
+					if (item.getField().trim().equalsIgnoreCase(finalField)) {
+						JiraHistoryChangeLog jiraHistoryChangeLog = new JiraHistoryChangeLog();
+						jiraHistoryChangeLog.setChangedFrom(parseStringToLocalDateTime(item.getFrom()));
+						jiraHistoryChangeLog.setChangedTo(parseStringToLocalDateTime(item.getTo()));
+						jiraHistoryChangeLog.setUpdatedOn(LocalDateTime.parse(JiraProcessorUtil
+								.getFormattedDate(JiraProcessorUtil.deodeUTF8String(history.getCreated()))));
+						fieldHistoryLog.add(jiraHistoryChangeLog);
+					}
+				});
+			}
+		}
+		return fieldHistoryLog;
+	}
+
 
 	private List<JiraHistoryChangeLog> mergeObjectsBasedOnTimestamp(List<JiraHistoryChangeLog> fieldHistoryLog) {
 		List<JiraHistoryChangeLog> fieldHistoryLogTemp = new ArrayList<>(fieldHistoryLog);
@@ -279,7 +289,7 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 	}
 
 	private List<JiraHistoryChangeLog> getCustomFieldChangeLog(List<ChangelogGroup> changeLogList,
-			String jiraCustomField, Map<String, IssueField> fields) {
+															   String jiraCustomField, Map<String, IssueField> fields) {
 
 		if (StringUtils.isNotEmpty(jiraCustomField.trim())
 				&& ObjectUtils.isNotEmpty(fields.get(jiraCustomField.trim()))) {
@@ -305,17 +315,28 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 	}
 
 	private void setJiraIssueCustomHistoryUpdationLog(JiraIssueCustomHistory jiraIssueCustomHistory,
-			List<ChangelogGroup> changeLogList, FieldMapping fieldMapping, Map<String, IssueField> fields,
-			Issue issue) {
+													  List<ChangelogGroup> changeLogList, ProjectConfFieldMapping projectConfig, Map<String, IssueField> fields,
+													  Issue issue) {
+		FieldMapping fieldMapping = projectConfig.getFieldMapping();
+		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+		Boolean cloudEnv = connectionOptional.isPresent() ? connectionOptional.map(Connection::isCloudEnv).get()
+				: Boolean.FALSE;
 		List<JiraHistoryChangeLog> statusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.STATUS);
 		List<JiraHistoryChangeLog> assigneeChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.ASSIGNEE);
 		List<JiraHistoryChangeLog> priorityChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.PRIORITY);
 		List<JiraHistoryChangeLog> fixVersionChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.FIXVERSION);
 		List<JiraHistoryChangeLog> labelsChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.LABELS);
+		List<JiraHistoryChangeLog> workLog = getJiraFieldChangeLog(changeLogList, JiraConstants.WORKLOG);
 		List<JiraHistoryChangeLog> dueDateChangeLog = getDueDateChangeLog(changeLogList, fieldMapping, fields);
+		List<JiraHistoryChangeLog> devDueDateChangeLog = getDevDueDateChangeLog(changeLogList, fieldMapping, fields);
 		List<JiraHistoryChangeLog> sprintChangeLog = getCustomFieldChangeLog(changeLogList,
 				handleStr(fieldMapping.getSprintName()), fields);
-
+		List<JiraHistoryChangeLog> flagStatusChangeLog;
+		if (cloudEnv) {
+			flagStatusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.FLAG_STATUS_FOR_CLOUD);
+		} else {
+			flagStatusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.FLAG_STATUS_FOR_SERVER);
+		}
 		createFirstEntryOfChangeLog(statusChangeLog, issue,
 				ObjectUtils.isNotEmpty(issue.getStatus()) ? issue.getStatus().getName() : "");
 		createFirstEntryOfChangeLog(assigneeChangeLog, issue,
@@ -323,7 +344,9 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 		createFirstEntryOfChangeLog(priorityChangeLog, issue,
 				ObjectUtils.isNotEmpty(issue.getPriority()) ? issue.getPriority().getName() : "");
 		createFirstEntryOfChangeLog(labelsChangeLog, issue, StringUtils.join(issue.getLabels(), " "));
+		createFirstEntryOfChangeLog(workLog, issue, "");
 		createFirstEntryOfDueDateChangeLog(dueDateChangeLog, fieldMapping, issue, fields);
+		createFirstEntryOfDevDueDateChangeLog(devDueDateChangeLog, fieldMapping, issue, fields);
 		creatingFirstEntryOfSprintChangeLog(sprintChangeLog, fieldMapping, issue, fields);
 		createFixVersionHistory(fixVersionChangeLog, issue, convertIterableVersionToString(issue.getFixVersions()));
 		splitMultipleSprintsAndStoreLastSprint(sprintChangeLog);
@@ -334,11 +357,55 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 		jiraIssueCustomHistory.setFixVersionUpdationLog(fixVersionChangeLog);
 		jiraIssueCustomHistory.setLabelUpdationLog(labelsChangeLog);
 		jiraIssueCustomHistory.setDueDateUpdationLog(dueDateChangeLog);
+		jiraIssueCustomHistory.setDevDueDateUpdationLog(devDueDateChangeLog);
 		jiraIssueCustomHistory.setSprintUpdationLog(sprintChangeLog);
+		jiraIssueCustomHistory.setFlagStatusChangeLog(flagStatusChangeLog);
+		jiraIssueCustomHistory.setWorkLog(workLog);
+	}
+
+	private List<JiraHistoryChangeLog> getDevDueDateChangeLog(List<ChangelogGroup> changeLogList, FieldMapping fieldMapping,
+															  Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
+			String field = "";
+			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE))
+				field = JiraConstants.DUEDATE;
+			else if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
+					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+				IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+				if (ObjectUtils.isNotEmpty(issueField.getName()))
+					field = issueField.getName();
+			}
+			return createDueDateChangeLogs(changeLogList, field);
+		}
+		return Collections.emptyList();
+	}
+
+	private void createFirstEntryOfDevDueDateChangeLog(List<JiraHistoryChangeLog> dueDateChangeLog, FieldMapping fieldMapping,
+													   Issue issue, Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
+			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
+					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
+				createFirstEntryOfChangeLog(dueDateChangeLog, issue,
+						LocalDateTime
+								.parse(JiraProcessorUtil
+										.getFormattedDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate())))
+								.toString());
+			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
+					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+				IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+					createFirstEntryOfChangeLog(dueDateChangeLog, issue,
+							LocalDateTime
+									.parse(JiraProcessorUtil
+											.getFormattedDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue())))
+									.toString());
+				}
+			}
+		}
 	}
 
 	private void creatingFirstEntryOfSprintChangeLog(List<JiraHistoryChangeLog> sprintChangeLog,
-			FieldMapping fieldMapping, Issue issue, Map<String, IssueField> fields) {
+													 FieldMapping fieldMapping, Issue issue, Map<String, IssueField> fields) {
 		if (StringUtils.isNotEmpty(fieldMapping.getSprintName())
 				&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getSprintName()))) {
 			IssueField issueField = fields.get(fieldMapping.getSprintName());
@@ -357,7 +424,7 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 	}
 
 	private void createFirstEntryOfDueDateChangeLog(List<JiraHistoryChangeLog> dueDateChangeLog,
-			FieldMapping fieldMapping, Issue issue, Map<String, IssueField> fields) {
+													FieldMapping fieldMapping, Issue issue, Map<String, IssueField> fields) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
 			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
 					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
@@ -381,7 +448,7 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 	}
 
 	private void createFixVersionHistory(List<JiraHistoryChangeLog> fixVersionChangeLog, Issue issue,
-			String currentFixVersionPresentInIssue) {
+										 String currentFixVersionPresentInIssue) {
 		final String[] lastLogChangeToValue = { currentFixVersionPresentInIssue };
 		Lists.reverse(fixVersionChangeLog).forEach(currChangeLog -> {
 			String currLogChangeToValue = currChangeLog.getChangedTo();
@@ -414,7 +481,7 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 	}
 
 	private void createFirstEntryOfChangeLog(List<JiraHistoryChangeLog> fieldChangeLog, Issue issue,
-			String fieldValuefromIssue) {
+											 String fieldValuefromIssue) {
 
 		if (null != issue.getCreationDate() && ((fieldChangeLog.isEmpty() && !fieldValuefromIssue.isEmpty())
 				|| (!fieldChangeLog.isEmpty() && !fieldChangeLog.get(0).getChangedFrom().isEmpty()))) {

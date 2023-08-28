@@ -12,6 +12,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.atlassian.jira.rest.client.api.RestClientException;
+import com.atlassian.jira.rest.client.api.domain.Status;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import io.atlassian.util.concurrent.Promise;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +48,10 @@ import lombok.extern.slf4j.Slf4j;
 public class JiraHelper {
 
 	protected static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
+	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
+	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
+	private static final String EXCEPTION = "Exception";
+	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
 
 	public static final Comparator<SprintDetails> SPRINT_COMPARATOR = (SprintDetails o1, SprintDetails o2) -> {
 		int cmp1 = ObjectUtils.compare(o1.getStartDate(), o2.getStartDate());
@@ -232,5 +240,36 @@ public class JiraHelper {
 			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
 		}
 	}
+
+	public static List<Status> getStatus(ProcessorJiraRestClient client) {
+		List<Status> statusList = new ArrayList<>();
+
+		if (client == null) {
+			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
+		} else {
+			try {
+				Promise<Iterable<Status>> promisedRs = client.getMetadataClient().getStatuses();
+
+				Iterable<Status> fieldIt = promisedRs.claim();
+				if (fieldIt != null) {
+					statusList = Lists.newArrayList(fieldIt.iterator());
+				}
+			} catch (RestClientException e) {
+				exceptionBlockProcess(e);
+			}
+		}
+
+		return statusList;
+	}
+
+	public static void exceptionBlockProcess(RestClientException e) {
+		if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+			log.error(ERROR_MSG_401);
+		} else {
+			log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+		}
+		log.debug(EXCEPTION, e);
+	}
+
 
 }

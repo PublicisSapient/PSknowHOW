@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.jira.jobs;
 
+import com.publicissapient.kpidashboard.jira.tasklet.JiraIssueReleaseStatusTasklet;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -56,6 +57,9 @@ public class JiraProcessorJob {
 	SprintScrumBoardTasklet sprintScrumBoardTasklet;
 
 	@Autowired
+	JiraIssueReleaseStatusTasklet jiraIssueReleaseStatusTasklet;
+
+	@Autowired
 	JiraIssueStepListener jiraIssueStepListener;
 
 	@Autowired
@@ -80,7 +84,7 @@ public class JiraProcessorJob {
 	@Bean
 	public Job fetchIssueScrumBoardJob() {
 		return jobBuilderFactory.get("FetchIssueScrum Board Job").incrementer(new RunIdIncrementer())
-				.start(metaDataStep()).next(sprintReportStep()).next(fetchIssueScrumBoardChunkStep()).build();
+				.start(metaDataStep()).next(sprintReportStep()).next(processProjectStatusStep()).next(fetchIssueScrumBoardChunkStep()).build();
 	}
 
 	private Step metaDataStep() {
@@ -89,6 +93,10 @@ public class JiraProcessorJob {
 
 	private Step sprintReportStep() {
 		return stepBuilderFactory.get("Fetch Sprint Report-Scrum-board").tasklet(sprintScrumBoardTasklet).build();
+	}
+
+	private Step processProjectStatusStep() {
+		return stepBuilderFactory.get("processProjectStatus-Scrum-board").tasklet(jiraIssueReleaseStatusTasklet).build();
 	}
 
 	private Step fetchIssueScrumBoardChunkStep() {
@@ -104,7 +112,7 @@ public class JiraProcessorJob {
 	@Bean
 	public Job fetchIssueScrumJqlJob() {
 		return jobBuilderFactory.get("FetchIssueScrum JQL Job").incrementer(new RunIdIncrementer())
-				.start(metaDataStep()).next(fetchIssueScrumJqlChunkStep()).build();
+				.start(metaDataStep()).next(processProjectStatusStep()).next(fetchIssueScrumJqlChunkStep()).build();
 	}
 
 	private Step fetchIssueScrumJqlChunkStep() {

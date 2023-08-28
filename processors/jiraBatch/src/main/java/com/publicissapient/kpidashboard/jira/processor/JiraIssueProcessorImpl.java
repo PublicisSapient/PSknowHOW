@@ -25,6 +25,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.json.simple.JSONArray;
@@ -105,7 +106,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		// save only issues which are in configuration.
 		if (issueTypeNames
 				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
-			Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
 			Map<String, String> issueEpics = new HashMap<>();
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 
@@ -116,6 +116,9 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			jiraIssue.setIssueId(JiraProcessorUtil.deodeUTF8String(issue.getId()));
 			jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
 			jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+			jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+
+			setEpicLinked(fieldMapping, jiraIssue, fields);
 			processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
 			setURL(issue.getKey(), jiraIssue, projectConfig);
 			setRCA(fieldMapping, issue, jiraIssue, fields);
@@ -132,7 +135,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			setIssueEpics(issueEpics, epic, jiraIssue);
 			setJiraIssueValues(jiraIssue, issue, fieldMapping, fields);
 			IssueField sprint = fields.get(fieldMapping.getSprintName());
-			processSprintData(jiraIssue, sprint, projectConfig, sprintDetailsSet);
+			processSprintData(jiraIssue, sprint, projectConfig);
 			User assignee = issue.getAssignee();
 			setJiraAssigneeDetails(jiraIssue, assignee, projectConfig);
 			setEstimates(jiraIssue, issue);
@@ -141,6 +144,14 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 		return jiraIssue;
 
+	}
+
+	private void setEpicLinked(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink())
+				&& fields.get(fieldMapping.getEpicLink()) != null
+				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
+			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+		}
 	}
 
 	private JiraIssue searchIssueInDb(ProjectConfFieldMapping projectConfig, String issueId) {
@@ -761,8 +772,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	 * @param sprintField
 	 *            Issuefield containing sprint Data
 	 */
-	private void processSprintData(JiraIssue jiraIssue, IssueField sprintField, ProjectConfFieldMapping projectConfig,
-			Set<SprintDetails> sprintDetailsSet) {
+	private void processSprintData(JiraIssue jiraIssue, IssueField sprintField, ProjectConfFieldMapping projectConfig) {
 		if (sprintField == null || sprintField.getValue() == null
 				|| JiraConstants.EMPTY_STR.equals(sprintField.getValue())) {
 			// Issue #678 - leave sprint blank. Not having a sprint does not
@@ -781,7 +791,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 				// Now sort so we can use the most recent one
 				// yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
 				Collections.sort(sprints, JiraIssueClientUtil.SPRINT_COMPARATOR);
-				setSprintData(sprints, jiraIssue, sValue, projectConfig, sprintDetailsSet);
+				setSprintData(sprints, jiraIssue, sValue, projectConfig);
 
 			} catch (ParseException | JSONException e) {
 				log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
@@ -792,12 +802,15 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private void setSprintData(List<SprintDetails> sprints, JiraIssue jiraIssue, Object sValue,
-			ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet) {
+							   ProjectConfFieldMapping projectConfig) {
 		List<String> sprintsList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprints)) {
 			for (SprintDetails sprint : sprints) {
 				sprintsList.add(sprint.getOriginalSprintId());
 				jiraIssue.setSprintIdList(sprintsList);
+				sprint.setSprintID(
+						sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + jiraIssue.getProjectName()
+								+ JiraConstants.COMBINE_IDS_SYMBOL + projectConfig.getBasicProjectConfigId());
 			}
 			// Use the latest sprint
 			// if any sprint date is blank set that sprint to JiraIssue
@@ -806,20 +819,15 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			// sprint
 			SprintDetails sprint = sprints.stream().filter(s -> StringUtils.isBlank(s.getStartDate())).findFirst()
 					.orElse(sprints.get(sprints.size() - 1));
-			String sprintId = sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL
-					+ jiraIssue.getProjectName() + JiraConstants.COMBINE_IDS_SYMBOL
-					+ projectConfig.getBasicProjectConfigId();
 
 			jiraIssue.setSprintName(sprint.getSprintName() == null ? StringUtils.EMPTY : sprint.getSprintName());
-			jiraIssue.setSprintID(sprint.getOriginalSprintId() == null ? StringUtils.EMPTY : sprintId);
+			jiraIssue.setSprintID(sprint.getOriginalSprintId() == null ? StringUtils.EMPTY : sprint.getSprintID());
 			jiraIssue.setSprintBeginDate(sprint.getStartDate() == null ? StringUtils.EMPTY
 					: JiraProcessorUtil.getFormattedDate(sprint.getStartDate()));
 			jiraIssue.setSprintEndDate(sprint.getEndDate() == null ? StringUtils.EMPTY
 					: JiraProcessorUtil.getFormattedDate(sprint.getEndDate()));
 			jiraIssue.setSprintAssetState(sprint.getState() == null ? StringUtils.EMPTY : sprint.getState());
 
-			sprint.setSprintID(sprintId);
-			sprintDetailsSet.add(sprint);
 		} else {
 			log.error("JIRA Processor | Failed to obtain sprint data for {}", sValue);
 		}

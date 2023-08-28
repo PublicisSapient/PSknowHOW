@@ -85,9 +85,9 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	private static final String GOAL = "goal";
 
 	@Override
-	public List<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			Set<SprintDetails> setForCacheClean, KerberosClient krb5Client) throws InterruptedException {
-		List<SprintDetails> sprintToSave = new ArrayList<>();
+	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
+										   Set<SprintDetails> setForCacheClean, KerberosClient krb5Client) throws InterruptedException {
+		Set<SprintDetails> sprintToSave = new HashSet<>();
 		//ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
