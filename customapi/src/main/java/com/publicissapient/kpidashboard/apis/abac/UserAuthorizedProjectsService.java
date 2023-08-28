@@ -170,7 +170,7 @@ public class UserAuthorizedProjectsService {
 		Set<String> projects = getProjectNodesForRequest(filteredAccountDataList);
 		List<String> ids = Arrays.asList(kpiRequest.getIds());
 		List<String> keys = Stream.concat(projects.stream(), ids.stream()).collect(Collectors.toList());
-
+		keys.addAll(kpiRequest.getSelectedMap().get(Constant.DATE));
 		return keys.stream().toArray(String[]::new);
 	}
 

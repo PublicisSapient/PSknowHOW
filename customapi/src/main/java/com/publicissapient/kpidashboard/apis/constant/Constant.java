@@ -139,7 +139,7 @@ public final class Constant {
 	public static final String DOT =".";
 	public static final String STAR="*";
 
-	public static final String REPO_TOOLS = "Repo_Tools";
+	public static final String REPO_TOOLS = "RepoTool";
 
 	private Constant() {
 	}

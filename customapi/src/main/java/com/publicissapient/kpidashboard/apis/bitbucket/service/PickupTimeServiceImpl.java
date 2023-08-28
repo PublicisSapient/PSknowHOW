@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import java.text.DecimalFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -275,6 +276,9 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 			LocalDate startDate = LocalDate.now().minusDays(dataPoint);
 			if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
 				startDate = LocalDate.now().minusWeeks(dataPoint);
+				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+					startDate = startDate.minusDays(1);
+				}
 			}
 			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK)?WEEK_FREQUENCY:DAY_FREQUENCY;
 			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
