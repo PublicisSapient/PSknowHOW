@@ -384,7 +384,7 @@ private String jiraLiveStatusKPI127;
 	private String notificationEnabler="On";
 
 	private List<String> jiraIssueEpicTypeKPI153;
-	private List<String> jiraSubTaskDefectType;
+	private List<String> jiraSubTaskIdentification;
 	private List<String> jiraStatusStartDevelopmentKPI154;
 
 	/**

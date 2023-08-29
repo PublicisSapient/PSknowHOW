@@ -271,17 +271,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForInProgressKPI119;
 	private List<String> jiraStatusForInProgressKPI154;
 
-	public List<String> getJiraStatusForInProgressKPI154() {
-		return jiraStatusForInProgressKPI119;
-	}
-
-	public void setJiraStatusForInProgressKPI119(List<String> status) {
-		this.jiraStatusForInProgressKPI154 = status;
-		this.jiraStatusForInProgressKPI119 = status;
-	}
-
-
-
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
 
@@ -393,7 +382,7 @@ public class FieldMapping extends BasicModel {
 	private String notificationEnabler="On";
 
 	private List<String> jiraIssueEpicTypeKPI153;
-	private List<String> jiraSubTaskDefectType;
+	private List<String> jiraSubTaskIdentification;
 
 	/**
 	 * Get jira issue type names string [ ].
@@ -412,6 +401,16 @@ public class FieldMapping extends BasicModel {
 	 */
 	public void setJiraIssueTypeNames(String[] jiraIssueTypeNames) {
 		this.jiraIssueTypeNames = jiraIssueTypeNames == null ? null : jiraIssueTypeNames.clone();
+	}
+
+
+	public List<String> getJiraStatusForInProgressKPI154() {
+		return jiraStatusForInProgressKPI119;
+	}
+
+	public void setJiraStatusForInProgressKPI119(List<String> status) {
+		this.jiraStatusForInProgressKPI154 = status;
+		this.jiraStatusForInProgressKPI119 = status;
 	}
 
 }

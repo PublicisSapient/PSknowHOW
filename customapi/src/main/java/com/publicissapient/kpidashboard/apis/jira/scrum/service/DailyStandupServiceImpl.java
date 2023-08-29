@@ -84,7 +84,10 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * First Screen of Daily StandUpView
+ * kpi of iteration dashboard, Daily Standup View which runs for the
+ * active sprint, and return data for both the screens
+ * 
+ * @author shi6
  */
 
 @Component
@@ -122,14 +125,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String getQualifierType() {
-		return KPICode.DAILY_STANDUP_VIEW.name();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
@@ -138,82 +133,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			}
 		});
 		return kpiElement;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Map<String, Long> calculateKPIMetrics(Map<String, Object> objectMap) {
-		return new HashMap<>();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(final List<Node> leafNodeList, final String startDate,
-			final String endDate, final KpiRequest kpiRequest) {
-		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
-		if (null != leafNode) {
-			log.info("Daily Standup View -> Requested sprint : {}", leafNode.getName());
-			SprintDetails sprintDetails;
-			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
-			if (null != dbSprintDetail && dbSprintDetail.getState().equals(SprintDetails.SPRINT_STATE_ACTIVE)) {
-				ObjectId basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
-				FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-
-				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails = KpiDataHelper.processSprintBasedOnFieldMappings(
-						Collections.singletonList(dbSprintDetail), fieldMapping.getJiraIterationIssuetypeKPI119(),
-						fieldMapping.getJiraIterationCompletionStatusKPI154(), null).get(0);
-
-				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
-						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);
-				List<String> allIssues = new ArrayList<>();
-				allIssues.addAll(notCompletedIssues);
-				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-						CommonConstant.COMPLETED_ISSUES));
-				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-						CommonConstant.ADDED_ISSUES));
-				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-						CommonConstant.PUNTED_ISSUES));
-
-				if (CollectionUtils.isNotEmpty(allIssues)) {
-					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
-							sprintDetails, null, getJiraIssuesFromBaseClass(allIssues));
-					Set<JiraIssue> notCompletedJiraIssues = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getNotCompletedIssues(),
-									getJiraIssuesFromBaseClass(notCompletedIssues));
-
-					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskDefectType())) {
-						List<String> taskType = fieldMapping.getJiraSubTaskDefectType();
-						// combined both sub-tasks and totalIssuelist
-						totalIssueList.addAll(
-								jiraIssueRepository.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(
-										basicProjectConfigId.toString(), new HashSet<>(allIssues), taskType));
-					}
-
-					Set<JiraIssue> epics = new HashSet<>(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
-							totalIssueList.stream().map(JiraIssue::getEpicLinked).collect(Collectors.toList()),
-							basicProjectConfigId.toString()));
-
-					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(
-							totalIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
-
-					resultListMap.put(SPRINT, sprintDetails);
-					resultListMap.put(ISSUES, totalIssueList);
-					resultListMap.put(HISTORY_ISSUES, issueHistoryList);
-					resultListMap.put(EPICS, epics);
-					resultListMap.put(NOT_COMPLETED_JIRAISSUE, new ArrayList<>(notCompletedJiraIssues));
-					resultListMap.put(ASSIGNEE_DETAILS, capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(
-							sprintDetails.getSprintID(), sprintDetails.getBasicProjectConfigId()));
-				}
-			}
-		}
-		return resultListMap;
 	}
 
 	/**
@@ -262,11 +181,12 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			Map<String, IterationKpiModalValue> mapOfModalObject = KpiDataHelper.createMapOfModalObject(totalIssueList);
 			Map<String, List<JiraIssue>> assigneeWiseList = totalIssueList.stream()
 					.collect(Collectors.groupingBy(function));
+
 			Map<String, List<JiraIssue>> assigneeWiseNotCompleted = notCompletedJiraIssue.stream()
 					.collect(Collectors.groupingBy(function));
 			String estimationCriteria = fieldMapping.getEstimationCriteria();
 
-			// calculate remianing estimate
+			// calculate remaining estimate
 			calculateAssigneeWiseRemainingEstimate(assigneeWiseNotCompleted, remianingWork, assigneeWiseRemaingEstimate,
 					estimationCriteria);
 
@@ -327,6 +247,186 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		}
 		kpiElement.setTrendValueList(userWiseCardDetails);
 
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Map<String, Object> fetchKPIDataFromDb(final List<Node> leafNodeList, final String startDate,
+			final String endDate, final KpiRequest kpiRequest) {
+		Map<String, Object> resultListMap = new HashMap<>();
+		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
+		if (null != leafNode) {
+			log.info("Daily Standup View -> Requested sprint : {}", leafNode.getName());
+			SprintDetails sprintDetails;
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
+			if (null != dbSprintDetail && dbSprintDetail.getState().equals(SprintDetails.SPRINT_STATE_ACTIVE)) {
+				ObjectId basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+
+				// to modify sprintdetails on the basis of configuration for the project
+				sprintDetails = KpiDataHelper.processSprintBasedOnFieldMappings(
+						Collections.singletonList(dbSprintDetail), fieldMapping.getJiraIterationIssuetypeKPI119(),
+						fieldMapping.getJiraIterationCompletionStatusKPI154(), null).get(0);
+
+				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
+						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);
+				List<String> allIssues = new ArrayList<>();
+				allIssues.addAll(notCompletedIssues);
+				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+						CommonConstant.COMPLETED_ISSUES));
+				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+						CommonConstant.ADDED_ISSUES));
+				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
+						CommonConstant.PUNTED_ISSUES));
+
+				if (CollectionUtils.isNotEmpty(allIssues)) {
+					List<JiraIssue> allJiraIssues = getJiraIssuesFromBaseClass(allIssues);
+					List<JiraIssue> filteredAllJiraIssue = KpiDataHelper.getFilteredJiraIssue(allIssues, allJiraIssues);
+					List<JiraIssue> filteredNotCompletedJiraIssue = KpiDataHelper
+							.getFilteredJiraIssue(notCompletedIssues, allJiraIssues);
+
+					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
+							sprintDetails, null, filteredAllJiraIssue);
+
+					Set<JiraIssue> notCompletedJiraIssues = KpiDataHelper
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
+									sprintDetails.getNotCompletedIssues(), filteredNotCompletedJiraIssue);
+
+					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())) {
+						List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
+						// combined both sub-tasks and totalIssuelist
+						totalIssueList.addAll(
+								jiraIssueRepository.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(
+										basicProjectConfigId.toString(), new HashSet<>(allIssues), taskType));
+					}
+
+					Set<JiraIssue> epics = new HashSet<>(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
+							totalIssueList.stream().map(JiraIssue::getEpicLinked).collect(Collectors.toList()),
+							basicProjectConfigId.toString()));
+
+					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(
+							totalIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
+
+					// get sprint start and sprint end time
+					resultListMap.put(SPRINT, sprintDetails);
+					// all jira issue within sprint
+					resultListMap.put(ISSUES, totalIssueList);
+					// get all the transitions occurred on the issue (Screen-2)
+					resultListMap.put(HISTORY_ISSUES, issueHistoryList);
+					// get epic name linked with the story (Screen-2)
+					resultListMap.put(EPICS, epics);
+					// calculate remaining estimate and delays
+					resultListMap.put(NOT_COMPLETED_JIRAISSUE, new ArrayList<>(notCompletedJiraIssues));
+					// to get the capacity of assignees(Screen-1)
+					resultListMap.put(ASSIGNEE_DETAILS, capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(
+							sprintDetails.getSprintID(), sprintDetails.getBasicProjectConfigId()));
+				}
+			}
+		}
+		return resultListMap;
+	}
+
+	/*
+	 * create map of parent linked with children issueType
+	 */
+	private Map<String, Set<String>> findLinkedSubTasks(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		Map<String, Set<String>> parentChild = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())) {
+			Set<String> tasks = new HashSet<>(fieldMapping.getJiraSubTaskIdentification());
+			jiraIssueList.stream()
+					.filter(issue -> tasks.contains(issue.getOriginalType())
+							&& CollectionUtils.isNotEmpty(issue.getParentStoryId()))
+					.forEach(childIssue -> childIssue.getParentStoryId().forEach(parent -> {
+						parentChild.computeIfPresent(parent, (k, v) -> {
+							v.add(childIssue.getNumber());
+							return v;
+						});
+						parentChild.computeIfAbsent(parent, k -> new HashSet<>()).add(childIssue.getNumber());
+					}));
+		}
+		return parentChild;
+	}
+
+	/**
+	 * calculate remaining estimate on the basis of fieldmapping
+	 */
+	private void calculateAssigneeWiseRemainingEstimate(Map<String, List<JiraIssue>> assigneeWiseNotCompleted,
+			Map<String, StandUpViewKpiData> remainingWork,
+			Map<String, StandUpViewKpiData> assigneeWiseRemainingEstimate, String estimationCriteria) {
+		String estimationUnit = estimationCriteria.equalsIgnoreCase(CommonConstant.STORY_POINT) ? CommonConstant.SP
+				: CommonConstant.DAY;
+
+		assigneeWiseNotCompleted.forEach((assigneeId, jiraIssueList) -> {
+			double totalEstimate = jiraIssueList.stream()
+					.mapToDouble(issue -> estimationCriteria.equalsIgnoreCase(CommonConstant.STORY_POINT)
+							? Optional.ofNullable(issue.getStoryPoints()).orElse(0d) // NOSONAR
+							: Optional.ofNullable(issue.getOriginalEstimateMinutes()).orElse(0))
+					.sum();
+			remainingWork.put(assigneeId, new StandUpViewKpiData(String.valueOf(jiraIssueList.size()),
+					String.valueOf(totalEstimate), null, estimationUnit));
+
+			int totalRemainingEstimate = jiraIssueList.stream()
+					.mapToInt(issue -> Optional.ofNullable(issue.getRemainingEstimateMinutes()).orElse(0)).sum();
+			assigneeWiseRemainingEstimate.put(assigneeId,
+					new StandUpViewKpiData(String.valueOf(totalRemainingEstimate), null, CommonConstant.DAY, null));
+		});
+	}
+
+	private void calculateAssigneeWiseMaxDelay(Map<String, IterationPotentialDelay> issueWiseDelay,
+			Map<String, StandUpViewKpiData> assigneeWiseMaxDelay) {
+		List<IterationPotentialDelay> maxPotentialDelayList = new ArrayList<>(issueWiseDelay.values());
+		Map<String, List<IterationPotentialDelay>> collect = maxPotentialDelayList.stream()
+				.filter(IterationPotentialDelay::isMaxMarker)
+				.collect(Collectors.groupingBy(IterationPotentialDelay::getAssigneeId));
+
+		collect.forEach((assigneeId, delayList) -> {
+			int totalDelayInMinutes = (int) delayList.stream()
+					.mapToDouble(delay -> Optional.of(delay.getPotentialDelay()).orElse(0) * 60 * 8).sum();
+
+			assigneeWiseMaxDelay.put(assigneeId,
+					new StandUpViewKpiData(String.valueOf(totalDelayInMinutes), null, CommonConstant.DAY, null));
+		});
+	}
+
+	private void calculateRemainingCapacity(SprintDetails sprintDetails, CapacityKpiData capacityKpiData,
+			Map<String, String> userWiseRole, Map<String, StandUpViewKpiData> userWiseRemainingCapacity) {
+		LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0], DATE_FORMATTER);
+		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0], DATE_FORMATTER);
+		int daysBetween = checkWorkingDays(sprintStartDate, sprintEndDate);
+		int daysLeft = checkWorkingDays(LocalDate.now(), sprintEndDate);
+
+		if (capacityKpiData != null && CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity())) {
+			capacityKpiData.getAssigneeCapacity().forEach(assignee -> {
+				getAssigneeWiseAvailableCapacity(daysBetween, daysLeft, assignee, userWiseRemainingCapacity);
+				if (assignee.getRole() != null)
+					userWiseRole.put(assignee.getUserId(), assignee.getRole().getRoleValue());
+			});
+		}
+	}
+
+	/*
+	 * excluding weekends in calculating of capacity
+	 */
+	private int checkWorkingDays(LocalDate startDate, LocalDate endDate) {
+		int incrementCounter = 1;
+		if (startDate.getDayOfWeek() == DayOfWeek.SATURDAY || startDate.getDayOfWeek() == DayOfWeek.SUNDAY)
+			incrementCounter--;
+		return CommonUtils.getWorkingDays(startDate, endDate) + incrementCounter;
+	}
+
+	/**
+	 * calculate Remaining Capacity (available capacity/days in sprint)* remaining
+	 * days
+	 */
+	private void getAssigneeWiseAvailableCapacity(int daysBetween, int daysLeft, AssigneeCapacity assignee,
+			Map<String, StandUpViewKpiData> userWiseRemainingCapacity) {
+		if (assignee.getAvailableCapacity() != null) {
+			double remainingCapacity = roundingOff((assignee.getAvailableCapacity() / daysBetween) * daysLeft);
+			userWiseRemainingCapacity.putIfAbsent(assignee.getUserId(),
+					new StandUpViewKpiData(String.valueOf(remainingCapacity), null, CommonConstant.HOURS, null));
+		}
 	}
 
 	private void populateModal(List<JiraIssue> jiraIssueList, Map<String, Object> resultMap,
@@ -395,174 +495,19 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	}
 
 	/*
-	 * create map of parent linked with children issueType
+	 * getting minimum dev done status, similar to the log of DevCompletion kpi
 	 */
-	private Map<String, Set<String>> findLinkedSubTasks(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		Map<String, Set<String>> parentChild = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskDefectType())) {
-			Set<String> tasks = new HashSet<>(fieldMapping.getJiraSubTaskDefectType());
-			jiraIssueList.stream()
-					.filter(issue -> tasks.contains(issue.getOriginalType())
-							&& CollectionUtils.isNotEmpty(issue.getParentStoryId()))
-					.forEach(childIssue -> childIssue.getParentStoryId().forEach(parent -> {
-						parentChild.computeIfPresent(parent, (k, v) -> {
-							v.add(childIssue.getNumber());
-							return v;
-						});
-						parentChild.computeIfAbsent(parent, k -> new HashSet<>()).add(childIssue.getNumber());
-					}));
+	public String getDevCompletionDateInTime(JiraIssueCustomHistory issueCustomHistory, List<String> devDoneStatuses) {
+		String devCompleteDate = "-";
+		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
+		if (CollectionUtils.isNotEmpty(devDoneStatuses)) {
+			devCompleteDate = filterStatusUpdationLog.stream()
+					.filter(jiraHistoryChangeLog -> devDoneStatuses.contains(jiraHistoryChangeLog.getChangedTo())
+							&& jiraHistoryChangeLog.getUpdatedOn() != null)
+					.findFirst().map(jiraHistoryChangeLog -> jiraHistoryChangeLog.getUpdatedOn().toString())
+					.orElse(devCompleteDate);
 		}
-		return parentChild;
-	}
-
-	private void setEstimatesInSeconds(JiraIssue jiraIssue, IterationKpiModalValue iterationKpiModalValue) {
-		if (jiraIssue.getTimeSpentInMinutes() != null)
-			iterationKpiModalValue.setLoggedWorkInSeconds((long) (jiraIssue.getTimeSpentInMinutes() * 60));
-		if (jiraIssue.getRemainingEstimateMinutes() != null)
-			iterationKpiModalValue.setRemainingEstimateInSeconds((long) (jiraIssue.getRemainingEstimateMinutes() * 60));
-		if (jiraIssue.getOriginalEstimateMinutes() != null)
-			iterationKpiModalValue.setOriginalEstimateInSeconds((long) (jiraIssue.getOriginalEstimateMinutes() * 60));
-	}
-
-	/*
-	 * if within active sprint no logs were generated, but the last change occurred
-	 * in the closed sprint continues in the active sprint, then the time should be
-	 * calculated from the sprintStartTime till today
-	 */
-	private long calculateWithLastTime(List<JiraHistoryChangeLog> inSprintHistoryLogs,
-			List<JiraHistoryChangeLog> allLogs, LocalDateTime sprintStartDateTime) {
-		long lastTime = 0L;
-		if (CollectionUtils.isNotEmpty(inSprintHistoryLogs)) {
-			Collections.sort(inSprintHistoryLogs, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn).reversed());
-			lastTime = ChronoUnit.SECONDS.between(inSprintHistoryLogs.get(0).getUpdatedOn(), LocalDateTime.now());
-		} else if (CollectionUtils.isNotEmpty(allLogs)) {
-			lastTime = ChronoUnit.SECONDS.between(sprintStartDateTime, LocalDateTime.now());
-		}
-		return lastTime;
-	}
-
-	/*
-	 * creating date wise logs of history
-	 */
-	private Map<String, List<String>> createDateWiseLogs(List<JiraHistoryChangeLog> historyLog) {
-		Map<String, List<String>> dateWiseLogMap = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(historyLog)) {
-			for (JiraHistoryChangeLog log : historyLog) {
-				String changedOn = log.getUpdatedOn().toLocalDate().toString();
-				dateWiseLogMap.computeIfPresent(changedOn, (date, logs) -> {
-					logs.add(log.getChangedTo());
-					return logs;
-				});
-				dateWiseLogMap.computeIfAbsent(changedOn, k -> new ArrayList<>()).add(log.getChangedTo());
-			}
-			dateWiseLogMap = dateWiseLogMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(
-					Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-		}
-		return dateWiseLogMap;
-	}
-
-	private void calculateRemainingCapacity(SprintDetails sprintDetails, CapacityKpiData capacityKpiData,
-			Map<String, String> userWiseRole, Map<String, StandUpViewKpiData> userWiseRemainingCapacity) {
-		LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0], DATE_FORMATTER);
-		LocalDate sprintEndDate = LocalDate.parse(sprintDetails.getEndDate().split("T")[0], DATE_FORMATTER);
-		int daysBetween = checkWorkingDays(sprintStartDate, sprintEndDate);
-		int daysLeft = checkWorkingDays(LocalDate.now(), sprintEndDate);
-
-		if (capacityKpiData != null && CollectionUtils.isNotEmpty(capacityKpiData.getAssigneeCapacity())) {
-			capacityKpiData.getAssigneeCapacity().forEach(assignee -> {
-				calculateRemainigCapacity(daysBetween, daysLeft, assignee, userWiseRemainingCapacity);
-				if (assignee.getRole() != null)
-					userWiseRole.put(assignee.getUserId(), assignee.getRole().getRoleValue());
-			});
-		}
-	}
-
-	/*
-	 * excluding weekends in calculating of capacity
-	 */
-	private int checkWorkingDays(LocalDate startDate, LocalDate endDate) {
-		int incrementCounter = 1;
-		if (startDate.getDayOfWeek() == DayOfWeek.SATURDAY || startDate.getDayOfWeek() == DayOfWeek.SUNDAY)
-			incrementCounter--;
-		return CommonUtils.getWorkingDays(startDate, endDate) + incrementCounter;
-	}
-
-	private void createRoleFilter(List<Filter> filtersList, Set<String> allRoles) {
-		List<String> values = allRoles.stream().sorted().collect(Collectors.toList());
-		Filter filter = new Filter();
-		filter.setFilterKey("role");
-		filter.setFilterType("singleSelect");
-		filter.setOptions(values);
-		filtersList.add(filter);
-	}
-
-	private void calculateAssigneeWiseMaxDelay(Map<String, IterationPotentialDelay> issueWiseDelay,
-			Map<String, StandUpViewKpiData> assigneeWiseMaxDelay) {
-		List<IterationPotentialDelay> maxPotentialDelayList = new ArrayList<>(issueWiseDelay.values());
-		Map<String, List<IterationPotentialDelay>> collect = maxPotentialDelayList.stream()
-				.filter(IterationPotentialDelay::isMaxMarker)
-				.collect(Collectors.groupingBy(IterationPotentialDelay::getAssigneeId));
-
-		collect.forEach((assigneeId, delayList) -> {
-			int totalDelayInMinutes = (int) delayList.stream()
-					.mapToDouble(delay -> Optional.of(delay.getPotentialDelay()).orElse(0) * 60 * 8).sum();
-
-			assigneeWiseMaxDelay.put(assigneeId,
-					new StandUpViewKpiData(String.valueOf(totalDelayInMinutes), null, CommonConstant.DAY, null));
-		});
-	}
-
-	/**
-	 * calculate remainung estimate on the basis of fieldmapping
-	 */
-	private void calculateAssigneeWiseRemainingEstimate(Map<String, List<JiraIssue>> assigneeWiseNotCompleted,
-			Map<String, StandUpViewKpiData> remainingWork,
-			Map<String, StandUpViewKpiData> assigneeWiseRemainingEstimate, String estimationCriteria) {
-		String estimationUnit = estimationCriteria.equalsIgnoreCase(CommonConstant.STORY_POINT) ? CommonConstant.SP
-				: CommonConstant.HOURS;
-
-		assigneeWiseNotCompleted.forEach((assigneeId, jiraIssueList) -> {
-			double totalEstimate = jiraIssueList.stream()
-					.mapToDouble(issue -> estimationCriteria.equalsIgnoreCase(CommonConstant.STORY_POINT)
-							? Optional.ofNullable(issue.getStoryPoints()).orElse(0d) // NOSONAR
-							: Optional.ofNullable(issue.getOriginalEstimateMinutes()).orElse(0))
-					.sum();
-			remainingWork.put(assigneeId, new StandUpViewKpiData(String.valueOf(jiraIssueList.size()),
-					String.valueOf(totalEstimate), null, estimationUnit));
-
-			int totalRemainingEstimate = jiraIssueList.stream()
-					.mapToInt(issue -> Optional.ofNullable(issue.getRemainingEstimateMinutes()).orElse(0)).sum();
-			assigneeWiseRemainingEstimate.put(assigneeId,
-					new StandUpViewKpiData(String.valueOf(totalRemainingEstimate), null, CommonConstant.DAY, null));
-		});
-	}
-
-	/**
-	 * calculate Remaining Capacity (available capacity/days in sprint)* remaining
-	 * days
-	 */
-	private void calculateRemainigCapacity(int daysBetween, int daysLeft, AssigneeCapacity assignee,
-			Map<String, StandUpViewKpiData> userWiseRemainingCapacity) {
-		if (assignee.getAvailableCapacity() != null) {
-			double remainingCapacity = roundingOff((assignee.getAvailableCapacity() / daysBetween) * daysLeft);
-			userWiseRemainingCapacity.putIfAbsent(assignee.getUserId(),
-					new StandUpViewKpiData(String.valueOf(remainingCapacity), null, CommonConstant.HOURS, null));
-		}
-	}
-
-	private void setPCDandDelay(IterationKpiModalValue jiraIssueModalObject,
-			Map<String, IterationPotentialDelay> issueWiseDelay, JiraIssue jiraIssue) {
-		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
-			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
-			jiraIssueModalObject.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
-			jiraIssueModalObject.setPredictedCompletionDate(
-					DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
-							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
-
-		} else {
-			jiraIssueModalObject.setPotentialOverallDelay("-");
-			jiraIssueModalObject.setPredictedCompletionDate("-");
-		}
+		return devCompleteDate;
 	}
 
 	private void getMaxCompleteMaxTestDevStartTime(List<JiraHistoryChangeLog> filterStatusUpdationLogs,
@@ -619,24 +564,94 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		}
 	}
 
-	/*
-	 * getting minimum dev done status, similar to the log of DevCompletion kpi
-	 */
-	public String getDevCompletionDateInTime(JiraIssueCustomHistory issueCustomHistory, List<String> devDoneStatuses) {
-		String devCompleteDate = "-";
-		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
-		if (CollectionUtils.isNotEmpty(devDoneStatuses)) {
-			devCompleteDate = filterStatusUpdationLog.stream()
-					.filter(jiraHistoryChangeLog -> devDoneStatuses.contains(jiraHistoryChangeLog.getChangedTo())
-							&& jiraHistoryChangeLog.getUpdatedOn() != null)
-					.findFirst().map(jiraHistoryChangeLog -> jiraHistoryChangeLog.getUpdatedOn().toString())
-					.orElse(devCompleteDate);
+	private void setPCDandDelay(IterationKpiModalValue jiraIssueModalObject,
+			Map<String, IterationPotentialDelay> issueWiseDelay, JiraIssue jiraIssue) {
+		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
+			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
+			jiraIssueModalObject.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+			jiraIssueModalObject.setPredictedCompletionDate(
+					DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
+							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+
+		} else {
+			jiraIssueModalObject.setPotentialOverallDelay("-");
+			jiraIssueModalObject.setPredictedCompletionDate("-");
 		}
-		return devCompleteDate;
+	}
+
+	/*
+	 * creating date wise logs of history
+	 */
+	private Map<String, List<String>> createDateWiseLogs(List<JiraHistoryChangeLog> historyLog) {
+		Map<String, List<String>> dateWiseLogMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(historyLog)) {
+			for (JiraHistoryChangeLog log : historyLog) {
+				String changedOn = log.getUpdatedOn().toLocalDate().toString();
+				dateWiseLogMap.computeIfPresent(changedOn, (date, logs) -> {
+					logs.add(log.getChangedTo());
+					return logs;
+				});
+				dateWiseLogMap.computeIfAbsent(changedOn, k -> new ArrayList<>()).add(log.getChangedTo());
+			}
+			dateWiseLogMap = dateWiseLogMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(
+					Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+		}
+		return dateWiseLogMap;
+	}
+
+	/*
+	 * if within active sprint no logs were generated, but the last change occurred
+	 * in the closed sprint continues in the active sprint, then the time should be
+	 * calculated from the sprintStartTime till today
+	 */
+	private long calculateWithLastTime(List<JiraHistoryChangeLog> inSprintHistoryLogs,
+			List<JiraHistoryChangeLog> allLogs, LocalDateTime sprintStartDateTime) {
+		long lastTime = 0L;
+		if (CollectionUtils.isNotEmpty(inSprintHistoryLogs)) {
+			Collections.sort(inSprintHistoryLogs, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn).reversed());
+			lastTime = ChronoUnit.SECONDS.between(inSprintHistoryLogs.get(0).getUpdatedOn(), LocalDateTime.now());
+		} else if (CollectionUtils.isNotEmpty(allLogs)) {
+			lastTime = ChronoUnit.SECONDS.between(sprintStartDateTime, LocalDateTime.now());
+		}
+		return lastTime;
+	}
+
+	private void setEstimatesInSeconds(JiraIssue jiraIssue, IterationKpiModalValue iterationKpiModalValue) {
+		if (jiraIssue.getTimeSpentInMinutes() != null)
+			iterationKpiModalValue.setLoggedWorkInSeconds((long) (jiraIssue.getTimeSpentInMinutes() * 60));
+		if (jiraIssue.getRemainingEstimateMinutes() != null)
+			iterationKpiModalValue.setRemainingEstimateInSeconds((long) (jiraIssue.getRemainingEstimateMinutes() * 60));
+		if (jiraIssue.getOriginalEstimateMinutes() != null)
+			iterationKpiModalValue.setOriginalEstimateInSeconds((long) (jiraIssue.getOriginalEstimateMinutes() * 60));
+	}
+
+	private void createRoleFilter(List<Filter> filtersList, Set<String> allRoles) {
+		List<String> values = allRoles.stream().sorted().collect(Collectors.toList());
+		Filter filter = new Filter();
+		filter.setFilterKey("role");
+		filter.setFilterType("singleSelect");
+		filter.setOptions(values);
+		filtersList.add(filter);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getQualifierType() {
+		return KPICode.DAILY_STANDUP_VIEW.name();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Map<String, Long> calculateKPIMetrics(Map<String, Object> objectMap) {
+		return new HashMap<>();
 	}
 
 	@Data
-	private class UserWiseCardDetail {
+	protected class UserWiseCardDetail {
 		String assigneeId;
 		String assigneeName;
 		String role;
@@ -647,7 +662,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	@Builder
 	@NoArgsConstructor
 	@AllArgsConstructor
-	private static class StandUpViewKpiData {
+	protected static class StandUpViewKpiData {
 		private String value;
 		private String value1;
 		private String unit;

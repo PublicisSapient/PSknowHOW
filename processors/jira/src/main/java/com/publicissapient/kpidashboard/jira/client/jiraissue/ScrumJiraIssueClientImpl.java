@@ -851,8 +851,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
 			Map<String, IssueField> fields) {
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskDefectType())
-				&& fieldMapping.getJiraSubTaskDefectType().contains(jiraIssue.getTypeName())) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
+				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getTypeName())) {
 			Set<String> mainStorySet = new HashSet<>();
 			storyWithSubTaskDefect(issue, fields, mainStorySet);
 			jiraIssue.setParentStoryId(mainStorySet);

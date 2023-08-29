@@ -873,8 +873,8 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 	private void setSubTaskLinkage(JiraIssue jiraIssue, Value issue, FieldMapping fieldMapping,
 			ProjectConfFieldMapping projectConfig) {
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskDefectType())
-				&& fieldMapping.getJiraSubTaskDefectType().contains(jiraIssue.getTypeName())) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
+				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getTypeName())) {
 			Set<String> mainStorySet = new HashSet<>();
 			List<Relation> relations = issue.getRelations();
 			if (relations != null) {

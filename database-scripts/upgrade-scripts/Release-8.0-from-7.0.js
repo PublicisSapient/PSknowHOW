@@ -3762,13 +3762,13 @@ db.getCollection('field_mapping_structure').insertMany([
         }
     },
    {
-   "fieldName": "jiraSubTaskDefectType",
-   "fieldLabel": "Issue type for sub-task defect",
+   "fieldName": "jiraSubTaskIdentification",
+   "fieldLabel": "Sub-Task Issue Types",
    "fieldType": "chips",
    "fieldCategory": "Issue_Type",
    "section": "Issue Types Mapping",
    "tooltip": {
-   "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard and Daily Scrum"
+   "definition": "Any issue type mentioned will be considered as sub-task linked with story"
    }
    }
 ])
