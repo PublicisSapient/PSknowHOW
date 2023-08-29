@@ -464,3 +464,11 @@ db.kpi_category_mapping.insertMany([
   	"kanban" : false
   },
 ]);
+
+
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+// delete FieldMapping Field which consider subtask defect  ---------------------------------------------------------------------------
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraSubTaskDefectType"
+});
