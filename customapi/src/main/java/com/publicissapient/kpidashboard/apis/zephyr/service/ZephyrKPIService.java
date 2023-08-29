@@ -359,16 +359,15 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 	}
 
 	/**
-	 *  fetch test execution uploaded data
+	 * fetch test execution uploaded data
+	 * 
 	 * @param leafNodeList
-	 * @param startDate
-	 * @param endDate
 	 * @param kpiRequest
 	 * @return
 	 */
 	public Map<String, Object> fetchTestExecutionUploadDataFromDb(List<Node> leafNodeList, KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(leafNodeList)) {
+		if (CollectionUtils.isNotEmpty(leafNodeList)) {
 			Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 			List<String> sprintList = new ArrayList<>();
 			List<String> basicProjectConfigIds = new ArrayList<>();
@@ -388,8 +387,6 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 
 			resultListMap.put(UPLOADED_DATA,
 					testExecutionRepository.findTestExecutionDetailByFilters(mapOfFilters, uniqueProjectMap));
-		} else {
-			resultListMap.put(UPLOADED_DATA, new ArrayList<>());
 		}
 		return resultListMap;
 	}

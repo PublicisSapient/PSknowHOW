@@ -271,7 +271,7 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter().getStartDate()
 				.compareTo(o2.getSprintFilter().getStartDate()));
 
-		// partitioning the sprintLeafNodeList by upload enable
+		// partitioning the sprintLeafNodeList by data upload enable
 		Map<Boolean, List<Node>> nodePartitionedMap = sprintLeafNodeList.stream()
 				.collect(Collectors.partitioningBy(leaf -> configHelperService.getFieldMappingMap()
 						.get(leaf.getProjectFilter().getBasicProjectConfigId()).isUploadDataKPI16()));
@@ -279,13 +279,16 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 		List<Node> uploadDataEnableNodes = nodePartitionedMap.get(true);
 		List<Node> uploadDataDisableNodes = nodePartitionedMap.get(false);
 
+		// flow 1 : fetching the uploaded data for uploadEnableNode
+		Map<String, Object> uploadedDataMap = fetchTestExecutionUploadDataFromDb(uploadDataEnableNodes, kpiRequest);
+		// Grouping of uploaded data by sprint
+		Map<String, TestExecution> sprintWiseUploadedDataMap = createSprintWiseTestExecutionMap(
+				(List<TestExecution>) uploadedDataMap.getOrDefault(TEST_EXECUTION_FROM_UPLOAD, new ArrayList<>()));
+		// flow 2 : fetching the data from configured tool for uploadDisableNode
 		Map<String, Object> defectDataListMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(uploadDataDisableNodes)) {
 			defectDataListMap = fetchKPIDataFromDb(uploadDataDisableNodes, null, null, kpiRequest);
 		}
-		Map<String, Object> uploadedDataMap = fetchTestExecutionUploadDataFromDb(uploadDataEnableNodes, kpiRequest);
-		Map<String, TestExecution> sprintWiseUploadedDataMap = createSprintWiseTestExecutionMap(
-				(List<TestExecution>) uploadedDataMap.get(TEST_EXECUTION_FROM_UPLOAD));
 
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) defectDataListMap
 				.getOrDefault(SPRINTSTORIES, new ArrayList<>());
@@ -328,22 +331,11 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 			// Leaf node wise data
 			String trendLineName = node.getProjectFilter().getName();
 			if (uploadDataEnableNodes.contains(node)) {
-				if (null != sprintWiseUploadedDataMap.get(sprintId)) {
-					setSprintNodeValue(sprintWiseUploadedDataMap.get(sprintId), resultList, node, trendLineName);
-				} else {
-					DataCount dataCount = new DataCount();
-					dataCount.setSubFilter(Constant.EMPTY_STRING);
-					dataCount.setSProjectName(trendLineName);
-					dataCount.setValue(0.0);
-					dataCount.setLineValue(0.0);
-					dataCount.setHoverValue(new HashMap<>());
-					dataCount.setSSprintID(node.getSprintFilter().getId());
-					dataCount.setSSprintName(node.getSprintFilter().getName());
-					resultList.add(dataCount);
-					trendValueList.add(dataCount);
-				}
-				mapTmp.get(node.getId()).setValue(resultList);
+				// flow 1 : populating by uploaded data
+				populatingForUploadedData(mapTmp, trendValueList, node, sprintWiseUploadedDataMap, sprintId, resultList,
+						trendLineName);
 			} else {
+				// flow 2 : populating by configured tool
 				Pair<String, String> currentNodeIdentifier = Pair.of(
 						node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
 
@@ -378,6 +370,36 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.INSPRINT_AUTOMATION_COVERAGE.getColumns());
+	}
+
+	/**
+	 *  populating from uploaded data
+	 * @param mapTmp
+	 * @param trendValueList
+	 * @param node
+	 * @param sprintWiseUploadedDataMap
+	 * @param sprintId
+	 * @param resultList
+	 * @param trendLineName
+	 */
+	private void populatingForUploadedData(Map<String, Node> mapTmp, List<DataCount> trendValueList, Node node,
+			Map<String, TestExecution> sprintWiseUploadedDataMap, String sprintId, List<DataCount> resultList,
+			String trendLineName) {
+		if (null != sprintWiseUploadedDataMap.get(sprintId)) {
+			setSprintNodeValue(sprintWiseUploadedDataMap.get(sprintId), resultList, node, trendLineName);
+		} else {
+			DataCount dataCount = new DataCount();
+			dataCount.setSubFilter(Constant.EMPTY_STRING);
+			dataCount.setSProjectName(trendLineName);
+			dataCount.setValue(0.0);
+			dataCount.setLineValue(0.0);
+			dataCount.setHoverValue(new HashMap<>());
+			dataCount.setSSprintID(node.getSprintFilter().getId());
+			dataCount.setSSprintName(node.getSprintFilter().getName());
+			resultList.add(dataCount);
+			trendValueList.add(dataCount);
+		}
+		mapTmp.get(node.getId()).setValue(resultList);
 	}
 
 	/**
