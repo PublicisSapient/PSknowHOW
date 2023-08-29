@@ -114,6 +114,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     kpiTableHeadingArr:Array<object> = [{
         'field': 'kpiName',
         'header': 'Kpi Name'
+    }, {
+        'field': 'frequency',
+        'header': 'Frequency'
     }];
     kpiTableDataObj:object={};
     noOfColumns:number = 5;
@@ -909,7 +912,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     }
 
     /** to prepare table data */
-    getTableData(kpiId, idx){
+    getTableData(kpiId, idx, xCaption){
         let trendValueList = [];
         if(idx){
             trendValueList = this.allKpiArray[idx]?.trendValueList;
@@ -917,7 +920,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             trendValueList = this.allKpiArray?.filter((x) => x[kpiId] == kpiId)[0]?.trendValueList;
         }
         /**To create KPI table headings */
-        if(this.kpiTableHeadingArr?.length == 1){
+        if(this.kpiTableHeadingArr?.length == 2){
             if(trendValueList?.length > 0){
                 this.noOfColumns = trendValueList?.[0]?.value?.length;
                 let hasFilter = trendValueList[0]?.hasOwnProperty('filter') || trendValueList[0]?.hasOwnProperty('filter1');
@@ -952,26 +955,39 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             let filtersApplied = [...this.filterApplyData?.['selectedMap']['project']];
             filtersApplied = filtersApplied.map((x) => x.split('_')[0]);
             
-            filtersApplied.forEach((hierarchyName, index) => {
+            filtersApplied.forEach((hierarchyName) => {
                 let obj = {
                     'kpiName': this.allKpiArray[idx]?.kpiName,
+                    'frequency': xCaption,
+                    'hoverText': []
                 }
                 let chosenItem = iterativeEle?.filter((item) => item['data'] == hierarchyName)[0];
-                for(let i=0; i<this.noOfColumns;i++){
-                    let item = chosenItem?.value[i];
-                    obj[i+1] = item?.['sprintNames']?.length > 0 ? item['sprintNames'].join(',') : item?.['sSprintName'] ? item['sSprintName'] : item?.['date'] || '-';
-                }
                 
                 let trendData = this.kpiTrendsObj[kpiId]?.filter(x => x['hierarchyName']?.toLowerCase() == hierarchyName?.toLowerCase())[0];
                 obj['latest'] = trendData?.value || '-';
                 obj['trend'] = trendData?.trend || '-';
                 obj['maturity'] = trendData?.maturity || '-';
+                for(let i=0; i<this.noOfColumns;i++){
+                    let item = chosenItem?.value[i];
+                    if(item){
+                        obj['hoverText']?.push((i+1) + ' - ' + (item?.['sprintNames']?.length > 0 
+                        ? item['sprintNames'].join(',') : item?.['sSprintName'] ? item['sSprintName'] : item?.['date']));
+                        obj[i+1] = item?.value > 0 ? 
+                        (Math.round(item?.value * 10) / 10) + (trendData?.unit ? ' ' + trendData?.unit : '') 
+                        : item?.value + (trendData?.unit ? ' ' + trendData?.unit : '') || '-';
+                    }else{
+                        obj[i+1] = '-';
+                    }
+                    
+                }
                 this.kpiTableDataObj[hierarchyName] = [...this.kpiTableDataObj[hierarchyName], obj];
             })
         }else{
             /** when no data available */
             let obj = {
                 'kpiName': this.allKpiArray[idx]?.kpiName,
+                'frequency': xCaption,
+                'hoverText': []
             }
             for(let i=0; i<this.noOfColumns;i++){
                 obj[i+1] = '-';
@@ -1421,7 +1437,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     this.kpiTrendsObj[kpiId]?.push(trendObj);
                 }
             }
-            this.getTableData(kpiId, idx);
+            this.getTableData(kpiId, idx, enabledKpiObj?.kpiDetail?.xaxisLabel);
         }
       }
 

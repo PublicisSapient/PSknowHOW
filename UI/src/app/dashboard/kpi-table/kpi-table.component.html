@@ -11,7 +11,7 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-rowData let-columns="columns">
                     <tr>
-                        <td *ngFor="let col of columns">
+                        <td *ngFor="let col of columns" (mouseenter)="mouseEnter($event, col.field, rowData, tab)" (mouseleave)="mouseLeave()">
                             {{ rowData[col.field] }}
                         </td>
                     </tr>
@@ -20,3 +20,4 @@
         </div>
     </p-tabPanel>
 </p-tabView>
+<div class="tool-tip" *ngIf="showToolTip" innerHtml="{{toolTipHtml}}" [ngStyle]="{'left': left, 'top': top}"></div>
