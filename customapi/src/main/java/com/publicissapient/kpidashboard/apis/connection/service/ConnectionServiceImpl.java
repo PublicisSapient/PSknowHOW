@@ -391,7 +391,12 @@ public class ConnectionServiceImpl implements ConnectionService {
 				case TOOL_SONAR:
 				case TOOL_ZEPHYR:
 				case TOOL_GITLAB:
-					String accessToken = inputConn.getAccessToken();
+					String accessToken;
+					if(inputConn.isAccessTokenEnabled()) {
+						accessToken = inputConn.getAccessToken();
+					} else {
+						accessToken = inputConn.getPatOAuthToken();
+					}
 					String accessTokenExists = aesEncryptionService.decrypt(currConn.getAccessToken(),
 							customApiConfig.getAesEncryptionKey());
 					accessTokenSimilarity = accessToken.equals(accessTokenExists);
@@ -578,7 +583,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	private Connection checkConnDetailsSonar(Connection inputConn, Connection currConn, String api) {
 		Connection existingConnection = null;
-		if (inputConn.isCloudEnv() || (!inputConn.isCloudEnv() && inputConn.isAccessTokenEnabled())) {
+		if (inputConn.isCloudEnv() || (!inputConn.isCloudEnv() && inputConn.isAccessTokenEnabled()) ||
+				(!inputConn.isCloudEnv() && inputConn.isBearerToken())) {
 			boolean sameURLCheck = api.equals("save") && inputConn.getBaseUrl().equals(currConn.getBaseUrl());
 			existingConnection = checkVaultConnection(inputConn, currConn, existingConnection, sameURLCheck);
 		} else {
