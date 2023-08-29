@@ -47,9 +47,17 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * This class displays the defects that are presently in the backlog and the
+ * active sprint, but have not yet been completed.
+ *
+ * @author eswbogol
+ *
+ */
 @Slf4j
 @Component
 public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -58,6 +66,9 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 
 	@Autowired
 	ConfigHelperService configHelperService;
+
+	@Autowired
+	JiraIssueRepository jiraIssueRepository;
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -72,9 +83,6 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 		return kpiElement;
 	}
 
-	/**
-	 *
-	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
@@ -88,7 +96,7 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			Set<String> excludeStatuses = getExcludeStatuses(fieldMapping);
 			// method to exclude the issues with status
-			jiraIssues = getJiraIssueListAfterDefectsWithStatusExcluded(fieldMapping, jiraIssues, excludeStatuses);
+			jiraIssues = getJiraIssueListAfterDefectsWithStatusExcluded(jiraIssues, excludeStatuses);
 			Map<String, List<JiraIssue>> statusWiseIssuesList = new HashMap<>(
 					CollectionUtils.isNotEmpty(jiraIssues)
 							? jiraIssues.stream().filter(
@@ -115,7 +123,10 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (leafNode != null) {
 			log.info("Defect Count By Type kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
-			List<JiraIssue> totalJiraIssue = getTotalIssuesOfProject();
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findByBasicProjectConfigIdAndTypeNameIn(
+					leafNode.getProjectFilter().getBasicProjectConfigId().toString(), fieldMapping.getJiradefecttype());
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 		}
 		return resultListMap;
@@ -131,16 +142,11 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 		return excludeStatuses;
 	}
 
-	private static List<JiraIssue> getJiraIssueListAfterDefectsWithStatusExcluded(FieldMapping fieldMapping,
-			List<JiraIssue> jiraIssues, Set<String> excludeStatuses) {
-		Set<String> excludeStatus = new HashSet<>(CollectionUtils.isNotEmpty(excludeStatuses)
-				? excludeStatuses.stream().map(String::toUpperCase).collect(Collectors.toSet())
-				: new HashSet<>());
+	private static List<JiraIssue> getJiraIssueListAfterDefectsWithStatusExcluded(List<JiraIssue> jiraIssues,
+			Set<String> excludeStatuses) {
+		Set<String> excludeStatus = excludeStatuses.stream().map(String::toUpperCase).collect(Collectors.toSet());
 		jiraIssues = jiraIssues.stream()
 				.filter(jiraIssue -> !excludeStatus.contains(jiraIssue.getJiraStatus().toUpperCase()))
-				.collect(Collectors.toList());
-		jiraIssues = jiraIssues.stream()
-				.filter(jiraIssue -> fieldMapping.getJiradefecttype().contains(jiraIssue.getTypeName()))
 				.collect(Collectors.toList());
 		return jiraIssues;
 	}

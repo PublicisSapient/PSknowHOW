@@ -167,4 +167,15 @@ public interface JiraIssueRepository
 	 */
 	List<JiraIssue> findByBasicProjectConfigIdIn(String basicProjectConfigId);
 
+	/*
+	 * Find documents for given types and basicProjectConfigId.
+	 *
+	 *
+	 * @param basicProjectConfigId
+	 * @param typeName
+	 *
+	 * @return JiraIssue
+	 */
+	List<JiraIssue> findByBasicProjectConfigIdAndTypeNameIn(String basicProjectConfigId, List<String> typeName);
+
 }
