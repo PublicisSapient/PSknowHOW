@@ -740,8 +740,7 @@ db.getCollection('field_mapping_structure').insert(
             "fieldCategory": "workflow",
             "section": "WorkFlow Status Mapping",
             "tooltip": {
-                "definition": "Enabled State (Works from data on Upload data screen)
-"
+                "definition": "Resolutions for defects which are to be excluded from 'Defect Injection rate' calculation <br>"
             }
         },
         {
@@ -3690,6 +3689,25 @@ db.getCollection('kpi_category_mapping').insertOne( {
                                                     		"kpiOrder": 4,
                                                     		"kanban": false
                                                     	});
+
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+// ---- New FieldMapping Field added to consider subtask defect not tagged in a release ---------------------------------------------------------------------------
+db.getCollection('field_mapping_structure').insertMany([
+    {
+            "fieldName": "jiraSubTaskDefectType",
+            "fieldLabel": "Issue type for sub-task defect",
+            "fieldType": "chips",
+            "fieldCategory": "Issue_Type",
+            "section": "Issue Types Mapping",
+            "tooltip": {
+                "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+            }
+    }
+])
+
+
+
+
 
 //------------------------- 7.8.0 changes----------------------------------------------------------------------------------
 db.getCollection('field_mapping_structure').insertMany([
