@@ -91,6 +91,8 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	@Autowired
 	private CommitRepository commitRepository;
 
+
+
 	@Override
 	public String getQualifierType() {
 		return KPICode.NUMBER_OF_CHECK_INS.name();

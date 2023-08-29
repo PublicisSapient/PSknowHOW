@@ -18,19 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.connection.service;
 
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZURE;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZUREPIPELINE;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZUREREPO;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_BAMBOO;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_BITBUCKET;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_GITHUB;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_GITLAB;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_JENKINS;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_JIRA;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_SONAR;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_TEAMCITY;
-import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_ZEPHYR;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -61,6 +48,8 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
+
+import static com.publicissapient.kpidashboard.apis.constant.Constant.*;
 
 /**
  * This class provides various methods related to operations on Connections
@@ -290,6 +279,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 			break;
 		case TOOL_ZEPHYR:
 			existingConnection = checkConnDetailsZephyr(inputConn, currConn, api);
+			break;
+		case REPO_TOOLS:
+			if(inputConn.getHttpUrl().equals(currConn.getHttpUrl()))
+				existingConnection = currConn;
 			break;
 		default:
 			existingConnection = new Connection();

@@ -1,41 +1,60 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.repotools.service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.repotools.RepoToolsClient;
-import com.publicissapient.kpidashboard.apis.repotools.model.*;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConfig;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
+import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import org.apache.commons.collections.CollectionUtils;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
-import com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.service.ProjectToolConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class RepoToolsConfigServiceImpl {
@@ -107,6 +126,7 @@ public class RepoToolsConfigServiceImpl {
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
 					fistScan.toString().replace("T", " "), toolCredential, branchNames);
 
+			repoToolsClient = createRepoToolsClient();
 			// api call to enroll the project
 			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig, customApiConfig.getRepoToolURL(),
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
@@ -180,19 +200,19 @@ public class RepoToolsConfigServiceImpl {
 
 	/**
 	 * update a project enrolled in repo tool
+	 * @param toolList
+	 * @param tool
 	 * @param basicProjectConfigId
-	 * @param connectionId
 	 * @return
 	 */
-	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ObjectId connectionId,
-			String basicProjectConfigId) {
+	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool, String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
-		int count = (int) toolList.stream()
+		long count = toolList.stream()
 				.filter(projectToolConfig -> projectToolConfig.getToolName().equals(CommonConstant.REPO_TOOLS)).count();
 		repoToolsClient = createRepoToolsClient();
 		if (count > 1) {
 			// delete only the repository
-			httpStatus = repoToolsClient.deleteRepositories(connectionId.toString(), customApiConfig.getRepoToolURL(),
+			httpStatus = repoToolsClient.deleteRepositories(tool.getRepositoryName(), customApiConfig.getRepoToolURL(),
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 		} else {
 			// delete the project from repo tool if only one repository is present

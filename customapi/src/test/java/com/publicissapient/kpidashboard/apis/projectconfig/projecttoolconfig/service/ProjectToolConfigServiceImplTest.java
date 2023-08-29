@@ -474,7 +474,8 @@ public class ProjectToolConfigServiceImplTest {
 		String toolId = "5fc4d61f80b6350f048a93e3";
 		String basicProjectId = "5fc4d61e80b6350f048a9381";
 
-		when(toolRepositroy.findById(toolId)).thenReturn(findToolById(toolId));
+		when(toolRepositroy.findByBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381")))
+				.thenReturn(createMockTools());
 		when(dataCleanUpServiceFactory.getService(anyString())).thenReturn(sonarDataCleanUpService);
 		doNothing().when(toolRepositroy).deleteById(new ObjectId(toolId));
 		doNothing().when(sonarDataCleanUpService).clean(toolId);
@@ -486,7 +487,7 @@ public class ProjectToolConfigServiceImplTest {
 		String toolId = "5fc4d61f80b6350f048a93e5";
 		String basicProjectId = "5fc4d61e80b6350f048a9381";
 		assertThrows(ToolNotFoundException.class, () -> {
-			when(toolRepositroy.findById(toolId)).thenReturn(findToolById(toolId));
+			when(toolRepositroy.findByBasicProjectConfigId(new ObjectId(basicProjectId))).thenReturn(createMockTools());
 
 			assertTrue(projectToolServiceImpl.deleteTool(basicProjectId, toolId));
 		});

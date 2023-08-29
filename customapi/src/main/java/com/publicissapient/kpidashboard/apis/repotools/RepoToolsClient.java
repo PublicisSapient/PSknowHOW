@@ -49,9 +49,6 @@ public class RepoToolsClient {
 	private static final String X_API_KEY = "X_API_KEY";
 	private HttpHeaders httpHeaders;
 
-	public RepoToolsClient() {
-		this.restTemplate = new RestTemplate();
-	}
 
 	/**
 	 * enroll project
@@ -143,6 +140,7 @@ public class RepoToolsClient {
 	 */
 	public void setHttpHeaders(String apiKey) {
 		httpHeaders = new HttpHeaders();
+		this.restTemplate = new RestTemplate();
 		httpHeaders.add(X_API_KEY, apiKey);
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 	}
