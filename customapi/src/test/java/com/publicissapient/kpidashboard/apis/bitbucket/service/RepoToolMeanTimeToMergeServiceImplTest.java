@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -8,12 +26,13 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.data.RepoToolsKpiRequestDataFactory;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -31,7 +50,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.data.MergeRequestDataFactory;
+import com.publicissapient.kpidashboard.apis.data.RepoToolsKpiRequestDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
@@ -39,20 +58,16 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.model.scm.BranchMergeReqCount;
-import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
-import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
-
-/**
- * @author yasbano
- *
- */
 
 @RunWith(MockitoJUnitRunner.class)
 public class RepoToolMeanTimeToMergeServiceImplTest {
@@ -67,7 +82,7 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 	@Mock
 	CacheService cacheService;
 	@InjectMocks
-	MeanTimeToMergeServiceImpl meanTimeToMergeServiceImpl;
+	RepoToolMeanTimeToMergeServiceImpl meanTimeToMergeServiceImpl;
 	@Mock
 	CustomApiConfig customApiConfig;
 	@Mock
@@ -182,7 +197,8 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 				.thenReturn("Jira-Excel-5be544de025de212549176a9");
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-
+		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any()))
+				.thenReturn(repoToolKpiMetricResponseList);
 		KpiElement kpiElement = meanTimeToMergeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		List<BranchMergeReqCount> out = (List<BranchMergeReqCount>) kpiElement.getTrendValueList();
@@ -192,12 +208,13 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 	@Test
 	public void testGetQualifierType() {
 		String result = meanTimeToMergeServiceImpl.getQualifierType();
-		assertEquals(result, KPICode.MEAN_TIME_TO_MERGE.name());
+		assertEquals(result, KPICode.REPO_TOOL_MEAN_TIME_TO_MERGE.name());
 
 	}
 
 	@Test
 	public void testCalculateKPIMetrics() {
-		assertNull(null, meanTimeToMergeServiceImpl.calculateKPIMetrics(new ArrayList<>()));
+		Map<String, Object> stringObjectMap = new HashMap<>();
+		assertNull(null, meanTimeToMergeServiceImpl.calculateKPIMetrics(stringObjectMap));
 	}
 }

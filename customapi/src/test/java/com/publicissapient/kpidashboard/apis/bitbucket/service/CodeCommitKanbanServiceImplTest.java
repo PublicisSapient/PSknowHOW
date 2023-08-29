@@ -32,9 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.data.RepoToolsKpiRequestDataFactory;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,7 +78,6 @@ public class CodeCommitKanbanServiceImplTest {
 
 	private static Tool tool1;
 	private static Tool tool2;
-	private static Tool tool3;
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	Map<String, List<Tool>> toolGroup = new HashMap<>();
@@ -99,8 +95,6 @@ public class CodeCommitKanbanServiceImplTest {
 	FieldMappingRepository fieldMappingRepository;
 	@Mock
 	CustomApiConfig customApiSetting;
-	@Mock
-	RepoToolsConfigServiceImpl repoToolsConfigService;
 	@InjectMocks
 	CodeCommitKanbanServiceImpl codeCommitServiceImpl;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
@@ -116,7 +110,6 @@ public class CodeCommitKanbanServiceImplTest {
 	private KpiRequest kpiRequest;
 
 	private List<AccountHierarchyDataKanban> accountHierarchyKanbanDataList = new ArrayList<>();
-	private List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -132,9 +125,6 @@ public class CodeCommitKanbanServiceImplTest {
 		CommitDetailsDataFactory commitDetailsDataFactory = CommitDetailsDataFactory
 				.newInstance("/json/non-JiraProcessors/commit_details_kanban.json");
 		commitList = commitDetailsDataFactory.getcommitDetailsList();
-
-		RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
-		repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
 
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
@@ -194,11 +184,9 @@ public class CodeCommitKanbanServiceImplTest {
 
 		tool1 = createTool("URL1", "BRANCH1", "Bitbucket", "USER1", "PASS1", processorItemList);
 		tool2 = createTool("URL1", "BRANCH2", "Bitbucket", "USER2", "PASS2", processorItemList);
-		tool2 = createTool("URL1", "BRANCH3", "Repo_Tools", "USER3", "PASS3", processorItemList);
 
 		toolList.add(tool1);
 		toolList.add(tool2);
-		toolList.add(tool3);
 
 		toolGroup.put(Constant.TOOL_BITBUCKET, toolList);
 
@@ -238,7 +226,7 @@ public class CodeCommitKanbanServiceImplTest {
 		when(commitRepository.findCommitList(any(), any(), any(), any())).thenReturn(commitList);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(repoToolsConfigService.getRepoToolKpiMetrics(any(), any(), any(), any(), any())).thenReturn(repoToolKpiMetricResponseList);
+
 		String kpiRequestTrackerId = "Excel-Bitbucket-5be544de025de212549176a9";
 
 		when(cacheService

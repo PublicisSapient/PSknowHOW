@@ -279,12 +279,12 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			Map<String, Object> hoverValues = new HashMap<>();
 			if (commitCountForRepo != null && commitCountForRepo.get(dateRange.getStartDate().toString()) != null) {
 				Long commitForDay = commitCountForRepo.get(dateRange.getStartDate().toString());
-				excelDataLoader.put(DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT),
+				excelDataLoader.put(getDateRange(dateRange, duration),
 						commitForDay);
 				dataCount.setValue(commitForDay);
 				hoverValues.put(NO_CHECKIN, commitForDay.intValue());
 			} else {
-				excelDataLoader.put(DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT),
+				excelDataLoader.put(getDateRange(dateRange, duration),
 						0l);
 				dataCount.setValue(0l);
 				hoverValues.put(NO_CHECKIN, 0);
@@ -292,19 +292,18 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			}
 			if (mergeCountForRepo != null && mergeCountForRepo.get(dateRange.getStartDate().toString()) != null) {
 				Long mergeForDay = mergeCountForRepo.get(dateRange.getStartDate().toString());
-				mergeRequestExcelDataLoader.put(
-						DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT), mergeForDay);
+				mergeRequestExcelDataLoader.put(getDateRange(dateRange, duration), mergeForDay);
 				dataCount.setLineValue(mergeForDay);
 				hoverValues.put(NO_MERGE, mergeForDay.intValue());
 
 			} else {
 				mergeRequestExcelDataLoader
-						.put(DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT), 0l);
+						.put(getDateRange(dateRange, duration), 0l);
 				dataCount.setLineValue(0l);
 				hoverValues.put(NO_MERGE, 0);
 
 			}
-			dataCount.setDate(DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), YYYYMMDD, DateUtil.DISPLAY_DATE_FORMAT));
+			dataCount.setDate(getDateRange(dateRange, duration));
 			dataCount.setHoverValue(hoverValues);
 			dataCount.setSProjectName(projectName);
 			dayWiseCommitCount.add(dataCount);

@@ -325,12 +325,15 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 		List<ProjectToolConfig> toolList = toolRepository
 				.findByBasicProjectConfigId(new ObjectId(basicProjectConfigId));
-		ProjectToolConfig tool = toolList.stream()
-				.filter(projectToolConfig -> projectToolConfig.getId().equals(new ObjectId(projectToolId))).findFirst()
-				.get();
+		Optional<ProjectToolConfig> optionalProjectToolConfig = toolList.stream()
+				.filter(projectToolConfig -> projectToolConfig.getId().equals(new ObjectId(projectToolId))).findFirst();
+		if (!optionalProjectToolConfig.isPresent()) {
+			throw new ToolNotFoundException("Tool not found");
+		}
+		ProjectToolConfig tool = optionalProjectToolConfig.get();
 		if (isValidTool(basicProjectConfigId, tool)) {
-			if (isRepoTool(tool) && !repoToolsConfigService.updateRepoToolProjectConfiguration(toolList,
-					tool.getConnectionId(), basicProjectConfigId)) {
+			if (isRepoTool(tool) && !repoToolsConfigService.updateRepoToolProjectConfiguration(toolList, tool,
+					basicProjectConfigId)) {
 				return false;
 			}
 			cleanData(tool);
