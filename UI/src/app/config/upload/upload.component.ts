@@ -705,11 +705,11 @@ export class UploadComponent implements OnInit {
             this.reqObj['automatableTestCases'] = this.popupForm?.get('automatableTestCases').value;
             this.reqObj['automatedRegressionTestCases'] = this.popupForm?.get('automatedRegressionTestCases').value;
             this.reqObj['totalRegressionTestCases'] = this.popupForm?.get('totalRegressionTestCases').value;
-        }else{
-            this.reqObj['automatedTestCases'] = "NA"
-            this.reqObj['automatableTestCases'] = "NA"
-            this.reqObj['automatedRegressionTestCases'] = "NA"
-            this.reqObj['totalRegressionTestCases'] = "NA";
+        }else if(!this.kanban){
+            this.reqObj['automatedTestCases'] = -1 ;
+            this.reqObj['automatableTestCases'] = -1
+            this.reqObj['automatedRegressionTestCases'] = -1;
+            this.reqObj['totalRegressionTestCases'] = -1 ;
         }
         this.http_service.saveTestExecutionPercent(this.reqObj)
             .subscribe(response => {
@@ -733,6 +733,18 @@ export class UploadComponent implements OnInit {
     }
 
     enableDisableTestExecutionSubmitButton() {
+        if (!this.isAddtionalTestField) {
+            this.validateFirstGroupTextCountField();
+        } else {
+            if ((!!this.popupForm?.get('totalTestCases').value) || (!!this.popupForm?.get('executedTestCase').value) || (!!this.popupForm?.get('passedTestCase').value)) {
+                this.validateFirstGroupTextCountField();
+            } else {
+                this.validateSecondGroupTextCountField()
+            }
+        }
+    }
+
+    validateFirstGroupTextCountField(){
         if (!(!!this.popupForm?.get('totalTestCases').value)) {
             this.isTestExecutionSaveDisabled = true;
             if (parseInt(this.popupForm?.get('totalTestCases').value) === 0) {
@@ -769,6 +781,24 @@ export class UploadComponent implements OnInit {
         if (parseFloat(this.popupForm?.get('executedTestCase').value) < parseFloat(this.popupForm?.get('passedTestCase').value)) {
             this.isTestExecutionSaveDisabled = true;
             this.testExecutionErrorMessage = 'Passed Test Cases should not be greater than Executed Test Cases';
+            return;
+        }
+        this.isTestExecutionSaveDisabled = false;
+        this.testExecutionErrorMessage = '';
+    }
+
+    validateSecondGroupTextCountField(){
+        if((!!this.popupForm?.get('automatedTestCases').value) && !(!!this.popupForm?.get('automatableTestCases').value) ||
+        !(!!this.popupForm?.get('automatedTestCases').value) && (!!this.popupForm?.get('automatableTestCases').value)){
+            this.isTestExecutionSaveDisabled = true;
+            this.testExecutionErrorMessage = 'Please fill Automated Test Case & Automatable Test Case both';
+            return;
+        }
+
+        if((!!this.popupForm?.get('automatedRegressionTestCases').value) && !(!!this.popupForm?.get('totalRegressionTestCases').value) || 
+        !(!!this.popupForm?.get('automatedRegressionTestCases').value) && (!!this.popupForm?.get('totalRegressionTestCases').value)){
+            this.isTestExecutionSaveDisabled = true;
+            this.testExecutionErrorMessage = 'Please fill Automated Regrassion & Total Regrassion both';
             return;
         }
         this.isTestExecutionSaveDisabled = false;
@@ -890,7 +920,7 @@ export class UploadComponent implements OnInit {
             if (response && response?.success && response?.data) {
                 if (this.kanban) {
                     this.testExecutionKanbanData = response?.data;
-                    this.isAddtionalTestField = (this.testExecutionKanbanData[0].automatedTestCases === 'NA' || this.testExecutionKanbanData[0].automatedTestCases === undefined) ? false : true;
+                    this.isAddtionalTestField = (this.testExecutionKanbanData[0].automatedTestCases === -1 || this.testExecutionKanbanData[0].automatedTestCases === undefined) ? false : true;
                     if(!this.isAddtionalTestField){
                         this.cols.testExecutionKanbanKeys = this.cols.testExecutionKanbanKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
                     }
@@ -901,7 +931,7 @@ export class UploadComponent implements OnInit {
                     }
                 } else {
                     this.testExecutionScrumData = response?.data;
-                    this.isAddtionalTestField = (this.testExecutionScrumData[0].automatedTestCases === 'NA' || this.testExecutionScrumData[0].automatedTestCases === undefined) ? false : true;
+                    this.isAddtionalTestField = (this.testExecutionScrumData[0].automatedTestCases === -1 || this.testExecutionScrumData[0].automatedTestCases === undefined) ? false : true;
                     if(!this.isAddtionalTestField){
                         this.cols.testExecutionScrumKeys = this.cols.testExecutionScrumKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
                     }
