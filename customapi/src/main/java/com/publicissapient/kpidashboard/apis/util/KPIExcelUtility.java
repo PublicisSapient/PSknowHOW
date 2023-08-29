@@ -1452,7 +1452,7 @@ public class KPIExcelUtility {
 				excelData.setIssueID(issueDetails);
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
 				excelData.setIssueStatus(jiraIssue.getStatus());
-				excelData.setIssueType(jiraIssue.getTypeName());
+				excelData.setIssueType(jiraIssue.getOriginalType());
 				populateAssignee(jiraIssue, excelData);
 				excelData.setPriority(jiraIssue.getPriority());
 				excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());

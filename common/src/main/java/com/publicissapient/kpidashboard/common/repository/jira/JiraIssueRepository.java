@@ -176,6 +176,6 @@ public interface JiraIssueRepository
 	 *
 	 * @return JiraIssue
 	 */
-	List<JiraIssue> findByBasicProjectConfigIdAndTypeNameIn(String basicProjectConfigId, List<String> typeName);
+	List<JiraIssue> findByBasicProjectConfigIdAndOriginalTypeIn(String basicProjectConfigId, List<String> typeName);
 
 }

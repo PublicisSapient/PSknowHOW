@@ -100,8 +100,8 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 			Map<String, List<JiraIssue>> statusWiseIssuesList = new HashMap<>(
 					CollectionUtils.isNotEmpty(jiraIssues)
 							? jiraIssues.stream().filter(
-									jiraIssue -> fieldMapping.getJiradefecttype().contains(jiraIssue.getTypeName()))
-									.collect(Collectors.groupingBy(JiraIssue::getTypeName))
+									jiraIssue -> fieldMapping.getJiradefecttype().contains(jiraIssue.getOriginalType()))
+									.collect(Collectors.groupingBy(JiraIssue::getOriginalType))
 							: new HashMap<>());
 			log.info("Defect Count By Type -> request id : {} total jira Issues : {}", requestTrackerId,
 					jiraIssues.size());
@@ -125,7 +125,7 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 			log.info("Defect Count By Type kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findByBasicProjectConfigIdAndTypeNameIn(
+			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findByBasicProjectConfigIdAndOriginalTypeIn(
 					leafNode.getProjectFilter().getBasicProjectConfigId().toString(), fieldMapping.getJiradefecttype());
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 		}
