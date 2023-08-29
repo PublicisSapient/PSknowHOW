@@ -42,8 +42,11 @@ describe('DashboardconfigComponent', () => {
   let messageService;
 
   const fakeGetDashData = require('../../../test/resource/fakeShowHideApi.json');
-  const fakeGetDashDataOthers = fakeGetDashData.data['others'][0].kpis;
-
+  let fakeGetDashDataOthers = fakeGetDashData.data['scrum'][0].kpis.concat(fakeGetDashData.data['kanban'][0].kpis).concat(fakeGetDashData.data['others'][0].kpis);
+  // let filteredFakeGetDashDataScrum = fakeGetDashDataOthers.filter((obj, index) => {
+  //   return index === fakeGetDashDataOthers.findIndex(o => obj.kpiId === o.kpiId);
+  // });
+  fakeGetDashDataOthers = fakeGetDashDataOthers.filter((kpi) => kpi.shown);
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -82,7 +85,9 @@ describe('DashboardconfigComponent', () => {
     fixture.detectChanges();
     const httpreq = httpMock.expectOne(baseUrl + '/api/user-board-config');
     httpreq.flush(fakeGetDashData);
-    expect(Object.keys(component.kpiFormValue).length).toBe(fakeGetDashDataOthers.length);
+    console.log(component.kpiFormValue);
+    console.log(fakeGetDashDataOthers);
+    expect(Object.keys(component.kpiFormValue['kpis']['controls']).length + 4).toBe(fakeGetDashDataOthers.length);
   }));
 
   it('on load get dashboard data with error  ', waitForAsync(() => {

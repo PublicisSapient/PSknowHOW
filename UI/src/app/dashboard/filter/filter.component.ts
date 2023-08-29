@@ -700,7 +700,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     const dateFilter = this.filterForm?.get('date')?.value;
-    if ((dateFilter != '' && this.kanban) || (dateFilter != '' && this.selectedTab.toLowerCase() === 'developer')) {
+    if ((dateFilter != '' && this.kanban) || (dateFilter != '' && (this.selectedTab && this.selectedTab.length && this.selectedTab.toLowerCase() === 'developer'))) {
       this.filterApplyData['ids'] = [];
       this.filterApplyData['selectedMap']['date']?.push(this.selectedDayType.toUpperCase());
       this.filterApplyData['ids'].push(this.filterForm?.get('date')?.value);
