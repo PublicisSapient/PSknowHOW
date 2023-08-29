@@ -55,6 +55,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -79,7 +80,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JiraServiceR {
 
-	public static final String BUG = "Bug";
 	@Autowired
 	private KpiHelperService kpiHelperService;
 
@@ -325,10 +325,10 @@ public class JiraServiceR {
 		} else if (board.equalsIgnoreCase(CommonConstant.RELEASE)) {
 			jiraIssueReleaseList = jiraIssueRepository
 					.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, sprintIssuesList);
-			Set<String> storyIDs = jiraIssueReleaseList.stream()
-					.filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(BUG)).map(JiraIssue::getNumber)
-					.collect(Collectors.toSet());
-			 subtaskDefectReleaseList = fetchSubTaskDefectsRelease(basicProjectConfigId, storyIDs);
+			Set<String> storyIDs = jiraIssueReleaseList.stream().filter(
+					jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(NormalizedJira.DEFECT_TYPE.getValue()))
+					.map(JiraIssue::getNumber).collect(Collectors.toSet());
+			subtaskDefectReleaseList = fetchSubTaskDefectsRelease(basicProjectConfigId, storyIDs);
 		}
 	}
 
@@ -396,14 +396,20 @@ public class JiraServiceR {
 		}
 	}
 
+	/**
+	 * This method is used to fetch subtask deffects which are not tagged to release
+	 *
+	 * @param projectConfigId
+	 * @param storyIDs
+	 * @return
+	 */
 	private Set<JiraIssue> fetchSubTaskDefectsRelease(String projectConfigId, Set<String> storyIDs) {
 		ObjectId basicProjectConfigId = new ObjectId(projectConfigId);
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 		if (CollectionUtils.isNotEmpty(storyIDs) && fieldMapping != null
 				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskDefectType())) {
-			return jiraIssueRepository
-					.findByBasicProjectConfigIdAndDefectStoryIDInAndOriginalTypeIn(projectConfigId, storyIDs,
-							fieldMapping.getJiraSubTaskDefectType());
+			return jiraIssueRepository.findByBasicProjectConfigIdAndDefectStoryIDInAndOriginalTypeIn(projectConfigId,
+					storyIDs, fieldMapping.getJiraSubTaskDefectType());
 		}
 		return new HashSet<>();
 	}
