@@ -3702,35 +3702,27 @@ db.getCollection('field_mapping_structure').insertMany([
             "tooltip": {
                 "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
             }
+    },
+    {
+      "fieldName": "uploadDataKPI42",
+      "fieldLabel": "KPI calculation logic",
+      "fieldType": "toggle",
+      "toggleLabel": "Upload Data",
+      "section": "WorkFlow Status Mapping",
+      "processorCommon": false,
+      "tooltip": {
+        "definition": "Enabled State (Kpi from data on Upload data screen)"
+      }
+    },
+      {
+      "fieldName": "uploadDataKPI16",
+      "fieldLabel": "KPI calculation logic",
+      "fieldType": "toggle",
+      "toggleLabel": "Upload Data",
+      "section": "WorkFlow Status Mapping",
+      "processorCommon": false,
+      "tooltip": {
+        "definition": "Enabled State (Kpi from data on Upload data screen)"
+      }
     }
 ])
-
-
-
-
-
-//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
-db.getCollection('field_mapping_structure').insertMany([
-{
-  "fieldName": "uploadDataKPI42",
-  "fieldLabel": "KPI calculation logic",
-  "fieldType": "toggle",
-  "toggleLabel": "Upload Data",
-  "section": "WorkFlow Status Mapping",
-  "processorCommon": false,
-  "tooltip": {
-    "definition": "Enabled State (Kpi from data on Upload data screen)"
-  }
-},
-  {
-  "fieldName": "uploadDataKPI16",
-  "fieldLabel": "KPI calculation logic",
-  "fieldType": "toggle",
-  "toggleLabel": "Upload Data",
-  "section": "WorkFlow Status Mapping",
-  "processorCommon": false,
-  "tooltip": {
-    "definition": "Enabled State (Kpi from data on Upload data screen)"
-  }
-}
-]);
