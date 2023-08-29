@@ -8140,34 +8140,44 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
-            "fieldName" : "jiraDefectRejectionStatusKPI155",
-            	"fieldLabel" : "Ticket Rejected/Dropped Status",
-            	"fieldType" : "text",
-            	"fieldCategory" : "workflow",
-            	"section" : "WorkFlow Status Mapping",
-            	"tooltip" : {
-            		"definition" : "Status from workflow on which ticket is considered as Rejected/Dropped."
-            	}
-     },
-     {
-            "fieldName": "jiraDodKPI155",
-            "fieldLabel": "DOD Status",
-            "fieldType": "chips",
-             "fieldCategory": "workflow",
-             "section": "WorkFlow Status Mapping",
-             "tooltip": {
-                 "definition": "......."
-             }
-     },
-     {
-            "fieldName": "jiraLiveStatusKPI155",
-             "fieldLabel": "Status to identify Live status",
-             "fieldType": "text",
-             "fieldCategory": "workflow",
-             "section": "WorkFlow Status Mapping",
-             "tooltip": {
-                 "definition": "Provide any status from workflow on which Live is considered."
-             }
-     }
+      "fieldName": "jiraSubTaskDefectType",
+      "fieldLabel": "Issue type for sub-task defect",
+      "fieldType": "chips",
+      "fieldCategory": "Issue_Type",
+      "section": "Issue Types Mapping",
+      "tooltip": {
+           "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+      }
+    },
+    {
+       "fieldName":"jiraDefectRejectionStatusKPI155",
+       "fieldLabel":"Ticket Rejected/Dropped Status",
+       "fieldType":"text",
+       "fieldCategory":"workflow",
+       "section":"WorkFlow Status Mapping",
+       "tooltip":{
+          "definition":"Status from workflow on which ticket is considered as Rejected/Dropped."
+       }
+    },
+    {
+       "fieldName":"jiraDodKPI155",
+       "fieldLabel":"DOD Status",
+       "fieldType":"chips",
+       "fieldCategory":"workflow",
+       "section":"WorkFlow Status Mapping",
+       "tooltip":{
+          "definition":"......."
+       }
+    },
+    {
+       "fieldName":"jiraLiveStatusKPI155",
+       "fieldLabel":"Status to identify Live status",
+       "fieldType":"text",
+       "fieldCategory":"workflow",
+       "section":"WorkFlow Status Mapping",
+       "tooltip":{
+          "definition":"Provide any status from workflow on which Live is considered."
+       }
+    }
 ]
 );

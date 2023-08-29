@@ -3691,6 +3691,21 @@ db.getCollection('kpi_category_mapping').insertOne( {
                                                     	});
 
 //------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+// ---- New FieldMapping Field added to consider subtask defect not tagged in a release ---------------------------------------------------------------------------
+db.getCollection('field_mapping_structure').insertMany([
+    {
+            "fieldName": "jiraSubTaskDefectType",
+            "fieldLabel": "Issue type for sub-task defect",
+            "fieldType": "chips",
+            "fieldCategory": "Issue_Type",
+            "section": "Issue Types Mapping",
+            "tooltip": {
+                "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+            }
+    }
+]);
+
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
  //DTS-26123 start
  db.getCollection('field_mapping_structure').insertMany([
  {
@@ -3770,3 +3785,6 @@ db.getCollection('kpi_master').insertOne(
      print("KPI are already present in Kpi master");
  }
   //DTS-26123 end
+
+
+
