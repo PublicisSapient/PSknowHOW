@@ -246,16 +246,6 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 		return aggData;
 	}
 
-	/**
-	 * * Group list of data by sprint
-	 * 
-	 * @param resultList
-	 * @return
-	 */
-	private Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
-		return resultList.stream().collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
-	}
-
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
 		return calculateKpiValueForDouble(valueList, kpiName);

@@ -9,6 +9,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,8 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 	private SprintDetailsService sprintDetailsService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private ConfigHelperService configHelperService;
 
 	/**
 	 * This method process the test Execution data.
@@ -88,6 +92,7 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 		List<TestExecutionData> testExecutions = new ArrayList<>();
 		List<SprintDetails> sprintDetails = filterSprints(
 				sprintDetailsService.getSprintDetails(project.getId().toHexString()));
+		FieldMapping fieldMapping = configHelperService.getFieldMapping(project.getId());
 		List<String> sprintIds = sprintDetails.stream().map(SprintDetails::getSprintID).collect(Collectors.toList());
 		List<TestExecution> savedTestExecutions = testExecutionRepository.findBySprintIdIn(sprintIds);
 
@@ -101,10 +106,26 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 				testExecutionData.setExecutedTestCase(savedTestExecution.getExecutedTestCase());
 				testExecutionData.setPassedTestCase(savedTestExecution.getPassedTestCase());
 				testExecutionData.setTotalTestCases(savedTestExecution.getTotalTestCases());
+				testExecutionData.setAutomatedTestCases(savedTestExecution.getAutomatedTestCases());
+				testExecutionData.setAutomatableTestCases(savedTestExecution.getAutomatableTestCases());
+				testExecutionData.setAutomatedRegressionTestCases(savedTestExecution.getAutomatedRegressionTestCases());
+				testExecutionData.setTotalRegressionTestCases(savedTestExecution.getTotalRegressionTestCases());
 			} else {
 				testExecutionData.setExecutedTestCase(0);
 				testExecutionData.setPassedTestCase(0);
 				testExecutionData.setTotalTestCases(0);
+				// sending -1 for proj if upload data is disabled for that proj
+				if (fieldMapping.isUploadDataKPI42() || fieldMapping.isUploadDataKPI16()) {
+					testExecutionData.setAutomatedTestCases(0);
+					testExecutionData.setAutomatableTestCases(0);
+					testExecutionData.setAutomatedRegressionTestCases(0);
+					testExecutionData.setTotalRegressionTestCases(0);
+				} else {
+					testExecutionData.setAutomatedTestCases(-1);
+					testExecutionData.setAutomatableTestCases(-1);
+					testExecutionData.setAutomatedRegressionTestCases(-1);
+					testExecutionData.setTotalRegressionTestCases(-1);
+				}
 			}
 
 			testExecutionData.setSprintName(sprint.getSprintName());
@@ -240,6 +261,10 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 				testExecution.setTotalTestCases(testExecutionData.getTotalTestCases());
 				testExecution.setExecutedTestCase(testExecutionData.getExecutedTestCase());
 				testExecution.setPassedTestCase(testExecutionData.getPassedTestCase());
+				testExecution.setAutomatedTestCases(testExecutionData.getAutomatedTestCases());
+				testExecution.setAutomatableTestCases(testExecutionData.getAutomatableTestCases());
+				testExecution.setAutomatedRegressionTestCases(testExecutionData.getAutomatedRegressionTestCases());
+				testExecution.setTotalRegressionTestCases(testExecutionData.getTotalRegressionTestCases());
 			} else {
 				testExecution = createScrumTestExecutionData(testExecutionData);
 			}
@@ -310,6 +335,10 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 		testExecution.setTotalTestCases(testExecutionData.getTotalTestCases());
 		testExecution.setExecutedTestCase(testExecutionData.getExecutedTestCase());
 		testExecution.setPassedTestCase(testExecutionData.getPassedTestCase());
+		testExecution.setAutomatedTestCases(testExecutionData.getAutomatedTestCases());
+		testExecution.setAutomatableTestCases(testExecutionData.getAutomatableTestCases());
+		testExecution.setAutomatedRegressionTestCases(testExecutionData.getAutomatedRegressionTestCases());
+		testExecution.setTotalRegressionTestCases(testExecutionData.getTotalRegressionTestCases());
 		testExecution.setBasicProjectConfigId(testExecutionData.getBasicProjectConfigId());
 		return testExecution;
 	}

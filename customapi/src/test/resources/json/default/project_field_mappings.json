@@ -235,6 +235,8 @@
     "jiraDevDueDateCustomField" : "",
     "jiraIterationCompletionStatusCustomField" : [ ],
     "jiraIncludeBlockedStatus131": "Include Flagged Issue",
-    "jiraStatusForInProgress148": ["On Progress","In Development","In Testing"]
+    "jiraStatusForInProgress148": ["On Progress","In Development","In Testing"],
+    "isUploadDataKPI42" : true,
+    "isUploadDataKPI16" : true
   }
 ]

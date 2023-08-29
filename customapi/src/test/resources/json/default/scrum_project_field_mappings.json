@@ -139,6 +139,8 @@
     "defectPriorityKPI133": [],
     "jiraIssueEpicTypeKPI153" : [ "Epic" ],
     "epicPlannedValue" : "customfield_58102",
-    "epicAchievedValue" : "customfield_51002"
+    "epicAchievedValue" : "customfield_51002",
+    "isUploadDataKPI42" : true,
+    "isUploadDataKPI16" : true
   }
 ]

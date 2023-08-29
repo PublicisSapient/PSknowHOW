@@ -464,3 +464,8 @@ db.kpi_category_mapping.insertMany([
   	"kanban" : false
   },
 ]);
+
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+db.field_mapping_structure.deleteMany({
+    "fieldName": { $in: ["uploadDataKPI42", "uploadDataKPI16"]}
+});

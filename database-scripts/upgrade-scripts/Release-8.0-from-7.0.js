@@ -740,7 +740,8 @@ db.getCollection('field_mapping_structure').insert(
             "fieldCategory": "workflow",
             "section": "WorkFlow Status Mapping",
             "tooltip": {
-                "definition": "Resolutions for defects which are to be excluded from 'Defect Injection rate' calculation <br>"
+                "definition": "Enabled State (Works from data on Upload data screen)
+"
             }
         },
         {
@@ -3689,3 +3690,29 @@ db.getCollection('kpi_category_mapping').insertOne( {
                                                     		"kpiOrder": 4,
                                                     		"kanban": false
                                                     	});
+
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+db.getCollection('field_mapping_structure').insertMany([
+{
+  "fieldName": "uploadDataKPI42",
+  "fieldLabel": "KPI calculation logic",
+  "fieldType": "toggle",
+  "toggleLabel": "Upload Data",
+  "section": "WorkFlow Status Mapping",
+  "processorCommon": false,
+  "tooltip": {
+    "definition": "Enabled State (Kpi from data on Upload data screen)"
+  }
+},
+  {
+  "fieldName": "uploadDataKPI16",
+  "fieldLabel": "KPI calculation logic",
+  "fieldType": "toggle",
+  "toggleLabel": "Upload Data",
+  "section": "WorkFlow Status Mapping",
+  "processorCommon": false,
+  "tooltip": {
+    "definition": "Enabled State (Kpi from data on Upload data screen)"
+  }
+}
+]);

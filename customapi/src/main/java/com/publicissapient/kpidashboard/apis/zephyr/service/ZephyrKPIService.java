@@ -24,8 +24,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
+import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -79,6 +82,9 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 	private static final String TESTCASEKEY = "testCaseData";
 	private static final String NIN = "nin";
 	private static final String AUTOMATED_TESTCASE_KEY = "automatedTestCaseData";
+	private static final String DEV = "DeveloperKpi";
+	public static final String SPRINT_ID = "sprintId";
+	public static final String UPLOADED_DATA = "uploadedData";
 	@Autowired
 	private CacheService cacheService;
 	@Autowired
@@ -87,6 +93,10 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 	private TestCaseDetailsRepository testCaseDetailsRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
+	@Autowired
+	private FilterHelperService flterHelperService;
+	@Autowired
+	private TestExecutionRepository testExecutionRepository;
 
 	public abstract String getQualifierType();
 
@@ -248,65 +258,66 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 	 */
 	public Map<String, Object> fetchRegressionKPIDataFromDb(List<Node> leafNodeList, boolean isKanban) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
-		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		List<String> basicProjectConfigIds = new ArrayList<>();
-		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService
-				.cacheProjectToolConfigMapData();
-		leafNodeList.forEach(leaf -> {
-			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
+		if (CollectionUtils.isNotEmpty(leafNodeList)) {
+			Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+			Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+			List<String> basicProjectConfigIds = new ArrayList<>();
+			Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService
+					.cacheProjectToolConfigMapData();
+			leafNodeList.forEach(leaf -> {
+				ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+				Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+				basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			List<ProjectToolConfig> zephyrTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId,
-					TOOL_ZEPHYR);
+				List<ProjectToolConfig> zephyrTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId,
+						TOOL_ZEPHYR);
 
-			List<ProjectToolConfig> jiraTestTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId,
-					TOOL_JIRA_TEST);
+				List<ProjectToolConfig> jiraTestTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId,
+						TOOL_JIRA_TEST);
 
-			List<String> regressionLabels = new ArrayList<>();
-			List<String> regressionAutomationFolderPath = new ArrayList<>();
-			// if Zephyr scale as a tool is setup with project
-			if (CollectionUtils.isNotEmpty(zephyrTools)) {
-				setZephyrScaleConfig(zephyrTools, regressionLabels, regressionAutomationFolderPath);
-			}
-			if (CollectionUtils.isNotEmpty(jiraTestTools)) {
-				setZephyrSquadConfig(jiraTestTools, regressionLabels, mapOfProjectFilters);
-			}
+				List<String> regressionLabels = new ArrayList<>();
+				List<String> regressionAutomationFolderPath = new ArrayList<>();
+				// if Zephyr scale as a tool is setup with project
+				if (CollectionUtils.isNotEmpty(zephyrTools)) {
+					setZephyrScaleConfig(zephyrTools, regressionLabels, regressionAutomationFolderPath);
+				}
+				if (CollectionUtils.isNotEmpty(jiraTestTools)) {
+					setZephyrSquadConfig(jiraTestTools, regressionLabels, mapOfProjectFilters);
+				}
 
-			if (CollectionUtils.isNotEmpty(regressionLabels)) {
-				mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(regressionLabels));
-			}
-			if (CollectionUtils.isNotEmpty(regressionAutomationFolderPath)) {
-				mapOfProjectFilters.put(JiraFeature.ATM_TEST_FOLDER.getFieldValueInFeature(),
-						CommonUtils.convertTestFolderToPatternList(regressionAutomationFolderPath));
-			}
+				if (CollectionUtils.isNotEmpty(regressionLabels)) {
+					mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
+							CommonUtils.convertToPatternList(regressionLabels));
+				}
+				if (CollectionUtils.isNotEmpty(regressionAutomationFolderPath)) {
+					mapOfProjectFilters.put(JiraFeature.ATM_TEST_FOLDER.getFieldValueInFeature(),
+							CommonUtils.convertTestFolderToPatternList(regressionAutomationFolderPath));
+				}
 
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
-		});
+			});
 
-		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-		mapOfFilters.put(JiraFeature.CAN_TEST_AUTOMATED.getFieldValueInFeature(),
-				Arrays.asList(NormalizedJira.YES_VALUE.getValue()));
-		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-				Arrays.asList(NormalizedJira.TEST_TYPE.getValue()));
+			mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+					basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+			mapOfFilters.put(JiraFeature.CAN_TEST_AUTOMATED.getFieldValueInFeature(),
+					Arrays.asList(NormalizedJira.YES_VALUE.getValue()));
+			mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+					Arrays.asList(NormalizedJira.TEST_TYPE.getValue()));
 
-		List<TestCaseDetails> testCasesList = testCaseDetailsRepository.findTestDetails(mapOfFilters, uniqueProjectMap,
-				NIN);
+			List<TestCaseDetails> testCasesList = testCaseDetailsRepository.findTestDetails(mapOfFilters,
+					uniqueProjectMap, NIN);
 
-		Map<String, List<TestCaseDetails>> towerWiseTotalMap = testCasesList.stream()
-				.collect(Collectors.groupingBy(TestCaseDetails::getBasicProjectConfigId, Collectors.toList()));
+			Map<String, List<TestCaseDetails>> towerWiseTotalMap = testCasesList.stream()
+					.collect(Collectors.groupingBy(TestCaseDetails::getBasicProjectConfigId, Collectors.toList()));
 
-		Map<String, List<TestCaseDetails>> towerWiseAutomatedMap = testCasesList.stream()
-				.filter(feature -> NormalizedJira.YES_VALUE.getValue().equals(feature.getIsTestAutomated()))
-				.collect(Collectors.groupingBy(TestCaseDetails::getBasicProjectConfigId, Collectors.toList()));
+			Map<String, List<TestCaseDetails>> towerWiseAutomatedMap = testCasesList.stream()
+					.filter(feature -> NormalizedJira.YES_VALUE.getValue().equals(feature.getIsTestAutomated()))
+					.collect(Collectors.groupingBy(TestCaseDetails::getBasicProjectConfigId, Collectors.toList()));
 
-		resultListMap.put(TESTCASEKEY, towerWiseTotalMap);
-		resultListMap.put(AUTOMATED_TESTCASE_KEY, towerWiseAutomatedMap);
-
+			resultListMap.put(TESTCASEKEY, towerWiseTotalMap);
+			resultListMap.put(AUTOMATED_TESTCASE_KEY, towerWiseAutomatedMap);
+		}
 		return resultListMap;
 	}
 
@@ -345,5 +356,51 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 						CommonUtils.convertTestFolderToPatternList(tool.getTestCaseStatus()));
 			}
 		});
+	}
+
+	/**
+	 *  fetch test execution uploaded data
+	 * @param leafNodeList
+	 * @param startDate
+	 * @param endDate
+	 * @param kpiRequest
+	 * @return
+	 */
+	public Map<String, Object> fetchTestExecutionUploadDataFromDb(List<Node> leafNodeList, KpiRequest kpiRequest) {
+		Map<String, Object> resultListMap = new HashMap<>();
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(leafNodeList)) {
+			Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
+			List<String> sprintList = new ArrayList<>();
+			List<String> basicProjectConfigIds = new ArrayList<>();
+			Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+
+			leafNodeList.forEach(leaf -> {
+				ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
+				sprintList.add(leaf.getSprintFilter().getId());
+				basicProjectConfigIds.add(basicProjectConfigId.toString());
+			});
+			/** additional filter **/
+			createAdditionalFilterMap(kpiRequest, mapOfFilters, DEV, flterHelperService);
+
+			mapOfFilters.put(SPRINT_ID, sprintList.stream().distinct().collect(Collectors.toList()));
+			mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
+					basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+
+			resultListMap.put(UPLOADED_DATA,
+					testExecutionRepository.findTestExecutionDetailByFilters(mapOfFilters, uniqueProjectMap));
+		} else {
+			resultListMap.put(UPLOADED_DATA, new ArrayList<>());
+		}
+		return resultListMap;
+	}
+
+	/**
+	 * * Group list of data by sprint
+	 *
+	 * @param resultList
+	 * @return
+	 */
+	public Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
+		return resultList.stream().collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
 	}
 }
