@@ -682,7 +682,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 15,
     "kpiSource": "Jenkins",
-    "groupId": 1,
+    "groupId": 14,
     "thresholdValue": 0,
     "kanban": false,
     "chartType": "line",
@@ -905,7 +905,6 @@ db.getCollection('kpi_master').insertMany(
     "groupId": 2,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "grouped_column_plus_line",
     "kpiInfo": {
       "definition": "Measures the rate of delivery across Sprints. Average velocity is calculated for the latest 5 sprints",
       "details": [
@@ -1126,7 +1125,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 25,
     "kpiSource": "Jenkins",
-    "groupId": 1,
+    "groupId": 14,
     "thresholdValue": 0,
     "kanban": false,
     "chartType": "line",
@@ -1142,7 +1141,7 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
-    "xAxisLabel": "Months",
+    "xAxisLabel": "Weeks",
     "yAxisLabel": "Count",
     "isPositiveTrend": true,
     "showTrend": true,
@@ -3059,7 +3058,6 @@ db.getCollection('kpi_master').insertMany(
       "aggregationCriteria": "sum",
       "isAdditionalFilterSupport": false,
       "calculateMaturity": false
-    }
   },
   {
     "kpiId": "kpi154",
@@ -8096,6 +8094,16 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "This field is used to identify Epic Issue type.",
     }
+    },
+    {
+        "fieldName": "jiraItrQSIssueTypeKPI133",
+        "fieldLabel": "Issue types which will have linked defects",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "Consider issue types which have defects tagged to them"
+        }
     },
     {
         "fieldName": "epicLink",
