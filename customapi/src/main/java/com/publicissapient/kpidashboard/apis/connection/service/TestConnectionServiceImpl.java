@@ -96,6 +96,10 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 					if (checkDetailsForTool(apiUrl, password)) {
 						statusCode = validateTestConn(connection, apiUrl, password, toolName);
 					}
+				} else if (!connection.isCloudEnv() && connection.isBearerToken()) {
+					if (checkDetailsForTool(apiUrl, password)) {
+						statusCode = validateTestConn(connection, apiUrl, password, toolName);
+					}
 				} else {
 					statusCode = testConnectionDetails(connection, apiUrl, password, toolName);
 				}
@@ -211,6 +215,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				isValid = testConnectionForTools(apiUrl, password);
 			} else if (!connection.isCloudEnv() && connection.isAccessTokenEnabled()) {
 				isValid = testConnection(connection, toolName, apiUrl, password, true);
+			}else if (!connection.isCloudEnv() && connection.isBearerToken()) {
+				isValid = testConnectionWithBearerToken(apiUrl, password);
 			} else {
 				isValid = testConnection(connection, toolName, apiUrl, password, false);
 			}
@@ -507,6 +513,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		}
 		if (Constant.TOOL_SONAR.equalsIgnoreCase(toolName) && StringUtils.isNotEmpty(connection.getAccessToken())) {
 			return connection.getAccessToken();
+		}
+		if (Constant.TOOL_SONAR.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
+			return connection.getPatOAuthToken();
 		}
 		if (Constant.TOOL_JIRA.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
 			return connection.getPatOAuthToken();
