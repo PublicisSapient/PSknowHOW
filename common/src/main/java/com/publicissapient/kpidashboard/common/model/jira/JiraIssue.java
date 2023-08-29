@@ -250,11 +250,12 @@ public class JiraIssue extends BasicModel implements Cloneable {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		JiraIssue jiraIssue = (JiraIssue) o;
-		return Objects.equals(number, jiraIssue.number) && Objects.equals(basicProjectConfigId,jiraIssue.basicProjectConfigId);
+		return Objects.equals(number, jiraIssue.number);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(number);
 	}
+
 }

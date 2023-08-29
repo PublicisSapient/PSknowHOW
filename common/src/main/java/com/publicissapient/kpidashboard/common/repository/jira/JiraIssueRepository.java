@@ -168,6 +168,12 @@ public interface JiraIssueRepository
 	 */
 	List<JiraIssue> findByBasicProjectConfigIdIn(String basicProjectConfigId);
 
+	List<JiraIssue> findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(String projectConfigId,
+			List<String> releaseVersions);
+
+	Set<JiraIssue> findByBasicProjectConfigIdAndDefectStoryIDInAndOriginalTypeIn(String basicProjectConfigID,
+			Set<String> storyIDs, List<String> originalType);
+
 	Set<JiraIssue> findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(String configId,
 			Set<String> parentStoryIds, List<String> originalTypes);
 

@@ -465,6 +465,14 @@ db.kpi_category_mapping.insertMany([
   },
 ]);
 
+
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+// delete FieldMapping Field which consider subtask defect  ---------------------------------------------------------------------------
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraSubTaskDefectType"
+});
+
 //------------------------- 7.9.0 changes----------------------------------------------------------------------------------
 db.field_mapping_structure.deleteMany({
     "fieldName": { $in: [ "jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154", "jiraQADoneStatusKPI154", "jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154", "jiraSubTaskDefectType"]}

@@ -48,6 +48,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
@@ -74,6 +75,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> implements ApplicationKPIService<R, S, T> {
 
 	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+	public static final String BASIC_PROJECT_CONFIG_ID = "basicProjectConfigId";
 	@Autowired
 	private CacheService cacheService;
 	@Autowired
@@ -221,8 +223,8 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
 		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
 			devCompleteDate = filterStatusUpdationLog.stream()
-					.filter(jiraHistoryChangeLog -> fieldMapping.contains(
-							jiraHistoryChangeLog.getChangedTo()) && jiraHistoryChangeLog.getUpdatedOn() != null)
+					.filter(jiraHistoryChangeLog -> fieldMapping.contains(jiraHistoryChangeLog.getChangedTo())
+							&& jiraHistoryChangeLog.getUpdatedOn() != null)
 					.findFirst()
 					.map(jiraHistoryChangeLog -> LocalDate
 							.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
@@ -287,7 +289,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		SprintDetails sprintDetails;
 		try {
 			sprintDetails = (SprintDetails) jiraService.getCurrentSprintDetails().clone();
-		}catch (CloneNotSupportedException e) {
+		} catch (CloneNotSupportedException e) {
 			sprintDetails = null;
 		}
 		return sprintDetails;
@@ -308,7 +310,31 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return jiraService.getJiraIssuesCustomHistoryForCurrentSprint();
 	}
 
-	public List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(Map<String, Set<String>> projectWiseDefectTypes) {
+	public List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(FieldMapping fieldMapping) {
+		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
+		List<JiraIssue> subtaskDefects = new ArrayList<>();
+		List<String> defectType = new ArrayList<>();
+		List<JiraIssue> jiraIssuesForCurrentRelease = jiraService.getJiraIssuesForSelectedRelease();
+		Set<JiraIssue> defectsList = jiraService.getSubTaskDefects();
+		if (CollectionUtils.isNotEmpty(defectsList)) {
+			subtaskDefects.addAll(defectsList);
+			subtaskDefects.removeIf(jiraIssuesForCurrentRelease::contains);
+			filteredJiraIssue = subtaskDefects;
+		}
+
+		if (fieldMapping != null && CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())
+				&& CollectionUtils.isNotEmpty(jiraIssuesForCurrentRelease)) {
+			defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
+			defectType.addAll(fieldMapping.getJiradefecttype());
+			List<JiraIssue> finalFilteredJiraIssue = filteredJiraIssue;
+			finalFilteredJiraIssue.addAll(jiraIssuesForCurrentRelease.stream()
+					.filter(jiraIssue -> defectType.contains(jiraIssue.getTypeName())).collect(Collectors.toList()));
+		} else
+			filteredJiraIssue = jiraIssuesForCurrentRelease;
+		return filteredJiraIssue;
+	}
+
+	public List<JiraIssue> getBackLogJiraIssuesFromBaseClass(Map<String, Set<String>> projectWiseDefectTypes) {
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		List<JiraIssue> jiraIssuesForCurrentSprint = jiraService.getJiraIssuesForCurrentSprint();
 		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(jiraIssuesForCurrentSprint)) {
