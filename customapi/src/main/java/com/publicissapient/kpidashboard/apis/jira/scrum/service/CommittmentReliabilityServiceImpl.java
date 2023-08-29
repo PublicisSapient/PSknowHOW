@@ -326,8 +326,9 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 		});
-
+        long time1 = System.currentTimeMillis();
 		List<SprintDetails> sprintDetails = new ArrayList<>(sprintRepository.findBySprintIDIn(sprintList));
+		log.info("CommitmentReliability findBySprintIDIn {}",System.currentTimeMillis()-time1);
 		Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
 				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
 
@@ -345,7 +346,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 								.orElse(Collections.emptyList());
 					}));
 			projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService
-					.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping);
+					.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping,"CommitmentReliability");
 		}
 
 		Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
@@ -379,8 +380,10 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
+			long time2 = System.currentTimeMillis();
 			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE,
 					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, new HashMap<>()));
+			log.info("CommitmentReliability findIssueByNumber {}",System.currentTimeMillis()-time2);
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 		}
 		return resultListMap;

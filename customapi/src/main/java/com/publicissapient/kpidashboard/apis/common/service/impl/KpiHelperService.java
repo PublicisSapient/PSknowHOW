@@ -548,7 +548,7 @@ public class KpiHelperService { // NOPMD
 	 */
 	public Map<String, Object> fetchSprintVelocityDataFromDb(KpiRequest kpiRequest,
 			Map<ObjectId, List<String>> projectWiseSprintsForFilter, List<SprintDetails> sprintDetails) {
-
+       long time1= System.currentTimeMillis();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
 
@@ -562,7 +562,7 @@ public class KpiHelperService { // NOPMD
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 		});
-
+       log.info("sprint velocity line 565 {}",System.currentTimeMillis()-time1);
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
@@ -572,7 +572,7 @@ public class KpiHelperService { // NOPMD
 					projectWiseTotalSprintDetails);
 			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
-
+            long time5 = System.currentTimeMillis();
 			if (MapUtils.isNotEmpty(fieldMappingMap) && !duplicateIssues.isEmpty()) {
 				Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
 						.filter(fieldMappingMap::containsKey).collect(Collectors.toMap(Function.identity(), key -> {
@@ -581,11 +581,16 @@ public class KpiHelperService { // NOPMD
 									.map(FieldMapping::getJiraIterationCompletionStatusKpi39)
 									.orElse(Collections.emptyList());
 						}));
+				log.info("sprint velocity line 584 {}",System.currentTimeMillis()-time5);
+				long time6 = System.currentTimeMillis();
 				projectWiseDuplicateIssuesWithMinCloseDate = getMinimumClosedDateFromConfiguration(duplicateIssues,
-						customFieldMapping);
+						customFieldMapping,"Velocity");
+				log.info("sprint velocity getMinimumClosedDateFromConfiguration 587=> {}",System.currentTimeMillis()-time6);
 			}
+			log.info("sprint velocity line 587 {}",System.currentTimeMillis()-time5);
 
 			Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
+			long time4= System.currentTimeMillis();
 			sprintDetails.stream().forEach(dbSprintDetail -> {
 				FieldMapping fieldMapping = fieldMappingMap
 						.get(dbSprintDetail.getBasicProjectConfigId());
@@ -599,6 +604,7 @@ public class KpiHelperService { // NOPMD
 					totalIssueIds.addAll(sprintWiseIssueIds);
 				}
 			});
+			log.info("Sprint velocity sprintDetails Line 603 => {}",System.currentTimeMillis()-time4);
 			mapOfFilters.put(JiraFeature.ISSUE_NUMBER.getFieldValueInFeature(),
 					totalIssueIds.stream().distinct().collect(Collectors.toList()));
 		}
@@ -610,14 +616,15 @@ public class KpiHelperService { // NOPMD
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 		if (CollectionUtils.isNotEmpty(totalIssueIds)) {
+			long time3 = System.currentTimeMillis();
 			List<JiraIssue> sprintVelocityList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 					new HashMap<>());
-
+            log.info("sprint velocity findIssuesBySprintAndType {}",System.currentTimeMillis()-time3);
 			resultListMap.put(SPRINTVELOCITYKEY, sprintVelocityList);
 			resultListMap.put(SPRINT_WISE_SPRINTDETAILS, sprintDetails);
 
 		}
-
+       log.info("fetchSprintVelocityDataFromDb time {}",System.currentTimeMillis()-time1);
 		return resultListMap;
 	}
 
@@ -1529,16 +1536,21 @@ public class KpiHelperService { // NOPMD
 	 * @return
 	 */
 	public Map<ObjectId, Map<String, List<LocalDateTime>>> getMinimumClosedDateFromConfiguration(
-			Map<ObjectId, Set<String>> duplicateIssues, Map<ObjectId, List<String>> customFieldMapping) {
+			Map<ObjectId, Set<String>> duplicateIssues, Map<ObjectId, List<String>> customFieldMapping,String type) {
+		long time1= System.currentTimeMillis();
 		Map<ObjectId, Map<String, List<LocalDateTime>>> projectIssueWiseClosedDates = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		mapOfFilters.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(),
 				duplicateIssues.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				duplicateIssues.keySet().stream().map(ObjectId::toString).collect(Collectors.toList()));
-		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
-				.findByFilterAndFromStatusMap(mapOfFilters, new HashMap<>());
+			log.info("Sprint Predectability KPI helper Service getMinimumClosedDateFromConfiguration line 1540: {}",System.currentTimeMillis()-time1);
+		long time2= System.currentTimeMillis();
 
+		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.//findByStoryIDIn(duplicateIssues.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
+				findByFilterAndFromStatusMap(mapOfFilters, new HashMap<>());
+		log.info("Sprint Predectability KPI helper Service getMinimumClosedDateFromConfiguration line 1542 findByFilterAndFromStatusMap {} {}",System.currentTimeMillis()-time2,type);
+		long time3= System.currentTimeMillis();
 		duplicateIssues.forEach((objectId, issues) -> {
 			List<String> customFields = customFieldMapping.getOrDefault(objectId, Collections.emptyList());
 			if (!customFields.isEmpty()) {
@@ -1589,6 +1601,8 @@ public class KpiHelperService { // NOPMD
 				projectIssueWiseClosedDates.put(objectId, issueWiseMinDateTime);
 			}
 		});
+		log.info("Sprint Predectability KPI helper Service getMinimumClosedDateFromConfiguration line 1546-1596: {} :{}",System.currentTimeMillis()-time3,type);
+
 		return projectIssueWiseClosedDates;
 	}
 

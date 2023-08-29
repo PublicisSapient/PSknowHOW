@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepositoryCustom;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -89,6 +90,8 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	private SprintRepository sprintRepository;
 	@Autowired
 	private SprintVelocityServiceHelper velocityHelper;
+	@Autowired
+	private SprintRepositoryCustom sprintRepositoryCustom;
 
 	/**
 	 * Gets Qualifier Type
@@ -155,11 +158,15 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 				.forEach(leaf -> basicProjectConfigObjectIds.add(leaf.getProjectFilter().getBasicProjectConfigId()));
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
-		List<SprintDetails> totalSprintDetails = sprintRepository
-				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
-						sprintStatusList);
-
+		long time2= System.currentTimeMillis();
+//		List<SprintDetails> totalSprintDetails = sprintRepository
+//				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
+//						sprintStatusList);//NOSONAR
+		List<SprintDetails> totalSprintDetails=sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
+				sprintStatusList,(long) customApiConfig.getSprintVelocityLimit() + customApiConfig.getSprintCountForFilters());
+        log.info("Sprint Velocity findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc method time taking {}",System.currentTimeMillis()-time2);
 		// Group the SprintDetails by basicProjectConfigId
+		long time3 = System.currentTimeMillis();
 		Map<ObjectId, List<SprintDetails>> sprintDetailsByProjectId = totalSprintDetails.stream()
 				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
 
@@ -178,7 +185,9 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 
 			resultListMap = kpiHelperService.fetchSprintVelocityDataFromDb(kpiRequest, projectWiseSprintDetails,
 					result);
+
 		}
+		log.info("sprint valocity time loop {}",System.currentTimeMillis()-time3);
 		return resultListMap;
 
 	}
@@ -246,7 +255,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 
 			double sprintVelocityForCurrentLeaf = 0.0;
 			if (CollectionUtils.isNotEmpty(sprintDetails)) {
-				sprintVelocityForCurrentLeaf = sprintVelocity.get(currentNodeIdentifier);
+				sprintVelocityForCurrentLeaf = sprintVelocity.getOrDefault(currentNodeIdentifier,sprintVelocityForCurrentLeaf);
 			}
 
 			populateExcelDataObject(requestTrackerId, excelData, currentSprintLeafVelocityMap, node, fieldMapping);
@@ -366,7 +375,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	 *
 	 * @param jiraIssues
 	 */
-	private void setDbQueryLogger(List<JiraIssue> jiraIssues) {
+	private void setDbQueryLogger(List<JiraIssue> jiraIssues) { //NOSONAR
 
 		if (customApiConfig.getApplicationDetailedLogger().equalsIgnoreCase("on")) {
 			log.info(SEPARATOR_ASTERISK);

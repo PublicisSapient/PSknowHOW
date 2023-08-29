@@ -4,16 +4,19 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepositoryCustom;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,6 +84,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 	@Autowired
 	private SprintRepository sprintRepository;
+	@Autowired
+	private SprintRepositoryCustom sprintRepositoryCustom;
 
 	private static void setEstimation(FieldMapping fieldMapping, AtomicDouble effectSumDouble, SprintIssue sprintIssue,
 			JiraIssue jiraIssue) {
@@ -154,7 +159,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 		List<String> basicProjectConfigIds = new ArrayList<>();
 		Set<ObjectId> basicProjectConfigObjectIds = new HashSet<>();
 		List<String> sprintStatusList = new ArrayList<>();
-
+		long time3 = System.currentTimeMillis();
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 
@@ -163,22 +168,41 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			basicProjectConfigObjectIds.add(basicProjectConfigId);
 
 		});
+		log.info("Sprint predictability Db leafNodeList  {}", System.currentTimeMillis() - time3);
+
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
-		List<SprintDetails> totalSprintDetails = sprintRepository
+		long time1 = System.currentTimeMillis();
+		// List<SprintDetails> totalSprintDetails = sprintRepository
+		// .findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
+		// sprintStatusList); //NOSONAR
+
+		log.info("Sprint predictability findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc result iteration {}",
+				System.currentTimeMillis() - time1);
+		long time9 = System.currentTimeMillis();
+
+		List<SprintDetails> totalSprintDetails = sprintRepositoryCustom
 				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
-						sprintStatusList);
+						sprintStatusList, Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT);
+		log.info("Sprint predictability findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc new method {}",
+				System.currentTimeMillis() - time9);
+
 		List<String> totalIssueIds = new ArrayList<>();
+		long time4 = System.currentTimeMillis();
 		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
 
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = totalSprintDetails.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
-
-			Map<ObjectId, Set<String>> duplicateIssues = kpiHelperService.getProjectWiseTotalSprintDetail(
-					projectWiseTotalSprintDetails);
+			log.info("Sprint predictability DB inside if method projectWiseTotalSprintDetails {}",
+					System.currentTimeMillis() - time4);
+			long time6 = System.currentTimeMillis();
+			Map<ObjectId, Set<String>> duplicateIssues = kpiHelperService
+					.getProjectWiseTotalSprintDetail(projectWiseTotalSprintDetails);
 			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
-
+			log.info("Sprint predictability DB inside if method getProjectWiseTotalSprintDetail {}",
+					System.currentTimeMillis() - time6);
+			long time7 = System.currentTimeMillis();
 			if (MapUtils.isNotEmpty(fieldMappingMap) && !duplicateIssues.isEmpty()) {
 				Map<ObjectId, List<String>> customFieldMapping = duplicateIssues.keySet().stream()
 						.filter(fieldMappingMap::containsKey).collect(Collectors.toMap(Function.identity(), key -> {
@@ -187,13 +211,15 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 									.map(FieldMapping::getJiraIterationCompletionStatusKpi5)
 									.orElse(Collections.emptyList());
 						}));
-				projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService
-						.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping);
+				log.info("Sprint predictability Line 197 {}", System.currentTimeMillis() - time7);
+				projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService.getMinimumClosedDateFromConfiguration(
+						duplicateIssues, customFieldMapping, "SprintPredictability");
 			}
-
+			log.info("Sprint Predectability DB 2nd if duplicateIssues {}", System.currentTimeMillis() - time7);
 			Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
 
 			List<SprintDetails> projectWiseSprintDetails = new ArrayList<>();
+			long time8 = System.currentTimeMillis();
 			projectWiseTotalSprintDetails.forEach((basicProjectConfigId, sprintDetailsList) -> {
 				List<SprintDetails> sprintDetails = sprintDetailsList.stream()
 						.limit(Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT)
@@ -202,9 +228,10 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 							.get(dbSprintDetail.getBasicProjectConfigId());
 					// to modify sprintdetails on the basis of configuration for the project
-					SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-							fieldMapping.getJiraIterationIssuetypeKpi5(),
-							fieldMapping.getJiraIterationCompletionStatusKpi5(), finalProjectWiseDuplicateIssuesWithMinCloseDate).get(0);
+					SprintDetails sprintDetail = KpiDataHelper.processSprintBasedOnFieldMappings(
+							Collections.singletonList(dbSprintDetail), fieldMapping.getJiraIterationIssuetypeKpi5(),
+							fieldMapping.getJiraIterationCompletionStatusKpi5(),
+							finalProjectWiseDuplicateIssuesWithMinCloseDate).get(0);
 					if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 						List<String> sprintWiseIssueIds = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 								sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -217,20 +244,28 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 						totalIssueIds.stream().distinct().collect(Collectors.toList()));
 
 			});
-		} else {
+			log.info("Sprint Predectability sprintDetails {}", System.currentTimeMillis() - time8);
+
+			log.info("Sprint predictability DB inside if method {}", System.currentTimeMillis() - time4);
+		}
+
+		else {
 			mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
 					sprintList.stream().distinct().collect(Collectors.toList()));
 		}
 
 		/** additional filter **/
+		long time5 = System.currentTimeMillis();
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-
+		log.info("Sprint predictability DB additional filter method {}", System.currentTimeMillis() - time5);
 		if (CollectionUtils.isNotEmpty(totalIssueIds)) {
+			long time2 = System.currentTimeMillis();
 			List<JiraIssue> sprintWiseJiraList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 					new HashMap<>());
+			log.info("Sprint predictability findIssuesBySprintAndType {}", System.currentTimeMillis() - time2);
 			resultListMap.put(SPRINT_WISE_PREDICTABILITY, sprintWiseJiraList);
 		}
 		return resultListMap;
@@ -272,11 +307,12 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 		long jiraRequestStartTime = System.currentTimeMillis();
-		log.info("*****SprintPredictability before fetchKPIDataFromDb {}",jiraRequestStartTime);
+		log.info("*****SprintPredictability before fetchKPIDataFromDb {}", jiraRequestStartTime);
 
 		Map<String, Object> sprintWisePredictabilityMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
 				kpiRequest);
-		log.info("SprintPredictability taking fetchKPIDataFromDb {}",String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
+		log.info("SprintPredictability taking fetchKPIDataFromDb {}",
+				String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
 
 		List<SprintWiseStory> sprintWisePredictabilityList = new ArrayList<>();
 
@@ -290,8 +326,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
-		long jiraRequestStartTime1= System.currentTimeMillis();
-		log.info("*********SprintPredictability before loop start of sprintDetails {}",jiraRequestStartTime1);
+		long jiraRequestStartTime1 = System.currentTimeMillis();
+		log.info("*********SprintPredictability before loop start of sprintDetails {}", jiraRequestStartTime1);
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
 
 			Map<String, JiraIssue> jiraIssueMap = sprintWiseJiraStoryList.stream().collect(
@@ -328,12 +364,13 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				currentSprintLeafPredictabilityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
 			});
 		}
-		log.info("*********SprintPredictability after loop end of sprintDetails {}",String.valueOf(System.currentTimeMillis() - jiraRequestStartTime1));
+		log.info("*********SprintPredictability after loop end of sprintDetails {}",
+				String.valueOf(System.currentTimeMillis() - jiraRequestStartTime1));
 
 		Map<Pair<String, String>, Double> predictability = prepareSprintPredictMap(sprintWisePredictabilityList);
 		List<KPIExcelData> excelData = new ArrayList<>();
 		long jiraRequestStartTime3 = System.currentTimeMillis();
-		log.info("*********SprintPredictability before loop start of sprintLeafNodeList {}",jiraRequestStartTime3);
+		log.info("*********SprintPredictability before loop start of sprintLeafNodeList {}", jiraRequestStartTime3);
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
@@ -359,7 +396,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				trendValueList.add(dataCount);
 			}
 		});
-		log.info("*********SprintPredictability after loop end of sprintLeafNodeList {}",String.valueOf(System.currentTimeMillis() - jiraRequestStartTime3));
+		log.info("*********SprintPredictability after loop end of sprintLeafNodeList {}",
+				String.valueOf(System.currentTimeMillis() - jiraRequestStartTime3));
 
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_PREDICTABILITY.getColumns());

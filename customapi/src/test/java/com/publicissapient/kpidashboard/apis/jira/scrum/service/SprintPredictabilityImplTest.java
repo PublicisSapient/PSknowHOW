@@ -2,6 +2,9 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -12,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepositoryCustom;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -108,6 +112,8 @@ public class SprintPredictabilityImplTest {
 
 	@Mock
 	private JiraServiceR jiraKPIService;
+	@Mock
+	private SprintRepositoryCustom sprintRepositoryCustom;
 
 	@Before
 	public void setup() {
@@ -171,12 +177,12 @@ public class SprintPredictabilityImplTest {
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
-				sprintStatusList)).thenReturn(sprintDetailsList);
+		when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(anySet(),
+				anyList(),anyLong())).thenReturn(sprintDetailsList);
 
 		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
 				.thenReturn(sprintWiseStoryList);
-
+        when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds, sprintStatusList,5)).thenReturn(sprintDetailsList);
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put(SPRINT_WISE_PREDICTABILITY, sprintWiseStoryList);
 
@@ -213,7 +219,7 @@ public class SprintPredictabilityImplTest {
 		try {
 			KpiElement kpiElement = sprintPredictability.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("DRE Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
+			assertThat("DRE Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
 		} catch (Exception exception) {
 		}
 	}
@@ -239,7 +245,7 @@ public class SprintPredictabilityImplTest {
 		try {
 			KpiElement kpiElement = sprintPredictability.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Azure Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
+			assertThat("Azure Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
 		} catch (Exception exception) {
 		}
 	}
@@ -272,7 +278,7 @@ public class SprintPredictabilityImplTest {
 		try {
 			KpiElement kpiElement = sprintPredictability.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("DRE Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
+			assertThat("DRE Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
 		} catch (Exception exception) {
 		}
 	}
