@@ -78,7 +78,7 @@ export class HelperService {
                 condition = obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
             }
 
-            if(obj?.kpiId){
+            if(kpiIdsForCurrentBoard && kpiIdsForCurrentBoard.length && obj?.kpiId){
                 condition = kpiIdsForCurrentBoard.includes(obj.kpiId) && condition;
             }
 
