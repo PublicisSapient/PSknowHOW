@@ -1,26 +1,39 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.repotools.model.Branches;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -39,8 +52,6 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
-import com.publicissapient.kpidashboard.common.model.scm.CommitDetails;
-import com.publicissapient.kpidashboard.common.repository.scm.CommitRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -52,27 +63,14 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 	/**
 	 *
 	 */
-	private static final int MILISEC_ONE_DAY = 86_399_999;
-	private static final String AZURE_REPO = "AzureRepository";
-	private static final String BITBUCKET = "Bitbucket";
-	private static final String GITLAB = "GitLab";
-	private static final String GITHUB = "GitHub";
-	private static final String DATE = "Date ";
-	private static final String COMMIT_COUNT = "commitCount";
-	private static final String REPO_TOOL_COMMIT_COUNT = "repoToolCommitCount";
-
-	public static final String REPO_TOOL_COMMIT_KPI = "repo-activity";
-	public static final String FREQUENCY = "week";
-	private static final String REPO_TOOL = "Repo_Tool";
+	private static final String NO_CHECKIN = "No. of Checkins";
+	public static final String REPO_TOOL_COMMIT_KPI = "repo-activity-bulk/";
+	public static final String WEEK_FREQUENCY = "week";
+	public static final String DAY_FREQUENCY = "day";
+	private static final String REPO_TOOLS = "RepoTool";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private CommitRepository commitRepository;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
@@ -128,175 +126,156 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 
 		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
 
-		String startDate = dateRange.getStartDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		String endDate = dateRange.getEndDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-		Map<String, Object> resultMap = fetchKPIDataFromDb(projectList, startDate, endDate, null);
-		getRepoToolKpiMetricResponse(startDate, endDate, projectList, REPO_TOOL_COMMIT_KPI, resultMap);
-		kpiWithFilter(resultMap, mapTmp, projectList, kpiElement, kpiRequest);
+		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList = getRepoToolsKpiMetricResponse(
+				dateRange.getEndDate(), toolMap, projectList, kpiRequest);
+		kpiWithFilter(repoToolKpiMetricResponseCommitList, mapTmp, projectList, kpiElement, kpiRequest);
 
 	}
 
-	private void kpiWithFilter(Map<String, Object> resultMap, Map<String, Node> mapTmp, List<Node> leafNodeList,
+	private void kpiWithFilter(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList, Map<String, Node> mapTmp, List<Node> leafNodeList,
 			KpiElement kpiElement, KpiRequest kpiRequest) {
 		Map<String, ValidationData> validationMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<CommitDetails> commitList = (List<CommitDetails>) resultMap.get(COMMIT_COUNT);
-		List<RepoToolKpiMetricResponse> repoToolCommitList = (List<RepoToolKpiMetricResponse>) resultMap
-				.get(REPO_TOOL_COMMIT_COUNT);
-		final Map<ObjectId, Map<String, Long>> commitListItemId = new LinkedHashMap<>();
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-		if (CollectionUtils.isNotEmpty(commitList)) {
-			commitListItemId.putAll(commitList.stream().collect(Collectors.groupingBy(CommitDetails::getProcessorItemId,
-					Collectors.toMap(CommitDetails::getDate, CommitDetails::getCount))));
-		}
 
 		leafNodeList.forEach(node -> {
-			List<Map<String, Long>> repoWiseCommitList = new LinkedList<>();
-			Map<String, List<DataCount>> projectWiseDataMap = new LinkedHashMap<>();
-			List<String> listOfRepo = new LinkedList<>();
-			List<String> listOfBranch = new LinkedList<>();
-			LocalDate currentDate = LocalDate.now();
-			String projectNodeId = node.getId();
-			for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
-
-				CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate,
-						kpiRequest.getDuration());
-				List<Tool> reposList = getBitBucketJobs(toolMap, node);
-				if (CollectionUtils.isEmpty(reposList)) {
-					log.error("[CODE_COMMIT_KANBAN]. No Jobs found for this project {}", node.getProjectFilter());
-					return;
-				}
-				String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
-				Map<String, Long> filterValueMap = filterKanbanDataBasedOnStartAndEndDateAndCommitDetails(reposList,
-						dateRange, commitListItemId, projectName, repoWiseCommitList, listOfRepo, listOfBranch,
-						repoToolCommitList);
-
-				String dataCountDate = getRange(dateRange, kpiRequest);
-				prepareRepoWiseMap(filterValueMap, projectName, dataCountDate, projectWiseDataMap);
-				currentDate = getNextRangeDate(kpiRequest, currentDate);
-
-				if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateCodeCommitKanbanExcelData(node.getProjectFilter().getName(),
-							repoWiseCommitList, listOfRepo, listOfBranch, excelData);
-				}
-
+			ProjectFilter accountHierarchyData = node.getProjectFilter();
+			ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+			Map<String, List<Tool>> mapOfListOfTools = toolMap.get(configId);
+			List<Tool> reposList = new ArrayList<>();
+			populateRepoList(reposList, mapOfListOfTools);
+			if (CollectionUtils.isEmpty(reposList)) {
+				log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
+				return;
 			}
-			mapTmp.get(projectNodeId).setValue(projectWiseDataMap);
 
+			List<Map<String, Long>> repoWiseCommitList = new ArrayList<>();
+			List<Map<String, Long>> repoWiseMergeRequestList = new ArrayList<>();
+			List<String> repoList = new ArrayList<>();
+			List<String> branchList = new ArrayList<>();
+			String projectName = node.getProjectFilter().getName();
+			Map<String, List<DataCount>> aggDataMap = new HashMap<>();
+			Map<String, Long> aggCommitCountForRepo = new HashMap<>();
+			reposList.forEach(repo -> {
+				if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
+						&& repo.getProcessorItemList().get(0).getId() != null) {
+					Map<String, Long> excelDataLoader = new HashMap<>();
+					Map<String, Long> mergeRequestExcelDataLoader = new HashMap<>();
+					List<DataCount> dayWiseCount = new ArrayList<>();
+					if (CollectionUtils.isNotEmpty(repoToolKpiMetricResponseCommitList)) {
+						Map<String, Long> dateWiseCommitList = new HashMap<>();
+
+						createDateLabelWiseMap(repoToolKpiMetricResponseCommitList,
+								repo.getRepositoryName(), repo.getBranch(), dateWiseCommitList);
+						if (MapUtils.isNotEmpty(dateWiseCommitList)) {
+							aggCommitCountForRepo.putAll(dateWiseCommitList);
+						}
+						dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, excelDataLoader,
+								projectName, kpiRequest);
+					}
+					aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
+					repoWiseCommitList.add(excelDataLoader);
+					repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
+					repoList.add(repo.getUrl());
+					branchList.add(repo.getBranch());
+
+				}
+			});
+			List<DataCount> dayWiseCount = setDayWiseCountForProject(aggCommitCountForRepo, new HashMap<>(), projectName, kpiRequest);
+			aggDataMap.put(Constant.AGGREGATED_VALUE, dayWiseCount);
+			mapTmp.get(node.getId()).setValue(aggDataMap);
+
+			if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+				KPIExcelUtility.populateCodeCommitKanbanExcelData(node.getProjectFilter().getName(),
+						repoWiseCommitList, repoList, branchList, excelData);
+			}
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.CODE_COMMIT_MERGE_KANBAN.getColumns());
 		kpiElement.setMapOfSprintAndData(validationMap);
 	}
 
-	/**
-	 * loop tool wise to fetch data for each day
-	 *
-	 * @param reposList
-	 * @param dateRange
-	 * @param commitListItemId
-	 * @param projectName
-	 * @param repoWiseCommitList
-	 * @param listOfRepo
-	 * @param listOfBranch
-	 * @return
-	 */
-	private Map<String, Long> filterKanbanDataBasedOnStartAndEndDateAndCommitDetails(List<Tool> reposList,
-			CustomDateRange dateRange, Map<ObjectId, Map<String, Long>> commitListItemId, String projectName,
-			List<Map<String, Long>> repoWiseCommitList, List<String> listOfRepo, List<String> listOfBranch,
-			List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList) {
-		LocalDate startDate = dateRange.getStartDate();
-		LocalDate endDate = dateRange.getEndDate();
-		Map<String, Long> filterWiseValue = new HashMap<>();
-		Map<String, Long> excelLoaderfinal = new HashMap<>();
+	private List<DataCount> setDayWiseCountForProject(Map<String, Long> commitCountForRepo, Map<String, Long> excelDataLoader,
+													  String projectName, KpiRequest kpiRequest) {
+		LocalDate currentDate = LocalDate.now();
+		List<DataCount> dayWiseCommitCount = new ArrayList<>();
+		for (int i = 0; i < kpiRequest.getKanbanXaxisDataPoints(); i++) {
+			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, kpiRequest.getDuration());
+			DataCount dataCount = new DataCount();
+			Map<String, Object> hoverValues = new HashMap<>();
+			if (commitCountForRepo != null && commitCountForRepo.get(dateRange.getStartDate().toString()) != null) {
+				Long commitForDay = commitCountForRepo.get(dateRange.getStartDate().toString());
+				excelDataLoader.put(getDateRange(dateRange, kpiRequest.getDuration()),
+						commitForDay);
+				dataCount.setValue(commitForDay);
+				hoverValues.put(NO_CHECKIN, commitForDay.intValue());
+			} else {
+				excelDataLoader.put(getDateRange(dateRange, kpiRequest.getDuration()),
+						0l);
+				dataCount.setValue(0l);
+				hoverValues.put(NO_CHECKIN, 0);
 
-		for (Tool tool : reposList) {
-			LocalDate currentDate = startDate;
-			Map<String, Long> excelLoader = new LinkedHashMap<>();
-			String keyName = getBranchSubFilter(tool, projectName);
-			Long commitCountValue = 0l;
-			Map<String, Long> commitDateMap = new HashMap<>();
-			if (!tool.getTool().equals(REPO_TOOL)) {
-				if (!CollectionUtils.isEmpty(tool.getProcessorItemList())
-						&& tool.getProcessorItemList().get(0).getId() != null) {
-					commitDateMap = commitListItemId.getOrDefault(tool.getProcessorItemList().get(0).getId(),
-							new HashMap<>());
-				} else {
-					commitDateMap = createDateLabelWiseMap(repoToolKpiMetricResponseList, tool.getRepositoryName(),
-							tool.getBranch());
-				}
-				while (currentDate.compareTo(endDate) <= 0) {
-					commitCountValue = commitCountValue + commitDateMap.getOrDefault(currentDate.toString(), 0l);
-					excelLoader.put(DATE + DateUtil.localDateTimeConverter(currentDate), commitCountValue);
-					currentDate = currentDate.plusDays(1);
-				}
-				// if data is there for any branch then only will shown on excel
-				if (MapUtils.isNotEmpty(excelLoader)) {
-					listOfRepo.add(tool.getUrl());
-					listOfBranch.add(tool.getBranch());
-					excelLoaderfinal.putAll(excelLoader);
-				}
 			}
-			filterWiseValue.putIfAbsent(keyName, commitCountValue);
-
+			dataCount.setDate(getDateRange(dateRange, kpiRequest.getDuration()));
+			dataCount.setHoverValue(hoverValues);
+			dataCount.setSProjectName(projectName);
+			dayWiseCommitCount.add(dataCount);
+			currentDate = getNextRangeDate(kpiRequest.getDuration(), currentDate);
 		}
-		repoWiseCommitList.add(excelLoaderfinal);
-		return filterWiseValue;
+		return dayWiseCommitCount;
+
 	}
 
-	private LocalDate getNextRangeDate(KpiRequest kpiRequest, LocalDate currentDate) {
-		if ((CommonConstant.WEEK).equalsIgnoreCase(kpiRequest.getDuration())) {
+	private String getDateRange(CustomDateRange dateRange, String duration) {
+		String range = null;
+		if (CommonConstant.WEEK.equalsIgnoreCase(duration)) {
+			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT) + " to "
+					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
+					DateUtil.DISPLAY_DATE_FORMAT);
+		} else {
+			range = dateRange.getStartDate().toString();
+		}
+		return range;
+	}
+
+	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+		if ((CommonConstant.WEEK).equalsIgnoreCase(duration)) {
 			currentDate = currentDate.minusWeeks(1);
-		} else if (CommonConstant.MONTH.equalsIgnoreCase(kpiRequest.getDuration())) {
-			currentDate = currentDate.minusMonths(1);
 		} else {
 			currentDate = currentDate.minusDays(1);
 		}
 		return currentDate;
 	}
 
-	private void prepareRepoWiseMap(Map<String, Long> filterWiseValue, String projectName, String dataCountDate,
-			Map<String, List<DataCount>> projectWiseDataMap) {
-		List<Long> commitCountList = new ArrayList<>();
-		filterWiseValue.forEach((filter, value) -> {
-			commitCountList.add(value);
-			DataCount dataCountObject = getDataCountObject(value, projectName, dataCountDate);
-			projectWiseDataMap.computeIfAbsent(filter, k -> new LinkedList<>()).add(dataCountObject);
-		});
-		DataCount dcObj = getDataCountObject(calculateKpiValue(commitCountList, KPICode.NUMBER_OF_CHECK_INS.getKpiId()),
-				projectName, dataCountDate);
-		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
-	}
+	private void createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesCommit,
+			String repoName, String branchName, Map<String, Long> dateWiseCommitRepoTools) {
 
-	private DataCount getDataCountObject(Long value, String projectName, String date) {
-		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(value));
-		dataCount.setSSprintID(date);
-		dataCount.setSSprintName(date);
-		dataCount.setSProjectName(projectName);
-		dataCount.setDate(date);
-		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
-		dataCount.setValue(value);
-		Map<String, Object> hoverValue = new HashMap<>();
-		hoverValue.put("No. of Checkins", value.intValue());
-		dataCount.setHoverValue(hoverValue);
-		return dataCount;
-	}
+		for (RepoToolKpiMetricResponse response : repoToolKpiMetricResponsesCommit) {
+			if (response.getProjectRepositories() != null) {
+				Optional<Branches> matchingBranch = response.getProjectRepositories().stream()
+						.filter(repository -> repository.getRepository().equals(repoName))
+						.flatMap(repository -> repository.getBranchesCommitsCount().stream())
+						.filter(branch -> branch.getBranchName().equals(branchName)).findFirst();
 
-	private String getRange(CustomDateRange dateRange, KpiRequest kpiRequest) {
-		String range = null;
-		if (CommonConstant.WEEK.equalsIgnoreCase(kpiRequest.getDuration())) {
-			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT) + " to "
-					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
-							DateUtil.DISPLAY_DATE_FORMAT);
-		} else if (CommonConstant.MONTH.equalsIgnoreCase(kpiRequest.getDuration())) {
-			range = dateRange.getStartDate().getMonth().toString() + " " + dateRange.getStartDate().getYear();
-		} else {
-			range = dateRange.getStartDate().toString();
+				Long commitValue = matchingBranch.map(Branches::getCount).orElse(0L);
+				dateWiseCommitRepoTools.put(response.getDateLabel(), commitValue);
+			}
 		}
-		return range;
+	}
+
+	/**
+	 * populate repolist from map
+	 *
+	 * @param reposList
+	 * @param mapOfListOfTools
+	 */
+	private void populateRepoList(List<Tool> reposList, Map<String, List<Tool>> mapOfListOfTools) {
+		if (null != mapOfListOfTools) {
+			reposList.addAll(mapOfListOfTools.get(REPO_TOOLS) == null ? Collections.emptyList()
+					: mapOfListOfTools.get(REPO_TOOLS));
+		}
 	}
 
 	/**
@@ -310,97 +289,40 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		Set<String> listOfmapOfProjectFilters = new HashSet<>();
-		Set<String> branchList = new HashSet<>();
+		return null;
+	}
 
-		List<ObjectId> tools = new ArrayList<>();
-		Map<String, Object> resultListMap = new HashMap<>();
-		Map<ObjectId, Map<String, List<Tool>>> toolMap;
-		// gets the tool configuration
-		toolMap = configHelperService.getToolItemMap();
+	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
+			Map<ObjectId, Map<String, List<Tool>>> toolMap, List<Node> nodeList, KpiRequest kpiRequest) {
 
-		BasicDBList filter = new BasicDBList();
-		leafNodeList.forEach(node -> {
-
-			List<Tool> bitbucketJob = getBitBucketJobs(toolMap, node);
-			if (CollectionUtils.isEmpty(bitbucketJob)) {
-				return;
+		List<String> projectCodeList = new ArrayList<>();
+		nodeList.forEach(node -> {
+			ProjectFilter accountHierarchyData = node.getProjectFilter();
+			ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
+			List<Tool> tools = toolMap.getOrDefault(configId, Collections.emptyMap()).getOrDefault(REPO_TOOLS,
+					Collections.emptyList());
+			if (!CollectionUtils.isEmpty(tools)) {
+				projectCodeList.add(node.getId());
 			}
-			bitbucketJob.forEach(job -> {
-				if (CollectionUtils.isEmpty(job.getProcessorItemList())) {
-					return;
-				}
-				tools.add(job.getProcessorItemList().get(0).getId());
-				filter.add(new BasicDBObject("processorItemId", job.getProcessorItemList().get(0).getId())
-						.append("branch", job.getBranch()).append("repoSlug", job.getRepoSlug()));
-				listOfmapOfProjectFilters.add(job.getUrl());
-				branchList.add(job.getBranch());
-			});
 		});
 
-		if (filter.isEmpty()) {
-			return new HashMap<>();
+		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = new ArrayList<>();
+
+		if (CollectionUtils.isNotEmpty(projectCodeList)) {
+			LocalDate startDate = LocalDate.now().minusDays(kpiRequest.getKanbanXaxisDataPoints());
+			if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
+				startDate = LocalDate.now().minusWeeks(kpiRequest.getKanbanXaxisDataPoints());
+				while (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
+					startDate = startDate.minusDays(1);
+				}
+			}
+			String debbieDuration = kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY
+					: DAY_FREQUENCY;
+			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
+					REPO_TOOL_COMMIT_KPI, startDate.toString(), endDate.toString(), debbieDuration);
 		}
 
-		List<CommitDetails> commitCount = commitRepository.findCommitList(tools,
-				new DateTime(startDate, DateTimeZone.UTC).withTimeAtStartOfDay().getMillis(),
-				StringUtils.isNotEmpty(endDate)
-						? new DateTime(endDate, DateTimeZone.UTC).withTimeAtStartOfDay().plus(MILISEC_ONE_DAY)
-								.getMillis()
-						: new Date().getTime(),
-				filter);
-
-		resultListMap.put(COMMIT_COUNT, commitCount);
-
-		return resultListMap;
-	}
-
-	private void getRepoToolKpiMetricResponse(String startDate, String endDate, List<Node> leafNodeList,
-			String repoToolsKpi, Map<String, Object> resultMap) {
-		List<String> projectCode = leafNodeList.stream().map(Node::getId).collect(Collectors.toList());
-		if (CollectionUtils.isEmpty(projectCode)) {
-			resultMap.put(REPO_TOOL_COMMIT_COUNT, new ArrayList<>());
-		}
-
-		resultMap.put(REPO_TOOL_COMMIT_COUNT,
-				repoToolsConfigService.getRepoToolKpiMetrics(projectCode, repoToolsKpi, startDate, endDate, FREQUENCY));
-	}
-
-	private List<Tool> getRepoToolsJobs(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
-		ProjectFilter accountHierarchyData = node.getProjectFilter();
-		ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(configId);
-		List<Tool> bitbucketJob = new ArrayList<>();
-		if (null != toolListMap) {
-			bitbucketJob
-					.addAll(toolListMap.get(REPO_TOOL) == null ? Collections.emptyList() : toolListMap.get(REPO_TOOL));
-		}
-		if (CollectionUtils.isEmpty(bitbucketJob)) {
-			log.error("[BITBUCKET]. No repository found for this project {}", node.getProjectFilter());
-		}
-		return bitbucketJob;
-	}
-
-	private List<Tool> getBitBucketJobs(Map<ObjectId, Map<String, List<Tool>>> toolMap, Node node) {
-		ProjectFilter projectFilter = node.getProjectFilter();
-		ObjectId configId = projectFilter == null ? null : projectFilter.getBasicProjectConfigId();
-		Map<String, List<Tool>> toolListMap = toolMap == null ? null : toolMap.get(configId);
-		List<Tool> bitbucketJob = new ArrayList<>();
-		if (null != toolListMap) {
-			bitbucketJob
-					.addAll(toolListMap.get(BITBUCKET) == null ? Collections.emptyList() : toolListMap.get(BITBUCKET));
-			bitbucketJob.addAll(
-					toolListMap.get(AZURE_REPO) == null ? Collections.emptyList() : toolListMap.get(AZURE_REPO));
-			bitbucketJob.addAll(toolListMap.get(GITLAB) == null ? Collections.emptyList() : toolListMap.get(GITLAB));
-			bitbucketJob.addAll(toolListMap.get(GITHUB) == null ? Collections.emptyList() : toolListMap.get(GITHUB));
-		}
-
-		if (CollectionUtils.isEmpty(bitbucketJob)) {
-			log.error("[BITBUCKET]. No repository found for this project {}", node.getAccountHierarchy());
-		}
-
-		return bitbucketJob;
-
+		return repoToolKpiMetricResponseList;
 	}
 
 	@Override
@@ -413,21 +335,4 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		return calculateKpiValueForLong(valueList, kpiName);
 	}
 
-	private Map<String, Long> createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons,
-			String repoName, String branchName) {
-		Map<String, Long> commitMap = new HashMap<>();
-
-		for (RepoToolKpiMetricResponse response : repoToolKpiMetricRespons) {
-			if (response.getRepositories() != null) {
-				Optional<Branches> matchingBranch = response.getRepositories().stream()
-						.filter(repository -> repository.getName().equals(repoName))
-						.flatMap(repository -> repository.getBranches().stream())
-						.filter(branch -> branch.getName().equals(branchName)).findFirst();
-
-				matchingBranch.ifPresent(branch -> commitMap.put(response.getDateLabel(), branch.getCount()));
-			}
-		}
-
-		return commitMap;
-	}
 }
