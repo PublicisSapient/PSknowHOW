@@ -923,6 +923,14 @@ export class UploadComponent implements OnInit {
                     this.isAddtionalTestField = (this.testExecutionKanbanData[0].automatedTestCases === -1 || this.testExecutionKanbanData[0].automatedTestCases === undefined) ? false : true;
                     if(!this.isAddtionalTestField){
                         this.cols.testExecutionKanbanKeys = this.cols.testExecutionKanbanKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
+                    }else{
+                        for (const additionalColumn of this.addtionalTestFieldColumn) {
+                            const fieldAlreadyExists = this.cols.testExecutionKanbanKeys.some(column => column.field === additionalColumn.field);
+                            
+                            if (!fieldAlreadyExists) {
+                                this.cols.testExecutionKanbanKeys.push(additionalColumn);
+                            }
+                        }
                     }
                     if (this.testExecutionKanbanData?.length > 0) {
                         this.noData = false;
@@ -934,6 +942,14 @@ export class UploadComponent implements OnInit {
                     this.isAddtionalTestField = (this.testExecutionScrumData[0].automatedTestCases === -1 || this.testExecutionScrumData[0].automatedTestCases === undefined) ? false : true;
                     if(!this.isAddtionalTestField){
                         this.cols.testExecutionScrumKeys = this.cols.testExecutionScrumKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
+                    }else{
+                        for (const additionalColumn of this.addtionalTestFieldColumn) {
+                            const fieldAlreadyExists = this.cols.testExecutionScrumKeys.some(column => column.field === additionalColumn.field);
+                            
+                            if (!fieldAlreadyExists) {
+                                this.cols.testExecutionScrumKeys.push(additionalColumn);
+                            }
+                        }
                     }
                     if (this.testExecutionScrumData?.length > 0) {
                         this.noData = false;
