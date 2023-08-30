@@ -19,39 +19,41 @@ import java.util.Map;
 @Service
 public class CreateJiraIssueReleaseStatusImpl implements CreateJiraIssueReleaseStatus {
 
-    @Autowired
-    private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+	@Autowired
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 
-    @Override
-    public void processAndSaveProjectStatusCategory(ProcessorJiraRestClient client, String basicProjectConfigId) {
+	@Override
+	public void processAndSaveProjectStatusCategory(ProcessorJiraRestClient client, String basicProjectConfigId) {
 
-        List<Status> listOfProjectStatus = JiraHelper.getStatus(client);
-        if (CollectionUtils.isNotEmpty(listOfProjectStatus)) {
-            JiraIssueReleaseStatus jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository
-                    .findByBasicProjectConfigId(basicProjectConfigId);
-            if (jiraIssueReleaseStatus == null) {
-                jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
-                jiraIssueReleaseStatus.setBasicProjectConfigId(basicProjectConfigId);
-            }
-            Map<Long, String> toDosList = new HashMap<>();
-            Map<Long, String> inProgressList = new HashMap<>();
-            Map<Long, String> closedList = new HashMap<>();
+		JiraIssueReleaseStatus jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository
+				.findByBasicProjectConfigId(basicProjectConfigId);
+		if (null == jiraIssueReleaseStatus) {
+			List<Status> listOfProjectStatus = JiraHelper.getStatus(client);
+			if (CollectionUtils.isNotEmpty(listOfProjectStatus)) {
+				jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
+				jiraIssueReleaseStatus.setBasicProjectConfigId(basicProjectConfigId);
+				Map<Long, String> toDosList = new HashMap<>();
+				Map<Long, String> inProgressList = new HashMap<>();
+				Map<Long, String> closedList = new HashMap<>();
 
-            listOfProjectStatus.stream().forEach(status -> {
-                if (JiraConstants.TO_DO.equals(status.getStatusCategory().getName())) {
-                    toDosList.put(status.getId(), status.getName());
-                } else if (JiraConstants.DONE.equals(status.getStatusCategory().getName())) {
-                    closedList.put(status.getId(), status.getName());
-                } else {
-                    inProgressList.put(status.getId(), status.getName());
-                }
-            });
-            jiraIssueReleaseStatus.setToDoList(toDosList);
-            jiraIssueReleaseStatus.setInProgressList(inProgressList);
-            jiraIssueReleaseStatus.setClosedList(closedList);
-            jiraIssueReleaseStatusRepository.save(jiraIssueReleaseStatus);
-            log.debug("saved project status category");
-        }
-    }
+				listOfProjectStatus.stream().forEach(status -> {
+					if (JiraConstants.TO_DO.equals(status.getStatusCategory().getName())) {
+						toDosList.put(status.getId(), status.getName());
+					} else if (JiraConstants.DONE.equals(status.getStatusCategory().getName())) {
+						closedList.put(status.getId(), status.getName());
+					} else {
+						inProgressList.put(status.getId(), status.getName());
+					}
+				});
+				jiraIssueReleaseStatus.setToDoList(toDosList);
+				jiraIssueReleaseStatus.setInProgressList(inProgressList);
+				jiraIssueReleaseStatus.setClosedList(closedList);
+				jiraIssueReleaseStatusRepository.save(jiraIssueReleaseStatus);
+				log.debug("saved project status category");
+			}
+		} else {
+			log.info("project status category is already in db");
+		}
+	}
 
 }

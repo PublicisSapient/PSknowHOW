@@ -40,6 +40,10 @@ public class JobController {
 	@Autowired
 	Job fetchIssueKanbanBoardJob;
 
+	@Qualifier("fetchIssueKanbanJqlJob")
+	@Autowired
+	Job fetchIssueKanbanJqlJob;
+
 	@Autowired
 	private FetchProjectConfiguration fetchProjectConfiguration;
 
@@ -130,6 +134,32 @@ public class JobController {
 					jobLauncher.run(fetchIssueKanbanBoardJob, params);
 				} catch (Exception e) {
 					log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}",
+							params.getString(PROJECT_ID));
+					e.printStackTrace();
+				}
+			});
+		}
+		executorService.shutdown();
+		return "Kanban job for boards started ....";
+	}
+
+	@GetMapping("/startkanbanjqljob")
+	public String startKanbanJqlJob() throws Exception {
+		log.info("Request coming for job for Kanban project configured with JQL");
+
+		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
+				true, false);
+
+		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
+
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+		for (JobParameters params : parameterSets) {
+			executorService.submit(() -> {
+				try {
+					jobLauncher.run(fetchIssueKanbanJqlJob, params);
+				} catch (Exception e) {
+					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}",
 							params.getString(PROJECT_ID));
 					e.printStackTrace();
 				}

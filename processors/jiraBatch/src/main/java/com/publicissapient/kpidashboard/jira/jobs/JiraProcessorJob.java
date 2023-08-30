@@ -137,4 +137,21 @@ public class JiraProcessorJob {
 				.listener(kanbanJiraIssueWriterListener).listener(kanbanJiraIssueStepListener).build();
 	}
 	/** Kanban projects for board job : End **/
+
+	/** Kanban projects for Jql job : Start **/
+	@Bean
+	public Job fetchIssueKanbanJqlJob() {
+		return jobBuilderFactory.get("FetchIssueKanban JQL Job").incrementer(new RunIdIncrementer())
+				.start(metaDataStep()).next(processProjectStatusStep()).next(fetchIssueKanbanJqlChunkStep()).build();
+	}
+
+	private Step fetchIssueKanbanJqlChunkStep() {
+		return stepBuilderFactory.get("Fetch Issue-Kanban-Jql").<ReadData, CompositeResult>chunk(50)
+				.reader(issueJqlReader).processor(issueKanbanProcessor).writer(issueKanbanWriter)
+				.listener(jiraIssueJqlWriterListener).listener(jiraIssueStepListener)
+				.listener(notificationJobListener).build();
+	}
+
+	/** Kanban projects for Jql job : End **/
+
 }

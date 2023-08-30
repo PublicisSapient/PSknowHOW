@@ -43,10 +43,9 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
             Object sValue = sprintField.getValue();
             try {
                 List<SprintDetails> sprints = JiraProcessorUtil.processSprintDetail(sValue);
-                // Now sort so we can use the most recent one
-                // yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
-                Collections.sort(sprints, JiraIssueClientUtil.SPRINT_COMPARATOR);
-                setSprintData(sprints, sValue, projectConfig, sprintDetailsSet);
+                if (CollectionUtils.isNotEmpty(sprints)) {
+                    sprintDetailsSet.addAll(sprints);
+                }
             } catch (ParseException | JSONException e) {
                 log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
             }
@@ -63,25 +62,4 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 
         return sprintDetailsSet;
     }
-
-    private void setSprintData(List<SprintDetails> sprints, Object sValue,
-                               ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet) {
-        List<String> sprintsList = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(sprints)) {
-            for (SprintDetails sprint : sprints) {
-                sprintsList.add(sprint.getOriginalSprintId());
-                sprint.setSprintID(
-                        sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + projectConfig.getProjectName()
-                                + JiraConstants.COMBINE_IDS_SYMBOL + projectConfig.getBasicProjectConfigId());
-                sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
-            }
-            sprintDetailsSet.addAll(sprints);
-
-        } else {
-            log.error("JIRA Processor | Failed to obtain sprint data for {}", sValue);
-        }
-
-    }
-
-
 }
