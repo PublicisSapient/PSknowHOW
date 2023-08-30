@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class KanbanJiraIssueWriterListener implements ItemWriteListener<CompositeResult> {
+public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<CompositeResult> {
 
     @Autowired
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
@@ -42,37 +42,28 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
         List<KanbanJiraIssue> jiraIssues = compositeResults.stream().map(CompositeResult::getKanbanJiraIssue)
                 .collect(Collectors.toList());
 
-        Map<String, Map<String, List<KanbanJiraIssue>>> projectBoardWiseIssues = jiraIssues.stream()
-                .filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC)).collect(Collectors
-                        .groupingBy(KanbanJiraIssue::getBasicProjectConfigId, Collectors.groupingBy(KanbanJiraIssue::getBoardId)));
+        Map<String, List<KanbanJiraIssue>> projectWiseIssues = jiraIssues.stream()
+                .collect(Collectors.groupingBy(KanbanJiraIssue::getBasicProjectConfigId));
 
-        for (Map.Entry<String, Map<String, List<KanbanJiraIssue>>> entry : projectBoardWiseIssues.entrySet()) {
+        for (Map.Entry<String, List<KanbanJiraIssue>> entry : projectWiseIssues.entrySet()) {
             String basicProjectConfigId = entry.getKey();
-            Map<String, List<KanbanJiraIssue>> boardWiseIssues = entry.getValue();
-            for (Map.Entry<String, List<KanbanJiraIssue>> boardData : boardWiseIssues.entrySet()) {
-                String boardId = boardData.getKey();
-                KanbanJiraIssue firstIssue = boardData
-                        .getValue().stream().sorted(
-                                Comparator
-                                        .comparing(
-                                                (KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
-                                                        DateTimeFormatter.ofPattern(
-                                                                JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
-                                        .reversed())
-                        .findFirst().orElse(null);
-                if (firstIssue != null) {
-                    Optional<ProcessorExecutionTraceLog> procTraceLog = processorExecutionTraceLogRepo
-                            .findByProcessorNameAndBasicProjectConfigIdAndBoardId(ProcessorConstants.JIRA,
-                                    basicProjectConfigId, boardId);
-                    if (procTraceLog.isPresent()) {
-                        ProcessorExecutionTraceLog processorExecutionTraceLog = procTraceLog.get();
-                        setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
-                                firstIssue.getChangeDate(), processorExecutionToSave);
-                    } else {
-                        ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-                        setTraceLog(processorExecutionTraceLog, basicProjectConfigId, boardId,
-                                firstIssue.getChangeDate(), processorExecutionToSave);
-                    }
+            KanbanJiraIssue firstIssue = entry.getValue().stream()
+                    .sorted(Comparator
+                            .comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
+                                    DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
+                            .reversed())
+                    .findFirst().orElse(null);
+            if (firstIssue != null) {
+                Optional<ProcessorExecutionTraceLog> procTraceLog = processorExecutionTraceLogRepo
+                        .findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JIRA, basicProjectConfigId);
+                if (procTraceLog.isPresent()) {
+                    ProcessorExecutionTraceLog processorExecutionTraceLog = procTraceLog.get();
+                    setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
+                            processorExecutionToSave);
+                } else {
+                    ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
+                    setTraceLog(processorExecutionTraceLog, basicProjectConfigId, firstIssue.getChangeDate(),
+                            processorExecutionToSave);
                 }
             }
 
@@ -83,9 +74,8 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
     }
 
     private void setTraceLog(ProcessorExecutionTraceLog processorExecutionTraceLog, String basicProjectConfigId,
-                             String boardId, String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave) {
+                             String changeDate, List<ProcessorExecutionTraceLog> processorExecutionToSave) {
         processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
-        processorExecutionTraceLog.setBoardId(boardId);
         processorExecutionTraceLog.setExecutionSuccess(true);
         processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
         processorExecutionTraceLog.setLastSuccessfulRun(DateUtil.dateTimeConverter(changeDate,
@@ -96,6 +86,6 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 
     @Override
     public void onWriteError(Exception exception, List<? extends CompositeResult> compositeResult) {
-        log.error("Exception occured while writing kanban jira Issue ", exception);
+        log.error("Exception occured while writing Kanban jira Issue ", exception);
     }
 }

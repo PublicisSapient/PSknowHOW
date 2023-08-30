@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.jira.jobs;
 
+import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueJqlWriterListener;
 import com.publicissapient.kpidashboard.jira.tasklet.JiraIssueReleaseStatusTasklet;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -80,6 +81,9 @@ public class JiraProcessorJob {
 	@Autowired
 	KanbanJiraIssueWriterListener kanbanJiraIssueWriterListener;
 
+	@Autowired
+	KanbanJiraIssueJqlWriterListener kanbanJiraIssueJqlWriterListener;
+
 	/** Scrum projects for board job : Start **/
 	@Bean
 	public Job fetchIssueScrumBoardJob() {
@@ -148,7 +152,7 @@ public class JiraProcessorJob {
 	private Step fetchIssueKanbanJqlChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Kanban-Jql").<ReadData, CompositeResult>chunk(50)
 				.reader(issueJqlReader).processor(issueKanbanProcessor).writer(issueKanbanWriter)
-				.listener(jiraIssueJqlWriterListener).listener(jiraIssueStepListener)
+				.listener(kanbanJiraIssueJqlWriterListener).listener(kanbanJiraIssueStepListener)
 				.listener(notificationJobListener).build();
 	}
 

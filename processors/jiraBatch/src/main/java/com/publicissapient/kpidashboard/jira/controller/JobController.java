@@ -148,7 +148,7 @@ public class JobController {
 		log.info("Request coming for job for Kanban project configured with JQL");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
-				true, false);
+				true, true);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
 
