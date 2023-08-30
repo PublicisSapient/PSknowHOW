@@ -147,19 +147,20 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
             if (Object.keys(x).length > 0) {
                 this.colorObj = x;
-                if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-                    for (const key in this.kpiChartData) {
-                        this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
-                        // this.createTrendsData(key);
-                    }
-                }
                 this.trendBoxColorObj = { ...x };
-                this.kpiTableDataObj = {};
+                let tempObj = {};
                 for (const key in this.trendBoxColorObj) {
                     const idx = key.lastIndexOf('_');
                     const nodeName = key.slice(0, idx);
                     this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-                    this.kpiTableDataObj[nodeName] = [];
+                    tempObj[nodeName] = [];
+                }
+                this.kpiTableDataObj = {...tempObj}; 
+                if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
+                    for (const key in this.kpiChartData) {
+                        this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
+                        this.createTrendsData(key);
+                    }
                 }
             }
             return this.service.passDataToDashboard;
@@ -198,6 +199,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         } else {
             this.noKpis = false;
         }
+        // this.kpiTableDataObj = {};
+        // for (const key in this.colorObj) {
+        //     const idx = key.lastIndexOf('_');
+        //     const nodeName = key.slice(0, idx);
+        //     this.kpiTableDataObj[nodeName] = []; 
+        // }
         this.configGlobalData?.forEach(element => {
             if (element.shown && element.isEnabled) {
                 this.kpiConfigData[element.kpiId] = true;
@@ -264,6 +271,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     this.kpiDropdowns = {};
                     this.kpiTrendsObj = {};
                     this.kpiLoader =true;
+                    this.kpiTableDataObj = {};
+                    for (const key in this.colorObj) {
+                        const idx = key.lastIndexOf('_');
+                        const nodeName = key.slice(0, idx);
+                        this.kpiTableDataObj[nodeName] = []; 
+                    }
                 }
                 const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
                 this.masterData = $event.masterData;
@@ -908,7 +921,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             this.showKpiTrendIndicator[kpiId] = false;
 
         }
-        this.createTrendsData(kpiId, idx);
+        this.createTrendsData(kpiId);
     }
 
     /** to prepare table data */
@@ -952,7 +965,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 }
                 iterativeEle = JSON.parse(JSON.stringify(trendValueList[selectedIdx]?.value));
             }
-            let filtersApplied = [...this.filterApplyData?.['selectedMap']['project']];
+            let filtersApplied = Object.keys(this.colorObj);
+            
             filtersApplied = filtersApplied.map((x) => x.split('_')[0]);
             
             filtersApplied.forEach((hierarchyName) => {
@@ -1396,7 +1410,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         return [latest, trend, unit];
       }
 
-      createTrendsData(kpiId, idx?){
+      createTrendsData(kpiId){
         let enabledKpiObj = this.updatedConfigGlobalData?.filter(x => x.kpiId == kpiId)[0];
         if(enabledKpiObj && Object.keys(enabledKpiObj)?.length != 0){
             this.kpiTrendsObj[kpiId] = [];
@@ -1437,6 +1451,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     this.kpiTrendsObj[kpiId]?.push(trendObj);
                 }
             }
+            let idx = this.allKpiArray.findIndex((x) => x.kpiId == kpiId);
             this.getTableData(kpiId, idx, enabledKpiObj?.kpiDetail?.xaxisLabel);
         }
       }
