@@ -8114,6 +8114,16 @@ db.getCollection('field_mapping_structure').insertMany(
         "tooltip": {
             "definition": "JIRA applications let you add custom fields in addition to the built-in fields.Provide value of Epic Linkage to the story/defect<br />Example:customfield_11111<hr>"
         }
+    },
+    {
+      "fieldName": "jiraSubTaskDefectType",
+      "fieldLabel": "Issue type for sub-task defect",
+      "fieldType": "chips",
+      "fieldCategory": "Issue_Type",
+      "section": "Issue Types Mapping",
+      "tooltip": {
+           "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+      }
     }
 ]
 );

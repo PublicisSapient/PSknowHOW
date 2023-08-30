@@ -53,6 +53,7 @@ public class FieldMappingDTO extends BasicModel {
 	private String epicName;
 	private List<String> jiradefecttype;
 	private String epicLink;
+	private List<String> jiraSubTaskDefectType;
 
 	// defectPriority
 	private List<String> defectPriority;
