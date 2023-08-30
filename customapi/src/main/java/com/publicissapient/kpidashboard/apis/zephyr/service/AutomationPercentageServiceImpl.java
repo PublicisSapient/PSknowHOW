@@ -472,7 +472,7 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 		// aggregated value of all sub-filters of a project for given sprint
 		double automationPerc = Math
 				.round((100.0 * executionDetail.getAutomatedTestCases()) / executionDetail.getAutomatableTestCases());
-		Map<String, Object> howerMap = new HashMap<>();
+		Map<String, Object> howerMap = new LinkedHashMap<>();
 		howerMap.put(AUTOMATED, executionDetail.getAutomatedTestCases());
 		howerMap.put(TOTAL, executionDetail.getAutomatableTestCases());
 		DataCount dataCount = new DataCount();

@@ -336,7 +336,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 		// aggregated value of all sub-filters of a project for given sprint
 		double regressionPerc = Math.round((100.0 * executionDetail.getAutomatedRegressionTestCases())
 				/ executionDetail.getTotalRegressionTestCases());
-		Map<String, Object> howerMap = new HashMap<>();
+		Map<String, Object> howerMap = new LinkedHashMap<>();
 		howerMap.put(AUTOMATED, executionDetail.getAutomatedRegressionTestCases());
 		howerMap.put(TOTAL, executionDetail.getTotalRegressionTestCases());
 		DataCount dataCount = new DataCount();
