@@ -9,6 +9,7 @@ export class KpiTableComponent implements OnInit {
   @Input() cols: Array<object> = [];
   @Input() kpiData: object = {};
   @Input() colorObj: object = {};
+  @Input() kpiConfigData: object = {};
   activeIndex: number = 0;
   tabs:Array<string> = [];
   showToolTip:boolean = false;
@@ -29,6 +30,9 @@ export class KpiTableComponent implements OnInit {
     }
     if(changes['colorObj']?.currentValue != changes['colorObj']?.previousValue){
       this.assignColorToNodes();
+    }
+    if(changes['kpiConfigData']?.currentValue != changes['kpiConfigData']?.previousValue){
+      this.kpiConfigData = changes['kpiConfigData']?.currentValue;
     }
   }  
 

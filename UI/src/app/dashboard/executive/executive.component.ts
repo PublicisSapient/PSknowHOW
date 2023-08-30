@@ -199,18 +199,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         } else {
             this.noKpis = false;
         }
-        // this.kpiTableDataObj = {};
-        // for (const key in this.colorObj) {
-        //     const idx = key.lastIndexOf('_');
-        //     const nodeName = key.slice(0, idx);
-        //     this.kpiTableDataObj[nodeName] = []; 
-        // }
         this.configGlobalData?.forEach(element => {
             if (element.shown && element.isEnabled) {
                 this.kpiConfigData[element.kpiId] = true;
-                // if(!this.kpiTrendsObj.hasOwnProperty(element.kpiId)){
-                //     this.createTrendsData(element.kpiId);
-                // }
+                if(!this.kpiTrendsObj.hasOwnProperty(element.kpiId)){
+                    this.createTrendsData(element.kpiId);
+                }
             } else {
                 this.kpiConfigData[element.kpiId] = false;
             }
@@ -925,7 +919,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     }
 
     /** to prepare table data */
-    getTableData(kpiId, idx, xCaption){
+    getTableData(kpiId, idx, enabledKpi){
         let trendValueList = [];
         if(idx){
             trendValueList = this.allKpiArray[idx]?.trendValueList;
@@ -971,8 +965,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             
             filtersApplied.forEach((hierarchyName) => {
                 let obj = {
+                    'kpiId': kpiId,
                     'kpiName': this.allKpiArray[idx]?.kpiName,
-                    'frequency': xCaption,
+                    'frequency': enabledKpi?.kpiDetail?.xaxisLabel,
+                    'show': enabledKpi?.isEnabled && enabledKpi?.shown,
                     'hoverText': []
                 }
                 let chosenItem = iterativeEle?.filter((item) => item['data'] == hierarchyName)[0];
@@ -994,13 +990,21 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     }
                     
                 }
-                this.kpiTableDataObj[hierarchyName] = [...this.kpiTableDataObj[hierarchyName], obj];
+                let kpiIndex = this.kpiTableDataObj[hierarchyName]?.findIndex((x) => x.kpiId == kpiId);
+                if(kpiIndex > -1){
+                    this.kpiTableDataObj[hierarchyName]?.splice(kpiIndex, 1);
+                }
+                if(enabledKpi?.isEnabled && enabledKpi?.shown){
+                    this.kpiTableDataObj[hierarchyName] = [...this.kpiTableDataObj[hierarchyName], obj];
+                }
             })
         }else{
             /** when no data available */
             let obj = {
+                'kpiId': kpiId,
                 'kpiName': this.allKpiArray[idx]?.kpiName,
-                'frequency': xCaption,
+                'frequency': enabledKpi?.kpiDetail?.xaxisLabel,
+                'show': enabledKpi?.isEnabled && enabledKpi?.shown,
                 'hoverText': []
             }
             for(let i=0; i<this.noOfColumns;i++){
@@ -1010,7 +1014,13 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             obj['trend'] = '-';
             obj['maturity'] = '-';
             for(let key in this.kpiTableDataObj){
-                this.kpiTableDataObj[key]?.push(obj)
+                if(enabledKpi?.isEnabled && enabledKpi?.shown){
+                    let kpiIndex = this.kpiTableDataObj[key]?.findIndex((x) => x.kpiId == kpiId);
+                    if(kpiIndex > -1){
+                        this.kpiTableDataObj[key]?.splice(kpiIndex, 1);
+                    }
+                    this.kpiTableDataObj[key]?.push(obj)
+                }
             }
         }
         console.log(kpiId, this.kpiTableDataObj);
@@ -1452,7 +1462,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 }
             }
             let idx = this.allKpiArray.findIndex((x) => x.kpiId == kpiId);
-            this.getTableData(kpiId, idx, enabledKpiObj?.kpiDetail?.xaxisLabel);
+            this.getTableData(kpiId, idx, enabledKpiObj);
         }
       }
 
