@@ -105,7 +105,7 @@
         </div>
       </div>
     </div>
-    <app-kpi-table *ngIf="showChart === 'table'" [cols]="kpiTableHeadingArr" [kpiData]="kpiTableDataObj"></app-kpi-table>
+    <app-kpi-table *ngIf="showChart === 'table'" [cols]="kpiTableHeadingArr" [kpiData]="kpiTableDataObj" [colorObj]="colorObj"></app-kpi-table>
   </div>
 </div>
 <ng-template #noKpiTemplate>

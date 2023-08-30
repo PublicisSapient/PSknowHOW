@@ -11,7 +11,8 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-rowData let-columns="columns">
                     <tr>
-                        <td *ngFor="let col of columns" (mouseenter)="mouseEnter($event, col.field, rowData, tab)" (mouseleave)="mouseLeave()">
+                        <td *ngFor="let col of columns" (mouseenter)="mouseEnter($event, col.field, rowData)" (mouseleave)="mouseLeave()"
+                        [ngStyle]="{'color': col.field == 'trend' ? (rowData[col.field] == '+ve' ? 'green' : rowData[col.field] == '-ve' ? 'red' : '#333333') : '#333333'}">
                             {{ rowData[col.field] }}
                         </td>
                     </tr>

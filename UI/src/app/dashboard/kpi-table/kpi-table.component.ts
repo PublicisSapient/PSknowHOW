@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-kpi-table',
@@ -8,20 +8,31 @@ import { Component, Input, OnInit } from '@angular/core';
 export class KpiTableComponent implements OnInit {
   @Input() cols: Array<object> = [];
   @Input() kpiData: object = {};
+  @Input() colorObj: object = {};
   activeIndex: number = 0;
   tabs:Array<string> = [];
   showToolTip:boolean = false;
   toolTipHtml:string = '';
   left:string = '';
   top: string = '';
+  nodeColors:object = {};
 
   constructor() { }
 
   ngOnInit(): void {
-    this.tabs = Object.keys(this.kpiData);  
+    this.assignColorToNodes();
   }
 
-  mouseEnter(event, field, data, selectedTab){  
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes['kpiData']?.currentValue != changes['kpiData']?.previousValue){
+      this.kpiData = changes['kpiData']?.currentValue;
+    }
+    if(changes['colorObj']?.currentValue != changes['colorObj']?.previousValue){
+      this.assignColorToNodes();
+    }
+  }  
+
+  mouseEnter(event, field, data){  
     if(field == 'frequency'){
       if(data?.hoverText?.length > 0){
         data.hoverText.forEach((item) =>{
@@ -37,5 +48,14 @@ export class KpiTableComponent implements OnInit {
   mouseLeave(){
     this.showToolTip = false;
     this.toolTipHtml = '';
+  }
+
+  assignColorToNodes(){
+    this.nodeColors = {};
+    for(let key in this.colorObj){
+      this.nodeColors[this.colorObj[key]?.nodeName] = this.colorObj[key]?.color; 
+      this.tabs = Object.keys(this.nodeColors);
+      console.log(this.nodeColors);
+    }
   }
 }
