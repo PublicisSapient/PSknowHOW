@@ -24,6 +24,7 @@ scrum and kanban code .
 
 /** Importing Services **/
 import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
+import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
@@ -37,6 +38,7 @@ import { distinctUntilChanged } from 'rxjs/operators';
   styleUrls: ['./developer.component.css']
 })
 export class DeveloperComponent implements OnInit {
+  @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   selectedTab = 'developer';
   subscriptions: any[] = [];
   masterData = <any>{};
@@ -514,6 +516,10 @@ export class DeveloperComponent implements OnInit {
     this.kpiSelectedFilterObj['action'] = 'update';
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
+
+  downloadExcel(kpiId, kpiName, isKanban,additionalFilterSupport, chartType?) {
+    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport,this.filterApplyData,this.filterData,false, chartType);
+}
 
   // unsubscribing all Kpi Request
   ngOnDestroy() {
