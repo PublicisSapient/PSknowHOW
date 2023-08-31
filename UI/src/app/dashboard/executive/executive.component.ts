@@ -1022,7 +1022,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 }
             }
         }
-        console.log(kpiId, this.kpiTableDataObj);
     }
 
     createCombinations(arr1, arr2) {
@@ -1055,7 +1054,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 if (formType?.toLowerCase() == 'radiobutton') {
                     this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
                 } else if (formType?.toLowerCase() == 'dropdown') {
-                    this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+                    // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
                     this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
                     let initialC= trendValueList[0].filter1;
                     if(data[key]?.kpiId ==="kpi72"){
