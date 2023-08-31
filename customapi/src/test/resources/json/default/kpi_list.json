@@ -4128,27 +4128,35 @@
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi155",
-    "kpiName": "Defect Count By Type",
-    "kpiUnit": "Count",
+    "kpiId": "kpi156",
+    "kpiName": "Lead Time For Change",
+    "maxValue": "100",
+    "kpiUnit": "Days",
     "isDeleted": "False",
-    "defaultOrder": 9,
-    "kpiCategory": "Backlog",
+    "defaultOrder": 3,
     "kpiSource": "Jira",
-    "groupId": 11,
-    "thresholdValue": "",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
     "kanban": false,
-    "chartType": "pieChart",
+    "chartType": "line",
     "kpiInfo": {
-      "definition": "Total count of issues in the backlog with a breakup by defect type."
+      "definition": "LEAD TIME FOR CHANGE measures the velocity of software delivery.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "LEAD TIME FOR CHANGE Captures the time between a code change commit and its deployable state."
+        }
+      ],
+      "maturityLevels": []
     },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Days",
     "isPositiveTrend": true,
-    "showTrend": false,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "dropdown",
-    "boxType": "chart",
     "calculateMaturity": false
   }
 ]
