@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -74,6 +75,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -84,8 +86,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * kpi of iteration dashboard, Daily Standup View which runs for the
- * active sprint, and return data for both the screens
+ * kpi of iteration dashboard, Daily Standup View which runs for the active
+ * sprint, and return data for both the screens
  * 
  * @author shi6
  */
@@ -108,6 +110,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	private static final String HISTORY_ISSUES = "historyIssue";
 	private static final String EPICS = "epics";
 	private static final String FILTER_INPROGRESS_SCR2 = "In Progress";
+	private static final String FILTER_OPEN_SCR2 = "Open";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -120,6 +123,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
+
+	@Autowired
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	/**
 	 * {@inheritDoc}
@@ -190,11 +196,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			calculateAssigneeWiseRemainingEstimate(assigneeWiseNotCompleted, remianingWork, assigneeWiseRemaingEstimate,
 					estimationCriteria);
 
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI154())) {
-				Map<String, List<String>> inProgressFilters = new HashMap<>();
-				inProgressFilters.put(FILTER_INPROGRESS_SCR2, fieldMapping.getJiraStatusForInProgressKPI154());
-				kpiElement.setStandUpStatusFilter(inProgressFilters);
-			}
 			// Calculate Delay
 			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper.calculatePotentialDelay(
 					sprintDetails, notCompletedJiraIssue, fieldMapping.getJiraStatusForInProgressKPI154());
@@ -239,6 +240,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				userWiseCardDetail.setAssigneeName(assigneeName);
 				userWiseCardDetails.add(userWiseCardDetail);
 			}
+			//set filter on Second Screen
+			setSecondScreenStatusFilter(kpiElement, fieldMapping);
+			//set filter on First Screen
 			createRoleFilter(filtersList, allRoles);
 			kpiElement.setIssueData(new HashSet<>(mapOfModalObject.values()));
 			userWiseCardDetails.sort(Comparator.comparing(UserWiseCardDetail::getAssigneeName));
@@ -247,6 +251,20 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		}
 		kpiElement.setTrendValueList(userWiseCardDetails);
 
+	}
+
+	/*
+	filter Status on Second Screen
+	 */
+	private void setSecondScreenStatusFilter(KpiElement kpiElement, FieldMapping fieldMapping) {
+		Map<String, List<String>> statusFilters = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI154())) {
+			statusFilters.put(FILTER_INPROGRESS_SCR2, fieldMapping.getJiraStatusForInProgressKPI154());
+		}
+		if (StringUtils.isNotEmpty(fieldMapping.getStoryFirstStatusKPI154())) {
+			statusFilters.put(FILTER_OPEN_SCR2, Arrays.asList(fieldMapping.getStoryFirstStatusKPI154()));
+		}
+		kpiElement.setStandUpStatusFilter(statusFilters);
 	}
 
 	/**
@@ -290,6 +308,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
 							sprintDetails, null, filteredAllJiraIssue);
 
+					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(
+							totalIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
+
 					Set<JiraIssue> notCompletedJiraIssues = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getNotCompletedIssues(), filteredNotCompletedJiraIssue);
@@ -297,17 +318,19 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())) {
 						List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
 						// combined both sub-tasks and totalIssuelist
-						totalIssueList.addAll(
-								jiraIssueRepository.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(
-										basicProjectConfigId.toString(), new HashSet<>(allIssues), taskType));
+						Set<JiraIssue> subTasksJiraIssue = jiraIssueRepository
+								.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(
+										basicProjectConfigId.toString(), new HashSet<>(allIssues), taskType);
+						totalIssueList.addAll(subTasksJiraIssue);
+						issueHistoryList.addAll(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigId(
+								subTasksJiraIssue.stream().map(JiraIssue::getNumber).collect(Collectors.toSet()),
+								basicProjectConfigId.toString()));
+
 					}
 
 					Set<JiraIssue> epics = new HashSet<>(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
 							totalIssueList.stream().map(JiraIssue::getEpicLinked).collect(Collectors.toList()),
 							basicProjectConfigId.toString()));
-
-					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(
-							totalIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
 
 					// get sprint start and sprint end time
 					resultListMap.put(SPRINT, sprintDetails);

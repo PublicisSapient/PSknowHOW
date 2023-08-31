@@ -8182,6 +8182,17 @@ db.getCollection('field_mapping_structure').insertMany(
        "tooltip": {
        "definition": "Any issue type mentioned will be considered as sub-task linked with story"
        }
+    },
+    {
+        "fieldName": "storyFirstStatusKPI154",
+        "fieldLabel": "Status when 'Story' issue type is created",
+        "fieldType": "text",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All issue types that identify with a Story.",
+
+        }
     }
 ]
 );
