@@ -17,6 +17,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   @ViewChild('popupHost', { read: ViewContainerRef })
   popupHost!: ViewContainerRef;
   elem: any;
+  selectedNode: any = {};
   constructor(public viewContainerRef: ViewContainerRef) { }
 
   @HostListener('window:resize')
@@ -28,8 +29,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     if (changes['data']) {
       this.isDrilledDown = false;
       this.elem = this.viewContainerRef.element.nativeElement;
-      if (!this.isDrilledDown)
-        this.data = require('../../../test/resource/horizontalDistributionChart.json');;
+     
       if (!this.isDrilledDown) {
         this.data = this.data[0]['value'];
         this.unmodifiedDataCopy = JSON.parse(JSON.stringify(this.data));
@@ -63,7 +63,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
 
     // let subgroups = Object.keys(data[0]['value']);
-    const groups = this.isDrilledDown ? ['(' + selectedNode['data']['kpiGroup'] + ')', data.map(d => d.kpiGroup)[0]] : data.map(d => d.kpiGroup);
+    const groups =  data.map(d => d.kpiGroup);
     let subgroups = [];
     data[0]['value'].forEach((element) => {
       for (var property in element) {
@@ -166,10 +166,10 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
           self.isDrilledDown = true;
           let key = d['key'];
           let kpiGroup = event.target.__data__.data.kpiGroup;
-          let selectedNode = d.filter((x) => x.data['kpiGroup'] === kpiGroup)[0];
+          this.selectedNode = d.filter((x) => x.data['kpiGroup'] === kpiGroup)[0];
           // self.showDistributionChartOnTooltip(event, d[0].data.value.filter((val) => val.hasOwnProperty(key))[0].distribution);
-          data = [selectedNode.data.value.filter((val) => val.hasOwnProperty(key))[0].distribution];
-          this.draw(data, selectedNode);
+          data = [this.selectedNode.data.value.filter((val) => val.hasOwnProperty(key))[0].distribution];
+          this.draw(data, this.selectedNode);
           d3.select(elem).select('#back_icon').style('display', 'block')
             .on('click', (event, d) => {
               this.isDrilledDown = false;
