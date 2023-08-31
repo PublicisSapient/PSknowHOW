@@ -52,8 +52,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class JiraProcessorUtil {
 
-	private static final JiraProcessorUtil INSTANCE = new JiraProcessorUtil();
-
 	// not static because not thread safe
 	private static final String SPRINT_SPLIT = "(?=,\\w+=)";
 	private static final String NULL_STR = "null";
@@ -131,7 +129,7 @@ public final class JiraProcessorUtil {
 	 * @throws JSONException
 	 *             JSONException
 	 */
-	public static List<SprintDetails> processSprintDetail(Object data) throws ParseException, JSONException {
+	public static List<SprintDetails> processSprintDetail(Object data) throws JSONException {
 		List<SprintDetails> sprints = new ArrayList<>();
 
 		if (data instanceof JSONArray) {

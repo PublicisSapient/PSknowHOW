@@ -147,7 +147,7 @@ public class IterationKpiModalValue implements Serializable {
 	@JsonProperty("Lead Time (In Days)")
 	private String leadTime;
 	@JsonProperty("DIR")
-	private Double DIR;
+	private Double defectInjectRate;
 	@JsonProperty("Defect Density")
 	private String defectDensity;
 	@JsonProperty("Test-Completed")
