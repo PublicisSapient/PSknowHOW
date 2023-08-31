@@ -59,7 +59,6 @@ export class KpiTableComponent implements OnInit {
     for(let key in this.colorObj){
       this.nodeColors[this.colorObj[key]?.nodeName] = this.colorObj[key]?.color; 
       this.tabs = Object.keys(this.nodeColors);
-      console.log(this.nodeColors);
     }
   }
 }

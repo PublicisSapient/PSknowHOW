@@ -113,7 +113,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     kpiCommentsCountObj: object = {};
     kpiTableHeadingArr:Array<object> = [];
     kpiTableDataObj:object={};
-    noOfColumns:number = 10;
+    noOfDataPoints:number = 5;
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -213,8 +213,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.httpService.getTooltipData().subscribe(filterData => {
             if (filterData[0] !== 'error') {
                 this.tooltip = filterData;
-                /**re-assign noOfColumns here */
-                this.createKpiTableHeads();
+                this.noOfDataPoints = filterData['noOfDataPoints'];
             }
         });
         this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
@@ -293,6 +292,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             this.groupBitBucketKpi(kpiIdsForCurrentBoard);
                             this.groupSonarKpi(kpiIdsForCurrentBoard);
                         }
+                        this.createKpiTableHeads(this.selectedtype.toLowerCase());
+                        
                         let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
                         if(projectLevel){
                             if(this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
@@ -915,20 +916,15 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     }
 
     /**To create KPI table headings */
-    createKpiTableHeads(){
-        // if(trendValueList?.length > 0){
-        //     noOfColumns = trendValueList?.[0]?.value?.length;
-        //     let hasFilter = trendValueList[0]?.hasOwnProperty('filter') || trendValueList[0]?.hasOwnProperty('filter1');
-        //     if(hasFilter){
-        //         noOfColumnsDynamic = trendValueList?.[0]?.value[0]?.value?.length;
-        //     }
-        //     console.log("noOfColumnsDynamic", noOfColumnsDynamic);
-            
-        // }
-        if(this.noOfColumns){
+    createKpiTableHeads(selectedType){
+        this.kpiTableHeadingArr = [];
+        if(selectedType == 'kanban'){
+            this.noOfDataPoints = this.filterApplyData['ids']?.[0];
+        }
+        if(this.noOfDataPoints){
             this.kpiTableHeadingArr?.push({'field': 'kpiName', 'header': 'Kpi Name'});
             this.kpiTableHeadingArr?.push({'field': 'frequency', 'header': 'Frequency'});
-            for(let i = 0; i < this.noOfColumns; i++){
+            for(let i = 0; i < this.noOfDataPoints; i++){
                 this.kpiTableHeadingArr?.push({'field':i+1, 'header': i+1});
             }
             this.kpiTableHeadingArr?.push({'field': 'trend', 'header': 'Trend'});
@@ -980,7 +976,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 obj['latest'] = trendData?.value || '-';
                 obj['trend'] = trendData?.trend || '-';
                 obj['maturity'] = trendData?.maturity || '-';
-                for(let i=0; i<this.noOfColumns;i++){
+                for(let i=0; i<this.noOfDataPoints;i++){
                     let item = chosenItem?.value[i];
                     if(item){
                         obj['hoverText']?.push((i+1) + ' - ' + (item?.['sprintNames']?.length > 0 
@@ -1010,7 +1006,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 'show': enabledKpi?.isEnabled && enabledKpi?.shown,
                 'hoverText': []
             }
-            for(let i=0; i<this.noOfColumns;i++){
+            for(let i=0; i<this.noOfDataPoints;i++){
                 obj[i+1] = '-';
             }
             obj['latest'] = '-';

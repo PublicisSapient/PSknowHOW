@@ -5976,7 +5976,7 @@ expect(result[1]).toEqual('-ve');
   it('should get table data for kpi when trendValueList dont have filter', () => {
     component.allKpiArray = fakeAllKpiArrayForTableData;
     component.kpiTableHeadingArr = fakeKpiTableHeadingArray;
-    component.noOfColumns = 5;
+    component.noOfDataPoints = 5;
     component.colorObj = {
       "AddingIterationProject_64e739541426ba469c39c102": {
           "nodeName": "AddingIterationProject",
@@ -6021,7 +6021,7 @@ expect(result[1]).toEqual('-ve');
   it('should get table data for kpi when trendValueList has filter', () => {
     component.allKpiArray = fakeAllKpiArrayForTableDataWithFilter;
     component.kpiTableHeadingArr = fakeKpiTableHeadingArray;
-    component.noOfColumns = 5;
+    component.noOfDataPoints = 5;
     component.colorObj = {
       "AddingIterationProject_64e739541426ba469c39c102": {
           "nodeName": "AddingIterationProject",
@@ -6102,10 +6102,22 @@ expect(result[1]).toEqual('-ve');
             "header": "Maturity"
         }
     ];
-    component.noOfColumns = 5;
+    component.selectedtype = 'Scrum';
+    component.noOfDataPoints = 5;
     component.kpiTableHeadingArr = [];
-    component.createKpiTableHeads();
+    component.createKpiTableHeads(component.selectedtype?.toLowerCase());
     expect(component.kpiTableHeadingArr?.length).toEqual(tableHeadsArr?.length);
+  });
+
+  it('should get tooltip data', () => {
+    component.tooltip = {};
+    component.noOfDataPoints = 0;
+    const data = {
+      "noOfDataPoints": 5
+    }
+    spyOn(httpService, 'getTooltipData').and.returnValue(of(data));
+    component.ngOnInit();
+    expect(component.noOfDataPoints).toEqual(data.noOfDataPoints);
   })
 
 });
