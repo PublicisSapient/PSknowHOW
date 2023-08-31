@@ -186,7 +186,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 			populateExcelDataObject(requestTrackerId, repoWisePRSizeList, repoList, branchList, excelData, node);
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.PICKUP_TIME.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.PR_SIZE.getColumns());
 	}
 
 	private void aggPickupTime(Map<String, Long> aggPRSizeForRepo, Map<String, Long> prSizeForRepo,
