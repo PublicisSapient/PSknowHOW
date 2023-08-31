@@ -492,7 +492,8 @@ db.getCollection('metadata_identifier').updateMany(
             $in: [
                { "type": "firstDevstatus" },
                { "type": "jiraStatusForInProgressKPI154" },
-               { "type": "jiraStatusStartDevelopmentKPI154" }
+               { "type": "jiraStatusStartDevelopmentKPI154" },
+               { "type": "storyFirstStatusKPI154" }
             ]
          }
       }

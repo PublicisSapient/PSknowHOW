@@ -68,7 +68,7 @@ public class FieldMappingDTO extends BasicModel {
 	private String storyFirstStatus;
 	private String storyFirstStatusKPI148;
 	private String storyFirstStatusKPI3;
-	private String storyFirstStatusKPI154;
+	private List<String> storyFirstStatusKPI154;
 	private String[] linkDefectToStoryField;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;

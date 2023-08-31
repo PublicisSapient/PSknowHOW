@@ -21,12 +21,14 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,6 +70,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -77,6 +80,8 @@ public class DailyStandupServiceImplTest {
 	CacheService cacheService;
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
+	@Mock
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Mock
 	private ConfigHelperService configHelperService;
 	@Mock
@@ -94,6 +99,7 @@ public class DailyStandupServiceImplTest {
 	private DailyStandupServiceImpl dailyStandupService;
 
 	private List<JiraIssue> storyList = new ArrayList<>();
+	private List<JiraIssue> subTasks = new ArrayList<>();
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
@@ -119,6 +125,7 @@ public class DailyStandupServiceImplTest {
 				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		storyList = jiraIssueDataFactory.findIssueByNumberList(jiraIssueList);
+		subTasks = jiraIssueDataFactory.findIssueByOriginalTypeName(Arrays.asList("Sub-Task", "Task"));
 
 		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory.newInstance();
 		jiraIssueCustomHistoryList = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
@@ -168,6 +175,8 @@ public class DailyStandupServiceImplTest {
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistoryList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList(), anyString())).thenReturn(storyList);
+		when(jiraIssueRepository.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(anyString(), anySet(),
+				anyList())).thenReturn(new HashSet<>(subTasks));
 		try {
 
 			KpiElement kpiElement = dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -196,6 +205,8 @@ public class DailyStandupServiceImplTest {
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(jiraIssueRepository.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(anyString(), anySet(),
+				anyList())).thenReturn(new HashSet<>(subTasks));
 
 		CapacityKpiData capacityKpiData = new CapacityKpiData();
 		capacityKpiData.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
@@ -248,6 +259,7 @@ public class DailyStandupServiceImplTest {
 		fieldMapping.setJiraStatusForInProgressKPI119(
 				Arrays.asList("In Analysis, In Development", "In Testing", "Ready for Testing", "Deployed"));
 		fieldMapping.setJiraIterationCompletionStatusKPI154(Arrays.asList("Closed", "Dropped", "Live"));
+		fieldMapping.setStoryFirstStatusKPI154(Arrays.asList("Open"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}
