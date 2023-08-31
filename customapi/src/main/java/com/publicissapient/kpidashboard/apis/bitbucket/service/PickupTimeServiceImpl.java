@@ -1,13 +1,35 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -17,18 +39,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.repotools.model.Branches;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
@@ -50,9 +79,6 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 	@Autowired
 	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
@@ -170,10 +196,10 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 	private void aggPickupTime(Map<String, Double> aggPickupTimeForRepo, Map<String, Double> pickupTimeForRepo,
 			Map<String, Integer> aggMRCount, Map<String, Integer> mrCount) {
 		if (MapUtils.isNotEmpty(pickupTimeForRepo)) {
-			aggPickupTimeForRepo.putAll(pickupTimeForRepo);
+			pickupTimeForRepo.forEach((key, value) -> aggPickupTimeForRepo.merge(key, value, Double::sum));
 		}
 		if (MapUtils.isNotEmpty(mrCount)) {
-			aggMRCount.putAll(mrCount);
+			mrCount.forEach((key, value) -> aggMRCount.merge(key, value, Integer::sum));
 		}
 	}
 

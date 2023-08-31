@@ -971,6 +971,29 @@ public class KPIExcelUtility {
 		}
 
 	}
+
+	public static void populatePRSizeExcelData(String projectName, List<Map<String, Long>> repoWiseMRList,
+												   List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData) {
+
+		if (CollectionUtils.isNotEmpty(repoWiseMRList)) {
+			for (int i = 0; i < repoWiseMRList.size(); i++) {
+				Map<String, Long> repoWiseMap = repoWiseMRList.get(i);
+				for (Map.Entry<String, Long> m : repoWiseMap.entrySet()) {
+					KPIExcelData excelData = new KPIExcelData();
+					excelData.setProject(projectName);
+					Map<String, String> repoUrl = new HashMap<>();
+					repoUrl.put(repoList.get(i), repoList.get(i));
+					excelData.setRepositoryURL(repoUrl);
+					excelData.setBranch(branchList.get(i));
+					excelData.setWeeks(m.getKey());
+					excelData.setPickupTime(m.getValue().toString());
+					kpiExcelData.add(excelData);
+				}
+
+			}
+		}
+
+	}
 	
 	public static void populateCodeCommit(String projectName, List<Map<String, Long>> repoWiseCommitList,
 			List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData,
