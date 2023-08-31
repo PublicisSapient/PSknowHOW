@@ -124,8 +124,6 @@ public final class JiraProcessorUtil {
 	 * @param data
 	 *            Sprint Data object
 	 * @return List of sprints
-	 * @throws ParseException
-	 *             ParseException
 	 * @throws JSONException
 	 *             JSONException
 	 */

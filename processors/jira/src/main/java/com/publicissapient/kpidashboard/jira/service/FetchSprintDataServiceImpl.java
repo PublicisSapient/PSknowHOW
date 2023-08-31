@@ -366,11 +366,11 @@ public class FetchSprintDataServiceImpl {
 	}
 
 	/**
-	 * This method used to convert string list to pattern list to support ignore
-	 * case
 	 *
 	 * @param stringList
-	 * @return return list of patttern
+	 * 			stringList
+	 * @return
+	 * 		patterned list
 	 */
 	public List<Pattern> convertToPatternList(List<String> stringList) {
 		List<Pattern> regexList = new ArrayList<>();
