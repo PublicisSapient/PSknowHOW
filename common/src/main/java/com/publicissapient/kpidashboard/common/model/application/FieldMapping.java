@@ -51,6 +51,8 @@ public class FieldMapping extends BasicModel {
 
 	public static final String READY_FOR_TESTING = "Ready For Testing";
 	public static final String IN_TESTING = "In Testing";
+	public static final String DONE = "Done";
+	public static final String CLOSED = "Closed";
 	private ObjectId projectToolConfigId;
 	private ObjectId basicProjectConfigId;
 	private String projectId;
@@ -373,7 +375,8 @@ public class FieldMapping extends BasicModel {
 	private LocalDateTime createdDate;
 	//DTS-26123 start
 	private String jiraDefectRejectionStatusKPI155;
-	private List<String> jiraDodKPI155;
+	@Builder.Default
+	private List<String> jiraDodKPI155 = Arrays.asList(DONE, CLOSED);
 	private String jiraLiveStatusKPI155;
 	//DTS-26123 end
 
