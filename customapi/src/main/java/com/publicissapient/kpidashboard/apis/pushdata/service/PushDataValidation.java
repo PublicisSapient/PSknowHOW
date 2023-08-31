@@ -31,6 +31,11 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 public class PushDataValidation {
 
+	private PushDataValidation() {
+	}
+
+	private static final String AMONG = " should be among ";
+
 	/**
 	 * check the Blank
 	 * 
@@ -72,8 +77,8 @@ public class PushDataValidation {
 				.filter(buildStatus -> buildStatus.toString().equalsIgnoreCase(status)).findFirst();
 		if (!buildStatusOptional.isPresent()) {
 			errors.computeIfPresent(parameter,
-					(param, error) -> error.concat(" ," + parameter + " should be among " + getAllBuildValues()));
-			errors.putIfAbsent(parameter, parameter + " should be among " + getAllBuildValues());
+					(param, error) -> error.concat(" ," + parameter + AMONG + getAllBuildValues()));
+			errors.putIfAbsent(parameter, parameter + AMONG + getAllBuildValues());
 		}
 
 	}
@@ -90,8 +95,8 @@ public class PushDataValidation {
 				.filter(deploymentStatus -> deploymentStatus.toString().equalsIgnoreCase(status)).findFirst();
 		if (!deploymentStatusOptional.isPresent()) {
 			errors.computeIfPresent(parameter,
-					(param, error) -> error.concat(" ," + parameter + " should be among " + getAllDeploymentValues()));
-			errors.putIfAbsent(parameter, parameter + " should be among " + getAllDeploymentValues());
+					(param, error) -> error.concat(" ," + parameter + AMONG + getAllDeploymentValues()));
+			errors.putIfAbsent(parameter, parameter + AMONG + getAllDeploymentValues());
 		}
 	}
 

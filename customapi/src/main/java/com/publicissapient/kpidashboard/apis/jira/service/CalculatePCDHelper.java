@@ -50,6 +50,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class CalculatePCDHelper {
 
+	private CalculatePCDHelper(){}
+
 	/**
 	 * with assignees criteria calculating potential delay for inprogress and open
 	 * issues and without assignees calculating potential delay for inprogress
@@ -263,7 +265,7 @@ public class CalculatePCDHelper {
 
 	}
 
-	public static LinkedHashMap<String, IterationPotentialDelay> checkMaxDelayAssigneeWise(
+	public static Map<String, IterationPotentialDelay> checkMaxDelayAssigneeWise(
 			List<IterationPotentialDelay> issueWiseDelay, List<String> inProgressStatus) {
 		Map<String, List<IterationPotentialDelay>> assigneeWiseDelay = issueWiseDelay.stream()
 				.collect(Collectors.groupingBy(IterationPotentialDelay::getAssigneeId));
@@ -271,7 +273,7 @@ public class CalculatePCDHelper {
 		List<String> jiraStatusInProgress = CollectionUtils.isNotEmpty(inProgressStatus)
 				? inProgressStatus
 				: new ArrayList<>();
-		assigneeWiseDelay.entrySet().forEach((assignee) -> maxDelayList.add(assignee.getValue().stream()
+		assigneeWiseDelay.entrySet().forEach(assignee -> maxDelayList.add(assignee.getValue().stream()
 				.filter(iterationPotentialDelay -> jiraStatusInProgress.contains(iterationPotentialDelay.getStatus()))
 				.max(Comparator.comparing(IterationPotentialDelay::getPotentialDelay))
 				.orElse(new IterationPotentialDelay())));

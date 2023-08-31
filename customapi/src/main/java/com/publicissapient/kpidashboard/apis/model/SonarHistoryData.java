@@ -43,5 +43,5 @@ public class SonarHistoryData implements Serializable {
 	private String key;
 	private Long date;
 	private String branch;
-	private List<SonarMetric> metrics;
+	transient List<SonarMetric> metrics;
 }
