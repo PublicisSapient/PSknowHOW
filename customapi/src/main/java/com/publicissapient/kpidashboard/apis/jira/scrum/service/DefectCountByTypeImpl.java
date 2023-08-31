@@ -189,7 +189,7 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 			List<JiraIssue> jiraIssueList) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
-			KPIExcelUtility.populateBacklogCountExcelData(jiraIssueList, excelData);
+			KPIExcelUtility.populateBacklogDefectCountExcelData(jiraIssueList, excelData);
 		}
 	}
 

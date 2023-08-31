@@ -1452,20 +1452,10 @@ public class KPIExcelUtility {
 				excelData.setIssueID(issueDetails);
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
 				excelData.setIssueStatus(jiraIssue.getStatus());
-				excelData.setIssueType(jiraIssue.getOriginalType());
+				excelData.setIssueType(jiraIssue.getTypeName());
 				populateAssignee(jiraIssue, excelData);
 				excelData.setPriority(jiraIssue.getPriority());
 				excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());
-				// DTS-26123 start
-				// setting the sprintName is currently for only KPI155, to enable for other
-				// KPI's,
-				// add the column in KPIExcelColumn
-				List<String> sprintStatusList = Arrays.asList(CommonConstant.ACTIVE, CommonConstant.FUTURE);
-				excelData.setSprintName(StringUtils.isNotEmpty(jiraIssue.getSprintName())
-						&& StringUtils.isNotEmpty(jiraIssue.getSprintAssetState())
-						&& sprintStatusList.contains(jiraIssue.getSprintAssetState()) ? jiraIssue.getSprintName()
-								: "-");
-				// DTS-26123 end
 				String date = Constant.EMPTY_STRING;
 				if (jiraIssue.getCreatedDate() != null) {
 					date = DateUtil.dateTimeConverter(jiraIssue.getCreatedDate(), DATE_FORMAT_PRODUCTION_DEFECT_AGEING,
@@ -1534,4 +1524,39 @@ public class KPIExcelUtility {
 		return (double) Math.round(value * 100) / 100;
 	}
 
+	public static void populateBacklogDefectCountExcelData(List<JiraIssue> jiraIssues,
+			List<KPIExcelData> kpiExcelData) {
+		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			jiraIssues.forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				Map<String, String> issueDetails = new HashMap<>();
+				issueDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setIssueID(issueDetails);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				excelData.setIssueType(jiraIssue.getOriginalType());
+				populateAssignee(jiraIssue, excelData);
+				excelData.setPriority(jiraIssue.getPriority());
+				excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());
+				List<String> sprintStatusList = Arrays.asList(CommonConstant.ACTIVE, CommonConstant.FUTURE);
+				excelData.setSprintName(StringUtils.isNotEmpty(jiraIssue.getSprintName())
+						&& StringUtils.isNotEmpty(jiraIssue.getSprintAssetState())
+						&& sprintStatusList.contains(jiraIssue.getSprintAssetState()) ? jiraIssue.getSprintName()
+								: "-");
+				String date = Constant.EMPTY_STRING;
+				if (jiraIssue.getCreatedDate() != null) {
+					date = DateUtil.dateTimeConverter(jiraIssue.getCreatedDate(), DATE_FORMAT_PRODUCTION_DEFECT_AGEING,
+							DateUtil.DISPLAY_DATE_FORMAT);
+				}
+				excelData.setCreatedDate(date);
+				String updateDate = Constant.EMPTY_STRING;
+				if (jiraIssue.getUpdateDate() != null) {
+					updateDate = DateUtil.dateTimeConverter(jiraIssue.getUpdateDate(),
+							DATE_FORMAT_PRODUCTION_DEFECT_AGEING, DateUtil.DISPLAY_DATE_FORMAT);
+				}
+				excelData.setUpdatedDate(updateDate);
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
 }
