@@ -160,33 +160,6 @@ public class BitBucketServiceR {
 	}
 
 	/**
-	 * Calculates aggregate metrics.
-	 * 
-	 * @param kpiRequest
-	 * @param responseList
-	 * @param kpiElement
-	 * @param treeAggregatorDetail
-	 * @throws ApplicationException
-	 */
-//	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-//			KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-//
-//		BitBucketKPIService<?, ?, ?> bitBucketKPIService = null;
-//		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
-//		bitBucketKPIService = BitBucketKPIServiceFactory.getBitBucketKPIService(kpi.name());
-//
-//		long startTime = System.currentTimeMillis();
-//
-//		TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-//				.clone(treeAggregatorDetail);
-//		responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
-//
-//		long procesTime = System.currentTimeMillis() - startTime;
-//		log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), procesTime);
-//
-//	}
-
-	/**
 	 * Cache response.
 	 * 
 	 * @param kpiRequest
