@@ -74,6 +74,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -84,8 +85,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * kpi of iteration dashboard, Daily Standup View which runs for the
- * active sprint, and return data for both the screens
+ * kpi of iteration dashboard, Daily Standup View which runs for the active
+ * sprint, and return data for both the screens
  * 
  * @author shi6
  */
@@ -107,7 +108,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 	private static final String HISTORY_ISSUES = "historyIssue";
 	private static final String EPICS = "epics";
+	private static final String FILTER_BUTTON = "button";
 	private static final String FILTER_INPROGRESS_SCR2 = "In Progress";
+	private static final String FILTER_OPEN_SCR2 = "Open";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -120,6 +123,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
+
+	@Autowired
+	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	/**
 	 * {@inheritDoc}
@@ -165,7 +171,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 
 			Map<String, Set<String>> parentChildRelation = findLinkedSubTasks(totalIssueList, fieldMapping);
 
-			List<Filter> filtersList = new ArrayList<>();
 			Map<String, String> userWiseRole = new HashMap<>();
 			Map<String, StandUpViewKpiData> userWiseRemainingCapacity = new HashMap<>();
 			Map<String, StandUpViewKpiData> remianingWork = new HashMap<>();
@@ -190,11 +195,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			calculateAssigneeWiseRemainingEstimate(assigneeWiseNotCompleted, remianingWork, assigneeWiseRemaingEstimate,
 					estimationCriteria);
 
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI154())) {
-				Map<String, List<String>> inProgressFilters = new HashMap<>();
-				inProgressFilters.put(FILTER_INPROGRESS_SCR2, fieldMapping.getJiraStatusForInProgressKPI154());
-				kpiElement.setStandUpStatusFilter(inProgressFilters);
-			}
 			// Calculate Delay
 			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper.calculatePotentialDelay(
 					sprintDetails, notCompletedJiraIssue, fieldMapping.getJiraStatusForInProgressKPI154());
@@ -239,14 +239,41 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				userWiseCardDetail.setAssigneeName(assigneeName);
 				userWiseCardDetails.add(userWiseCardDetail);
 			}
-			createRoleFilter(filtersList, allRoles);
+			// set filter on Second Screen
+			setFilters(kpiElement, fieldMapping, allRoles);
 			kpiElement.setIssueData(new HashSet<>(mapOfModalObject.values()));
 			userWiseCardDetails.sort(Comparator.comparing(UserWiseCardDetail::getAssigneeName));
 			kpiElement.setModalHeads(KPIExcelColumn.DAILY_STANDUP_VIEW.getColumns());
-			kpiElement.setFilterData(filtersList);
+
 		}
 		kpiElement.setTrendValueList(userWiseCardDetails);
 
+	}
+
+	/*
+	 * filter Status on Second Screen
+	 */
+	private void setFilters(KpiElement kpiElement, FieldMapping fieldMapping, Set<String> allRoles) {
+		List<Filter> firstScreenFilter = new ArrayList<>();
+		// Role Filter on First Screen
+		List<String> values = allRoles.stream().sorted().collect(Collectors.toList());
+		Filter filter = new Filter("role", "singleSelect", values);
+		firstScreenFilter.add(filter);
+
+		// Filters on Second Screen
+		List<Filter> secondScreenFilters = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI154())) {
+			Filter inProgressFilters = new Filter(FILTER_INPROGRESS_SCR2,
+					fieldMapping.getJiraStatusForInProgressKPI154(), FILTER_BUTTON, true, 1);
+			secondScreenFilters.add(inProgressFilters);
+		}
+		if (CollectionUtils.isNotEmpty(fieldMapping.getStoryFirstStatusKPI154())) {
+			Filter openFilter = new Filter(FILTER_OPEN_SCR2, fieldMapping.getStoryFirstStatusKPI154(), FILTER_BUTTON,
+					false, null);
+			secondScreenFilters.add(openFilter);
+		}
+		kpiElement.setFilterData(firstScreenFilter);
+		kpiElement.setStandUpStatusFilter(secondScreenFilters);
 	}
 
 	/**
@@ -290,6 +317,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
 							sprintDetails, null, filteredAllJiraIssue);
 
+					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(
+							totalIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
+
 					Set<JiraIssue> notCompletedJiraIssues = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getNotCompletedIssues(), filteredNotCompletedJiraIssue);
@@ -297,17 +327,22 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())) {
 						List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
 						// combined both sub-tasks and totalIssuelist
-						totalIssueList.addAll(
-								jiraIssueRepository.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(
-										basicProjectConfigId.toString(), new HashSet<>(allIssues), taskType));
+						Set<JiraIssue> subTasksJiraIssue = jiraIssueRepository
+								.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(
+										basicProjectConfigId.toString(), new HashSet<>(allIssues), taskType);
+						if (CollectionUtils.isNotEmpty(subTasksJiraIssue)) {
+							totalIssueList.addAll(subTasksJiraIssue);
+							issueHistoryList
+									.addAll(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigId(
+											subTasksJiraIssue.stream().map(JiraIssue::getNumber)
+													.collect(Collectors.toSet()),
+											basicProjectConfigId.toString()));
+						}
 					}
 
 					Set<JiraIssue> epics = new HashSet<>(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
 							totalIssueList.stream().map(JiraIssue::getEpicLinked).collect(Collectors.toList()),
 							basicProjectConfigId.toString()));
-
-					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(
-							totalIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
 
 					// get sprint start and sprint end time
 					resultListMap.put(SPRINT, sprintDetails);
@@ -623,15 +658,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			iterationKpiModalValue.setRemainingEstimateInSeconds((long) (jiraIssue.getRemainingEstimateMinutes() * 60));
 		if (jiraIssue.getOriginalEstimateMinutes() != null)
 			iterationKpiModalValue.setOriginalEstimateInSeconds((long) (jiraIssue.getOriginalEstimateMinutes() * 60));
-	}
-
-	private void createRoleFilter(List<Filter> filtersList, Set<String> allRoles) {
-		List<String> values = allRoles.stream().sorted().collect(Collectors.toList());
-		Filter filter = new Filter();
-		filter.setFilterKey("role");
-		filter.setFilterType("singleSelect");
-		filter.setOptions(values);
-		filtersList.add(filter);
 	}
 
 	/**

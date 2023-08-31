@@ -134,6 +134,11 @@ public class JiraIssueDataFactory {
 				.collect(Collectors.toList());
 	}
 
+	public List<JiraIssue> findIssueByOriginalTypeName(List<String> typeName) {
+		return jiraIssues.stream().filter(jiraIssue -> typeName.contains(jiraIssue.getOriginalType()))
+				.collect(Collectors.toList());
+	}
+
 	public Set<String> getUniqueIssueTypes() {
 		Set<String> types = new HashSet<>();
 		jiraIssues.forEach(jiraIssue -> types.add(jiraIssue.getTypeName()));

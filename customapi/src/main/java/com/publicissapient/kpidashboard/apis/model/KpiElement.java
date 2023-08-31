@@ -115,7 +115,7 @@ public class KpiElement implements Serializable { // NOPMD
 	//used by first scrren of DSV for filtering
 	private transient List<Filter> filterData;
 	//used by second screen of DSV for filtering on status
-	private transient Map<String,List<String>> standUpStatusFilter;
+	private transient List<Filter> standUpStatusFilter;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -850,11 +850,11 @@ public class KpiElement implements Serializable { // NOPMD
 
 	public void setFilterData(List<Filter> filterData) { this.filterData = filterData; }
 
-	public Map<String, List<String>> getStandUpStatusFilter() {
+	public List<Filter> getStandUpStatusFilter() {
 		return standUpStatusFilter;
 	}
 
-	public void setStandUpStatusFilter(Map<String, List<String>> standUpStatusFilter) {
+	public void setStandUpStatusFilter(List<Filter> standUpStatusFilter) {
 		this.standUpStatusFilter = standUpStatusFilter;
 	}
 
