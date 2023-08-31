@@ -38,4 +38,6 @@ public class Branches {
     private double grade;
     private double average;
     private double hours;
+    @JsonProperty("lines_change")
+    private long linesChanged;
 }

@@ -168,9 +168,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 
 						createDateLabelWiseMap(repoToolKpiMetricResponseCommitList,
 								repo.getRepositoryName(), repo.getBranch(), dateWiseCommitList);
-						if (MapUtils.isNotEmpty(dateWiseCommitList)) {
-							aggCommitCountForRepo.putAll(dateWiseCommitList);
-						}
+						aggCommitCount(aggCommitCountForRepo,dateWiseCommitList);
 						dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, excelDataLoader,
 								projectName, kpiRequest);
 					}
@@ -249,6 +247,17 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		return currentDate;
 	}
 
+	/**
+	 *
+	 * @param aggCommitCountForRepo
+	 * @param commitCountForRepo
+	 */
+	private void aggCommitCount(Map<String, Long> aggCommitCountForRepo, Map<String, Long> commitCountForRepo) {
+		if (MapUtils.isNotEmpty(commitCountForRepo)) {
+			commitCountForRepo.forEach((key, value) -> aggCommitCountForRepo.merge(key, value, Long::sum));
+		}
+	}
+
 	private void createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesCommit,
 			String repoName, String branchName, Map<String, Long> dateWiseCommitRepoTools) {
 
@@ -289,7 +298,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		return null;
+		return new HashMap<>();
 	}
 
 	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,

@@ -2350,8 +2350,6 @@ db.getCollection('field_mapping_structure').insert(
     print("Field Mapping Structure already executed. Skipping...");
   }
 
-
-
 //DTS-25767 Commitment Reliability - Add Filter by Issue type (add one column for issue type in excel)
  db.kpi_column_configs.updateOne(
    { "kpiId": "kpi72" },
@@ -2522,6 +2520,684 @@ db.getCollection('metadata_identifier').updateMany(
    }}
 );
 
+//updating metadata_identifier
+db.getCollection('metadata_identifier').update(
+     { "templateCode": "7" }, // Match documents with templateCode equal to "7"
+     {
+     $set:
+     {
+              "tool": "Jira",
+              "templateName": "Standard Template",
+              "templateCode": "7",
+              "isKanban": false,
+              "disabled": false,
+              "issues": [
+                  {
+                      "type": "jiradefecttype",
+                      "value": [
+                          "Defect",
+                          "Bug"
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueTypeNames",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request",
+                          "Defect",
+                          "Bug",
+                          "Epic"
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueEpicType",
+                      "value": [
+                          "Epic"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectInjectionIssueTypeKPI14",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueTypeKPI35",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraTestAutomationIssueType",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraSprintVelocityIssueTypeKPI138",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraSprintCapacityIssueTypeKpi46",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectCountlIssueTypeKPI28",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectCountlIssueTypeKPI36",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueTypeKPI3",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+
+                      ]
+                  },
+                  {
+                      "type": "jiraQAKPI111IssueType",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraStoryIdentificationKPI129",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraStoryIdentificationKpi40",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraTechDebtIssueType",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraKPI82StoryIdentification",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
+                      "type": "jiraKPI135StoryIdentification",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  }
+              ],
+              "customfield": [
+                  {
+                      "type": "jiraStoryPointsCustomField",
+                      "value": [
+                          "Story Points"
+                      ]
+                  },
+                  {
+                      "type": "epicCostOfDelay",
+                      "value": [
+                          "Story Points"
+                      ]
+                  },
+                  {
+                      "type": "epicRiskReduction",
+                      "value": [
+                          "Risk Reduction-Opportunity Enablement Value"
+                      ]
+                  },
+                  {
+                      "type": "epicUserBusinessValue",
+                      "value": [
+                          "User-Business Value"
+                      ]
+                  },
+                  {
+                      "type": "epicWsjf",
+                      "value": [
+                          "WSJF"
+                      ]
+                  },
+                  {
+                      "type": "epicTimeCriticality",
+                      "value": [
+                          "Time Criticality"
+                      ]
+                  },
+                  {
+                      "type": "epicJobSize",
+                      "value": [
+                          "Job Size"
+                      ]
+                  },
+                 {
+                     "type": "epicLink",
+                     "value": [
+                         "Epic Link"
+                     ]
+                 },
+                  {
+                      "type": "rootcause",
+                      "value": [
+                          "Root Cause"
+                      ]
+                  },
+                  {
+                      "type": "sprintName",
+                      "value": [
+                          "Sprint"
+                      ]
+                  }
+              ],
+              "workflow": [
+                  {
+                      "type": "storyFirstStatusKPI148",
+                      "value": [
+                          "Open"
+                      ]
+                  },
+                  {
+                      "type": "storyFirstStatusKPI3",
+                      "value": [
+                          "Open"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForQaKPI148",
+                      "value": [
+                          "In Testing"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForQaKPI135",
+                      "value": [
+                          "In Testing"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForQaKPI82",
+                      "value": [
+                          "In Testing"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForDevelopmentKPI82",
+                      "value": [
+                          "Implementing",
+                          "In Development",
+                          "In Analysis"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForDevelopmentKPI135",
+                      "value": [
+                          "Implementing",
+                          "In Development",
+                          "In Analysis"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectCreatedStatusKPI14",
+                      "value": [
+                          "Open"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI152",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI151",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI28",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI37",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI35",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI82",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI135",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI133",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusRCAKPI36",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusKPI14",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRejectionStatusQAKPI111",
+                      "value": [
+                          "Rejected"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectRemovalStatusKPI34",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Ready for Release",
+                          "Done"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectClosedStatusKPI137",
+                      "value": [
+                          "Closed",
+                          "CLOSED"
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueDeliverdStatusKPI138",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Ready for Release",
+                          "Done"
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueDeliverdStatusKPI126",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Ready for Release",
+                          "Done"
+                      ]
+                  },
+                  {
+                      "type": "jiraIssueDeliverdStatusKPI82",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Ready for Release",
+                          "Done"
+                      ]
+                  },
+                  {
+                      "type": "jiraDorKPI3",
+                      "value": [
+                          "Ready for Sprint Planning"
+
+                      ]
+                  },
+                  {
+                      "type": "jiraLiveStatusKPI3",
+                      "value": [
+                          "Live"
+                      ]
+                  },
+                  {
+                      "type": "jiraLiveStatusKPI127",
+                      "value": [
+                          "Live"
+                      ]
+                  },
+                  {
+                      "type": "jiraLiveStatusKPI152",
+                      "value": [
+                          "Live"
+                      ]
+                  },
+                  {
+                      "type": "jiraLiveStatusKPI151",
+                      "value": [
+                          "Live"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI28",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI37",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI35",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI135",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI82",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI133",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionRCAKPI36",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionQAKPI111",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "resolutionTypeForRejectionKPI14",
+                      "value": [
+                          "Invalid",
+                          "Duplicate",
+                          "Unrequired",
+                          "Cannot Reproduce",
+                          "Won't Fix"
+                      ]
+                  },
+                  {
+                      "type": "issueStatusExcluMissingWorkKPI124",
+                      "value": [
+                          "Open"
+                      ]
+                  },
+                  {
+                      "type": "jiraDefectDroppedStatusKPI127",
+                      "value": [
+                          "Dropped",
+                          "Canceled"
+                      ]
+                  },
+                  {
+                      "type": "jiraBlockedStatusKPI131",
+                      "value": [
+                          "On Hold",
+                          "Blocked"
+                      ]
+                  },
+                  {
+                      "type": "jiraWaitStatusKPI131",
+                      "value": [
+                          "Ready for Testing",
+                          "Code Review"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI148",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI122",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI145",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI125",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI128",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI123",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraStatusForInProgressKPI119",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodKPI14",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodQAKPI111",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodKPI3",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodKPI127",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodKPI152",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodKPI151",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  },
+                  {
+                      "type": "jiraDodKPI37",
+                      "value": [
+                          "Closed",
+                          "Resolved",
+                          "Ready for Delivery",
+                          "Done",
+                          "Ready for Sign-off"
+                      ]
+                  }
+              ]
+     },
+     $unset: {
+         "valuestoidentify":1
+     }
+     },
+     { multi: false }
+);
+
 //DTS-26121 Enchancement of Quality Status Overlay
 db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
 {$set:{"kpiColumnDetails" : [
@@ -2588,7 +3264,6 @@ db.kpi_column_configs.updateMany({"kpiId" : "kpi133"},
 	]}});
 
 //---- KPI info update for KPI 137 (Defect Reopen Rate)
-
 db.getCollection('kpi_master').updateOne(
   { "kpiId": "kpi137" },
   { $set: { "kpiInfo.definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available." } }
@@ -2608,17 +3283,6 @@ db.action_policy_rule.updateOne({
         "lastModifiedDate": new Date(),
         "isDeleted": false
     }
-});
-
-//we dont need to keep these on processor side
-db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraDefectDroppedStatus"
-});
-db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraStoryIdentification"
-});
-db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraDod"
 });
 
 //DTS-27561-Mapping name to be corrected 'Priority to be Excluded'
@@ -2679,7 +3343,7 @@ var fieldNameToUpdate = "jiradefecttype";
     "tooltip.definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
     } },
     { multi: false }
-  );.
+  );
 
   var fieldNameToUpdate = "jiraDefectDroppedStatusKPI127";
   db.getCollection('field_mapping_structure').update(
@@ -2728,13 +3392,14 @@ var fieldNameToUpdate = "jiradefecttype";
 
 //dts-27545_Unrequired fields should be removed from DRE KPI field mapping
 db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraDefectRemovalIssueTypeKPI34"
-});
-db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraDefectRejectionStatusKPI34"
-});
-db.field_mapping_structure.deleteMany({
-    "fieldName": "resolutionTypeForRejectionKPI34"
+    $or: [
+        { "fieldName": "jiraDefectRemovalIssueTypeKPI34" },
+        { "fieldName": "jiraDefectRejectionStatusKPI34" },
+        { "fieldName": "resolutionTypeForRejectionKPI34" },
+        { "fieldName": "jiraDefectDroppedStatus" },
+        { "fieldName": "jiraStoryIdentification" },
+        { "fieldName": "jiraDod" }
+    ]
 });
 
 const fieldMappings = db.field_mapping.find({});
@@ -2769,60 +3434,6 @@ db.getCollection('field_mapping_structure').insertMany([
 }
 ]);
 
-//---------7.4.0 changes----------------------------------------------------------------------
-db.getCollection('field_mapping_structure').deleteOne(
-{
-    "fieldName": "jiraDevDueDateCustomField",
-    "fieldLabel": "Dev Due Date",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "This field is to track dev due date of issues tagged in the iteration."
-    }
-});
-
-const fieldMappingField = ["jiraDevDueDateField"];
-var jiraDevDueDateField = db.getCollection('field_mapping_structure').find( {fieldName: { $in: fieldMappingField }}).toArray();
-if (jiraDevDueDateField.length === 0) {
-db.getCollection('field_mapping_structure').insertOne(
-{
-     "fieldName": "jiraDevDueDateField",
-     "fieldLabel": "Dev Due Date",
-     "fieldType": "radiobutton",
-     "section": "Custom Fields Mapping",
-     "tooltip": {
-       "definition": "This field is to track dev due date of issues tagged in the iteration."
-     },
-     "options": [
-       {
-         "label": "Custom Field",
-         "value": "CustomField"
-       },
-       {
-         "label": "Due Date",
-         "value": "Due Date"
-       }
-     ],
-     "nestedFields": [
-       {
-         "fieldName": "jiraDevDueDateCustomField",
-         "fieldLabel": "Dev Due Date Custom Field",
-         "fieldType": "text",
-         "fieldCategory": "fields",
-         "filterGroup": [
-           "CustomField"
-         ],
-         "tooltip": {
-           "definition": "This field is to track dev due date of issues tagged in the iteration."
-         }
-       }
-     ]
-   }
-);
-}
-])
-
 // --- Backlog Readiness KPI Fieldmapping Enhancement (DTS-27535)
 
 var fieldNameToUpdate = "readyForDevelopmentStatusKPI138";
@@ -2845,3 +3456,975 @@ db.field_mapping.find({ readyForDevelopmentStatusKPI138: { $type: 2 } }).forEach
         }
     );
 });
+
+//------------------------- 7.7.0 changes----------------------------------------------------------------------------------
+// kpi issue type mapping for Quality status  ---------------------------------------------------------------------------
+// add Enable Notification option
+// PI predictability field mapping structure
+
+db.getCollection('field_mapping_structure').insertMany([
+    {
+            "fieldName": "jiraItrQSIssueTypeKPI133",
+            "fieldLabel": "Issue types which will have linked defects",
+            "fieldType": "chips",
+            "fieldCategory": "Issue_Type",
+            "section": "Issue Types Mapping",
+            "tooltip": {
+                "definition": "Consider issue types which have defects tagged to them"
+            }
+    },
+    {
+            "fieldName": "notificationEnabler",
+            "fieldLabel": "Processor Failure Notification",
+            "fieldType": "radiobutton",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                 "definition": "On/Off notification in case processor failure."
+            },
+            "options": [{
+                 "label": "On",
+                 "value": "On"
+            },
+            {
+                 "label": "Off",
+                 "value": "Off"
+            }
+            ]
+    },
+    {
+            "fieldName": "epicPlannedValue",
+            "fieldLabel": "Custom field for Epic Planned Value",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+        }
+        },
+    {
+            "fieldName": "epicAchievedValue",
+            "fieldLabel": "Custom field for Epic Achieved Value",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+        }
+        },
+    {
+        "fieldName": "jiraIssueEpicTypeKPI153",
+        "fieldLabel": "Epic Issue Type",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "This field is used to identify Epic Issue type.",
+        }
+        },
+        {
+            "fieldName": "epicLink",
+            "fieldLabel": "Custom field for Epic Link",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "JIRA applications let you add custom fields in addition to the built-in fields.Provide value of Epic Linkage to the story/defect<br />Example:customfield_11111<hr>"
+            }
+        }
+
+])
+
+// PI predictability KPI column config
+db.getCollection('kpi_column_configs').insertOne({
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi153',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Project Name',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		},  {
+                                 			columnName: 'Epic ID',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Epic Name',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Status',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'PI Name',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Planned Value',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Achieved Value',
+                                 			order: 7,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}
+                                 		]
+});
+
+// delete dora kpi
+db.kpi_category_mapping.deleteMany({
+  "kpiId": {
+    "$in": ["kpi116", "kpi118"]
+  }
+});
+
+//adding dailyStandup kpi
+//added PI Predictability KPI for categoryThree board
+// dora kpi master changes
+db.kpi_master.bulkWrite([{
+  updateMany: { //changing dora kpi groupId
+    filter: {
+      kpiId: {
+        $in: ["kpi116", "kpi118"]
+      }
+    },
+    update: {
+      $set: {
+        groupId: 14
+      }
+    }
+  }
+}, { // change the x-axis of deployment freq
+  updateOne: {
+    filter: {
+      kpiId: "kpi118"
+    },
+    update: {
+      $set: {
+        xAxisLabel: "Weeks"
+      }
+    }
+  }
+}, { // adding kpi category dora
+  updateMany: {
+    filter: {
+      kpiId: {
+        $in: ["kpi116", "kpi118"]
+      }
+    },
+    update: {
+      $set: {
+        kpiCategory: "Dora"
+      }
+    }
+  }
+}, {
+  insertOne: {
+    document: {
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "maxValue": "200",
+      "kpiUnit": "",
+      "isDeleted": "False",
+      "defaultOrder": 29,
+      "kpiSource": "Jira",
+      "groupId": 4,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "multipleline",
+      "kpiInfo": {
+        "definition": "PI predictability is calculated by the sum of the actual value achieved against the planned value at the beginning of the PI",
+        "details": [{
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#PI-Predictability"
+          }
+        }]
+      },
+      "xAxisLabel": "PIs",
+      "yAxisLabel": "Business Value",
+      "isPositiveTrend": true,
+      "showTrend": true,
+      "aggregationCriteria": "sum",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": false
+    },
+  }
+}, {
+  insertOne: {
+    document: {
+      "kpiId": "kpi154",
+      "kpiName": "Daily Standup View",
+      "maxValue": "",
+      "isDeleted": "False",
+      "defaultOrder": 8,
+      "kpiCategory": "Iteration",
+      "kpiSubCategory": "Daily Standup",
+      "kpiSource": "Jira",
+      "groupId": 13,
+      "thresholdValue": "",
+      "kanban": false,
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiselectdropdown",
+      "kpiWidth": 100,
+      "calculateMaturity": false
+    }
+  }
+}]);
+
+// Note : below code only For Opensource project
+// PI predictability KPI category mapping
+db.getCollection('kpi_category_mapping').insertOne( {
+                                                    		"kpiId": "kpi153",
+                                                    		"categoryId": "categoryThree",
+                                                    		"kpiOrder": 4,
+                                                    		"kanban": false
+                                                    	});
+
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+// ---- New FieldMapping Field added to consider subtask defect not tagged in a release ---------------------------------------------------------------------------
+db.getCollection('field_mapping_structure').insertMany([
+    {
+            "fieldName": "jiraSubTaskDefectType",
+            "fieldLabel": "Issue type for sub-task defect",
+            "fieldType": "chips",
+            "fieldCategory": "Issue_Type",
+            "section": "Issue Types Mapping",
+            "tooltip": {
+                "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+            }
+    }
+])
+
+
+
+
+
+//------------------------- 7.9.0 changes----------------------------------------------------------------------------------
+db.getCollection('field_mapping_structure').insertMany([
+    {
+        "fieldName": "jiraStatusStartDevelopmentKPI154",
+        "fieldLabel": "Start of Development",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status from workflow on which issue is started development. <br> Example: In Analysis<hr>"
+        }
+    },
+    {
+        "fieldName": "jiraDevDoneStatusKPI154",
+        "fieldLabel": "Status to identify Dev completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
+        }
+    },
+    {
+        "fieldName": "jiraQADoneStatusKPI154",
+        "fieldLabel": "Status to identify QA completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status that confirms that the QA work is completed and an issue can be ready for signoff/close",
+        }
+    },
+    {
+        "fieldName": "jiraIterationCompletionStatusKPI154",
+        "fieldLabel": "Status to identify completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
+        }
+    },
+    {
+        "fieldName": "jiraStatusForInProgressKPI154",
+        "fieldLabel": "Status to identify In Progress issues",
+        "section": "WorkFlow Status Mapping",
+        "fieldType": "text",
+        "readOnly": true,
+        "tooltip": {
+            "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI",
+        }
+    },
+   {
+   "fieldName": "jiraSubTaskIdentification",
+   "fieldLabel": "Sub-Task Issue Types",
+   "fieldType": "chips",
+   "fieldCategory": "Issue_Type",
+   "section": "Issue Types Mapping",
+   "tooltip": {
+   "definition": "Any issue type mentioned will be considered as sub-task linked with story"
+   }
+   }
+])
+// Initialize an array to store the bulk write operations
+var metaDataOperations = [];
+
+// Add the first update operation to the bulk operations array
+metaDataOperations.push({
+   updateMany: {
+      filter: {
+         $or: [
+            { "templateCode": "8" },
+            { "tool": "Azure" }
+         ]
+      },
+      update: {
+         $push: {
+            "workflow": {
+               "type": "firstDevstatus",
+               "value": [
+                  "In Analysis",
+                  "IN ANALYSIS",
+                  "In Development",
+                  "In Progress"
+               ]
+            }
+         }
+      }
+   }
+});
+
+metaDataOperations.push({
+   updateMany: {
+      filter: {
+         "templateCode": "7"
+      },
+      update: {
+         $push: {
+            "workflow": {
+               "type": "jiraStatusForInProgressKPI154",
+               "value": [
+                  "In Analysis",
+                  "In Development",
+                  "In Progress"
+               ]
+            }
+         }
+      }
+   }
+});
+
+metaDataOperations.push({
+   updateMany: {
+      filter: {
+         "templateCode": "7"
+      },
+      update: {
+         $push: {
+            "workflow": {
+               "type": "jiraStatusStartDevelopmentKPI154",
+               "value": [
+                  "In Analysis",
+                  "IN ANALYSIS",
+                  "In Development",
+                  "In Progress"
+               ]
+            }
+         }
+      }
+   }
+});
+
+// Execute the bulk write operations
+db.getCollection('metadata_identifier').bulkWrite(metaDataOperations);
+
+
+// RepoTool
+// added new repo tools kpi for developer tab
+const kpiIdsToCheck = ["kpi157", "kpi158", "kpi159", "kpi160"];
+var kpiData = db
+  .getCollection("kpi_master")
+  .find({ kpiId: { $in: kpiIdsToCheck } })
+  .toArray();
+var kpiColumnData = db
+  .getCollection("kpi_column_configs")
+  .find({ kpiId: { $in: kpiIdsToCheck } })
+  .toArray();
+
+if (kpiData.length === 0) {
+  db.getCollection("kpi_master").insertMany([
+    {
+      kpiId: "kpi157",
+      kpiName: "Check-Ins & Merge Requests",
+      maxValue: "10",
+      kpiUnit: "MRs",
+      isDeleted: "False",
+      defaultOrder: 1,
+      kpiSource: "BitBucket",
+      groupId: 1,
+      thresholdValue: "55",
+      kanban: false,
+      chartType: "grouped_column_plus_line",
+      kpiInfo: {
+        definition:
+          "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down. NUMBER OF MERGE REQUESTS when looked at along with commits highlights the efficiency of the review process",
+        details: [
+          {
+            type: "paragraph",
+            value:
+              "It is calculated as a Count. Higher the count better is the ‘Speed’",
+          },
+          {
+            type: "paragraph",
+            value:
+              "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive",
+          },
+        ],
+        maturityLevels: [
+          {
+            level: "M5",
+            bgColor: "#6cab61",
+            range: "> 16",
+          },
+          {
+            level: "M4",
+            bgColor: "#AEDB76",
+            range: "8-16",
+          },
+          {
+            level: "M3",
+            bgColor: "#eff173",
+            range: "4-8",
+          },
+          {
+            level: "M2",
+            bgColor: "#ffc35b",
+            range: "2-4",
+          },
+          {
+            level: "M1",
+            bgColor: "#F06667",
+            range: "0-2",
+          },
+        ],
+      },
+      xAxisLabel: "Days",
+      yAxisLabel: "Count",
+      lineLegend: "Merge Requests",
+      barLegend: "Commits",
+      isPositiveTrend: true,
+      showTrend: true,
+      kpiFilter: "dropDown",
+      aggregationCriteria: "average",
+      isAdditionalFilterSupport: false,
+      calculateMaturity: true,
+      hideOverallFilter: true,
+      maturityRange: ["-2", "2-4", "4-8", "8-16", "16-"],
+      isRepoToolKpi: true,
+      kpiCategory: "Developer",
+    },
+    {
+      kpiId: "kpi158",
+      kpiName: "Mean Time To Merge",
+      maxValue: "10",
+      kpiUnit: "Hours",
+      isDeleted: "False",
+      defaultOrder: 2,
+      groupId: 1,
+      kpiSource: "BitBucket",
+      thresholdValue: "55",
+      kanban: false,
+      chartType: "line",
+      kpiInfo: {
+        definition:
+          "MEAN TIME TO MERGE measures the efficiency of the code review process in a team",
+        details: [
+          {
+            type: "paragraph",
+            value:
+              "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’",
+          },
+          {
+            type: "paragraph",
+            value:
+              "A progress indicator shows trend of Mean time to merge in last 2 weeks. A downward trend is considered positive",
+          },
+          {
+            type: "paragraph",
+            value:
+              "Maturity of the KPI is calculated based on the average of the last 5 weeks",
+          },
+        ],
+        maturityLevels: [
+          {
+            level: "M5",
+            bgColor: "#6cab61",
+            range: "<4 Hours",
+          },
+          {
+            level: "M4",
+            bgColor: "#AEDB76",
+            range: "4-8 Hours",
+          },
+          {
+            level: "M3",
+            bgColor: "#eff173",
+            range: "8-16 Hours",
+          },
+          {
+            level: "M2",
+            bgColor: "#ffc35b",
+            range: "16-48 Hours",
+          },
+          {
+            level: "M1",
+            bgColor: "#F06667",
+            range: ">48 Hours",
+          },
+        ],
+      },
+      xAxisLabel: "Weeks",
+      yAxisLabel: "Count(Hours)",
+      isPositiveTrend: false,
+      showTrend: true,
+      kpiFilter: "dropDown",
+      aggregationCriteria: "average",
+      isAdditionalFilterSupport: false,
+      calculateMaturity: true,
+      hideOverallFilter: true,
+      maturityRange: ["-16", "16-8", "8-4", "4-2", "2-"],
+      isRepoToolKpi: true,
+      kpiCategory: "Developer",
+    },
+    {
+      kpiId: "kpi159",
+      kpiName: "Number of Check-ins",
+      maxValue: "10",
+      kpiUnit: "check-ins",
+      isDeleted: "False",
+      defaultOrder: 1,
+      groupId: 1,
+      kpiSource: "BitBucket",
+      thresholdValue: "55",
+      kanban: true,
+      chartType: "line",
+      kpiInfo: {
+        definition:
+          "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down.",
+        details: [
+          {
+            type: "paragraph",
+            value:
+              "It is calculated as a Count. Higher the count better is the ‘Speed’",
+          },
+          {
+            type: "paragraph",
+            value:
+              "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive.",
+          },
+          {
+            type: "paragraph",
+            value:
+              "Maturity of the KPI is calculated based on the latest value",
+          },
+        ],
+        maturityLevels: [
+          {
+            level: "M5",
+            bgColor: "#6cab61",
+            range: ">16",
+          },
+          {
+            level: "M4",
+            bgColor: "#AEDB76",
+            range: "8-16",
+          },
+          {
+            level: "M3",
+            bgColor: "#eff173",
+            range: "4-8",
+          },
+          {
+            level: "M2",
+            bgColor: "#ffc35b",
+            range: "2-4",
+          },
+          {
+            level: "M1",
+            bgColor: "#F06667",
+            range: "0-2",
+          },
+        ],
+      },
+      xAxisLabel: "Weeks",
+      yAxisLabel: "Count",
+      isPositiveTrend: true,
+      showTrend: true,
+      kpiFilter: "dropDown",
+      aggregationCriteria: "sum",
+      isAdditionalFilterSupport: false,
+      calculateMaturity: true,
+      hideOverallFilter: true,
+      maturityRange: ["-2", "2-4", "4-8", "8-16", "16-"],
+      isRepoToolKpi: true,
+      kpiCategory: "Developer",
+    },
+    {
+      kpiId: "kpi160",
+      kpiName: "Pickup Time",
+      maxValue: "10",
+      kpiUnit: "Hours",
+      isDeleted: "False",
+      defaultOrder: 3,
+      groupId: 1,
+      kpiSource: "BitBucket",
+      thresholdValue: "20",
+      kanban: false,
+      chartType: "line",
+      kpiInfo: {
+        definition:
+          "Pickup time measures the time a pull request waits for someone to start reviewing it. Low pickup time represents strong teamwork and a healthy review",
+        details: [
+          {
+            type: "paragraph",
+            value:
+              "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’",
+          },
+          {
+            type: "paragraph",
+            value:
+              "A progress indicator shows trend of Mean time to merge in last 2 weeks. A downward trend is considered positive",
+          },
+          {
+            type: "paragraph",
+            value:
+              "Maturity of the KPI is calculated based on the average of the last 5 weeks",
+          },
+        ],
+        maturityLevels: [
+          {
+            level: "M5",
+            bgColor: "#6cab61",
+            range: "<4 Hours",
+          },
+          {
+            level: "M4",
+            bgColor: "#AEDB76",
+            range: "4-8 Hours",
+          },
+          {
+            level: "M3",
+            bgColor: "#eff173",
+            range: "8-16 Hours",
+          },
+          {
+            level: "M2",
+            bgColor: "#ffc35b",
+            range: "16-48 Hours",
+          },
+          {
+            level: "M1",
+            bgColor: "#F06667",
+            range: ">48 Hours",
+          },
+        ],
+      },
+      xAxisLabel: "Weeks",
+      yAxisLabel: "Count(Hours)",
+      isPositiveTrend: false,
+      showTrend: true,
+      kpiFilter: "dropDown",
+      aggregationCriteria: "average",
+      isAdditionalFilterSupport: false,
+      calculateMaturity: true,
+      hideOverallFilter: true,
+      maturityRange: ["-16", "16-8", "8-4", "4-2", "2-"],
+      isRepoToolKpi: true,
+      kpiCategory: "Developer",
+    },
+    {
+      kpiId: "kpi162",
+      kpiName: "PR Size",
+      maxValue: "10",
+      kpiUnit: "Lines",
+      isDeleted: "False",
+      defaultOrder: 4,
+      groupId: 1,
+      kpiSource: "BitBucket",
+      thresholdValue: "20",
+      kanban: false,
+      chartType: "line",
+      kpiInfo: {
+        definition:
+          "Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time.",
+        details: [
+          {
+            type: "paragraph",
+            value:
+              "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’",
+          },
+          {
+            type: "paragraph",
+            value:
+              "A progress indicator shows trend of Mean time to merge in last 2 weeks. A downward trend is considered positive",
+          },
+          {
+            type: "paragraph",
+            value:
+              "Maturity of the KPI is calculated based on the average of the last 5 weeks",
+          },
+        ],
+        maturityLevels: [
+          {
+            level: "M5",
+            bgColor: "#6cab61",
+            range: "<4 Hours",
+          },
+          {
+            level: "M4",
+            bgColor: "#AEDB76",
+            range: "4-8 Hours",
+          },
+          {
+            level: "M3",
+            bgColor: "#eff173",
+            range: "8-16 Hours",
+          },
+          {
+            level: "M2",
+            bgColor: "#ffc35b",
+            range: "16-48 Hours",
+          },
+          {
+            level: "M1",
+            bgColor: "#F06667",
+            range: ">48 Hours",
+          },
+        ],
+      },
+      xAxisLabel: "Weeks",
+      yAxisLabel: "Count(No. of Lines)",
+      isPositiveTrend: false,
+      showTrend: true,
+      kpiFilter: "dropDown",
+      aggregationCriteria: "average",
+      isAdditionalFilterSupport: false,
+      calculateMaturity: true,
+      hideOverallFilter: true,
+      maturityRange: ["-16", "16-8", "8-4", "4-2", "2-"],
+      isRepoToolKpi: true,
+      kpiCategory: "Developer",
+    },
+  ]);
+} else {
+  print("KPI are already present in Kpi master");
+}
+
+if (kpiColumnData.length === 0) {
+  db.getCollection("kpi_column_configs").insertMany([
+    {
+      basicProjectConfigId: null,
+      kpiId: "kpi157",
+      kpiColumnDetails: [
+        {
+          columnName: "Project Name",
+          order: 0,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Repository Url",
+          order: 1,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Branch",
+          order: 2,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Day",
+          order: 3,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "No. Of Commit",
+          order: 4,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "No. of Merge",
+          order: 5,
+          isShown: true,
+          isDefault: true,
+        },
+      ],
+    },
+    {
+      basicProjectConfigId: null,
+      kpiId: "kpi158",
+      kpiColumnDetails: [
+        {
+          columnName: "Project Name",
+          order: 0,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Repository Url	",
+          order: 1,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Branch",
+          order: 2,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Weeks",
+          order: 3,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Mean Time To Merge (In Hours)",
+          order: 4,
+          isShown: true,
+          isDefault: true,
+        },
+      ],
+    },
+    {
+      basicProjectConfigId: null,
+      kpiId: "kpi159",
+      kpiColumnDetails: [
+        {
+          columnName: "Project Name",
+          order: 0,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Repository Url	",
+          order: 1,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Branch",
+          order: 2,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Days",
+          order: 3,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "No. Of Commit",
+          order: 4,
+          isShown: true,
+          isDefault: true,
+        },
+      ],
+    },
+    {
+      basicProjectConfigId: null,
+      kpiId: "kpi160",
+      kpiColumnDetails: [
+        {
+          columnName: "Project Name",
+          order: 0,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Repository Url	",
+          order: 1,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Branch",
+          order: 2,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Weeks",
+          order: 3,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Pickup Time (In Hours)",
+          order: 4,
+          isShown: true,
+          isDefault: true,
+        },
+      ],
+    },
+    {
+      basicProjectConfigId: null,
+      kpiId: "kpi162",
+      kpiColumnDetails: [
+        {
+          columnName: "Project Name",
+          order: 0,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Repository Url	",
+          order: 1,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Branch",
+          order: 2,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Weeks",
+          order: 3,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "PR Size",
+          order: 4,
+          isShown: true,
+          isDefault: true,
+        },
+      ],
+    },
+  ]);
+} else {
+  print("KPI Column Config data is already present");
+}
+
+var kpiIdsToUpdate = ["kpi84", "kpi11", "kpi65"];
+var developerTabFields = {
+  isRepoToolKpi: false,
+  kpiCategory: "Developer",
+};
+db.getCollection("kpi_master").updateMany(
+  { kpiId: { $in: kpiIdsToUpdate } },
+  { $set: developerTabFields }
+);

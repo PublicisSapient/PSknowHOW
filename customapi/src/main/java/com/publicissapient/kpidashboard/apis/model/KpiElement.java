@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.model;//NOPMD
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -109,6 +110,12 @@ public class KpiElement implements Serializable { // NOPMD
 	// For Excel column Info
 	private List<KPIExcelColumnInfo> excelColumnInfo;
 	private transient Object filterDuration;
+	//used by second screen of DSV for sending all data
+    private transient Set<IterationKpiModalValue> issueData;
+	//used by first scrren of DSV for filtering
+	private transient List<Filter> filterData;
+	//used by second screen of DSV for filtering on status
+	private transient Map<String,List<String>> standUpStatusFilter;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -553,7 +560,7 @@ public class KpiElement implements Serializable { // NOPMD
 				+ ", isDeleted=" + isDeleted + ", kpiCategory=" + kpiCategory + ", kpiInAggregatedFeed="
 				+ kpiInAggregatedFeed + ", kpiOnDashboard=" + kpiOnDashboard + ", kpiBaseLine=" + kpiBaseLine
 				+ ", kpiUnit=" + kpiUnit + ", isTrendUpOnValIncrease=" + isTrendUpOnValIncrease + ", kpiSource="
-				+ kpiSource + ", trendValueList=" + trendValueList + "]";
+				+ kpiSource + ", trendValueList=" + trendValueList + ", filterData=" + filterData;
 	}
 
 	/**
@@ -830,5 +837,27 @@ public class KpiElement implements Serializable { // NOPMD
 	public void setFilterDuration(Object filterDuration) {
 		this.filterDuration = filterDuration;
 	}
+
+	public Set<IterationKpiModalValue> getIssueData() {
+		return issueData;
+	}
+
+	public void setIssueData(Set<IterationKpiModalValue> issueData) {
+		this.issueData = issueData;
+	}
+
+	public List<Filter> getFilterData() { return filterData; }
+
+	public void setFilterData(List<Filter> filterData) { this.filterData = filterData; }
+
+	public Map<String, List<String>> getStandUpStatusFilter() {
+		return standUpStatusFilter;
+	}
+
+	public void setStandUpStatusFilter(Map<String, List<String>> standUpStatusFilter) {
+		this.standUpStatusFilter = standUpStatusFilter;
+	}
+
+
 
 }

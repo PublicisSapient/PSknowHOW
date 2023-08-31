@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
@@ -45,7 +45,7 @@ export class NavComponent implements OnInit {
   boardNameArr: any[] = [];
   boardId = 1;
   ssoLogin= environment.SSO_LOGIN;
-  visibleSidebar = true;
+  visibleSidebar;
   kanban = false;
   
   constructor(
@@ -71,6 +71,9 @@ export class NavComponent implements OnInit {
 
 
   ngOnInit() {
+    this.service.visibleSideBarObs.subscribe(value =>{
+      this.visibleSidebar = value;
+    });
     this.service.setSideNav(true);
     this.service.changedMainDashboardValueObs.subscribe((data) => {
       this.mainTab = data;
@@ -87,7 +90,7 @@ export class NavComponent implements OnInit {
   // call when user is seleting tab
   selectTab(selectedTab) {
     this.selectedTab = selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
-    if((selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog' || selectedTab.toLowerCase() === 'release') && this.selectedType.toLowerCase() !== 'scrum'){
+    if((selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog' || selectedTab.toLowerCase() === 'release' || selectedTab.toLowerCase() === 'dora') && this.selectedType.toLowerCase() !== 'scrum'){
       this.selectedType = 'Scrum';
     }
     this.setSelectedType(this.selectedType);
@@ -239,6 +242,10 @@ export class NavComponent implements OnInit {
 
   closeEditModal() {
     this.displayEditModal = false;
+  }
+
+  setVisibleSideBar(val){
+    this.service.setVisibleSideBar(val);
   }
 
 }

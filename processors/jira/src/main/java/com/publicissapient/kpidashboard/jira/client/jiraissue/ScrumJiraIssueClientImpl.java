@@ -694,6 +694,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
 
 				setEpicLinked(fieldMapping, jiraIssue, fields);
+				setSubTaskLinkage(jiraIssue, fieldMapping, issue, fields);
+				
 
 				setDefectIssueType(jiraIssue, issueType, fieldMapping);
 
@@ -844,6 +846,16 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())
 				&& fieldMapping.getJiradefecttype().stream().anyMatch(issueType.getName()::equalsIgnoreCase)) {
 			jiraIssue.setTypeName(NormalizedJira.DEFECT_TYPE.getValue());
+		}
+	}
+
+	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
+			Map<String, IssueField> fields) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
+				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getTypeName())) {
+			Set<String> mainStorySet = new HashSet<>();
+			storyWithSubTaskDefect(issue, fields, mainStorySet);
+			jiraIssue.setParentStoryId(mainStorySet);
 		}
 	}
 
@@ -1593,6 +1605,18 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		double costOfDelay = jiraIssue.getBusinessValue() + jiraIssue.getRiskReduction()
 				+ jiraIssue.getTimeCriticality();
 		jiraIssue.setCostOfDelay(costOfDelay);
+
+		if (fields.get(fieldMapping.getEpicPlannedValue()) != null
+				&& fields.get(fieldMapping.getEpicPlannedValue()).getValue() != null) {
+			String fieldValue = getFieldValue(fieldMapping.getEpicPlannedValue(), fields);
+			jiraIssue.setEpicPlannedValue(Double.parseDouble(fieldValue));
+		}
+
+		if (fields.get(fieldMapping.getEpicAchievedValue()) != null
+				&& fields.get(fieldMapping.getEpicAchievedValue()).getValue() != null) {
+			String fieldValue = getFieldValue(fieldMapping.getEpicAchievedValue(), fields);
+			jiraIssue.setEpicAchievedValue(Double.parseDouble(fieldValue));
+		}
 
 	}
 

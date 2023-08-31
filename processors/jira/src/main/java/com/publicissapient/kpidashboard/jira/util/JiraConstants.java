@@ -34,6 +34,7 @@ public final class JiraConstants {
 	public static final String FIXVERSION = "fix version";
 	public static final String DUEDATE = "duedate";
 	public static final String LABELS = "Labels";
+	public static final String WORKLOG = "timespent";
 	public static final String CUSTOM_FIELD = "CustomField";
 	public static final String ISSUE_TYPE = "IssueType";
 	public static final String FLAG_STATUS_FOR_SERVER = "Flag as Impediment";

@@ -1095,7 +1095,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   color: var(--color-white);
   background: var(--color-cyan-blue);
   border-radius: 3px;
-  font-size: .85rem;
+  font-size: 1rem;
   cursor: pointer;
 }
 .fail-state{
@@ -1146,4 +1146,5 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   pointer-events: none;
   background-color: rgba(0, 0, 0, 0.1) !important;
   border: 1px solid rgba(0,0,0,0.2) !important;
+  opacity: 0.6;
 }

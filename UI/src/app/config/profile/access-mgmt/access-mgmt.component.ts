@@ -102,10 +102,10 @@ export class AccessMgmtComponent implements OnInit {
 	mouseEnter(event, item, node) {
 		// console.log(event, item, accessLevel);
 		const accessLevel = node.accessLevel;
-		if (this.allProjectsData && this.allProjectsData.length) {
+		if (this.allProjectsData?.length) {
 			// console.log(this.allProjectsData);
 			if (accessLevel.toLowerCase() === 'project') {
-				const tooltipProject = this.allProjectsData.filter((proj) => proj.id === item.itemId);
+				const tooltipProject = this.allProjectsData?.filter((proj) => proj.id === item.itemId);
 				this.toolTipHtml = `<span>Project: ${tooltipProject[0].projectName}</span><br/>`;
 				tooltipProject[0].hierarchy.forEach(hier => {
 					this.toolTipHtml += `<span>${hier.hierarchyLevel.hierarchyLevelName}: ${hier.value}</span><br/>`;
@@ -256,11 +256,11 @@ export class AccessMgmtComponent implements OnInit {
 
 	saveAccessChange(userData) {
 		// clean userdata, remove empty access-nodes
-		if (userData['projectsAccess'] && userData['projectsAccess'].length) {
+		if (userData['projectsAccess']?.length) {
 			userData['projectsAccess'].forEach((element) => {
 				if (element.role !== 'ROLE_SUPERADMIN') {
 					element['accessNodes'].forEach((node, index) => {
-						if (node['accessItems'] && node['accessItems'].length === 0) {
+						if (node['accessItems']?.length === 0) {
 							element['accessNodes'].splice(index, 1);
 						}
 					});
@@ -270,7 +270,7 @@ export class AccessMgmtComponent implements OnInit {
 
 		const uniqueProjectArr = [];
 		const uniqueRoleArr = [];
-		if (userData.projectsAccess && userData.projectsAccess.length) {
+		if (userData?.projectsAccess?.length) {
 			userData.projectsAccess.forEach((obj) => {
 				if (!uniqueRoleArr.includes(obj.role)) {
 					uniqueRoleArr.push(obj.role);

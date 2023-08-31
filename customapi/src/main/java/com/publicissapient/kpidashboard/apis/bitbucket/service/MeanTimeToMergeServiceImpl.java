@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
-import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -59,9 +58,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List<Object>, List<MergeRequests>> {
 
-	public static final String MEAN_TIME_TO_MERGE = "meanTimeToMerge";
-	public static final DecimalFormat decformat = new DecimalFormat("#0.00");
-	public static final String WEEK_SEPERATOR = " to ";
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final String AZURE_REPO = "AzureRepository";
 	private static final String BITBUCKET = "Bitbucket";

@@ -114,9 +114,14 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		return kpiElement;
 	}
 
-	private void aggMeanTimeToMerge(Map<String, Double> aggPickupTimeForRepo, Map<String, Double> pickupTimeForRepo) {
-		if (MapUtils.isNotEmpty(pickupTimeForRepo)) {
-			aggPickupTimeForRepo.putAll(pickupTimeForRepo);
+	private void aggMeanTimeToMerge(Map<String, Double> aggMRTimeForRepo, Map<String, Double> mrTime) {
+		if (MapUtils.isNotEmpty(mrTime)) {
+			mrTime.forEach((key, value) -> {
+				if (mrTime.containsKey(key)) {
+					aggMRTimeForRepo.merge(key, value,
+							(currentValue, newValue) -> (currentValue + newValue) / (mrTime.get(key) + 1));
+				}
+			});
 		}
 	}
 
@@ -139,7 +144,6 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 		List<KPIExcelData> excelData = new ArrayList<>();
 		projectLeafNodeList.stream().forEach(node -> {
 			String projectName = node.getProjectFilter().getName();
-			LocalDate end = localEndDate;
 
 			ProjectFilter accountHierarchyData = node.getProjectFilter();
 			ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
@@ -275,7 +279,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		return null;
+		return new HashMap<>();
 	}
 
 	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,

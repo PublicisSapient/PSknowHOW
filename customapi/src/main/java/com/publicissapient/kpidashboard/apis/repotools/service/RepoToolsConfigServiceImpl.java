@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,7 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepos
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 
+@Slf4j
 @Service
 public class RepoToolsConfigServiceImpl {
 
@@ -98,9 +100,9 @@ public class RepoToolsConfigServiceImpl {
 		return new RepoToolsClient();
 	}
 
-
 	/**
 	 * enroll a project to the repo tool
+	 * 
 	 * @param projectToolConfig
 	 * @param connection
 	 * @param branchNames
@@ -132,13 +134,14 @@ public class RepoToolsConfigServiceImpl {
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			log.error("Error enrolling project");
 		}
 		return httpStatus;
 	}
 
 	/**
 	 * trigger repo tool scanning process
+	 * 
 	 * @param basicProjectconfigIdList
 	 * @return
 	 */
@@ -190,6 +193,7 @@ public class RepoToolsConfigServiceImpl {
 
 	/**
 	 * create a project code for repo tool enrollment
+	 * 
 	 * @param basicProjectConfigId
 	 * @return
 	 */
@@ -200,20 +204,24 @@ public class RepoToolsConfigServiceImpl {
 
 	/**
 	 * update a project enrolled in repo tool
+	 * 
 	 * @param toolList
 	 * @param tool
 	 * @param basicProjectConfigId
 	 * @return
 	 */
-	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool, String basicProjectConfigId) {
-		int httpStatus = HttpStatus.NOT_FOUND.value();
+	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool,
+			String basicProjectConfigId) {
+		int httpStatus;
 		long count = toolList.stream()
 				.filter(projectToolConfig -> projectToolConfig.getToolName().equals(CommonConstant.REPO_TOOLS)).count();
 		repoToolsClient = createRepoToolsClient();
 		if (count > 1) {
+
 			// delete only the repository
 			httpStatus = repoToolsClient.deleteRepositories(tool.getRepositoryName(), customApiConfig.getRepoToolURL(),
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+
 		} else {
 			// delete the project from repo tool if only one repository is present
 			ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
@@ -224,6 +232,7 @@ public class RepoToolsConfigServiceImpl {
 
 	/**
 	 * get metrics from repo tool kpis fo different projects
+	 * 
 	 * @param projectCode
 	 * @param repoToolKpi
 	 * @param startDate
@@ -237,8 +246,8 @@ public class RepoToolsConfigServiceImpl {
 		String repoToolUrl = customApiConfig.getRepoToolURL() + METRIC + repoToolKpi;
 		String repoToolApiKey = restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey());
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons = new ArrayList<>();
-		RepoToolKpiRequestBody repoToolKpiRequestBody = new RepoToolKpiRequestBody(projectCode,
-				startDate, endDate, frequency);
+		RepoToolKpiRequestBody repoToolKpiRequestBody = new RepoToolKpiRequestBody(projectCode, startDate, endDate,
+				frequency);
 		try {
 			String url = String.format(repoToolUrl, startDate, endDate, frequency);
 			RepoToolKpiBulkMetricResponse repoToolKpiBulkMetricResponse = repoToolsClient.kpiMetricCall(url,
@@ -246,13 +255,14 @@ public class RepoToolsConfigServiceImpl {
 			repoToolKpiMetricRespons = repoToolKpiBulkMetricResponse.getValues().stream().flatMap(List::stream)
 					.collect(Collectors.toList());
 		} catch (HttpClientErrorException ex) {
-			ex.printStackTrace();
+			log.error("Project not found");
 		}
 		return repoToolKpiMetricRespons;
 	}
 
 	/**
 	 * create ProcessorItemList for scanning
+	 * 
 	 * @param toolList
 	 * @param processorId
 	 * @return
@@ -276,6 +286,7 @@ public class RepoToolsConfigServiceImpl {
 
 	/**
 	 * delete project or project data enrolled in the repo tool
+	 * 
 	 * @param projectBasicConfig
 	 * @param onlyData
 	 * @return
@@ -290,6 +301,7 @@ public class RepoToolsConfigServiceImpl {
 
 	/**
 	 * create ProcessorExecutionTraceLog to track repo tool project scan
+	 * 
 	 * @param basicProjectConfigId
 	 * @return
 	 */

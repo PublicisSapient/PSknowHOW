@@ -245,6 +245,7 @@ public class ConfigHelperService {
 		return kpiMasterRepository.findAll();
 	}
 
+
 	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_MATURITY_RANGE)
 	public Map<String, List<String>> calculateMaturity() {

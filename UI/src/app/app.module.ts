@@ -112,6 +112,14 @@ import { CumulativeLineChartComponent } from './component/cumulative-line-chart/
 
 import { StackedAreaChartComponent } from './component/stacked-area-chart/stacked-area-chart.component';
 import { FeedbackComponent } from './feedback/feedback.component';
+import { DailyScrumComponent } from './dashboard/daily-scrum/daily-scrum.component';
+import { DailyScrumTabComponent } from './dashboard/daily-scrum-tab/daily-scrum-tab.component';
+import { AssigneeBoardComponent } from './dashboard/assignee-board/assignee-board.component';
+import { IssueCardComponent } from './dashboard/issue-card/issue-card.component';
+import { IssueBodyComponent } from './dashboard/issue-body/issue-body.component';
+import { DailyScrumGraphComponent } from './dashboard/daily-scrum-graph/daily-scrum-graph.component';
+import { MultilineStyleComponent } from './component/multiline-style/multiline-style.component';
+import { DoraComponent } from './dashboard/dora/dora.component';
 import { DeveloperComponent } from './dashboard/developer/developer.component';
 
 /******************************************************/
@@ -177,6 +185,14 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         CumulativeLineChartComponent,
         StackedAreaChartComponent,
         FeedbackComponent,
+        DailyScrumComponent,
+        DailyScrumTabComponent,
+        AssigneeBoardComponent,
+        IssueCardComponent,
+        IssueBodyComponent,
+        DailyScrumGraphComponent,
+        MultilineStyleComponent,
+        DoraComponent,
         DeveloperComponent
     ],
     imports: [

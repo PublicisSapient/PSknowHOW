@@ -1,0 +1,80 @@
+.container{
+    background: #fff;
+    border-radius: 5px;
+    opacity: 1;
+    position: relative;
+    margin: 0.5rem 0.25rem;
+}
+
+.user-filter ,.filter-header, .show-more{
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0.5rem 1rem;
+}
+
+.filter-header{
+    justify-content: space-between;
+}
+
+.user-filter.show-less{
+    height: 62px;
+    overflow: hidden;
+    padding-bottom: 1rem;
+    width: 85% !important;
+}
+
+.show-more{
+    height: 62px;
+    width: 15%;
+}
+
+/* filter button css */
+:host::ng-deep.filter-header button{
+    color: black;
+    background: #EFEFEF;
+}
+
+:host::ng-deep .p-button:enabled:focus, :host::ng-deep.p-button:enabled:hover{
+    background: #EFEFEF;
+    color: black;
+}
+
+/* user button css */
+.user-filter button.assignee{
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color: white;
+    cursor: pointer;
+    margin: 0.15rem;
+    font-weight: bold;
+}
+
+.user-filter button.assignee.selected-user{
+    background: #437495 !important;
+    color: white !important;
+    font-weight: bold;
+    border: none;
+}
+/* user info table css */
+:host::ng-deep .p-datatable{
+    border: 1px solid var(--color-gray-c6);
+}
+
+:host::ng-deep.p-datatable-thead tr:nth-child(2) th{
+    padding: 0.5rem 1rem;
+    background-color: #EFEFEF;
+}
+
+:host::ng-deep .p-datatable tr td .user-name{
+    font-weight: bold;
+}
+
+.selected-user-info{
+    display: flex;
+    margin-left: 1rem;
+}
+
+.selected-user-info p{
+    color: var(--color-green);
+}

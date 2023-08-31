@@ -20,12 +20,15 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
-import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -35,17 +38,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.repotools.model.Branches;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.repotools.model.Branches;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
@@ -63,7 +74,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object>, Map<String, Object>> {
 
-	private static final String YYYYMMDD = "yyyy-MM-dd";
 	private static final String NO_CHECKIN = "No. of Check in";
 	private static final String NO_MERGE = "No. of Merge Requests";
 	public static final String REPO_TOOLS_COMMIT_KPI = "repo-activity-bulk/";
@@ -74,9 +84,6 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 
 	@Autowired
 	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
@@ -220,10 +227,10 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	private void aggCommitAndMergeCount(Map<String, Long> aggCommitCountForRepo, Map<String, Long> aggMergeCountForRepo,
 			Map<String, Long> commitCountForRepo, Map<String, Long> mergeCountForRepo) {
 		if (MapUtils.isNotEmpty(commitCountForRepo)) {
-			aggCommitCountForRepo.putAll(commitCountForRepo);
+			commitCountForRepo.forEach((key, value) -> aggCommitCountForRepo.merge(key, value, Long::sum));
 		}
 		if (MapUtils.isNotEmpty(mergeCountForRepo)) {
-			aggMergeCountForRepo.putAll(mergeCountForRepo);
+			mergeCountForRepo.forEach((key, value) -> aggMergeCountForRepo.merge(key, value, Long::sum));
 		}
 	}
 
@@ -338,7 +345,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		return null;
+		return new HashMap<>();
 	}
 
 	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,

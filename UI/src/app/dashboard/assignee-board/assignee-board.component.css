@@ -1,0 +1,31 @@
+.container{
+    min-height: 400px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.25rem;
+    box-sizing: border-box;
+}
+
+.graph-container{
+    flex-basis: 75%;
+    border: 1px solid #c0c0c0;
+    margin: 0.25rem;
+    width: 75%;
+}
+
+.issue-card-container{
+    flex-basis: 25%;
+    border: 1px solid #c0c0c0;
+    margin: 0.25rem;
+}
+
+.issue-nav{
+    display: flex;
+    justify-content: space-between;
+}
+
+:host::ng-deep .prev .p-button,:host::ng-deep .next .p-button{
+    color: black;
+    background: #EFEFEF;
+}

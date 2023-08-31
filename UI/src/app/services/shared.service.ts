@@ -63,7 +63,7 @@ export class SharedService {
   changedMainDashboardValueSub = new Subject<any>();
   changedMainDashboardValueObs = this.changedMainDashboardValueSub.asObservable();
   currentSelectedSprintSub = new Subject<any>();
-  currentSelectedSprintObs = this.currentSelectedSprintSub.asObservable();
+  currentSelectedSprint;
   mapColorToProject = new BehaviorSubject<any>({});
   mapColorToProjectObs = this.mapColorToProject.asObservable();
   selectedFilterOption = new BehaviorSubject<any>({});
@@ -88,6 +88,8 @@ export class SharedService {
   noReleaseObs = this.noRelease.asObservable();
   fieldMappingOptionsMetaData : any = []
   kpiCardView : string = "chart";
+  visibleSideBarSubject = new BehaviorSubject(true);
+  visibleSideBarObs = this.visibleSideBarSubject.asObservable();
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -101,6 +103,11 @@ export class SharedService {
 
 
   ngOnInit() {
+  }
+
+  setCurrentSelectedSprint(selectedSprint){
+    this.currentSelectedSprint = selectedSprint;
+    this.currentSelectedSprintSub.next(selectedSprint);
   }
 
   setSelectedTypeOrTabRefresh(selectedTab, selectedType) {
@@ -149,6 +156,10 @@ export class SharedService {
 
   setLogoImage(logoImage: File) {
     this.subject.next({ File: logoImage });
+  }
+
+  setVisibleSideBar(value){
+    this.visibleSideBarSubject.next(value);
   }
 
   clearLogoImage() {
