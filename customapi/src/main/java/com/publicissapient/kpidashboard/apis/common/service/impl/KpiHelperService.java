@@ -62,6 +62,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.MasterResponse;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -590,9 +591,9 @@ public class KpiHelperService { // NOPMD
 				FieldMapping fieldMapping = fieldMappingMap
 						.get(dbSprintDetail.getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
 						fieldMapping.getJiraIterationIssuetypeKPI39(),
-						fieldMapping.getJiraIterationCompletionStatusKpi39(), finalProjectWiseDuplicateIssuesWithMinCloseDate).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKpi39(), finalProjectWiseDuplicateIssuesWithMinCloseDate);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -659,9 +660,9 @@ public class KpiHelperService { // NOPMD
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(dbSprintDetail.getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
 						fieldMapping.getJiraIterationIssuetypeKPI138(),
-						fieldMapping.getJiraIterationCompletionStatusKPI138(), null).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKPI138(), null);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -1506,7 +1507,10 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * get projectWiseTotalIssues
+	 * when multiple sprints are selected from knowHow dashboard, duplicate issues
+	 * present in total sprintdetails section should be used to find minimum closed
+	 * dates
+	 *
 	 * @param projectWiseTotalSprintDetails
 	 * @return
 	 */
@@ -1539,57 +1543,15 @@ public class KpiHelperService { // NOPMD
 		List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository
 				.findByFilterAndFromStatusMap(mapOfFilters, new HashMap<>());
 
-		duplicateIssues.forEach((objectId, issues) -> {
-			List<String> customFields = customFieldMapping.getOrDefault(objectId, Collections.emptyList());
-			if (!customFields.isEmpty()) {
-				Map<String, List<LocalDateTime>> issueWiseMinDateTime = new HashMap<>();
-				for (String issue : issues) {
-					List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistoryList.stream()
-							.filter(history -> history.getStoryID().equalsIgnoreCase(issue)
-									&& objectId.toString().equalsIgnoreCase(history.getBasicProjectConfigId()))
-							.flatMap(history -> history.getStatusUpdationLog().stream())
-							.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn))
-							.collect(Collectors.toList());
-					/*
-					iterate over status logs and if some not completed status appears then that has to be considered as
-					reopen scenario, and at that time whatever statuses present in  minimumCompletedStatusWiseMap, out of them
-					the minimum date has to be considered of that closed cycle.
-					 */
-					if (CollectionUtils.isNotEmpty(statusUpdationLog)) {
-						Map<String, LocalDateTime> minimumCompletedStatusWiseMap = new HashMap<>();
-						List<LocalDateTime> minimumDate = new ArrayList<>();
-
-						for (JiraHistoryChangeLog log : statusUpdationLog) {
-							String changedTo = log.getChangedTo();
-							if (customFields.contains(changedTo)) {
-								LocalDateTime updatedOn = log.getUpdatedOn();
-								minimumCompletedStatusWiseMap.putIfAbsent(changedTo, updatedOn);
-							} else if (!minimumCompletedStatusWiseMap.isEmpty()) {
-								LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream()
-										.min(LocalDateTime::compareTo).orElse(null);
-								if (minDate != null) {
-									minimumDate.add(minDate);
-									minimumCompletedStatusWiseMap.clear();
-								}
-							}
-						}
-
-						//if some status is left in the last cycle then that has to added in the minimum set
-						if (MapUtils.isNotEmpty(minimumCompletedStatusWiseMap)) {
-							LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream()
-									.min(LocalDateTime::compareTo).orElse(null);
-							if (minDate != null) {
-								minimumDate.add(minDate);
-								minimumCompletedStatusWiseMap.clear();
-							}
-						}
-						issueWiseMinDateTime.put(issue, minimumDate);
-					}
-				}
-				projectIssueWiseClosedDates.put(objectId, issueWiseMinDateTime);
-			}
+		duplicateIssues.forEach((projectConfigId, issues) -> {
+			List<String> customFields = customFieldMapping.getOrDefault(projectConfigId, Collections.emptyList());
+			List<JiraIssueCustomHistory> filteredHistoryList = jiraIssueCustomHistoryList.stream()
+					.filter(history -> issues.contains(history.getStoryID())
+							&& projectConfigId.toString().equalsIgnoreCase(history.getBasicProjectConfigId())).collect(Collectors.toList());
+			Map<String, List<LocalDateTime>> stringListMap = IterationKpiHelper.calculateMinDateFromCloseCycle(filteredHistoryList, issues, customFields);
+			projectIssueWiseClosedDates.put(projectConfigId,stringListMap);
 		});
 		return projectIssueWiseClosedDates;
 	}
-
+	
 }

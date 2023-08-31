@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -92,8 +91,9 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 	 */
 	private static boolean checkFlagIncludedStatus(FieldMapping fieldMapping) {
 		boolean isFlagIncluded = false;
-		if (null != fieldMapping && StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatusKPI131()) && fieldMapping
-				.getJiraIncludeBlockedStatusKPI131().contains(CommonConstant.IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE)) {
+		if (null != fieldMapping && StringUtils.isNotEmpty(fieldMapping.getJiraIncludeBlockedStatusKPI131())
+				&& fieldMapping.getJiraIncludeBlockedStatusKPI131()
+						.contains(CommonConstant.IS_FLAG_STATUS_INCLUDED_FOR_WASTAGE)) {
 			isFlagIncluded = true;
 		}
 		return isFlagIncluded;
@@ -137,9 +137,9 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+				sprintDetails = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
 						fieldMapping.getJiraIterationIssuetypeKPI131(),
-						fieldMapping.getJiraIterationCompletionStatusKPI131(), null).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKPI131(), null);
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);

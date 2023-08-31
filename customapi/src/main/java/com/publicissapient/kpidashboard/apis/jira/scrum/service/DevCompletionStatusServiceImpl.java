@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -112,9 +111,9 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+				sprintDetails = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
 						fieldMapping.getJiraIterationIssuetypeKPI145(),
-						fieldMapping.getJiraIterationCompletionStatusKPI145(), null).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKPI145(), null);
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
@@ -369,7 +368,8 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 				JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream().filter(
 						jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
 						.findFirst().orElse(new JiraIssueCustomHistory());
-				String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping.getJiraDevDoneStatusKPI145());
+				String devCompletionDate = getDevCompletionDate(issueCustomHistory,
+						fieldMapping.getJiraDevDoneStatusKPI145());
 				compltedIssues.putIfAbsent(jiraIssue, devCompletionDate);
 			});
 		}

@@ -129,9 +129,8 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-						new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusKPI136(), null).get(0);
+				sprintDetails = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail, new ArrayList<>(),
+						fieldMapping.getJiraIterationCompletionStatusKPI136(), null);
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
