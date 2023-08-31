@@ -2414,8 +2414,46 @@ describe('ExecutiveComponent', () => {
   ];
 
   const fakeJiraGroupId1 = require('../../../test/resource/fakeJiraGroupId1.json');
-
-
+  const fakeAllKpiArrayForTableData = require('../../../test/resource/fakeAllKpiArrayForTableData.json');
+  const fakeAllKpiArrayForTableDataWithFilter = require('../../../test/resource/fakeAllKpiArrayForTableDataWithFilter.json');
+  const fakeKpiTableHeadingArray = [
+    {
+        "field": "kpiName",
+        "header": "Kpi Name"
+    },
+    {
+        "field": "frequency",
+        "header": "Frequency"
+    },
+    {
+        "field": 1,
+        "header": 1
+    },
+    {
+        "field": 2,
+        "header": 2
+    },
+    {
+        "field": 3,
+        "header": 3
+    },
+    {
+        "field": 4,
+        "header": 4
+    },
+    {
+        "field": 5,
+        "header": 5
+    },
+    {
+        "field": "trend",
+        "header": "Trend"
+    },
+    {
+        "field": "maturity",
+        "header": "Maturity"
+    }
+  ]
   beforeEach(() => {
 
     service = new SharedService();
@@ -5933,6 +5971,141 @@ expect(result[1]).toEqual('-ve');
     spyOn(helperService, 'applyAggregationLogic').and.callThrough();
     component.getChartData('kpi118', 0, 'sum')
     expect(component.kpiChartData['kpi118'][0]?.value?.length).toEqual(res?.value?.length);
+  });
+
+  it('should get table data for kpi when trendValueList dont have filter', () => {
+    component.allKpiArray = fakeAllKpiArrayForTableData;
+    component.kpiTableHeadingArr = fakeKpiTableHeadingArray;
+    component.noOfColumns = 5;
+    component.colorObj = {
+      "AddingIterationProject_64e739541426ba469c39c102": {
+          "nodeName": "AddingIterationProject",
+          "color": "#079FFF"
+      }
+    };
+    component.kpiTableDataObj['AddingIterationProject'] = [];
+    const enabledKpi = {
+      'kpiDetail': {
+        'xaxisLabel': 'Sprints'
+      },
+      'isEnabled': true,
+      'shown': true
+    }
+    const returnedObj = {
+      'AddingIterationProject':[{
+      "1": "122.6",
+      "2": "126.9",
+      "3": "176.5",
+      "4": "83.3",
+      "5": "57.7",
+      "kpiId": "kpi14",
+      "kpiName": "Defect Injection Rate",
+      "frequency": "Sprints",
+      "show": true,
+      "hoverText": [
+          "1 - DRP Sprint 71_AddingIterationProject",
+          "2 - DRP Sprint 72_AddingIterationProject",
+          "3 - DRP Sprint 73_AddingIterationProject",
+          "4 - DRP Sprint 74_AddingIterationProject",
+          "5 - DRP Sprint 75_AddingIterationProject"
+      ],
+      "latest": "85 %",
+      "trend": "-ve",
+      "maturity": "M3"
+    }]}
+    
+    component.getTableData('kpi14', 0, enabledKpi);
+    expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
+  });
+
+  it('should get table data for kpi when trendValueList has filter', () => {
+    component.allKpiArray = fakeAllKpiArrayForTableDataWithFilter;
+    component.kpiTableHeadingArr = fakeKpiTableHeadingArray;
+    component.noOfColumns = 5;
+    component.colorObj = {
+      "AddingIterationProject_64e739541426ba469c39c102": {
+          "nodeName": "AddingIterationProject",
+          "color": "#079FFF"
+      }
+    };
+    component.kpiTableDataObj['AddingIterationProject'] = [];
+    const enabledKpi = {
+      'kpiDetail': {
+        'xaxisLabel': 'Sprints'
+      },
+      'isEnabled': true,
+      'shown': true
+    }
+    const returnedObj = {
+      'AddingIterationProject':[{
+        "1": "38",
+        "2": "33",
+        "3": "32",
+        "4": "36",
+        "5": "19",
+        "kpiId": "kpi28",
+        "kpiName": "Defect Count By Priority",
+        "frequency": "Sprints",
+        "show": true,
+        "hoverText": [
+            "1 - DRP Sprint 71_AddingIterationProject",
+            "2 - DRP Sprint 72_AddingIterationProject",
+            "3 - DRP Sprint 73_AddingIterationProject",
+            "4 - DRP Sprint 74_AddingIterationProject",
+            "5 - DRP Sprint 75_AddingIterationProject",
+        ],
+        "latest": "25",
+        "trend": "-ve",
+        "maturity": "NA"
+    }]}
+    
+    component.getTableData('kpi28', 0, enabledKpi);
+    expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
+  });
+
+  it('should create all kpi Table Heads', () => {
+    const tableHeadsArr = [
+        {
+            "field": "kpiName",
+            "header": "Kpi Name"
+        },
+        {
+            "field": "frequency",
+            "header": "Frequency"
+        },
+        {
+            "field": 1,
+            "header": 1
+        },
+        {
+            "field": 2,
+            "header": 2
+        },
+        {
+            "field": 3,
+            "header": 3
+        },
+        {
+            "field": 4,
+            "header": 4
+        },
+        {
+            "field": 5,
+            "header": 5
+        },
+        {
+            "field": "trend",
+            "header": "Trend"
+        },
+        {
+            "field": "maturity",
+            "header": "Maturity"
+        }
+    ];
+    component.noOfColumns = 5;
+    component.kpiTableHeadingArr = [];
+    component.createKpiTableHeads();
+    expect(component.kpiTableHeadingArr?.length).toEqual(tableHeadsArr?.length);
   })
 
 });

@@ -111,15 +111,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     noProjects = false;
     sprintsOverlayVisible : boolean = false;
     kpiCommentsCountObj: object = {};
-    kpiTableHeadingArr:Array<object> = [{
-        'field': 'kpiName',
-        'header': 'Kpi Name'
-    }, {
-        'field': 'frequency',
-        'header': 'Frequency'
-    }];
+    kpiTableHeadingArr:Array<object> = [];
     kpiTableDataObj:object={};
-    noOfColumns:number = 5;
+    noOfColumns:number = 10;
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -219,6 +213,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.httpService.getTooltipData().subscribe(filterData => {
             if (filterData[0] !== 'error') {
                 this.tooltip = filterData;
+                /**re-assign noOfColumns here */
+                this.createKpiTableHeads();
             }
         });
         this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
@@ -918,6 +914,28 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.createTrendsData(kpiId);
     }
 
+    /**To create KPI table headings */
+    createKpiTableHeads(){
+        // if(trendValueList?.length > 0){
+        //     noOfColumns = trendValueList?.[0]?.value?.length;
+        //     let hasFilter = trendValueList[0]?.hasOwnProperty('filter') || trendValueList[0]?.hasOwnProperty('filter1');
+        //     if(hasFilter){
+        //         noOfColumnsDynamic = trendValueList?.[0]?.value[0]?.value?.length;
+        //     }
+        //     console.log("noOfColumnsDynamic", noOfColumnsDynamic);
+            
+        // }
+        if(this.noOfColumns){
+            this.kpiTableHeadingArr?.push({'field': 'kpiName', 'header': 'Kpi Name'});
+            this.kpiTableHeadingArr?.push({'field': 'frequency', 'header': 'Frequency'});
+            for(let i = 0; i < this.noOfColumns; i++){
+                this.kpiTableHeadingArr?.push({'field':i+1, 'header': i+1});
+            }
+            this.kpiTableHeadingArr?.push({'field': 'trend', 'header': 'Trend'});
+            this.kpiTableHeadingArr?.push({'field': 'maturity', 'header': 'Maturity'});
+        }
+    }
+
     /** to prepare table data */
     getTableData(kpiId, idx, enabledKpi){
         let trendValueList = [];
@@ -925,21 +943,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             trendValueList = this.allKpiArray[idx]?.trendValueList;
         }else{
             trendValueList = this.allKpiArray?.filter((x) => x[kpiId] == kpiId)[0]?.trendValueList;
-        }
-        /**To create KPI table headings */
-        if(this.kpiTableHeadingArr?.length == 2){
-            if(trendValueList?.length > 0){
-                this.noOfColumns = trendValueList?.[0]?.value?.length;
-                let hasFilter = trendValueList[0]?.hasOwnProperty('filter') || trendValueList[0]?.hasOwnProperty('filter1');
-                if(hasFilter){
-                    this.noOfColumns = trendValueList?.[0]?.value[0]?.value?.length;
-                }
-            }
-            for(let i = 0; i < this.noOfColumns; i++){
-                this.kpiTableHeadingArr?.push({'field':i+1, 'header': i+1});
-            }
-            this.kpiTableHeadingArr?.push({'field': 'trend', 'header': 'Trend'});
-            this.kpiTableHeadingArr?.push({'field': 'maturity', 'header': 'Maturity'});
         }
         
         if(trendValueList?.length > 0){
@@ -983,8 +986,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         obj['hoverText']?.push((i+1) + ' - ' + (item?.['sprintNames']?.length > 0 
                         ? item['sprintNames'].join(',') : item?.['sSprintName'] ? item['sSprintName'] : item?.['date']));
                         obj[i+1] = item?.value > 0 ? 
-                        (Math.round(item?.value * 10) / 10) + (trendData?.unit ? ' ' + trendData?.unit : '') 
-                        : item?.value + (trendData?.unit ? ' ' + trendData?.unit : '') || '-';
+                        (Math.round(item?.value * 10) / 10) + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') 
+                        : item?.value + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') || '-';
                     }else{
                         obj[i+1] = '-';
                     }

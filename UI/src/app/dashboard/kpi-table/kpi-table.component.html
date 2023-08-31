@@ -4,7 +4,7 @@
             <p-table [columns]="cols" [value]="kpiData[tab]">
                 <ng-template pTemplate="header" let-columns>
                     <tr>
-                        <th *ngFor="let col of columns">
+                        <th *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'kpiName' ? '200px': ''}">
                             {{ col.header }}
                         </th>
                     </tr>
