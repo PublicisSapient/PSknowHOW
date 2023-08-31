@@ -733,13 +733,15 @@ export class UploadComponent implements OnInit {
     }
 
     enableDisableTestExecutionSubmitButton() {
+        this.testExecutionErrorMessage = '';
         if (!this.isAddtionalTestField) {
             this.validateFirstGroupTextCountField();
         } else {
             if ((!!this.popupForm?.get('totalTestCases').value) || (!!this.popupForm?.get('executedTestCase').value) || (!!this.popupForm?.get('passedTestCase').value)) {
                 this.validateFirstGroupTextCountField();
-            } else {
-                this.validateSecondGroupTextCountField()
+            }
+            if(this.testExecutionErrorMessage === ''){
+            this.validateSecondGroupTextCountField();
             }
         }
     }
