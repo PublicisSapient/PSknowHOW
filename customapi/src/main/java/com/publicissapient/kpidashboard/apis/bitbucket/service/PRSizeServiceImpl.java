@@ -171,7 +171,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 								repo.getBranch(), dateWisePickupTime, dateWiseMRCount);
 						aggPickupTime(aggPRSizeForRepo, dateWisePickupTime, aggMRCount, dateWiseMRCount);
 						setWeekWisePickupTime(dateWisePickupTime, dateWiseMRCount, excelDataLoader, branchName,
-								projectName, aggDataMap, duration, dataPoints);
+								projectName, aggDataMap, kpiRequest);
 					}
 					repoWisePRSizeList.add(excelDataLoader);
 					repoList.add(repo.getUrl());
@@ -180,7 +180,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 				}
 			});
 			setWeekWisePickupTime(aggPRSizeForRepo, aggMRCount, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
-					aggDataMap, duration, dataPoints);
+					aggDataMap, kpiRequest);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 
 			populateExcelDataObject(requestTrackerId, repoWisePRSizeList, repoList, branchList, excelData, node);
@@ -226,8 +226,11 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 
 	private void setWeekWisePickupTime(Map<String, Long> weekWisePickupTime, Map<String, Long> weekWiseMRCount,
 			Map<String, Long> excelDataLoader, String branchName, String projectName,
-			Map<String, List<DataCount>> aggDataMap, String duration, Integer dataPoints) {
+			Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
 		LocalDate currentDate = LocalDate.now();
+		Integer dataPoints = NumberUtils.isCreatable(kpiRequest.getIds()[0]) ? Integer.parseInt(kpiRequest.getIds()[0])
+				: 5;
+		String duration = kpiRequest.getSelectedMap().get(CommonConstant.date).get(0);
 		for (int i = 0; i < dataPoints; i++) {
 			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
 			long pickupTime = weekWisePickupTime.getOrDefault(dateRange.getStartDate().toString(), 0l);

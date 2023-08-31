@@ -226,6 +226,7 @@ public final class CommonConstant {
 	public static final String JIRASTORYIDENTIFICATIONKPI40="jiraStoryIdentificationKpi40";
 
 	public static final String STORYFIRSTSTATUSKPI148="storyFirstStatusKPI148";
+	public static final String STORYFIRSTSTATUSKPI154="storyFirstStatusKPI154";
 	public static final String STORYFIRSTSTATUSKPI3="storyFirstStatusKPI3";
 	public static final String JIRASTATUSFORQAKPI148="jiraStatusForQaKPI148";
 	public static final String JIRASTATUSFORQAKPI135="jiraStatusForQaKPI135";

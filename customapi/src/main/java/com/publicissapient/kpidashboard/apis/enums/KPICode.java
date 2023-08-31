@@ -425,6 +425,11 @@ public enum KPICode {
      *
      */
     DAILY_STANDUP_VIEW("kpi154", KPISource.JIRA.name()),
+
+    /**
+     * Lead Time Chnage DORA  kpi code
+     */
+    LEAD_TIME_CHANGE("kpi156", KPISource.JENKINS.name()),
     /**
      * Mean Time To Merge
      */
@@ -445,6 +450,8 @@ public enum KPICode {
      * PR Size
      */
     PR_SIZE("kpi162", KPISource.BITBUCKET.name());
+
+
 
     // @formatter:on
 

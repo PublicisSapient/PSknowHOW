@@ -15,11 +15,14 @@ export class DoraComponent implements OnInit {
   masterData;
   filterData = [];
   jenkinsKpiData = {};
+  jiraKpiData = {};
   filterApplyData;
   kpiJenkins;
+  kpiJira;
   loaderJenkins = false;
   subscriptions: any[] = [];
   jenkinsKpiRequest;
+  jiraKpiRequest;
   tooltip;
   selectedtype = 'Scrum';
   configGlobalData;
@@ -59,16 +62,7 @@ export class DoraComponent implements OnInit {
   kpiCommentsCountObj: object = {};
   noOfFilterSelected = 0;
   selectedJobFilter = 'Select';
-  summaryObj = {
-    'kpi116': {
-      'label': 'Change Failure Rate',
-      'value': '0-15%'
-    },
-    'kpi118': {
-      'label': 'Deployment Frequency',
-      'value': 'Daily'
-    },
-  };
+  loaderJiraArray = [];
   updatedConfigDataObj: object = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
@@ -230,6 +224,7 @@ export class DoraComponent implements OnInit {
       // call kpi request according to tab selected
       if (this.masterData && Object.keys(this.masterData).length) {
         this.groupJenkinsKpi(kpiIdsForCurrentBoard);
+        this.groupJiraKpi(kpiIdsForCurrentBoard);
         this.getKpiCommentsCount();
       }
     } else {
@@ -261,6 +256,29 @@ export class DoraComponent implements OnInit {
     }
   }
 
+  // Used for grouping all Jira kpi from master data and calling Jira kpi.
+   groupJiraKpi(kpiIdsForCurrentBoard) {
+          this.jiraKpiData = {};
+          // creating a set of unique group Ids
+          const groupIdSet = new Set();
+          this.masterData.kpiList.forEach((obj) => {
+              if (!obj.kanban && obj.kpiSource === 'Jira') {
+                  groupIdSet.add(obj.groupId);
+              }
+          });
+
+          // sending requests after grouping the the KPIs according to group Id
+          groupIdSet.forEach((groupId) => {
+              if (groupId) {
+                  this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Dora');
+                  if (this.kpiJira?.kpiList?.length > 0) {
+                      this.postJiraKpi(this.kpiJira, 'jira');
+                  }
+              }
+          });
+
+      }
+
   // calling post request of Jenkins of scrum and storing in jenkinsKpiData id wise
   postJenkinsKpi(postData, source): void {
     this.loaderJenkins = true;
@@ -277,6 +295,33 @@ export class DoraComponent implements OnInit {
         this.kpiLoader = false;
       });
   }
+
+  // post request of Jira(scrum)
+      postJiraKpi(postData, source): void {
+
+          postData.kpiList.forEach(element => {
+              this.loaderJiraArray.push(element.kpiId);
+          });
+
+          this.jiraKpiRequest = this.httpService.postKpi(postData, source)
+              .subscribe(getData => {
+                  if (getData !== null && getData[0] !== 'error' && !getData['error']) {
+                      // creating array into object where key is kpi id
+                      const localVariable = this.helperService.createKpiWiseId(getData);
+                      for (const kpi in localVariable) {
+                          this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(kpi), 1);
+                      }
+                      this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
+                      this.createAllKpiArray(localVariable);
+                  } else {
+                      this.jiraKpiData = getData;
+                      postData.kpiList.forEach(element => {
+                          this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(element.kpiId), 1);
+                      });
+                  }
+                  this.kpiLoader = false;
+              });
+      }
 
   // Used for grouping all Jenkins kpi of kanban from master data and calling jenkins kpi.
   groupJenkinsKanbanKpi(kpiIdsForCurrentBoard) {

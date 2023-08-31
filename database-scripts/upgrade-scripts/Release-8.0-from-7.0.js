@@ -3706,6 +3706,44 @@ db.getCollection('field_mapping_structure').insertMany([
 ])
 
 
+// KPI add Lead time for changes in DORA tab
+db.kpi_master.bulkWrite([{
+   insertOne: {
+     document: {
+ {
+    "kpiId": "kpi156",
+    "kpiName": "Lead Time For Change",
+    "maxValue": "100",
+    "kpiUnit": "Days",
+    "isDeleted": "False",
+    "defaultOrder": 3,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "LEAD TIME FOR CHANGE measures the velocity of software delivery.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "LEAD TIME FOR CHANGE Captures the time between a code change commit and its deployable state."
+        }
+      ],
+      "maturityLevels": []
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Days",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+ }
+   }
+ }]);
 
 
 
@@ -3761,16 +3799,27 @@ db.getCollection('field_mapping_structure').insertMany([
             "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI",
         }
     },
-   {
-   "fieldName": "jiraSubTaskIdentification",
-   "fieldLabel": "Sub-Task Issue Types",
-   "fieldType": "chips",
-   "fieldCategory": "Issue_Type",
-   "section": "Issue Types Mapping",
-   "tooltip": {
-   "definition": "Any issue type mentioned will be considered as sub-task linked with story"
-   }
-   }
+    {
+       "fieldName": "jiraSubTaskIdentification",
+       "fieldLabel": "Sub-Task Issue Types",
+       "fieldType": "chips",
+       "fieldCategory": "Issue_Type",
+       "section": "Issue Types Mapping",
+       "tooltip": {
+       "definition": "Any issue type mentioned will be considered as sub-task linked with story"
+       }
+    },
+    {
+        "fieldName": "storyFirstStatusKPI154",
+        "fieldLabel": "Status when 'Story' issue type is created",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All issue types that identify with a Story.",
+
+        }
+    }
 ])
 // Initialize an array to store the bulk write operations
 var metaDataOperations = [];
@@ -3836,6 +3885,24 @@ metaDataOperations.push({
                   "In Progress"
                ]
             }
+         }
+      }
+   }
+});
+
+metaDataOperations.push({
+   updateMany: {
+      filter: {
+         "templateCode": "7"
+      },
+      update: {
+         $push: {
+            "workflow":{
+                      "type": "storyFirstStatusKPI154",
+                      "value": [
+                          "Open"
+                      ]
+                  }
          }
       }
    }
