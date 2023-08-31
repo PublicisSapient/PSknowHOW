@@ -37,4 +37,7 @@ public class Branches {
     private long mergeRequests;
     private double grade;
     private double average;
+    private double hours;
+    @JsonProperty("lines_change")
+    private long linesChanged;
 }

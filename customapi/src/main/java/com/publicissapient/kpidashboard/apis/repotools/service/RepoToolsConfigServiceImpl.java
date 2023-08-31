@@ -205,15 +205,18 @@ public class RepoToolsConfigServiceImpl {
 	 * @param basicProjectConfigId
 	 * @return
 	 */
-	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool, String basicProjectConfigId) {
+	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool,
+			String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
 		long count = toolList.stream()
 				.filter(projectToolConfig -> projectToolConfig.getToolName().equals(CommonConstant.REPO_TOOLS)).count();
 		repoToolsClient = createRepoToolsClient();
 		if (count > 1) {
+
 			// delete only the repository
 			httpStatus = repoToolsClient.deleteRepositories(tool.getRepositoryName(), customApiConfig.getRepoToolURL(),
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+
 		} else {
 			// delete the project from repo tool if only one repository is present
 			ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);

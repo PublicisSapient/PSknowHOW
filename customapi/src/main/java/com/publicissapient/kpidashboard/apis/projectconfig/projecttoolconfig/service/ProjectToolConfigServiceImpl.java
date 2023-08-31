@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
@@ -72,7 +73,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	@Autowired
 	private ToolDataCleanUpServiceFactory dataCleanUpServiceFactory;
 	@Autowired
-	private ProjectBasicConfigRepository projectBasicConfigRepository;
+	private ConfigHelperService configHelperService;
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
@@ -480,6 +481,10 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	public boolean cleanToolData(String basicProjectConfigId, String projectToolId) {
 		ProjectToolConfig tool = toolRepository.findById(projectToolId);
 		if (isValidTool(basicProjectConfigId, tool)) {
+			if (isRepoTool(tool)) {
+				repoToolsConfigService.deleteRepoToolProject(configHelperService.getProjectConfig(basicProjectConfigId),
+						true);
+			}
 			cleanData(tool);
 			return true;
 		} else {

@@ -413,16 +413,10 @@ public enum KPICode {
      * Backlog Issue Count By Status
      */
     BACKLOG_ISSUE_COUNT_BY_STATUS("kpi151", KPISource.JIRA.name()),
-    /**
-     * Backlog Issue Count By Type
-     */
-    BACKLOG_COUNT_BY_ISSUE_TYPE("kpi152", KPISource.JIRA.name()),
-
-    PICKUP_TIME("kpi154", KPISource.BITBUCKET.name()),
-    REPO_TOOL_MEAN_TIME_TO_MERGE("kpi155", KPISource.BITBUCKET.name()),
-    REPO_TOOL_NUMBER_OF_CHECK_INS("kpi157", KPISource.BITBUCKETKANBAN.name()),
-
-    REPO_TOOL_CODE_COMMIT("kpi156", KPISource.BITBUCKET.name()),
+	/**
+	 * Backlog Issue Count By Type
+	 */
+	BACKLOG_COUNT_BY_ISSUE_TYPE("kpi152", KPISource.JIRA.name()),
 	/**
 	 * PI Predictability
 	 */
@@ -430,8 +424,27 @@ public enum KPICode {
     /**
      *
      */
-    DAILY_STANDUP_VIEW("kpi154", KPISource.JIRA.name());
-
+    DAILY_STANDUP_VIEW("kpi154", KPISource.JIRA.name()),
+    /**
+     * Mean Time To Merge
+     */
+    REPO_TOOL_MEAN_TIME_TO_MERGE("kpi158", KPISource.BITBUCKET.name()),
+    /**
+     * Number of Check-ins
+     */
+    REPO_TOOL_NUMBER_OF_CHECK_INS("kpi159", KPISource.BITBUCKETKANBAN.name()),
+    /**
+     * Check-Ins & Merge Requests
+     */
+    REPO_TOOL_CODE_COMMIT("kpi157", KPISource.BITBUCKET.name()),
+    /**
+     * Pickup Time
+     */
+    PICKUP_TIME("kpi160", KPISource.BITBUCKET.name()),
+    /**
+     * PR Size
+     */
+    PR_SIZE("kpi162", KPISource.BITBUCKET.name());
 
     // @formatter:on
 

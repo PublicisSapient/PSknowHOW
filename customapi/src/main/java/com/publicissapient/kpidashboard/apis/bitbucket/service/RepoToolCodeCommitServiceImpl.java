@@ -63,7 +63,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object>, Map<String, Object>> {
 
-	private static final String YYYYMMDD = "yyyy-MM-dd";
 	private static final String NO_CHECKIN = "No. of Check in";
 	private static final String NO_MERGE = "No. of Merge Requests";
 	public static final String REPO_TOOLS_COMMIT_KPI = "repo-activity-bulk/";
@@ -74,9 +73,6 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 
 	@Autowired
 	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
@@ -220,10 +216,10 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	private void aggCommitAndMergeCount(Map<String, Long> aggCommitCountForRepo, Map<String, Long> aggMergeCountForRepo,
 			Map<String, Long> commitCountForRepo, Map<String, Long> mergeCountForRepo) {
 		if (MapUtils.isNotEmpty(commitCountForRepo)) {
-			aggCommitCountForRepo.putAll(commitCountForRepo);
+			commitCountForRepo.forEach((key, value) -> aggCommitCountForRepo.merge(key, value, Long::sum));
 		}
 		if (MapUtils.isNotEmpty(mergeCountForRepo)) {
-			aggMergeCountForRepo.putAll(mergeCountForRepo);
+			mergeCountForRepo.forEach((key, value) -> aggMergeCountForRepo.merge(key, value, Long::sum));
 		}
 	}
 
