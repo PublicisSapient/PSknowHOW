@@ -20,12 +20,9 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -49,7 +46,6 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -86,19 +82,11 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, 
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Defect count by RCA Release -> Requested sprint : {}", leafNode.getName());
-			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
-			Set<String> defectType = new HashSet<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 
 			if (null != fieldMapping) {
-				Map<String, Set<String>> mapOfProjectFilters = new LinkedHashMap<>();
-				if (fieldMapping.getJiradefecttype() != null) {
-					defectType.addAll(fieldMapping.getJiradefecttype());
-				}
-				defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
-				mapOfProjectFilters.put(basicProjectConfigId, defectType);
-				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(mapOfProjectFilters);
+				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping);
 				resultListMap.put(TOTAL_DEFECT, releaseDefects);
 			}
 		}
@@ -161,7 +149,7 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, 
 					middleOverallData.setData(latestRelease.getProjectFilter().getName());
 					middleOverallData.setValue(trendValueListOverAll);
 					middleTrendValueListOverAll.add(middleOverallData);
-					populateExcelDataObject(requestTrackerId, excelData, totalDefects,fieldMapping);
+					populateExcelDataObject(requestTrackerId, excelData, totalDefects, fieldMapping);
 
 					IterationKpiValue filterDataOverall = new IterationKpiValue(CommonConstant.OVERALL,
 							middleTrendValueListOverAll);

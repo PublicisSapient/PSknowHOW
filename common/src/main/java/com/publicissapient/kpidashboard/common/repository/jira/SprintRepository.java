@@ -99,8 +99,4 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	 */
 	@Query(value = "{ 'sprintID' : { $in: ?0 } }", fields = "{ 'sprintID' : 1, 'state' : 1 }")
 	List<SprintDetails> findBySprintIDInGetStatus(List<String> sprintIDs);
-
-	@Query(value = "{ 'originalSprintId' : { $in: ?0 }, 'basicProjectConfigId' : ?1, 'state' : 'CLOSED'}", fields = "{ 'originalSprintId':1, 'sprintName' : 1 }")
-	List<SprintDetails> findByOriginalSprintIdInAndBasicProjectConfigId(Set<String> originalSprintIds,
-			ObjectId basicProjectConfigId);
 }
