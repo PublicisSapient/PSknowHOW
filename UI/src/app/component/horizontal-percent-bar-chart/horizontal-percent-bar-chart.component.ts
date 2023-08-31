@@ -12,7 +12,7 @@ declare const require: any;
 export class HorizontalPercentBarChartComponent implements OnChanges {
   @Input() data = [];
   unmodifiedDataCopy = [];
-  @Input() isOnTooltip: boolean = false;
+  @Input() isDrilledDown: boolean = false;
   selectedGroup = '';
   @ViewChild('popupHost', { read: ViewContainerRef })
   popupHost!: ViewContainerRef;
@@ -21,34 +21,36 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
   @HostListener('window:resize')
   onWindowResize() {
-    this.draw();
+    this.draw(this.data);
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data']) {
+      this.isDrilledDown = false;
       this.elem = this.viewContainerRef.element.nativeElement;
-      if (!this.isOnTooltip)
+      if (!this.isDrilledDown)
         this.data = require('../../../test/resource/horizontalDistributionChart.json');;
-      this.unmodifiedDataCopy = JSON.parse(JSON.stringify(this.data));
-      if (!this.isOnTooltip)
+      if (!this.isDrilledDown) {
         this.data = this.data[0]['value'];
-      this.draw();
+        this.unmodifiedDataCopy = JSON.parse(JSON.stringify(this.data));
+      }
+      this.draw(this.data);
       d3.select('.tooltip-chart-container').select('app-horizontal-percent-bar-chart').remove();
     }
   }
 
-
-  draw() {
+  draw(data, selectedNode = '') {
     let self = this;
     const elem = this.elem;
     let chartContainerWidth = (document.getElementById('chart')?.offsetWidth ? document.getElementById('chart')?.offsetWidth : 485);
     chartContainerWidth = chartContainerWidth <= 490 ? chartContainerWidth : chartContainerWidth - 70;
-    const chart = self.isOnTooltip ? d3.select('.tooltip-chart-container').append('div').attr('id', 'chart2') : d3.select('#chart');
+    const chart = d3.select('#chart');
     chart.select('.chart-container').select('svg').remove();
     chart.select('.chart-container').remove();
     const margin = { top: 10, right: 22, bottom: 20, left: 100 };
     const width = chartContainerWidth - margin.left - margin.right;
-    const height = 180 - margin.top - margin.bottom;
+    const height = !this.isDrilledDown ? 180 - margin.top - margin.bottom : 100;
+
     // append the svg object to the body of the page
     const svg = chart
       .append('div')
@@ -60,10 +62,10 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
 
-    // let subgroups = Object.keys(this.data[0]['value']);
-    const groups = this.data.map(d => d.kpiGroup);
+    // let subgroups = Object.keys(data[0]['value']);
+    const groups = this.isDrilledDown ? ['(' + selectedNode['data']['kpiGroup'] + ')', data.map(d => d.kpiGroup)[0]] : data.map(d => d.kpiGroup);
     let subgroups = [];
-    this.data[0]['value'].forEach((element) => {
+    data[0]['value'].forEach((element) => {
       for (var property in element) {
         if (property !== 'distribution') {
           subgroups.push(property);
@@ -101,7 +103,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
     // Add Y axis
     const yAxis = svg.append('g')
-      .attr('calss', 'yAxis')
+      .attr('class', 'yAxis')
       .call(d3.axisLeft(y).tickSize(0));
 
     yAxis.selectAll('text')
@@ -115,12 +117,12 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     // color palette = one color per subgroup
     const color = d3.scaleOrdinal()
       .domain(subgroups)
-      .range(subgroups.length > 2 ? d3.schemeSpectral[subgroups.length] : ['#4472C4', '#F4AA46', '#7FBD7F'])
+      .range(subgroups.length > 3 ? d3.schemePaired : ['#4472C4', '#F4AA46', '#7FBD7F'])
       .unknown("#ccc");
 
     // Normalize the data -> sum of each group must be 100!
-    if (!self.isOnTooltip) {
-      this.data.forEach((d) => {
+    if (!self.isDrilledDown) {
+      data.forEach((d) => {
         let tot = 0;
         for (const i in subgroups) {
           const name = subgroups[i];
@@ -132,7 +134,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
         }
       });
     } else {
-      this.data.forEach((d) => {
+      data.forEach((d) => {
         let tot = 0;
         for (const i in subgroups) {
           const name = subgroups[i];
@@ -148,8 +150,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     //stack the data? --> stack per subgroup
     const stackedData = d3.stack()
       .keys(subgroups)
-      (this.data);
-
+      (data);
 
     // Show the bars
     svg.append('g')
@@ -160,18 +161,21 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .attr('fill', d => {
         return color(d.key);
       })
-      .on('mouseover', (event, d) => {
-        if (!self.isOnTooltip) {
+      .on('click', (event, d) => {
+        if (!self.isDrilledDown) {
+          self.isDrilledDown = true;
           let key = d['key'];
-          self.showDistributionChart(event, d[0].data.value.filter((val) => val.hasOwnProperty(key))[0].distribution);
-          this.showLegend(subgroups, width, margin, color, elem);
-        }
-      })
-      .on('mouseout', (event, d) => {
-        if (!self.isOnTooltip) {
-          self.popupHost.clear();
-          d3.select('#chart2').remove();
-          d3.select('.tooltip-chart-container').style('display', 'none');
+          let kpiGroup = event.target.__data__.data.kpiGroup;
+          let selectedNode = d.filter((x) => x.data['kpiGroup'] === kpiGroup)[0];
+          // self.showDistributionChartOnTooltip(event, d[0].data.value.filter((val) => val.hasOwnProperty(key))[0].distribution);
+          data = [selectedNode.data.value.filter((val) => val.hasOwnProperty(key))[0].distribution];
+          this.draw(data, selectedNode);
+          d3.select(elem).select('#back_icon').style('display', 'block')
+            .on('click', (event, d) => {
+              this.isDrilledDown = false;
+              this.draw(this.unmodifiedDataCopy);
+              d3.select(elem).select('#back_icon').style('display', 'none');
+            });
         }
       })
       .selectAll('rect')
@@ -179,31 +183,44 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .join('rect')
       .attr('x', d => x(d[0]))
       .attr('y', d => y(d.data.kpiGroup))
-      .attr('width', d => x(d[1]) - x(d[0]))
-      .attr('height', y.bandwidth())
-      .style('cursor', 'pointer')
       .on('mouseover', (event, d) => {
         this.selectedGroup = d.data.kpiGroup;
-        const tooltipData = this.data.filter(tooltip => tooltip.kpiGroup === this.selectedGroup)[0];
-        d3.select(elem).select('#chart').select('#legendContainer').selectAll('div').remove();
-        this.showTooltip(subgroups, width, margin, color, tooltipData, elem);
+        if (!this.isDrilledDown) {
+          const tooltipData = data.filter(tooltip => tooltip.kpiGroup === this.selectedGroup)[0];
+          d3.select(elem).select('#chart').select('#legendContainer').selectAll('div').remove();
+          this.showTooltip(subgroups, width, margin, color, tooltipData, elem, height);
+        }
       })
       .on('mouseout', (event, d) => {
-        d3.select(elem).select('#chart').select('#legendContainer').selectAll('div').remove();
-        this.showLegend(subgroups, width, margin, color, elem);
-      });
+        if (!this.isDrilledDown) {
+          d3.select(elem).select('#chart').select('#legendContainer').selectAll('div').remove();
+          this.showLegend(subgroups, width, margin, color, elem, data, height);
+        }
+      })
+      .attr('height', y.bandwidth());
 
-    this.showLegend(subgroups, width, margin, color, elem);
+    if (this.isDrilledDown) {
+      svg.selectAll('rect')
+        .transition()
+        .ease(d3.easeLinear)
+        .duration(200)
+        .delay(function (d, i) { return i * 200 }) //a different delay for each rect
+        .attr('width', d => x(d[1]) - x(d[0]))
+        .style('cursor', this.isDrilledDown ? 'default' : 'pointer')
+    } else {
+      svg.selectAll('rect')
+        .attr('width', d => x(d[1]) - x(d[0]))
+        .style('cursor', this.isDrilledDown ? 'default' : 'pointer')
+    }
 
+
+
+    this.showLegend(subgroups, width, margin, color, elem, data, height);
   }
 
-  showLegend(subgroups, width, margin, color, elem) {
+  showLegend(subgroups, width, margin, color, elem, data, height) {
     let legendDiv;
-    if (!this.isOnTooltip) {
-      legendDiv = d3.select(elem).select('#chart').select('#legendContainer')
-    } else {
-      legendDiv = d3.select('#chart2').append('div').attr('id', 'legendContainer')
-    }
+    legendDiv = d3.select(elem).select('#chart').select('#legendContainer');
 
     legendDiv
       .style('margin-top', '20px')
@@ -217,26 +234,23 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .attr('class', 'p-d-flex p-flex-wrap normal-legend');
 
     let htmlString = '';
-    if (!this.isOnTooltip) {
+    if (!this.isDrilledDown) {
       subgroups.forEach((d, i) => {
         htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> <span class="p-m-1" style="font-weight:bold">: ${d}</span></div>`;
       });
     } else {
-      console.log(this.data);
       subgroups.forEach((d, i) => {
-        htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> <span class="p-m-1" style="font-weight:bold">: ${d} (${this.data[0].value.filter((val) => val.hasOwnProperty(d))[0][d]})</span></div>`;
+        htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> <span class="p-m-1" style="font-size: 10px; font-weight:bold;">: ${d} 
+        (${data[0].value.filter((val) => val.hasOwnProperty(d))[0][d]} | <span style="font-weight:bold">${data[0][d].toFixed(2).replace(/\.00$/, '')}%</span>)
+        </span></div>`;
       });
     }
 
     legendDiv.html(htmlString)
-    if (!this.isOnTooltip) {
-      legendDiv.style('bottom', 60 + 'px');
-    } else {
-      legendDiv.style('bottom', 20 + 'px');
-    }
+    legendDiv.style('bottom', 60 + 'px');
   }
 
-  showTooltip(subgroups, width, margin, color, tooltipData, elem) {
+  showTooltip(subgroups, width, margin, color, tooltipData, elem, height) {
     const legendDiv = d3.select(elem).select('#chart').select('#legendContainer')
       .style('margin-top', '20px')
       .attr('width', 'auto')
@@ -258,18 +272,17 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
                       </div>
                       <span class="p-m-1" style="font-weight:bold">: ${d}</span>
                     </div>
-                    <div style="font-size: 0.75rem;">${tooltipData.kpiGroup}: <span style="color:${color(d)}; font-weight:bold">${tooltipData['value'][d]}</span></div>
+                    <div style="font-size: 0.75rem;">${tooltipData.kpiGroup}: <span style="color:${color(d)}; font-weight:bold">${tooltipData['value'].filter((x) => x.hasOwnProperty(d))[0][d]}</span></div>
                     <div style="font-size: 0.75rem;">Percentage: <span style="color:${color(d)} ; font-weight:bold">${tooltipData[d].toFixed(2).replace(/\.00$/, '')}%</span></div>
                     </div>`;
     });
 
     legendDiv.html(htmlString)
-      .style('bottom', 30 + 'px');
+      .style('bottom', 60 + 'px');
   }
 
-
-  showDistributionChart(event, d) {
-    console.log(event);
+  // Required for dynamic component only; not in use right now
+  showDistributionChartOnTooltip(event, d) {
     let variableWidthOffset = document.documentElement.clientWidth > 1500 ? -200 : 200;
     // position the tooltip
     const xPosition = event.screenX;

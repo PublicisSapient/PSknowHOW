@@ -25,7 +25,6 @@
 
 :host::ng-deep .legend_item {
     margin-right: 10px;
-    margin-top: 8px;
     display: flex;
     align-items: center;
   }
@@ -47,4 +46,11 @@
     background-color: #fff;
     border: 2px solid #BDBDBD;
     border-radius: 5px;
+    display: none;
+  }
+
+  #back_icon {
+    display: none;
+    margin: 10px;
+    cursor: pointer;
   }
