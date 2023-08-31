@@ -1,0 +1,15 @@
+.tool-tip {
+    position: absolute;
+    text-align: left;
+    min-width: 200px;
+    max-width: 280px;
+    line-height: 1.5;
+    color: var(--color-white);
+    z-index: 8;
+    white-space: pre-line;
+    box-shadow: none;
+    font-size: 0.875rem;
+    background: rgba(97, 97, 97, 0.9);
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
