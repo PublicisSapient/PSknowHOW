@@ -1236,7 +1236,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
 				Collections.sort(sprints, JiraIssueClientUtil.SPRINT_COMPARATOR);
 				setSprintData(sprints, jiraIssue, sValue, projectConfig, sprintDetailsSet);
-			} catch (ParseException | JSONException e) {
+			} catch (JSONException e) {
 				log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
 			}
 		}
