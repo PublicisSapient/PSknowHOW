@@ -29,7 +29,6 @@ import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -73,10 +72,6 @@ public class ProcessorServiceImpl implements ProcessorService {
 	private ProcessorUrlConfig processorUrlConfig;
 	@Autowired
 	SprintTraceLogRepository sprintTraceLogRepository;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
-
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
 

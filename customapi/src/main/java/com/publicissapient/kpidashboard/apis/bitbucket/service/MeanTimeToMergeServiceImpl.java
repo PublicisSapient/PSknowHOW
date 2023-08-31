@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
-import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;

@@ -327,11 +327,6 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 	}
 
 	@Override
-	public List<Object> calculateTrendMetrics(Map<String, Object> stringObjectMap) {
-		return super.calculateTrendMetrics(stringObjectMap);
-	}
-
-	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
 		return calculateKpiValueForLong(valueList, kpiId);
 	}
@@ -339,6 +334,6 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		return null;
+		return new HashMap<>();
 	}
 }
