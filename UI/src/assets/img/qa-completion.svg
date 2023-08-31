@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48" height="48" viewBox="0 0 48 48">
+  <defs>
+    <filter id="Ellipse_201" x="0" y="0" width="48" height="48" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_2621" data-name="Group 2621" transform="translate(-6542.04 -1761.967)">
+    <g transform="matrix(1, 0, 0, 1, 6542.04, 1761.97)" filter="url(#Ellipse_201)">
+      <circle id="Ellipse_201-2" data-name="Ellipse 201" cx="15" cy="15" r="15" transform="translate(9 6)" fill="#437495"/>
+    </g>
+    <path id="Path_761" data-name="Path 761" d="M11.366,10.362h-.529l-.187-.181a4.357,4.357,0,1,0-.469.469l.181.187v.529l3.347,3.34,1-1-3.34-3.347Zm-4.016,0a3.012,3.012,0,1,1,3.012-3.012A3.008,3.008,0,0,1,7.351,10.362Z" transform="translate(6551.888 1770.474)" fill="#fff"/>
+    <line id="Line_480" data-name="Line 480" x2="8" y2="8" transform="translate(6569.38 1781.967)" fill="none" stroke="#fff" stroke-width="2"/>
+    <line id="Line_481" data-name="Line 481" x1="7.5" y2="8" transform="translate(6569.88 1781.967)" fill="none" stroke="#fff" stroke-width="2"/>
+  </g>
+</svg>

@@ -48,6 +48,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	private String fieldCategory;
 	private String section;
 	private boolean processorCommon;
+	private boolean readOnly;
 	private MappingToolTip tooltip;
 	private List<Options> options;
 	private List<String> filterGroup;

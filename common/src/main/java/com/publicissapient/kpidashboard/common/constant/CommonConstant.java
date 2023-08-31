@@ -50,6 +50,7 @@ public final class CommonConstant {
 	public static final String TICKET_COUNT_ISSUE_TYPE = "ticketCountIssueType";
 
 	public static final String FIRST_STATUS = "firststatus";
+	public static final String FIRST_DEV_STATUS = "firstDevstatus";
 	public static final String OPEN = "Open";
 	public static final String CLOSED = "Closed";
 	public static final String FUTURE = "FUTURE";
@@ -210,6 +211,7 @@ public final class CommonConstant {
 	public static final String JIRADODKPI152="jiraDodKPI152";
 	public static final String JIRADODKPI151="jiraDodKPI151";
 	public static final String JIRADODKPI37="jiraDodKPI37";
+	public static final String JIRASTARTDEVKPI54="jiraStatusStartDevelopmentKPI154";
 	public static final String JIRAISSUETYPEKPI35="jiraIssueTypeKPI35";
 	public static final String JIRADEFECTREMOVALISSUETYPEKPI34="jiraDefectRemovalIssueTypeKPI34";
 	public static final String JIRATESTAUTOMATIONISSUETYPE="jiraTestAutomationIssueType";
@@ -295,6 +297,7 @@ public final class CommonConstant {
 	public static final String JIRASTATUSFORINPROGRESSKPI128="jiraStatusForInProgressKPI128";
 	public static final String JIRASTATUSFORINPROGRESSKPI123="jiraStatusForInProgressKPI123";
 	public static final String JIRASTATUSFORINPROGRESSKPI119="jiraStatusForInProgressKPI119";
+	public static final String JIRASTATUSFORINPROGRESSKPI154="jiraStatusForInProgressKPI154";
 
 	public static final String JIRASTORYPOINTSCUSTOMFIELD="jiraStoryPointsCustomField";
 	public static final String EPICCOSTOFDELAY="epicCostOfDelay";

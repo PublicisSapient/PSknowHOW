@@ -173,4 +173,8 @@ public interface JiraIssueRepository
 
 	Set<JiraIssue> findByBasicProjectConfigIdAndDefectStoryIDInAndOriginalTypeIn(String basicProjectConfigID,
 			Set<String> storyIDs, List<String> originalType);
+
+	Set<JiraIssue> findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(String configId,
+			Set<String> parentStoryIds, List<String> originalTypes);
+
 }

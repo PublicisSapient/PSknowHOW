@@ -1328,6 +1328,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
     this.httpService.getShowHideKpi().subscribe(response => {
+      this.service.setSideNav(true);
+      this.service.setVisibleSideBar(true);
       this.service.setDashConfigData(response.data);
       this.kpiListData = response.data;
       this.getNotification();

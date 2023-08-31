@@ -2,7 +2,7 @@
 
     <!-- filter section -->
     <section class="filter-header">
-        <ng-container *ngIf="selectedUser === 'Overall'">
+        <ng-container *ngIf="selectedUser === 'Overall' else assignee">
             <ng-container *ngFor="let filter of filterData">
                 <ng-container [ngSwitch]="filter?.filterType">
                     <div class="filters" *ngSwitchCase="'singleSelect'">
@@ -18,21 +18,36 @@
               
             </ng-container>
         </ng-container>
-
-       
+        <ng-template #assignee>
+            <p-button (click)="setSelectedUser('Overall','')">Back to Dashboard</p-button>
+        </ng-template>
         <p-button (click)="handleViewExpandCollapse()">{{displayModal ? 'Collapse' : 'Expand'}} </p-button>
     </section>
 
     <!-- user filter section -->
     <section class="p-d-flex p-w-100 p-align-center">
-        <div class="user-filter" [ngClass]="{'show-less': showLess}">
-            <p-button class="p-m-1" [ngClass]="{'selected-user' : selectedUser === 'Overall'}" (click)="setSelectedUser('Overall')"><span class="filter-user">Overall</span></p-button>
-            <p-button  class="p-m-1" *ngFor="let assignee of assigneeList" [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" (click)="setSelectedUser(assignee.assigneeId)"><span class="filter-user">{{assignee.assigneeName}}</span></p-button>
-            <p-button class="p-m-1" *ngIf="!showLess" (click)="setShowLess()">Show fewer...</p-button>
+        <div class="user-filter">
+            <button  *ngFor="let assignee of assigneeList" 
+            (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)" 
+            [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
+            [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}"
+            class="assignee">
+                {{getNameInitials(assignee.assigneeName)}}
+            </button>
         </div>
-        <div *ngIf="showLess" class="p-p-3 show-more" [style]="{'height':'62px'}">
-            <p-button class="p-m-1" (click)="setShowLess()">Show More...</p-button>
-        </div>
+    </section>
+
+    <!-- assignee capacity info -->
+    <section *ngIf="selectedUserInfo" class="selected-user-info">
+        <span class="p-mr-5">
+            <h4 class="p-mb-1 font-grey font-bold">{{selectedUserInfo.assigneeName}}</h4>
+            <p class="p-mt-2 font-bold">{{selectedUserInfo.role}}</p>
+        </span>
+        <sapn *ngFor="let col of columns" class="p-mr-5">
+            <h4 class="p-mb-1 font-grey font-bold">{{col}}</h4>
+            <p class="p-mt-2 font-bold">{{convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value'],selectedUserInfo.cardDetails[col]['unit'])}} {{(selectedUserInfo.cardDetails[col]['unit'] !== 'day' && selectedUserInfo.cardDetails[col]['value'] !== '-')  ? selectedUserInfo.cardDetails[col]['unit'] : ''}}
+                {{selectedUserInfo.cardDetails[col]['value1'] ? ' / ' + selectedUserInfo.cardDetails[col]['value1'] +' '+ selectedUserInfo.cardDetails[col]['unit1'] : ''}} </p>
+        </sapn>
     </section>
 
     <!-- Capacity Info table -->
@@ -48,8 +63,8 @@
             <tr>
                 <th>{{totals['Team Member']}}</th>
                 <th *ngFor="let col of columns">
-                    {{totals[col]?.value}} {{totals[col]?.unit !== 'day' ? totals[col].unit : ''}}
-                    {{totals[col]?.unit1 ? ' / ' + totals[col]?.value1 +' '+ totals[col].unit1 : ''}}
+                    {{totals[col]?.value}} {{totals[col]?.unit !== 'day' ? totals[col]?.unit : ''}}
+                    {{totals[col]?.unit1 ? ' / ' + totals[col]?.value1 +' '+ totals[col]?.unit1 : ''}}
                 </th>
             </tr>
         </ng-template>
@@ -68,7 +83,7 @@
    <!-- Assignee Issue details -->
    <ng-template #userInfo>
     <section class="user-info p-m-2">
-        <h1 [style]="{'text-align': 'center'}">User issue details</h1>
+       <app-assignee-board [issueDataList]="currentAssigneeissueData"></app-assignee-board>
     </section>
    </ng-template>
 </main>

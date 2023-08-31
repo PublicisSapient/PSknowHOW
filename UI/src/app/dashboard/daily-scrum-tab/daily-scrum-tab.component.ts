@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-daily-scrum-tab',
@@ -10,15 +11,18 @@ export class DailyScrumTabComponent implements OnInit {
   @Input() filterData;
   @Input() assigneeList = [];
   @Input() columns =[];
+  @Input() issueData =[];
   displayModal = false;
   showLess = true;
   selectedRole =null;
   selectedUser = 'Overall';
   filters={};
 
-  constructor() { }
+  constructor(private sharedService: SharedService) { }
 
   ngOnInit(): void {
+    this.sharedService.setVisibleSideBar(false);
+    this.sharedService.setSideNav(false);
   }
 
   setExpandView(e){
@@ -35,6 +39,6 @@ export class DailyScrumTabComponent implements OnInit {
   }
 
   onSelectedUserChange(selectedUser){
-    this.selectedUser = selectedUser;
+    this.selectedUser = this.selectedUser === selectedUser ? 'Overall' : selectedUser ;
   }
 }

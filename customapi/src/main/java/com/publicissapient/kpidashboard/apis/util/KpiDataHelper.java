@@ -936,4 +936,13 @@ public final class KpiDataHelper {
 		resultMap.put(Constant.COUNT, value);
 		return resultMap;
 	}
+
+	public static List<JiraIssue> getFilteredJiraIssue(List<String> issueNumberList, List<JiraIssue> allJiraIssues) {
+		List<JiraIssue> filteredNotCompletedJiraIssue= new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(issueNumberList) && CollectionUtils.isNotEmpty(allJiraIssues)){
+			filteredNotCompletedJiraIssue = allJiraIssues.stream()
+					.filter(jiraIssue -> issueNumberList.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+		}
+		return filteredNotCompletedJiraIssue;
+	}
 }
