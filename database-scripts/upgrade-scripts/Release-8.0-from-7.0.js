@@ -3708,9 +3708,8 @@ db.getCollection('field_mapping_structure').insertMany([
 
 // KPI add Lead time for changes in DORA tab
 db.kpi_master.bulkWrite([{
-   insertOne: {
+    insertOne: {
      document: {
- {
     "kpiId": "kpi156",
     "kpiName": "Lead Time For Change",
     "maxValue": "100",

@@ -125,11 +125,6 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
 			dataCountGroup.setFilter(envName);
 			dataCountGroup.setValue(dataList);
-			List<DataCount> dataCountValues = dataList.stream().map(dataCount -> (List<DataCount>) dataCount.getValue())
-					.flatMap(List::stream).collect(Collectors.toList());
-			List<Long> values = dataCountValues.stream().map(dataCount -> (Long) dataCount.getValue())
-					.collect(Collectors.toList());
-			dataCountGroup.setAggregationValue(String.valueOf(AggregationUtils.percentilesLong(values, 90d)));
 			dataCountGroups.add(dataCountGroup);
 		});
 		kpiElement.setTrendValueList(dataCountGroups);

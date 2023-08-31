@@ -42,8 +42,6 @@ public class DataCountGroup implements Serializable {
 	private String filter1;
 	private String filter2;
 	private List<DataCount> value;
-	//dora dashboard
-	private String aggregationValue;
 	// releaseBurnup kpi
 	private String duration;
 

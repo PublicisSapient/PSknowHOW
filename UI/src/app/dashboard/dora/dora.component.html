@@ -82,7 +82,7 @@
                   <h4 class="p-m-0">Change Failure Rate</h4>
                   <div
                     *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0); else noData1">
-                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi116']?.[0]?.aggregationValue}}</div>
+                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi116']?.[0]?.maturityValue}}</div>
                   </div>
                   <ng-template #noData1>
                     <div class="overlay"
@@ -98,7 +98,7 @@
                 <div class="kpi-summary p-p-3 position-relative">
                   <h4 class="p-m-0">Deployment Frequency</h4>
                   <div *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0); else noData2">
-                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi118']?.[0]?.aggregationValue}}</div>
+                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi118']?.[0]?.maturityValue}}</div>
                   </div>
                   <ng-template #noData2>
                     <div class="overlay"
@@ -191,10 +191,10 @@
                               (reloadKPITab)="reloadKPI($event)" [board]="'dora'">
                   <ng-container *ngIf="!noTabAccess else noDataAccess">
                     <ng-container
-                      *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
+                      *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData4">
                       <div class="p-pl-3 p-pr-3" *ngIf="ifKpiExist('kpi156') != -1; else loader">
                         <ng-container
-                          *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList['kpi156']?.length>0); else noData">
+                          *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList['kpi156']?.length>0); else noData4">
                           <ng-container *ngIf="showChart">
                             <app-multiline
                               [thresholdValue]="updatedConfigDataObj['kpi156']?.kpiDetail?.thresholdValue"
@@ -210,7 +210,7 @@
                         </ng-container>
                       </div>
                     </ng-container>
-                    <ng-template #noData>
+                    <ng-template #noData4>
                       <div class="overlay"
                            *ngIf="(kpiChartData['kpi156'] && kpiChartData['kpi156']?.length) || kpiLoader">
                         <div class="loading-img"></div>
@@ -230,12 +230,12 @@
               </div>
               <div class="p-sm-2">
                 <div class="kpi-summary p-p-3 position-relative">
-                  <h4 class="p-m-0">Lead Time For Change{{kpiChartData['kpi156']?.[0]?.aggregationValue}}</h4>
+                  <h4 class="p-m-0">Lead Time For Change</h4>
                   <div
-                    *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList?.length>0); else noData3">
-                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi156']?.[0]?.aggregationValue}}</div>
+                    *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList['kpi156']?.length>0); else noData5">
+                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi156']?.[0]?.maturityValue}}</div>
                   </div>
-                  <ng-template #noData3>
+                  <ng-template #noData5>
                     <div class="overlay"
                          *ngIf="(kpiChartData['kpi156'] && kpiChartData['kpi156']?.length > 0) || kpiLoader">
                       <div class="loading-img"></div>
