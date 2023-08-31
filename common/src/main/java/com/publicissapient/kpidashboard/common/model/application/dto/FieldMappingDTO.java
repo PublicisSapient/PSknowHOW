@@ -52,9 +52,12 @@ public class FieldMappingDTO extends BasicModel {
 	private String atmQueryEndpoint;
 	private String sprintName;
 	private String epicName;
+	public static final String DEFECT = "Defect";
+	public static final String BUG = "Bug";
 	public static final String DONE = "Done";
 	public static final String CLOSED = "Closed";
-	private List<String> jiradefecttype;
+	@Builder.Default
+	private List<String> jiradefecttype = Arrays.asList(DEFECT, BUG);
 	private String epicLink;
 	private List<String> jiraSubTaskDefectType;
 
