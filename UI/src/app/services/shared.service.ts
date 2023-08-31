@@ -63,7 +63,7 @@ export class SharedService {
   changedMainDashboardValueSub = new Subject<any>();
   changedMainDashboardValueObs = this.changedMainDashboardValueSub.asObservable();
   currentSelectedSprintSub = new Subject<any>();
-  currentSelectedSprintObs = this.currentSelectedSprintSub.asObservable();
+  currentSelectedSprint;
   mapColorToProject = new BehaviorSubject<any>({});
   mapColorToProjectObs = this.mapColorToProject.asObservable();
   selectedFilterOption = new BehaviorSubject<any>({});
@@ -101,6 +101,11 @@ export class SharedService {
 
 
   ngOnInit() {
+  }
+
+  setCurrentSelectedSprint(selectedSprint){
+    this.currentSelectedSprint = selectedSprint;
+    this.currentSelectedSprintSub.next(selectedSprint);
   }
 
   setSelectedTypeOrTabRefresh(selectedTab, selectedType) {

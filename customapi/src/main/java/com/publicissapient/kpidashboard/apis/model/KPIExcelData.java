@@ -334,6 +334,15 @@ public class KPIExcelData {
 	@JsonProperty("Initial Commitment")
 	private String initialCommited;
 
+	@JsonProperty("PI Name")
+	private String piName;
+
+	@JsonProperty("Planned Value")
+	private String plannedValue;
+
+	@JsonProperty("Achieved Value")
+	private String achievedValue;
+
 	@JsonProperty("Pickup Time (In Hours)")
 	private String pickupTime;
 

@@ -29,6 +29,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 
 import org.joda.time.DateTime;
@@ -66,6 +67,8 @@ public class DateUtil {
 
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
 	public static final String NOT_APPLICABLE = "NA";
+	public static final String D_MMM = "d-MMM";
+	public static final String D_MMM_YY = "d-MMM yy";
 
 	private DateUtil() {
 		// to prevent creation on object
@@ -244,6 +247,16 @@ public class DateUtil {
 	public static DateTime convertLocalDateTimeToDateTime(LocalDateTime dateTime) {
 		Instant instant = dateTime.atZone(ZoneId.systemDefault()).toInstant();
 		return new DateTime(instant.toEpochMilli());
+	}
+
+	public static String getWeekRange(LocalDate currentDate) {
+		LocalDate monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		LocalDate sunday = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+		String formattedMonday = monday.format(DateTimeFormatter.ofPattern(D_MMM));
+		String formattedSunday = sunday.format(DateTimeFormatter.ofPattern(D_MMM_YY));
+
+		return formattedMonday + " to " + formattedSunday;
 	}
 
 }

@@ -136,6 +136,9 @@
     "defectPriorityKPI14": [],
     "defectPriorityQAKPI111": [],
     "defectPriorityKPI82": [],
-    "defectPriorityKPI133": []
+    "defectPriorityKPI133": [],
+    "jiraIssueEpicTypeKPI153" : [ "Epic" ],
+    "epicPlannedValue" : "customfield_58102",
+    "epicAchievedValue" : "customfield_51002"
   }
 ]
