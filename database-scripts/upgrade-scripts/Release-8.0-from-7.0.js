@@ -3799,16 +3799,27 @@ db.getCollection('field_mapping_structure').insertMany([
             "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI",
         }
     },
-   {
-   "fieldName": "jiraSubTaskIdentification",
-   "fieldLabel": "Sub-Task Issue Types",
-   "fieldType": "chips",
-   "fieldCategory": "Issue_Type",
-   "section": "Issue Types Mapping",
-   "tooltip": {
-   "definition": "Any issue type mentioned will be considered as sub-task linked with story"
-   }
-   }
+    {
+       "fieldName": "jiraSubTaskIdentification",
+       "fieldLabel": "Sub-Task Issue Types",
+       "fieldType": "chips",
+       "fieldCategory": "Issue_Type",
+       "section": "Issue Types Mapping",
+       "tooltip": {
+       "definition": "Any issue type mentioned will be considered as sub-task linked with story"
+       }
+    },
+    {
+        "fieldName": "storyFirstStatusKPI154",
+        "fieldLabel": "Status when 'Story' issue type is created",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All issue types that identify with a Story.",
+
+        }
+    }
 ])
 // Initialize an array to store the bulk write operations
 var metaDataOperations = [];
@@ -3874,6 +3885,24 @@ metaDataOperations.push({
                   "In Progress"
                ]
             }
+         }
+      }
+   }
+});
+
+metaDataOperations.push({
+   updateMany: {
+      filter: {
+         "templateCode": "7"
+      },
+      update: {
+         $push: {
+            "workflow":{
+                      "type": "storyFirstStatusKPI154",
+                      "value": [
+                          "Open"
+                      ]
+                  }
          }
       }
    }

@@ -327,6 +327,10 @@ public class MetaDataClientImpl implements MetadataClient {
 				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI148))
 						? workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI148).get(0)
 						: CommonConstant.OPEN);
+		fieldMapping.setStoryFirstStatusKPI154(
+				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI154))
+						? workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI154)
+						: Arrays.asList(CommonConstant.OPEN));
 		fieldMapping.setJiraIssueDeliverdStatusKPI138(
 				workflowMap.getOrDefault(CommonConstant.JIRAISSUEDELIVERDSTATUSKPI138, new ArrayList<>()));
 		fieldMapping.setJiraIssueDeliverdStatusKPI126(
@@ -508,11 +512,13 @@ public class MetaDataClientImpl implements MetadataClient {
 				fieldMapping.setStoryFirstStatus(firstStatusList.get(0));
 				fieldMapping.setStoryFirstStatusKPI3(firstStatusList.get(0));
 				fieldMapping.setStoryFirstStatusKPI148(firstStatusList.get(0));
+				fieldMapping.setStoryFirstStatusKPI154(firstStatusList);
 				fieldMapping.setJiraDefectCreatedStatusKPI14(firstStatusList.get(0));
 			} else {
 				fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 				fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
 				fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
+				fieldMapping.setStoryFirstStatusKPI154(Arrays.asList(CommonConstant.OPEN));
 				fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
 			}
 			fieldMapping.setIssueStatusExcluMissingWorkKPI124(firstStatusList);
@@ -666,6 +672,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
+			fieldMapping.setStoryFirstStatusKPI154(Arrays.asList(CommonConstant.OPEN));
 			fieldMapping.setJiraIssueDeliverdStatusKPI138(
 					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
 			fieldMapping.setJiraIssueDeliverdStatusAVR(
@@ -748,6 +755,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
+			fieldMapping.setStoryFirstStatusKPI154(Arrays.asList(CommonConstant.OPEN));
 			fieldMapping.setJiraTicketResolvedStatus(
 					workflowMap.getOrDefault(CommonConstant.TICKET_RESOLVED_STATUS, new ArrayList<>()));
 			fieldMapping.setTicketDeliverdStatus(workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));

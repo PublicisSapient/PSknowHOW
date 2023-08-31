@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.azure.client.metadata;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -256,11 +257,13 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setStoryFirstStatus(firstStatusList.get(0));
 			fieldMapping.setStoryFirstStatusKPI3(firstStatusList.get(0));
 			fieldMapping.setStoryFirstStatusKPI148(firstStatusList.get(0));
+			fieldMapping.setStoryFirstStatusKPI154(firstStatusList);
 			fieldMapping.setJiraDefectCreatedStatusKPI14(firstStatusList.get(0));
 		} else {
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
+			fieldMapping.setStoryFirstStatusKPI154(Arrays.asList(CommonConstant.OPEN));
 			fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
 		}
 		fieldMapping.setRootCause(customField.get(CommonConstant.ROOT_CAUSE));

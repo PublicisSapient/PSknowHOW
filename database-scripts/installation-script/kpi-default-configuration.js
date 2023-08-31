@@ -247,6 +247,12 @@
                       ]
                   },
                   {
+                      "type": "storyFirstStatusKPI154",
+                      "value": [
+                          "Open"
+                      ]
+                  },
+                  {
                       "type": "jiraStatusForQaKPI148",
                       "value": [
                           "In Testing"

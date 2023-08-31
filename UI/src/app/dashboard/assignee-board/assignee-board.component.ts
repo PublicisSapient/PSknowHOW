@@ -9,6 +9,7 @@ import { SharedService } from 'src/app/services/shared.service';
 export class AssigneeBoardComponent implements OnInit {
 
 @Input() issueDataList =[];
+@Input() standUpStatusFilter =[];
 currentIssueIndex = 0;
 currentSprint;
 
