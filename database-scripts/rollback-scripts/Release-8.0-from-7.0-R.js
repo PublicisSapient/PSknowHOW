@@ -464,3 +464,14 @@ db.kpi_category_mapping.insertMany([
   	"kanban" : false
   },
 ]);
+
+//------------------------- 7.8.0 changes---------------------------------------------------------------
+
+db.kpi_master.bulkWrite([
+// delete Lead time for change KPI (156)
+  {
+    deleteMany: {
+      filter: { kpiId: { $in: ["kpi156"] } }
+    }
+  }
+]);

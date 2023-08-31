@@ -3689,3 +3689,45 @@ db.getCollection('kpi_category_mapping').insertOne( {
                                                     		"kpiOrder": 4,
                                                     		"kanban": false
                                                     	});
+
+//------------------------- 7.8.0 changes---------------------------------------------------------------
+
+// KPI add Lead time for changes in DORA tab
+db.kpi_master.bulkWrite([{
+   insertOne: {
+     document: {
+ {
+    "kpiId": "kpi156",
+    "kpiName": "Lead Time For Change",
+    "maxValue": "100",
+    "kpiUnit": "Days",
+    "isDeleted": "False",
+    "defaultOrder": 3,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "LEAD TIME FOR CHANGE measures the velocity of software delivery.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "LEAD TIME FOR CHANGE Captures the time between a code change commit and its deployable state."
+        }
+      ],
+      "maturityLevels": []
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Days",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+ }
+   }
+ }]);
+

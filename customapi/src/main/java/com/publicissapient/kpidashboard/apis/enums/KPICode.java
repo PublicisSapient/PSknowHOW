@@ -424,7 +424,12 @@ public enum KPICode {
     /**
      *
      */
-    DAILY_STANDUP_VIEW("kpi154", KPISource.JIRA.name());
+    DAILY_STANDUP_VIEW("kpi154", KPISource.JIRA.name()),
+
+    /**
+     * Lead Time Chnage DORA  kpi code
+     */
+    LEAD_TIME_CHANGE("kpi156", KPISource.JENKINS.name());
 
 
     // @formatter:on
