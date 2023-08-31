@@ -3690,7 +3690,21 @@ db.getCollection('kpi_category_mapping').insertOne( {
                                                     		"kanban": false
                                                     	});
 
-//------------------------- 7.8.0 changes---------------------------------------------------------------
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+// ---- New FieldMapping Field added to consider subtask defect not tagged in a release ---------------------------------------------------------------------------
+db.getCollection('field_mapping_structure').insertMany([
+    {
+            "fieldName": "jiraSubTaskDefectType",
+            "fieldLabel": "Issue type for sub-task defect",
+            "fieldType": "chips",
+            "fieldCategory": "Issue_Type",
+            "section": "Issue Types Mapping",
+            "tooltip": {
+                "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+            }
+    }
+])
+
 
 // KPI add Lead time for changes in DORA tab
 db.kpi_master.bulkWrite([{

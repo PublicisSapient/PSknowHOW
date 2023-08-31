@@ -465,7 +465,13 @@ db.kpi_category_mapping.insertMany([
   },
 ]);
 
-//------------------------- 7.8.0 changes---------------------------------------------------------------
+
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+// delete FieldMapping Field which consider subtask defect  ---------------------------------------------------------------------------
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": "jiraSubTaskDefectType"
+});
 
 db.kpi_master.bulkWrite([
 // delete Lead time for change KPI (156)
