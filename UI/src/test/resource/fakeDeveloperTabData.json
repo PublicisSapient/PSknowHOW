@@ -1,0 +1,414 @@
+[
+    {
+        "kpiId": "kpi84",
+        "kpiName": "Mean Time To Merge",
+        "unit": "Hours",
+        "maxValue": "10",
+        "chartType": "",
+        "kpiInfo": {
+            "definition": "MEAN TIME TO MERGE measures the efficiency of the code review process in a team",
+            "details": [
+                {
+                    "type": "paragraph",
+                    "value": "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "A progress indicator shows trend of Mean time to merge in last 2 weeks. A downward trend is considered positive"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "Maturity of the KPI is calculated based on the average of the last 5 weeks"
+                }
+            ],
+            "maturityLevels": [
+                {
+                    "level": "M5",
+                    "bgColor": "#6cab61",
+                    "range": "<4 Hours"
+                },
+                {
+                    "level": "M4",
+                    "bgColor": "#AEDB76",
+                    "range": "4-8 Hours"
+                },
+                {
+                    "level": "M3",
+                    "bgColor": "#eff173",
+                    "range": "8-16 Hours"
+                },
+                {
+                    "level": "M2",
+                    "bgColor": "#ffc35b",
+                    "range": "16-48 Hours"
+                },
+                {
+                    "level": "M1",
+                    "bgColor": "#F06667",
+                    "range": ">48 Hours"
+                }
+            ]
+        },
+        "id": "64da0fc3fa8e85ada337fb42",
+        "isDeleted": "False",
+        "kpiCategory": "Developer",
+        "kpiUnit": "Hours",
+        "kanban": false,
+        "kpiSource": "BitBucket",
+        "thresholdValue": 55.0,
+        "trendValueList": [
+            {
+                "filter": "Overall",
+                "value": [
+                    {
+                        "data": "KnowHOW",
+                        "value": [
+                            {
+                                "data": "1",
+                                "value": 1.0,
+                                "hoverValue": {},
+                                "date": "2023-08-25",
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "value": 0.0,
+                                "hoverValue": {},
+                                "date": "2023-08-26",
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "value": 0.0,
+                                "hoverValue": {},
+                                "date": "2023-08-27",
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "value": 0.0,
+                                "hoverValue": {},
+                                "date": "2023-08-28",
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "value": 0.0,
+                                "hoverValue": {},
+                                "date": "2023-08-29",
+                                "sprojectName": "KnowHOW"
+                            }
+                        ],
+                        "maturity": "5",
+                        "maturityValue": "0.2"
+                    }
+                ]
+            },
+            {
+                "filter": "master -> PSknowHOW -> KnowHOW",
+                "value": [
+                    {
+                        "data": "KnowHOW",
+                        "value": [
+                            {
+                                "data": "1",
+                                "value": 1.0,
+                                "hoverValue": {},
+                                "date": "2023-08-25",
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "value": 0.0,
+                                "hoverValue": {},
+                                "date": "2023-08-26",
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "value": 0.0,
+                                "hoverValue": {},
+                                "date": "2023-08-27",
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "value": 0.0,
+                                "hoverValue": {},
+                                "date": "2023-08-28",
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "data": "0",
+                                "value": 0.0,
+                                "hoverValue": {},
+                                "date": "2023-08-29",
+                                "sprojectName": "KnowHOW"
+                            }
+                        ],
+                        "maturity": "5",
+                        "maturityValue": "0.2"
+                    }
+                ]
+            }
+        ],
+        "maturityRange": [
+            "-16",
+            "16-8",
+            "8-4",
+            "4-2",
+            "2-"
+        ],
+        "groupId": 1
+    },
+    {
+        "kpiId": "kpi11",
+        "kpiName": "Check-Ins & Merge Requests",
+        "unit": "MRs",
+        "maxValue": "10",
+        "chartType": "",
+        "kpiInfo": {
+            "definition": "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down. NUMBER OF MERGE REQUESTS when looked at along with commits highlights the efficiency of the review process",
+            "details": [
+                {
+                    "type": "paragraph",
+                    "value": "It is calculated as a Count. Higher the count better is the ‘Speed’"
+                },
+                {
+                    "type": "paragraph",
+                    "value": "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive"
+                }
+            ],
+            "maturityLevels": [
+                {
+                    "level": "M5",
+                    "bgColor": "#6cab61",
+                    "range": "> 16"
+                },
+                {
+                    "level": "M4",
+                    "bgColor": "#AEDB76",
+                    "range": "8-16"
+                },
+                {
+                    "level": "M3",
+                    "bgColor": "#eff173",
+                    "range": "4-8"
+                },
+                {
+                    "level": "M2",
+                    "bgColor": "#ffc35b",
+                    "range": "2-4"
+                },
+                {
+                    "level": "M1",
+                    "bgColor": "#F06667",
+                    "range": "0-2"
+                }
+            ]
+        },
+        "id": "64da1294fa8e85ada337fb43",
+        "isDeleted": "False",
+        "kpiCategory": "Developer",
+        "kpiUnit": "MRs",
+        "kanban": false,
+        "kpiSource": "BitBucket",
+        "thresholdValue": 55.0,
+        "trendValueList": [
+            {
+                "filter": "Overall",
+                "value": [
+                    {
+                        "data": "KnowHOW",
+                        "value": [
+                            {
+                                "value": 0,
+                                "hoverValue": {
+                                    "No. of Check in": 0,
+                                    "No. of Merge Requests": 0
+                                },
+                                "date": "2023-08-29",
+                                "lineValue": 0,
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "value": 2,
+                                "hoverValue": {
+                                    "No. of Check in": 2,
+                                    "No. of Merge Requests": 1
+                                },
+                                "date": "2023-08-28",
+                                "lineValue": 1,
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "value": 1,
+                                "hoverValue": {
+                                    "No. of Check in": 1,
+                                    "No. of Merge Requests": 1
+                                },
+                                "date": "2023-08-27",
+                                "lineValue": 1,
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "value": 0,
+                                "hoverValue": {
+                                    "No. of Check in": 0,
+                                    "No. of Merge Requests": 0
+                                },
+                                "date": "2023-08-26",
+                                "lineValue": 0,
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "value": 2,
+                                "hoverValue": {
+                                    "No. of Check in": 2,
+                                    "No. of Merge Requests": 2
+                                },
+                                "date": "2023-08-25",
+                                "lineValue": 2,
+                                "sprojectName": "KnowHOW"
+                            }
+                        ],
+                        "maturity": "1",
+                        "maturityValue": "1"
+                    }
+                ]
+            },
+            {
+                "filter": "debbie_integration -> PSKnowHOW -> KnowHOW",
+                "value": [
+                    {
+                        "data": "KnowHOW",
+                        "value": [
+                            {
+                                "value": 0,
+                                "hoverValue": {
+                                    "No. of Check in": 0,
+                                    "No. of Merge Requests": 0
+                                },
+                                "date": "2023-08-29",
+                                "lineValue": 0,
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "value": 2,
+                                "hoverValue": {
+                                    "No. of Check in": 2,
+                                    "No. of Merge Requests": 0
+                                },
+                                "date": "2023-08-28",
+                                "lineValue": 0,
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "value": 1,
+                                "hoverValue": {
+                                    "No. of Check in": 1,
+                                    "No. of Merge Requests": 0
+                                },
+                                "date": "2023-08-27",
+                                "lineValue": 0,
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "value": 0,
+                                "hoverValue": {
+                                    "No. of Check in": 0,
+                                    "No. of Merge Requests": 0
+                                },
+                                "date": "2023-08-26",
+                                "lineValue": 0,
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "value": 2,
+                                "hoverValue": {
+                                    "No. of Check in": 2,
+                                    "No. of Merge Requests": 0
+                                },
+                                "date": "2023-08-25",
+                                "lineValue": 0,
+                                "sprojectName": "KnowHOW"
+                            }
+                        ],
+                        "maturity": "1",
+                        "maturityValue": "0"
+                    }
+                ]
+            },
+            {
+                "filter": "master -> PSknowHOW -> KnowHOW",
+                "value": [
+                    {
+                        "data": "KnowHOW",
+                        "value": [
+                            {
+                                "value": 0,
+                                "hoverValue": {
+                                    "No. of Check in": 0,
+                                    "No. of Merge Requests": 0
+                                },
+                                "date": "2023-08-29",
+                                "lineValue": 0,
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "value": 0,
+                                "hoverValue": {
+                                    "No. of Check in": 0,
+                                    "No. of Merge Requests": 1
+                                },
+                                "date": "2023-08-28",
+                                "lineValue": 1,
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "value": 0,
+                                "hoverValue": {
+                                    "No. of Check in": 0,
+                                    "No. of Merge Requests": 1
+                                },
+                                "date": "2023-08-27",
+                                "lineValue": 1,
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "value": 0,
+                                "hoverValue": {
+                                    "No. of Check in": 0,
+                                    "No. of Merge Requests": 0
+                                },
+                                "date": "2023-08-26",
+                                "lineValue": 0,
+                                "sprojectName": "KnowHOW"
+                            },
+                            {
+                                "value": 9,
+                                "hoverValue": {
+                                    "No. of Check in": 9,
+                                    "No. of Merge Requests": 2
+                                },
+                                "date": "2023-08-25",
+                                "lineValue": 2,
+                                "sprojectName": "KnowHOW"
+                            }
+                        ],
+                        "maturity": "1",
+                        "maturityValue": "1"
+                    }
+                ]
+            }
+        ],
+        "maturityRange": [
+            "-2",
+            "2-4",
+            "4-8",
+            "8-16",
+            "16-"
+        ],
+        "groupId": 1
+    }
+]
