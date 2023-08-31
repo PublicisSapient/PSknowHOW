@@ -11,6 +11,7 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
 
   @Input() issusDataList;
   @Input() selectedSprintInfo;
+  @Input() standUpStatusFilter;
   elem;
 
   currentDayIndex;
@@ -60,6 +61,10 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
     const margin = { top: 30, right: 10, bottom: 20, left: 10 };
     let width = (chart.node().getBoundingClientRect().width < 1200 ? 1200 : chart.node().getBoundingClientRect().width) - margin.left - margin.right;
     const height = d3.select(this.elem).node().offsetHeight;
+
+    const openIssueStatus = this.standUpStatusFilter.find(item => item['filterName'] === 'Open')?.options;
+    console.log(openIssueStatus);
+    
 
     if(this.issusDataList.length > 15){
       width= width +(( this.issusDataList.length -14) * 200);
@@ -129,7 +134,15 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
           .attr('r', 5)
           .style('stroke-width', 1)
           .attr('stroke', '#437495')
-          .attr('fill', 'white');
+          .attr('fill', 'white')
+          .style('cursor','pointer')
+          .on('mouseover',()=>{
+           const  data = `<p>${issue['statusLogGroup'][status].join(' --> ')}</p><p>Date: ${status}</>`;
+           showTooltip(data,xValue,yValue);
+          })
+          .on('mouseout',()=>{
+            hideTooltip();
+          });
 
       });
 
@@ -137,6 +150,8 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
       if (this.compareDates(new Date(), issue['Due Date']) && !issue['Actual-Completion-Date']) {
         const xValue = x(this.formatDate(new Date())) + initialCoordinate / 2;
         const yValue = y(index);
+        console.log(xValue,yValue);
+
         marker.append('image')
           .attr('xlink:href', '../../../assets/img/due-date-exceeded.svg')
           .attr('width', '50px').attr('height', '50px')
@@ -144,11 +159,11 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
           .attr('y', yValue - 25)
           .style('cursor','pointer')
           .on('mouseover',()=>{
-           const  data = `<p>Due date exceeded</p><br><p>${issue['Due Date']}</>`;
+           const  data = `<p>Due date exceeded</p><p>Original Due Date: ${issue['Due Date']}</>`;
            showTooltip(data,xValue,yValue);
           })
           .on('mouseout',()=>{
-            // hideTooltip();
+            hideTooltip();
           });
       }
 
@@ -160,7 +175,15 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
           .attr('xlink:href', '../../../assets/img/dev-completed.svg')
           .attr('width', '50px').attr('height', '50px')
           .attr('x', xValue - 25)
-          .attr('y', yValue - 25);
+          .attr('y', yValue - 25)
+          .style('cursor','pointer')
+          .on('mouseover',()=>{
+           const  data = `<p>Dev Completed</p><p>Original Due Date: ${issue['Dev-Completion-Date']}</>`;
+           showTooltip(data,xValue,yValue);
+          })
+          .on('mouseout',()=>{
+            hideTooltip();
+          });
       }
 
       // show QA completed ifit exist
@@ -171,20 +194,27 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
           .attr('xlink:href', '../../../assets/img/qa-completed.svg')
           .attr('width', '50px').attr('height', '50px')
           .attr('x', xValue - 25)
-          .attr('y', yValue - 25);
+          .attr('y', yValue - 25)
+          .style('cursor','pointer')
+          .on('mouseover',()=>{
+           const  data = `<p>QA Completed</p><p>Date: ${issue['Test-Completed']}</>`;
+           showTooltip(data,xValue,yValue);
+          })
+          .on('mouseout',()=>{
+            hideTooltip();
+          });
       }
     };
 
-    const showIssueIdandStatus = (centerDate, issue, i) => {
+    const showIssueIdandStatus = (centerDate, issue, i, isOpenIssue=false) => {
       const issueId = svg
         .append('g')
         .attr('transform', `translate(0,0)`)
         .append('text')
         .attr('height', 10)
         .attr('width', 100)
-        // .attr('x', issue['Actual-Start-Date'] ? x(centerDate) +initialCoordinate/2 : x(centerDate) +initialCoordinate/2 + 30)
-        .attr('x', x(centerDate) + initialCoordinate / 2)
-        .attr('y', y(i) - 15)
+        .attr('x', isOpenIssue ? x(centerDate) + initialCoordinate / 2 + 10 : x(centerDate) + initialCoordinate / 2)
+        .attr('y',  isOpenIssue ? y(i) - 10 : y(i)-15 )
         .html(`${issue['Issue Id']}`)
         .style('font-weight', 'bold');
 
@@ -195,8 +225,8 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
         .attr('height', 10)
         .attr('width', 100)
         // .attr('x', issue['Actual-Start-Date'] ? x(centerDate) +initialCoordinate/2 : x(centerDate) +initialCoordinate/2 + 30)
-        .attr('x', x(centerDate) + initialCoordinate / 2)
-        .attr('y', y(i) + 18)
+        .attr('x',  isOpenIssue ? x(centerDate) + initialCoordinate / 2 + 10 : x(centerDate) + initialCoordinate / 2)
+        .attr('y', isOpenIssue? y(i)+5: y(i)+18)
         .html(`${issue['Issue Status']}`);
 
 
@@ -205,15 +235,14 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
 
     //show tooltip
     const tooltipContainer = d3.select('#chart').select('.tooltip-container');
-    const showTooltip = (data,xVal,yVal) => {
-      svg
-      .append('g')
-      // .attr('class', 'tooltip')
-      .attr('transform', `translate(0,0)`)
-      .append('div')
+    const showTooltip = (data, xVal, yVal) => {
+      tooltipContainer
+        .selectAll('div')
+        .data(data)
+        .join('div')
         .attr('class', 'tooltip')
-        .style('left',  x(xVal) + initialCoordinate/2 )
-        .style('top',  y(yVal))
+        .style('left', xVal + initialCoordinate / 2 + 'px')
+        .style('top', yVal + 'px')
         .html(data)
         .transition()
         .duration(500)
@@ -232,28 +261,33 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
 
     const drawLineForIssue =(issue,i,isSubTask)=>{
       const {startPoint, endPoint,centerDate} = this.getStartAndEndLinePoints(issue);
-      console.log(startPoint,endPoint,issue['Issue Id']);
-          if(startPoint && endPoint){
+      // console.log(startPoint,endPoint,issue['Issue Id']);
+          if(startPoint && endPoint && !openIssueStatus.includes(issue['Issue Status'])){
+            const lineColor = issue['spill'] ||issue['Actual-Completion-Date'] ? '#D8D8D8' :  '#437495';
+            const lineType = issue['spill'] ? '4,4' : '0,0';
+
             const line = svg
             .append('g')
+            .attr('class','line')
             .attr('transform', `translate(0,0)`)
             .append('svg:line')
             .attr('x1', issue['spill'] ? x(startPoint) -initialCoordinate : x(startPoint) + initialCoordinate / 2)
             .attr('x2', x(endPoint) + initialCoordinate / 2)
             .attr('y1', y(i+1))
             .attr('y2',  y(i+1))
-            .style('stroke',issue['spill'] ? '#D8D8D8' : '#437495')
+            .style('stroke',lineColor)
             .style('stroke-width', isSubTask ? 1 : 4)
-            .style('stroke-dasharray', issue['spill'] ?  '4,4' : '0,0')
+            .style('stroke-dasharray',lineType)
             .style('fill', 'none')
             .attr('class', 'gridline');
 
             showMarkers(issue,i+1);
+            showIssueIdandStatus(centerDate,issue,i+1);
 
-          } else if (!issue['Actual-Start-Date']) {
+          } else if (openIssueStatus.includes(issue['Issue Status'])) {
             //draw circle to represent issue 
             const xValue = x(this.formatDate(new Date())) + initialCoordinate / 2;
-            const yValue = y(i);
+            const yValue = y(i+1);
 
             svg.append('g')
               .attr('transform', `translate(0,0)`)
@@ -264,10 +298,8 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
               .style('stroke-width', 1)
               .attr('stroke', '#707070')
               .attr('fill', '#707070');
-
+              showIssueIdandStatus(this.formatDate(new Date()),issue,i+1,true);
           }
-
-          showIssueIdandStatus(centerDate,issue,i+1);
     };
 
 
@@ -276,12 +308,12 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
     for(let i = 0;i<this.issusDataList.length;i++){
       drawLineForIssue(this.issusDataList[i],i,false);
 
-      //draw lines for subtask
-      // if(this.issusDataList[i]['subTask']){
-      //   for(let j=0;j<this.issusDataList[i]['subTask'].length ; j++){
-      //     drawLineForIssue(this.issusDataList[i]['subTask'][j],(i +j+1*0.5),true);
-      //   }
-      // }
+      // draw lines for subtask
+      if(this.issusDataList[i]['subTask']){
+        for(let j=0;j<this.issusDataList[i]['subTask'].length ; j++){
+          drawLineForIssue(this.issusDataList[i]['subTask'][j],(i +j+1*0.5),true);
+        }
+      }
   }
 
 
