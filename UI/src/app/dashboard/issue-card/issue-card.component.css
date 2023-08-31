@@ -1,0 +1,59 @@
+.button-set{
+    display: flex;
+}
+
+.button-set button{
+    flex-grow: 1;
+    padding: 1rem;
+    cursor: pointer;
+    color: #666666;
+    background-color: white;
+    border: 1px solid #666666;;
+}
+
+.button-set button.selected-button{
+    color: white;
+    background-color: var(--color-cyan-blue);
+    border: 1px solid var(--color-cyan-blue);
+}
+
+
+.issue-status{
+    display:flex;
+    justify-content: space-between;
+}
+
+.issue-status p{
+    color: #666666;
+}
+
+.issue-status p span{
+    color: #3F51B5;
+}
+
+:host::ng-deep .p-accordion .p-accordion-tab .p-accordion-toggle-icon{
+    border: none;
+    font-size: 1rem;
+}
+
+:host::ng-deep .p-accordion .p-accordion-header .p-accordion-header-link{
+    padding: 0.5rem;
+    border-bottom: 1px solid #666666;
+}
+
+:host::ng-deep .p-accordion .p-accordion-tab{
+    margin-bottom: 1rem;
+}
+
+.assignee{
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background-color: white;
+    cursor: pointer;
+    margin: 0.15rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 2px;
+}
+

@@ -110,8 +110,12 @@ public class KpiElement implements Serializable { // NOPMD
 	// For Excel column Info
 	private List<KPIExcelColumnInfo> excelColumnInfo;
 	private transient Object filterDuration;
+	//used by second screen of DSV for sending all data
     private transient Set<IterationKpiModalValue> issueData;
+	//used by first scrren of DSV for filtering
 	private transient List<Filter> filterData;
+	//used by second screen of DSV for filtering on status
+	private transient Map<String,List<String>> standUpStatusFilter;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -842,10 +846,17 @@ public class KpiElement implements Serializable { // NOPMD
 		this.issueData = issueData;
 	}
 
-
 	public List<Filter> getFilterData() { return filterData; }
 
 	public void setFilterData(List<Filter> filterData) { this.filterData = filterData; }
+
+	public Map<String, List<String>> getStandUpStatusFilter() {
+		return standUpStatusFilter;
+	}
+
+	public void setStandUpStatusFilter(Map<String, List<String>> standUpStatusFilter) {
+		this.standUpStatusFilter = standUpStatusFilter;
+	}
 
 
 

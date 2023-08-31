@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.model;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -149,4 +150,24 @@ public class IterationKpiModalValue implements Serializable {
 	private Double DIR;
 	@JsonProperty("Defect Density")
 	private String defectDensity;
+	@JsonProperty("Test-Completed")
+	private String testCompletedInTime;
+	@JsonProperty("Dev-Completion-Date")
+	private String devCompletionDateInTime;
+	@JsonProperty("Actual-Completion-Date")
+	private String actualCompletionDateInTime;
+	@JsonProperty("Actual-Start-Date")
+	private String actualStartDateInTime;
+	Map<String, List<String>> statusLogGroup;
+	Map<String, List<String>> workLogGroup;
+	Map<String, List<String>> assigneeLogGroup;
+	private Long timeWithUser;
+	private Long timeWithStatus;
+	private Long loggedWorkInSeconds;
+	private String epicName;
+	private boolean spill;
+	private Long remainingEstimateInSeconds;
+	private Long originalEstimateInSeconds;
+	private Set<String> subTask;
+	private Set<String> parentStory;
 }

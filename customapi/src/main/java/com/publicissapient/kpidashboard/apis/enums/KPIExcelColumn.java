@@ -262,10 +262,14 @@ public enum KPIExcelColumn {
 	PI_PREDICTABILITY("kpi153", Arrays.asList("Project Name", "Epic ID", "Epic Name", "Status", "PI Name",
 			"Planned Value", "Achieved Value")),
 
-	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay")),
-	PICKUP_TIME("kpi154",
+	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Work","Remaining Estimate", "Delay")),
+
+	PICKUP_TIME("kpi160",
+				Arrays.asList("Project", "Repository Url", "Branch", "Weeks",
+						"Pickup Time (In Hours)")),
+	PR_SIZE("kpi162",
 			Arrays.asList("Project", "Repository Url", "Branch", "Weeks",
-					"Pickup Time (In Hours)"));
+					"PR Size (No. of lines)"));
 
 	// @formatter:on
 

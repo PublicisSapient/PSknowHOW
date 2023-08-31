@@ -9,7 +9,7 @@
 .user-filter ,.filter-header, .show-more{
     display: flex;
     flex-wrap: wrap;
-    padding: 1rem;
+    padding: 0.5rem 1rem;
 }
 
 .filter-header{
@@ -28,27 +28,34 @@
     width: 15%;
 }
 
-/* user button css */
-:host::ng-deep.user-filter button, :host::ng-deep.filter-header button, :host::ng-deep.show-more button{
+/* filter button css */
+:host::ng-deep.filter-header button{
     color: black;
     background: #EFEFEF;
 }
 
-:host::ng-deep.user-filter button span.filter-user{
-    width: 100px;
-    overflow: hidden;
-    white-space: nowrap;
-    display: block;
-    text-overflow: ellipsis;
+:host::ng-deep .p-button:enabled:focus, :host::ng-deep.p-button:enabled:hover{
+    background: #EFEFEF;
+    color: black;
 }
 
-:host::ng-deep.user-filter .selected-user button, :host::ng-deep.p-button:enabled:hover{
-    background: #437495;
-    color: white;
+/* user button css */
+.user-filter button.assignee{
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color: white;
+    cursor: pointer;
+    margin: 0.15rem;
     font-weight: bold;
 }
 
-
+.user-filter button.assignee.selected-user{
+    background: #437495 !important;
+    color: white !important;
+    font-weight: bold;
+    border: none;
+}
 /* user info table css */
 :host::ng-deep .p-datatable{
     border: 1px solid var(--color-gray-c6);
@@ -61,4 +68,13 @@
 
 :host::ng-deep .p-datatable tr td .user-name{
     font-weight: bold;
+}
+
+.selected-user-info{
+    display: flex;
+    margin-left: 1rem;
+}
+
+.selected-user-info p{
+    color: var(--color-green);
 }
