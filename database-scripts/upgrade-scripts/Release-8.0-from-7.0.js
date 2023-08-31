@@ -3703,7 +3703,72 @@ db.getCollection('field_mapping_structure').insertMany([
                 "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
             }
     }
-])
+]);
+
+
+//DTS-26150 start
+db.getCollection('field_mapping_structure').insertOne(
+{
+  "fieldName": "testingPhaseDefectsIdentifier",
+  "fieldLabel": "Testing phase defects identification",
+  "fieldType": "radiobutton",
+  "section": "Defects Mapping",
+  "tooltip": {
+    "definition": "This field is used to identify a defect in which phase it is raised. 1. CustomField : If a separate custom field is used, 2. Labels : If a label is used to identify, 3. Component : If a Component is used to identify"
+  },
+  "options": [
+    {
+      "label": "CustomField",
+      "value": "CustomField"
+    },
+    {
+      "label": "Labels",
+      "value": "Labels"
+    },
+    {
+      "label": "Component",
+      "value": "Component"
+    }
+  ],
+  "nestedFields": [
+    {
+      "fieldName": "testingPhaseDefectCustomField",
+      "fieldLabel": "Testing Phase Defect CustomField",
+      "fieldType": "text",
+      "fieldCategory": "fields",
+      "filterGroup": [
+        "CustomField"
+      ],
+      "tooltip": {
+        "definition": " Provide customfield name to identify testing phase defects."
+      }
+    },
+    {
+      "fieldName": "testingPhaseDefectValue",
+      "fieldLabel": "Testing Phase Defect Values",
+      "fieldType": "chips",
+      "filterGroup": [
+        "CustomField",
+        "Labels"
+      ],
+      "tooltip": {
+        "definition": "Provide label name to identify testing phase defects."
+      }
+    },
+    {
+      "fieldName": "testingPhaseDefectComponentValue",
+      "fieldLabel": "Component",
+      "fieldType": "text",
+      "filterGroup": [
+        "Component"
+      ],
+      "tooltip": {
+        "definition": "Provide label name to identify testing phase defects."
+      }
+    }
+  ]
+});
+//DTS-26150 end
 
 
 

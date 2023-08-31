@@ -472,3 +472,9 @@ db.kpi_category_mapping.insertMany([
 db.field_mapping_structure.deleteMany({
     "fieldName": "jiraSubTaskDefectType"
 });
+
+//DTS-26150 start
+db.field_mapping_structure.deleteOne({
+    "fieldName": "testingPhaseDefectsIdentifier"
+});
+//DTS-26150 end

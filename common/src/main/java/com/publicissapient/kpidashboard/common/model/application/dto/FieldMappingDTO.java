@@ -381,6 +381,14 @@ private String jiraLiveStatusKPI127;
 
 	private List<String> jiraIssueEpicTypeKPI153;
 
+	// DTS-26150 start
+	// Testing Phase Defect Mapping
+	private String testingPhaseDefectCustomField;
+	private String testingPhaseDefectsIdentifier;
+	private List<String> testingPhaseDefectValue;
+	private String testingPhaseDefectComponentValue;
+	// DTS-26150 end
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *
