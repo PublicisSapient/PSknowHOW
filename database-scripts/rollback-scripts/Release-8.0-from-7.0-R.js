@@ -473,6 +473,15 @@ db.field_mapping_structure.deleteMany({
     "fieldName": "jiraSubTaskDefectType"
 });
 
+db.kpi_master.bulkWrite([
+// delete Lead time for change KPI (156)
+  {
+    deleteMany: {
+      filter: { kpiId: { $in: ["kpi156"] } }
+    }
+  }
+]);
+
 //------------------------- 7.9.0 changes----------------------------------------------------------------------------------
 db.field_mapping_structure.deleteMany({
     "fieldName": { $in: [ "jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154", "jiraQADoneStatusKPI154", "jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154", "jiraSubTaskIdentification","storyFirstStatusKPI154"]}
