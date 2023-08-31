@@ -25,9 +25,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +77,8 @@ public class ProcessorServiceImplTest {
 	@Mock
 	SprintTraceLogRepository sprintTraceLogRepository;
 
+	@Mock
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
 	/**
 	 * method includes preprocesses for test cases
@@ -140,6 +145,8 @@ public class ProcessorServiceImplTest {
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class), Mockito.any(),
 				Mockito.<Class<String>>any())).thenReturn(mockResponseEntity);
 		Mockito.when(mockResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
+		ProcessorExecutionBasicConfig processorExecutionBasicConfig = new ProcessorExecutionBasicConfig();
+		processorExecutionBasicConfig.setProjectBasicConfigIds(Arrays.asList(""));
 		ServiceResponse response = processorService.runProcessor("Bitbucket", null);
 		assertTrue(response.getSuccess());
 	}

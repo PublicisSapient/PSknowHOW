@@ -930,6 +930,12 @@ describe('ConnectionListComponent', () => {
           isEnabled: false,
         },
       ],
+      isCloneable:[
+        {
+          field: 'sshUrl',
+          isEnabled: false
+        }, 
+      ],
       accessTokenEnabled: [],
     },
     enableDisableAnotherTime: {
@@ -997,6 +1003,7 @@ describe('ConnectionListComponent', () => {
           isEnabled: false,
         },
       ],
+      isCloneable:[],
       accessTokenEnabled: [],
     },
   };
@@ -1039,7 +1046,7 @@ describe('ConnectionListComponent', () => {
   });
 
   it('Should test 10 connections are loaded', () => {
-    expect(component.addEditConnectionFieldsNlabels.length).toEqual(12);
+    expect(component.addEditConnectionFieldsNlabels.length).toEqual(13);
   });
 
   it('Should test all connections are present', () => {

@@ -265,7 +265,10 @@ public enum KPIExcelColumn {
 	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Work","Remaining Estimate", "Delay")),
 
 	LEAD_TIME_FOR_CHANGE("Kpi156",
-			Arrays.asList("Date"));
+			Arrays.asList("Date")),
+	PICKUP_TIME("kpi160",
+			Arrays.asList("Project", "Repository Url", "Branch", "Weeks", "Pickup Time (In Hours)")), PR_SIZE("kpi162",
+					Arrays.asList("Project", "Repository Url", "Branch", "Weeks", "PR Size (No. of lines)"));
 
 	// @formatter:on
 

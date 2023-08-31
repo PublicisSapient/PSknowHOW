@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +60,7 @@ import com.publicissapient.kpidashboard.common.repository.application.KpiCategor
 import com.publicissapient.kpidashboard.common.repository.application.KpiCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author yasbano
@@ -94,8 +96,13 @@ public class UserBoardConfigServiceImplTest {
 	@Mock
 	private CacheService cacheService;
 
+	@Mock
+	private CustomApiConfig customApiConfig;
+
 	private List<KpiCategory> kpiCategoryList;
 	private List<KpiCategoryMapping> kpiCategoryMappingList;
+
+
 
 	@Before
 	public void setUp() {

@@ -972,6 +972,82 @@
     "calculateMaturity": false
   },
   {
+    "kpiId": "kpi83",
+    "kpiName": "Average Resolution Time",
+    "maxValue": "100",
+    "kpiUnit": "Days",
+    "isDeleted": "False",
+    "defaultOrder": 22,
+    "kpiSource": "Jira",
+    "groupId": 1,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "AVERAGE RESOLUTION TIME measures average time taken to complete an issue that could be a story or bug etc.",
+      "formula": [
+        {
+          "lhs": "Sum of resolution times of all issues completed in the Sprint/No. of issues completed within a sprint"
+        }
+      ],
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "It is calculated as a ‘Days’. Fewer the days better is the ‘Speed’"
+        },
+        {
+          "type": "paragraph",
+          "value": "A progress indicator shows trend of Average Resolution Time between last 2 sprints. A downward trend is considered positive"
+        },
+        {
+          "type": "paragraph",
+          "value": "Maturity of the KPI is calculated based on the average of the last 5 sprints"
+        },
+        {
+          "type": "paragraph",
+          "value": "*If the KPI data is not available for last 5 sprints, the Maturity level will not be shown"
+        }
+      ],
+      "maturityLevels": [
+        {
+          "level": "M5",
+          "bgColor": "#6cab61",
+          "range": "<= 3 days"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#AEDB76",
+          "range": "3-5 days"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#eff173",
+          "range": "5-8 days"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#ffc35b",
+          "range": "8-10 days"
+        },
+        {
+          "level": "M1",
+          "bgColor": "#F06667",
+          "range": "=> 10 days"
+        }
+      ]
+    },
+    "xAxisLabel": "Sprints",
+    "yAxisLabel": "Count(Days)",
+    "isPositiveTrend": false,
+    "showTrend": true,
+    "kpiFilter": "dropDown",
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": true,
+    "calculateMaturity": true,
+    "hideOverallFilter" : false,
+    "maturityRange": ["-10","10-8","8-5","5-3","3-"]
+  },
+  {
     "kpiId": "kpi84",
     "kpiName": "Mean Time To Merge",
     "maxValue": "10",
@@ -2530,6 +2606,39 @@
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi130",
+    "kpiName": "Iteration Status",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 11,
+    "kpiCategory": "Iteration",
+    "kpiSource": "Jira",
+    "groupId": 8,
+    "thresholdValue": "",
+    "kanban": false,
+    "kpiInfo": {
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Iteration Status KPI gives a representation of delays in the story."
+        },
+        {
+          "type": "paragraph",
+          "value": "This KPI gives the information of net delay of all the issues, issues causing delay and issues completed before due date."
+        }
+      ]
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "2_column",
     "calculateMaturity": false
   },
   {

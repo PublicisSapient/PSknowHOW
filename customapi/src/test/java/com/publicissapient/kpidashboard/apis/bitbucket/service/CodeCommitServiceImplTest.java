@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -138,6 +139,10 @@ public class CodeCommitServiceImplTest {
 
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi11");
+		Map<String, List<String>> selectedMap = kpiRequest.getSelectedMap();
+		selectedMap.put(CommonConstant.date, Arrays.asList("DAYS"));
+		kpiRequest.setSelectedMap(selectedMap);
+		kpiRequest.setLabel("Project");
 		kpiRequest.setLabel("Project");
 		kpiElement = kpiRequest.getKpiList().get(0);
 

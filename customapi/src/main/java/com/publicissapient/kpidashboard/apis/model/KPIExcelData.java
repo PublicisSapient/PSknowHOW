@@ -343,4 +343,7 @@ public class KPIExcelData {
 	@JsonProperty("Achieved Value")
 	private String achievedValue;
 
+	@JsonProperty("Pickup Time (In Hours)")
+	private String pickupTime;
+
 }
