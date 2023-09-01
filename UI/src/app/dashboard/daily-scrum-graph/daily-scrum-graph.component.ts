@@ -120,11 +120,11 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
     }
 
     const getNameInitials = (name)=>{
-      const initials = name.split(' ').map(d => d[0]);
+      const initials = name?.split(' ').map(d => d[0]);
       if(initials.length > 2){
-       return  initials.map(d => d[0]).slice(0,2).join('').toUpperCase();
+       return  initials?.map(d => d[0]).slice(0,2).join('').toUpperCase();
       }
-      return initials.join('').toUpperCase();
+      return initials?.join('').toUpperCase();
   };
 
     const showMarkers = (issue, index) => {
@@ -160,7 +160,20 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
        Object.keys(issue['assigneeLogGroup']).forEach(d => {
         const xValue = x(this.formatDate(new Date(d))) + initialCoordinate;
         const yValue = y(index);
-        const assigneeName = getNameInitials(issue['Assignee']);
+        let assigneeName ='';
+        if(Array.isArray(issue['assigneeLogGroup'][d])){
+          
+          for(let i=0;i< issue['assigneeLogGroup'][d].length;i++){
+            if(issue['assigneeLogGroup'][d].length > 1 && i !== issue['assigneeLogGroup'][d].length-1){
+              assigneeName += getNameInitials(issue['assigneeLogGroup'][d][i]) +' --> ';
+            }else{
+              assigneeName += getNameInitials(issue['assigneeLogGroup'][d][i]);
+            }
+           
+          }
+        }else{
+          assigneeName = getNameInitials(issue['assigneeLogGroup'][d]);
+        }
         marker.append('text')
          .attr('height', 10)
           .attr('width', 100)
@@ -171,7 +184,7 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
           .style('cursor','pointer')
           .html(`${assigneeName}`)
           .on('mouseover',()=>{
-           const  data = `<p>${issue['Assignee']}</p><p>Owned: ${d}</>`;
+           const  data = `<p>${issue['assigneeLogGroup'][d].join('-->')}</p><p>Owned: ${d}</>`;
            showTooltip(data,xValue,yValue);
           })
           .on('mouseout',()=>{
@@ -415,7 +428,10 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
   compareDates(date1,date2){
     const d1 = new Date(date1);
     const d2 = new Date(date2);
-    return d1 >= d2;
+    if(d1.toDateString() === d2.toDateString()){
+      return false;
+    }
+    return d1 > d2;
   }
 
 

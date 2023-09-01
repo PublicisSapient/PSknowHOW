@@ -21,7 +21,9 @@ package com.publicissapient.kpidashboard.apis.zephyr.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
+import java.util.Objects;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -39,6 +41,8 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
+import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrService;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrServiceKanban;
 
@@ -62,6 +66,9 @@ public class ZephyrController {
 	@Autowired
 	private CacheService cacheService;
 
+	@Autowired
+	private AuthExposeAPIService authExposeAPIService;
+
 	/**
 	 * Gets zephyr data metrics.
 	 *
@@ -81,7 +88,7 @@ public class ZephyrController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 		}
 
 		List<KpiElement> responseList = zephyrService.process(kpiRequest);
@@ -113,7 +120,7 @@ public class ZephyrController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 		}
 
 		List<KpiElement> responseList = zephyrServiceKanban.process(kpiRequest);
@@ -121,6 +128,42 @@ public class ZephyrController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
 		} else {
 			return ResponseEntity.ok().body(responseList);
+		}
+	}
+
+	/**
+	 * Gets zephyr data metrics.
+	 *
+	 * @param kpiRequest
+	 *            the kpi request
+	 * @return the zephyr metrics
+	 * @throws Exception
+	 *             the exception
+	 */
+	@RequestMapping(value = "/maturity/zypher/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<List<KpiElement>> getZephyrMetricsForMaturity(HttpServletRequest request,
+			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception {// NOSONAR
+
+		log.info("[ZEPHYR][{}]. Received Zephyr KPI request {}", kpiRequest.getRequestTrackerId(), kpiRequest);
+		ExposeApiToken exposeApiToken = authExposeAPIService.validateToken(request);
+		if (Objects.nonNull(exposeApiToken)) {
+			cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name(),
+					kpiRequest.getRequestTrackerId());
+
+			if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
+				throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
+			}
+
+			List<KpiElement> responseList = zephyrService.process(kpiRequest);
+			if (responseList.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
+			} else {
+				return ResponseEntity.ok().body(responseList);
+			}
+		} else {
+			log.info("Generate Token Push Data via KnowHow tool configuration screen {}",
+					kpiRequest.getRequestTrackerId());
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 		}
 	}
 

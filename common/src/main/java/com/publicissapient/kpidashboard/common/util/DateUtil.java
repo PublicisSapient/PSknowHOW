@@ -169,6 +169,14 @@ public class DateUtil {
 		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
 	}
 
+	public static boolean equalAndAfterTime(LocalDateTime targetDate, LocalDateTime startDate) {
+		return targetDate.isAfter(startDate) || targetDate.isEqual(startDate);
+	}
+
+	public static boolean equalAndBeforTime(LocalDateTime targetDate, LocalDateTime startDate) {
+		return targetDate.isBefore(startDate) || targetDate.isEqual(startDate);
+	}
+
 	public static String convertMillisToDateTime(long milliSeconds) {
 		return convertMillisToLocalDateTime(milliSeconds).toString();
 	}
@@ -254,7 +262,7 @@ public class DateUtil {
 		LocalDate sunday = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
 		String formattedMonday = monday.format(DateTimeFormatter.ofPattern(D_MMM));
-		String formattedSunday = sunday.format(DateTimeFormatter.ofPattern(D_MMM_YY));
+		String formattedSunday = sunday.format(DateTimeFormatter.ofPattern(D_MMM));
 
 		return formattedMonday + " to " + formattedSunday;
 	}

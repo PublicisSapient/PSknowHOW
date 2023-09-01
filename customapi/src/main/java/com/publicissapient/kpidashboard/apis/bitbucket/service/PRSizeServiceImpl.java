@@ -45,7 +45,6 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +68,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 	private static final String REPO_TOOLS = "RepoTool";
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	public static final String PICKUP_TIME_KPI = "pr-size-bulk/";
-	public static final String MR_COUNT = "No of MRs";
+	public static final String MR_COUNT = "No of PRs";
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
 
@@ -131,9 +130,8 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		String requestTrackerId = getRequestTrackerId();
 		LocalDate localEndDate = dateRange.getEndDate();
 
-		Integer dataPoints = NumberUtils.isCreatable(kpiRequest.getIds()[0]) ? Integer.parseInt(kpiRequest.getIds()[0])
-				: 5;
-		String duration = kpiRequest.getSelectedMap().get(CommonConstant.date).get(0);
+		Integer dataPoints = kpiRequest.getKanbanXaxisDataPoints();
+		String duration = kpiRequest.getDuration();
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
@@ -228,9 +226,8 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 			Map<String, Long> excelDataLoader, String branchName, String projectName,
 			Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
 		LocalDate currentDate = LocalDate.now();
-		Integer dataPoints = NumberUtils.isCreatable(kpiRequest.getIds()[0]) ? Integer.parseInt(kpiRequest.getIds()[0])
-				: 5;
-		String duration = kpiRequest.getSelectedMap().get(CommonConstant.date).get(0);
+		Integer dataPoints = kpiRequest.getKanbanXaxisDataPoints();
+		String duration = kpiRequest.getDuration();
 		for (int i = 0; i < dataPoints; i++) {
 			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
 			long prSize = weekWisePickupTime.getOrDefault(dateRange.getStartDate().toString(), 0l);

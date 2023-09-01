@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,8 +135,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 		String requestTrackerId = getRequestTrackerId();
 		LocalDate localEndDate = dateRange.getEndDate();
 
-		Integer dataPoints = NumberUtils.isCreatable(kpiRequest.getIds()[0])?Integer.parseInt(kpiRequest.getIds()[0]):5;
-		String duration = kpiRequest.getSelectedMap().get(CommonConstant.date).get(0);
+		Integer dataPoints = kpiRequest.getKanbanXaxisDataPoints();
+		String duration = kpiRequest.getDuration();
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
@@ -232,9 +231,9 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 			Map<String, Double> excelDataLoader, String branchName, String projectName,
 			Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
 		LocalDate currentDate = LocalDate.now();
-		Integer dataPoints = NumberUtils.isCreatable(kpiRequest.getIds()[0]) ? Integer.parseInt(kpiRequest.getIds()[0])
-				: 5;
-		String duration = kpiRequest.getSelectedMap().get(CommonConstant.date).get(0);
+		Integer dataPoints = kpiRequest.getKanbanXaxisDataPoints();
+		String duration = kpiRequest.getDuration();
+
 		for (int i = 0; i < dataPoints; i++) {
 			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
 			double pickupTime = Double.parseDouble(
