@@ -226,7 +226,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				String assigneeName = jiraIssueList.stream().findFirst().orElse(new JiraIssue()).getAssigneeName();
 
 				cardDetails.put(REMAINING_CAPACITY, userWiseRemainingCapacity.getOrDefault(assigneeId,
-						StandUpViewKpiData.builder().value(Constant.DASH).unit(CommonConstant.HOURS).build()));
+						StandUpViewKpiData.builder().value(Constant.DASH).unit(CommonConstant.DAY).build()));
 				cardDetails.put(REMAINING_ESTIMATE, assigneeWiseRemaingEstimate.getOrDefault(assigneeId,
 						StandUpViewKpiData.builder().value(Constant.DASH).unit(CommonConstant.DAY).build()));
 				cardDetails.put(REMAINING_WORK, remianingWork.getOrDefault(assigneeId, defaultRemainingWork));
@@ -468,8 +468,10 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			Map<String, StandUpViewKpiData> userWiseRemainingCapacity) {
 		if (assignee.getAvailableCapacity() != null) {
 			double remainingCapacity = roundingOff((assignee.getAvailableCapacity() / daysBetween) * daysLeft);
+			//capacity/8hrs, to calculate in days
+			double remainingCapacityInMinutes= remainingCapacity*60;
 			userWiseRemainingCapacity.putIfAbsent(assignee.getUserId(),
-					new StandUpViewKpiData(String.valueOf(remainingCapacity), null, CommonConstant.HOURS, null));
+					new StandUpViewKpiData(String.valueOf(remainingCapacityInMinutes), null, CommonConstant.DAY, null));
 		}
 	}
 
