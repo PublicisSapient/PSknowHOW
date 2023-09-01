@@ -331,7 +331,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 
 					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())) {
 						List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
-						processSubtaskFromDb(basicProjectConfigId, allIssues, totalIssueList, issueHistoryList, taskType);
+						processSubtaskFromDb(basicProjectConfigId, allIssues, totalIssueList, issueHistoryList,
+								taskType);
 					}
 
 					Set<JiraIssue> epics = new HashSet<>(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
@@ -357,18 +358,17 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		return resultListMap;
 	}
 
-	private void processSubtaskFromDb(ObjectId basicProjectConfigId, List<String> allIssues, Set<JiraIssue> totalIssueList, List<JiraIssueCustomHistory> issueHistoryList, List<String> taskType) {
+	private void processSubtaskFromDb(ObjectId basicProjectConfigId, List<String> allIssues,
+			Set<JiraIssue> totalIssueList, List<JiraIssueCustomHistory> issueHistoryList, List<String> taskType) {
 		// combined both sub-tasks and totalIssuelist
 		Set<JiraIssue> subTasksJiraIssue = jiraIssueRepository
-				.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(
-						basicProjectConfigId.toString(), new HashSet<>(allIssues), taskType);
+				.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(basicProjectConfigId.toString(),
+						new HashSet<>(allIssues), taskType);
 		if (CollectionUtils.isNotEmpty(subTasksJiraIssue)) {
 			totalIssueList.addAll(subTasksJiraIssue);
-			issueHistoryList
-					.addAll(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigId(
-							subTasksJiraIssue.stream().map(JiraIssue::getNumber)
-									.collect(Collectors.toSet()),
-							basicProjectConfigId.toString()));
+			issueHistoryList.addAll(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigId(
+					subTasksJiraIssue.stream().map(JiraIssue::getNumber).collect(Collectors.toSet()),
+					basicProjectConfigId.toString()));
 		}
 	}
 
@@ -514,12 +514,16 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				setPCDandDelay(iterationKpiModalValue, issueWiseDelay, jiraIssue);
 				iterationKpiModalValue.setStatusLogGroup(createDateWiseLogs(inSprintStatusLogs));
 				iterationKpiModalValue.setWorkLogGroup(createDateWiseLogs(inSprintWorkLogs));
-				iterationKpiModalValue.setAssigneeLogGroup(createDateWiseLogs(inSprintAssigneeLogs, iterationKpiModalValue.getActualStartDateInTime(), iterationKpiModalValue.getActualCompletionDateInTime()));
+				iterationKpiModalValue.setAssigneeLogGroup(
+						createDateWiseLogs(inSprintAssigneeLogs, iterationKpiModalValue.getActualStartDateInTime(),
+								iterationKpiModalValue.getActualCompletionDateInTime()));
 
-				iterationKpiModalValue.setTimeWithUser(calculateWithLastTime(inSprintAssigneeLogs,
-						issueHistory.getAssigneeUpdationLog(), sprintStartDateTime));
-				iterationKpiModalValue.setTimeWithStatus(calculateWithLastTime(inSprintStatusLogs,
-						issueHistory.getStatusUpdationLog(), sprintStartDateTime));
+
+					iterationKpiModalValue.setTimeWithUser(calculateWithLastTime(inSprintAssigneeLogs,
+							issueHistory.getAssigneeUpdationLog(), sprintStartDateTime, iterationKpiModalValue.getActualCompletionDateInTime()));
+					iterationKpiModalValue.setTimeWithStatus(calculateWithLastTime(inSprintStatusLogs,
+							issueHistory.getStatusUpdationLog(), sprintStartDateTime, iterationKpiModalValue.getActualCompletionDateInTime()));
+
 				setEstimatesInSeconds(jiraIssue, iterationKpiModalValue);
 
 				epicMap.computeIfPresent(jiraIssue.getEpicLinked(), (k, v) -> {
@@ -670,16 +674,22 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * in the closed sprint continues in the active sprint, then the time should be
 	 * calculated from the sprintStartTime till today
 	 */
-	private long calculateWithLastTime(List<JiraHistoryChangeLog> inSprintHistoryLogs,
-			List<JiraHistoryChangeLog> allLogs, LocalDateTime sprintStartDateTime) {
-		long lastTime = 0L;
-		if (CollectionUtils.isNotEmpty(inSprintHistoryLogs)) {
-			Collections.sort(inSprintHistoryLogs, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn).reversed());
-			lastTime = ChronoUnit.SECONDS.between(inSprintHistoryLogs.get(0).getUpdatedOn(), LocalDateTime.now());
-		} else if (CollectionUtils.isNotEmpty(allLogs)) {
-			lastTime = ChronoUnit.SECONDS.between(sprintStartDateTime, LocalDateTime.now());
-		}
-		return lastTime;
+	private String calculateWithLastTime(List<JiraHistoryChangeLog> inSprintHistoryLogs,
+			List<JiraHistoryChangeLog> allLogs, LocalDateTime sprintStartDateTime, String actualCompletionDateInTime) {
+		String lastTimeInString;
+		if (StringUtils.isNotEmpty(actualCompletionDateInTime)) {
+			long lastTime = 0L;
+			if (CollectionUtils.isNotEmpty(inSprintHistoryLogs)) {
+				Collections.sort(inSprintHistoryLogs,
+						Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn).reversed());
+				lastTime = ChronoUnit.SECONDS.between(inSprintHistoryLogs.get(0).getUpdatedOn(), LocalDateTime.now());
+			} else if (CollectionUtils.isNotEmpty(allLogs)) {
+				lastTime = ChronoUnit.SECONDS.between(sprintStartDateTime, LocalDateTime.now());
+			}
+			lastTimeInString = String.valueOf(lastTime);
+		} else
+			lastTimeInString = Constant.DASH;
+		return lastTimeInString;
 	}
 
 	private void setEstimatesInSeconds(JiraIssue jiraIssue, IterationKpiModalValue iterationKpiModalValue) {
