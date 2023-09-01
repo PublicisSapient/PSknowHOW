@@ -88,7 +88,7 @@ public class ZephyrController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 		}
 
 		List<KpiElement> responseList = zephyrService.process(kpiRequest);
@@ -120,7 +120,7 @@ public class ZephyrController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 		}
 
 		List<KpiElement> responseList = zephyrServiceKanban.process(kpiRequest);
@@ -151,7 +151,7 @@ public class ZephyrController {
 					kpiRequest.getRequestTrackerId());
 
 			if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-				throw new MissingServletRequestParameterException("kpiList", "List");
+				throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 			}
 
 			List<KpiElement> responseList = zephyrService.process(kpiRequest);

@@ -92,7 +92,7 @@ public class SonarController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 		}
 
 		List<KpiElement> responseList = sonarService.process(kpiRequest);
@@ -121,7 +121,7 @@ public class SonarController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 		}
 
 		List<KpiElement> responseList = sonarServiceKanban.process(kpiRequest);

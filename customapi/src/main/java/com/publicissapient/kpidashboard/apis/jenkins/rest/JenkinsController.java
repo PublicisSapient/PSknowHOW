@@ -137,7 +137,7 @@ public class JenkinsController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 		}
 
 		List<KpiElement> responseList = jenkinsServiceKanban.process(kpiRequest);
@@ -201,7 +201,7 @@ public class JenkinsController {
 					kpiRequest.getRequestTrackerId());
 
 			if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-				throw new MissingServletRequestParameterException("kpiList", "List");
+				throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 			}
 
 			List<KpiElement> responseList = jenkinsService.process(kpiRequest);

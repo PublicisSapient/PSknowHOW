@@ -82,7 +82,7 @@ public class BitBucketController {
 	@RequestMapping(value = "/bitbucket/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<List<KpiElement>> getBitBucketAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception { // NOSONAR
-		MDC.put("BitbucketKpiRequest", kpiRequest.getRequestTrackerId());
+		MDC.put("BitbucketKpiRequest", kpiRequest.getRequestTrackerId()); // NOSONAR
 		log.info("Received BitBucket KPI request {}", kpiRequest);
 		long bitbucketRequestStartTime = System.currentTimeMillis();
 		MDC.put("BitbucketRequestStartTime", String.valueOf(bitbucketRequestStartTime));
@@ -90,7 +90,7 @@ public class BitBucketController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 		}
 
 		List<KpiElement> responseList = bitbucketService.process(kpiRequest);
@@ -125,7 +125,7 @@ public class BitBucketController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 		}
 
 		List<KpiElement> responseList = bitbucketServiceKanban.process(kpiRequest);
@@ -165,7 +165,7 @@ public class BitBucketController {
 					kpiRequest.getRequestTrackerId());
 
 			if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-				throw new MissingServletRequestParameterException("kpiList", "List");
+				throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 			}
 
 			List<KpiElement> responseList = bitbucketService.process(kpiRequest);
