@@ -161,8 +161,8 @@ public class IterationKpiModalValue implements Serializable {
 	private Map<String, List<String>> statusLogGroup;
 	private Map<String, List<String>> workLogGroup;
 	private Map<String, List<String>> assigneeLogGroup;
-	private Long timeWithUser;
-	private Long timeWithStatus;
+	private String timeWithUser;
+	private String timeWithStatus;
 	private Long loggedWorkInSeconds;
 	private String epicName;
 	private boolean spill;

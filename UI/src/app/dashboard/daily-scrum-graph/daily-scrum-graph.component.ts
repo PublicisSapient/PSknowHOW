@@ -15,11 +15,16 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
   elem;
 
   currentDayIndex;
+  displayModal = false;
   constructor(private viewContainerRef: ViewContainerRef) { }
 
   ngOnChanges(changes: SimpleChanges){
     this.elem = this.viewContainerRef.element.nativeElement;
     this.draw(this.issueDataList,'');
+  }
+
+  showLegends(){
+    this.displayModal = !this.displayModal;
   }
 
   //generated dates on MM/DD format 
@@ -340,7 +345,7 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
       const {startPoint, endPoint,centerDate} = this.getStartAndEndLinePoints(issue);
       // console.log(startPoint,endPoint,issue['Issue Id']);
           if(startPoint && endPoint && !openIssueStatus.includes(issue['Issue Status'])){
-            const lineColor = issue['spill'] ||issue['Actual-Completion-Date'] ? '#D8D8D8' :  '#437495';
+            const lineColor =  issue['Actual-Completion-Date'] ? '#D8D8D8' :  '#437495';
             const lineType = issue['spill'] ? '4,4' : '0,0';
 
             const line = svg
@@ -412,15 +417,15 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
     if (issue['spill']) {
       startPoint = new Date(this.selectedSprintInfo.sprintStartDate);
     } else {
-      startPoint = issue['Actual-Start-Date'] &&  issue['Actual-Start-Date'] ? new Date(issue['Actual-Start-Date']) : new Date();
+      startPoint = issue['Actual-Start-Date']  ? new Date(issue['Actual-Start-Date']) : new Date();
     }
     //calculate endDate
     const endPoint = issue['Actual-Completion-Date'] ? new Date(issue['Actual-Completion-Date']) : new Date(this.selectedSprintInfo.sprintEndDate);
 
     const noOfDaysBetweenStartandEnd = this.getNoOFDayBetweenStartAndEndDate(startPoint,endPoint);
-   
+
     const centerDate = new Date(startPoint.getFullYear(),startPoint.getMonth(),startPoint.getDate() + noOfDaysBetweenStartandEnd/2);
- 
+
     return {startPoint: this.formatDate(startPoint),endPoint: this.formatDate(endPoint),centerDate:this.formatDate(centerDate)};
   }
 

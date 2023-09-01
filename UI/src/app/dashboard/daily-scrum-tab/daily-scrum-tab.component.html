@@ -1,6 +1,6 @@
 
-
-<app-daily-scrum *ngIf="!displayModal" 
+<div class="expandCollapseModal">
+    <app-daily-scrum *ngIf="!displayModal" 
     [assigneeList]="assigneeList" 
     [columns]="columns" 
     [filterData]="filterData"
@@ -34,3 +34,5 @@
     [standUpStatusFilter]="standUpStatusFilter">
     </app-daily-scrum>
 </p-dialog>
+
+</div>

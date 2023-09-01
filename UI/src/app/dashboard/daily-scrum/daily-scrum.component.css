@@ -6,6 +6,11 @@
     margin: 0.5rem 0.25rem;
 }
 
+.user-filter{
+    padding: 0px;
+    margin-left: 2rem;
+}
+
 .user-filter ,.filter-header, .show-more{
     display: flex;
     flex-wrap: wrap;
