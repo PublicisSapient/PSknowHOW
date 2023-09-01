@@ -536,6 +536,7 @@ div.main {
 
 .upload_tep_width_10column {
   width: calc(100% / 10);
+  overflow-wrap: break-word;
 }
 
 .upload_tep_width_kanban {

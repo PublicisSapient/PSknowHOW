@@ -700,17 +700,10 @@ export class UploadComponent implements OnInit {
         this.reqObj['totalTestCases'] = this.popupForm?.get('totalTestCases').value;
         this.reqObj['executedTestCase'] = this.popupForm?.get('executedTestCase').value;
         this.reqObj['passedTestCase'] = this.popupForm?.get('passedTestCase').value;
-        if (this.isAddtionalTestField) {
-            this.reqObj['automatedTestCases'] = this.popupForm?.get('automatedTestCases').value;
-            this.reqObj['automatableTestCases'] = this.popupForm?.get('automatableTestCases').value;
-            this.reqObj['automatedRegressionTestCases'] = this.popupForm?.get('automatedRegressionTestCases').value;
-            this.reqObj['totalRegressionTestCases'] = this.popupForm?.get('totalRegressionTestCases').value;
-        }else if(!this.kanban){
-            this.reqObj['automatedTestCases'] = -1 ;
-            this.reqObj['automatableTestCases'] = -1
-            this.reqObj['automatedRegressionTestCases'] = -1;
-            this.reqObj['totalRegressionTestCases'] = -1 ;
-        }
+        this.reqObj['automatedTestCases'] = this.popupForm?.get('automatedTestCases').value === -1 ? '' : this.popupForm?.get('automatedTestCases').value;
+        this.reqObj['automatableTestCases'] = this.popupForm?.get('automatableTestCases').value === -1 ? '' : this.popupForm?.get('automatableTestCases').value;
+        this.reqObj['automatedRegressionTestCases'] = this.popupForm?.get('automatedRegressionTestCases').value === -1 ? '' : this.popupForm?.get('automatedRegressionTestCases').value ;
+        this.reqObj['totalRegressionTestCases'] = this.popupForm?.get('totalRegressionTestCases').value === -1 ? '' : this.popupForm?.get('totalRegressionTestCases').value ;
         this.http_service.saveTestExecutionPercent(this.reqObj)
             .subscribe(response => {
                 if (response.success) {
@@ -801,6 +794,17 @@ export class UploadComponent implements OnInit {
         !(!!this.popupForm?.get('automatedRegressionTestCases').value) && (!!this.popupForm?.get('totalRegressionTestCases').value)){
             this.isTestExecutionSaveDisabled = true;
             this.testExecutionErrorMessage = 'Please fill Automated Regrassion & Total Regrassion both';
+            return;
+        }
+
+        if (parseFloat(this.popupForm?.get('automatableTestCases').value) < parseFloat(this.popupForm?.get('automatedTestCases').value)) {
+            this.isTestExecutionSaveDisabled = true;
+            this.testExecutionErrorMessage = 'Automated should not be greater than Automatable Test Cases';
+            return;
+        }
+        if (parseFloat(this.popupForm?.get('totalRegressionTestCases').value) < parseFloat(this.popupForm?.get('automatedRegressionTestCases').value)) {
+            this.isTestExecutionSaveDisabled = true;
+            this.testExecutionErrorMessage = 'Automated Regression should not be greater than Total Regression Test Case';
             return;
         }
         this.isTestExecutionSaveDisabled = false;
