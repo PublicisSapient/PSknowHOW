@@ -164,7 +164,12 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
         if(Array.isArray(issue['assigneeLogGroup'][d])){
           
           for(let i=0;i< issue['assigneeLogGroup'][d].length;i++){
-            assigneeName += getNameInitials(issue['assigneeLogGroup'][d][i]) +' --> ';
+            if(issue['assigneeLogGroup'][d].length > 1 && i !== issue['assigneeLogGroup'][d].length-1){
+              assigneeName += getNameInitials(issue['assigneeLogGroup'][d][i]) +' --> ';
+            }else{
+              assigneeName += getNameInitials(issue['assigneeLogGroup'][d][i]);
+            }
+           
           }
         }else{
           assigneeName = getNameInitials(issue['assigneeLogGroup'][d]);
@@ -179,7 +184,7 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
           .style('cursor','pointer')
           .html(`${assigneeName}`)
           .on('mouseover',()=>{
-           const  data = `<p>${issue['Assignee']}</p><p>Owned: ${d}</>`;
+           const  data = `<p>${issue['assigneeLogGroup'][d].join('-->')}</p><p>Owned: ${d}</>`;
            showTooltip(data,xValue,yValue);
           })
           .on('mouseout',()=>{
