@@ -1,5 +1,5 @@
-<p-tabView [(activeIndex)]="activeIndex">
-    <p-tabPanel *ngFor="let tab of tabs; let i = index;" [header]="tab" [headerStyle]="{'background-color': nodeColors[tab]}">
+<p-tabView [(activeIndex)]="activeIndex" class="kpi-table-tabs">
+    <p-tabPanel *ngFor="let tab of tabs; let i = index;" [header]="tab" [headerStyle]="{'background': nodeColors[tab]}">
         <div class="card">
             <p-table [columns]="cols" [value]="kpiData[tab]">
                 <ng-template pTemplate="header" let-columns>
@@ -11,8 +11,10 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-rowData let-columns="columns">
                     <tr *ngIf="kpiConfigData[rowData['kpiId']]">
-                        <td *ngFor="let col of columns" (mouseenter)="mouseEnter($event, col.field, rowData)" (mouseleave)="mouseLeave()"
-                        [ngStyle]="{'color': col.field == 'trend' ? (rowData[col.field] == '+ve' ? 'green' : rowData[col.field] == '-ve' ? 'red' : '#333333') : '#333333'}">
+                        <td *ngFor="let col of columns" 
+                        (mouseenter)="mouseEnter($event, col.field, rowData)" (mouseleave)="mouseLeave()"
+                        [ngStyle]="{'color': col.field == 'trend' ? (rowData[col.field] == '+ve' ? 'green' : rowData[col.field] == '-ve' ? 'red' : '#333333') : '#333333', 
+                        'max-width': col.field == 'kpiName' ? '200px': ''}">
                             {{ rowData[col.field] }}
                         </td>
                     </tr>

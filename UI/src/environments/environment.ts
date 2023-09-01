@@ -22,7 +22,7 @@
 
 export const environment = {
    production: false,
-   baseUrl: '//customapi:8080',
+   baseUrl: '//localhost:8081',
    SSO_LOGIN: false
 };
 
