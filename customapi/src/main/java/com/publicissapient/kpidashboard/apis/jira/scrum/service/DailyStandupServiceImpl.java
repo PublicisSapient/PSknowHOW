@@ -326,18 +326,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 
 					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())) {
 						List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
-						// combined both sub-tasks and totalIssuelist
-						Set<JiraIssue> subTasksJiraIssue = jiraIssueRepository
-								.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(
-										basicProjectConfigId.toString(), new HashSet<>(allIssues), taskType);
-						if (CollectionUtils.isNotEmpty(subTasksJiraIssue)) {
-							totalIssueList.addAll(subTasksJiraIssue);
-							issueHistoryList
-									.addAll(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigId(
-											subTasksJiraIssue.stream().map(JiraIssue::getNumber)
-													.collect(Collectors.toSet()),
-											basicProjectConfigId.toString()));
-						}
+						processSubtaskFromDb(basicProjectConfigId, allIssues, totalIssueList, issueHistoryList, taskType);
 					}
 
 					Set<JiraIssue> epics = new HashSet<>(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
@@ -361,6 +350,21 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			}
 		}
 		return resultListMap;
+	}
+
+	private void processSubtaskFromDb(ObjectId basicProjectConfigId, List<String> allIssues, Set<JiraIssue> totalIssueList, List<JiraIssueCustomHistory> issueHistoryList, List<String> taskType) {
+		// combined both sub-tasks and totalIssuelist
+		Set<JiraIssue> subTasksJiraIssue = jiraIssueRepository
+				.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(
+						basicProjectConfigId.toString(), new HashSet<>(allIssues), taskType);
+		if (CollectionUtils.isNotEmpty(subTasksJiraIssue)) {
+			totalIssueList.addAll(subTasksJiraIssue);
+			issueHistoryList
+					.addAll(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigId(
+							subTasksJiraIssue.stream().map(JiraIssue::getNumber)
+									.collect(Collectors.toSet()),
+							basicProjectConfigId.toString()));
+		}
 	}
 
 	/*
@@ -626,7 +630,13 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					logs.add(log.getChangedTo());
 					return logs;
 				});
-				dateWiseLogMap.computeIfAbsent(changedOn, k -> new ArrayList<>()).add(log.getChangedTo());
+
+				dateWiseLogMap.computeIfAbsent(changedOn, k -> {
+					List<String> statusLogs = new ArrayList<>();
+					statusLogs.add(log.getChangedTo());
+					return statusLogs;
+				});
+
 			}
 			dateWiseLogMap = dateWiseLogMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(
 					Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));

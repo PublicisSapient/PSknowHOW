@@ -133,6 +133,7 @@ public class OnlineAdapter implements JiraAdapter {
 	public OnlineAdapter() {
 	}
 
+
 	/**
 	 * @param jiraProcessorConfig
 	 *            jira processor configuration
@@ -140,6 +141,19 @@ public class OnlineAdapter implements JiraAdapter {
 	 *            ProcessorJiraRestClient instance
 	 * @param aesEncryptionService
 	 *            aesEncryptionService
+	 */
+	/**
+	 *
+	 * @param jiraProcessorConfig
+	 * 			jira processor configuration
+	 * @param client
+	 * 			ProcessorJiraRestClient instance
+	 * @param aesEncryptionService
+	 * 			aesEncryptionService
+	 * @param toolCredentialProvider
+	 * 			credential Provider
+	 * @param krb5Client
+	 * 			kerberos Client
 	 */
 	public OnlineAdapter(JiraProcessorConfig jiraProcessorConfig, ProcessorJiraRestClient client,
 			AesEncryptionService aesEncryptionService, ToolCredentialProvider toolCredentialProvider,

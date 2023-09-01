@@ -29,24 +29,31 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
  */
 
 public interface SprintClient {
-
 	/**
 	 * This method handles sprint detailsList
-	 * 
 	 * @param projectConfig
-	 *            projectConfig
+	 * 			projectConfig
 	 * @param sprintDetailsList
-	 *            sprintDetailsList
+	 * 			sprintDetailsList
+	 * @param jiraAdapter
+	 * 			jiraAdapter
+	 * @param isSprintFetch
+	 * 				isSprintFetch
+	 * @throws InterruptedException
+	 * 				InterruptedException
 	 */
-	public void processSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsList,
+	 void processSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsList,
 			JiraAdapter jiraAdapter, boolean isSprintFetch) throws InterruptedException;
 
 	/**
-	 * This method fetch sprint report
-	 * 
+	 *
 	 * @param projectConfig
+	 * 			projectConfig
 	 * @param jiraAdapter
+	 * 			jiraAdapter
+	 * @throws InterruptedException
+	 * 			InterruptedException
 	 */
-	public void createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter)
+	 void createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter)
 			throws InterruptedException;
 }
