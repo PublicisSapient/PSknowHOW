@@ -518,11 +518,12 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 						createDateWiseLogs(inSprintAssigneeLogs, iterationKpiModalValue.getActualStartDateInTime(),
 								iterationKpiModalValue.getActualCompletionDateInTime()));
 
-
-					iterationKpiModalValue.setTimeWithUser(calculateWithLastTime(inSprintAssigneeLogs,
-							issueHistory.getAssigneeUpdationLog(), sprintStartDateTime, iterationKpiModalValue.getActualCompletionDateInTime()));
-					iterationKpiModalValue.setTimeWithStatus(calculateWithLastTime(inSprintStatusLogs,
-							issueHistory.getStatusUpdationLog(), sprintStartDateTime, iterationKpiModalValue.getActualCompletionDateInTime()));
+				iterationKpiModalValue.setTimeWithUser(
+						calculateWithLastTime(inSprintAssigneeLogs, issueHistory.getAssigneeUpdationLog(),
+								sprintStartDateTime, iterationKpiModalValue.getActualCompletionDateInTime()));
+				iterationKpiModalValue.setTimeWithStatus(
+						calculateWithLastTime(inSprintStatusLogs, issueHistory.getStatusUpdationLog(),
+								sprintStartDateTime, iterationKpiModalValue.getActualCompletionDateInTime()));
 
 				setEstimatesInSeconds(jiraIssue, iterationKpiModalValue);
 
@@ -677,7 +678,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	private String calculateWithLastTime(List<JiraHistoryChangeLog> inSprintHistoryLogs,
 			List<JiraHistoryChangeLog> allLogs, LocalDateTime sprintStartDateTime, String actualCompletionDateInTime) {
 		String lastTimeInString;
-		if (StringUtils.isNotEmpty(actualCompletionDateInTime)) {
+		if (StringUtils.isEmpty(actualCompletionDateInTime)) {
 			long lastTime = 0L;
 			if (CollectionUtils.isNotEmpty(inSprintHistoryLogs)) {
 				Collections.sort(inSprintHistoryLogs,
