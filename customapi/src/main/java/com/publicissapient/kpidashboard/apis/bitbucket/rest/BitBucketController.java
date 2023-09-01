@@ -21,9 +21,13 @@ package com.publicissapient.kpidashboard.apis.bitbucket.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
+import java.util.Objects;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
+import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +67,9 @@ public class BitBucketController {
 	@Autowired
 	private CacheService cacheService;
 
+	@Autowired
+	private AuthExposeAPIService authExposeAPIService;
+
 	/**
 	 * Gets bit bucket aggregated metrics.
 	 *
@@ -75,7 +82,7 @@ public class BitBucketController {
 	@RequestMapping(value = "/bitbucket/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<List<KpiElement>> getBitBucketAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception { // NOSONAR
-		MDC.put("BitbucketKpiRequest", kpiRequest.getRequestTrackerId());
+		MDC.put("BitbucketKpiRequest", kpiRequest.getRequestTrackerId()); // NOSONAR
 		log.info("Received BitBucket KPI request {}", kpiRequest);
 		long bitbucketRequestStartTime = System.currentTimeMillis();
 		MDC.put("BitbucketRequestStartTime", String.valueOf(bitbucketRequestStartTime));
@@ -83,7 +90,7 @@ public class BitBucketController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 		}
 
 		List<KpiElement> responseList = bitbucketService.process(kpiRequest);
@@ -118,7 +125,7 @@ public class BitBucketController {
 				kpiRequest.getRequestTrackerId());
 
 		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
-			throw new MissingServletRequestParameterException("kpiList", "List");
+			throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 		}
 
 		List<KpiElement> responseList = bitbucketServiceKanban.process(kpiRequest);
@@ -131,6 +138,49 @@ public class BitBucketController {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
 		}
 		return ResponseEntity.ok().body(responseList);
+
+	}
+
+	/**
+	 * Gets bit bucket aggregated metrics.
+	 *
+	 * @param kpiRequest
+	 *            the kpi request
+	 * @return the bit bucket aggregated metrics
+	 * @throws Exception
+	 *             the exception
+	 */
+	@RequestMapping(value = "/maturity/bitbucket/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	public ResponseEntity<List<KpiElement>> getBitBucketAggregatedMetricsForMaturity(HttpServletRequest request,
+			@NotNull @RequestBody KpiRequest kpiRequest)
+			throws Exception { // NOSONAR
+		MDC.put("BitbucketKpiRequest", kpiRequest.getRequestTrackerId());
+		log.info("Received BitBucket KPI request {}", kpiRequest);
+		long bitbucketRequestStartTime = System.currentTimeMillis();
+		MDC.put("BitbucketRequestStartTime", String.valueOf(bitbucketRequestStartTime));
+
+		ExposeApiToken exposeApiToken = authExposeAPIService.validateToken(request);
+		if(Objects.nonNull(exposeApiToken)) {
+			cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.BITBUCKET.name(),
+					kpiRequest.getRequestTrackerId());
+
+			if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
+				throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
+			}
+
+			List<KpiElement> responseList = bitbucketService.process(kpiRequest);
+			MDC.put("TotalBitbucketRequestTime", String.valueOf(System.currentTimeMillis() - bitbucketRequestStartTime));
+
+			log.info("");
+			MDC.clear();
+			if (responseList.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
+			}
+			return ResponseEntity.ok().body(responseList);
+		} else {
+			log.info("Generate Token Push Data via KnowHow tool configuration screen {}", kpiRequest.getRequestTrackerId());
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		}
 
 	}
 

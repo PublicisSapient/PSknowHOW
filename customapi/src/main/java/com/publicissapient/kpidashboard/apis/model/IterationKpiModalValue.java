@@ -147,7 +147,7 @@ public class IterationKpiModalValue implements Serializable {
 	@JsonProperty("Lead Time (In Days)")
 	private String leadTime;
 	@JsonProperty("DIR")
-	private Double DIR;
+	private Double defectInjectRate;
 	@JsonProperty("Defect Density")
 	private String defectDensity;
 	@JsonProperty("Test-Completed")
@@ -158,9 +158,9 @@ public class IterationKpiModalValue implements Serializable {
 	private String actualCompletionDateInTime;
 	@JsonProperty("Actual-Start-Date")
 	private String actualStartDateInTime;
-	Map<String, List<String>> statusLogGroup;
-	Map<String, List<String>> workLogGroup;
-	Map<String, List<String>> assigneeLogGroup;
+	private Map<String, List<String>> statusLogGroup;
+	private Map<String, List<String>> workLogGroup;
+	private Map<String, List<String>> assigneeLogGroup;
 	private Long timeWithUser;
 	private Long timeWithStatus;
 	private Long loggedWorkInSeconds;

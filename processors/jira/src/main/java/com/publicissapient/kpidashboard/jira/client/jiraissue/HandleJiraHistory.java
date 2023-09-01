@@ -240,7 +240,7 @@ public class HandleJiraHistory {
 					Collections.sort(sprints, JiraIssueClientUtil.SPRINT_COMPARATOR);
 					if (!sprints.isEmpty())
 						createFirstEntryOfChangeLog(sprintChangeLog, issue, sprints.get(0).getSprintName());
-				} catch (ParseException | JSONException e) {
+				} catch ( JSONException e) {
 					log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
 				}
 

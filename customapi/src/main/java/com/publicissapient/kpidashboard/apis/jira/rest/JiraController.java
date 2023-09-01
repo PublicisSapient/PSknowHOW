@@ -26,8 +26,6 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
-import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
-import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +52,8 @@ import com.publicissapient.kpidashboard.apis.jira.service.JiraToolConfigServiceI
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
+import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 import com.publicissapient.kpidashboard.common.model.application.dto.AssigneeResponseDTO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -192,11 +192,12 @@ public class JiraController {
 
 		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId()); // NOSONAR
 		log.info("Received Jira KPI request {}", kpiRequest);
-		ExposeApiToken exposeApiToken = authExposeAPIService.validateToken(request);
 		long jiraRequestStartTime = System.currentTimeMillis();
 		MDC.put("JiraRequestStartTime", String.valueOf(jiraRequestStartTime));
-		if(Objects.nonNull(exposeApiToken)) {
-			cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name(), kpiRequest.getRequestTrackerId());
+		ExposeApiToken exposeApiToken = authExposeAPIService.validateToken(request);
+		if (Objects.nonNull(exposeApiToken)) {
+			cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name(),
+					kpiRequest.getRequestTrackerId());
 			if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
 				throw new MissingServletRequestParameterException("kpiList", "List"); // NOSONAR
 			}
@@ -212,7 +213,8 @@ public class JiraController {
 				return ResponseEntity.ok().body(responseList);
 			}
 		} else {
-			log.info("Generate Token Push Data via KnowHow tool configuration screen {}", kpiRequest.getRequestTrackerId());
+			log.info("Generate Token Push Data via KnowHow tool configuration screen {}",
+					kpiRequest.getRequestTrackerId());
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 		}
 	}

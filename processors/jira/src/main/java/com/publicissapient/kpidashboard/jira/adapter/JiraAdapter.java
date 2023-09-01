@@ -53,6 +53,8 @@ public interface JiraAdapter {
 	 * @param dataExist
 	 *            data exist in db or not
 	 * @return list of issues
+	 * @throws InterruptedException
+	 *          interrupted exception
 	 */
 	SearchResult getIssues(BoardDetails boardDetails, ProjectConfFieldMapping projectConfig,
 			String startDateTimeByIssueType, String userTimeZone, int pageStart, boolean dataExist)
@@ -72,6 +74,8 @@ public interface JiraAdapter {
 	 * @param dataExist
 	 *            data exist in db or not
 	 * @return list of issues
+	 * @throws InterruptedException
+	 *          interrupted exception
 	 */
 	SearchResult getIssues(ProjectConfFieldMapping projectConfig, Map<String, LocalDateTime> startDateTimeByIssueType,
 			String userTimeZone, int pageStart, boolean dataExist) throws InterruptedException;

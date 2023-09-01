@@ -134,11 +134,6 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
 			dataCountGroup.setFilter(issueType);
 			dataCountGroup.setValue(dataList);
-			List<DataCount> dataCountValues = dataList.stream().map(dataCount -> (List<DataCount>) dataCount.getValue())
-					.flatMap(List::stream).collect(Collectors.toList());
-			List<Double> values = dataCountValues.stream().map(dataCount -> (Double) dataCount.getValue())
-					.collect(Collectors.toList());
-			dataCountGroup.setAggregationValue(String.valueOf(AggregationUtils.percentiles(values, 90.0D)));
 			dataCountGroups.add(dataCountGroup);
 		});
 		kpiElement.setTrendValueList(dataCountGroups);

@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -267,11 +268,15 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					fieldMapping.getJiraStatusForInProgressKPI154(), FILTER_BUTTON, true, 1);
 			secondScreenFilters.add(inProgressFilters);
 		}
+		Filter openFilter;
 		if (CollectionUtils.isNotEmpty(fieldMapping.getStoryFirstStatusKPI154())) {
-			Filter openFilter = new Filter(FILTER_OPEN_SCR2, fieldMapping.getStoryFirstStatusKPI154(), FILTER_BUTTON,
+			openFilter = new Filter(FILTER_OPEN_SCR2, fieldMapping.getStoryFirstStatusKPI154(), FILTER_BUTTON, false,
+					null);
+		} else {
+			openFilter = new Filter(FILTER_OPEN_SCR2, Arrays.asList(fieldMapping.getStoryFirstStatus()), FILTER_BUTTON,
 					false, null);
-			secondScreenFilters.add(openFilter);
 		}
+		secondScreenFilters.add(openFilter);
 		kpiElement.setFilterData(firstScreenFilter);
 		kpiElement.setStandUpStatusFilter(secondScreenFilters);
 	}
@@ -326,18 +331,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 
 					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())) {
 						List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
-						// combined both sub-tasks and totalIssuelist
-						Set<JiraIssue> subTasksJiraIssue = jiraIssueRepository
-								.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(
-										basicProjectConfigId.toString(), new HashSet<>(allIssues), taskType);
-						if (CollectionUtils.isNotEmpty(subTasksJiraIssue)) {
-							totalIssueList.addAll(subTasksJiraIssue);
-							issueHistoryList
-									.addAll(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigId(
-											subTasksJiraIssue.stream().map(JiraIssue::getNumber)
-													.collect(Collectors.toSet()),
-											basicProjectConfigId.toString()));
-						}
+						processSubtaskFromDb(basicProjectConfigId, allIssues, totalIssueList, issueHistoryList, taskType);
 					}
 
 					Set<JiraIssue> epics = new HashSet<>(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
@@ -361,6 +355,21 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			}
 		}
 		return resultListMap;
+	}
+
+	private void processSubtaskFromDb(ObjectId basicProjectConfigId, List<String> allIssues, Set<JiraIssue> totalIssueList, List<JiraIssueCustomHistory> issueHistoryList, List<String> taskType) {
+		// combined both sub-tasks and totalIssuelist
+		Set<JiraIssue> subTasksJiraIssue = jiraIssueRepository
+				.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(
+						basicProjectConfigId.toString(), new HashSet<>(allIssues), taskType);
+		if (CollectionUtils.isNotEmpty(subTasksJiraIssue)) {
+			totalIssueList.addAll(subTasksJiraIssue);
+			issueHistoryList
+					.addAll(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigId(
+							subTasksJiraIssue.stream().map(JiraIssue::getNumber)
+									.collect(Collectors.toSet()),
+							basicProjectConfigId.toString()));
+		}
 	}
 
 	/*
@@ -505,7 +514,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				setPCDandDelay(iterationKpiModalValue, issueWiseDelay, jiraIssue);
 				iterationKpiModalValue.setStatusLogGroup(createDateWiseLogs(inSprintStatusLogs));
 				iterationKpiModalValue.setWorkLogGroup(createDateWiseLogs(inSprintWorkLogs));
-				iterationKpiModalValue.setAssigneeLogGroup(createDateWiseLogs(inSprintAssigneeLogs));
+				iterationKpiModalValue.setAssigneeLogGroup(createDateWiseLogs(inSprintAssigneeLogs, iterationKpiModalValue.getActualStartDateInTime(), iterationKpiModalValue.getActualCompletionDateInTime()));
 
 				iterationKpiModalValue.setTimeWithUser(calculateWithLastTime(inSprintAssigneeLogs,
 						issueHistory.getAssigneeUpdationLog(), sprintStartDateTime));
@@ -626,12 +635,34 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					logs.add(log.getChangedTo());
 					return logs;
 				});
-				dateWiseLogMap.computeIfAbsent(changedOn, k -> new ArrayList<>()).add(log.getChangedTo());
+
+				dateWiseLogMap.computeIfAbsent(changedOn, k -> {
+					List<String> statusLogs = new ArrayList<>();
+					statusLogs.add(log.getChangedTo());
+					return statusLogs;
+				});
+
 			}
 			dateWiseLogMap = dateWiseLogMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(
 					Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 		}
 		return dateWiseLogMap;
+	}
+
+	private Map<String, List<String>> createDateWiseLogs(List<JiraHistoryChangeLog> historyLog,
+			String actualStartDateInTime, String actualCompletionTime) {
+		if (StringUtils.isNotEmpty(actualCompletionTime)) {
+			LocalDateTime endLocalTime = LocalDateTime.parse(actualCompletionTime);
+			historyLog = historyLog.stream().filter(log -> DateUtil.equalAndBeforTime(log.getUpdatedOn(), endLocalTime))
+					.collect(Collectors.toList());
+		}
+		if (StringUtils.isNotEmpty(actualStartDateInTime)) {
+			LocalDateTime startLocalTime = LocalDateTime.parse(actualStartDateInTime);
+			historyLog = historyLog.stream()
+					.filter(log -> DateUtil.equalAndAfterTime(log.getUpdatedOn(), startLocalTime))
+					.collect(Collectors.toList());
+		}
+		return createDateWiseLogs(historyLog);
 	}
 
 	/*

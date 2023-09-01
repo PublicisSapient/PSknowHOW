@@ -106,8 +106,8 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 				kpiRequest.getRequestTrackerId(), root);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_INJECTION_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.DEFECT_INJECTION_RATE);
+		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.LEAD_TIME_CHANGE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.LEAD_TIME_CHANGE);
 		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;
@@ -138,7 +138,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 
 				List<DataCount> dataCountList = new ArrayList<>();
 				String weekOrMonth = (String) durationFilter.getOrDefault(Constant.DURATION, CommonConstant.WEEK);
-				int previousTimeCount = (int) durationFilter.getOrDefault(Constant.COUNT, 5);
+				int previousTimeCount = 8;
 				LocalDate endDateTime = LocalDate.now();
 
 				// jiraIssueCustomHistoryList group by

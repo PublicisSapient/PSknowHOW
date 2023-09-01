@@ -160,7 +160,7 @@ export class IssueCardComponent implements OnChanges {
   constructor() { }
 
   ngOnChanges(changes: SimpleChanges){
-    // console.log(this.issueData);
+    console.log(this.issueData);
     this.isOverViewSelected=true;
   }
 

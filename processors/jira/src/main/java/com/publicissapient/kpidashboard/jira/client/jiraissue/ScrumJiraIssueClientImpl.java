@@ -617,16 +617,22 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	/**
-	 * Saves jira issues details
 	 *
 	 * @param currentPagedJiraRs
-	 *            List of Jira issue in current page call
+	 * 			List of Jira issue in current page call
 	 * @param projectConfig
-	 *            Project Configuration Mapping
+	 * 			Project Configuration Mapping
 	 * @param setForCacheClean
-	 *            setForCacheClean
+	 * 			setForCacheClean
+	 * @param jiraAdapter
+	 * 			jiraAdapter
+	 * @param dataFromBoard
+	 *        dataFromBoard
+	 * @param isSprintFetch
+	 * 			isSprintFetch
+	 * @return
 	 * @throws JSONException
-	 *             Error If JSON is invalid
+	 * @throws InterruptedException
 	 */
 	public List<JiraIssue> saveJiraIssueDetails(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
 			Set<SprintDetails> setForCacheClean, JiraAdapter jiraAdapter, boolean dataFromBoard, boolean isSprintFetch)
@@ -1236,7 +1242,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
 				Collections.sort(sprints, JiraIssueClientUtil.SPRINT_COMPARATOR);
 				setSprintData(sprints, jiraIssue, sValue, projectConfig, sprintDetailsSet);
-			} catch (ParseException | JSONException e) {
+			} catch (JSONException e) {
 				log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
 			}
 		}

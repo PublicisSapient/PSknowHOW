@@ -9,9 +9,9 @@ import org.springframework.http.MediaType;
 
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -36,7 +36,7 @@ public class FieldMappingStructureController {
 		this.kPIHelperService = kPIHelperService;
 	}
 
-	@RequestMapping(value = "{projectBasicConfigId}/{kpiId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "{projectBasicConfigId}/{kpiId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> fetchFieldMappingStructureByKpiFieldMappingData(
 			@PathVariable String projectBasicConfigId, @PathVariable String kpiId) {
 		projectBasicConfigId = CommonUtils.handleCrossScriptingTaintedValue(projectBasicConfigId);

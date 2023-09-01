@@ -3708,9 +3708,8 @@ db.getCollection('field_mapping_structure').insertMany([
 
 // KPI add Lead time for changes in DORA tab
 db.kpi_master.bulkWrite([{
-   insertOne: {
+    insertOne: {
      document: {
- {
     "kpiId": "kpi156",
     "kpiName": "Lead Time For Change",
     "maxValue": "100",
@@ -3728,7 +3727,7 @@ db.kpi_master.bulkWrite([{
       "details": [
         {
           "type": "paragraph",
-          "value": "LEAD TIME FOR CHANGE Captures the time between a code change commit and its deployable state."
+          "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
         }
       ],
       "maturityLevels": []

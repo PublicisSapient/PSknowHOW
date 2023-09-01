@@ -9,7 +9,7 @@ import * as d3 from 'd3';
 export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
 
 
-  @Input() issusDataList;
+  @Input() issueDataList;
   @Input() selectedSprintInfo;
   @Input() standUpStatusFilter;
   elem;
@@ -19,7 +19,7 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
 
   ngOnChanges(changes: SimpleChanges){
     this.elem = this.viewContainerRef.element.nativeElement;
-    this.draw();
+    this.draw(this.issueDataList,'');
   }
 
   //generated dates on MM/DD format 
@@ -53,7 +53,7 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
     return s < 10 ? '0' + s : s;
   }
 
-  draw(){
+  draw(issueList,selectedIssue){
     const chart = d3.select(this.elem).select('#chart');
     chart.select('svg').remove();
 
@@ -63,11 +63,12 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
     const height = d3.select(this.elem).node().offsetHeight;
 
     const openIssueStatus = this.standUpStatusFilter.find(item => item['filterName'] === 'Open')?.options;
-    console.log(openIssueStatus);
-    
+    let selectedIssueSubtask = [];
+    const acutalIssueList = [...this.issueDataList];
+    let issueDataList = [...issueList];
 
-    if(this.issusDataList.length > 15){
-      width= width +(( this.issusDataList.length -14) * 200);
+    if(issueDataList.length > 15){
+      width= width +(( issueDataList.length -14) * 200);
     }
 
     const svg = chart
@@ -83,8 +84,8 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
       .paddingOuter(0);
 
       const y = d3.scaleLinear()
-      .domain([0,this.issusDataList.length +2])
-      .range([height,0]);
+      .domain([0,issueDataList.length +2])
+      .range([0,height]);
 
       const initialCoordinate = x(xCoordinates[1]);
 
@@ -118,6 +119,14 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
         .attr('class', 'gridline');
     }
 
+    const getNameInitials = (name)=>{
+      const initials = name?.split(' ').map(d => d[0]);
+      if(initials.length > 2){
+       return  initials?.map(d => d[0]).slice(0,2).join('').toUpperCase();
+      }
+      return initials?.join('').toUpperCase();
+  };
+
     const showMarkers = (issue, index) => {
       const marker = svg
         .append('g')
@@ -146,11 +155,48 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
 
       });
 
+
+       //show assignee status transition within sprint dates 'assigneeLogGroup'
+       Object.keys(issue['assigneeLogGroup']).forEach(d => {
+        const xValue = x(this.formatDate(new Date(d))) + initialCoordinate;
+        const yValue = y(index);
+        let assigneeName ='';
+        if(Array.isArray(issue['assigneeLogGroup'][d])){
+          
+          for(let i=0;i< issue['assigneeLogGroup'][d].length;i++){
+            if(issue['assigneeLogGroup'][d].length > 1 && i !== issue['assigneeLogGroup'][d].length-1){
+              assigneeName += getNameInitials(issue['assigneeLogGroup'][d][i]) +' --> ';
+            }else{
+              assigneeName += getNameInitials(issue['assigneeLogGroup'][d][i]);
+            }
+           
+          }
+        }else{
+          assigneeName = getNameInitials(issue['assigneeLogGroup'][d]);
+        }
+        marker.append('text')
+         .attr('height', 10)
+          .attr('width', 100)
+          .style('color','#437495')
+          .style('font-weight','bold')
+          .attr('x',  xValue)
+          .attr('y', yValue)
+          .style('cursor','pointer')
+          .html(`${assigneeName}`)
+          .on('mouseover',()=>{
+           const  data = `<p>${issue['assigneeLogGroup'][d].join('-->')}</p><p>Owned: ${d}</>`;
+           showTooltip(data,xValue,yValue);
+          })
+          .on('mouseout',()=>{
+            hideTooltip();
+          });
+
+      });
+
       //show 'Due Date Exceeded' if status not closed after dueDate
       if (this.compareDates(new Date(), issue['Due Date']) && !issue['Actual-Completion-Date']) {
         const xValue = x(this.formatDate(new Date())) + initialCoordinate / 2;
         const yValue = y(index);
-        console.log(xValue,yValue);
 
         marker.append('image')
           .attr('xlink:href', '../../../assets/img/due-date-exceeded.svg')
@@ -206,7 +252,27 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
       }
     };
 
+    const showSubTask =(parentIssue,index,)=>{
+      if(selectedIssue === parentIssue['Issue Id']){
+        selectedIssue = '';
+        selectedIssueSubtask = [];
+        issueDataList = acutalIssueList;
+        this.draw(issueDataList,'');
+      }else if(selectedIssue && selectedIssue !== parentIssue['Issue Id']){
+        issueDataList = acutalIssueList;
+        issueDataList.splice(index,0,...selectedIssueSubtask);
+        console.log(issueDataList);
+        this.draw(issueDataList,parentIssue['Issue Id']);
+      }else{
+        console.log(index,selectedIssueSubtask,issueDataList,selectedIssue);
+        issueDataList.splice(index,0,...selectedIssueSubtask);
+        console.log(issueDataList);
+        this.draw(issueDataList,parentIssue['Issue Id']);
+      }
+     };
+
     const showIssueIdandStatus = (centerDate, issue, i, isOpenIssue=false) => {
+
       const issueId = svg
         .append('g')
         .attr('transform', `translate(0,0)`)
@@ -216,7 +282,16 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
         .attr('x', isOpenIssue ? x(centerDate) + initialCoordinate / 2 + 10 : x(centerDate) + initialCoordinate / 2)
         .attr('y',  isOpenIssue ? y(i) - 10 : y(i)-15 )
         .html(`${issue['Issue Id']}`)
-        .style('font-weight', 'bold');
+        .style('font-weight', 'bold')
+        .style('cursor', issue['subTask'] ? 'pointer': 'initial')
+        .on('click',function(){
+        
+          
+          selectedIssueSubtask = issue['subTask'].map(d => ({...d,isSubtask:true}));
+          console.log(issue['subTask'],selectedIssueSubtask);
+          showSubTask(issue,i);
+
+        });
 
       const issUeStatus = svg
         .append('g')
@@ -259,6 +334,8 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
       tooltipContainer.selectAll('.tooltip').remove();
     };
 
+
+
     const drawLineForIssue =(issue,i,isSubTask)=>{
       const {startPoint, endPoint,centerDate} = this.getStartAndEndLinePoints(issue);
       // console.log(startPoint,endPoint,issue['Issue Id']);
@@ -279,10 +356,19 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
             .style('stroke-width', isSubTask ? 1 : 4)
             .style('stroke-dasharray',lineType)
             .style('fill', 'none')
-            .attr('class', 'gridline');
+            .attr('class', 'gridline')
+            .style('cursor','pointer')
+            .on('mouseover', function(event) {
+              d3.select(this)
+                .style('stroke-width',isSubTask ? 3: 6);
+            })
+            .on('mouseout', function(event) {
+              d3.select(this)
+                .style('stroke-width', isSubTask ? 1 : 4);
+            });
 
             showMarkers(issue,i+1);
-            showIssueIdandStatus(centerDate,issue,i+1);
+            showIssueIdandStatus(centerDate,issue,i+1,false);
 
           } else if (openIssueStatus.includes(issue['Issue Status'])) {
             //draw circle to represent issue 
@@ -305,15 +391,15 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
 
 
     // draw lines for each issues and its subtask
-    for(let i = 0;i<this.issusDataList.length;i++){
-      drawLineForIssue(this.issusDataList[i],i,false);
+    for(let i = 0;i<issueDataList.length;i++){
+      drawLineForIssue(issueDataList[i],i,issueDataList[i]['isSubtask']);
 
       // draw lines for subtask
-      if(this.issusDataList[i]['subTask']){
-        for(let j=0;j<this.issusDataList[i]['subTask'].length ; j++){
-          drawLineForIssue(this.issusDataList[i]['subTask'][j],(i +j+1*0.5),true);
-        }
-      }
+      // if(issueDataList[i]['subTask']){
+      //   for(let j=0;j<issueDataList[i]['subTask'].length ; j++){
+      //     drawLineForIssue(issueDataList[i]['subTask'][j],(i +j+1*0.5),true);
+      //   }
+      // }
   }
 
 
@@ -342,7 +428,10 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
   compareDates(date1,date2){
     const d1 = new Date(date1);
     const d2 = new Date(date2);
-    return d1 >= d2;
+    if(d1.toDateString() === d2.toDateString()){
+      return false;
+    }
+    return d1 > d2;
   }
 
 
