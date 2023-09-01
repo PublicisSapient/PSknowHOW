@@ -124,7 +124,7 @@ public class RepoToolsConfigServiceImpl {
 			// create configuration details for repo tool
 			RepoToolConfig repoToolConfig = new RepoToolConfig(projectToolConfig.getRepositoryName(),
 					projectToolConfig.getIsNew(), projectToolConfig.getBasicProjectConfigId().toString(),
-					connection.getHttpUrl(), repoToolsProvider.getRepoToolProvider(), connection.getSshUrl(),
+					connection.getHttpUrl(), repoToolsProvider.getRepoToolProvider(), connection.getHttpUrl(),
 					projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
 					fistScan.toString().replace("T", " "), toolCredential, branchNames);
@@ -135,7 +135,7 @@ public class RepoToolsConfigServiceImpl {
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 
 		} catch (Exception ex) {
-			log.error("Error enrolling project");
+			log.error(ex.getMessage());
 		}
 		return httpStatus;
 	}
