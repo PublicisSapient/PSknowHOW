@@ -136,7 +136,7 @@ public class RepoToolsConfigServiceImpl {
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 
 		} catch (Exception ex) {
-			log.error(ex.getMessage());
+			log.error("Exception occcured while enrolling project {}", projectToolConfig.getBasicProjectConfigId().toString(), ex);
 		}
 		return httpStatus;
 	}
@@ -187,8 +187,9 @@ public class RepoToolsConfigServiceImpl {
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
 				}
 			}
-		} catch (HttpClientErrorException ex) {
-			httpStatus = ex.getStatusCode().value();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			log.error("Exception occcured while scanning project {}", basicProjectconfigIdList, ex);
 		}
 		return httpStatus;
 	}
@@ -229,6 +230,7 @@ public class RepoToolsConfigServiceImpl {
 		} else {
 			// delete the project from repo tool if only one repository is present
 			httpStatus = deleteRepoToolProject(projectBasicConfig, false);
+
 		}
 		return httpStatus == HttpStatus.OK.value();
 	}
@@ -258,7 +260,7 @@ public class RepoToolsConfigServiceImpl {
 			repoToolKpiMetricRespons = repoToolKpiBulkMetricResponse.getValues().stream().flatMap(List::stream)
 					.collect(Collectors.toList());
 		} catch (HttpClientErrorException ex) {
-			log.error("Project not found");
+			log.error("Get KPI data {}", projectCode, ex);
 		}
 		return repoToolKpiMetricRespons;
 	}
