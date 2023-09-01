@@ -51,8 +51,6 @@ public class FieldMapping extends BasicModel {
 
 	public static final String READY_FOR_TESTING = "Ready For Testing";
 	public static final String IN_TESTING = "In Testing";
-	public static final String DEFECT = "Defect";
-	public static final String BUG = "Bug";
 	public static final String DONE = "Done";
 	public static final String CLOSED = "Closed";
 	private ObjectId projectToolConfigId;
@@ -60,8 +58,7 @@ public class FieldMapping extends BasicModel {
 	private String projectId;
 	private String sprintName;
 	private String epicName;
-	@Builder.Default
-	private List<String> jiradefecttype = Arrays.asList(DEFECT, BUG);
+	private List<String> jiradefecttype;
 	private String epicLink;
 	private List<String> jiraSubTaskDefectType;
 
