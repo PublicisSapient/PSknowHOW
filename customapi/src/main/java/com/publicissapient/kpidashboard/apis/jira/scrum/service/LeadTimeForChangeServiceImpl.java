@@ -106,8 +106,8 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 				kpiRequest.getRequestTrackerId(), root);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_INJECTION_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.DEFECT_INJECTION_RATE);
+		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.LEAD_TIME_CHANGE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.LEAD_TIME_CHANGE);
 		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;

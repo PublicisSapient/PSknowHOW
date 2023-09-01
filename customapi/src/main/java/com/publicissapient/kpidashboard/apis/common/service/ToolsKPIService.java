@@ -564,7 +564,7 @@ public abstract class ToolsKPIService<R, S> {
 					if (kpiId.equals("kpi156")) {
 						List<Double> values = dataCounts.stream().map(val -> (Double) val.getValue())
 								.collect(Collectors.toList());
-						calculatedAggValue = AggregationUtils.percentiles(values, 90.0D);
+						calculatedAggValue = AggregationUtils.average(values);
 					}
 					String aggregateValue = null;
 					String maturity = null;
@@ -617,12 +617,12 @@ public abstract class ToolsKPIService<R, S> {
 						if (kpiId.equals("kpi116")) {
 							List<Double> values = value.stream().map(val -> (Double) val.getValue())
 									.collect(Collectors.toList());
-							calculatedAggValue = AggregationUtils.percentiles(values, 90.0D);
+							calculatedAggValue = AggregationUtils.average(values);
 						}
 						if (kpiId.equals("kpi118")) {
 							List<Long> values = value.stream().map(val -> (Long) val.getValue())
 									.collect(Collectors.toList());
-							calculatedAggValue = AggregationUtils.percentilesForLongValues(values, 90.0D);
+							calculatedAggValue = AggregationUtils.averageLong(values);
 						}
 						String aggregateValue = null;
 						String maturity = null;

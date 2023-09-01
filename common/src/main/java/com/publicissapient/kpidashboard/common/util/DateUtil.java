@@ -261,10 +261,9 @@ public class DateUtil {
 		LocalDate monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		LocalDate sunday = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
-		String formattedMonday = monday.format(DateTimeFormatter.ofPattern(D_MMM));
-		String formattedSunday = sunday.format(DateTimeFormatter.ofPattern(D_MMM));
+		String formattedSunday = sunday.format(DateTimeFormatter.ofPattern("d-MMM"));
 
-		return formattedMonday + " to " + formattedSunday;
+		return monday.getDayOfMonth() + " to " + formattedSunday;
 	}
 
 }
