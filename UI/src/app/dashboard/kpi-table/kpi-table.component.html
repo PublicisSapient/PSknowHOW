@@ -1,4 +1,4 @@
-<p-tabView [(activeIndex)]="activeIndex" [scrollable]="true">
+<p-tabView [(activeIndex)]="activeIndex">
     <p-tabPanel *ngFor="let tab of tabs" [header]="tab">
         <div class="card">
             <p-table [columns]="cols" [value]="kpiData[tab]">

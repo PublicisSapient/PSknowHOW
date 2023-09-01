@@ -213,7 +213,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.httpService.getTooltipData().subscribe(filterData => {
             if (filterData[0] !== 'error') {
                 this.tooltip = filterData;
-                this.noOfDataPoints = filterData['noOfDataPoints'];
+                this.noOfDataPoints = filterData['noOfDataPoints'] || 5;
             }
         });
         this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
@@ -981,11 +981,16 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     if(item){
                         obj['hoverText']?.push((i+1) + ' - ' + (item?.['sprintNames']?.length > 0 
                         ? item['sprintNames'].join(',') : item?.['sSprintName'] ? item['sSprintName'] : item?.['date']));
-                        obj[i+1] = item?.value > 0 ? 
-                        (Math.round(item?.value * 10) / 10) + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') 
-                        : item?.value + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') || '-';
+                        let val = item?.lineValue ? item?.lineValue : item?.value;
+                        console.log(kpiId, trendData);
+                        
+                        obj[i+1] = val > 0 ? 
+                        (Math.round(val * 10) / 10) + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') 
+                        : val + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') || '-';
                     }else{
                         obj[i+1] = '-';
+                        console.log("hi");
+                        
                     }
                     
                 }
@@ -1022,6 +1027,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 }
             }
         }
+        // console.log(kpiId, this.kpiTableDataObj);
+        
     }
 
     createCombinations(arr1, arr2) {
