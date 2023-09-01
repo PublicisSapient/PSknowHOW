@@ -95,7 +95,7 @@ public class RepoToolsClient {
 		String payload = gson.toJson(repoToolKpiRequestBody);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
 		ResponseEntity<RepoToolKpiBulkMetricResponse> response = restTemplate.exchange(URI.create(repoToolsUrl),
-				HttpMethod.GET, entity, RepoToolKpiBulkMetricResponse.class);
+				HttpMethod.POST, entity, RepoToolKpiBulkMetricResponse.class);
 		return response.getBody();
 
 	}
