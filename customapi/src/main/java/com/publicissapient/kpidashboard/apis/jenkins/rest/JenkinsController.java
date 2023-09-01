@@ -23,7 +23,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -49,6 +51,8 @@ import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsToolConfigSe
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
+import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,6 +76,9 @@ public class JenkinsController {
 
 	@Autowired
 	private JenkinsToolConfigServiceImpl jenkinsToolConfigService;
+
+	@Autowired
+	private AuthExposeAPIService authExposeAPIService;
 
 	/**
 	 * Gets jenkins aggregated metrics.
@@ -171,4 +178,46 @@ public class JenkinsController {
 		}
 	}
 
+	/**
+	 * Gets jenkins aggregated metrics.
+	 *
+	 * @param kpiRequest
+	 *            the kpi request
+	 * @return the jenkins aggregated metrics
+	 * @throws Exception
+	 *             the exception
+	 */
+	@RequestMapping(value = "/maturity/jenkins/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
+	public ResponseEntity<List<KpiElement>> getJenkinsAggregatedMetricsForMaturity(HttpServletRequest request,
+			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { // NOSONAR
+		MDC.put("JenkinsKpiRequest", kpiRequest.getRequestTrackerId());
+		log.info("Received Jenkins KPI request {}", kpiRequest);
+		long jenkinsRequestStartTime = System.currentTimeMillis();
+		MDC.put("JenkinsRequestStartTime", String.valueOf(jenkinsRequestStartTime));
+		ExposeApiToken exposeApiToken = authExposeAPIService.validateToken(request);
+		if (Objects.nonNull(exposeApiToken)) {
+			cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name(),
+					kpiRequest.getRequestTrackerId());
+
+			if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
+				throw new MissingServletRequestParameterException("kpiList", "List");
+			}
+
+			List<KpiElement> responseList = jenkinsService.process(kpiRequest);
+			MDC.put("TotalJenkinsRequestTime", String.valueOf(System.currentTimeMillis() - jenkinsRequestStartTime));
+
+			log.info("");
+			MDC.clear();
+			if (responseList.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
+			} else {
+				return ResponseEntity.ok().body(responseList);
+			}
+		} else {
+			log.info("Generate Token Push Data via KnowHow tool configuration screen {}",
+					kpiRequest.getRequestTrackerId());
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+		}
+	}
 }
