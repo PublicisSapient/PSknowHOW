@@ -68,7 +68,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 	private static final String REPO_TOOLS = "RepoTool";
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	public static final String PICKUP_TIME_KPI = "pr-size-bulk/";
-	public static final String MR_COUNT = "No of MRs";
+	public static final String MR_COUNT = "No of PRs";
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
 
