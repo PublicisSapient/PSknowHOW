@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.repotools;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConfig;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
@@ -41,10 +42,7 @@ public class RepoToolsClient {
 
 	private RestTemplate restTemplate;
 	private static final String REPO_TOOLS_ENROLL_URL = "/beta/repositories/";
-
-	private static final String REPO_TOOLS_DELETE_REPO_URL = "/beta/repositories/%s";
 	private static final String REPO_TOOLS_TRIGGER_SCAN_URL = "/metric/%s/trigger-scan";
-
 	private static final String X_API_KEY = "X_API_KEY";
 	private HttpHeaders httpHeaders;
 
@@ -118,15 +116,13 @@ public class RepoToolsClient {
 
 	/**
 	 * delete repository of the project
-	 * @param masterSystemId
-	 * @param repoToolsUrl
+	 * @param deleteRepoUrl
 	 * @param apiKey
 	 * @return http status
 	 */
-	public int deleteRepositories(String masterSystemId, String repoToolsUrl, String apiKey) {
-		String deleteRepoUrl = String.format(REPO_TOOLS_DELETE_REPO_URL, masterSystemId);
+	public int deleteRepositories(String deleteRepoUrl, String apiKey) {
 		setHttpHeaders(apiKey);
-		URI url = URI.create(repoToolsUrl + deleteRepoUrl);
+		URI url = URI.create(deleteRepoUrl);
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 		return response.getStatusCode().value();

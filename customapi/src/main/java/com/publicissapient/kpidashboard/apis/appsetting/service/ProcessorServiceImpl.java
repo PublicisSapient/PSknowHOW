@@ -27,7 +27,6 @@ import javax.ws.rs.core.Context;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -91,6 +91,7 @@ public class RepoToolsConfigServiceImpl {
 	public static final String REPO_NAME = "repoName";
 	public static final String REPO_BRANCH = "defaultBranch";
 	public static final String DELETE_REPO = "/project/delete/%s/?only_data=%s";
+	public static final String REMOVE_PROJECT = "/project/delete/%s/%s";
 
 	private RepoToolsClient repoToolsClient;
 
@@ -211,15 +212,16 @@ public class RepoToolsConfigServiceImpl {
 		long count = toolList.stream()
 				.filter(projectToolConfig -> projectToolConfig.getToolName().equals(CommonConstant.REPO_TOOLS)).count();
 		repoToolsClient = createRepoToolsClient();
+		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
 		if (count > 1) {
-
 			// delete only the repository
-			httpStatus = repoToolsClient.deleteRepositories(tool.getRepositoryName(), customApiConfig.getRepoToolURL(),
+			String deleteRepoUrl = customApiConfig.getRepoToolURL() + String.format(REMOVE_PROJECT,
+					projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId(), tool.getRepositoryName());
+			httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 
 		} else {
 			// delete the project from repo tool if only one repository is present
-			ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
 			httpStatus = deleteRepoToolProject(projectBasicConfig, false);
 		}
 		return httpStatus == HttpStatus.OK.value();
