@@ -564,7 +564,7 @@ public abstract class ToolsKPIService<R, S> {
 					if (kpiId.equals("kpi156")) {
 						List<Double> values = dataCounts.stream().map(val -> (Double) val.getValue())
 								.collect(Collectors.toList());
-						calculatedAggValue = AggregationUtils.average(values);
+						calculatedAggValue = AggregationUtils.average(values).intValue();
 					}
 					String aggregateValue = null;
 					String maturity = null;
