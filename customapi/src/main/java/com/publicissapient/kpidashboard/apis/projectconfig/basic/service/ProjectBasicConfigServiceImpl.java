@@ -356,7 +356,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	public void deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean isRepoTool) {
 
-		if(isRepoTool) {
+		if(isRepoTool.equals(Boolean.TRUE)) {
 			repoToolsConfigService.deleteRepoToolProject(projectBasicConfig, false);
 		}
 
