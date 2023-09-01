@@ -249,7 +249,7 @@ export class DoraComponent implements OnInit {
       for (let i = 0; i < this.kpiJenkins?.kpiList?.length; i++) {
         this.kpiJenkins.kpiList[i]['filterDuration'] = {
           duration: 'WEEKS',
-          value: 5
+          value: 8
         }
       }
       this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
