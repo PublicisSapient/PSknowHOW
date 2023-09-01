@@ -168,8 +168,8 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 						createDateLabelWiseMap(repoToolKpiMetricResponseList, repo.getRepositoryName(),
 								repo.getBranch(), dateWisePickupTime, dateWiseMRCount);
 						aggPickupTime(aggPRSizeForRepo, dateWisePickupTime, aggMRCount, dateWiseMRCount);
-						setWeekWisePickupTime(dateWisePickupTime, dateWiseMRCount, excelDataLoader, branchName,
-								projectName, aggDataMap, kpiRequest);
+						setWeekWisePickupTime(dateWisePickupTime, excelDataLoader, branchName, projectName, aggDataMap,
+								kpiRequest);
 					}
 					repoWisePRSizeList.add(excelDataLoader);
 					repoList.add(repo.getUrl());
@@ -177,8 +177,8 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 
 				}
 			});
-			setWeekWisePickupTime(aggPRSizeForRepo, aggMRCount, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
-					aggDataMap, kpiRequest);
+			setWeekWisePickupTime(aggPRSizeForRepo, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName, aggDataMap,
+					kpiRequest);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 
 			populateExcelDataObject(requestTrackerId, repoWisePRSizeList, repoList, branchList, excelData, node);
@@ -190,7 +190,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 	private void aggPickupTime(Map<String, Long> aggPRSizeForRepo, Map<String, Long> prSizeForRepo,
 			Map<String, Long> aggMRCount, Map<String, Long> mrCount) {
 		if (MapUtils.isNotEmpty(prSizeForRepo)) {
-            prSizeForRepo.forEach((key, value) -> aggPRSizeForRepo.merge(key, value, Long::sum));
+			prSizeForRepo.forEach((key, value) -> aggPRSizeForRepo.merge(key, value, Long::sum));
 		}
 		if (MapUtils.isNotEmpty(mrCount)) {
 			mrCount.forEach((key, value) -> aggMRCount.merge(key, value, Long::sum));
@@ -215,16 +215,14 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 						.flatMap(repository -> repository.getBranches().stream())
 						.filter(branch -> branch.getName().equals(branchName)).findFirst();
 				long prSize = matchingBranch.isPresent() ? matchingBranch.get().getLinesChanged() : 0l;
-				long mrCount = matchingBranch.isPresent() ? matchingBranch.get().getMergeRequests() : 0l;
 				dateWisePickupTime.put(response.getDateLabel(), prSize);
-				dateWiseMRCount.put(response.getDateLabel(), mrCount);
+				dateWiseMRCount.put(response.getDateLabel(), 0l);
 			}
 		}
 	}
 
-	private void setWeekWisePickupTime(Map<String, Long> weekWisePickupTime, Map<String, Long> weekWiseMRCount,
-			Map<String, Long> excelDataLoader, String branchName, String projectName,
-			Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
+	private void setWeekWisePickupTime(Map<String, Long> weekWisePickupTime, Map<String, Long> excelDataLoader,
+			String branchName, String projectName, Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
 		LocalDate currentDate = LocalDate.now();
 		Integer dataPoints = kpiRequest.getKanbanXaxisDataPoints();
 		String duration = kpiRequest.getDuration();
@@ -233,8 +231,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 			long prSize = weekWisePickupTime.getOrDefault(dateRange.getStartDate().toString(), 0l);
 			String date = getDateRange(dateRange, duration);
 			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
-			DataCount dataCount = setDataCount(projectName, date, prSize,
-					weekWiseMRCount.getOrDefault(dateRange.getStartDate().toString(), 0l));
+			DataCount dataCount = setDataCount(projectName, date, prSize);
 			aggDataMap.get(branchName).add(dataCount);
 			excelDataLoader.put(date, prSize);
 			currentDate = getNextRangeDate(duration, currentDate);
@@ -265,9 +262,8 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		return currentDate;
 	}
 
-	private DataCount setDataCount(String projectName, String week, Long value, Long mrCount) {
+	private DataCount setDataCount(String projectName, String week, Long value) {
 		Map<String, Object> hoverMap = new HashMap<>();
-		hoverMap.put(MR_COUNT, mrCount);
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value == null ? 0l : value));
 		dataCount.setSProjectName(projectName);

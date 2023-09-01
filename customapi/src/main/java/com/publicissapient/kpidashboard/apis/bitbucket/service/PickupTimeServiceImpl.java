@@ -173,8 +173,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 						createDateLabelWiseMap(repoToolKpiMetricResponseList, repo.getRepositoryName(),
 								repo.getBranch(), dateWisePickupTime, dateWiseMRCount);
 						aggPickupTime(aggPickupTimeForRepo, dateWisePickupTime, aggMRCount, dateWiseMRCount);
-						setWeekWisePickupTime(dateWisePickupTime, dateWiseMRCount, excelDataLoader, branchName,
-								projectName, aggDataMap, kpiRequest);
+						setWeekWisePickupTime(dateWisePickupTime, excelDataLoader, branchName, projectName, aggDataMap,
+								kpiRequest);
 					}
 					repoWisePickupTimeList.add(excelDataLoader);
 					repoList.add(repo.getUrl());
@@ -182,8 +182,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 
 				}
 			});
-			setWeekWisePickupTime(aggPickupTimeForRepo, aggMRCount, new HashMap<>(), Constant.AGGREGATED_VALUE,
-					projectName, aggDataMap, kpiRequest);
+			setWeekWisePickupTime(aggPickupTimeForRepo, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
+					aggDataMap, kpiRequest);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 
 			populateExcelDataObject(requestTrackerId, repoWisePickupTimeList, repoList, branchList, excelData, node);
@@ -220,16 +220,13 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 						.flatMap(repository -> repository.getBranches().stream())
 						.filter(branch -> branch.getName().equals(branchName)).findFirst();
 				double pickupTime = matchingBranch.isPresent() ? matchingBranch.get().getHours() : 0.0d;
-				int mrCount = matchingBranch.isPresent() ? matchingBranch.get().getMergeRequestsPT().size() : 0;
 				dateWisePickupTime.put(response.getDateLabel(), pickupTime);
-				dateWiseMRCount.put(response.getDateLabel(), mrCount);
 			}
 		}
 	}
 
-	private void setWeekWisePickupTime(Map<String, Double> weekWisePickupTime, Map<String, Integer> weekWiseMRCount,
-			Map<String, Double> excelDataLoader, String branchName, String projectName,
-			Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
+	private void setWeekWisePickupTime(Map<String, Double> weekWisePickupTime, Map<String, Double> excelDataLoader,
+			String branchName, String projectName, Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
 		LocalDate currentDate = LocalDate.now();
 		Integer dataPoints = kpiRequest.getKanbanXaxisDataPoints();
 		String duration = kpiRequest.getDuration();
@@ -240,8 +237,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 					decimalFormat.format(weekWisePickupTime.getOrDefault(dateRange.getStartDate().toString(), 0.0d)));
 			String date = getDateRange(dateRange, duration);
 			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
-			DataCount dataCount = setDataCount(projectName, date, pickupTime,
-					weekWiseMRCount.getOrDefault(dateRange.getStartDate().toString(), 0).longValue());
+			DataCount dataCount = setDataCount(projectName, date, pickupTime);
 			aggDataMap.get(branchName).add(dataCount);
 			excelDataLoader.put(date, pickupTime);
 			currentDate = getNextRangeDate(duration, currentDate);
@@ -272,9 +268,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 		return currentDate;
 	}
 
-	private DataCount setDataCount(String projectName, String week, Double value, Long mrCount) {
+	private DataCount setDataCount(String projectName, String week, Double value) {
 		Map<String, Object> hoverMap = new HashMap<>();
-		hoverMap.put(MR_COUNT, mrCount);
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value == null ? 0L : value.longValue()));
 		dataCount.setSProjectName(projectName);
@@ -308,7 +303,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 					startDate = startDate.minusDays(1);
 				}
 			}
-			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK)?WEEK_FREQUENCY:DAY_FREQUENCY;
+			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
 			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
 					PICKUP_TIME_KPI, startDate.toString(), endDate.toString(), debbieDuration);
 		}
