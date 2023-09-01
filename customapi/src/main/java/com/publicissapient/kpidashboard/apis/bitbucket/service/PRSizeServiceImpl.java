@@ -45,7 +45,6 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,9 +130,8 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		String requestTrackerId = getRequestTrackerId();
 		LocalDate localEndDate = dateRange.getEndDate();
 
-		Integer dataPoints = NumberUtils.isCreatable(kpiRequest.getIds()[0]) ? Integer.parseInt(kpiRequest.getIds()[0])
-				: 5;
-		String duration = kpiRequest.getSelectedMap().get(CommonConstant.date).get(0);
+		Integer dataPoints = kpiRequest.getKanbanXaxisDataPoints();
+		String duration = kpiRequest.getDuration();
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
@@ -171,7 +169,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 								repo.getBranch(), dateWisePickupTime, dateWiseMRCount);
 						aggPickupTime(aggPRSizeForRepo, dateWisePickupTime, aggMRCount, dateWiseMRCount);
 						setWeekWisePickupTime(dateWisePickupTime, dateWiseMRCount, excelDataLoader, branchName,
-								projectName, aggDataMap, duration, dataPoints);
+								projectName, aggDataMap, kpiRequest);
 					}
 					repoWisePRSizeList.add(excelDataLoader);
 					repoList.add(repo.getUrl());
@@ -180,13 +178,13 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 				}
 			});
 			setWeekWisePickupTime(aggPRSizeForRepo, aggMRCount, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
-					aggDataMap, duration, dataPoints);
+					aggDataMap, kpiRequest);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 
 			populateExcelDataObject(requestTrackerId, repoWisePRSizeList, repoList, branchList, excelData, node);
 		});
 		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.PICKUP_TIME.getColumns());
+		kpiElement.setExcelColumns(KPIExcelColumn.PR_SIZE.getColumns());
 	}
 
 	private void aggPickupTime(Map<String, Long> aggPRSizeForRepo, Map<String, Long> prSizeForRepo,
@@ -226,17 +224,19 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 
 	private void setWeekWisePickupTime(Map<String, Long> weekWisePickupTime, Map<String, Long> weekWiseMRCount,
 			Map<String, Long> excelDataLoader, String branchName, String projectName,
-			Map<String, List<DataCount>> aggDataMap, String duration, Integer dataPoints) {
+			Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
 		LocalDate currentDate = LocalDate.now();
+		Integer dataPoints = kpiRequest.getKanbanXaxisDataPoints();
+		String duration = kpiRequest.getDuration();
 		for (int i = 0; i < dataPoints; i++) {
 			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
-			long pickupTime = weekWisePickupTime.getOrDefault(dateRange.getStartDate().toString(), 0l);
+			long prSize = weekWisePickupTime.getOrDefault(dateRange.getStartDate().toString(), 0l);
 			String date = getDateRange(dateRange, duration);
 			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
-			DataCount dataCount = setDataCount(projectName, date, pickupTime,
+			DataCount dataCount = setDataCount(projectName, date, prSize,
 					weekWiseMRCount.getOrDefault(dateRange.getStartDate().toString(), 0l));
 			aggDataMap.get(branchName).add(dataCount);
-			excelDataLoader.put(date, pickupTime);
+			excelDataLoader.put(date, prSize);
 			currentDate = getNextRangeDate(duration, currentDate);
 
 		}
@@ -327,11 +327,6 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 	}
 
 	@Override
-	public List<Object> calculateTrendMetrics(Map<String, Object> stringObjectMap) {
-		return super.calculateTrendMetrics(stringObjectMap);
-	}
-
-	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
 		return calculateKpiValueForLong(valueList, kpiId);
 	}
@@ -339,6 +334,6 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		return null;
+		return new HashMap<>();
 	}
 }

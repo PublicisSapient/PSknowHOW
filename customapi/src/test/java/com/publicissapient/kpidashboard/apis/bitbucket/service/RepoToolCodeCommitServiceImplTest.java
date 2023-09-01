@@ -113,7 +113,8 @@ public class RepoToolCodeCommitServiceImplTest {
 		kpiRequest.setSelectedMap(selectedMap);
 		kpiRequest.setLabel("Project");
 		kpiElement = kpiRequest.getKpiList().get(0);
-
+		kpiRequest.setKanbanXaxisDataPoints(5);
+		kpiRequest.setDuration("WEEKS");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();

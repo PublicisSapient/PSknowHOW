@@ -109,6 +109,8 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi84");
 		kpiRequest.setLabel("PROJECT");
 		kpiRequest.getSelectedMap().put(CommonConstant.date, Arrays.asList("DAYS"));
+		kpiRequest.setKanbanXaxisDataPoints(5);
+		kpiRequest.setDuration("WEEKS");
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
