@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConfig;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,6 +36,7 @@ import java.net.URI;
 /**
  * rest template for repo tools
  */
+@Slf4j
 public class RepoToolsClient {
 
 	private RestTemplate restTemplate;
@@ -57,7 +59,9 @@ public class RepoToolsClient {
 		String payload = gson.toJson(repoToolConfig);
 		URI url = URI.create(repoToolsUrl + REPO_TOOLS_ENROLL_URL);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
+		log.info(url.getHost());
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+		log.debug(response.getBody());
 		return response.getStatusCode().value();
 	}
 
@@ -70,10 +74,9 @@ public class RepoToolsClient {
 	 */
 	public int triggerScanCall(String projectKey, String repoToolsUrl, String apiKey) {
 		setHttpHeaders(apiKey);
-		String triggerScanUrl = String.format(REPO_TOOLS_TRIGGER_SCAN_URL, projectKey);
-		URI url = URI.create(repoToolsUrl + triggerScanUrl);
+		String triggerScanUrl = String.format(repoToolsUrl+REPO_TOOLS_TRIGGER_SCAN_URL, projectKey);
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(triggerScanUrl, HttpMethod.GET, entity, String.class);
 		return response.getStatusCode().value();
 
 	}
