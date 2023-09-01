@@ -468,8 +468,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			Map<String, StandUpViewKpiData> userWiseRemainingCapacity) {
 		if (assignee.getAvailableCapacity() != null) {
 			double remainingCapacity = roundingOff((assignee.getAvailableCapacity() / daysBetween) * daysLeft);
-			//capacity/8hrs, to calculate in days
-			double remainingCapacityInMinutes= remainingCapacity*60;
+			// capacity/8hrs, to calculate in days
+			double remainingCapacityInMinutes = remainingCapacity * 60;
 			userWiseRemainingCapacity.putIfAbsent(assignee.getUserId(),
 					new StandUpViewKpiData(String.valueOf(remainingCapacityInMinutes), null, CommonConstant.DAY, null));
 		}
@@ -685,9 +685,10 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			if (CollectionUtils.isNotEmpty(inSprintHistoryLogs)) {
 				Collections.sort(inSprintHistoryLogs,
 						Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn).reversed());
-				lastTime = ChronoUnit.SECONDS.between(inSprintHistoryLogs.get(0).getUpdatedOn(), LocalDateTime.now());
+				lastTime = ChronoUnit.MINUTES.between(inSprintHistoryLogs.get(0).getUpdatedOn(), LocalDateTime.now())
+						* 8;
 			} else if (CollectionUtils.isNotEmpty(allLogs)) {
-				lastTime = ChronoUnit.SECONDS.between(sprintStartDateTime, LocalDateTime.now());
+				lastTime = ChronoUnit.MINUTES.between(sprintStartDateTime, LocalDateTime.now()) * 8;
 			}
 			lastTimeInString = String.valueOf(lastTime);
 		} else
