@@ -128,6 +128,7 @@ public class RepoToolsConfigServiceImpl {
 					fistScan.toString().replace("T", " "), toolCredential, branchNames);
 
 			repoToolsClient = createRepoToolsClient();
+			log.debug(repoToolConfig.toString());
 			// api call to enroll the project
 			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig, customApiConfig.getRepoToolURL(),
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));

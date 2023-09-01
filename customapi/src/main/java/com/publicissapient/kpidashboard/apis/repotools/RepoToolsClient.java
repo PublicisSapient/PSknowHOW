@@ -24,6 +24,7 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConfig;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -38,6 +39,7 @@ import java.util.List;
 /**
  * rest template for repo tools
  */
+@Slf4j
 public class RepoToolsClient {
 
 	private RestTemplate restTemplate;
@@ -60,7 +62,9 @@ public class RepoToolsClient {
 		String payload = gson.toJson(repoToolConfig);
 		URI url = URI.create(repoToolsUrl + REPO_TOOLS_ENROLL_URL);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
+		log.debug(url.getHost());
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+		log.debug(response.getBody());
 		return response.getStatusCode().value();
 	}
 
