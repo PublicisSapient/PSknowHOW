@@ -1,5 +1,5 @@
 <p-tabView [(activeIndex)]="activeIndex">
-    <p-tabPanel *ngFor="let tab of tabs" [header]="tab">
+    <p-tabPanel *ngFor="let tab of tabs; let i = index;" [header]="tab" [headerStyle]="{'background-color': nodeColors[tab]}">
         <div class="card">
             <p-table [columns]="cols" [value]="kpiData[tab]">
                 <ng-template pTemplate="header" let-columns>
