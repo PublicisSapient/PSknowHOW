@@ -986,7 +986,7 @@ public class KPIExcelUtility {
 					excelData.setRepositoryURL(repoUrl);
 					excelData.setBranch(branchList.get(i));
 					excelData.setWeeks(m.getKey());
-					excelData.setPickupTime(m.getValue().toString());
+					excelData.setPrSize(m.getValue().toString());
 					kpiExcelData.add(excelData);
 				}
 

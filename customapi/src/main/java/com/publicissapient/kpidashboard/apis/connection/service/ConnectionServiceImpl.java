@@ -197,6 +197,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 			} else {
 
 				List<String> connectionUser = new ArrayList<>();
+				if(conn.getType().equals(REPO_TOOLS))
+					conn.setBaseUrl(conn.getHttpUrl());
 				connectionUser.add(username);
 				encryptSecureFields(conn);
 				conn.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
