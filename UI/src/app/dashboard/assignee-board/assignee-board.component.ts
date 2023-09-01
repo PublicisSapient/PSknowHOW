@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -6,7 +6,7 @@ import { SharedService } from 'src/app/services/shared.service';
   templateUrl: './assignee-board.component.html',
   styleUrls: ['./assignee-board.component.css']
 })
-export class AssigneeBoardComponent implements OnInit {
+export class AssigneeBoardComponent implements OnInit , OnChanges{
 
 @Input() issueDataList =[];
 @Input() standUpStatusFilter =[];
@@ -17,6 +17,10 @@ currentSprint;
 
   ngOnInit(): void {
     this.currentSprint = this.sharedService.currentSelectedSprint;
+  }
+
+  ngOnChanges(changes: SimpleChanges){
+    this.currentIssueIndex = 0;
   }
 
   onPreviousIssue(){

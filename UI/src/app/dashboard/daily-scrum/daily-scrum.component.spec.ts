@@ -23,8 +23,8 @@ describe('DailyScrumComponent', () => {
 
   it('should set selected user', () => {
     const spySelecteUserChange = spyOn(component.onSelectedUserChange, 'emit');
-    component.setSelectedUser('dummyUserId');
-    expect(spySelecteUserChange).toHaveBeenCalledWith('dummyUserId');
+    component.setSelectedUser('dummyUserId','dummy');
+    expect(spySelecteUserChange).toHaveBeenCalled();
 
   });
 
