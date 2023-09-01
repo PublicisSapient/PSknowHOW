@@ -215,8 +215,9 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 						.flatMap(repository -> repository.getBranches().stream())
 						.filter(branch -> branch.getName().equals(branchName)).findFirst();
 				long prSize = matchingBranch.isPresent() ? matchingBranch.get().getLinesChanged() : 0l;
+				long mrCount = matchingBranch.isPresent() ? matchingBranch.get().getMergeRequests() : 0l;
 				dateWisePickupTime.put(response.getDateLabel(), prSize);
-				dateWiseMRCount.put(response.getDateLabel(), 0l);
+				dateWiseMRCount.put(response.getDateLabel(), mrCount);
 			}
 		}
 	}
@@ -232,7 +233,8 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 			long prSize = weekWisePickupTime.getOrDefault(dateRange.getStartDate().toString(), 0l);
 			String date = getDateRange(dateRange, duration);
 			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
-			DataCount dataCount = setDataCount(projectName, date, prSize);
+			DataCount dataCount = setDataCount(projectName, date, prSize,
+					weekWiseMRCount.getOrDefault(dateRange.getStartDate().toString(), 0l));
 			aggDataMap.get(branchName).add(dataCount);
 			excelDataLoader.put(date, prSize);
 			currentDate = getNextRangeDate(duration, currentDate);
@@ -263,8 +265,9 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		return currentDate;
 	}
 
-	private DataCount setDataCount(String projectName, String week, Long value) {
+	private DataCount setDataCount(String projectName, String week, Long value, Long mrCount) {
 		Map<String, Object> hoverMap = new HashMap<>();
+		hoverMap.put(MR_COUNT, mrCount);
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value == null ? 0l : value));
 		dataCount.setSProjectName(projectName);
