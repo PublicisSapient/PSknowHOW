@@ -100,11 +100,17 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
    this.columns?.forEach(col =>{
     if(this.totals[col]?.unit === 'day'){
       this.totals[col].value = this.convertToHoursIfTime(this.totals[col].value,this.totals[col].unit);
+    }else{
+      this.totals[col].value = this.totals[col].value.toFixed();
     }
 
     if(this.totals[col]?.unit1 === 'day'){
       this.totals[col].value1 = this.convertToHoursIfTime(this.totals[col].value1,this.totals[col].unit1);
+    }else{
+      this.totals[col].value1 = this.totals[col].value1?.toFixed(2);
     }
+   
+    
 
    });
   }

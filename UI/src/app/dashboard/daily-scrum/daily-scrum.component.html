@@ -2,39 +2,39 @@
 
     <!-- filter section -->
     <section class="filter-header">
-        <ng-container *ngIf="selectedUser === 'Overall' else assignee">
-            <ng-container *ngFor="let filter of filterData">
-                <ng-container [ngSwitch]="filter?.filterType">
-                    <div class="filters" *ngSwitchCase="'singleSelect'">
-                        <ng-select  [(ngModel)]="filters[filter?.filterKey]" [dropdownPosition]="'bottom'"
-                        (change)="handleSingleSelectChange($event,filter?.filterKey)" placeholder="Filter By Role"
-                         class="p-pb-0" [style]="{'min-width' : '180px'}">
-                        <ng-option *ngFor="let item of filter.options" [value]="item">
-                           {{item}}
-                        </ng-option>
-                     </ng-select>
-                    </div>
+        <div class="p-d-flex p-align-center">
+            <ng-container *ngIf="selectedUser === 'Overall' else assignee">
+                <ng-container *ngFor="let filter of filterData">
+                    <ng-container [ngSwitch]="filter?.filterType">
+                        <div class="filters" *ngSwitchCase="'singleSelect'">
+                            <ng-select  [(ngModel)]="filters[filter?.filterKey]" [dropdownPosition]="'bottom'"
+                            (change)="handleSingleSelectChange($event,filter?.filterKey)" placeholder="Filter By Role"
+                             class="p-pb-0" [style]="{'min-width' : '180px'}">
+                            <ng-option *ngFor="let item of filter.options" [value]="item">
+                               {{item}}
+                            </ng-option>
+                         </ng-select>
+                        </div>
+                    </ng-container>
+                  
                 </ng-container>
-              
             </ng-container>
-        </ng-container>
-        <ng-template #assignee>
-            <p-button (click)="setSelectedUser('Overall','')">Back to Dashboard</p-button>
-        </ng-template>
-        <p-button (click)="handleViewExpandCollapse()">{{displayModal ? 'Collapse' : 'Expand'}} </p-button>
-    </section>
-
-    <!-- user filter section -->
-    <section class="p-d-flex p-w-100 p-align-center">
-        <div class="user-filter">
-            <button  *ngFor="let assignee of assigneeList" 
-            (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)" 
-            [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
-            [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}"
-            class="assignee">
-                {{getNameInitials(assignee.assigneeName)}}
-            </button>
+            <ng-template #assignee>
+                <p-button (click)="setSelectedUser('Overall','')">Back to Dashboard</p-button>
+            </ng-template>
+    
+            <div class="user-filter" [ngClass]="{'p-mt-2': selectedUser === 'Overall'}">
+                <button  *ngFor="let assignee of assigneeList" 
+                (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)" 
+                [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
+                [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}"
+                class="assignee">
+                    {{getNameInitials(assignee.assigneeName)}}
+                </button>
+            </div>
         </div>
+      
+        <p-button (click)="handleViewExpandCollapse()">{{displayModal ? 'Collapse' : 'Expand'}} </p-button>
     </section>
 
     <!-- assignee capacity info -->
@@ -73,7 +73,7 @@
                 <td> <span class="user-name">{{assignee.assigneeName}}</span></td>
                 <td *ngFor="let col of columns">
                     {{convertToHoursIfTime(assignee.cardDetails[col]['value'],assignee.cardDetails[col]['unit'])}} {{(assignee.cardDetails[col]['unit'] !== 'day' && assignee.cardDetails[col]['value'] !== '-')  ? assignee.cardDetails[col]['unit'] : ''}} 
-                    {{assignee.cardDetails[col]['value1'] ? ' / ' + assignee.cardDetails[col]['value1'] +' '+ assignee.cardDetails[col]['unit1'] : ''}}
+                    {{assignee.cardDetails[col]['value1'] ? (' / ' + convertToHoursIfTime(assignee.cardDetails[col]['value1'],assignee.cardDetails[col]['unit1']) +' '+ ((assignee.cardDetails[col]['unit1'] !== 'day' && assignee.cardDetails[col]['value1'] !== '-')  ? assignee.cardDetails[col]['unit1'] :'') ): ''}}
                 </td>
             </tr>
         </ng-template>

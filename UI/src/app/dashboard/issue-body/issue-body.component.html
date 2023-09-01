@@ -7,11 +7,11 @@
             <div class="p-d-flex p-justify-between" [style]="{'flex-grow':1}">
                 <span>
                     <h4 class="p-mb-1 p-mt-2" [style]="{'color':'#666666'}">DUE DATE</h4>
-                    <p class="p-mt-1 font-bold">{{issueData['Due Date']}}</p>
+                    <p class="p-mt-1 font-bold">{{issueData['Due Date'] | date:"dd-MMM-yyyy" }}</p>
                 </span>
                 <span>
-                    <h4 class="p-mb-1  p-mt-2"  [style]="{'color':'#666666'}">DEV</h4>
-                    <p class="p-mt-1 font-bold">{{issueData['Dev Due Date']}}</p>
+                    <h4 class="p-mb-1  p-mt-2"  [style]="{'color':'#666666'}">DEV DUE DATE</h4>
+                    <p class="p-mt-1 font-bold">{{issueData['Dev Due Date'] | date:"dd-MMM-yyyy"}}</p>
                 </span>
             </div>
         </div>
@@ -39,14 +39,14 @@
                 <div class="indicator"></div>
                 <span>
                     <h4 class="p-mb-1 p-mt-2" [style]="{'color':'#666666'}">Time with user</h4>
-                    <p class="p-mt-1 font-bold">{{issueData['timeWithUser']}}</p>
+                    <p class="p-mt-1 font-bold">{{convertToHoursIfTime(issueData['timeWithUser'],'day')}}</p>
                 </span>
             </div>
             <div class="p-d-flex p-mb-2" [style]="{'width':'50%'}">
                 <div class="indicator"></div>
                 <span>
                     <h4 class="p-mb-1 p-mt-2" [style]="{'color':'#666666'}">Time in status</h4>
-                    <p class="p-mt-1 font-bold">{{issueData['timeWithStatus']}}</p>
+                    <p class="p-mt-1 font-bold">{{convertToHoursIfTime(issueData['timeWithStatus'],'day')}}</p>
                 </span>
             </div>
             <div class="p-d-flex p-mb-2" [style]="{'width':'50%'}">

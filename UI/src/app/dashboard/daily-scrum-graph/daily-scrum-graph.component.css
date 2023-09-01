@@ -31,3 +31,33 @@
     margin: 0rem;
 }
 
+:host ::ng-deep.tick text{
+    font-size: 0.8rem;
+}
+
+.legends-button{
+    position: absolute;
+    top: -1rem;
+    right: 25%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: blue;
+}
+
+:host ::ng-deep .expandCollapseModal .modal .p-dialog-header{
+    display: block;
+}
+
+:host ::ng-deep- .expandCollapseModal .modal .p-dialog-content{
+    padding: 0;
+}
+
+:host ::ng-deep  .expandCollapseModal .modal .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable{
+    max-width: 50% !important;
+    max-height: 50%;
+    height: 200px;
+    width: 400px !important;
+}
+
+
