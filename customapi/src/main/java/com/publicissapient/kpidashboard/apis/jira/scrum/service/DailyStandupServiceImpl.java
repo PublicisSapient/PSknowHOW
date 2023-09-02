@@ -489,8 +489,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				iterationKpiModalValue.setDevCompletionDateInTime(
 						getDevCompletionDateInTime(issueHistory, fieldMapping.getJiraDevDoneStatusKPI154()));
 
-				getMaxCompleteMaxTestDevStartTime(inSprintStatusLogs, sprintDetails, fieldMapping,
-						iterationKpiModalValue, closedStatus);
+				getMaxCompleteMaxTestDevStartTime(inSprintStatusLogs, fieldMapping, iterationKpiModalValue,
+						closedStatus);
 
 				setPCDandDelay(iterationKpiModalValue, issueWiseDelay, jiraIssue);
 				iterationKpiModalValue.setStatusLogGroup(createDateWiseLogs(inSprintStatusLogs));
@@ -541,8 +541,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	}
 
 	private void getMaxCompleteMaxTestDevStartTime(List<JiraHistoryChangeLog> filterStatusUpdationLogs,
-			SprintDetails sprintDetail, FieldMapping fieldMapping, IterationKpiModalValue iterationKpiModalValue,
-			Set<String> closedStatus) {
+			FieldMapping fieldMapping, IterationKpiModalValue iterationKpiModalValue, Set<String> closedStatus) {
 
 		Set<String> testStatus = fieldMapping != null
 				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraQADoneStatusKPI154())
@@ -697,18 +696,17 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				Set<String> childSet = parentChild.getValue();
 				String parentKey = parentChild.getKey();
 
-				if (!issueIdToModalValueMap.containsKey(parentKey) && ObjectUtils.isNotEmpty(mapOfModalObject.get(parentKey))) {
+				if (!issueIdToModalValueMap.containsKey(parentKey)
+						&& ObjectUtils.isNotEmpty(mapOfModalObject.get(parentKey))) {
 					parentModalValue = mapOfModalObject.get(parentKey);
 					String actualCompletionDate = parentModalValue.getActualCompletionDateInTime();
 
-					childSet.forEach(child -> {
-						mapOfModalObject.computeIfPresent(child, (k, v) -> {
-							if (StringUtils.isEmpty(v.getActualCompletionDateInTime())
-									&& closedStatus.contains(v.getIssueStatus()))
-								v.setActualCompletionDateInTime(actualCompletionDate);
-							return v;
-						});
-					});
+					childSet.forEach(child -> mapOfModalObject.computeIfPresent(child, (k, v) -> {
+						if (StringUtils.isEmpty(v.getActualCompletionDateInTime())
+								&& closedStatus.contains(v.getIssueStatus()))
+							v.setActualCompletionDateInTime(actualCompletionDate);
+						return v;
+					}));
 				}
 			}
 		}
