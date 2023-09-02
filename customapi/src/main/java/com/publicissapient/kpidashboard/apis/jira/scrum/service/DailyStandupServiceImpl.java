@@ -705,6 +705,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 						if (StringUtils.isEmpty(v.getActualCompletionDateInTime())
 								&& closedStatus.contains(v.getIssueStatus()))
 							v.setActualCompletionDateInTime(actualCompletionDate);
+						v.setTimeWithStatus(Constant.DASH);
+						v.setTimeWithUser(Constant.DASH);
 						return v;
 					}));
 				}
