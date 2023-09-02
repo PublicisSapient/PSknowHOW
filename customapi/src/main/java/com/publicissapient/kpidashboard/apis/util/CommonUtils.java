@@ -502,4 +502,38 @@ public final class CommonUtils {
 		}
 		return returnString.toString();
 	}
+
+	public static String convertSecondsToDays(int inputSeconds) {
+		if (inputSeconds <= 0) {
+			return "0s";
+		}
+
+		StringBuilder sb = new StringBuilder();
+		int days = inputSeconds / (24 * 3600);
+
+		if (days > 0) {
+			sb.append(days).append('d');
+			inputSeconds %= (days * 24 * 3600);
+		}
+
+		int hours = inputSeconds / 3600;
+		if (hours > 0) {
+			sb.append(' ').append(hours).append('h');
+			inputSeconds %= (hours * 3600);
+		}
+
+		int minutes = inputSeconds / 60;
+		if (minutes > 0) {
+			sb.append(' ').append(minutes).append('m');
+			inputSeconds %= (minutes * 60);
+		}
+
+		int seconds = inputSeconds;
+		if (seconds > 0) {
+			sb.append(' ').append(seconds).append('s');
+		}
+
+		return sb.toString();
+	}
+
 }
