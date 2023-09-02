@@ -968,7 +968,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     'kpiName': this.allKpiArray[idx]?.kpiName,
                     'frequency': enabledKpi?.kpiDetail?.xaxisLabel,
                     'show': enabledKpi?.isEnabled && enabledKpi?.shown,
-                    'hoverText': []
+                    'hoverText': [],
+                    'order': enabledKpi?.order
                 }
                 let chosenItem = iterativeEle?.filter((item) => item['data'] == hierarchyName)[0];
                 
@@ -982,15 +983,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         obj['hoverText']?.push((i+1) + ' - ' + (item?.['sprintNames']?.length > 0 
                         ? item['sprintNames'].join(',') : item?.['sSprintName'] ? item['sSprintName'] : item?.['date']));
                         let val = item?.lineValue ? item?.lineValue : item?.value;
-                        console.log(kpiId, trendData);
-                        
                         obj[i+1] = val > 0 ? 
                         (Math.round(val * 10) / 10) + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') 
                         : val + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') || '-';
                     }else{
                         obj[i+1] = '-';
-                        console.log("hi");
-                        
                     }
                     
                 }
@@ -1001,6 +998,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 if(enabledKpi?.isEnabled && enabledKpi?.shown){
                     this.kpiTableDataObj[hierarchyName] = [...this.kpiTableDataObj[hierarchyName], obj];
                 }
+                this.sortingRowsInTable(hierarchyName);
             })
         }else{
             /** when no data available */
@@ -1009,7 +1007,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 'kpiName': this.allKpiArray[idx]?.kpiName,
                 'frequency': enabledKpi?.kpiDetail?.xaxisLabel,
                 'show': enabledKpi?.isEnabled && enabledKpi?.shown,
-                'hoverText': []
+                'hoverText': [],
+                'order': enabledKpi?.order
             }
             for(let i=0; i<this.noOfDataPoints;i++){
                 obj[i+1] = '-';
@@ -1017,18 +1016,20 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             obj['latest'] = '-';
             obj['trend'] = '-';
             obj['maturity'] = '-';
-            for(let key in this.kpiTableDataObj){
+            for(let hierarchyName in this.kpiTableDataObj){
                 if(enabledKpi?.isEnabled && enabledKpi?.shown){
-                    let kpiIndex = this.kpiTableDataObj[key]?.findIndex((x) => x.kpiId == kpiId);
+                    let kpiIndex = this.kpiTableDataObj[hierarchyName]?.findIndex((x) => x.kpiId == kpiId);
                     if(kpiIndex > -1){
-                        this.kpiTableDataObj[key]?.splice(kpiIndex, 1);
+                        this.kpiTableDataObj[hierarchyName]?.splice(kpiIndex, 1);
                     }
-                    this.kpiTableDataObj[key]?.push(obj)
+                    this.kpiTableDataObj[hierarchyName]?.push(obj)
+                    this.sortingRowsInTable(hierarchyName);
                 }
             }
         }
-        // console.log(kpiId, this.kpiTableDataObj);
-        
+    }
+    sortingRowsInTable(hierarchyName){
+        this.kpiTableDataObj[hierarchyName]?.sort((a, b) => a.order - b.order);
     }
 
     createCombinations(arr1, arr2) {

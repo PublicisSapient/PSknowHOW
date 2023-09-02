@@ -5989,7 +5989,8 @@ expect(result[1]).toEqual('-ve');
         'xaxisLabel': 'Sprints'
       },
       'isEnabled': true,
-      'shown': true
+      'shown': true,
+      "order": '1'
     }
     const returnedObj = {
       'AddingIterationProject':[{
@@ -6011,7 +6012,8 @@ expect(result[1]).toEqual('-ve');
       ],
       "latest": "85 %",
       "trend": "-ve",
-      "maturity": "M3"
+      "maturity": "M3",
+      "order": '1'
     }]}
     
     component.getTableData('kpi14', 0, enabledKpi);
@@ -6034,7 +6036,8 @@ expect(result[1]).toEqual('-ve');
         'xaxisLabel': 'Sprints'
       },
       'isEnabled': true,
-      'shown': true
+      'shown': true,
+      "order": '1'
     }
     const returnedObj = {
       'AddingIterationProject':[{
@@ -6056,7 +6059,8 @@ expect(result[1]).toEqual('-ve');
         ],
         "latest": "25",
         "trend": "-ve",
-        "maturity": "NA"
+        "maturity": "NA",
+        "order": '1'
     }]}
     
     component.getTableData('kpi28', 0, enabledKpi);
