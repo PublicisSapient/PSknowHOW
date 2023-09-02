@@ -34,8 +34,8 @@
                             <h4 class="font-bold p-mb-1 p-mt-0 p-mr-2">{{subTask['Issue Id']}}</h4>
                             <button  class="assignee" [pTooltip]="subTask['Assignee']" tooltipPosition="bottom">{{getNameInitials(subTask['Assignee'])}}</button>
                         </div>
-                        <h5 class="font-grey p-mt-1 p-mb-1">{{issueData['Issue Description']}}</h5>
-                        <p class="p-mt-0">Status: <span [style]="{'color':'#3F51B5'}">{{issueData['Issue Status']}}</span></p>
+                        <h5 class="font-grey p-mt-1 p-mb-1">{{subTask['Issue Description']}}</h5>
+                        <p class="p-mt-0">Status: <span [style]="{'color':'#3F51B5'}">{{subTask['Issue Status']}}</span></p>
                     </div>
                 </ng-template>
                 <ng-template pTemplate="content">

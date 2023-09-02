@@ -408,8 +408,8 @@ export class HelperService {
         for (const key in obj) {
             for (let i = 0; i < obj[key]?.length; i++) {
                 const idx = aggArr?.findIndex(x => x?.data == obj[key][i]?.data);
-                if(obj[key][i]?.hasOwnProperty('aggregationValue')){
-                    aggArr[idx]['aggregationValue'] = [...aggArr[idx]['aggregationValue'], ...obj[key][i]['aggregationValue']];
+                if(obj[key][i]?.hasOwnProperty('aggregationValue') && obj[key][i]['aggregationValue'] != null){
+                    aggArr[idx]['aggregationValue'] = [...aggArr[idx]['aggregationValue'], obj[key][i]['aggregationValue']];
                 }
                 if (idx != -1) {
                     for (let j = 0; j < obj[key][i]?.value?.length; j++) {

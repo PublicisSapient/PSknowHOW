@@ -312,7 +312,9 @@ export class MultilineComponent implements OnChanges {
     const xAxis = d3.axisBottom(xScale);
     /*var xAxis = d3.axisBottom(xScale).ticks(7);
      */
-    const yAxis = d3.axisLeft(yScale).ticks(5);
+    const yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(function(tickval) {
+      return tickval >= 1000 ? tickval/1000 + "k" : tickval;
+    });
 
     const XCaptionSVG = d3
       .select(this.elem)

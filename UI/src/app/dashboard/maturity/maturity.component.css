@@ -79,6 +79,14 @@
 	fill: #0B7A75;
 }
 
+::ng-deep .group-5-off {
+	fill: #E2E2E2;
+}
+
+::ng-deep .group-5-on {
+	fill: #800000;
+}
+
 ::ng-deep .labelText {
 	font-size: 12px;
 	fill: white;
