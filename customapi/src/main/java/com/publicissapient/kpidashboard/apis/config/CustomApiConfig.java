@@ -222,6 +222,15 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolAPIKey;
 	private String repoToolURL;
 	private Boolean isRepoToolEnable;
+	private boolean fetchFromJson;
+
+	public Boolean getFetchFromJson() {
+		return fetchFromJson;
+	}
+
+	public void setFetchFromJson(Boolean flag) {
+		this.fetchFromJson = flag;
+	}
 
 	public Boolean getIsRepoToolEnable() {
 		return isRepoToolEnable;

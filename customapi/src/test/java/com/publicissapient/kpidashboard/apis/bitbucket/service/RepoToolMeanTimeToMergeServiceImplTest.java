@@ -129,6 +129,7 @@ public class RepoToolMeanTimeToMergeServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		setToolMap();
 		setTreadValuesDataCount();
+		when(customApiConfig.getFetchFromJson()).thenReturn(false);
 
 	}
 

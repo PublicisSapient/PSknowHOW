@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
@@ -97,6 +98,8 @@ public class PickupTimeServiceImplTest {
     CacheService cacheService;
     @Mock
     private CommonService commonService;
+    @Mock
+    CustomApiConfig customApiConfig;
 
     @Before
     public void setup() {
@@ -128,7 +131,7 @@ public class PickupTimeServiceImplTest {
 
         configHelperService.setProjectConfigMap(projectConfigMap);
         configHelperService.setFieldMappingMap(fieldMappingMap);
-
+        when(customApiConfig.getFetchFromJson()).thenReturn(false);
         Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
 
     }
@@ -214,6 +217,7 @@ public class PickupTimeServiceImplTest {
         try {
             KpiElement kpiElement = pickupTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);
+
         } catch (ApplicationException e) {
             e.printStackTrace();
         }

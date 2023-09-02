@@ -18,9 +18,31 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.bson.types.ObjectId;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
@@ -40,22 +62,6 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
-import org.bson.types.ObjectId;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.*;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PRSizeServiceImplTest {
@@ -93,6 +99,8 @@ public class PRSizeServiceImplTest {
     @Mock
     private RepoToolsConfigServiceImpl repoToolsConfigService;
     @Mock
+    CustomApiConfig customApiConfig;
+    @Mock
     CacheService cacheService;
     @Mock
     private CommonService commonService;
@@ -127,6 +135,7 @@ public class PRSizeServiceImplTest {
 
         configHelperService.setProjectConfigMap(projectConfigMap);
         configHelperService.setFieldMappingMap(fieldMappingMap);
+        when(customApiConfig.getFetchFromJson()).thenReturn(false);
 
         Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
 

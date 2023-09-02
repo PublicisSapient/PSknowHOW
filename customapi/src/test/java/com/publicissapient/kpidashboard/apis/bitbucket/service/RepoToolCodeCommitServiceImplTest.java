@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,6 +97,9 @@ public class RepoToolCodeCommitServiceImplTest {
 	private ConfigHelperService configHelperService;
 
 	@Mock
+	CustomApiConfig customApiConfig;
+
+	@Mock
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
 	@Mock
 	CacheService cacheService;
@@ -130,7 +134,7 @@ public class RepoToolCodeCommitServiceImplTest {
 
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-
+		when(customApiConfig.getFetchFromJson()).thenReturn(false);
 		Mockito.when(cacheService.getFromApplicationCache(Mockito.anyString())).thenReturn("trackerid");
 
 	}
