@@ -19,10 +19,10 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -99,6 +99,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	public static final String UNASSIGNED = "Unassigned";
 	private static final String SPRINT = "sprint";
 	private static final String ISSUES = "issues";
+	private static final String CLOSE_STATUS = "close status";
 	public static final String NOT_COMPLETED_JIRAISSUE = "notCompletedJiraIssue";
 	public static final String ASSIGNEE_DETAILS = "AssigneeDetails";
 	public static final String REMAINING_CAPACITY = "Remaining Capacity";
@@ -169,7 +170,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			List<JiraIssue> notCompletedJiraIssue = (List<JiraIssue>) resultMap.get(NOT_COMPLETED_JIRAISSUE);
 			CapacityKpiData capacityKpiData = (CapacityKpiData) resultMap.get(ASSIGNEE_DETAILS);
 			List<JiraIssue> totalIssueList = new ArrayList<>((Set<JiraIssue>) resultMap.get(ISSUES));
-
+			resultMap.put(CLOSE_STATUS, getClosedStatus(fieldMapping, sprintDetails));
 			Map<String, Set<String>> parentChildRelation = findLinkedSubTasks(totalIssueList, fieldMapping);
 
 			Map<String, String> userWiseRole = new HashMap<>();
@@ -240,6 +241,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				userWiseCardDetail.setAssigneeName(assigneeName);
 				userWiseCardDetails.add(userWiseCardDetail);
 			}
+			inheritFromParent(parentChildRelation, mapOfModalObject, (Set<String>) resultMap.get(CLOSE_STATUS));
 			// set filter on Second Screen
 			setFilters(kpiElement, fieldMapping, allRoles);
 			kpiElement.setIssueData(new HashSet<>(mapOfModalObject.values()));
@@ -249,36 +251,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		}
 		kpiElement.setTrendValueList(userWiseCardDetails);
 
-	}
-
-	/*
-	 * filter Status on Second Screen
-	 */
-	private void setFilters(KpiElement kpiElement, FieldMapping fieldMapping, Set<String> allRoles) {
-		List<Filter> firstScreenFilter = new ArrayList<>();
-		// Role Filter on First Screen
-		List<String> values = allRoles.stream().sorted().collect(Collectors.toList());
-		Filter filter = new Filter("role", "singleSelect", values);
-		firstScreenFilter.add(filter);
-
-		// Filters on Second Screen
-		List<Filter> secondScreenFilters = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI154())) {
-			Filter inProgressFilters = new Filter(FILTER_INPROGRESS_SCR2,
-					fieldMapping.getJiraStatusForInProgressKPI154(), FILTER_BUTTON, true, 1);
-			secondScreenFilters.add(inProgressFilters);
-		}
-		Filter openFilter;
-		if (CollectionUtils.isNotEmpty(fieldMapping.getStoryFirstStatusKPI154())) {
-			openFilter = new Filter(FILTER_OPEN_SCR2, fieldMapping.getStoryFirstStatusKPI154(), FILTER_BUTTON, false,
-					null);
-		} else {
-			openFilter = new Filter(FILTER_OPEN_SCR2, Arrays.asList(fieldMapping.getStoryFirstStatus()), FILTER_BUTTON,
-					false, null);
-		}
-		secondScreenFilters.add(openFilter);
-		kpiElement.setFilterData(firstScreenFilter);
-		kpiElement.setStandUpStatusFilter(secondScreenFilters);
 	}
 
 	/**
@@ -370,6 +342,12 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					subTasksJiraIssue.stream().map(JiraIssue::getNumber).collect(Collectors.toSet()),
 					basicProjectConfigId.toString()));
 		}
+	}
+
+	private Set<String> getClosedStatus(FieldMapping fieldMapping, SprintDetails sprintDetails) {
+		return fieldMapping != null && CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusKPI154())
+				? new HashSet<>(fieldMapping.getJiraIterationCompletionStatusKPI154())
+				: sprintDetails.getCompletedIssues().stream().map(SprintIssue::getStatus).collect(Collectors.toSet());
 	}
 
 	/*
@@ -484,6 +462,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		Map<String, String> epicMap = epicList.stream()
 				.collect(Collectors.toMap(JiraIssue::getNumber, JiraIssue::getName));
 		List<JiraIssueCustomHistory> totalHistoryList = (List<JiraIssueCustomHistory>) resultMap.get(HISTORY_ISSUES);
+		Set<String> closedStatus = (Set<String>) resultMap.get(CLOSE_STATUS);
 
 		if (CollectionUtils.isNotEmpty(totalHistoryList)) {
 			LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0], DATE_FORMATTER);
@@ -511,7 +490,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 						getDevCompletionDateInTime(issueHistory, fieldMapping.getJiraDevDoneStatusKPI154()));
 
 				getMaxCompleteMaxTestDevStartTime(inSprintStatusLogs, sprintDetails, fieldMapping,
-						iterationKpiModalValue);
+						iterationKpiModalValue, closedStatus);
 
 				setPCDandDelay(iterationKpiModalValue, issueWiseDelay, jiraIssue);
 				iterationKpiModalValue.setStatusLogGroup(createDateWiseLogs(inSprintStatusLogs));
@@ -562,13 +541,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	}
 
 	private void getMaxCompleteMaxTestDevStartTime(List<JiraHistoryChangeLog> filterStatusUpdationLogs,
-			SprintDetails sprintDetail, FieldMapping fieldMapping, IterationKpiModalValue iterationKpiModalValue) {
-
-		Set<String> closedStatus = fieldMapping != null
-				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusKPI154())
-						? new HashSet<>(fieldMapping.getJiraIterationCompletionStatusKPI154())
-						: sprintDetail.getCompletedIssues().stream().map(SprintIssue::getStatus)
-								.collect(Collectors.toSet());
+			SprintDetails sprintDetail, FieldMapping fieldMapping, IterationKpiModalValue iterationKpiModalValue,
+			Set<String> closedStatus) {
 
 		Set<String> testStatus = fieldMapping != null
 				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraQADoneStatusKPI154())
@@ -679,18 +653,18 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 */
 	private String calculateWithLastTime(List<JiraHistoryChangeLog> inSprintHistoryLogs,
 			List<JiraHistoryChangeLog> allLogs, LocalDateTime sprintStartDateTime, String actualCompletionDateInTime) {
-		String lastTimeInString;
+		String lastTimeInString = null;
 		if (StringUtils.isEmpty(actualCompletionDateInTime)) {
-			long lastTime = 0L;
 			if (CollectionUtils.isNotEmpty(inSprintHistoryLogs)) {
 				Collections.sort(inSprintHistoryLogs,
 						Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn).reversed());
-				lastTime = ChronoUnit.MINUTES.between(inSprintHistoryLogs.get(0).getUpdatedOn(), LocalDateTime.now())
-						* 8;
+				lastTimeInString = CommonUtils.convertSecondsToDays((int) Duration
+						.between(inSprintHistoryLogs.get(0).getUpdatedOn(), LocalDateTime.now()).getSeconds());
 			} else if (CollectionUtils.isNotEmpty(allLogs)) {
-				lastTime = ChronoUnit.MINUTES.between(sprintStartDateTime, LocalDateTime.now()) * 8;
+				lastTimeInString = CommonUtils.convertSecondsToDays(
+						(int) Duration.between(sprintStartDateTime, LocalDateTime.now()).getSeconds());
 			}
-			lastTimeInString = String.valueOf(lastTime);
+
 		} else
 			lastTimeInString = Constant.DASH;
 		return lastTimeInString;
@@ -703,6 +677,71 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			iterationKpiModalValue.setRemainingEstimateInSeconds((long) (jiraIssue.getRemainingEstimateMinutes() * 60));
 		if (jiraIssue.getOriginalEstimateMinutes() != null)
 			iterationKpiModalValue.setOriginalEstimateInSeconds((long) (jiraIssue.getOriginalEstimateMinutes() * 60));
+	}
+
+	/*
+	 * if subtasks issues were closed in the previous sprint, and also spilled the
+	 * issues were coming with full length dotted line, provifing the completion
+	 * date of
+	 */
+	private void inheritFromParent(Map<String, Set<String>> parentChildRelation,
+			Map<String, IterationKpiModalValue> mapOfModalObject, Set<String> closedStatus) {
+		if (MapUtils.isNotEmpty(parentChildRelation) && MapUtils.isNotEmpty(mapOfModalObject)) {
+			IterationKpiModalValue parentModalValue;
+			Map<String, IterationKpiModalValue> issueIdToModalValueMap = mapOfModalObject.entrySet().stream()
+					.filter(entry -> StringUtils.isEmpty(entry.getValue().getActualCompletionDateInTime()))
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+							(existing, replacement) -> existing));
+
+			for (Map.Entry<String, Set<String>> parentChild : parentChildRelation.entrySet()) {
+				Set<String> childSet = parentChild.getValue();
+				String parentKey = parentChild.getKey();
+
+				if (!issueIdToModalValueMap.containsKey(parentKey)) {
+					parentModalValue = mapOfModalObject.get(parentKey);
+					String actualCompletionDate = parentModalValue.getActualCompletionDateInTime();
+
+					childSet.forEach(child -> {
+						mapOfModalObject.computeIfPresent(child, (k, v) -> {
+							if (StringUtils.isEmpty(v.getActualCompletionDateInTime())
+									&& closedStatus.contains(v.getIssueStatus()))
+								v.setActualCompletionDateInTime(actualCompletionDate);
+							return v;
+						});
+					});
+				}
+			}
+		}
+	}
+
+	/*
+	 * filter Status on Second Screen
+	 */
+	private void setFilters(KpiElement kpiElement, FieldMapping fieldMapping, Set<String> allRoles) {
+		List<Filter> firstScreenFilter = new ArrayList<>();
+		// Role Filter on First Screen
+		List<String> values = allRoles.stream().sorted().collect(Collectors.toList());
+		Filter filter = new Filter("role", "singleSelect", values);
+		firstScreenFilter.add(filter);
+
+		// Filters on Second Screen
+		List<Filter> secondScreenFilters = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI154())) {
+			Filter inProgressFilters = new Filter(FILTER_INPROGRESS_SCR2,
+					fieldMapping.getJiraStatusForInProgressKPI154(), FILTER_BUTTON, true, 1);
+			secondScreenFilters.add(inProgressFilters);
+		}
+		Filter openFilter;
+		if (CollectionUtils.isNotEmpty(fieldMapping.getStoryFirstStatusKPI154())) {
+			openFilter = new Filter(FILTER_OPEN_SCR2, fieldMapping.getStoryFirstStatusKPI154(), FILTER_BUTTON, false,
+					null);
+		} else {
+			openFilter = new Filter(FILTER_OPEN_SCR2, Arrays.asList(fieldMapping.getStoryFirstStatus()), FILTER_BUTTON,
+					false, null);
+		}
+		secondScreenFilters.add(openFilter);
+		kpiElement.setFilterData(firstScreenFilter);
+		kpiElement.setStandUpStatusFilter(secondScreenFilters);
 	}
 
 	/**
